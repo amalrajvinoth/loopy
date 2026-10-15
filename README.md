@@ -40,6 +40,7 @@ Open it from the link at the bottom of the home page.
 - **Colors.** Black is the default. You can also pick Sunny, Ocean, Candy or Forest.
 - **Stars.** Every right answer gives a star. More stars unlock badges. A streak of right answers sets off confetti.
 - **Sound.** Short happy sounds play. Tap the speaker to turn them off.
+- **Read aloud.** In Plus and Minus, Times and Share, What Time Is It? and Bigger or Smaller, a speaker button reads the question out loud in the device's own voice, in English or German. Nothing is downloaded. It is on by itself for ages 5 to 7. Turn it on or off in **Settings**.
 - **Help.** After each answer, the game shows a short reason, so kids learn from mistakes.
 - **Last 5.** Each game shows the last 5 answers as green and red dots.
 - **Back.** The big button with the loopy bunny at the top of a game goes back to all games.
@@ -72,7 +73,7 @@ The site is plain HTML, CSS and JavaScript. One small build step makes the share
 | File | What it is |
 | --- | --- |
 | `index.html` | The home page and the list of games |
-| `src/loopy.js` | Shared code: languages, colors, age, sound, stars and badges, Last 5 dots, the back button, printable worksheets. Edit this one |
+| `src/loopy.js` | Shared code: languages, colors, age, sound, read aloud, stars and badges, Last 5 dots, the back button, printable worksheets. Edit this one |
 | `src/loopy.css` | Shared styles and fonts. Edit this one |
 | `loopy.js`, `loopy.css` | Small copies made by the build. Pages load these. Do not edit them |
 | `DESIGN.md` | How loopy looks: colors, fonts, buttons, layout and rules. Read it before you change a page |

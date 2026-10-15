@@ -42,6 +42,7 @@ Tap **Settings** to choose:
 
 - **Problems:** Times, Share, or Both.
 - **Show dots:** turn the counting dots on or off.
+- **Read aloud:** On or Off. When it is on, a speaker button sits in the corner of the problem. It says, for example, "What is 7 times 8?". Tap it to hear the question in the device's own voice, in English or German. Each new question is also read by itself while the sound is on. It starts on for ages 5 to 7 and off from 8. If the device has no voice, the button and the setting do not show.
 
 After 10 right in a row, the game asks if you want to make it harder.
 

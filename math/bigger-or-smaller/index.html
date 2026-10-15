@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'sha256-0yb2nliTaNBB1hni2tJztieOJy3q5E7FzpO64+OgXHs='; style-src 'self' 'sha256-z2P7kGW5Z05eCTjTZdYpc0vThTlOE9vmt97pVSvi2I4=' 'sha256-mLPHAhVTJm0SdZ8DexJ6WrBF50yBW0YxTiBm379jILE=' 'sha256-RT1053JU5UiKvjrCUFx1rlhdFLMmgtuFJ9T8jnMeawQ=' 'sha256-pxp/kBLGl+9iEuWmE39iE3rdwOKNvJ0P5qI66lh2pmE='; img-src 'self' data:; font-src 'self'; connect-src 'none'; object-src 'none'; base-uri 'none'; form-action 'none'; manifest-src 'self'; upgrade-insecure-requests">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'sha256-Yo0HEr7gQY2ke7DPdalrd/NLfaYkqXnfwhqlByqXL/A='; style-src 'self' 'sha256-z2P7kGW5Z05eCTjTZdYpc0vThTlOE9vmt97pVSvi2I4=' 'sha256-b3hnvXtAki+MiiuhFoXP7ow8lTz5lijMUvbmM/sg6Y8=' 'sha256-RT1053JU5UiKvjrCUFx1rlhdFLMmgtuFJ9T8jnMeawQ=' 'sha256-pxp/kBLGl+9iEuWmE39iE3rdwOKNvJ0P5qI66lh2pmE='; img-src 'self' data:; font-src 'self'; connect-src 'none'; object-src 'none'; base-uri 'none'; form-action 'none'; manifest-src 'self'; upgrade-insecure-requests">
 <meta name="referrer" content="strict-origin-when-cross-origin">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <style>:root{color-scheme:light;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}body{margin:0}[hidden]{display:none!important}</style>
@@ -66,7 +66,7 @@ h1 { margin: 0; font-size: 1.6rem; font-weight: 700; text-wrap: balance; }
 }
 .problem-card.good { border-color: var(--good); box-shadow: 0 0 0 2px var(--good) inset; }
 .problem-card.bad { border-color: var(--bad); box-shadow: 0 0 0 2px var(--bad) inset; }
-.prompt { margin: 0; color: var(--muted); font-size: 1rem; text-align: center; }
+.prompt { margin: 0; color: var(--muted); font-size: 1rem; text-align: center; padding: 0 48px; }
 
 /* The problem: "37 ( ) 73", "__ < __ < __" or "4,567 rounds to __". */
 .show {
@@ -294,6 +294,7 @@ Loopy.addStrings({
     bsRoundUp: "{n} is between {lo} and {hi}. It is past halfway ({mid}), so it rounds up to {r}.",
     bsRoundDown: "{n} is between {lo} and {hi}. It is before halfway ({mid}), so it rounds down to {r}.",
     bsRoundHalf: "{n} is exactly halfway between {lo} and {hi}. Halfway rounds up, so it is {r}.",
+    bsReadCmp: "Is {a} smaller than, equal to, or bigger than {b}?", bsReadList: "{q} {list}.",
     bsTryUpTo: "Try numbers up to {n}", bsTryDec: "Try decimals and minus numbers", bsTryMix: "Try all three mixed",
     bsHowCmp: "Write <, > or = in each circle.", bsHowOrd: "Write the numbers in order, smallest first.",
     bsHowRnd: "Round each number as it says.", bsHowMix: "Write <, > or = in the circles, put numbers in order (smallest first), and round.",
@@ -324,6 +325,7 @@ Loopy.addStrings({
     bsRoundUp: "{n} liegt zwischen {lo} und {hi}. Es ist nach der Mitte ({mid}), also wird auf {r} aufgerundet.",
     bsRoundDown: "{n} liegt zwischen {lo} und {hi}. Es ist vor der Mitte ({mid}), also wird auf {r} abgerundet.",
     bsRoundHalf: "{n} liegt genau in der Mitte zwischen {lo} und {hi}. Bei der Mitte wird aufgerundet, also {r}.",
+    bsReadCmp: "Ist {a} kleiner als, gleich oder größer als {b}?", bsReadList: "{q} {list}.",
     bsTryUpTo: "Probiere Zahlen bis {n}", bsTryDec: "Probiere Kommazahlen und Minuszahlen", bsTryMix: "Probiere alle drei gemischt",
     bsHowCmp: "Schreibe <, > oder = in jeden Kreis.", bsHowOrd: "Schreibe die Zahlen der Größe nach auf, die kleinste zuerst.",
     bsHowRnd: "Runde jede Zahl so, wie es dasteht.", bsHowMix: "Schreibe <, > oder = in die Kreise, ordne die Zahlen (die kleinste zuerst) und runde.",
@@ -601,7 +603,7 @@ Loopy.addStrings({
     let p;
     do { p = makeProblem(); } while (p.key === lastKey);
     lastKey = p.key; cur = p; answered = false; picked = [];
-    card.className = "problem-card";
+    card.classList.remove("good", "bad");
     nl.classList.add("off");
     nl.textContent = "";
     feedbackEl.className = "feedback";
@@ -636,6 +638,7 @@ Loopy.addStrings({
       });
     }
     $("next").textContent = t("bsNew");
+    Loopy.speech.read();
   }
 
   // Compare and Round: one tap picks the answer.
@@ -731,6 +734,15 @@ Loopy.addStrings({
     const b = n >= 1 && choicesEl.children[n - 1];
     if (b && !b.disabled) b.click();
   });
+
+  // Read aloud: "Is 37 smaller than, equal to, or bigger than 73?", "Tap the numbers from smallest to biggest. 412, 142 or 241."
+  // or "Round to the nearest hundred. 4,567." Voices read "-7" as minus 7, so speech gets a plain minus sign.
+  const said = (x) => fmt(x).replace("\u2212", "-");
+  Loopy.speech.question({ host: card, text: () => {
+    if (cur.type === "cmp") return t("bsReadCmp", { a: said(cur.a), b: said(cur.b) });
+    if (cur.type === "ord") return t("bsReadList", { q: t("bsAskOrd"), list: cur.list.slice(0, -1).map(said).join(", ") + " " + t("orWord") + " " + said(cur.list[2]) });
+    return t("bsReadList", { q: t("bsRound" + cur.u), list: said(cur.n) });
+  } });
 
   // Print worksheet: 20 problems at the same level and kind, in black and white.
   Loopy.worksheet({
