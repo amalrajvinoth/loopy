@@ -1146,6 +1146,15 @@ document.documentElement.classList.add("loopy-building");
   window.addEventListener("afterprint", function () { filled = false; });
 })();
 
+// Works offline: sw.js, next to this file, saves every page on the device after the first visit
+// (see src/sw.js). Browsers only allow it on https and on localhost.
+(function () {
+  var me = document.currentScript;
+  if (!me || !me.src || !window.isSecureContext || !("serviceWorker" in navigator)) return;
+  var url = new URL("sw.js", me.src).href;
+  window.addEventListener("load", function () { navigator.serviceWorker.register(url).catch(function () {}); });
+})();
+
 // Show the page. This listener is added last, so it runs after every part above is built.
 (function () {
   var show = function () { document.documentElement.classList.remove("loopy-building"); };
