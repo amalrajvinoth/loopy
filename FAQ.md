@@ -28,11 +28,13 @@ Tap EN for English or DE for German. You find it on the home page and in each ga
 
 ## Where are the stars saved? Can I lose them?
 
-Stars are saved in your browser. If you clear your browser data or use a private window, they go away. To keep a backup, copy your stars code from the home page.
+Stars are saved in your browser. If you clear your browser data or use a private window, they go away. To keep a backup, copy your stars code from the home page. It also keeps the day streak and progress.
 
 ## How do I move stars to another device?
 
-On the home page, open "Move my stars to another device". Copy the code, then paste it on the other device and tap Load. The code moves one child at a time: pick the child first, on both devices. A child with no name yet takes the name and picture from the code.
+On the home page, open "Move my stars to another device". Copy the code, then paste it on the other device and tap Load. The code holds every child on the device. Each child's stars go to the child with the same name on the other device, or a new child is added.
+
+The code carries stars, badges, best scores, the day streak, the answers on the grown-ups' page, the Last 5 dots, the age and the settings. Loading a code only adds. It never takes stars or answers away, and loading the same code twice counts nothing twice. Codes from before still work: they move stars and best scores.
 
 ## Can I use Loopy like an app?
 

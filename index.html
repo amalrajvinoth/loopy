@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'sha256-MDCO53QALRWZmFckfWhteEJBDa4W+/zgzkcO/StO1PY='; style-src 'self' 'sha256-jJV23ytjR5k4ldb6SK9y5o4ubpBlQ4f2dO2pHCt03Tw='; img-src 'self' data:; font-src 'self'; connect-src 'none'; worker-src 'self'; object-src 'none'; base-uri 'none'; form-action 'none'; manifest-src 'self'; upgrade-insecure-requests">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'sha256-x5X1Twmj0lsLpbrAR5f516VNgT++3oNbet1o23PE3G8='; style-src 'self' 'sha256-jJV23ytjR5k4ldb6SK9y5o4ubpBlQ4f2dO2pHCt03Tw='; img-src 'self' data:; font-src 'self'; connect-src 'none'; worker-src 'self'; object-src 'none'; base-uri 'none'; form-action 'none'; manifest-src 'self'; upgrade-insecure-requests">
 <meta name="referrer" content="strict-origin-when-cross-origin">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <link rel="icon" href="icon.svg" type="image/svg+xml">
@@ -113,7 +113,7 @@ footer p { margin: 0; }
     <details class="transfer">
       <summary data-t="moveStars">Move my stars to another device</summary>
       <div class="transfer-body">
-        <p data-t="moveHow">Copy this code on this device, then paste it on the other one.</p>
+        <p data-t="moveHow">This code holds your stars, badges, day streak and progress. Copy it here, then paste it on the other device.</p>
         <div class="transfer-row"><input id="code-out" readonly data-t-aria="yourCode" aria-label="Your stars code"><button type="button" id="code-copy" data-t="copy">Copy</button></div>
         <div class="transfer-row"><input id="code-in" placeholder="Paste a code here" data-t-placeholder="pasteHere" data-t-aria="pasteCode" aria-label="Paste a stars code"><button type="button" id="code-load" data-t="load">Load</button></div>
         <p id="code-msg" aria-live="polite"></p>
@@ -127,8 +127,8 @@ footer p { margin: 0; }
 Loopy.addStrings({
   en: {
     tagline: "Learn. Play. Repeat.", myStars: "My stars", moveStars: "Move my stars to another device",
-    moveHow: "Copy this code on this device, then paste it on the other one.", yourCode: "Your stars code", copy: "Copy",
-    moveKidStars: "Move {name}'s stars to another device",
+    moveHow: "This code holds your stars, badges, day streak and progress. Copy it here, then paste it on the other device.", yourCode: "Your stars code", copy: "Copy",
+    moveKidStars: "Move everyone's stars to another device",
     pasteHere: "Paste a code here", pasteCode: "Paste a stars code", load: "Load", moreSoon: "More games are on the way!", helpLink: "Help and feedback", progressLink: "For grown-ups: how it's going",
     copied: "Copied!", copyByHand: "Select the code and copy it.", badCode: "That code didn't work. Check it was copied in full.",
     toNext: "{n} more stars to the {name} badge. Every right answer earns a star.", toNextOne: "1 more star to the {name} badge. Every right answer earns a star.",
@@ -154,8 +154,8 @@ Loopy.addStrings({
   },
   de: {
     tagline: "Lernen. Spielen. Wiederholen.", myStars: "Meine Sterne", moveStars: "Sterne auf ein anderes Gerät bringen",
-    moveHow: "Kopiere diesen Code hier und füge ihn auf dem anderen Gerät ein.", yourCode: "Dein Sterne-Code", copy: "Kopieren",
-    moveKidStars: "Sterne von {name} auf ein anderes Gerät bringen",
+    moveHow: "Dieser Code enthält deine Sterne, Abzeichen, Tage in Folge und deinen Fortschritt. Kopiere ihn hier und füge ihn auf dem anderen Gerät ein.", yourCode: "Dein Sterne-Code", copy: "Kopieren",
+    moveKidStars: "Sterne von allen Kindern auf ein anderes Gerät bringen",
     pasteHere: "Code hier einfügen", pasteCode: "Sterne-Code einfügen", load: "Laden", moreSoon: "Bald kommen mehr Spiele!", helpLink: "Hilfe und Feedback", progressLink: "Für Erwachsene: so läuft es",
     copied: "Kopiert!", copyByHand: "Markiere den Code und kopiere ihn.", badCode: "Der Code hat nicht geklappt. Prüfe, ob er ganz kopiert wurde.",
     toNext: "Noch {n} Sterne bis zum Abzeichen {name}. Jede richtige Antwort gibt einen Stern.", toNextOne: "Noch 1 Stern bis zum Abzeichen {name}. Jede richtige Antwort gibt einen Stern.",
@@ -253,21 +253,22 @@ window.addEventListener("loopy:age", render);
     : t("allBadges");
   document.getElementById("meter-fill").style.width = next ? Math.round((stars - from) / (next.stars - from) * 100) + "%" : "100%";
   const out = document.getElementById("code-out"), msg = document.getElementById("code-msg");
-  out.value = R.exportCode();
-  // With more than one child, say whose stars the code moves.
+  Loopy.backup.exportCode().then(code => { out.value = code; }, () => { out.value = ""; });
+  // With more than one child, the code holds all of them.
   if (Loopy.kids.list().length > 1) {
-    const name = Loopy.kids.label(Loopy.kids.current());
     const summary = document.querySelector(".transfer summary");
     summary.removeAttribute("data-t");
-    summary.textContent = t("moveKidStars", { name });
+    summary.textContent = t("moveKidStars");
   }
   document.getElementById("code-copy").addEventListener("click", () => {
     out.select();
     navigator.clipboard.writeText(out.value).then(() => { msg.textContent = t("copied"); }, () => { msg.textContent = t("copyByHand"); });
   });
   document.getElementById("code-load").addEventListener("click", () => {
-    if (R.importCode(document.getElementById("code-in").value)) location.reload();
-    else msg.textContent = t("badCode");
+    Loopy.backup.importCode(document.getElementById("code-in").value).then(ok => {
+      if (ok) location.reload();
+      else msg.textContent = t("badCode");
+    });
   });
   const box = document.getElementById("badges");
   for (const b of R.BADGES) {
