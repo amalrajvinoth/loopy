@@ -4,6 +4,7 @@ The big changes, newest first. Small fixes are not listed.
 
 | Date | What's new | Where | PR |
 | --- | --- | --- | --- |
+| 2026-10-15 | Pizza Fractions: name the part of a pizza or bar, compare two fractions, and add halves and quarters. A picture shows why after each answer. Read aloud and a printable worksheet too. English and German. | Pizza Fractions (new game), How it's going | #36 |
 | 2026-10-15 | Bigger or Smaller: pick <, = or >, put three numbers in order, and round numbers. A number line shows why after each answer. Read aloud works here too. English and German. | Bigger or Smaller | #34 |
 | 2026-10-15 | Make 10: find the number that makes 10, then 20 and 100 as your child grows. Ten-frames help younger kids count. English and German. | Make 10 (new game), How it's going | #33 |
 | 2026-10-15 | Read aloud: a speaker button reads the question out loud in the device's own voice, in English or German. On by itself for ages 5 to 7; turn it on or off in Settings. | Plus and Minus, Times and Share, What Time Is It? | #32 |
