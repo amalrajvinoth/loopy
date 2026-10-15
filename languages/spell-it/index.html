@@ -1,0 +1,609 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'sha256-dR8NMZiR5FoA3+nFfU3z1q0cmtwgHYpGeA4NKbj4nQY='; style-src 'self' 'sha256-z2P7kGW5Z05eCTjTZdYpc0vThTlOE9vmt97pVSvi2I4=' 'sha256-5/L3e/BVPjm2GPi51M3FkQuzTeZ4bCdHn3SxvjZFuAk=' 'sha256-RT1053JU5UiKvjrCUFx1rlhdFLMmgtuFJ9T8jnMeawQ=' 'sha256-4dEdrKbKL7IOE6FtAmSKmFZuQ7pndyr//hTTqH+uDSo='; img-src 'self' data:; font-src 'self'; connect-src 'none'; object-src 'none'; base-uri 'none'; form-action 'none'; manifest-src 'self'; upgrade-insecure-requests">
+<meta name="referrer" content="strict-origin-when-cross-origin">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<style>:root{color-scheme:light;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}body{margin:0}[hidden]{display:none!important}</style>
+<link rel="icon" href="../../icon.svg" type="image/svg+xml">
+<link rel="manifest" href="../../manifest.webmanifest">
+<link rel="apple-touch-icon" href="../../apple-touch-icon.png">
+<meta name="theme-color" content="#0a0a0c">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="loopy">
+<title data-t="siName">Spell It</title>
+<link rel="preload" href="../../fonts/lexend-latin.woff2" as="font" type="font/woff2" crossorigin>
+<style>
+/* Layout: a picture card with letter boxes, a letter pad below. Shared look with the other games. */
+:root {
+  --bg: #f3f6fb;
+  --card: #ffffff;
+  --ink: #1d2a3f;
+  --muted: #5d6b82;
+  --line: #d5dde9;
+  --accent: #2457c5;
+  --accent-ink: #ffffff;
+  --mark: #e2622b;
+  --good: #1f8a4c;
+  --good-bg: #e3f5ea;
+  --bad: #c23a3a;
+  --bad-bg: #fbe6e6;
+  --chip: #e6ecf6;
+  --key: #ffffff;
+  --font: "Lexend", "Segoe UI", "Helvetica Neue", Arial, sans-serif;
+}
+
+* { box-sizing: border-box; }
+body {
+  background: var(--bg); color: var(--ink); font-family: var(--font); font-size: 16px;
+  padding-left: max(16px, env(safe-area-inset-left, 0px));
+  padding-right: max(16px, env(safe-area-inset-right, 0px));
+  padding-block: 20px 32px;
+}
+.wrap { max-width: 520px; margin: 0 auto; display: flex; flex-direction: column; gap: 16px; }
+
+.top { display: flex; flex-wrap: wrap; gap: 12px; align-items: center; justify-content: space-between; }
+h1 { margin: 0; font-size: 1.6rem; font-weight: 700; text-wrap: balance; }
+.score { display: flex; flex-wrap: wrap; gap: 8px; font-variant-numeric: tabular-nums; }
+.pill { background: var(--card); border: 1px solid var(--line); border-radius: 999px; padding: 6px 14px; font-weight: 600; font-size: 1rem; white-space: nowrap; }
+.pill span { color: var(--muted); font-weight: 400; margin-right: 4px; }
+
+.settings { display: flex; flex-direction: column; gap: 8px; }
+.seg-label { font-size: 0.8rem; font-weight: 600; letter-spacing: 0.06em; text-transform: uppercase; color: var(--muted); margin: 0 0 4px 4px; }
+.seg { display: grid; grid-template-columns: repeat(3, 1fr); gap: 6px; background: var(--chip); padding: 5px; border-radius: 14px; }
+.seg.two { grid-template-columns: repeat(2, 1fr); }
+.seg button {
+  font: inherit; font-size: 0.95rem; font-weight: 600; color: var(--muted);
+  background: transparent; border: 0; border-radius: 10px; padding: 8px 6px; min-height: 44px; cursor: pointer;
+}
+.seg button[aria-pressed="true"] { background: var(--card); color: var(--ink); box-shadow: 0 1px 3px rgb(0 0 0 / 0.12); }
+
+.problem-card {
+  background: var(--card); border: 1px solid var(--line); border-radius: 24px;
+  padding: 20px 18px 18px; display: flex; flex-direction: column; align-items: center; gap: 14px;
+}
+.problem-card.good { border-color: var(--good); box-shadow: 0 0 0 2px var(--good) inset; }
+.problem-card.bad { border-color: var(--bad); box-shadow: 0 0 0 2px var(--bad) inset; }
+
+/* Vertical problem, written like the worksheets: operator on the left, digits right-aligned. */
+.vert {
+  display: grid; grid-template-columns: auto auto; column-gap: 0.35em;
+  font-size: clamp(3.4rem, 15vw, 4.6rem); font-weight: 600; line-height: 1.12;
+  font-variant-numeric: tabular-nums; letter-spacing: 0.04em;
+}
+.vert .num { grid-column: 2; text-align: right; min-width: 3ch; }
+.vert .op { grid-column: 1; grid-row: 2; color: var(--accent); }
+.vert .rule { grid-column: 1 / -1; height: 0.07em; background: var(--ink); border-radius: 2px; margin: 0.1em 0 0.12em; }
+.vert .ans {
+  grid-column: 2; text-align: right; min-width: 3ch; min-height: 1.12em;
+  color: var(--accent); position: relative;
+}
+.vert .ans.empty::after {
+  content: ""; position: absolute; right: 0; bottom: 0.12em; width: 0.55em; height: 0.07em;
+  background: var(--mark); border-radius: 2px; animation: blink 1s steps(2, start) infinite;
+}
+.problem-card.good .ans { color: var(--good); }
+.problem-card.bad .ans { color: var(--bad); text-decoration: line-through; text-decoration-thickness: 0.06em; }
+@keyframes blink { to { visibility: hidden; } }
+
+.feedback { min-height: 3.1em; text-align: center; font-size: 1.1rem; line-height: 1.45; margin: 0; max-width: 34ch; }
+.feedback strong { display: block; font-size: 1.45rem; }
+.feedback.good strong { color: var(--good); }
+.feedback.bad strong { color: var(--bad); }
+.feedback .hint { color: var(--muted); }
+
+.pad { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; }
+.pad button {
+  font: inherit; font-size: 2rem; font-weight: 700; font-variant-numeric: tabular-nums; color: var(--ink);
+  background: var(--key); border: 2px solid var(--line); border-radius: 18px; min-height: 72px; cursor: pointer;
+  transition: transform .08s ease, border-color .15s ease;
+  touch-action: manipulation; -webkit-tap-highlight-color: transparent;
+}
+.pad button:hover:not(:disabled) { border-color: var(--accent); }
+.pad button:active:not(:disabled) { transform: scale(0.96); }
+.pad button:disabled { opacity: 0.4; cursor: default; }
+.pad .erase { font-size: 1.15rem; color: var(--muted); }
+.pad .go { background: var(--accent); border-color: var(--accent); color: var(--accent-ink); font-size: 1.35rem; }
+.pad .go:hover:not(:disabled) { border-color: var(--accent); filter: brightness(1.08); }
+
+.foot { display: flex; justify-content: space-between; align-items: center; gap: 12px; flex-wrap: wrap; }
+.foot p { margin: 0; color: var(--muted); font-size: 0.9rem; }
+.reset { font: inherit; font-size: 0.95rem; color: var(--muted); background: transparent; border: 2px solid var(--line); border-radius: 14px; padding: 0 16px; min-height: 44px; cursor: pointer; }
+button:focus-visible { outline: 3px solid var(--mark); outline-offset: 3px; }
+
+@media (max-width: 420px) {
+  h1 { font-size: 1.35rem; }
+  .pad button { min-height: 64px; font-size: 1.8rem; }
+  .seg button { font-size: 0.85rem; }
+}
+@media (prefers-reduced-motion: reduce) {
+  * { transition: none !important; }
+  .vert .ans.empty::after { animation: none; }
+}
+</style>
+<style>.home-link{display:inline-flex;align-items:center;min-height:40px;color:var(--muted);font-weight:600;text-decoration:none;font-size:0.95rem}.home-link:hover{color:var(--ink)}</style>
+<style>
+/* Phones and tablets: the game fills one screen; settings sit behind a button. */
+body { min-height: 100vh; min-height: 100dvh; padding-block: 12px 16px; }
+.wrap { gap: 12px; }
+.game-bar { display: flex; align-items: center; justify-content: space-between; gap: 8px; }
+.bar-right { display: flex; align-items: center; gap: 8px; }
+.top { gap: 8px 12px; }
+.play { display: flex; flex-direction: column; gap: 12px; -webkit-user-select: none; user-select: none; }
+@media (min-width: 600px) and (orientation: portrait) { .wrap { max-width: 640px; } }
+@media (orientation: landscape) and (min-width: 640px) {
+  .wrap { max-width: 1100px; }
+  .play { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; align-items: center; }
+}
+
+.problem-card { padding: 14px 14px 12px; gap: 8px; }
+.vert { font-size: clamp(2.4rem, min(15vw, 8.5vh), 5rem); font-size: clamp(2.4rem, min(15vw, 8.5dvh), 5rem); }
+.feedback { min-height: 2.9em; font-size: 1.05rem; }
+.feedback strong { font-size: 1.3rem; }
+.pad { gap: 8px; }
+.pad button { min-height: clamp(50px, 8vh, 92px); min-height: clamp(50px, 8dvh, 92px); }
+@media (min-width: 600px) and (orientation: portrait) {
+  .vert { font-size: clamp(3rem, 10dvh, 7rem); }
+  .pad button { min-height: clamp(60px, 10dvh, 120px); font-size: 2.4rem; }
+}
+@media (orientation: landscape) and (min-width: 640px) {
+  .problem-card { height: 100%; justify-content: center; }
+  .vert { font-size: clamp(2.2rem, min(7vw, 13dvh), 7rem); }
+  .pad button { min-height: clamp(44px, calc((100dvh - 150px) / 4.4), 130px); }
+}
+/* Short phones: keep long explanations from pushing the number pad off screen. */
+@media (max-height: 760px) and (orientation: portrait) {
+  .feedback { font-size: 0.95rem; line-height: 1.35; }
+  .feedback strong { font-size: 1.15rem; }
+}
+
+/* Portrait: the page is exactly one screen tall; the pad or answers stay at the bottom
+   and the top part shrinks to fit. With settings open, the page scrolls normally. */
+@media (orientation: portrait) {
+  body { height: calc(100dvh - env(safe-area-inset-top, 0px) - env(safe-area-inset-bottom, 0px)); min-height: 0; display: flex; flex-direction: column; overflow: hidden; }
+  body:has(#settings-panel:not([hidden])) { height: auto; overflow: visible; }
+  .wrap { flex: 1 1 auto; min-height: 0; width: 100%; }
+  .play { flex: 1 1 auto; min-height: 0; }
+}
+@media (orientation: portrait) {
+  .problem-card { flex: 1 1 auto; min-height: 0; justify-content: center; overflow: hidden; }
+  .feedback { flex: 0 1 auto; min-height: 0; overflow-y: auto; }
+}
+@media (orientation: landscape) and (min-width: 640px) {
+  body { height: calc(100dvh - env(safe-area-inset-top, 0px) - env(safe-area-inset-bottom, 0px)); min-height: 0; display: flex; flex-direction: column; overflow: hidden; }
+  body:has(#settings-panel:not([hidden])) { height: auto; overflow: visible; }
+  .wrap { flex: 1 1 auto; min-height: 0; width: 100%; }
+  .play { flex: 1 1 auto; min-height: 0; grid-template-rows: minmax(0, 1fr); }
+  .problem-card { min-height: 0; overflow: hidden; }
+  .feedback { flex: 0 1 auto; min-height: 0; overflow-y: auto; }
+}
+/* After answering on smaller screens, shrink the sum so the reason has room. */
+@media (max-height: 900px), (max-width: 599px) {
+  .problem-card.good .vert, .problem-card.bad .vert { zoom: 0.7; }
+}
+@media (max-height: 500px) {
+  .feedback { font-size: 0.9rem; line-height: 1.3; }
+  .feedback strong { font-size: 1.05rem; }
+}
+
+
+
+/* Spell It: a picture, a speaker button, one box per letter, and a letter pad to spell the word. */
+.pic { font-size: clamp(3rem, 15dvh, 8rem); line-height: 1.15; }
+.speak { font: inherit; display: inline-flex; align-items: center; gap: 8px; min-height: 44px; padding: 0 16px; border-radius: 999px;
+  border: 2px solid var(--line); background: var(--key); color: var(--ink); cursor: pointer; font-weight: 600; font-size: 0.95rem; }
+.speak svg { width: 22px; height: 22px; fill: currentColor; }
+.speak:hover { border-color: var(--accent); }
+.speak[hidden] { display: none; }
+.slots { display: flex; justify-content: center; gap: 0.18em; font-size: clamp(1.9rem, min(10vw, 7dvh), 3.2rem); font-weight: 700; line-height: 1.2; }
+.slots.long { font-size: clamp(1.5rem, min(7vw, 5.5dvh), 2.6rem); }
+.slot { min-width: 1.05em; text-align: center; border-bottom: 0.09em solid var(--line); color: var(--ink); }
+.slot:empty::before { content: "\00a0"; }
+.slot.cur { border-color: var(--accent); }
+.slot.ok { color: var(--good); border-color: var(--good); }
+.slot.no { color: var(--bad); border-color: var(--bad); text-decoration: line-through; text-decoration-thickness: 0.06em; }
+.slots.reveal { font-size: clamp(1.5rem, min(7vw, 5.5dvh), 2.6rem); }
+.slots.reveal .slot { color: var(--good); border-color: var(--good); opacity: 0; transform: translateY(0.2em); transition: opacity .2s ease, transform .2s ease; }
+.slots.reveal .slot.show { opacity: 1; transform: none; }
+.side { display: flex; flex-direction: column; gap: 8px; }
+.letters { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; }
+.letters.five { grid-template-columns: repeat(5, 1fr); }
+.letters button, .actions button {
+  font: inherit; font-size: clamp(1.5rem, 4.5dvh, 2.3rem); font-weight: 700; color: var(--ink);
+  background: var(--key); border: 2px solid var(--line); border-radius: 16px; min-height: clamp(50px, 8dvh, 92px); cursor: pointer;
+  transition: transform .08s ease, border-color .15s ease; touch-action: manipulation; -webkit-tap-highlight-color: transparent;
+}
+.letters button:hover:not(:disabled), .actions button:hover:not(:disabled) { border-color: var(--accent); }
+.letters button:active:not(:disabled), .actions button:active:not(:disabled) { transform: scale(0.96); }
+.letters button:disabled, .actions button:disabled { opacity: 0.4; cursor: default; }
+.actions { display: grid; grid-template-columns: 1fr 2fr; gap: 8px; }
+.actions .erase { font-size: 1.1rem; color: var(--muted); }
+.actions .go { background: var(--accent); border-color: var(--accent); color: var(--accent-ink); font-size: 1.3rem; }
+.actions .go:hover:not(:disabled) { border-color: var(--accent); filter: brightness(1.08); }
+.helper { display: flex; align-items: center; gap: 8px; min-height: 40px; cursor: pointer; }
+.helper input { width: 22px; height: 22px; accent-color: var(--c2); }
+.seg.four { grid-template-columns: repeat(4, 1fr); }
+.seg button { padding-inline: 4px; }
+@media (min-width: 600px) and (orientation: portrait) {
+  .letters button, .actions button { min-height: clamp(60px, 9dvh, 110px); }
+}
+@media (orientation: landscape) and (min-width: 640px) {
+  .problem-card { height: 100%; justify-content: center; }
+  .side { height: 100%; justify-content: center; }
+  .letters button, .actions button { min-height: clamp(44px, 15dvh, 120px); }
+}
+@media (max-height: 900px), (max-width: 599px) {
+  .problem-card.good .pic, .problem-card.bad .pic { zoom: 0.7; }
+}
+/* Short phones: a smaller picture, so the letter boxes and the explanation have room. */
+@media (max-height: 700px) {
+  .pic { font-size: clamp(2.6rem, 11dvh, 5rem); }
+  .speak { min-height: 40px; }
+  .problem-card.good .pic, .problem-card.bad .pic { zoom: 0.6; }
+}
+/* Short phones in portrait: after a wrong answer the right spelling needs the picture's room. */
+@media (max-height: 700px) and (orientation: portrait) {
+  .problem-card.bad .pic { display: none; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .slots.reveal .slot { transform: none; }
+}
+</style>
+<link rel="stylesheet" href="../../loopy.css">
+<script src="../../loopy.js"></script>
+</head>
+<body>
+
+<div class="wrap">
+  <header class="game-bar">
+    <a class="home-link" href="../../">&larr; loopy</a>
+    <div class="bar-right">
+      <span id="star-chip"></span>
+      <button type="button" id="settings-toggle" aria-controls="settings-panel"></button>
+    </div>
+  </header>
+  <div class="top">
+    <h1 id="title" data-t="siName">Spell It</h1>
+    <div class="score" aria-live="polite">
+      <div class="pill"><span data-t="score">Score</span><b id="score">0 / 0</b></div>
+      <div class="pill"><span data-t="streak">Streak</span><b id="streak">0</b></div>
+      <div id="last5" data-game="spell-it"></div>
+    </div>
+  </div>
+  <div class="settings-panel" id="settings-panel" hidden>
+    <div class="controls"><div id="age-picker"></div><div id="theme-picker"></div><button id="sound-toggle"></button><div id="lang-picker"></div></div>
+    <div>
+      <p class="seg-label" id="words-label" data-t="siWords">Words in</p>
+      <div class="seg two" role="group" aria-labelledby="words-label" id="words-seg">
+        <button type="button" data-words="en">English</button>
+        <button type="button" data-words="de">Deutsch</button>
+      </div>
+    </div>
+    <div>
+      <p class="seg-label" id="len-label" data-t="siLen">Word length</p>
+      <div class="seg four" role="group" aria-labelledby="len-label" id="len-seg">
+        <button type="button" data-len="3" data-t="siL3">3 letters</button>
+        <button type="button" data-len="4" data-t="siL4">4 letters</button>
+        <button type="button" data-len="5" data-t="siL5">5 letters</button>
+        <button type="button" data-len="6" data-t="siL6">6 to 8</button>
+      </div>
+    </div>
+    <label class="helper"><input type="checkbox" id="auto-read"> <span data-t="siAutoRead">Read each new word out loud</span></label>
+    <div class="panel-foot">
+      <p data-t="siKbd">Keyboard works too: type the letters, Backspace erases, Enter checks.</p>
+      <button type="button" class="reset" id="reset" data-t="resetScore">Reset score</button>
+    </div>
+  </div>
+
+  <main class="play">
+    <div class="problem-card" id="card">
+      <div class="pic" id="pic" role="img" aria-label=""></div>
+      <button type="button" class="speak" id="speak"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 9v6h4l5 4V5L7 9H3zm13.5 3a4.5 4.5 0 0 0-2.5-4v8a4.5 4.5 0 0 0 2.5-4zM14 3.2v2.1a7 7 0 0 1 0 13.4v2.1a9 9 0 0 0 0-17.6z"/></svg><span data-t="siHear">Hear the word</span></button>
+      <div class="slots" id="slots" role="group" aria-live="polite"></div>
+      <div class="slots reveal" id="reveal" aria-hidden="true" hidden></div>
+      <p class="feedback" id="feedback"><span class="hint"></span></p>
+    </div>
+    <div class="side">
+      <div class="letters" id="letters"></div>
+      <div class="actions">
+        <button type="button" class="erase" id="k-erase" data-t="erase" data-t-aria="siEraseAria">Erase</button>
+        <button type="button" class="go" id="k-go" data-t="check">Check</button>
+      </div>
+    </div>
+  </main>
+</div>
+
+<script>
+Loopy.addStrings({
+  en: {
+    siName: "Spell It", siWords: "Words in", siLen: "Word length", siL3: "3 letters", siL4: "4 letters", siL5: "5 letters", siL6: "6 to 8",
+    siAutoRead: "Read each new word out loud", siHear: "Hear the word", siEraseAria: "Erase the last letter",
+    siKbd: "Keyboard works too: type the letters, Backspace erases, Enter checks.",
+    siAsk: "Listen, then spell the word.", siAskPic: "Look at the picture, then spell the word.",
+    siPic: "Picture", siBoxes: "{n} letters", siYes: "You spelled “{w}”.", siSpelled: "It is spelled {s}.",
+    siHow: "Look at each picture. Write the word on the line. The letters under the line help.",
+    siTry4: "Try words with 4 letters", siTry5: "Try words with 5 letters", siTry6: "Try longer words"
+  },
+  de: {
+    siName: "Wörter schreiben", siWords: "Wörter auf", siLen: "Wortlänge", siL3: "3 Buchstaben", siL4: "4 Buchstaben", siL5: "5 Buchstaben", siL6: "6 bis 8",
+    siAutoRead: "Jedes neue Wort vorlesen", siHear: "Wort anhören", siEraseAria: "Letzten Buchstaben löschen",
+    siKbd: "Die Tastatur geht auch: Buchstaben tippen, Rücktaste löscht, Enter prüft.",
+    siAsk: "Hör zu und schreibe das Wort.", siAskPic: "Schau dir das Bild an und schreibe das Wort.",
+    siPic: "Bild", siBoxes: "{n} Buchstaben", siYes: "Du hast „{w}“ geschrieben.", siSpelled: "Man schreibt es so: {s}.",
+    siHow: "Schau dir jedes Bild an. Schreibe das Wort auf die Linie. Die Buchstaben darunter helfen.",
+    siTry4: "Probiere Wörter mit 4 Buchstaben", siTry5: "Probiere Wörter mit 5 Buchstaben", siTry6: "Probiere längere Wörter"
+  }
+});
+
+// GEN START
+// Each word: [picture, word]. The game sorts them by length: 3, 4, 5, and 6 to 8 letters.
+// German words are nouns, so they start with a capital letter; the child does not need to type it.
+const WORDS = {
+  en: [
+    ["🐱","cat"],["🐶","dog"],["🐷","pig"],["🐄","cow"],["🚌","bus"],["☀️","sun"],["🎩","hat"],["🛏️","bed"],["☕","cup"],["🥚","egg"],
+    ["🦊","fox"],["🦉","owl"],["🐝","bee"],["🐜","ant"],["🦇","bat"],["🐔","hen"],["🚗","car"],["🗺️","map"],["🖊️","pen"],["📦","box"],
+    ["🔑","key"],["🥅","net"],["🥜","nut"],["👂","ear"],["🦵","leg"],["6️⃣","six"],["🔟","ten"],["🕸️","web"],["🚐","van"],["🥧","pie"],
+    ["🐟","fish"],["🐸","frog"],["🦆","duck"],["🐦","bird"],["🦁","lion"],["🐻","bear"],["🐐","goat"],["🦀","crab"],["🌙","moon"],["⭐","star"],
+    ["🌳","tree"],["🚢","ship"],["🎂","cake"],["🥛","milk"],["🚪","door"],["⚽","ball"],["📖","book"],["🪁","kite"],["💡","lamp"],["💍","ring"],
+    ["🧦","sock"],["👟","shoe"],["✋","hand"],["👃","nose"],["⛵","boat"],["🥁","drum"],["🌽","corn"],["🍐","pear"],["5️⃣","five"],["9️⃣","nine"],
+    ["4️⃣","four"],["🔔","bell"],
+    ["🍎","apple"],["🐴","horse"],["🐭","mouse"],["🐑","sheep"],["🐍","snake"],["🐯","tiger"],["🦓","zebra"],["🐳","whale"],["🐌","snail"],["🦈","shark"],
+    ["🏠","house"],["🪑","chair"],["🕰️","clock"],["🍞","bread"],["🍇","grape"],["🍋","lemon"],["🍕","pizza"],["🚂","train"],["🚚","truck"],["✈️","plane"],
+    ["☁️","cloud"],["❤️","heart"],["7️⃣","seven"],["3️⃣","three"],["8️⃣","eight"],["🤖","robot"],["🎹","piano"],
+    ["🐰","rabbit"],["🐵","monkey"],["🐢","turtle"],["🕷️","spider"],["🦜","parrot"],["🍌","banana"],["🥕","carrot"],["🍒","cherry"],["🧀","cheese"],["🍊","orange"],
+    ["🚀","rocket"],["🌸","flower"],["✏️","pencil"],["🕯️","candle"],["🎸","guitar"],["🌉","bridge"],["🪟","window"],["🍅","tomato"],["🦒","giraffe"],["🐧","penguin"],
+    ["🐬","dolphin"],["🎃","pumpkin"],["🐙","octopus"],["🦄","unicorn"],["🌈","rainbow"],["🐘","elephant"],["☂️","umbrella"],["🥪","sandwich"],["🦕","dinosaur"],["✂️","scissors"],
+    ["🦘","kangaroo"],["🍄","mushroom"],["🎒","backpack"]
+  ],
+  de: [
+    ["🎩","Hut"],["🚌","Bus"],["🚂","Zug"],["⌚","Uhr"],["🚲","Rad"],["👂","Ohr"],["🐄","Kuh"],["🐻","Bär"],["🦈","Hai"],["🦌","Reh"],
+    ["🍵","Tee"],["🍦","Eis"],["🦶","Fuß"],["💪","Arm"],["🛸","Ufo"],["🥅","Tor"],["🚪","Tür"],
+    ["🐶","Hund"],["🐭","Maus"],["🦆","Ente"],["🐰","Hase"],["🦔","Igel"],["🦁","Löwe"],["🐵","Affe"],["🦉","Eule"],["🐓","Hahn"],["🌙","Mond"],
+    ["🌳","Baum"],["🏠","Haus"],["⚽","Ball"],["📖","Buch"],["🛏️","Bett"],["🚗","Auto"],["⛵","Boot"],["🍞","Brot"],["✋","Hand"],["👃","Nase"],
+    ["🦵","Bein"],["⛺","Zelt"],["🌽","Mais"],["🥜","Nuss"],["🌹","Rose"],["🥝","Kiwi"],["❤️","Herz"],["💍","Ring"],["🍄","Pilz"],["2️⃣","Zwei"],
+    ["3️⃣","Drei"],["4️⃣","Vier"],["5️⃣","Fünf"],["8️⃣","Acht"],["9️⃣","Neun"],
+    ["🐱","Katze"],["🐟","Fisch"],["🐴","Pferd"],["🐯","Tiger"],["🦓","Zebra"],["🐑","Schaf"],["🐝","Biene"],["🐐","Ziege"],["🦀","Krebs"],["☀️","Sonne"],
+    ["⭐","Stern"],["☁️","Wolke"],["🌸","Blume"],["🍎","Apfel"],["🍐","Birne"],["🧀","Käse"],["☕","Tasse"],["💡","Lampe"],["🪑","Stuhl"],["🧦","Socke"],
+    ["👟","Schuh"],["🍕","Pizza"],["🎂","Torte"],["6️⃣","Sechs"],["🕯️","Kerze"],["👑","Krone"],["🏝️","Insel"],["🐙","Krake"],
+    ["🍌","Banane"],["🚢","Schiff"],["🚀","Rakete"],["🐉","Drache"],["7️⃣","Sieben"],["🌉","Brücke"],["🪟","Fenster"],["🍒","Kirsche"],["🍋","Zitrone"],["🦒","Giraffe"],
+    ["🐧","Pinguin"],["🐬","Delfin"],["🐌","Schnecke"],["🐍","Schlange"],["🐘","Elefant"],["🍅","Tomate"],["🥕","Karotte"],["🎸","Gitarre"],["✂️","Schere"],["🕷️","Spinne"],
+    ["🦜","Papagei"],["🎃","Kürbis"],["🦄","Einhorn"],["🍓","Erdbeere"],["🎒","Rucksack"],["✈️","Flugzeug"]
+  ]
+};
+// Extra letters for the pad: common letters, so the extras look like real choices.
+const EXTRA = { en: "abcdefghiklmnoprstuw", de: "abdefghiklmnorstuwz" };
+const randInt = (n) => Math.floor(Math.random() * n);
+const pick = (arr) => arr[randInt(arr.length)];
+const shuffle = (arr) => arr.slice().sort(() => Math.random() - 0.5);
+// 3, 4, 5, or 6 for words with 6 to 8 letters.
+const lenOf = (word) => Math.min(word.length, 6);
+
+// One word to spell. len: 3, 4, 5 or 6 (6 to 8 letters). The pad has the word's letters, each once
+// (a double letter is tapped twice), plus extras: 8 keys for short words, 10 for longer ones.
+function makeProblem(lang, len, avoid) {
+  const list = WORDS[lang].filter(w => lenOf(w[1]) === len);
+  let w = pick(list);
+  for (let tries = 0; tries < 40 && avoid && avoid.includes(w[1]); tries++) w = pick(list);
+  const letters = [...w[1].toLowerCase()];
+  const need = [...new Set(letters)];
+  const keys = len <= 4 ? 8 : 10;
+  const extra = shuffle([...EXTRA[lang]].filter(c => !need.includes(c))).slice(0, Math.max(2, keys - need.length));
+  return { pic: w[0], word: w[1], letters, tiles: shuffle([...need, ...extra]), len, key: w[1] };
+}
+// GEN END
+
+(function () {
+  const $ = (id) => document.getElementById(id);
+  const card = $("card"), picEl = $("pic"), slotsEl = $("slots"), revealEl = $("reveal"), lettersEl = $("letters"),
+    feedbackEl = $("feedback"), goBtn = $("k-go"), eraseBtn = $("k-erase"), speakBtn = $("speak"), autoBox = $("auto-read");
+  const wordsBtns = [...document.querySelectorAll("#words-seg button")];
+  const lenBtns = [...document.querySelectorAll("#len-seg button")];
+  const t = Loopy.t;
+  const store = {
+    // ok: the values this setting may have; anything else falls back to the default.
+    get(k, d, ok) { try { const v = JSON.parse(localStorage.getItem(k)); return ok.includes(v) ? v : d; } catch (e) { return d; } },
+    set(k, v) { try { localStorage.setItem(k, JSON.stringify(v)); } catch (e) {} }
+  };
+  const still = window.matchMedia && matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+  let age = Loopy.getAge();
+  let wordsLang = store.get("si.words", Loopy.lang === "de" ? "de" : "en", ["en", "de"]);
+  let autoRead = store.get("si.autoRead", true, [true, false]);
+  let len;
+  // Word length is remembered per age: 3 letters up to age 6, 4 at 7, 5 at 8, then 6 to 8 letters.
+  function loadForAge() { len = store.get("si.len.a" + age, age <= 6 ? 3 : age === 7 ? 4 : age === 8 ? 5 : 6, [3, 4, 5, 6]); }
+  loadForAge();
+  let right = 0, tried = 0, streak = 0;
+  let current = null, typed = [], answered = false, recent = [], interacted = false, timers = [];
+
+  // Read the word aloud with the browser's own voice, in the language of the words.
+  // Nothing is downloaded. If there is no voice for that language, the button hides.
+  const canSpeak = "speechSynthesis" in window && "SpeechSynthesisUtterance" in window;
+  function voiceFor(lang) {
+    const list = speechSynthesis.getVoices().map(v => ({ v, l: String(v.lang).toLowerCase().replace("_", "-") }));
+    const mine = list.filter(x => x.l === lang || x.l.startsWith(lang + "-"));
+    const best = mine.find(x => x.v.default) || mine.find(x => x.v.localService) || mine[0];
+    return best ? best.v : null;
+  }
+  function voiceOk() {
+    if (!canSpeak) return false;
+    try { const all = speechSynthesis.getVoices(); return !all.length || !!voiceFor(wordsLang); } catch (e) { return false; }
+  }
+  function speak() {
+    if (!canSpeak || !current) return;
+    try {
+      speechSynthesis.cancel();
+      const u = new SpeechSynthesisUtterance(current.word);
+      u.lang = wordsLang === "de" ? "de-DE" : "en-US";
+      const v = voiceFor(wordsLang);
+      if (v) u.voice = v;
+      u.rate = 0.8;
+      speechSynthesis.speak(u);
+    } catch (e) {}
+  }
+
+  // German nouns start with a capital letter, so the first box shows one whatever key was pressed.
+  const shown = (c, i) => i === 0 && wordsLang === "de" ? c.toUpperCase() : c;
+  function drawSlots() {
+    slotsEl.textContent = "";
+    slotsEl.classList.toggle("long", current.len === 6);
+    current.letters.forEach((c, i) => {
+      const s = document.createElement("span");
+      s.className = "slot";
+      if (typed[i]) s.textContent = shown(typed[i], i);
+      if (answered) s.classList.add(typed[i] === c ? "ok" : "no");
+      else if (i === typed.length) s.classList.add("cur");
+      slotsEl.appendChild(s);
+    });
+    slotsEl.setAttribute("aria-label", t("siBoxes", { n: current.letters.length }) + (typed.length ? ": " + typed.join(" ") : ""));
+  }
+  function render() {
+    $("score").textContent = right + " / " + tried;
+    $("streak").textContent = streak;
+    wordsBtns.forEach(b => b.setAttribute("aria-pressed", String(b.dataset.words === wordsLang)));
+    lenBtns.forEach(b => b.setAttribute("aria-pressed", String(+b.dataset.len === len)));
+    autoBox.checked = autoRead;
+    speakBtn.hidden = !voiceOk();
+    goBtn.textContent = t(answered ? "next" : "check");
+    goBtn.disabled = !answered && typed.length < current.letters.length;
+    eraseBtn.disabled = answered || !typed.length;
+    [...lettersEl.children].forEach(b => { b.disabled = answered || typed.length >= current.letters.length; });
+    drawSlots();
+  }
+  function stopReveal() { timers.forEach(clearTimeout); timers = []; }
+  function newRound() {
+    stopReveal();
+    current = makeProblem(wordsLang, len, recent);
+    recent.push(current.key);
+    if (recent.length > 15) recent.shift();
+    typed = []; answered = false;
+    picEl.textContent = current.pic;
+    picEl.setAttribute("aria-label", t("siPic"));
+    lettersEl.textContent = "";
+    lettersEl.classList.toggle("five", current.tiles.length > 8);
+    current.tiles.forEach(c => {
+      const b = document.createElement("button");
+      b.type = "button"; b.textContent = c; b.lang = wordsLang;
+      b.addEventListener("click", () => add(c));
+      lettersEl.appendChild(b);
+    });
+    revealEl.hidden = true; revealEl.textContent = "";
+    card.classList.remove("good", "bad");
+    feedbackEl.className = "feedback";
+    feedbackEl.innerHTML = '<span class="hint"></span>';
+    feedbackEl.firstChild.textContent = t(voiceOk() ? "siAsk" : "siAskPic");
+    render();
+    if (autoRead && interacted && Loopy.sound.isOn()) speak();
+  }
+  function add(c) {
+    if (answered || typed.length >= current.letters.length) return;
+    typed.push(c);
+    render();
+  }
+  function erase() {
+    if (answered || !typed.length) return;
+    typed.pop();
+    render();
+  }
+  // After a wrong answer, the right spelling appears under the child's try, one letter at a time.
+  function reveal() {
+    revealEl.textContent = "";
+    revealEl.classList.toggle("long", current.len === 6);
+    const boxes = current.letters.map((c, i) => {
+      const s = document.createElement("span");
+      s.className = "slot"; s.textContent = shown(c, i);
+      revealEl.appendChild(s);
+      return s;
+    });
+    revealEl.hidden = false;
+    boxes.forEach((s, i) => {
+      if (still) s.classList.add("show");
+      else timers.push(setTimeout(() => s.classList.add("show"), 250 + i * 350));
+    });
+  }
+  function check() {
+    if (answered || typed.length < current.letters.length) return;
+    answered = true; tried++;
+    const ok = typed.join("") === current.letters.join("");
+    const yours = typed.map(shown).join("");
+    if (ok) { right++; streak++; } else { streak = 0; }
+    if (ok) Loopy.rewards.correct("spell-it", streak, harder());
+    else Loopy.rewards.wrong("spell-it", { q: current.pic, a: current.word, y: yours, k: "si-" + current.len });
+    card.classList.remove("good", "bad");
+    card.classList.add(ok ? "good" : "bad");
+    feedbackEl.className = "feedback " + (ok ? "good" : "bad");
+    feedbackEl.innerHTML = "<strong></strong>";
+    feedbackEl.firstChild.textContent = ok ? (streak >= 3 ? t("correctRow", { n: streak }) : t("correct")) : t("notQuite");
+    const spelled = current.letters.map(shown).join("\u2011");
+    feedbackEl.appendChild(document.createTextNode(ok ? t("siYes", { w: current.word }) : t("siSpelled", { s: spelled })));
+    if (!ok) reveal();
+    render();
+    goBtn.focus({ preventScroll: true });
+    if ((!ok || autoRead) && interacted && Loopy.sound.isOn()) speak();
+  }
+  // What "Make it harder" does after 10 in a row: one letter longer each time, up to 6 to 8 letters.
+  function harder() {
+    if (len >= 6) return null;
+    return { label: t({ 3: "siTry4", 4: "siTry5", 5: "siTry6" }[len]), apply: () => { len++; store.set("si.len.a" + age, len); } };
+  }
+
+  document.addEventListener("pointerdown", () => { interacted = true; }, { once: true });
+  document.addEventListener("keydown", () => { interacted = true; }, { once: true });
+  speakBtn.addEventListener("click", speak);
+  eraseBtn.addEventListener("click", erase);
+  goBtn.addEventListener("click", () => { answered ? newRound() : check(); });
+  wordsBtns.forEach(b => b.addEventListener("click", () => { wordsLang = b.dataset.words; store.set("si.words", wordsLang); recent = []; newRound(); }));
+  lenBtns.forEach(b => b.addEventListener("click", () => { len = +b.dataset.len; store.set("si.len.a" + age, len); recent = []; newRound(); }));
+  autoBox.addEventListener("change", () => { autoRead = autoBox.checked; store.set("si.autoRead", autoRead); });
+  window.addEventListener("loopy:age", (e) => { age = e.detail; recent = []; loadForAge(); newRound(); });
+  $("reset").addEventListener("click", () => { right = 0; tried = 0; streak = 0; Loopy.recent.clear("spell-it"); newRound(); });
+  document.addEventListener("keydown", (e) => {
+    if (e.target.tagName === "INPUT" || e.ctrlKey || e.metaKey || e.altKey || document.querySelector(".loopy-cheer.big")) return;
+    if (e.key === "Enter") {
+      if (e.target.tagName === "BUTTON") return;
+      answered ? newRound() : check();
+      e.preventDefault();
+      return;
+    }
+    if (e.key === "Backspace") { erase(); e.preventDefault(); return; }
+    const c = e.key.length === 1 ? e.key.toLowerCase() : "";
+    if (c && current.tiles.includes(c)) add(c);
+  });
+  // Some browsers load their voices a moment after the page.
+  if (canSpeak) speechSynthesis.addEventListener("voiceschanged", render);
+  window.addEventListener("pagehide", () => { try { speechSynthesis.cancel(); } catch (e) {} });
+
+  // Print worksheet: 20 pictures, each with a line to write the word and its letters mixed up underneath.
+  const part = (cls, text) => { const n = document.createElement("span"); n.className = cls; if (text) n.textContent = text; return n; };
+  Loopy.worksheet({
+    title: () => t("siName"),
+    level: () => [t("ageLabel", { n: age }), t("siLen") + ": " + t({ 3: "siL3", 4: "siL4", 5: "siL5", 6: "siL6" }[len]),
+      t("siWords") + ": " + (wordsLang === "de" ? "Deutsch" : "English")].join(" · "),
+    how: () => t("siHow"),
+    layout: "word",
+    make: (n) => { const list = [], keys = []; while (list.length < n) { const p = makeProblem(wordsLang, len, keys); keys.push(p.key); list.push(p); } return list; },
+    cell: (p) => {
+      const box = document.createElement("div");
+      box.appendChild(part("ws-pic", p.pic));
+      const line = part("ws-word");
+      line.appendChild(part("ws-gap", "\u2007".repeat(Math.min(p.letters.length + 2, 10))));
+      box.appendChild(line);
+      const opts = part("ws-opts");
+      // Mix the letters until they no longer spell the word.
+      let mixed = shuffle(p.letters);
+      for (let i = 0; i < 20 && mixed.join("") === p.letters.join(""); i++) mixed = shuffle(p.letters);
+      opts.appendChild(part("", mixed.join("\u00a0")));
+      box.appendChild(opts);
+      return box;
+    },
+    answer: (p) => p.pic + " " + p.word
+  });
+
+  newRound();
+})();
+</script>
+</body>
+</html>
