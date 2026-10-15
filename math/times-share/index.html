@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'sha256-5VzASa8NeTB1TMEGBCu3cFoemn6jPB/t3SkIbmJ7GEE='; style-src 'self' 'sha256-z2P7kGW5Z05eCTjTZdYpc0vThTlOE9vmt97pVSvi2I4=' 'sha256-ER4UVxOAHVG2PpFuwsi/fNYnlP9iTYLytTr9Qx7YKqY=' 'sha256-RT1053JU5UiKvjrCUFx1rlhdFLMmgtuFJ9T8jnMeawQ=' 'sha256-EgU4y8/59HTZwV3AzcrjDFd0xMdOdzbadhnUxcmpZZs='; img-src 'self' data:; font-src 'self'; connect-src 'none'; object-src 'none'; base-uri 'none'; form-action 'none'; manifest-src 'self'; upgrade-insecure-requests">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'sha256-jU4ALiA7BnYwXFER8WDkosFwZlu2e++FLCdvqjl86Lc='; style-src 'self' 'sha256-z2P7kGW5Z05eCTjTZdYpc0vThTlOE9vmt97pVSvi2I4=' 'sha256-ER4UVxOAHVG2PpFuwsi/fNYnlP9iTYLytTr9Qx7YKqY=' 'sha256-RT1053JU5UiKvjrCUFx1rlhdFLMmgtuFJ9T8jnMeawQ=' 'sha256-EgU4y8/59HTZwV3AzcrjDFd0xMdOdzbadhnUxcmpZZs='; img-src 'self' data:; font-src 'self'; connect-src 'none'; object-src 'none'; base-uri 'none'; form-action 'none'; manifest-src 'self'; upgrade-insecure-requests">
 <meta name="referrer" content="strict-origin-when-cross-origin">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <style>:root{color-scheme:light;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}body{margin:0}[hidden]{display:none!important}</style>
@@ -227,6 +227,7 @@ body { min-height: 100vh; min-height: 100dvh; padding-block: 12px 16px; }
     <div class="score" aria-live="polite">
       <div class="pill"><span data-t="score">Score</span><b id="score">0 / 0</b></div>
       <div class="pill"><span data-t="streak">Streak</span><b id="streak">0</b></div>
+      <div id="last5" data-game="times-share"></div>
     </div>
   </div>
   <div class="settings-panel" id="settings-panel" hidden>
@@ -480,7 +481,7 @@ function explain(p) {
     answered = true; tried++;
     const ok = parseInt(typed, 10) === current.answer;
     if (ok) { right++; streak++; } else { streak = 0; }
-    if (window.Loopy && Loopy.rewards) ok ? Loopy.rewards.correct("times-share", streak, harder()) : Loopy.rewards.wrong();
+    if (window.Loopy && Loopy.rewards) ok ? Loopy.rewards.correct("times-share", streak, harder()) : Loopy.rewards.wrong("times-share");
     card.className = "problem-card " + (ok ? "good" : "bad");
     feedbackEl.className = "feedback " + (ok ? "good" : "bad");
     const sign = current.op === "mul" ? " × " : " ÷ ";
@@ -514,7 +515,7 @@ function explain(p) {
   dotsBox.addEventListener("change", () => { dots = dotsBox.checked; store.set("ts.dots.a" + age, dots); render(); drawDots(); });
   window.addEventListener("loopy:age", (e) => { age = e.detail; recent = []; loadForAge(); newRound(); });
   window.addEventListener("resize", drawDots);
-  $("reset").addEventListener("click", () => { right = 0; tried = 0; streak = 0; newRound(); });
+  $("reset").addEventListener("click", () => { right = 0; tried = 0; streak = 0; if (window.Loopy && Loopy.recent) Loopy.recent.clear("times-share"); newRound(); });
   document.addEventListener("keydown", (e) => {
     if (e.metaKey || e.ctrlKey || e.altKey || document.querySelector(".loopy-cheer.big")) return;
     if (e.target.tagName === "INPUT") return;

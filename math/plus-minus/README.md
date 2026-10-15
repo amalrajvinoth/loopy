@@ -26,6 +26,11 @@ The numbers grow with age.
 
 Younger kids start with adding only and no regrouping.
 
+## Last 5
+
+At the top, **Last 5** shows your last 5 answers as dots: green for right, red for wrong. The newest one is on the right.
+They stay there next time you play. **Reset score** in Settings clears them.
+
 ## Settings
 
 Tap **Settings** to choose:

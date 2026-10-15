@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'sha256-oEgp9R3rB1t67Dde/q2s6SRtp6boiJhr+wct01e1sso='; style-src 'self' 'sha256-z2P7kGW5Z05eCTjTZdYpc0vThTlOE9vmt97pVSvi2I4=' 'sha256-xiQ/+AzzVFvamMSKxKU68FfPajpV8TA12Ri8gQSSYQY='; img-src 'self' data:; font-src 'self'; connect-src 'none'; object-src 'none'; base-uri 'none'; form-action 'none'; manifest-src 'self'; upgrade-insecure-requests">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'sha256-bz9jS89VrxeJdAO9P1hIyNkYn6/GpPb162ozoIuuO3w='; style-src 'self' 'sha256-z2P7kGW5Z05eCTjTZdYpc0vThTlOE9vmt97pVSvi2I4=' 'sha256-xiQ/+AzzVFvamMSKxKU68FfPajpV8TA12Ri8gQSSYQY='; img-src 'self' data:; font-src 'self'; connect-src 'none'; object-src 'none'; base-uri 'none'; form-action 'none'; manifest-src 'self'; upgrade-insecure-requests">
 <meta name="referrer" content="strict-origin-when-cross-origin">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <style>:root{color-scheme:light;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}body{margin:0}[hidden]{display:none!important}</style>
@@ -542,7 +542,7 @@ function makeSet(age, lang) {
     });
     streak = ok ? streak + 1 : 0;
     results.push({ kind: p.kind, ok });
-    ok ? Loopy.rewards.correct("daily-mix", streak) : Loopy.rewards.wrong();
+    ok ? Loopy.rewards.correct("daily-mix", streak) : Loopy.rewards.wrong("daily-mix");
     card.className = "problem-card " + (ok ? "good" : "bad");
     feedbackEl.className = "feedback " + (ok ? "good" : "bad");
     let why;
