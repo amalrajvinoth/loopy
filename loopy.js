@@ -266,7 +266,7 @@
 
   var data = { stars: 0, best: {} };
   var cheeredBest = {}; // one "new best" cheer per run
-  var MAX_STARS = 1000000, GAMES = ["plus-minus", "times-share", "clock", "sound-spell"];
+  var MAX_STARS = 1000000, GAMES = ["plus-minus", "times-share", "clock", "sound-spell", "daily-mix"];
   var num = function (n) { return typeof n === "number" && isFinite(n) && n >= 0 ? Math.min(Math.floor(n), MAX_STARS) : 0; };
   // Only known games and sane numbers are kept, whatever the stored text says.
   function clean(raw) {
@@ -420,6 +420,60 @@
   }
   if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", build);
   else build();
+})();
+
+// Loopy day streak: finishing Today's 10 on days in a row. Badges at 3, 7 and 30 days.
+// Kept in this browser's localStorage as { last: "2026-10-15", streak: 3, best: 5 }.
+(function () {
+  var KEY = "loopy.daily", MAX = 100000;
+  var DAY_BADGES = [{ days: 3, key: "d3", color: "--c2" }, { days: 7, key: "d7", color: "--c4" }, { days: 30, key: "d30", color: "--c3" }];
+  var Loopy = window.Loopy = window.Loopy || {};
+  Loopy.addStrings({
+    en: { d3: "On a Roll", d7: "Week Hero", d30: "Month Master", dayStreakBadge: "{n} days in a row! You play every day." },
+    de: { d3: "Gut dabei", d7: "Wochen-Held", d30: "Monats-Meister", dayStreakBadge: "{n} Tage hintereinander! Du spielst jeden Tag." }
+  });
+  DAY_BADGES.forEach(function (b) { Object.defineProperty(b, "name", { get: function () { return Loopy.t(b.key); } }); });
+
+  var pad = function (n) { return (n < 10 ? "0" : "") + n; };
+  function dayKey(offset) {
+    var d = new Date();
+    d = new Date(d.getFullYear(), d.getMonth(), d.getDate() + (offset || 0));
+    return d.getFullYear() + "-" + pad(d.getMonth() + 1) + "-" + pad(d.getDate());
+  }
+  var whole = function (n) { return typeof n === "number" && isFinite(n) && n >= 0 ? Math.min(Math.floor(n), MAX) : 0; };
+  // Only a real date and sane numbers are kept, whatever the stored text says.
+  function clean(raw) {
+    var out = { last: "", streak: 0, best: 0 };
+    if (!raw || typeof raw !== "object") return out;
+    if (typeof raw.last === "string" && /^\d{4}-\d{2}-\d{2}$/.test(raw.last)) out.last = raw.last;
+    out.streak = out.last ? whole(raw.streak) : 0;
+    out.best = Math.max(whole(raw.best), out.streak);
+    return out;
+  }
+  var data = clean(null);
+  try { data = clean(JSON.parse(localStorage.getItem(KEY))); } catch (e) {}
+
+  Loopy.daily = {
+    BADGES: DAY_BADGES,
+    // streak: days in a row that are still alive (finished today or yesterday). doneToday: today's 10 is finished.
+    get: function () {
+      var alive = data.last === dayKey(0) || data.last === dayKey(-1);
+      return { streak: alive ? data.streak : 0, best: data.best, doneToday: data.last === dayKey(0) };
+    },
+    // Call when Today's 10 is finished. Returns the streak and a new day badge, if one was just earned.
+    finish: function () {
+      var today = dayKey(0), before = data.best;
+      if (data.last !== today) {
+        data.streak = data.last === dayKey(-1) ? data.streak + 1 : 1;
+        data.last = today;
+        data.best = Math.max(data.best, data.streak);
+        try { localStorage.setItem(KEY, JSON.stringify(data)); } catch (e) {}
+      }
+      var badge = null;
+      DAY_BADGES.forEach(function (b) { if (before < b.days && data.best >= b.days) badge = b; });
+      return { streak: data.streak, badge: badge };
+    }
+  };
 })();
 
 // Settings button: shows or hides the panel with age, theme, sound and game levels.
