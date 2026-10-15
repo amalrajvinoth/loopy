@@ -1,6 +1,6 @@
 /* Loopy shared styles: themes, age picker, sound button, rewards. Load after each page's own styles. */
 /* Fonts are stored on this site, so no request goes to Google or anyone else.
-   Fredoka and Lexend are free fonts under the SIL Open Font License 1.1 (see fonts/OFL.txt).
+   Fredoka, Lexend and Atkinson Hyperlegible Next are free fonts under the SIL Open Font License 1.1 (see fonts/OFL.txt).
    The *-latin files are made by tools/build.py --fonts from src/fonts/ and keep only the letters
    in the unicode-range below. Change both together. */
 @font-face {
@@ -35,6 +35,15 @@
   src: url("fonts/lexend-latin.woff2") format("woff2");
   unicode-range: U+0020-007E, U+00A0, U+00A9, U+00AB, U+00B0-00B1, U+00B7, U+00BB, U+00C4, U+00D6-00D7, U+00DC, U+00DF, U+00E4, U+00F6-00F7, U+00FC, U+2013-2014, U+2018-201A, U+201C-201E, U+2022, U+2026, U+20AC, U+2212;
 }
+/* "Easier to read" font, only loaded by a page when that setting is on (see the end of this file). */
+@font-face {
+  font-family: "Atkinson Hyperlegible Next";
+  font-style: normal;
+  font-weight: 400 700;
+  font-display: swap;
+  src: url("fonts/atkinson-latin.woff2") format("woff2");
+  unicode-range: U+0020-007E, U+00A0, U+00A9, U+00AB, U+00B0-00B1, U+00B7, U+00BB, U+00C4, U+00D6-00D7, U+00DC, U+00DF, U+00E4, U+00F6-00F7, U+00FC, U+2013-2014, U+2018-201A, U+201C-201E, U+2022, U+2026, U+20AC, U+2212;
+}
 /* loopy.js hides the page while it builds the shared parts, so nothing jumps on load. */
 .loopy-building body { visibility: hidden; }
 :root[data-theme="black"] {
@@ -61,6 +70,12 @@
   --good: #0b7f5e; --good-bg: #e0f7ef; --bad: #c92a2a; --bad-bg: #ffe3e3; --on-accent: #ffffff;
   --face: #ffffff; --rim: #3a1d3f; color-scheme: light;
 }
+:root[data-theme="contrast"] {
+  --bg: #000000; --card: #000000; --ink: #ffffff; --muted: #e6e6e6; --line: #ffffff; --chip: #1f1f1f; --key: #141414;
+  --c1: #8cc8ff; --c2: #ffb066; --c3: #5cf2a0; --c4: #ffa6f0; --c5: #ffe500;
+  --good: #5cf2a0; --good-bg: #002b14; --bad: #ff9b9b; --bad-bg: #3d0000; --on-accent: #000000;
+  --face: #ffffff; --rim: #ffffff; color-scheme: dark;
+}
 :root[data-theme="forest"] {
   --bg: #0f1f17; --card: #183024; --ink: #effaf2; --muted: #a6c4b1; --line: #2a4a38; --chip: #22402f; --key: #1d3829;
   --c1: #8ce99a; --c2: #ffa94d; --c3: #63e6be; --c4: #f783ac; --c5: #ffe066;
@@ -71,6 +86,8 @@
 :root[data-theme] {
   --accent: var(--c1); --hour: var(--c1); --minute: var(--c2); --mark: var(--c2); --accent-ink: var(--on-accent);
 }
+/* The clock hands sit on a white face, so high contrast needs mid colors that stand out on white and on black. */
+:root[data-theme="contrast"] { --hour: #3d84ff; --minute: #e65c00; }
 .next { color: var(--on-accent) !important; }
 
 .themes { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; }
@@ -201,6 +218,8 @@ button, a, label, summary { touch-action: manipulation; -webkit-tap-highlight-co
 .panel-foot { display: flex; flex-wrap: wrap; gap: 10px; align-items: center; justify-content: space-between; }
 .panel-foot p { margin: 0; color: var(--muted); font-size: 0.9rem; }
 @media (max-width: 380px) { .settings-toggle span { display: none; } .settings-toggle { padding: 0 11px; } }
+/* "Einstellungen" is long: with the child's picture in the star chip it no longer fits next to the back button on phones. */
+@media (max-width: 420px) { :root[lang="de"] .settings-toggle span { display: none; } :root[lang="de"] .settings-toggle { padding: 0 11px; } }
 
 .lang-picker { display: inline-flex; gap: 4px; background: var(--chip); border-radius: 999px; padding: 4px; }
 .lang-picker button { min-width: 44px; height: 36px; border: 0; border-radius: 999px; background: transparent; color: var(--muted); font: inherit; font-weight: 700; cursor: pointer; }
@@ -323,3 +342,15 @@ a.home-link.loopy-back:focus-visible { outline: 3px solid var(--mark); outline-o
   .sheet-key li { display: flex; gap: 3mm; align-items: baseline; border-bottom: 0.2mm solid #ddd; padding-bottom: 2mm; }
   .sheet-key .sheet-n { position: static; min-width: 8mm; font-size: 11pt; }
 }
+
+/* High contrast theme: on top of its colors, every button and box gets a clear white edge. */
+:root[data-theme="contrast"] :is(button, .pill, .seg, .lang-picker, .age-picker, .star-chip):not(.themes button, .seg button, .lang-picker button, .age-picker button, :focus-visible) {
+  outline: 2px solid var(--line); outline-offset: -2px;
+}
+:root[data-theme="contrast"] .themes button { border-color: #6b6b6b; }
+:root[data-theme="contrast"] .themes button[aria-pressed="true"] { border-color: var(--ink); outline: 3px solid var(--ink); outline-offset: 2px; }
+:root[data-theme="contrast"] a { text-decoration-thickness: 2px; }
+
+/* "Easier to read" font (Settings): one font with clear, different letter shapes for every text on the page. */
+:root[data-font="easy"] { --font: "Atkinson Hyperlegible Next", "Segoe UI", Arial, sans-serif; --display: var(--font); }
+:root[data-font="easy"] body, :root[data-font="easy"] body * { font-family: var(--font) !important; letter-spacing: 0.02em; }
