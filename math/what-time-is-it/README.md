@@ -12,7 +12,7 @@ Practice reading a clock with hands.
 
 You can also use a keyboard. Press **1** to **4** to pick an answer, and **Enter** to go on.
 
-## How hard it is
+## Age levels
 
 | Age | Times on the clock |
 | --- | --- |
@@ -46,7 +46,7 @@ Tap **Settings**, then **Print worksheet**. The print window opens. Print it, or
 - Page 2 has the times, for example "4:30".
 - Each tap makes a new set of clocks.
 
-## The reason after each answer
+## Example help text
 
 The game explains how to read the clock.
 For example: "The short hand is just past 3. The long hand points to 5, which is 25 minutes."

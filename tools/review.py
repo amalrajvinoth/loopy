@@ -99,16 +99,13 @@ GAME_PARTS = [
     ("Loopy.recent.clear", "Reset score clears Last 5 (`Loopy.recent.clear`)"),
     ("Loopy.worksheet", "Print worksheet (`Loopy.worksheet`)"),
 ]
-README_PARTS = ["How to play", "Settings", "Print a worksheet"]
-README_LEVELS = ["How hard it is", "Age levels"]
-README_HELP = ["Example help text", "The reason after each answer"]
+README_PARTS = ["How to play", "Age levels", "Settings", "Print a worksheet", "Example help text"]
 
 
 def main():
     home = (ROOT / "index.html").read_text(encoding="utf-8")
     readme = (ROOT / "README.md").read_text(encoding="utf-8")
     games = re.findall(r"path:\s*\"([^\"]+)\"", home[home.find("const GAMES"):home.find("];", home.find("const GAMES"))])
-    level_names, help_names = {}, {}
 
     for p in sorted(ROOT.glob("*/*/index.html")) + sorted(ROOT.glob("*/index.html")) + [ROOT / "index.html"]:
         text = p.read_text(encoding="utf-8")
@@ -138,17 +135,6 @@ def main():
         for h in README_PARTS:
             if h not in heads:
                 add("should", rel(rd), f"no \"## {h}\" section")
-        level_names[g] = next((h for h in heads if h in README_LEVELS), None)
-        help_names[g] = next((h for h in heads if h in README_HELP), None)
-
-    for label, names, choices in (("age levels", level_names, README_LEVELS), ("help text", help_names, README_HELP)):
-        for g, h in names.items():
-            if h is None:
-                add("should", f"{g}README.md", f"no section about {label} (\"{choices[0]}\" or \"{choices[1]}\")")
-        used = {h for h in names.values() if h}
-        if len(used) > 1:
-            add("suggest", "*/README.md", f"game READMEs name the {label} section differently: "
-                + ", ".join(f"\"{h}\" ({', '.join(g for g, x in names.items() if x == h)})" for h in sorted(used)))
 
     order = {"must": 0, "should": 1, "suggest": 2}
     findings.sort(key=lambda f: (order[f[0]], f[1]))
