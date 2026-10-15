@@ -36,7 +36,7 @@ typography:
   display:
     fontFamily: "Fredoka, Lexend, sans-serif"
     fontWeight: 600-700
-    use: home page headings, game card titles, cheer pop-ups, Help page, results screens
+    use: home page headings, game card titles, cheer pop-ups, Help page, How it's going page, results screens
   body:
     fontFamily: "Lexend, Segoe UI, Helvetica Neue, Arial, sans-serif"
     fontWeight: 400-700
@@ -155,7 +155,7 @@ Ink #1d2a3f (white in `logo-white.svg`), ears #3ddc84, eyes white. The app icon 
 
 All fonts are stored on the site and cut down to English and German letters (`python3 tools/build.py --fonts`). Never load a font from Google or anywhere else.
 
-- **Fredoka** (600 and 700): playful headings. Home page subject headings, game card titles, the "go" pills, cheer pop-ups, the star shelf, the Help page and results screens.
+- **Fredoka** (600 and 700): playful headings. Home page subject headings, game card titles, the "go" pills, cheer pop-ups, the star shelf, the Help page, the grown-ups' "How it's going" page and results screens.
 - **Lexend** (400 to 700): everything else. Body text, game titles, numbers, buttons. Pages preload `fonts/lexend-latin.woff2`.
 - **Nunito**: only in the wordmark, and only as shapes inside `logo.svg`. It is not loaded as a font.
 
