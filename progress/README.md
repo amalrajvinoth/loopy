@@ -21,6 +21,7 @@ Open it from the link **For grown-ups: how it's going** at the bottom of the hom
 | Coins and Change | Adding small coins, counting notes and coins, change with prices in tens of cents, change with any price |
 | What Time Is It? | O'clock, half past, quarter past and quarter to, minutes in fives, single minutes |
 | Sound Spell | The sound at the start of a word, the sound at the end of a word |
+| Where Is It? | Continents and oceans, countries of Europe, capitals of Europe, countries around the world, capitals around the world |
 | Today's 10 | Any of the tips above, for the problems missed in Today's 10 |
 
 ## Your data

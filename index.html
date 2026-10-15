@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'sha256-hQVNaHZNyL6pqA65itrsOVizzSjsdhyVun6m76oLGFc='; style-src 'self' 'sha256-jJV23ytjR5k4ldb6SK9y5o4ubpBlQ4f2dO2pHCt03Tw='; img-src 'self' data:; font-src 'self'; connect-src 'none'; object-src 'none'; base-uri 'none'; form-action 'none'; manifest-src 'self'; upgrade-insecure-requests">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'sha256-ivCBooKqv3O8bD7iXHhovFNj82JwojRNHxaOqRYmxpw='; style-src 'self' 'sha256-jJV23ytjR5k4ldb6SK9y5o4ubpBlQ4f2dO2pHCt03Tw='; img-src 'self' data:; font-src 'self'; connect-src 'none'; object-src 'none'; base-uri 'none'; form-action 'none'; manifest-src 'self'; upgrade-insecure-requests">
 <meta name="referrer" content="strict-origin-when-cross-origin">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <link rel="icon" href="icon.svg" type="image/svg+xml">
@@ -132,7 +132,7 @@ Loopy.addStrings({
     toNext: "{n} more stars to the {name} badge. Every right answer earns a star.", toNextOne: "1 more star to the {name} badge. Every right answer earns a star.",
     allBadges: "You have every badge. You're a loopy Master!", earned: "Earned", nStars: "{n} stars",
     play: "Play →", ages: "Ages {a}–{b}", more: "More to explore", noneForAge: "No games for age {n} yet. Try the ones below.",
-    math: "Math", languages: "Languages",
+    math: "Math", languages: "Languages", geography: "Geography",
     pmTitle: "Plus and Minus", pmTag: "Adding and taking away", pmText: "Worksheet-style sums typed on a big number pad. The numbers grow with your age.",
     tsTitle: "Times and Share", tsTag: "Times and division", tsText: "Times tables with dots to count, and sharing into equal groups. Bigger numbers as you grow.",
     clTitle: "What Time Is It?", clTag: "Telling time", clText: "Read the hands on the clock and pick the right time, from half hours down to the minute.",
@@ -145,7 +145,8 @@ Loopy.addStrings({
     dayNone: "Play Today's 10 on days in a row to earn day badges.", nDays: "{n} days",
     mkTitle: "Make 10", mkTag: "Number pairs", mkText: "See a number and find the one that makes 10, with ten-frames to count. Grows to 20 and 100 as you grow.",
     ssTitle: "Sound Spell", ssTag: "Starting and ending sounds", ssText: "See a picture, hear the word, and pick the sound it starts or ends with. English and German words.",
-    wmTitle: "Word Match", wmTag: "Words and pictures", wmText: "See a picture and pick its word. 100 words about animals, food, home and school, in English or German."
+    wmTitle: "Word Match", wmTag: "Words and pictures", wmText: "See a picture and pick its word. 100 words about animals, food, home and school, in English or German.",
+    wiTitle: "Where Is It?", wiTag: "Maps", wiText: "Tap continents, oceans, countries and capitals on a map. Europe first, then the whole world."
   },
   de: {
     tagline: "Lernen. Spielen. Wiederholen.", myStars: "Meine Sterne", moveStars: "Sterne auf ein anderes Gerät bringen",
@@ -155,7 +156,7 @@ Loopy.addStrings({
     toNext: "Noch {n} Sterne bis zum Abzeichen {name}. Jede richtige Antwort gibt einen Stern.", toNextOne: "Noch 1 Stern bis zum Abzeichen {name}. Jede richtige Antwort gibt einen Stern.",
     allBadges: "Du hast alle Abzeichen. Du bist ein loopy-Meister!", earned: "Geschafft", nStars: "{n} Sterne",
     play: "Spielen →", ages: "{a}–{b} Jahre", more: "Mehr entdecken", noneForAge: "Noch keine Spiele für {n} Jahre. Probier die unten.",
-    math: "Mathe", languages: "Sprachen",
+    math: "Mathe", languages: "Sprachen", geography: "Erdkunde",
     pmTitle: "Plus und Minus", pmTag: "Plus und Minus rechnen", pmText: "Aufgaben wie auf dem Arbeitsblatt, getippt auf einem großen Zahlenfeld. Die Zahlen wachsen mit deinem Alter.",
     tsTitle: "Mal und Teilen", tsTag: "Malnehmen und Teilen", tsText: "Einmaleins mit Punkten zum Zählen und Teilen in gleiche Gruppen. Größere Zahlen, wenn du wächst.",
     clTitle: "Wie spät ist es?", clTag: "Uhr lesen", clText: "Lies die Zeiger der Uhr und wähle die richtige Zeit, von halben Stunden bis zur Minute.",
@@ -168,7 +169,8 @@ Loopy.addStrings({
     dayNone: "Spiele die 10 von heute an Tagen hintereinander, um Tage-Abzeichen zu bekommen.", nDays: "{n} Tage",
     mkTitle: "Ergänze bis 10", mkTag: "Zahlenpartner", mkText: "Sieh eine Zahl und finde die, die bis 10 fehlt, mit Zehnerfeldern zum Zählen. Später bis 20 und 100.",
     ssTitle: "Anlaut und Endlaut", ssTag: "Anlaute und Endlaute", ssText: "Sieh ein Bild, hör das Wort und wähle den Laut, mit dem es beginnt oder endet. Deutsche und englische Wörter.",
-    wmTitle: "Bild und Wort", wmTag: "Wörter und Bilder", wmText: "Sieh ein Bild und wähle das passende Wort. 100 Wörter zu Tieren, Essen, Zuhause und Schule, auf Deutsch oder Englisch."
+    wmTitle: "Bild und Wort", wmTag: "Wörter und Bilder", wmText: "Sieh ein Bild und wähle das passende Wort. 100 Wörter zu Tieren, Essen, Zuhause und Schule, auf Deutsch oder Englisch.",
+    wiTitle: "Wo liegt das?", wiTag: "Landkarten", wiText: "Tippe Kontinente, Ozeane, Länder und Hauptstädte auf der Karte an. Erst Europa, dann die ganze Welt."
   }
 });
 // To add a game: put it in <subject>/<folder>/index.html and add one line below.
@@ -184,6 +186,7 @@ const GAMES = [
   { subject: "math", path: "math/coins-change/", id: "cc", ages: [6, 10] },
   { subject: "languages", path: "languages/sound-spell/", id: "ss", ages: [5, 8] },
   { subject: "languages", path: "languages/word-match/", id: "wm", ages: [5, 10] },
+  { subject: "geography", path: "geography/where-is-it/", id: "wi", ages: [7, 14] },
 ];
 const t = Loopy.t;
 const list = document.getElementById("list");
