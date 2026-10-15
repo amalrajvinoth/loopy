@@ -24,6 +24,7 @@ It works on phones, tablets and computers. There is no sign-up and no ads.
 | [What Time Is It?](math/what-time-is-it/) | Reading a clock with hands | [README](math/what-time-is-it/README.md) |
 | [Bigger or Smaller](math/bigger-or-smaller/) | Comparing, ordering and rounding numbers, with a number line | [README](math/bigger-or-smaller/README.md) |
 | [Sound Spell](languages/sound-spell/) | Starting and ending sounds of English and German words | [README](languages/sound-spell/README.md) |
+| [Word Match](languages/word-match/) | 100 words for animals, food, home and school, in English or German | [README](languages/word-match/README.md) |
 | [Today's 10](mix/daily-mix/) | A daily mix of 10 problems from the games for your age, with a day streak | [README](mix/daily-mix/README.md) |
 
 ## For grown-ups
@@ -45,7 +46,7 @@ Open it from the link at the bottom of the home page.
 - **Help.** After each answer, the game shows a short reason, so kids learn from mistakes.
 - **Last 5.** Each game shows the last 5 answers as green and red dots.
 - **Back.** The big button with the loopy bunny at the top of a game goes back to all games.
-- **Worksheets.** In Plus and Minus, Times and Share, What Time Is It? and Sound Spell, tap **Settings**, then **Print worksheet**. You get 20 problems at the child's level on one page, and the answers on a second page. It works on A4 and US Letter paper, and you can save it as a PDF from the print window.
+- **Worksheets.** In Plus and Minus, Times and Share, What Time Is It?, Sound Spell and Word Match, tap **Settings**, then **Print worksheet**. You get 20 problems at the child's level on one page, and the answers on a second page. It works on A4 and US Letter paper, and you can save it as a PDF from the print window.
 
 In a game, tap **Settings** to change age, language, colors, sound or level.
 

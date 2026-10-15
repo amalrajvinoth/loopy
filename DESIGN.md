@@ -241,7 +241,7 @@ What **Print worksheet** prints. Only the sheet prints; the game is hidden. It i
 - **Paper:** 12mm margins. Sized to fit both A4 and US Letter. Page 1 has the problems, page 2 the answers.
 - **Header:** the game's name in Fredoka 20pt, "loopy" on the right in grey, a 0.6mm rule, one grey line with the age and settings, then Name, Date and Score lines, then one bold line saying what to do.
 - **Problems:** 20 boxes with a light grey 0.3mm border and 3mm radius, numbered small in the top left corner. Lexend, large: 24pt for sums in columns, 20pt for lines, 18pt for words.
-- **Layouts:** `vert` (Plus and Minus, 4 × 5, written in columns), `line` (Times and Share and Make 10, 2 × 10, "7 × 8 = ____" or "7 + ____ = 10"), `clock` (What Time Is It?, 4 × 5, a 32mm clock and "____ : ____"), `word` (Sound Spell, 4 × 5, picture, word with a gap, choices to circle).
+- **Layouts:** `vert` (Plus and Minus, 4 × 5, written in columns), `line` (Times and Share and Make 10, 2 × 10, "7 × 8 = ____" or "7 + ____ = 10"), `clock` (What Time Is It?, 4 × 5, a 32mm clock and "____ : ____"), `word` (Sound Spell and Word Match, 4 × 5, a picture with a word with a gap and choices to circle, or a picture with words to circle, one to a line).
 - **Clocks:** black face line, ticks and numbers. The hour hand is short and thick, the minute hand long and thin.
 - **Answers:** two columns of ten, 16pt, with a light line under each.
 
