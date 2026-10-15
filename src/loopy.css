@@ -170,3 +170,23 @@ button, a, label, summary { touch-action: manipulation; -webkit-tap-highlight-co
 .lang-picker button { min-width: 44px; height: 36px; border: 0; border-radius: 999px; background: transparent; color: var(--muted); font: inherit; font-weight: 700; cursor: pointer; }
 .lang-picker button[aria-pressed="true"] { background: var(--card); color: var(--ink); }
 .lang-picker button:focus-visible { outline: 3px solid var(--mark); outline-offset: 2px; }
+
+/* Back button on game pages: a back arrow and the loopy logo in one big button. */
+a.home-link.loopy-back {
+  display: inline-flex; align-items: center; gap: 8px; min-height: 48px; padding: 4px 14px 4px 6px; border-radius: 999px;
+  background: var(--chip); border: 2px solid var(--line); color: var(--ink); text-decoration: none;
+}
+a.home-link.loopy-back:hover { color: var(--ink); border-color: var(--c1); }
+a.home-link.loopy-back:focus-visible { outline: 3px solid var(--mark); outline-offset: 2px; }
+.back-arrow { width: 36px; height: 36px; border-radius: 50%; display: grid; place-items: center; background: var(--c1); color: var(--on-accent); }
+.back-arrow svg { width: 22px; height: 22px; fill: none; stroke: currentColor; stroke-width: 3; stroke-linecap: round; stroke-linejoin: round; }
+.back-logo { display: block; height: 30px; width: auto; overflow: visible; }
+
+/* Last 5 answers: five dots, green tick or red cross, newest on the right with a ring. */
+.last5 { display: inline-flex; align-items: center; gap: 5px; }
+.last5 i { width: 22px; height: 22px; border-radius: 50%; display: grid; place-items: center; border: 2px dashed var(--muted); opacity: .45; }
+.last5 i.good, .last5 i.bad { opacity: 1; border: 0; color: var(--on-accent); }
+.last5 i.good { background: var(--good); }
+.last5 i.bad { background: var(--bad); }
+.last5 i.new { outline: 2px solid var(--ink); outline-offset: 2px; }
+.last5 svg { width: 15px; height: 15px; fill: none; stroke: currentColor; stroke-width: 3.2; stroke-linecap: round; stroke-linejoin: round; }

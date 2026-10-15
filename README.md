@@ -32,6 +32,8 @@ It works on phones, tablets and computers. There is no sign-up and no ads.
 - **Stars.** Every right answer gives a star. More stars unlock badges. A streak of right answers sets off confetti.
 - **Sound.** Short happy sounds play. Tap the speaker to turn them off.
 - **Help.** After each answer, the game shows a short reason, so kids learn from mistakes.
+- **Last 5.** Each game shows the last 5 answers as green and red dots.
+- **Back.** The big button with the loopy bunny at the top of a game goes back to all games.
 
 In a game, tap **Settings** to change age, language, colors, sound or level.
 
@@ -60,7 +62,7 @@ The site is plain HTML, CSS and JavaScript. One small build step makes the share
 | File | What it is |
 | --- | --- |
 | `index.html` | The home page and the list of games |
-| `src/loopy.js` | Shared code: languages, colors, age, sound, stars and badges. Edit this one |
+| `src/loopy.js` | Shared code: languages, colors, age, sound, stars and badges, Last 5 dots, the back button. Edit this one |
 | `src/loopy.css` | Shared styles and fonts. Edit this one |
 | `loopy.js`, `loopy.css` | Small copies made by the build. Pages load these. Do not edit them |
 | `logo.svg`, `logo-white.svg`, `icon.svg` | The logo (for light and dark backgrounds) and the app icon |
@@ -88,10 +90,11 @@ Then open http://localhost:8000.
    <link rel="stylesheet" href="../../loopy.css">
    <script src="../../loopy.js"></script>
    ```
-3. Add the shared controls: `#star-chip`, `#settings-toggle`, and inside `#settings-panel` add `#age-picker`, `#theme-picker`, `#sound-toggle` and `#lang-picker`.
+3. Add the shared controls: the `.home-link` back button, `#star-chip`, `<div id="last5" data-game="game-id">` in the score row, `#settings-toggle`, and inside `#settings-panel` add `#age-picker`, `#theme-picker`, `#sound-toggle` and `#lang-picker`.
 4. In your script:
    - `Loopy.getAge()` gives the age. The `loopy:age` event fires when it changes.
-   - Call `Loopy.rewards.correct("game-id", streak)` after a right answer, and `Loopy.rewards.wrong()` after a wrong one.
+   - Call `Loopy.rewards.correct("game-id", streak)` after a right answer, and `Loopy.rewards.wrong("game-id")` after a wrong one. These also fill in the Last 5 dots.
+   - In the **Reset score** button, call `Loopy.recent.clear("game-id")`. Add the game id to the `GAMES` lists in `src/loopy.js`.
 5. Add words in both languages with `Loopy.addStrings({ en: {...}, de: {...} })`. Put `data-t="key"` on fixed text, and use `Loopy.t("key")` in code. Use `Loopy.num(n)` to show numbers.
 6. Add one line to the `GAMES` list in the home page `index.html`, with the ages the game fits.
 7. Add a `README.md` in the game folder, and a row to the table above.

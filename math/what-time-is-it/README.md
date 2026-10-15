@@ -23,6 +23,11 @@ You can also use a keyboard. Press **1** to **4** to pick an answer, and **Enter
 
 The wrong answers are the mistakes kids often make, like mixing up the two hands.
 
+## Last 5
+
+At the top, **Last 5** shows your last 5 answers as dots: green for right, red for wrong. The newest one is on the right.
+They stay there next time you play. **Reset score** in Settings clears them.
+
 ## Settings
 
 Tap **Settings** to choose:

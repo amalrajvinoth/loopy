@@ -31,6 +31,11 @@ Dots are on for kids aged 8 and under. You can turn them on or off in **Settings
 | 11 to 12 | Two-digit numbers times or shared by one digit |
 | 13 and up | Three digits by one, or two digits by two |
 
+## Last 5
+
+At the top, **Last 5** shows your last 5 answers as dots: green for right, red for wrong. The newest one is on the right.
+They stay there next time you play. **Reset score** in Settings clears them.
+
 ## Settings
 
 Tap **Settings** to choose:

@@ -44,6 +44,7 @@ document.documentElement.classList.add("loopy-building");
       newBest: "New best streak: {n}!", keepItGoing: "Keep it going!",
       correct: "Correct!", correctRow: "Correct! {n} in a row!", notQuite: "Not quite.",
       score: "Score", streak: "Streak", home: "← loopy", resetScore: "Reset score",
+      backHome: "Back to all games", last5: "Last 5", last5Aria: "Last 5 answers: {n} right", last5None: "Last 5 answers: none yet",
       tapHint: "Tap the numbers to write your answer.", kbdHint: "Keyboard works too: numbers, Backspace, Enter.",
       erase: "Erase", eraseAria: "Erase last digit", check: "Check", next: "Next", yourAnswer: "Your answer", both: "Both"
     },
@@ -59,6 +60,7 @@ document.documentElement.classList.add("loopy-building");
       newBest: "Neue beste Serie: {n}!", keepItGoing: "Mach weiter so!",
       correct: "Richtig!", correctRow: "Richtig! {n} hintereinander!", notQuite: "Nicht ganz.",
       score: "Punkte", streak: "Serie", home: "← loopy", resetScore: "Punkte zurücksetzen",
+      backHome: "Zurück zu allen Spielen", last5: "Letzte 5", last5Aria: "Letzte 5 Antworten: {n} richtig", last5None: "Letzte 5 Antworten: noch keine",
       tapHint: "Tippe auf die Zahlen, um deine Antwort zu schreiben.", kbdHint: "Die Tastatur geht auch: Zahlen, Rücktaste, Enter.",
       erase: "Löschen", eraseAria: "Letzte Ziffer löschen", check: "Prüfen", next: "Weiter", yourAnswer: "Deine Antwort", both: "Beides"
     }
@@ -380,11 +382,12 @@ document.documentElement.classList.add("loopy-building");
       } catch (e) { return false; }
     },
     badgeFor: badgeFor, nextBadge: nextBadge, confetti: confetti, celebrate: celebrate,
-    // Call after a wrong answer.
-    wrong: function () { Loopy.sound.play("wrong"); },
+    // Call after a wrong answer, with the game's name.
+    wrong: function (game) { if (Loopy.recent) Loopy.recent.add(game, false); Loopy.sound.play("wrong"); },
     // Call after each right answer with the current streak.
     // harder: optional { label, apply } offered after 10 in a row, e.g. { label: "Try quarter hours", apply: fn }.
     correct: function (game, streak, harder) {
+      if (Loopy.recent) Loopy.recent.add(game, true);
       var before = badgeFor(data.stars);
       data.stars++;
       if (streak <= 1) cheeredBest[game] = false;
@@ -478,6 +481,76 @@ document.documentElement.classList.add("loopy-building");
       return { streak: data.streak, badge: badge };
     }
   };
+})();
+
+// Last 5 answers in a game: <div id="last5" data-game="plus-minus"></div> becomes five dots,
+// green for right and red for wrong, newest on the right. rewards.correct / wrong fill it in.
+// Kept in this browser's localStorage as { "plus-minus": [1, 1, 0, 1, 1], ... }.
+(function () {
+  var KEY = "loopy.recent", N = 5, GAMES = ["plus-minus", "times-share", "clock", "sound-spell", "daily-mix"];
+  var TICK = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 12.5l4 4 8-9"/></svg>';
+  var CROSS = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M7 7l10 10M17 7L7 17"/></svg>';
+  var Loopy = window.Loopy = window.Loopy || {};
+  // Only known games and lists of up to five 0s and 1s are kept, whatever the stored text says.
+  function clean(raw) {
+    var out = {};
+    if (!raw || typeof raw !== "object") return out;
+    GAMES.forEach(function (g) {
+      if (Array.isArray(raw[g])) out[g] = raw[g].filter(function (v) { return v === 0 || v === 1; }).slice(-N);
+    });
+    return out;
+  }
+  var data = {};
+  try { data = clean(JSON.parse(localStorage.getItem(KEY))); } catch (e) {}
+  function save() { try { localStorage.setItem(KEY, JSON.stringify(data)); } catch (e) {} }
+
+  function render() {
+    var box = document.getElementById("last5");
+    if (!box) return;
+    var list = data[box.getAttribute("data-game")] || [], html = "<span>" + Loopy.t("last5") + "</span>", right = 0;
+    for (var i = 0; i < N; i++) {
+      var v = list[i - (N - list.length)];
+      if (v === 1) right++;
+      html += v === undefined ? "<i></i>" : '<i class="' + (v ? "good" : "bad") + (i === N - 1 ? " new" : "") + '">' + (v ? TICK : CROSS) + "</i>";
+    }
+    box.innerHTML = html;
+    box.setAttribute("aria-label", list.length ? Loopy.t("last5Aria", { n: right }) : Loopy.t("last5None"));
+  }
+
+  Loopy.recent = {
+    get: function (game) { return (data[game] || []).slice(); },
+    add: function (game, ok) {
+      if (GAMES.indexOf(game) === -1) return;
+      data[game] = (data[game] || []).concat(ok ? 1 : 0).slice(-N);
+      save(); render();
+    },
+    // Call from the game's "Reset score" button.
+    clear: function (game) { delete data[game]; save(); render(); }
+  };
+
+  function build() {
+    var box = document.getElementById("last5");
+    if (box) { box.className = "pill last5"; box.setAttribute("role", "img"); }
+    render();
+  }
+  if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", build);
+  else build();
+})();
+
+// Back button: <a class="home-link" href="../../">&larr; loopy</a> becomes a big button
+// with a back arrow and the loopy bunny logo.
+(function () {
+  var ARROW = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M15 5l-7 7 7 7"/></svg>';
+  var LOGO = '<svg class="back-logo" viewBox="-30 -1180 2773 1460" aria-hidden="true"><g><path fill="currentColor" transform="translate(0 0) scale(1 -1)" d="M239 -11Q143 -11 97.5 40.5Q52 92 52 196V624Q52 668 75.0 691.0Q98 714 140 714Q183 714 206.5 691.0Q230 668 230 624V202Q230 165 244.5 148.0Q259 131 282 131Q289 131 296.5 132.5Q304 134 313 135Q330 135 338.5 122.0Q347 109 347 69Q347 34 333.0 16.5Q319 -1 290 -6Q282 -7 267.0 -9.0Q252 -11 239 -11Z"/></g><g><ellipse cx="695" cy="-766" rx="110" ry="300" fill="#fff" stroke="currentColor" stroke-width="35" transform="rotate(-12 695 -512)"/><ellipse cx="695" cy="-766" rx="52" ry="220" fill="#3ddc84" transform="rotate(-12 695 -512)"/><ellipse cx="1204" cy="-766" rx="110" ry="300" fill="#fff" stroke="currentColor" stroke-width="35" transform="rotate(12 1204 -512)"/><ellipse cx="1204" cy="-766" rx="52" ry="220" fill="#3ddc84" transform="rotate(12 1204 -512)"/><clipPath id="lbk0"><path d="M460,-97 A240,240 0 1 1 837,-97 Q648,-193 460,-97Z"/></clipPath><path d="M460,-97 A240,240 0 1 1 837,-97 Q648,-193 460,-97Z" fill="#fff"/><g clip-path="url(#lbk0)"><circle cx="648" cy="-275" r="106" fill="#1d2a3f"/><circle cx="685" cy="-313" r="34" fill="#fff"/></g><path d="M460,-97 A240,240 0 1 1 837,-97 Q648,-193 460,-97Z" fill="none" stroke="currentColor" stroke-width="46" stroke-linejoin="round"/><clipPath id="lbk1"><path d="M1062,-97 A240,240 0 1 1 1439,-97 Q1250,-193 1062,-97Z"/></clipPath><path d="M1062,-97 A240,240 0 1 1 1439,-97 Q1250,-193 1062,-97Z" fill="#fff"/><g clip-path="url(#lbk1)"><circle cx="1250" cy="-275" r="106" fill="#1d2a3f"/><circle cx="1287" cy="-313" r="34" fill="#fff"/></g><path d="M1062,-97 A240,240 0 1 1 1439,-97 Q1250,-193 1062,-97Z" fill="none" stroke="currentColor" stroke-width="46" stroke-linejoin="round"/><path d="M811,-45 Q880,41 950,-11 Q1019,41 1088,-45" fill="none" stroke="currentColor" stroke-width="32" stroke-linecap="round" stroke-linejoin="round"/><rect x="876" y="-6" width="72" height="116" rx="21" fill="#fff" stroke="currentColor" stroke-width="21"/><rect x="952" y="-6" width="72" height="116" rx="21" fill="#fff" stroke="currentColor" stroke-width="21"/></g><g><path fill="currentColor" transform="translate(1552 0) scale(1 -1)" d="M140 -189Q98 -189 75.0 -166.0Q52 -143 52 -99V412Q52 455 74.5 478.0Q97 501 139 501Q182 501 204.5 478.0Q227 455 227 412V354L216 403Q230 448 274.5 475.5Q319 503 376 503Q440 503 488.5 472.0Q537 441 564.0 384.0Q591 327 591 246Q591 167 564.0 109.0Q537 51 488.5 20.0Q440 -11 376 -11Q321 -11 277.0 15.0Q233 41 218 83H230V-99Q230 -143 206.5 -166.0Q183 -189 140 -189ZM320 120Q347 120 367.5 133.5Q388 147 400.0 174.5Q412 202 412 246Q412 313 386.0 342.5Q360 372 320 372Q293 372 272.0 359.0Q251 346 239.0 318.5Q227 291 227 246Q227 180 253.0 150.0Q279 120 320 120Z"/></g><g><path fill="currentColor" transform="translate(2172 0) scale(1 -1)" d="M195 -189Q164 -189 145.0 -173.0Q126 -157 121.5 -131.0Q117 -105 130 -76L197 69V-3L26 388Q13 418 17.5 444.0Q22 470 44.0 485.5Q66 501 104 501Q136 501 155.5 486.5Q175 472 191 430L291 170H257L363 431Q379 472 399.5 486.5Q420 501 455 501Q485 501 503.0 485.5Q521 470 525.0 444.0Q529 418 516 388L289 -122Q271 -162 249.5 -175.5Q228 -189 195 -189Z"/></g></svg>';
+  function build() {
+    document.querySelectorAll("a.home-link").forEach(function (a) {
+      a.classList.add("loopy-back");
+      a.setAttribute("aria-label", Loopy.t("backHome"));
+      a.innerHTML = '<span class="back-arrow">' + ARROW + "</span>" + LOGO;
+    });
+  }
+  if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", build);
+  else build();
 })();
 
 // Settings button: shows or hides the panel with age, theme, sound and game levels.
