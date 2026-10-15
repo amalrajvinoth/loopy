@@ -5,6 +5,7 @@ The big changes, newest first. Small fixes are not listed.
 | Date | What's new | Where | PR |
 | --- | --- | --- | --- |
 | 2026-10-15 | Quick Facts, the first science game: short picture quizzes about space, animals and the body, with one line of why after each answer. Three levels by age, Read aloud and a printable worksheet. English and German. | Quick Facts (new game), Home (new Science section), How it's going | #39 |
+| 2026-10-15 | Spell It: hear a word and spell it on a letter pad, from 3-letter words up to 8 letters as your child grows. A wrong answer shows the right spelling letter by letter. English or German, with a printable worksheet. | Spell It (new game), How it's going | #38 |
 | 2026-10-15 | Word Match: see a picture and pick its word, from 100 words about animals, food, home and school. Learn the words in English or German, hear them read out loud, and see each word in the other language too. | Word Match (new game), How it's going | #37 |
 | 2026-10-15 | Coins and Change: count coins and notes, then give change from 5 or 10 by counting up from the price. Euros by default, or pounds and dollars in Settings. Read aloud and a printable worksheet. English and German. | Coins and Change (new game), How it's going | #35 |
 | 2026-10-15 | Pizza Fractions: name the part of a pizza or bar, compare two fractions, and add halves and quarters. A picture shows why after each answer. Read aloud and a printable worksheet too. English and German. | Pizza Fractions (new game), How it's going | #36 |
