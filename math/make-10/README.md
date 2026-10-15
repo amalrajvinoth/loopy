@@ -45,6 +45,7 @@ Tap **Settings** to choose:
 
 - **Make:** Make 10, Make 20, Tens to 100, or Make 100.
 - **Show the ten-frame picture:** turn the boxes on or off.
+- **Read aloud:** On or Off. When it is on, a speaker button sits in the corner of the problem. It says, for example, "7 plus what makes 10?". Tap it to hear the question in the device's own voice, in English or German. Each new question is also read by itself while the sound is on. It starts on for ages 5 to 7 and off from 8. If the device has no voice, the button and the setting do not show.
 
 Settings are remembered for each age.
 After 10 right in a row, the game asks if you want to make it harder: the next bigger total first, then without the picture.
