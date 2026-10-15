@@ -2,7 +2,7 @@
 // The default age comes from a birth month of August 2018 and goes up by itself each year.
 (function () {
   var BIRTH_YEAR = 2018, BIRTH_MONTH = 8;
-  var MIN = 5, MAX = 16, KEY = "loopy.age";
+  var MIN = 5, MAX = 16, KEY = "loopy.ageOffset";
   var clamp = function (n) { return Math.max(MIN, Math.min(MAX, n)); };
 
   function defaultAge() {
@@ -11,9 +11,10 @@
     if (d.getMonth() + 1 < BIRTH_MONTH) a--;
     return clamp(a);
   }
-  var age = null;
-  try { age = parseInt(localStorage.getItem(KEY), 10); } catch (e) {}
-  if (!(age >= MIN && age <= MAX)) age = defaultAge();
+  // A changed age is saved as years above or below the default, so it still goes up each birthday.
+  var offset = 0;
+  try { offset = parseInt(localStorage.getItem(KEY), 10) || 0; } catch (e) {}
+  var age = clamp(defaultAge() + offset);
 
   var Loopy = window.Loopy = window.Loopy || {};
   Loopy.getAge = function () { return age; };
@@ -21,7 +22,7 @@
     n = clamp(n);
     if (n === age) return;
     age = n;
-    try { localStorage.setItem(KEY, String(age)); } catch (e) {}
+    try { localStorage.setItem(KEY, String(age - defaultAge())); } catch (e) {}
     sync();
     window.dispatchEvent(new CustomEvent("loopy:age", { detail: age }));
   };

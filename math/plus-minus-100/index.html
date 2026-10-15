@@ -4,6 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <style>:root{color-scheme:light;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}body{margin:0}[hidden]{display:none!important}</style>
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 24 24%22%3E%3Cpath fill=%22%23ffd23f%22 d=%22M12 2.5l2.9 6 6.6.9-4.8 4.6 1.2 6.5L12 17.4l-5.9 3.1 1.2-6.5L2.5 9.4l6.6-.9z%22/%3E%3C/svg%3E">
 <title>Plus and Minus</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Lexend:wght@400;600;700&display=swap">
@@ -26,16 +27,6 @@
   --key: #ffffff;
   --font: "Lexend", "Segoe UI", "Helvetica Neue", Arial, sans-serif;
 }
-@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) {
-  --bg: #121826; --card: #1b2335; --ink: #edf1f8; --muted: #a2adc2; --line: #2e3a52;
-  --accent: #6f9bff; --accent-ink: #0d1424; --mark: #ff8a55;
-  --good: #57d08a; --good-bg: #173426; --bad: #ff7b7b; --bad-bg: #3a1d22; --chip: #26304a; --key: #222c42;
-  color-scheme: dark } }
-:root[data-theme="dark"] {
-  --bg: #121826; --card: #1b2335; --ink: #edf1f8; --muted: #a2adc2; --line: #2e3a52;
-  --accent: #6f9bff; --accent-ink: #0d1424; --mark: #ff8a55;
-  --good: #57d08a; --good-bg: #173426; --bad: #ff7b7b; --bad-bg: #3a1d22; --chip: #26304a; --key: #222c42;
-  color-scheme: dark }
 
 * { box-sizing: border-box; }
 body {
@@ -377,7 +368,7 @@ function explain(p) {
   window.addEventListener("loopy:age", (e) => { age = e.detail; recent = []; loadForAge(); newRound(); });
   $("reset").addEventListener("click", () => { right = 0; tried = 0; streak = 0; newRound(); });
   document.addEventListener("keydown", (e) => {
-    if (e.metaKey || e.ctrlKey || e.altKey) return;
+    if (e.metaKey || e.ctrlKey || e.altKey || document.querySelector(".loopy-cheer.big")) return;
     if (/^[0-9]$/.test(e.key)) { press(e.key); e.preventDefault(); }
     else if (e.key === "Backspace") { erase(); e.preventDefault(); }
     else if (e.key === "Enter") {
