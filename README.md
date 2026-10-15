@@ -65,7 +65,7 @@ In a game, tap **Settings** to change age, language, colors, sound or level.
 ## Your data stays on your device
 
 Stars, settings and the answers on the grown-ups' page are saved in your browser. Nothing is sent anywhere. There are no ads, no tracking and no outside services. Even the fonts are stored on the site.
-To move stars to another device, open the home page, tap **Move my stars to another device**, and copy the code across.
+To move stars to another device, open the home page, tap **Move my stars to another device**, and copy the code across. The code also carries the day streak, progress, Last 5, the age and the settings. Loading a code only adds, it never takes anything away.
 
 ## Add Loopy to your home screen
 
@@ -80,7 +80,7 @@ The site is plain HTML, CSS and JavaScript. One small build step makes the share
 | File | What it is |
 | --- | --- |
 | `index.html` | The home page and the list of games |
-| `src/loopy.js` | Shared code: languages, colors, age, sound, read aloud, stars and badges, Last 5 dots, the back button, printable worksheets. Edit this one |
+| `src/loopy.js` | Shared code: languages, colors, age, sound, read aloud, stars and badges, Last 5 dots, the stars code, the back button, printable worksheets. Edit this one |
 | `src/loopy.css` | Shared styles and fonts. Edit this one |
 | `loopy.js`, `loopy.css` | Small copies made by the build. Pages load these. Do not edit them |
 | `DESIGN.md` | How loopy looks: colors, fonts, buttons, layout and rules. Read it before you change a page |
