@@ -211,6 +211,10 @@ The question sits on a card with a 1px line border and radius 24px. After an ans
 
 Under the problem: a short bold word: "Correct!" in green or "Not quite." in red, then one plain sentence that explains why. It always has room saved, so the layout does not jump.
 
+### Number line
+
+Bigger or Smaller explains each answer with a number line drawn in SVG. It stays hidden (but keeps its room) until the answer is in, so it never gives the answer away. The line and ticks are `muted`. Each number is a dot in `c1`, `c2` or `c4` with its value above it in the same color. For rounding, a dashed `ink` tick marks halfway, the number is a `c2` dot, and a `c1` arrow runs along the line to where it rounds. Labels near an end lean inwards so they are never cut off.
+
 ### Top bar
 
 Each game has a top bar with the way home on the left, and the star counter and the ⚙ Settings button on the right.
@@ -232,7 +236,7 @@ What **Print worksheet** prints. Only the sheet prints; the game is hidden. It i
 - **Paper:** 12mm margins. Sized to fit both A4 and US Letter. Page 1 has the problems, page 2 the answers.
 - **Header:** the game's name in Fredoka 20pt, "loopy" on the right in grey, a 0.6mm rule, one grey line with the age and settings, then Name, Date and Score lines, then one bold line saying what to do.
 - **Problems:** 20 boxes with a light grey 0.3mm border and 3mm radius, numbered small in the top left corner. Lexend, large: 24pt for sums in columns, 20pt for lines, 18pt for words.
-- **Layouts:** `vert` (Plus and Minus, 4 × 5, written in columns), `line` (Times and Share, 2 × 10, "7 × 8 = ____"), `clock` (What Time Is It?, 4 × 5, a 32mm clock and "____ : ____"), `word` (Sound Spell, 4 × 5, picture, word with a gap, choices to circle).
+- **Layouts:** `vert` (Plus and Minus, 4 × 5, written in columns), `line` (Times and Share and Bigger or Smaller, 2 × 10, "7 × 8 = ____" or "37 ◯ 73"), `clock` (What Time Is It?, 4 × 5, a 32mm clock and "____ : ____"), `word` (Sound Spell, 4 × 5, picture, word with a gap, choices to circle).
 - **Clocks:** black face line, ticks and numbers. The hour hand is short and thick, the minute hand long and thin.
 - **Answers:** two columns of ten, 16pt, with a light line under each.
 

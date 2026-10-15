@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'sha256-lVsiuQmdtFTsN8WJtJB0aL3iobuixlY84IsLB+fDYsY='; style-src 'self' 'sha256-jJV23ytjR5k4ldb6SK9y5o4ubpBlQ4f2dO2pHCt03Tw='; img-src 'self' data:; font-src 'self'; connect-src 'none'; object-src 'none'; base-uri 'none'; form-action 'none'; manifest-src 'self'; upgrade-insecure-requests">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'sha256-G55xms7Cxb1AZ0Jm6zbkraEDP1AISkqgdmUZ6UeI9eQ='; style-src 'self' 'sha256-jJV23ytjR5k4ldb6SK9y5o4ubpBlQ4f2dO2pHCt03Tw='; img-src 'self' data:; font-src 'self'; connect-src 'none'; object-src 'none'; base-uri 'none'; form-action 'none'; manifest-src 'self'; upgrade-insecure-requests">
 <meta name="referrer" content="strict-origin-when-cross-origin">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <link rel="icon" href="icon.svg" type="image/svg+xml">
@@ -136,6 +136,7 @@ Loopy.addStrings({
     pmTitle: "Plus and Minus", pmTag: "Adding and taking away", pmText: "Worksheet-style sums typed on a big number pad. The numbers grow with your age.",
     tsTitle: "Times and Share", tsTag: "Times and division", tsText: "Times tables with dots to count, and sharing into equal groups. Bigger numbers as you grow.",
     clTitle: "What Time Is It?", clTag: "Telling time", clText: "Read the hands on the clock and pick the right time, from half hours down to the minute.",
+    bsTitle: "Bigger or Smaller", bsTag: "Comparing numbers", bsText: "Pick <, = or >, put numbers in order and round them, with a number line to show why.",
     dmTag: "Every day", dmTitle: "Today's 10", dmText: "10 quick problems from the games that fit your age. Play every day to grow your day streak!",
     dmGo: "Start →", dmAgain: "Done today! Play again →", dmStreak: "🔥 {n} days", dmStreakOne: "🔥 1 day",
     dayLine: "Day streak: {n} days in a row. Best: {best}.", dayLineOne: "Day streak: 1 day in a row. Best: {best}.",
@@ -154,6 +155,7 @@ Loopy.addStrings({
     pmTitle: "Plus und Minus", pmTag: "Plus und Minus rechnen", pmText: "Aufgaben wie auf dem Arbeitsblatt, getippt auf einem großen Zahlenfeld. Die Zahlen wachsen mit deinem Alter.",
     tsTitle: "Mal und Teilen", tsTag: "Malnehmen und Teilen", tsText: "Einmaleins mit Punkten zum Zählen und Teilen in gleiche Gruppen. Größere Zahlen, wenn du wächst.",
     clTitle: "Wie spät ist es?", clTag: "Uhr lesen", clText: "Lies die Zeiger der Uhr und wähle die richtige Zeit, von halben Stunden bis zur Minute.",
+    bsTitle: "Größer oder kleiner", bsTag: "Zahlen vergleichen", bsText: "Wähle <, = oder >, ordne Zahlen und runde sie, mit einem Zahlenstrahl, der zeigt warum.",
     dmTag: "Jeden Tag", dmTitle: "Die 10 von heute", dmText: "10 schnelle Aufgaben aus den Spielen für dein Alter. Spiel jeden Tag, damit deine Tage-Serie wächst!",
     dmGo: "Los →", dmAgain: "Heute geschafft! Nochmal →", dmStreak: "🔥 {n} Tage", dmStreakOne: "🔥 1 Tag",
     dayLine: "Tage-Serie: {n} Tage hintereinander. Beste: {best}.", dayLineOne: "Tage-Serie: 1 Tag hintereinander. Beste: {best}.",
@@ -168,6 +170,7 @@ const GAMES = [
   { subject: "math", path: "math/plus-minus/", id: "pm", ages: [5, 16] },
   { subject: "math", path: "math/times-share/", id: "ts", ages: [6, 16] },
   { subject: "math", path: "math/what-time-is-it/", id: "cl", ages: [5, 10] },
+  { subject: "math", path: "math/bigger-or-smaller/", id: "bs", ages: [6, 12] },
   { subject: "languages", path: "languages/sound-spell/", id: "ss", ages: [5, 8] },
 ];
 const t = Loopy.t;
