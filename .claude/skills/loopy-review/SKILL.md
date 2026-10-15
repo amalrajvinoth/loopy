@@ -22,7 +22,7 @@ Note which kind of change it is: new game, change to one game, shared code (`src
 ## 2. Run the checks
 
 ```sh
-python3 tools/build.py --check      # loopy.js and loopy.css match src/
+python3 tools/build.py --check      # loopy.js, loopy.css and sw.js match src/
 python3 tools/csp.py --check        # every page's security policy is up to date
 python3 tools/check_external.py     # nothing loads from another website
 python3 tools/review.py             # games follow the same rules (table of findings)

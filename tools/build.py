@@ -3,6 +3,7 @@
 
     src/loopy.js   ->  loopy.js    (minified)
     src/loopy.css  ->  loopy.css   (minified)
+    src/sw.js      ->  sw.js       (minified, with the list of files to save for offline use and their hash)
     src/fonts/*    ->  fonts/*     (only the letters loopy uses, weights 400 to 700; with --fonts)
 
 Then it refreshes every page's security policy (tools/csp.py).
@@ -14,7 +15,7 @@ Check without changing anything (used by the GitHub check):   python3 tools/buil
 Needs the minifiers in tools/requirements.txt. The --fonts step also needs fonttools and brotli.
 Never edit loopy.js or loopy.css by hand: the next build overwrites them and the check fails.
 """
-import io, pathlib, subprocess, sys
+import hashlib, io, json, pathlib, subprocess, sys
 
 ROOT = pathlib.Path(__file__).resolve().parent.parent
 SRC = ROOT / "src"
@@ -46,6 +47,38 @@ def minified():
         "loopy.js": banner("loopy.js") + rjsmin.jsmin(js).strip() + "\n",
         "loopy.css": banner("loopy.css") + rcssmin.cssmin(css).strip() + "\n",
     }
+
+
+# Files the offline helper (sw.js) saves on the device: everything a page loads. Not saved: the
+# folders and file types below, which are for people working on loopy, not for the site.
+SKIP_DIRS = {".git", ".github", ".claude", ".well-known", "docs", "src", "tools", "node_modules"}
+SAVE = {".html", ".js", ".css", ".woff2", ".png", ".svg", ".webmanifest"}
+
+
+def offline_files():
+    """{"math/plus-minus/": path, ...} for every file the site serves to a visitor."""
+    out = {}
+    for p in sorted(ROOT.rglob("*")):
+        rel = p.relative_to(ROOT)
+        if not p.is_file() or p.suffix not in SAVE or SKIP_DIRS & set(rel.parts) or rel.as_posix() == "sw.js":
+            continue
+        url = rel.as_posix()
+        if p.name == "index.html":
+            url = url[:-len("index.html")] or "./"
+        out[url] = p
+    return out
+
+
+def service_worker():
+    """sw.js: the minified src/sw.js after VERSION (a hash of every saved file) and FILES."""
+    import rjsmin
+    files = offline_files()
+    digest = hashlib.sha256()
+    for url, path in files.items():
+        digest.update(url.encode() + b"\0" + path.read_bytes() + b"\0")
+    js = (SRC / "sw.js").read_text(encoding="utf-8")
+    head = f'var VERSION="{digest.hexdigest()[:16]}",FILES={json.dumps(list(files), separators=(",", ":"))};\n'
+    return banner("sw.js") + head + rjsmin.jsmin(js).strip() + "\n"
 
 
 def build_fonts():
@@ -91,9 +124,18 @@ def main():
     if (SRC / "loopy.css").read_text(encoding="utf-8").count(f"unicode-range: {UNICODES};") != len(FONTS):
         print("The unicode-range of the -latin fonts in src/loopy.css does not match UNICODES in tools/build.py.")
         stale += 1
-    if check and not stale:
-        print("loopy.js and loopy.css match their sources in src/.")
     csp = subprocess.run([sys.executable, str(ROOT / "tools" / "csp.py")] + (["--check"] if check else []))
+    # Last, because its hash covers the files written above and the pages csp.py just updated.
+    sw, path = service_worker(), ROOT / "sw.js"
+    if (path.read_text(encoding="utf-8") if path.exists() else "") != sw:
+        if check:
+            print("sw.js is out of date (a saved file or src/sw.js changed). Run: python3 tools/build.py")
+            stale += 1
+        else:
+            path.write_text(sw, encoding="utf-8")
+            print(f"sw.js: {len(sw.encode()):,} bytes, saves {len(offline_files())} files for offline use")
+    if check and not stale:
+        print("loopy.js, loopy.css and sw.js match their sources in src/.")
     sys.exit(1 if stale or csp.returncode else 0)
 
 

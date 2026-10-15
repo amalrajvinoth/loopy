@@ -32,7 +32,7 @@ On the home page, open "Move my stars to another device". Copy the code, then pa
 
 ## Can I use Loopy like an app?
 
-Yes. On a phone or tablet, open Loopy in the browser and choose "Add to Home Screen". It then opens full screen. It needs the internet to open.
+Yes. On a phone or tablet, open Loopy in the browser and choose "Add to Home Screen". It then opens full screen. After one visit with internet, it also works offline, on a plane or in the car. When you are online, it gets the newest version by itself.
 
 ## Can Loopy read the questions out loud?
 

@@ -168,7 +168,7 @@ All fonts are stored on the site and cut down to English and German letters (`py
 
 - **Fredoka** (600 and 700): playful headings. Home page subject headings, game card titles, the "go" pills, cheer pop-ups, the star shelf, the Help page, the grown-ups' "How it's going" page and results screens.
 - **Lexend** (400 to 700): everything else. Body text, game titles, numbers, buttons. Pages preload `fonts/lexend-latin.woff2`.
-- **Atkinson Hyperlegible Next** (400 to 700): the "Easier to read" font. When it is on, it replaces Fredoka and Lexend for every text on the page, with 0.02em extra letter spacing. Letters that look alike (b d p q, I l 1, O 0) have different shapes. It is only downloaded when the setting is on. It is a little narrower than Lexend, so nothing grows.
+- **Atkinson Hyperlegible Next** (400 to 700): the "Easier to read" font. When it is on, it replaces Fredoka and Lexend for every text on the page, with 0.02em extra letter spacing. Letters that look alike (b d p q, I l 1, O 0) have different shapes. A page only loads it when the setting is on; the offline helper saves it with the other fonts. It is a little narrower than Lexend, so nothing grows.
 - **Nunito**: only in the wordmark, and only as shapes inside `logo.svg`. It is not loaded as a font.
 
 | Use | Font | Size | Weight |

@@ -144,7 +144,7 @@ document.documentElement.classList.add("loopy-building");
 
 // "Easier to read": one font with clear letter shapes (Atkinson Hyperlegible Next) for all text.
 // An on/off pill after the color themes in Settings; the choice is remembered on this device.
-// The font file is only downloaded when it is on (see the end of loopy.css).
+// A page only loads the font file when it is on (see the end of loopy.css).
 (function () {
   var KEY = "loopy.font";
   var on = false;
@@ -921,6 +921,15 @@ document.documentElement.classList.add("loopy-building");
   // Printing from the browser's own menu also prints a fresh worksheet.
   window.addEventListener("beforeprint", function () { if (opts && sheet && !filled) fill(); });
   window.addEventListener("afterprint", function () { filled = false; });
+})();
+
+// Works offline: sw.js, next to this file, saves every page on the device after the first visit
+// (see src/sw.js). Browsers only allow it on https and on localhost.
+(function () {
+  var me = document.currentScript;
+  if (!me || !me.src || !window.isSecureContext || !("serviceWorker" in navigator)) return;
+  var url = new URL("sw.js", me.src).href;
+  window.addEventListener("load", function () { navigator.serviceWorker.register(url).catch(function () {}); });
 })();
 
 // Show the page. This listener is added last, so it runs after every part above is built.

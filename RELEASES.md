@@ -5,6 +5,7 @@ The big changes, newest first. Small fixes are not listed.
 | Date | What's new | Where | PR |
 | --- | --- | --- | --- |
 | 2026-10-15 | Easier to see and read: a High contrast color theme (black and white, bright colors, white edges on every button), and an "Easier to read" font switch with clearer letter shapes. Both in Settings, in English and German, and remembered on this device. | Every page | #45 |
+| 2026-10-15 | Works offline: after one visit with internet, loopy opens with no internet too. Every game, Today's 10, Help and the grown-ups' page work on a plane or in the car. New versions arrive by themselves the next time you are online. | Every page | #43 |
 | 2026-10-15 | Where Is It?, the first geography game: tap continents, oceans, countries and capitals on a map. Europe first, then the whole world, one region at a time. Read aloud and a printable worksheet. English and German. | Where Is It? (new game), How it's going | #41 |
 | 2026-10-15 | Quick Facts, the first science game: short picture quizzes about space, animals and the body, with one line of why after each answer. Three levels by age, Read aloud and a printable worksheet. English and German. | Quick Facts (new game), Home (new Science section), How it's going | #39 |
 | 2026-10-15 | Spell It: hear a word and spell it on a letter pad, from 3-letter words up to 8 letters as your child grows. A wrong answer shows the right spelling letter by letter. English or German, with a printable worksheet. | Spell It (new game), How it's going | #38 |
