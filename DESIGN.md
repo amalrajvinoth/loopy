@@ -82,6 +82,8 @@ components:
   settings-toggle: { background: "{colors.chip}", rounded: "{rounded.pill}", minHeight: 44px, open: "{colors.c1}" }
   settings-panel: { background: "{colors.card}", border: "2px solid {colors.line}", rounded: "{rounded.panel}", padding: 14px }
   cheer:          { background: "{colors.card}", border: "4px solid {colors.c5}", shadow: "0 8px 0 {colors.c5}", rounded: "{rounded.cheer}" }
+  back-button:    { background: "{colors.chip}", border: "2px solid {colors.line}", rounded: "{rounded.pill}", minHeight: 48px, arrow: "36px circle in {colors.c1}", logo: 30px tall }
+  last5-pill:     { dots: 5, dotSize: 22px, right: "{colors.good}", wrong: "{colors.bad}", empty: "2px dashed {colors.muted} at 45%", newest: "2px {colors.ink} ring" }
   focus-ring:     { outline: "3px solid {colors.c2}", offset: 2-3px }
 ---
 
@@ -148,7 +150,7 @@ Each theme sets the same names. Use the name, not the hex.
 
 ### Logo colors
 
-The logo has fixed colors and does not follow the theme.
+The logo has fixed colors and does not follow the theme. The one exception is the small logo in the game back button: its outlines and letters use the theme's text color, so it shows on every theme.
 Ink #1d2a3f (white in `logo-white.svg`), ears #3ddc84, eyes white. The app icon is the bunny face on a #0a0a0c tile.
 
 ## 3. Typography
@@ -213,7 +215,7 @@ Under the problem: a short bold word: "Correct!" in green or "Not quite." in red
 
 ### Top bar
 
-Each game has a top bar with the way home on the left, and the star counter and the ⚙ Settings button on the right.
+Each game has a top bar with the back button on the left, and the star counter and the ⚙ Settings button on the right. The score row under the title holds the score, the streak and the Last 5 pill.
 
 ### Settings
 
@@ -234,14 +236,28 @@ Age, language, color theme, sound and levels go behind the ⚙ button. The toggl
 - **"Ready to level up?"** card after 10 right answers in a row.
 - **Chimes:** short tones made in the browser. No sound files. "Right" goes up, "wrong" goes gently down, cheers and badges play a little tune. The speaker button mutes them.
 
-### Coming soon
+### Back button
 
-Another piece of work is changing the game page top bar. Do not copy these until they are merged:
+Every game has the same big back button in the top-left corner. It takes you to the home page.
 
-- A bigger back button: a pill with the bunny logo that takes you home.
-- A pill in the game that shows the last 5 answers as green and red dots.
+- A chip pill with a 2px line border, at least 48px tall.
+- On the left, a 36px round `c1` circle with a back arrow in `on-accent`.
+- Next to it, the bunny logo, 30px tall, drawn in the theme's text color. It does not hop.
+- The border turns `c1` on hover. It gets the usual focus ring.
+- Screen readers hear "Back to all games" ("Zurück zu allen Spielen").
+- In the page, write `<a class="home-link" href="../../">&larr; loopy</a>`. `loopy.js` turns it into the button, so the plain link still works if the script fails. Do not build your own.
 
-Both will live in `src/loopy.css` so every game gets them.
+### Last 5 pill
+
+The score row shows the last 5 answers in this game as dots.
+
+- A pill with the label "Last 5" ("Letzte 5") and five 22px dots, 5px apart.
+- Right: a green (`good`) dot with a tick. Wrong: a red (`bad`) dot with a cross. The icon is in `on-accent`.
+- Not played yet: a dashed `muted` circle at 45%.
+- The newest answer is on the right, with a 2px `ink` ring around it.
+- Screen readers hear how many of the last 5 were right.
+- In the page, add `<div id="last5" data-game="game-id"></div>`. `Loopy.rewards.correct()` and `.wrong()` fill it in. "Reset score" clears it with `Loopy.recent.clear()`.
+- It is saved in the browser (`loopy.recent`), one list per game. Today's 10 does not use it: it has its own 10 dots.
 
 ## 5. Layout
 
@@ -279,6 +295,7 @@ loopy is mostly flat. Depth comes from solid offset shadows, not blur.
 - Explain every answer in one plain sentence.
 - Give green and red a second signal too, like a word or a line-through.
 - Put settings behind the ⚙ button.
+- Use the shared back button and Last 5 pill. Do not make your own.
 
 ### Don't
 
@@ -320,6 +337,5 @@ Example prompts:
 
 ## Known gaps
 
-- Each game page still has its own copy of some base styles (pad, problem card, top bar). Only themes, rewards and settings are shared today.
+- Each game page still has its own copy of some base styles (pad, problem card, top bar). Only themes, rewards, settings, the back button and the Last 5 pill are shared today.
 - Some pages set light fallback colors in their own `:root`. The theme from `loopy.css` replaces them.
-- The new back button and last-5-answers pill are still being built (see "Coming soon").
