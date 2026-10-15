@@ -222,6 +222,9 @@ Bigger or Smaller explains each answer with a number line drawn in SVG. It stays
 ### Fraction pictures
 
 Pizza Fractions draws pizzas and bars in SVG. A pizza is a `c2` crust ring with equal slices from the top, going round clockwise. Slices with toppings are `c1` with small `c2` pepperoni dots; the others are `chip`. Cut lines are `muted`. A bar is equal pieces side by side, colored in from the left, with a `muted` outline (radius 6) and cut lines. When comparing, the second fraction is `c4`; when adding, the second part is `c4`, cut into the same size pieces as the first. Fractions are written stacked (top number, a line in the text color, bottom number) in the problem and on the answer buttons, and as "3/4" in sentences. Like the number line, a picture that is not shown first keeps its room until the answer is in. On the printed sheet the pictures are black lines with grey parts.
+### Coins and notes
+
+Coins and Change draws money in SVG. Coins and notes keep fixed metal and paper colors in every theme, so they look like real money: copper, gold and silver coins, with two metals for the €1, €2, £1 and £2. Euro and pound notes have their own soft colors; dollar bills are a pale grey-green (never the `good` green). The coins keep their real sizes compared to each other, within limits, so the small ones stay readable. The value sits in the middle in dark ink, with the unit (c, ct, p, ¢) under it. A price tag is a `c2` tag with `on-accent` text. All pictures size themselves to the room left on the card. The answer is written in boxes, "€_.__" or "_,__ €", which fill from left to right.
 
 ### Top bar
 
@@ -245,7 +248,7 @@ What **Print worksheet** prints. Only the sheet prints; the game is hidden. It i
 - **Paper:** 12mm margins. Sized to fit both A4 and US Letter. Page 1 has the problems, page 2 the answers.
 - **Header:** the game's name in Fredoka 20pt, "loopy" on the right in grey, a 0.6mm rule, one grey line with the age and settings, then Name, Date and Score lines, then one bold line saying what to do.
 - **Problems:** 20 boxes with a light grey 0.3mm border and 3mm radius, numbered small in the top left corner. Lexend, large: 24pt for sums in columns, 20pt for lines, 18pt for words.
-- **Layouts:** `vert` (Plus and Minus, 4 × 5, written in columns), `line` (Times and Share and Make 10, 2 × 10, "7 × 8 = ____" or "7 + ____ = 10"), `clock` (What Time Is It?, 4 × 5, a 32mm clock and "____ : ____"), `word` (Sound Spell, 4 × 5, picture, word with a gap, choices to circle). Pizza Fractions uses `clock` boxes for a pizza or bar with a line for the fraction (Name it and Mix), and `line` for Compare and Add.
+- **Layouts:** `vert` (Plus and Minus, 4 × 5, written in columns), `line` (Times and Share and Make 10, 2 × 10, "7 × 8 = ____" or "7 + ____ = 10"), `clock` (What Time Is It? and Coins and Change, 4 × 5, a 32mm picture and a line to write on: a clock and "____ : ____", or coins, notes and a price tag in black lines), `word` (Sound Spell, 4 × 5, picture, word with a gap, choices to circle). Pizza Fractions uses `clock` boxes for a pizza or bar with a line for the fraction (Name it and Mix), and `line` for Compare and Add.
 - **Clocks:** black face line, ticks and numbers. The hour hand is short and thick, the minute hand long and thin.
 - **Answers:** two columns of ten, 16pt, with a light line under each.
 
