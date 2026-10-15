@@ -272,6 +272,18 @@ What **Print worksheet** prints. Only the sheet prints; the game is hidden. It i
 - **"Ready to level up?"** card after 10 right answers in a row.
 - **Chimes:** short tones made in the browser. No sound files. "Right" goes up, "wrong" goes gently down, cheers and badges play a little tune. The speaker button mutes them.
 
+### Who is playing? (children)
+
+Each child on the device has their own picture, name, age, stars, streaks, progress and game settings. Theme, sound and language are the same for everyone on the device.
+
+- **Picker:** on the home page, between the tagline and the age picker. A muted line "Who is playing?" ("Wer spielt?"), then one chip pill per child: a picture (one of 12 animal emoji) and the name, at least 44px tall. The child playing gets the card color and a 3px `c1` border. Then a round 44px ✎ chip (change the child playing) and a round + chip (add a child, hidden at 6 children).
+- A new device starts with two children: Dio (🐰) and Dia (🦄). Stars saved before children came in go to Dio.
+- A child with no name is called "Player 1" ("Kind 1"), by place in the list.
+- **Add or change box:** a dialog card with a 3px `c1` border, a `0 6px 0` `c1` shadow and radius 24px, over a dark backdrop. A Fredoka title, a Name field, a 6 × 2 grid of pictures (the picked one gets a `c1` border), and for a new child the age picker. Buttons at the bottom: Cancel (outline) and Save (`c1`). With two or more children, a red outline Remove button on the left. It needs a second tap ("Tap again to remove Mia and all their stars"), and turns solid red for that second tap. Red is used here only because the stars are lost, like Clear answers on "How it's going".
+- **Star counter:** with two or more children, the child's picture sits before the star, on the home page and in every game, so a sibling sees whose stars they are earning.
+- **How it's going:** the heading names the child ("How it's going for Mia") and a picker without ✎ and + switches between children.
+- Switching child reloads the page. In the page, add `<div id="kid-picker"></div>` (or with `data-switch-only`). `loopy.js` builds it.
+
 ### Back button
 
 Every game has the same big back button in the top-left corner. It takes you to the home page.
@@ -293,7 +305,7 @@ The score row shows the last 5 answers in this game as dots.
 - The newest answer is on the right, with a 2px `ink` ring around it.
 - Screen readers hear how many of the last 5 were right.
 - In the page, add `<div id="last5" data-game="game-id"></div>`. `Loopy.rewards.correct()` and `.wrong()` fill it in. "Reset score" clears it with `Loopy.recent.clear()`.
-- It is saved in the browser (`loopy.recent`), one list per game. Today's 10 does not use it: it has its own 10 dots.
+- It is saved in the browser (`loopy.recent`, per child), one list per game. Today's 10 does not use it: it has its own 10 dots.
 
 ## 5. Layout
 
