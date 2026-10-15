@@ -21,6 +21,7 @@ It works on phones, tablets and computers. There is no sign-up and no ads.
 | [Plus and Minus](math/plus-minus/) | Adding and taking away | [README](math/plus-minus/README.md) |
 | [Times and Share](math/times-share/) | Times tables and sharing (division) | [README](math/times-share/README.md) |
 | [What Time Is It?](math/what-time-is-it/) | Reading a clock with hands | [README](math/what-time-is-it/README.md) |
+| [Sound Spell](languages/sound-spell/) | Starting and ending sounds of English and German words | [README](languages/sound-spell/README.md) |
 
 ## How it works
 

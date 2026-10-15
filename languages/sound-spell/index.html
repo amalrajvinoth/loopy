@@ -1,0 +1,526 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'sha256-due99wGEzbW5re0DJ3EVDw4lj3CK8ijQJIN5tciih74='; style-src 'self' 'sha256-z2P7kGW5Z05eCTjTZdYpc0vThTlOE9vmt97pVSvi2I4=' 'sha256-X/6TgBlwR/r0pxAaWlbvoxARMjftgwBhtW4mnRo1lys=' 'sha256-RT1053JU5UiKvjrCUFx1rlhdFLMmgtuFJ9T8jnMeawQ=' 'sha256-35tG1j/tA0HVaojPp5ha06THcTUMUgDN4WQCSKQ5qo0='; img-src 'self' data:; font-src 'self'; connect-src 'none'; object-src 'none'; base-uri 'none'; form-action 'none'; manifest-src 'self'; upgrade-insecure-requests">
+<meta name="referrer" content="strict-origin-when-cross-origin">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<style>:root{color-scheme:light;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}body{margin:0}[hidden]{display:none!important}</style>
+<link rel="icon" href="../../icon.svg" type="image/svg+xml">
+<link rel="manifest" href="../../manifest.webmanifest">
+<link rel="apple-touch-icon" href="../../apple-touch-icon.png">
+<meta name="theme-color" content="#0a0a0c">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="loopy">
+<title data-t="ssName">Sound Spell</title>
+<link rel="stylesheet" href="../../fonts/fonts.css">
+<style>
+/* Layout: a picture card with the word and a missing sound, answer buttons below. Shared look with the maths games. */
+:root {
+  --bg: #f3f6fb;
+  --card: #ffffff;
+  --ink: #1d2a3f;
+  --muted: #5d6b82;
+  --line: #d5dde9;
+  --accent: #2457c5;
+  --accent-ink: #ffffff;
+  --mark: #e2622b;
+  --good: #1f8a4c;
+  --good-bg: #e3f5ea;
+  --bad: #c23a3a;
+  --bad-bg: #fbe6e6;
+  --chip: #e6ecf6;
+  --key: #ffffff;
+  --font: "Lexend", "Segoe UI", "Helvetica Neue", Arial, sans-serif;
+}
+
+* { box-sizing: border-box; }
+body {
+  background: var(--bg); color: var(--ink); font-family: var(--font); font-size: 16px;
+  padding-left: max(16px, env(safe-area-inset-left, 0px));
+  padding-right: max(16px, env(safe-area-inset-right, 0px));
+  padding-block: 20px 32px;
+}
+.wrap { max-width: 520px; margin: 0 auto; display: flex; flex-direction: column; gap: 16px; }
+
+.top { display: flex; flex-wrap: wrap; gap: 12px; align-items: center; justify-content: space-between; }
+h1 { margin: 0; font-size: 1.6rem; font-weight: 700; text-wrap: balance; }
+.score { display: flex; flex-wrap: wrap; gap: 8px; font-variant-numeric: tabular-nums; }
+.pill { background: var(--card); border: 1px solid var(--line); border-radius: 999px; padding: 6px 14px; font-weight: 600; font-size: 1rem; white-space: nowrap; }
+.pill span { color: var(--muted); font-weight: 400; margin-right: 4px; }
+
+.settings { display: flex; flex-direction: column; gap: 8px; }
+.seg-label { font-size: 0.8rem; font-weight: 600; letter-spacing: 0.06em; text-transform: uppercase; color: var(--muted); margin: 0 0 4px 4px; }
+.seg { display: grid; grid-template-columns: repeat(3, 1fr); gap: 6px; background: var(--chip); padding: 5px; border-radius: 14px; }
+.seg.two { grid-template-columns: repeat(2, 1fr); }
+.seg button {
+  font: inherit; font-size: 0.95rem; font-weight: 600; color: var(--muted);
+  background: transparent; border: 0; border-radius: 10px; padding: 8px 6px; min-height: 44px; cursor: pointer;
+}
+.seg button[aria-pressed="true"] { background: var(--card); color: var(--ink); box-shadow: 0 1px 3px rgb(0 0 0 / 0.12); }
+
+.problem-card {
+  background: var(--card); border: 1px solid var(--line); border-radius: 24px;
+  padding: 20px 18px 18px; display: flex; flex-direction: column; align-items: center; gap: 14px;
+}
+.problem-card.good { border-color: var(--good); box-shadow: 0 0 0 2px var(--good) inset; }
+.problem-card.bad { border-color: var(--bad); box-shadow: 0 0 0 2px var(--bad) inset; }
+
+/* Vertical problem, written like the worksheets: operator on the left, digits right-aligned. */
+.vert {
+  display: grid; grid-template-columns: auto auto; column-gap: 0.35em;
+  font-size: clamp(3.4rem, 15vw, 4.6rem); font-weight: 600; line-height: 1.12;
+  font-variant-numeric: tabular-nums; letter-spacing: 0.04em;
+}
+.vert .num { grid-column: 2; text-align: right; min-width: 3ch; }
+.vert .op { grid-column: 1; grid-row: 2; color: var(--accent); }
+.vert .rule { grid-column: 1 / -1; height: 0.07em; background: var(--ink); border-radius: 2px; margin: 0.1em 0 0.12em; }
+.vert .ans {
+  grid-column: 2; text-align: right; min-width: 3ch; min-height: 1.12em;
+  color: var(--accent); position: relative;
+}
+.vert .ans.empty::after {
+  content: ""; position: absolute; right: 0; bottom: 0.12em; width: 0.55em; height: 0.07em;
+  background: var(--mark); border-radius: 2px; animation: blink 1s steps(2, start) infinite;
+}
+.problem-card.good .ans { color: var(--good); }
+.problem-card.bad .ans { color: var(--bad); text-decoration: line-through; text-decoration-thickness: 0.06em; }
+@keyframes blink { to { visibility: hidden; } }
+
+.feedback { min-height: 3.1em; text-align: center; font-size: 1.1rem; line-height: 1.45; margin: 0; max-width: 34ch; }
+.feedback strong { display: block; font-size: 1.45rem; }
+.feedback.good strong { color: var(--good); }
+.feedback.bad strong { color: var(--bad); }
+.feedback .hint { color: var(--muted); }
+
+.pad { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; }
+.pad button {
+  font: inherit; font-size: 2rem; font-weight: 700; font-variant-numeric: tabular-nums; color: var(--ink);
+  background: var(--key); border: 2px solid var(--line); border-radius: 18px; min-height: 72px; cursor: pointer;
+  transition: transform .08s ease, border-color .15s ease;
+  touch-action: manipulation; -webkit-tap-highlight-color: transparent;
+}
+.pad button:hover:not(:disabled) { border-color: var(--accent); }
+.pad button:active:not(:disabled) { transform: scale(0.96); }
+.pad button:disabled { opacity: 0.4; cursor: default; }
+.pad .erase { font-size: 1.15rem; color: var(--muted); }
+.pad .go { background: var(--accent); border-color: var(--accent); color: var(--accent-ink); font-size: 1.35rem; }
+.pad .go:hover:not(:disabled) { border-color: var(--accent); filter: brightness(1.08); }
+
+.foot { display: flex; justify-content: space-between; align-items: center; gap: 12px; flex-wrap: wrap; }
+.foot p { margin: 0; color: var(--muted); font-size: 0.9rem; }
+.reset { font: inherit; font-size: 0.95rem; color: var(--muted); background: transparent; border: 2px solid var(--line); border-radius: 14px; padding: 0 16px; min-height: 44px; cursor: pointer; }
+button:focus-visible { outline: 3px solid var(--mark); outline-offset: 3px; }
+
+@media (max-width: 420px) {
+  h1 { font-size: 1.35rem; }
+  .pad button { min-height: 64px; font-size: 1.8rem; }
+  .seg button { font-size: 0.85rem; }
+}
+@media (prefers-reduced-motion: reduce) {
+  * { transition: none !important; }
+  .vert .ans.empty::after { animation: none; }
+}
+</style>
+<style>.home-link{display:inline-flex;align-items:center;min-height:40px;color:var(--muted);font-weight:600;text-decoration:none;font-size:0.95rem}.home-link:hover{color:var(--ink)}</style>
+<style>
+/* Phones and tablets: the game fills one screen; settings sit behind a button. */
+body { min-height: 100vh; min-height: 100dvh; padding-block: 12px 16px; }
+.wrap { gap: 12px; }
+.game-bar { display: flex; align-items: center; justify-content: space-between; gap: 8px; }
+.bar-right { display: flex; align-items: center; gap: 8px; }
+.top { gap: 8px 12px; }
+.play { display: flex; flex-direction: column; gap: 12px; -webkit-user-select: none; user-select: none; }
+@media (min-width: 600px) and (orientation: portrait) { .wrap { max-width: 640px; } }
+@media (orientation: landscape) and (min-width: 640px) {
+  .wrap { max-width: 1100px; }
+  .play { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; align-items: center; }
+}
+
+.problem-card { padding: 14px 14px 12px; gap: 8px; }
+.vert { font-size: clamp(2.4rem, min(15vw, 8.5vh), 5rem); font-size: clamp(2.4rem, min(15vw, 8.5dvh), 5rem); }
+.feedback { min-height: 2.9em; font-size: 1.05rem; }
+.feedback strong { font-size: 1.3rem; }
+.pad { gap: 8px; }
+.pad button { min-height: clamp(50px, 8vh, 92px); min-height: clamp(50px, 8dvh, 92px); }
+@media (min-width: 600px) and (orientation: portrait) {
+  .vert { font-size: clamp(3rem, 10dvh, 7rem); }
+  .pad button { min-height: clamp(60px, 10dvh, 120px); font-size: 2.4rem; }
+}
+@media (orientation: landscape) and (min-width: 640px) {
+  .problem-card { height: 100%; justify-content: center; }
+  .vert { font-size: clamp(2.2rem, min(7vw, 13dvh), 7rem); }
+  .pad button { min-height: clamp(44px, calc((100dvh - 150px) / 4.4), 130px); }
+}
+/* Short phones: keep long explanations from pushing the number pad off screen. */
+@media (max-height: 760px) and (orientation: portrait) {
+  .feedback { font-size: 0.95rem; line-height: 1.35; }
+  .feedback strong { font-size: 1.15rem; }
+}
+
+/* Portrait: the page is exactly one screen tall; the pad or answers stay at the bottom
+   and the top part shrinks to fit. With settings open, the page scrolls normally. */
+@media (orientation: portrait) {
+  body { height: calc(100dvh - env(safe-area-inset-top, 0px) - env(safe-area-inset-bottom, 0px)); min-height: 0; display: flex; flex-direction: column; overflow: hidden; }
+  body:has(#settings-panel:not([hidden])) { height: auto; overflow: visible; }
+  .wrap { flex: 1 1 auto; min-height: 0; width: 100%; }
+  .play { flex: 1 1 auto; min-height: 0; }
+}
+@media (orientation: portrait) {
+  .problem-card { flex: 1 1 auto; min-height: 0; justify-content: center; overflow: hidden; }
+  .feedback { flex: 0 1 auto; min-height: 0; overflow-y: auto; }
+}
+@media (orientation: landscape) and (min-width: 640px) {
+  body { height: calc(100dvh - env(safe-area-inset-top, 0px) - env(safe-area-inset-bottom, 0px)); min-height: 0; display: flex; flex-direction: column; overflow: hidden; }
+  body:has(#settings-panel:not([hidden])) { height: auto; overflow: visible; }
+  .wrap { flex: 1 1 auto; min-height: 0; width: 100%; }
+  .play { flex: 1 1 auto; min-height: 0; grid-template-rows: minmax(0, 1fr); }
+  .problem-card { min-height: 0; overflow: hidden; }
+  .feedback { flex: 0 1 auto; min-height: 0; overflow-y: auto; }
+}
+/* After answering on smaller screens, shrink the sum so the reason has room. */
+@media (max-height: 900px), (max-width: 599px) {
+  .problem-card.good .vert, .problem-card.bad .vert { zoom: 0.7; }
+}
+@media (max-height: 500px) {
+  .feedback { font-size: 0.9rem; line-height: 1.3; }
+  .feedback strong { font-size: 1.05rem; }
+}
+
+/* Sound Spell: a big picture, the word with one sound missing, and letter buttons to fill it. */
+.pic { font-size: clamp(4rem, 16dvh, 8rem); line-height: 1.15; }
+.word { display: flex; gap: 0.06em; align-items: baseline; font-size: clamp(2rem, 7dvh, 3.4rem); font-weight: 700; letter-spacing: 0.03em; }
+.word .blank { display: inline-block; min-width: 1.2ch; border-bottom: 0.08em solid var(--accent); color: var(--accent); text-align: center; }
+.word .blank.empty::after { content: "?"; color: var(--muted); }
+.problem-card.good .blank { color: var(--good); border-color: var(--good); }
+.problem-card.bad .blank { color: var(--bad); border-color: var(--bad); }
+.speak { font: inherit; display: inline-flex; align-items: center; gap: 8px; min-height: 44px; padding: 0 16px; border-radius: 999px;
+  border: 2px solid var(--line); background: var(--key); color: var(--ink); cursor: pointer; font-weight: 600; font-size: 0.95rem; }
+.speak svg { width: 22px; height: 22px; fill: currentColor; }
+.speak:hover { border-color: var(--accent); }
+.speak[hidden] { display: none; }
+.prompt { margin: 0; color: var(--muted); font-size: 1rem; text-align: center; }
+.side { display: flex; flex-direction: column; gap: 10px; }
+.choices { display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; }
+.choices button {
+  font: inherit; font-size: clamp(1.8rem, 5dvh, 2.6rem); font-weight: 700; color: var(--ink);
+  background: var(--key); border: 2px solid var(--line); border-radius: 18px; min-height: clamp(56px, 9dvh, 96px); cursor: pointer;
+  transition: transform .08s ease, border-color .15s ease; touch-action: manipulation; -webkit-tap-highlight-color: transparent;
+}
+.choices button:hover:not(:disabled) { border-color: var(--accent); }
+.choices button:active:not(:disabled) { transform: scale(0.96); }
+.choices button:disabled { cursor: default; }
+.choices button.right { border-color: var(--good); background: var(--good-bg); color: var(--good); }
+.choices button.wrong { border-color: var(--bad); background: var(--bad-bg); color: var(--bad); }
+.choices button.faded { opacity: 0.45; }
+.next { font: inherit; font-size: 1.25rem; font-weight: 700; color: var(--accent-ink); background: var(--accent); border: 0; border-radius: 16px; min-height: clamp(52px, 7dvh, 72px); cursor: pointer; width: 100%; }
+.helper { display: flex; align-items: center; gap: 8px; min-height: 40px; cursor: pointer; }
+.helper input { width: 22px; height: 22px; accent-color: var(--c2); }
+@media (orientation: landscape) and (min-width: 640px) {
+  .side { height: 100%; justify-content: center; }
+  .choices button { min-height: clamp(52px, 14dvh, 130px); }
+}
+@media (max-height: 900px), (max-width: 599px) {
+  .problem-card.good .pic, .problem-card.bad .pic { zoom: 0.7; }
+}
+</style>
+<link rel="stylesheet" href="../../loopy.css">
+<script src="../../loopy.js"></script>
+</head>
+<body>
+
+<div class="wrap">
+  <header class="game-bar">
+    <a class="home-link" href="../../">&larr; loopy</a>
+    <div class="bar-right">
+      <span id="star-chip"></span>
+      <button type="button" id="settings-toggle" aria-controls="settings-panel"></button>
+    </div>
+  </header>
+  <div class="top">
+    <h1 id="title" data-t="ssName">Sound Spell</h1>
+    <div class="score" aria-live="polite">
+      <div class="pill"><span data-t="score">Score</span><b id="score">0 / 0</b></div>
+      <div class="pill"><span data-t="streak">Streak</span><b id="streak">0</b></div>
+    </div>
+  </div>
+  <div class="settings-panel" id="settings-panel" hidden>
+    <div class="controls"><div id="age-picker"></div><div id="theme-picker"></div><button id="sound-toggle"></button><div id="lang-picker"></div></div>
+    <div>
+      <p class="seg-label" id="mode-label" data-t="ssMode">Sounds</p>
+      <div class="seg" role="group" aria-labelledby="mode-label" id="mode-seg">
+        <button type="button" id="mode-start" data-mode="start" data-t="ssStart">Starting</button>
+        <button type="button" id="mode-end" data-mode="end" data-t="ssEnd">Ending</button>
+        <button type="button" id="mode-mix" data-mode="mix" data-t="both">Both</button>
+      </div>
+    </div>
+    <div>
+      <p class="seg-label" id="words-label" data-t="ssWords">Words in</p>
+      <div class="seg two" role="group" aria-labelledby="words-label" id="words-seg">
+        <button type="button" id="words-en" data-words="en">English</button>
+        <button type="button" id="words-de" data-words="de">Deutsch</button>
+      </div>
+    </div>
+    <label class="helper"><input type="checkbox" id="auto-read"> <span data-t="ssAutoRead">Read each word out loud</span></label>
+    <div class="panel-foot">
+      <p data-t="ssKbd">Keyboard works too: 1 to 4 picks an answer, Enter goes on.</p>
+      <button type="button" class="reset" id="reset" data-t="resetScore">Reset score</button>
+    </div>
+  </div>
+
+  <main class="play">
+    <div class="problem-card" id="card">
+      <div class="pic" id="pic" aria-hidden="true"></div>
+      <div class="word" id="word" aria-live="polite"></div>
+      <button type="button" class="speak" id="speak"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 9v6h4l5 4V5L7 9H3zm13.5 3a4.5 4.5 0 0 0-2.5-4v8a4.5 4.5 0 0 0 2.5-4zM14 3.2v2.1a7 7 0 0 1 0 13.4v2.1a9 9 0 0 0 0-17.6z"/></svg><span data-t="ssHear">Hear the word</span></button>
+      <p class="feedback" id="feedback"><span class="hint" id="prompt"></span></p>
+    </div>
+    <div class="side">
+      <div class="choices" id="choices"></div>
+      <button type="button" class="next" id="next" data-t="ssNew">New word</button>
+    </div>
+  </main>
+</div>
+
+<script>
+Loopy.addStrings({
+  en: {
+    ssName: "Sound Spell", ssMode: "Sounds", ssStart: "Starting", ssEnd: "Ending", ssWords: "Words in",
+    ssAutoRead: "Read each word out loud", ssHear: "Hear the word", ssNew: "New word", ssNext: "Next word",
+    ssKbd: "Keyboard works too: 1 to 4 picks an answer, Enter goes on.",
+    ssAskStart: "Which sound does it start with?", ssAskEnd: "Which sound does it end with?",
+    ssStartsWith: "{word} starts with {u}.", ssEndsWith: "{word} ends with {u}.",
+    ssTryBoth: "Try starting and ending sounds together", ssTryFour: "Try it with four choices",
+    ssLangEn: "English", ssLangDe: "German"
+  },
+  de: {
+    ssName: "Anlaut und Endlaut", ssMode: "Laute", ssStart: "Anlaut", ssEnd: "Endlaut", ssWords: "Wörter auf",
+    ssAutoRead: "Jedes Wort vorlesen", ssHear: "Wort anhören", ssNew: "Neues Wort", ssNext: "Nächstes Wort",
+    ssKbd: "Die Tastatur geht auch: 1 bis 4 wählt eine Antwort, Enter geht weiter.",
+    ssAskStart: "Mit welchem Laut beginnt das Wort?", ssAskEnd: "Mit welchem Laut endet das Wort?",
+    ssStartsWith: "{word} beginnt mit {u}.", ssEndsWith: "{word} endet mit {u}.",
+    ssTryBoth: "Probiere Anlaut und Endlaut gemischt", ssTryFour: "Probiere es mit vier Antworten",
+    ssLangEn: "Englisch", ssLangDe: "Deutsch"
+  }
+});
+
+// GEN START
+// Each word: [picture, word, starting sound, ending sound, level]. An empty ending sound means the word
+// is only used for starting sounds (silent letters or sounds that two letters make together).
+// Level 2 words start or end with a two-letter sound, so they come at age 7 and up.
+const WORDS = {
+  en: [
+    ["🍎","apple","a","",1],["🐜","ant","a","t",1],["⚽","ball","b","",1],["🦇","bat","b","t",1],["🛏️","bed","b","d",1],
+    ["🐝","bee","b","",1],["🚌","bus","b","s",1],["👜","bag","b","g",1],["📦","box","b","x",1],["🐱","cat","c","t",1],
+    ["🐄","cow","c","",1],["☕","cup","c","p",1],["🚗","car","c","r",1],["🐶","dog","d","g",1],["🦆","duck","d","",1],
+    ["🥁","drum","d","m",1],["🥚","egg","e","",1],["🐘","elephant","e","t",2],["🦊","fox","f","x",1],["🐟","fish","f","sh",2],
+    ["🐸","frog","f","g",1],["🎁","gift","g","t",1],["🐐","goat","g","t",1],["🎩","hat","h","t",1],["🐔","hen","h","n",1],
+    ["🏠","house","h","",1],["🍯","jam","j","m",1],["✈️","jet","j","t",1],["🪁","kite","k","",1],["🔑","key","k","",1],
+    ["👑","king","k","",1],["🦁","lion","l","n",1],["🍃","leaf","l","f",1],["💡","lamp","l","p",1],["🌙","moon","m","n",1],
+    ["🗺️","map","m","p",1],["🥛","milk","m","k",1],["🥜","nut","n","t",1],["🥅","net","n","t",1],["👃","nose","n","",1],
+    ["🦉","owl","o","l",1],["🐙","octopus","o","s",2],["🐷","pig","p","g",1],["🖊️","pen","p","n",1],["🍳","pan","p","n",1],
+    ["🐀","rat","r","t",1],["💍","ring","r","",1],["🌧️","rain","r","n",1],["☀️","sun","s","n",1],["🧦","sock","s","",1],
+    ["⭐","star","s","r",1],["6️⃣","six","s","x",1],["🚢","ship","sh","p",2],["👟","shoe","sh","",2],["🪑","chair","ch","r",2],
+    ["🧀","cheese","ch","",2],["3️⃣","three","th","",2],["⛺","tent","t","t",1],["🌳","tree","t","",1],["🔟","ten","t","n",1],
+    ["☂️","umbrella","u","",2],["⬆️","up","u","p",1],["🚐","van","v","n",1],["🕸️","web","w","b",1],["🐺","wolf","w","f",1],
+    ["🤐","zip","z","p",1],["🦓","zebra","z","",1]
+  ],
+  de: [
+    ["🍎","Apfel","A","l",1],["🐜","Ameise","A","e",1],["🐵","Affe","A","e",1],["🍍","Ananas","A","s",1],["⚽","Ball","B","",1],
+    ["🌳","Baum","B","m",1],["🍞","Brot","B","t",1],["🌸","Blume","B","e",1],["🚌","Bus","B","s",1],["⛵","Boot","B","t",1],
+    ["🍌","Banane","B","e",1],["🍐","Birne","B","e",1],["📖","Buch","B","ch",2],["🐉","Drache","D","e",1],["🦖","Dino","D","o",1],
+    ["🐟","Fisch","F","sch",2],["🐸","Frosch","F","sch",2],["🦶","Fuß","F","",1],["🥛","Glas","G","s",1],["🦒","Giraffe","G","e",1],
+    ["🐶","Hund","H","d",1],["🏠","Haus","H","s",1],["🎩","Hut","H","t",1],["✋","Hand","H","d",1],["❤️","Herz","H","z",1],
+    ["🦔","Igel","I","l",1],["🏝️","Insel","I","l",1],["🧥","Jacke","J","e",1],["🐱","Katze","K","e",1],["🐄","Kuh","K","",1],
+    ["🕯️","Kerze","K","e",1],["👑","Krone","K","e",1],["🍒","Kirsche","K","e",1],["🧀","Käse","K","e",1],["💡","Lampe","L","e",1],
+    ["🦁","Löwe","L","e",1],["🐭","Maus","M","s",1],["🌙","Mond","M","d",1],["🥛","Milch","M","ch",2],["👃","Nase","N","e",1],
+    ["🥜","Nuss","N","",1],["🍊","Orange","O","e",1],["🍄","Pilz","P","z",1],["🐧","Pinguin","P","n",1],["🚲","Rad","R","d",1],
+    ["💍","Ring","R","",1],["🌹","Rose","R","e",1],["☀️","Sonne","S","e",1],["🥗","Salat","S","t",1],["🧦","Socke","S","e",1],
+    ["🐑","Schaf","Sch","f",2],["👟","Schuh","Sch","",2],["❄️","Schnee","Sch","",2],["🔑","Schlüssel","Sch","l",2],["⭐","Stern","St","n",2],
+    ["🪑","Stuhl","St","l",2],["☕","Tasse","T","e",1],["🍅","Tomate","T","e",1],["🐯","Tiger","T","r",1],["⌚","Uhr","U","r",1],
+    ["🐦","Vogel","V","l",1],["☁️","Wolke","W","e",1],["🐺","Wolf","W","f",1],["🦓","Zebra","Z","a",1],["🚂","Zug","Z","g",1],
+    ["🍋","Zitrone","Z","e",1],["🚗","Auto","Au","o",2],["👁️","Auge","Au","e",2]
+  ]
+};
+// Letters that sound the same in that place, so they are never offered against each other.
+const ALIKE = {
+  en: { start: [["c", "k"]], end: [] },
+  de: { start: [["V", "F"]], end: [["d", "t"], ["g", "k"], ["b", "p"]] }
+};
+const randInt = (n) => Math.floor(Math.random() * n);
+const pick = (arr) => arr[randInt(arr.length)];
+const shuffle = (arr) => arr.slice().sort(() => Math.random() - 0.5);
+const unitOf = (w, mode) => mode === "start" ? w[2] : w[3];
+const restOf = (w, mode) => mode === "start" ? w[1].slice(w[2].length) : w[1].slice(0, w[1].length - w[3].length);
+
+// Words that fit the mode and age. Level 2 words need age 7 or more.
+function wordsFor(lang, mode, age) {
+  return WORDS[lang].filter(w => (mode === "start" || w[3] !== "") && (age >= 7 || w[4] === 1));
+}
+// Wrong choices: real sounds from the same list, same length kind, not sounding like the answer,
+// and never one that would spell another word in the list.
+function distractors(lang, mode, word, n) {
+  const want = unitOf(word, mode), rest = restOf(word, mode);
+  const alike = ALIKE[lang][mode].find(g => g.includes(want)) || [];
+  const spelled = new Set(WORDS[lang].map(w => w[1].toLowerCase()));
+  const pool = [...new Set(WORDS[lang].map(w => unitOf(w, mode)).filter(Boolean))].filter(u => {
+    if (u === want || alike.includes(u)) return false;
+    const made = (mode === "start" ? u + rest : rest + u).toLowerCase();
+    return !spelled.has(made);
+  });
+  const same = pool.filter(u => (u.length > 1) === (want.length > 1));
+  const out = shuffle(same.length >= n ? same : pool).slice(0, n);
+  return out;
+}
+function makeProblem(lang, modeSetting, age, choices, avoid) {
+  for (let tries = 0; tries < 50; tries++) {
+    const mode = modeSetting === "mix" ? (Math.random() < 0.5 ? "start" : "end") : modeSetting;
+    const list = wordsFor(lang, mode, age);
+    const word = pick(list);
+    const key = mode + ":" + word[1];
+    if (avoid && avoid.includes(key) && tries < 40) continue;
+    const answer = unitOf(word, mode);
+    const options = shuffle([answer, ...distractors(lang, mode, word, choices - 1)]);
+    return { word, mode, answer, options, key, rest: restOf(word, mode) };
+  }
+}
+// GEN END
+
+(function () {
+  const $ = (id) => document.getElementById(id);
+  const card = $("card"), picEl = $("pic"), wordEl = $("word"), choicesEl = $("choices"), feedbackEl = $("feedback"), nextBtn = $("next"), speakBtn = $("speak"), autoBox = $("auto-read");
+  const modeBtns = [...document.querySelectorAll("#mode-seg button")];
+  const wordsBtns = [...document.querySelectorAll("#words-seg button")];
+  const t = Loopy.t;
+  const store = {
+    // ok: the values this setting may have; anything else falls back to the default.
+    get(k, d, ok) { try { const v = JSON.parse(localStorage.getItem(k)); return ok.includes(v) ? v : d; } catch (e) { return d; } },
+    set(k, v) { try { localStorage.setItem(k, JSON.stringify(v)); } catch (e) {} }
+  };
+
+  let age = window.Loopy ? Loopy.getAge() : 8;
+  let modeSetting, choices;
+  let wordsLang = store.get("ss.words", Loopy.lang === "de" ? "de" : "en", ["en", "de"]);
+  let autoRead = store.get("ss.autoRead", true, [true, false]);
+  // Settings are remembered per age, so each age starts at the right level.
+  function loadForAge() {
+    modeSetting = store.get("ss.mode.a" + age, age <= 6 ? "start" : "mix", ["start", "end", "mix"]);
+    choices = store.get("ss.choices.a" + age, age <= 6 ? 3 : 4, [3, 4]);
+  }
+  loadForAge();
+  let right = 0, tried = 0, streak = 0;
+  let current = null, answered = false, recent = [], interacted = false;
+
+  // Read the word aloud with the browser's own voice. Nothing is downloaded; if there is no voice, the button hides.
+  const canSpeak = "speechSynthesis" in window && "SpeechSynthesisUtterance" in window;
+  function voiceFor(lang) {
+    const code = lang === "de" ? "de" : "en";
+    const voices = speechSynthesis.getVoices();
+    return voices.find(v => v.lang.toLowerCase().startsWith(code + "-")) || voices.find(v => v.lang.toLowerCase().startsWith(code)) || null;
+  }
+  function speak() {
+    if (!canSpeak || !current) return;
+    try {
+      speechSynthesis.cancel();
+      const u = new SpeechSynthesisUtterance(current.word[1]);
+      u.lang = wordsLang === "de" ? "de-DE" : "en-US";
+      const v = voiceFor(wordsLang);
+      if (v) u.voice = v;
+      u.rate = 0.85;
+      speechSynthesis.speak(u);
+    } catch (e) {}
+  }
+  speakBtn.hidden = !canSpeak;
+
+  function render() {
+    $("score").textContent = right + " / " + tried;
+    $("streak").textContent = streak;
+    modeBtns.forEach(b => b.setAttribute("aria-pressed", String(b.dataset.mode === modeSetting)));
+    wordsBtns.forEach(b => b.setAttribute("aria-pressed", String(b.dataset.words === wordsLang)));
+    autoBox.checked = autoRead;
+    nextBtn.textContent = t(answered ? "ssNext" : "ssNew");
+  }
+  function showWord(fill) {
+    wordEl.textContent = "";
+    const blank = document.createElement("span");
+    blank.className = "blank" + (fill ? "" : " empty");
+    if (fill) blank.textContent = fill;
+    const rest = document.createElement("span");
+    rest.textContent = current.rest;
+    if (current.mode === "start") wordEl.append(blank, rest); else wordEl.append(rest, blank);
+  }
+  function newRound() {
+    current = makeProblem(wordsLang, modeSetting, age, choices, recent);
+    recent.push(current.key);
+    if (recent.length > 12) recent.shift();
+    answered = false;
+    picEl.textContent = current.word[0];
+    showWord("");
+    wordEl.setAttribute("aria-label", current.word[1]);
+    choicesEl.textContent = "";
+    current.options.forEach((u, i) => {
+      const b = document.createElement("button");
+      b.type = "button"; b.id = "choice-" + i; b.textContent = u;
+      b.dataset.correct = String(u === current.answer);
+      b.addEventListener("click", () => choose(b));
+      choicesEl.appendChild(b);
+    });
+    card.className = "problem-card";
+    feedbackEl.className = "feedback";
+    feedbackEl.innerHTML = '<span class="hint"></span>';
+    feedbackEl.firstChild.textContent = t(current.mode === "start" ? "ssAskStart" : "ssAskEnd");
+    render();
+    if (autoRead && interacted) speak();
+  }
+  function choose(btn) {
+    if (answered) return;
+    answered = true; tried++;
+    const ok = btn.dataset.correct === "true";
+    [...choicesEl.children].forEach(b => {
+      b.disabled = true;
+      if (b.dataset.correct === "true") b.classList.add("right");
+      else if (b === btn) b.classList.add("wrong");
+      else b.classList.add("faded");
+    });
+    if (ok) { right++; streak++; } else { streak = 0; }
+    if (window.Loopy && Loopy.rewards) ok ? Loopy.rewards.correct("sound-spell", streak, harder()) : Loopy.rewards.wrong();
+    card.className = "problem-card " + (ok ? "good" : "bad");
+    feedbackEl.className = "feedback " + (ok ? "good" : "bad");
+    showWord(current.answer);
+    const why = t(current.mode === "start" ? "ssStartsWith" : "ssEndsWith", { word: current.word[1], u: current.answer });
+    feedbackEl.innerHTML = "<strong></strong>";
+    feedbackEl.firstChild.textContent = ok ? (streak >= 3 ? t("correctRow", { n: streak }) : t("correct")) : t("notQuite");
+    feedbackEl.appendChild(document.createTextNode(why));
+    render();
+    nextBtn.focus({ preventScroll: true });
+  }
+  // What "Make it harder" does after 10 in a row: both sound kinds first, then four choices.
+  function harder() {
+    if (modeSetting !== "mix") return { label: t("ssTryBoth"), apply: () => { modeSetting = "mix"; store.set("ss.mode.a" + age, modeSetting); render(); } };
+    if (choices < 4) return { label: t("ssTryFour"), apply: () => { choices = 4; store.set("ss.choices.a" + age, choices); render(); } };
+    return null;
+  }
+
+  document.addEventListener("pointerdown", () => { interacted = true; }, { once: true });
+  speakBtn.addEventListener("click", speak);
+  nextBtn.addEventListener("click", newRound);
+  modeBtns.forEach(b => b.addEventListener("click", () => { modeSetting = b.dataset.mode; store.set("ss.mode.a" + age, modeSetting); newRound(); }));
+  wordsBtns.forEach(b => b.addEventListener("click", () => { wordsLang = b.dataset.words; store.set("ss.words", wordsLang); recent = []; newRound(); }));
+  autoBox.addEventListener("change", () => { autoRead = autoBox.checked; store.set("ss.autoRead", autoRead); });
+  window.addEventListener("loopy:age", (e) => { age = e.detail; recent = []; loadForAge(); newRound(); });
+  $("reset").addEventListener("click", () => { right = 0; tried = 0; streak = 0; newRound(); });
+  document.addEventListener("keydown", (e) => {
+    if (e.target.tagName === "INPUT" || document.querySelector(".loopy-cheer.big")) return;
+    if (e.key === "Enter" && answered && e.target.tagName !== "BUTTON") { newRound(); return; }
+    const n = parseInt(e.key, 10);
+    if (n >= 1 && n <= 4 && !answered) { const b = choicesEl.children[n - 1]; if (b) choose(b); }
+  });
+  if (canSpeak) speechSynthesis.addEventListener("voiceschanged", () => {});
+
+  newRound();
+})();
+</script>
+</body>
+</html>

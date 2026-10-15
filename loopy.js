@@ -266,7 +266,7 @@
 
   var data = { stars: 0, best: {} };
   var cheeredBest = {}; // one "new best" cheer per run
-  var MAX_STARS = 1000000, GAMES = ["plus-minus", "times-share", "clock"];
+  var MAX_STARS = 1000000, GAMES = ["plus-minus", "times-share", "clock", "sound-spell"];
   var num = function (n) { return typeof n === "number" && isFinite(n) && n >= 0 ? Math.min(Math.floor(n), MAX_STARS) : 0; };
   // Only known games and sane numbers are kept, whatever the stored text says.
   function clean(raw) {

@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'sha256-FD8Z2yeSvv7q1Dzao3t6ylN3FPajaHXFf2DW5ZSOWG4='; style-src 'self' 'sha256-HMK98GHBTbAlbH/4aII8tuFBE+bwPwShvPIRVspa9t4='; img-src 'self' data:; font-src 'self'; connect-src 'none'; object-src 'none'; base-uri 'none'; form-action 'none'; manifest-src 'self'; upgrade-insecure-requests">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'sha256-S5cJl9zWV5NZHFgqZu7BEfwlo4mvs6TENvZEiBKAT6U='; style-src 'self' 'sha256-HMK98GHBTbAlbH/4aII8tuFBE+bwPwShvPIRVspa9t4='; img-src 'self' data:; font-src 'self'; connect-src 'none'; object-src 'none'; base-uri 'none'; form-action 'none'; manifest-src 'self'; upgrade-insecure-requests">
 <meta name="referrer" content="strict-origin-when-cross-origin">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <link rel="icon" href="icon.svg" type="image/svg+xml">
@@ -113,10 +113,11 @@ Loopy.addStrings({
     toNext: "{n} more stars to the {name} badge. Every right answer earns a star.", toNextOne: "1 more star to the {name} badge. Every right answer earns a star.",
     allBadges: "You have every badge. You're a loopy Master!", earned: "Earned", nStars: "{n} stars",
     play: "Play →", ages: "Ages {a}–{b}", more: "More to explore", noneForAge: "No games for age {n} yet. Try the ones below.",
-    math: "Math",
+    math: "Math", languages: "Languages",
     pmTitle: "Plus and Minus", pmTag: "Adding and taking away", pmText: "Worksheet-style sums typed on a big number pad. The numbers grow with your age.",
     tsTitle: "Times and Share", tsTag: "Times and division", tsText: "Times tables with dots to count, and sharing into equal groups. Bigger numbers as you grow.",
-    clTitle: "What Time Is It?", clTag: "Telling time", clText: "Read the hands on the clock and pick the right time, from half hours down to the minute."
+    clTitle: "What Time Is It?", clTag: "Telling time", clText: "Read the hands on the clock and pick the right time, from half hours down to the minute.",
+    ssTitle: "Sound Spell", ssTag: "Starting and ending sounds", ssText: "See a picture, hear the word, and pick the sound it starts or ends with. English and German words."
   },
   de: {
     tagline: "Lernen. Spielen. Wiederholen.", myStars: "Meine Sterne", moveStars: "Sterne auf ein anderes Gerät bringen",
@@ -126,10 +127,11 @@ Loopy.addStrings({
     toNext: "Noch {n} Sterne bis zum Abzeichen {name}. Jede richtige Antwort gibt einen Stern.", toNextOne: "Noch 1 Stern bis zum Abzeichen {name}. Jede richtige Antwort gibt einen Stern.",
     allBadges: "Du hast alle Abzeichen. Du bist ein loopy-Meister!", earned: "Geschafft", nStars: "{n} Sterne",
     play: "Spielen →", ages: "{a}–{b} Jahre", more: "Mehr entdecken", noneForAge: "Noch keine Spiele für {n} Jahre. Probier die unten.",
-    math: "Mathe",
+    math: "Mathe", languages: "Sprachen",
     pmTitle: "Plus und Minus", pmTag: "Plus und Minus rechnen", pmText: "Aufgaben wie auf dem Arbeitsblatt, getippt auf einem großen Zahlenfeld. Die Zahlen wachsen mit deinem Alter.",
     tsTitle: "Mal und Teilen", tsTag: "Malnehmen und Teilen", tsText: "Einmaleins mit Punkten zum Zählen und Teilen in gleiche Gruppen. Größere Zahlen, wenn du wächst.",
-    clTitle: "Wie spät ist es?", clTag: "Uhr lesen", clText: "Lies die Zeiger der Uhr und wähle die richtige Zeit, von halben Stunden bis zur Minute."
+    clTitle: "Wie spät ist es?", clTag: "Uhr lesen", clText: "Lies die Zeiger der Uhr und wähle die richtige Zeit, von halben Stunden bis zur Minute.",
+    ssTitle: "Anlaut und Endlaut", ssTag: "Anlaute und Endlaute", ssText: "Sieh ein Bild, hör das Wort und wähle den Laut, mit dem es beginnt oder endet. Deutsche und englische Wörter."
   }
 });
 // To add a game: put it in <subject>/<folder>/index.html and add one line below.
@@ -139,6 +141,7 @@ const GAMES = [
   { subject: "math", path: "math/plus-minus/", id: "pm", ages: [5, 16] },
   { subject: "math", path: "math/times-share/", id: "ts", ages: [6, 16] },
   { subject: "math", path: "math/what-time-is-it/", id: "cl", ages: [5, 10] },
+  { subject: "languages", path: "languages/sound-spell/", id: "ss", ages: [5, 8] },
 ];
 const t = Loopy.t;
 const list = document.getElementById("list");
