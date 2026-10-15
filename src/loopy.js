@@ -479,21 +479,7 @@ document.documentElement.classList.add("loopy-building");
   Loopy.rewards = {
     BADGES: BADGES, STAR_PATH: STAR_PATH,
     get: function () { return data; },
-    // Moving progress to another device: a short code to copy, and loading one back.
-    exportCode: function () { return "LOOPY-" + btoa(JSON.stringify({ s: data.stars, b: data.best })); },
-    importCode: function (code) {
-      try {
-        code = String(code).trim().replace(/^LOOPY-/i, "");
-        if (code.length > 2000 || !/^[A-Za-z0-9+/=]+$/.test(code)) return false;
-        var d = JSON.parse(atob(code));
-        if (!d || typeof d.s !== "number") return false;
-        var got = clean({ stars: d.s, best: d.b });
-        data.stars = Math.max(data.stars, got.stars);
-        GAMES.forEach(function (g) { if (got.best[g]) data.best[g] = Math.max(data.best[g] || 0, got.best[g]); });
-        save(); updateChips();
-        return true;
-      } catch (e) { return false; }
-    },
+    clean: clean, // used by Loopy.backup
     badgeFor: badgeFor, nextBadge: nextBadge, confetti: confetti, celebrate: celebrate,
     // Call after a wrong answer, with the game's name.
     // detail: optional { q: "52 − 17", a: "35", y: "45", k: "sub-rg" } for the grown-ups' progress page (see Loopy.log).
@@ -582,7 +568,7 @@ document.documentElement.classList.add("loopy-building");
   // A day as "2026-10-15" in local time. offset: days from today, e.g. -1 for yesterday.
   Loopy.dayKey = dayKey;
   Loopy.daily = {
-    BADGES: DAY_BADGES,
+    BADGES: DAY_BADGES, clean: clean, // clean is used by Loopy.backup
     // streak: days in a row that are still alive (finished today or yesterday). doneToday: today's 10 is finished.
     get: function () {
       var alive = data.last === dayKey(0) || data.last === dayKey(-1);
@@ -605,7 +591,7 @@ document.documentElement.classList.add("loopy-building");
 })();
 
 // Answer log for the grown-ups' progress page: right and wrong answers per game per day, and each
-// wrong answer with the right one, for the last 30 days. It is not in the stars code and never sent anywhere.
+// wrong answer with the right one, for the last 30 days. It goes in the stars code (Loopy.backup) and is never sent anywhere.
 // Kept in this browser's localStorage as
 // { days: { "2026-10-15": { "plus-minus": [right, wrong] } }, wrong: [{ d: day, g: game, q, a: right answer, y: their answer, k: kind }] }.
 (function () {
@@ -644,6 +630,7 @@ document.documentElement.classList.add("loopy-building");
   function save() { try { localStorage.setItem(KEY, JSON.stringify(data)); } catch (e) {} }
 
   Loopy.log = {
+    MAX_WRONG: MAX_WRONG, clean: clean, // used by Loopy.backup
     get: function () { return clean(data); },
     // rewards.correct / wrong call this. detail: { q, a, y, k } for a wrong answer, see rewards.wrong.
     add: function (game, ok, detail) {
@@ -709,6 +696,7 @@ document.documentElement.classList.add("loopy-building");
   }
 
   Loopy.recent = {
+    clean: clean, // used by Loopy.backup
     get: function (game) { return (data[game] || []).slice(); },
     add: function (game, ok) {
       if (GAMES.indexOf(game) === -1) return;
@@ -876,6 +864,145 @@ document.documentElement.classList.add("loopy-building");
   // Printing from the browser's own menu also prints a fresh worksheet.
   window.addEventListener("beforeprint", function () { if (opts && sheet && !filled) fill(); });
   window.addEventListener("afterprint", function () { filled = false; });
+})();
+
+// Stars code: moves stars, badges, day streak, progress, Last 5, age and settings to another device.
+// No account and nothing sent anywhere: the code is copied by hand and pasted on the other device.
+// "LOOPY2-Z..." is the data packed small (deflate) and written as letters; "LOOPY2-J..." is the same
+// data unpacked, for browsers that can't pack. Old "LOOPY-..." codes (stars and best scores only) still load.
+// Inside: { v: 2, p: [child], theme, sound, lang }, child = { rewards, daily, log, recent, age, read }.
+// p is a list so codes can carry more than one child later; today it holds one.
+// Loading a code adds to what is here and never takes anything away: the bigger number wins,
+// and a setting is only taken when this device has not chosen one yet.
+(function () {
+  var Loopy = window.Loopy = window.Loopy || {};
+  var MAX_CODE = 40000, MAX_JSON = 200000, MAX_P = 10;
+  var KEYS = { rewards: "loopy.rewards", daily: "loopy.daily", log: "loopy.log", recent: "loopy.recent",
+    age: "loopy.ageOffset", read: "loopy.readAloud", theme: "loopy.theme", sound: "loopy.sound", lang: "loopy.lang" };
+  var CHOICES = { read: ["on", "off"], theme: ["black", "sunny", "ocean", "candy", "forest"], sound: ["on", "off"], lang: ["en", "de"] };
+  var get = function (k) { try { return localStorage.getItem(KEYS[k]); } catch (e) { return null; } };
+  var read = function (k) { try { return JSON.parse(get(k)); } catch (e) { return null; } };
+  var put = function (k, v) { try { localStorage.setItem(KEYS[k], typeof v === "string" ? v : JSON.stringify(v)); } catch (e) {} };
+  var cleanAge = function (n) { return typeof n === "number" && isFinite(n) && Math.abs(n) <= 11 ? Math.round(n) : null; };
+  var choice = function (k, v) { return CHOICES[k].indexOf(v) !== -1 ? v : null; };
+  var can = typeof CompressionStream === "function" && typeof DecompressionStream === "function";
+
+  function b64(bytes) {
+    var s = "";
+    for (var i = 0; i < bytes.length; i += 8192) s += String.fromCharCode.apply(null, bytes.subarray(i, i + 8192));
+    return btoa(s).replace(/=+$/, "");
+  }
+  function unb64(s) {
+    var bin = atob(s), out = new Uint8Array(bin.length);
+    for (var i = 0; i < bin.length; i++) out[i] = bin.charCodeAt(i);
+    return out;
+  }
+  // Runs bytes through a (de)compression stream. Stops with an error past MAX_JSON bytes, so a tiny code can't fill the memory.
+  function pipe(bytes, stream) {
+    var reader = new Blob([bytes]).stream().pipeThrough(stream).getReader(), parts = [], size = 0;
+    return (function next() {
+      return reader.read().then(function (r) {
+        if (r.done) {
+          var out = new Uint8Array(size), at = 0;
+          parts.forEach(function (p) { out.set(p, at); at += p.length; });
+          return out;
+        }
+        size += r.value.length;
+        if (size > MAX_JSON) { reader.cancel(); throw new Error("too big"); }
+        parts.push(r.value);
+        return next();
+      });
+    })();
+  }
+
+  function snapshot() {
+    var child = {
+      rewards: Loopy.rewards.clean(read("rewards")),
+      daily: Loopy.daily.clean(read("daily")),
+      log: Loopy.log.clean(read("log")),
+      recent: Loopy.recent.clean(read("recent")),
+      age: get("age") === null ? null : cleanAge(parseInt(get("age"), 10) || 0),
+      read: choice("read", get("read"))
+    };
+    return { v: 2, p: [child], theme: choice("theme", get("theme")), sound: choice("sound", get("sound")), lang: choice("lang", get("lang")) };
+  }
+
+  // Adds a checked child from a code to what this device has. Everything is cleaned again before it is saved.
+  function merge(got) {
+    var R = Loopy.rewards.clean(read("rewards")), r = Loopy.rewards.clean(got.rewards);
+    R.stars = Math.max(R.stars, r.stars);
+    Object.keys(r.best).forEach(function (g) { R.best[g] = Math.max(R.best[g] || 0, r.best[g]); });
+    put("rewards", Loopy.rewards.clean(R));
+
+    var D = Loopy.daily.clean(read("daily")), d = Loopy.daily.clean(got.daily);
+    if (d.last > D.last) { D.last = d.last; D.streak = d.streak; }
+    D.best = Math.max(D.best, d.best);
+    put("daily", Loopy.daily.clean(D));
+
+    // Progress: for each day and game the bigger count wins, so loading the same code twice counts nothing twice.
+    var L = Loopy.log.clean(read("log")), l = Loopy.log.clean(got.log);
+    Object.keys(l.days).forEach(function (day) {
+      var row = L.days[day] = L.days[day] || {};
+      Object.keys(l.days[day]).forEach(function (g) {
+        var a = row[g] || [0, 0], b = l.days[day][g];
+        row[g] = [Math.max(a[0], b[0]), Math.max(a[1], b[1])];
+      });
+    });
+    var seen = {};
+    L.wrong = L.wrong.concat(l.wrong).filter(function (w) {
+      var k = JSON.stringify(w);
+      return seen[k] ? false : (seen[k] = true);
+    }).sort(function (a, b) { return a.d < b.d ? -1 : a.d > b.d ? 1 : 0; }).slice(-Loopy.log.MAX_WRONG);
+    put("log", Loopy.log.clean(L));
+
+    var N = Loopy.recent.clean(read("recent")), n = Loopy.recent.clean(got.recent);
+    Object.keys(n).forEach(function (g) { if (!N[g] || !N[g].length) N[g] = n[g]; });
+    put("recent", N);
+
+    if (get("age") === null && cleanAge(got.age) !== null) put("age", String(cleanAge(got.age)));
+    if (get("read") === null && choice("read", got.read)) put("read", got.read);
+  }
+
+  function load(d) {
+    if (!d || typeof d !== "object" || d.v !== 2 || !Array.isArray(d.p) || !d.p.length || d.p.length > MAX_P) return false;
+    if (!d.p[0] || typeof d.p[0] !== "object") return false;
+    merge(d.p[0]);
+    ["theme", "sound", "lang"].forEach(function (k) { if (get(k) === null && choice(k, d[k])) put(k, d[k]); });
+    return true;
+  }
+  // Codes from before: { s: stars, b: { game: best } }.
+  function loadOld(d) {
+    if (!d || typeof d !== "object" || typeof d.s !== "number") return false;
+    merge({ rewards: { stars: d.s, best: d.b } });
+    return true;
+  }
+
+  Loopy.backup = {
+    // A promise of the code for everything saved in this browser.
+    exportCode: function () {
+      var bytes = new TextEncoder().encode(JSON.stringify(snapshot()));
+      if (!can) return Promise.resolve("LOOPY2-J" + b64(bytes));
+      return pipe(bytes, new CompressionStream("deflate-raw")).then(function (z) { return "LOOPY2-Z" + b64(z); });
+    },
+    // A promise of true when the code was good and its data is saved. Reload the page to show it.
+    importCode: function (code) {
+      return Promise.resolve().then(function () {
+        code = String(code).replace(/\s+/g, "");
+        if (code.length > MAX_CODE) return false;
+        var m = /^LOOPY2-([ZJ])([A-Za-z0-9+/]+=*)$/i.exec(code);
+        if (m) {
+          var bytes = unb64(m[2]);
+          var json = m[1].toUpperCase() === "J" ? Promise.resolve(bytes) : can ? pipe(bytes, new DecompressionStream("deflate-raw")) : Promise.reject(new Error("can't unpack"));
+          return json.then(function (b) {
+            if (b.length > MAX_JSON) return false;
+            return load(JSON.parse(new TextDecoder("utf-8", { fatal: true }).decode(b)));
+          });
+        }
+        m = /^LOOPY-([A-Za-z0-9+/]+=*)$/i.exec(code);
+        return !!m && m[1].length <= 2000 && loadOld(JSON.parse(atob(m[1])));
+      }).catch(function () { return false; });
+    }
+  };
 })();
 
 // Works offline: sw.js, next to this file, saves every page on the device after the first visit
