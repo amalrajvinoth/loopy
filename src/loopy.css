@@ -240,9 +240,10 @@ a.home-link.loopy-back:focus-visible { outline: 3px solid var(--mark); outline-o
   .loopy-sheet { display: block; color: #000; font-family: "Lexend", "Segoe UI", Arial, sans-serif; font-variant-numeric: tabular-nums; }
   .sheet-answers { break-before: page; }
   .sheet-head { margin-bottom: 4mm; }
-  .sheet-top { display: flex; align-items: baseline; justify-content: space-between; gap: 6mm; border-bottom: 0.6mm solid #000; padding-bottom: 1.5mm; }
+  .sheet-top { display: flex; align-items: center; justify-content: space-between; gap: 6mm; border-bottom: 0.6mm solid #000; padding-bottom: 1.5mm; }
   .sheet-title { margin: 0; font-family: "Fredoka", "Lexend", sans-serif; font-size: 20pt; font-weight: 700; line-height: 1.15; }
-  .sheet-brand { font-family: "Fredoka", "Lexend", sans-serif; font-size: 14pt; font-weight: 700; color: #555; }
+  .sheet-brand { flex: 0 0 auto; color: #000; }
+  .sheet-logo { display: block; height: 8mm; width: auto; overflow: visible; }
   .sheet-level { margin: 1.5mm 0 0; font-size: 10pt; color: #444; }
   .sheet-fields { display: flex; gap: 6mm; margin-top: 4mm; font-size: 11pt; }
   .sheet-field { display: flex; align-items: flex-end; gap: 2mm; flex: 1 1 0; }
