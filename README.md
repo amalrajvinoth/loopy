@@ -28,6 +28,7 @@ It works on phones, tablets and computers. There is no sign-up and no ads.
 | [Sound Spell](languages/sound-spell/) | Starting and ending sounds of English and German words | [README](languages/sound-spell/README.md) |
 | [Word Match](languages/word-match/) | 100 words for animals, food, home and school, in English or German | [README](languages/word-match/README.md) |
 | [Spell It](languages/spell-it/) | Hear a word and spell it on a letter pad, from 3 letters up to 8, in English or German | [README](languages/spell-it/README.md) |
+| [Quick Facts](science/quick-facts/) | Short science quizzes about space, animals and the body, with one line of why after each answer | [README](science/quick-facts/README.md) |
 | [Today's 10](mix/daily-mix/) | A daily mix of 10 problems from the games for your age, with a day streak | [README](mix/daily-mix/README.md) |
 
 ## For grown-ups
