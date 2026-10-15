@@ -20,7 +20,7 @@ Tap − or + next to Age on the home page or in a game's Settings. The games get
 
 ## Can brothers and sisters share one device?
 
-Yes. On the home page, under "Who is playing?", tap **+** to add a child. Give them a name (or a nickname), a picture and their age. Each child has their own stars, badges, streaks, age and game settings. Tap a child's name to switch. Tap ✎ to change the name or picture, or to remove a child. Removing a child deletes their stars on this device. The theme, sound and language are the same for everyone.
+Yes. A new device starts with two children, Dio and Dia. Tap ✎ to rename them. On the home page, under "Who is playing?", tap **+** to add a child. Give them a name (or a nickname), a picture and their age. Each child has their own stars, badges, streaks, age and game settings. Tap a child's name to switch. Tap ✎ to change the name or picture, or to remove a child. Removing a child deletes their stars on this device. The theme, sound and language are the same for everyone.
 
 ## How do I change the language?
 

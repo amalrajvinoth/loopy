@@ -42,7 +42,7 @@ Open it from the link at the bottom of the home page.
 
 ## How it works
 
-- **Children.** More than one child can play on the same device. Tap **+** under "Who is playing?" on the home page to add a child with a name, a picture and an age. Each child has their own age, stars, badges, streaks, progress and game settings. Tap a name to switch. Theme, sound and language are shared.
+- **Children.** More than one child can play on the same device. It starts with Dio and Dia. Tap **+** under "Who is playing?" on the home page to add a child with a name, a picture and an age. Each child has their own age, stars, badges, streaks, progress and game settings. Tap a name to switch. Theme, sound and language are shared.
 - **Age.** Pick the child's age. Each game gets easier or harder to match it. The age goes up by itself on each birthday.
 - **Language.** English is the default. Tap **DE** for German, or **EN** to go back.
 - **Colors.** Black is the default. You can also pick Sunny, Ocean, Candy or Forest.

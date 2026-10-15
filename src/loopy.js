@@ -93,12 +93,14 @@ document.documentElement.classList.add("loopy-building");
 // Children: each child who plays on this device has their own age, stars, badges, streaks,
 // progress and game settings. Theme, sound and language stay the same for everyone on the device.
 // The list is kept in this browser's localStorage "loopy.kids" as
-// { on: 1, next: 3, list: [{ id: 1, name: "Mia", pic: "🐰" }, { id: 2, name: "", pic: "🦊" }] }.
+// { on: 1, next: 3, list: [{ id: 1, name: "Dio", pic: "🐰" }, { id: 2, name: "Dia", pic: "🦄" }] }.
 // Each child's own things are kept under "loopy.kid.<id>." + key. Use Loopy.store.get / set / remove
 // instead of localStorage for anything that belongs to one child (scores, levels, settings in a game).
 // <div id="kid-picker"></div> becomes the "Who is playing?" row; add data-switch-only to hide add and edit.
 (function () {
   var KEY = "loopy.kids", MAX = 6, LEN = 12, BIG_ID = 1000000;
+  // A new device starts with two children, Dio and Dia. Rename or remove them with ✎.
+  var START = [{ id: 1, name: "Dio", pic: "🐰" }, { id: 2, name: "Dia", pic: "🦄" }];
   var PICS = ["🐰", "🦊", "🐼", "🐯", "🐸", "🦄", "🐙", "🦖", "🐝", "🐧", "🦁", "🐨"];
   // Keys saved before there were children. On the first visit they move to child 1, so no stars are lost.
   var OLD = /^(?:loopy\.(?:rewards|daily|log|recent|ageOffset|readAloud)$|(?:bs|cc|clockquiz|mk|pm100|pz|qf|si|ss|ts|wi|wm)\.)/;
@@ -134,7 +136,7 @@ document.documentElement.classList.add("loopy-building");
       if (out.list.some(function (x) { return x.id === k.id; })) return;
       out.list.push({ id: k.id, name: cleanName(k.name), pic: PICS.indexOf(k.pic) !== -1 ? k.pic : PICS[0] });
     });
-    if (!out.list.length) out.list.push({ id: 1, name: "", pic: PICS[0] });
+    if (!out.list.length) out.list = START.map(function (k) { return { id: k.id, name: k.name, pic: k.pic }; });
     var top = Math.max.apply(null, out.list.map(function (k) { return k.id; }));
     out.next = Math.min(Math.max(whole(raw.next) ? raw.next : 0, top + 1), BIG_ID);
     out.on = out.list.some(function (k) { return k.id === raw.on; }) ? raw.on : out.list[0].id;
@@ -146,7 +148,7 @@ document.documentElement.classList.add("loopy-building");
   var data = clean(null), stored = null;
   try { stored = localStorage.getItem(KEY); data = clean(JSON.parse(stored)); } catch (e) {}
   if (stored === null) {
-    // First visit since children came in: move what was saved before to child 1.
+    // First visit since children came in: move what was saved before to child 1 (Dio).
     try {
       var keys = [];
       for (var i = 0; i < localStorage.length; i++) { var k = localStorage.key(i); if (OLD.test(k)) keys.push(k); }
