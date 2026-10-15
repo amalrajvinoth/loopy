@@ -71,6 +71,10 @@ To move stars to another device, open the home page, tap **Move my stars to anot
 
 On a phone or tablet, open the site and choose **Add to Home Screen**. Loopy then opens full screen like an app.
 
+## Works offline
+
+After one visit with internet, loopy opens with no internet too: on a plane, in the car, anywhere. Every game, Today's 10, Help and the grown-ups' page work. The browser keeps a copy of the site on the device. When you are online, loopy checks for a new version each time it opens, and the next page you open shows it.
+
 ## For developers
 
 The site is plain HTML, CSS and JavaScript. One small build step makes the shared files smaller, so pages load fast on slow mobile data.
@@ -89,7 +93,8 @@ The site is plain HTML, CSS and JavaScript. One small build step makes the share
 | `progress/index.html` | How it's going: the grown-ups' page. Games log answers with `Loopy.rewards.wrong(game, { q, a, y, k })` |
 | `fonts/` | The Fredoka and Lexend fonts, stored here so no request goes to Google. The `-latin` files are made by the build from `src/fonts/` |
 | `.github/` | Forms for problems, ideas and questions, the automatic checks, and Dependabot |
-| `tools/` | Small scripts: `build.py` makes the small files, `csp.py` updates each page's security policy, `check_external.py` makes sure nothing loads from other websites, `review.py` checks that all games follow the same rules |
+| `sw.js` | The offline helper (a service worker). Made by the build from `src/sw.js` |
+| `tools/` | Small scripts: `build.py` makes the small files and the offline list, `csp.py` updates each page's security policy, `check_external.py` makes sure nothing loads from other websites, `review.py` checks that all games follow the same rules |
 | `RELEASES.md` | What's new: one line per big change, for parents |
 | `.claude/skills/loopy-review/` | The review checklist for every change: design, architecture, docs, games alike, and release notes after a merge |
 | `math/<game>/index.html` | One game per folder (also `languages/` and `mix/`) |
@@ -124,7 +129,7 @@ Read [DESIGN.md](DESIGN.md) first. It lists the colors, fonts, buttons and layou
 5. Add words in both languages with `Loopy.addStrings({ en: {...}, de: {...} })`. Put `data-t="key"` on fixed text, and use `Loopy.t("key")` in code. Use `Loopy.num(n)` to show numbers.
 6. Add one line to the `GAMES` list in the home page `index.html`, with the ages the game fits.
 7. Add a `README.md` in the game folder, and a row to the table above.
-8. Run `python3 tools/csp.py` so the page's security policy knows about its code. Do this again after any edit to a page.
+8. Run `python3 tools/build.py`. It updates the page's security policy and adds the page to the offline list. Do this again after any edit to a page.
 
 ### Changing the site
 
@@ -132,7 +137,7 @@ The `main` branch is what goes live. Make changes on a new branch and open a pul
 
 Before a pull request is ready, review it with `.claude/skills/loopy-review/SKILL.md` and run `python3 tools/review.py`. After a big change is merged, add a line to [RELEASES.md](RELEASES.md).
 
-After editing any page, run `python3 tools/csp.py`. The GitHub check fails otherwise.
+After editing any page, run `python3 tools/build.py` (or at least `python3 tools/csp.py`). The GitHub check fails otherwise.
 
 ### Build the small files
 
@@ -145,7 +150,7 @@ python3 -m pip install --require-hashes --no-binary :all: -r tools/requirements.
 python3 tools/build.py
 ```
 
-The build also runs `tools/csp.py`. Commit the small files with your change. The GitHub check runs `python3 tools/build.py --check` and fails if they do not match `src/`.
+The build also runs `tools/csp.py`, then writes `sw.js`, the offline helper. `sw.js` holds the list of files to keep offline and a hash of all of them. Any change to a page, script, style, font or icon changes the hash, so visitors get the new version and their offline copy is replaced. Commit the small files and `sw.js` with your change. The GitHub check runs `python3 tools/build.py --check` and fails if they do not match `src/`.
 
 The fonts keep only the letters loopy uses (English and German). To rebuild them, for example after adding a letter to the list in `tools/build.py`, install `fonttools` and `brotli` and run `python3 tools/build.py --fonts`.
 

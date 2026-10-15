@@ -26,8 +26,7 @@ You need a free GitHub account. GitHub accounts are for ages 13 and up, so a gro
 1. Fork the repo and make a new branch.
 2. Make your change. Keep it small and focused.
 3. Test it on a phone size and a computer size, in English and German.
-   If you edited a page, run `python3 tools/csp.py` and `python3 tools/check_external.py`.
-   If you edited anything in `src/`, run `python3 tools/build.py` (see the README).
+   If you edited a page or anything in `src/`, run `python3 tools/build.py` (see the README) and `python3 tools/check_external.py`.
 4. Open a pull request and say what you changed and why.
 
 The owner reviews every pull request before it goes live. See the [README](README.md) for how to add a game.
