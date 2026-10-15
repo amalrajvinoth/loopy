@@ -647,6 +647,117 @@ document.documentElement.classList.add("loopy-building");
   else build();
 })();
 
+// Printable worksheet: a "Print worksheet" button in the game's Settings. It fills a sheet with
+// 20 problems made with the game's current age and settings, then opens the browser's print
+// dialog (which can also save a PDF). Page 1 has the problems with room to write, page 2 the answers.
+// The sheet is hidden on screen; when printing, only the sheet shows (see loopy.css).
+// A game calls Loopy.worksheet({ ... }) once:
+//   title()   the heading, usually the game's name
+//   level()   one line about the level, e.g. "Age 8 · Problems: Both"
+//   how()     one line telling the child what to do
+//   layout    "vert", "line", "clock" or "word": how the 20 problems are laid out
+//   make(n)   n problems, from the game's own problem maker
+//   cell(p)   a node that shows problem p with room to write
+//   answer(p) the answer for the key, as text, e.g. "47 + 25 = 72"
+(function () {
+  var N = 20, LAYOUTS = ["vert", "line", "clock", "word"];
+  var PRINTER = '<svg viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9V3h12v6"/><rect x="3" y="9" width="18" height="8" rx="2"/><path d="M6 14h12v7H6z"/></svg>';
+  Loopy.addStrings({
+    en: { printSheet: "Print worksheet", printNote: "20 problems at this level. Answers on page 2.",
+      sheetName: "Name", sheetDate: "Date", sheetAnswers: "Answers" },
+    de: { printSheet: "Arbeitsblatt drucken", printNote: "20 Aufgaben auf dieser Stufe. Lösungen auf Seite 2.",
+      sheetName: "Name", sheetDate: "Datum", sheetAnswers: "Lösungen" }
+  });
+  var opts = null, sheet = null, filled = false;
+
+  function el(tag, cls, text) {
+    var n = document.createElement(tag);
+    if (cls) n.className = cls;
+    if (text !== undefined) n.textContent = text;
+    return n;
+  }
+  function field(label, cls) {
+    var f = el("span", "sheet-field " + cls);
+    f.appendChild(el("b", "", label));
+    f.appendChild(el("i"));
+    return f;
+  }
+  function head(key) {
+    var h = el("header", "sheet-head");
+    var top = el("div", "sheet-top");
+    top.appendChild(el("h1", "sheet-title", key ? Loopy.t("sheetAnswers") + ": " + opts.title() : opts.title()));
+    top.appendChild(el("span", "sheet-brand", "loopy"));
+    h.appendChild(top);
+    h.appendChild(el("p", "sheet-level", opts.level()));
+    if (!key) {
+      var fields = el("div", "sheet-fields");
+      fields.appendChild(field(Loopy.t("sheetName"), "wide"));
+      fields.appendChild(field(Loopy.t("sheetDate"), ""));
+      var score = field(Loopy.t("score"), "score");
+      score.appendChild(el("b", "", "/ " + N));
+      fields.appendChild(score);
+      h.appendChild(fields);
+      h.appendChild(el("p", "sheet-how", opts.how()));
+    }
+    return h;
+  }
+  function fill() {
+    var items = opts.make(N).slice(0, N);
+    var layout = LAYOUTS.indexOf(opts.layout) === -1 ? "line" : opts.layout;
+    var work = el("div", "sheet-page");
+    work.appendChild(head(false));
+    var grid = el("ol", "sheet-grid sheet-" + layout);
+    items.forEach(function (p, i) {
+      var li = el("li");
+      li.appendChild(el("span", "sheet-n", String(i + 1)));
+      li.appendChild(opts.cell(p));
+      grid.appendChild(li);
+    });
+    work.appendChild(grid);
+    var key = el("div", "sheet-page sheet-answers");
+    key.appendChild(head(true));
+    var list = el("ol", "sheet-key");
+    items.forEach(function (p, i) {
+      var li = el("li");
+      li.appendChild(el("span", "sheet-n", String(i + 1)));
+      li.appendChild(el("span", "", opts.answer(p)));
+      list.appendChild(li);
+    });
+    key.appendChild(list);
+    sheet.textContent = "";
+    sheet.appendChild(work);
+    sheet.appendChild(key);
+    filled = true;
+  }
+
+  Loopy.worksheet = function (o) {
+    opts = o;
+    var build = function () {
+      document.documentElement.classList.add("loopy-print");
+      sheet = el("section", "loopy-sheet");
+      sheet.setAttribute("aria-hidden", "true");
+      document.body.appendChild(sheet);
+      var panel = document.getElementById("settings-panel");
+      if (!panel) return;
+      var row = el("div", "print-row");
+      var btn = el("button", "print-btn");
+      btn.type = "button";
+      btn.id = "print-sheet";
+      btn.innerHTML = PRINTER;
+      btn.appendChild(el("span", "", Loopy.t("printSheet")));
+      btn.addEventListener("click", function () { fill(); window.print(); });
+      row.appendChild(btn);
+      row.appendChild(el("p", "", Loopy.t("printNote")));
+      panel.insertBefore(row, panel.querySelector(".panel-foot"));
+    };
+    if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", build);
+    else build();
+  };
+  // Printing from the browser's own menu also prints a fresh worksheet.
+  window.addEventListener("beforeprint", function () { if (opts && sheet && !filled) fill(); });
+  window.addEventListener("afterprint", function () { filled = false; });
+})();
+
 // Show the page. This listener is added last, so it runs after every part above is built.
 (function () {
   var show = function () { document.documentElement.classList.remove("loopy-building"); };

@@ -45,6 +45,15 @@ Tap **Settings** to choose:
 
 After 10 right in a row, the game asks if you want to make it harder.
 
+## Print a worksheet
+
+Tap **Settings**, then **Print worksheet**. The print window opens. Print it, or save it as a PDF.
+
+- Page 1 has 20 problems in two columns, like "7 × 8 = ____", with a line to write the answer.
+- The tables, number sizes and problems (Times, Share or Both) are the same as the game's settings for that age.
+- Page 2 has the answers.
+- Each tap makes a new set of problems.
+
 ## The reason after each answer
 
 The game shows a simple way to get the answer. For example:

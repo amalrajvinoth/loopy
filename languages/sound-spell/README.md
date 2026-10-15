@@ -31,6 +31,15 @@ Open them with the gear button.
 - **Words in.** English or German. The game starts with the site language, and you can switch at any time.
 - **Read each word out loud.** On by default. Turn it off for quiet play. The speaker button still works.
 - Age, colors, sound effects and the display language (EN/DE) are shared with the other games.
+- **Print worksheet.** See below.
+
+## Print a worksheet
+
+Tap **Settings**, then **Print worksheet**. The print window opens. Print it, or save it as a PDF.
+
+- Page 1 has 20 pictures. Each word has a gap for the missing sound. The choices from the game are printed under it, so a child can write the sound or circle it.
+- The sounds (Starting, Ending or Both), the word language and the number of choices are the same as in the game.
+- Page 2 has the answers, for example "🐱 cat (c)".
 
 ## Example help text
 

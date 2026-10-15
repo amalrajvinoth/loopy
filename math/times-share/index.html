@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'sha256-QIxcNnYSs4aAD4/+vslseACkecTDzZvPRL1M/yhUljw='; style-src 'self' 'sha256-z2P7kGW5Z05eCTjTZdYpc0vThTlOE9vmt97pVSvi2I4=' 'sha256-ER4UVxOAHVG2PpFuwsi/fNYnlP9iTYLytTr9Qx7YKqY=' 'sha256-RT1053JU5UiKvjrCUFx1rlhdFLMmgtuFJ9T8jnMeawQ=' 'sha256-EgU4y8/59HTZwV3AzcrjDFd0xMdOdzbadhnUxcmpZZs='; img-src 'self' data:; font-src 'self'; connect-src 'none'; object-src 'none'; base-uri 'none'; form-action 'none'; manifest-src 'self'; upgrade-insecure-requests">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'sha256-HrNdQ47EW7mfyY1qJxCfbCINHlADGSrvEj3YaBgCPtU='; style-src 'self' 'sha256-z2P7kGW5Z05eCTjTZdYpc0vThTlOE9vmt97pVSvi2I4=' 'sha256-ER4UVxOAHVG2PpFuwsi/fNYnlP9iTYLytTr9Qx7YKqY=' 'sha256-RT1053JU5UiKvjrCUFx1rlhdFLMmgtuFJ9T8jnMeawQ=' 'sha256-EgU4y8/59HTZwV3AzcrjDFd0xMdOdzbadhnUxcmpZZs='; img-src 'self' data:; font-src 'self'; connect-src 'none'; object-src 'none'; base-uri 'none'; form-action 'none'; manifest-src 'self'; upgrade-insecure-requests">
 <meta name="referrer" content="strict-origin-when-cross-origin">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <style>:root{color-scheme:light;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}body{margin:0}[hidden]{display:none!important}</style>
@@ -290,7 +290,8 @@ Loopy.addStrings({
     tsThink: "Think: {b} × {q} = {a}, so {a} ÷ {b} = {q}.",
     tsHowMany: "How many in each group?", tsCount: "Count the dots, or use what you know.",
     tsTryMix: "Try times and sharing mixed together", tsNoDots: "Try it without the dots",
-    timesWord: "times", dividedBy: "divided by"
+    timesWord: "times", dividedBy: "divided by",
+    tsHow: "Work out each problem. Write the answer on the line."
   },
   de: {
     tsName: "Mal und Teilen", problems: "Aufgaben", times: "Mal ×", share: "Teilen ÷",
@@ -306,7 +307,8 @@ Loopy.addStrings({
     tsThink: "Denke: {b} × {q} = {a}, also {a} ÷ {b} = {q}.",
     tsHowMany: "Wie viele sind in jeder Gruppe?", tsCount: "Zähle die Punkte oder nutze, was du schon weißt.",
     tsTryMix: "Probiere Mal und Teilen gemischt", tsNoDots: "Probiere es ohne Punkte",
-    timesWord: "mal", dividedBy: "geteilt durch"
+    timesWord: "mal", dividedBy: "geteilt durch",
+    tsHow: "Rechne jede Aufgabe aus. Schreibe das Ergebnis auf die Linie."
   }
 });
 
@@ -525,6 +527,26 @@ function explain(p) {
       if (document.activeElement && document.activeElement.tagName === "BUTTON" && document.activeElement !== goBtn) return;
       go(); e.preventDefault();
     }
+  });
+
+  // Print worksheet: 20 problems with the same tables, numbers and problems as the game.
+  const eq = (p) => fmt(p.a) + (p.op === "mul" ? " × " : " ÷ ") + fmt(p.b) + " =";
+  Loopy.worksheet({
+    title: () => t("tsName"),
+    level: () => [t("ageLabel", { n: age }), t("problems") + ": " + t({ mul: "times", div: "share", mix: "both" }[opMode]), t(level.note)].join(" · "),
+    how: () => t("tsHow"),
+    layout: "line",
+    make: (n) => { const list = [], keys = []; while (list.length < n) { const p = makeProblem(opMode, level, keys); keys.push(p.key); list.push(p); } return list; },
+    cell: (p) => {
+      const line = document.createElement("span");
+      line.className = "ws-sl";
+      line.textContent = eq(p);
+      const blank = document.createElement("span");
+      blank.className = "ws-blank";
+      line.appendChild(blank);
+      return line;
+    },
+    answer: (p) => eq(p) + " " + fmt(p.answer)
   });
 
   newRound();
