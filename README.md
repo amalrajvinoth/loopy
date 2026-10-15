@@ -2,29 +2,43 @@
 
 Learn. Play. Repeat.
 
-Free, interactive learning games for kids at amalrajvinoth.github.io/loopy, published with GitHub Pages. Each game is one HTML page with no build step, grouped by subject. All pages share `theme.css` and `theme.js` for the color themes (Black is the default; Sunny, Ocean, Candy and Forest are the others).
+Free, interactive learning games for kids in grades 1 to 10, at **amalrajvinoth.github.io/loopy**. Each game is one HTML page with no build step, grouped by subject. Every page shares two files: `loopy.css` and `loopy.js`.
 
 | Subject | Game | What it practices |
 | --- | --- | --- |
-| Math | [Plus and Minus](math/plus-minus-100/) | Addition and subtraction, with or without regrouping. Numbers go up to 20 (age 6), 100 (ages 7 to 8), 1,000 (ages 9 to 10) and 10,000 (age 11 and up) |
+| Math | [Plus and Minus](math/plus-minus/) | Addition and subtraction, with or without regrouping. Numbers go up to 20 (age 6), 100 (ages 7 to 8), 1,000 (ages 9 to 10) and 10,000 (age 11 and up) |
 | Math | [What Time Is It?](math/what-time-is-it/) | Reading an analog clock: half hours (age 6), quarter hours (7), 5 minutes (8), every minute (9 and up) |
 
 ## Adding a game
 
-1. Create `<subject>/<short-name>/index.html` (for example `reading/sight-words/index.html`). Use lowercase folder names.
-2. In `<head>`, after your own styles, add `<link rel="stylesheet" href="../../theme.css">` and `<script src="../../theme.js"></script>`. Use the color names from `theme.css` (`--bg`, `--card`, `--ink`, `--muted`, `--c1` to `--c5`, `--good`, `--bad`). At the top of the page, add a link home `<a href="../../">← Loopy</a>` and `<div id="theme-picker"></div>`.
-3. Add one line to the `GAMES` list in the root `index.html`, with the `ages` it suits. A new subject gets its own section automatically.
-4. Load `../../age.js` in `<head>` and add `<div id="age-picker"></div>`. Read the age with `Loopy.getAge()` and listen for the `loopy:age` event to change difficulty when it changes.
-5. Add a row to the table above.
+1. Create `<subject>/<short-name>/index.html`, for example `reading/sight-words/index.html`. Use lowercase folder names.
+2. In `<head>`, after your own styles, add:
+   ```html
+   <link rel="stylesheet" href="../../loopy.css">
+   <script src="../../loopy.js"></script>
+   ```
+3. At the top of the page, add the home link and the shared controls:
+   ```html
+   <a href="../../">← Loopy</a>
+   <div class="controls"><div id="age-picker"></div><div id="theme-picker"></div><button id="sound-toggle"></button></div>
+   <span id="star-chip"></span>
+   ```
+4. In your script:
+   - `Loopy.getAge()` gives the age. Listen for the `loopy:age` event to change difficulty when it changes.
+   - After each right answer, call `Loopy.rewards.correct("<game-id>", streak, harder)`. `harder` is optional: `{ label: "Try quarter hours", apply: fn }`, offered after every 10 in a row.
+   - After each wrong answer, call `Loopy.rewards.wrong()`.
+   - Use the theme colors: `--bg`, `--card`, `--ink`, `--muted`, `--line`, `--chip`, `--c1` to `--c5`, `--good`, `--bad`.
+5. Add one line to the `GAMES` list in the root `index.html`, with the `ages` it suits. A new subject gets its own section automatically.
+6. Add a row to the table above.
 
-## Rewards
+## What `loopy.js` does
 
-Every right answer in any game earns a star. Star totals unlock badges (10, 25, 50, 100, 250, 500, 1000), and streaks of 5, 10, 15, 20, 30 and 50 in a row set off confetti. Progress is saved in the browser with `localStorage`, so it stays on that device and nothing is sent anywhere. New games load `../../rewards.js`, add `<span id="star-chip"></span>`, and call `Loopy.rewards.correct("<game-id>", streak)` after each right answer.
+- **Themes:** Black (default), Sunny, Ocean, Candy and Forest.
+- **Age:** defaults to the age of a child born in August 2018 and goes up each year. A change is saved as years above or below that default, so it keeps growing. The default is at the top of the age block.
+- **Sound:** short tones made in the browser for right, wrong, streak and badge moments, with a mute button.
+- **Stars and badges:** every right answer earns a star. Badges unlock at 10, 25, 50, 100, 250, 500 and 1000 stars, and streaks of 5, 10, 15, 20, 30 and 50 set off confetti.
+- **Saving:** progress is kept in the browser's `localStorage`, so nothing is sent anywhere. To move stars to another device, use "Move my stars to another device" on the home page and copy the code across.
 
-## Age
+## Style
 
-The age picker defaults to the age of a child born in August 2018 and goes up by itself each year. A child can change it with the − and + buttons, and the choice is remembered on that device. The default lives at the top of `age.js`.
-
-## Style used so far
-
-Fredoka for headings, Lexend for text, large tap targets, five color themes with Black as the default, score and streak, and a one-line reason after every answer.
+Fredoka for headings, Lexend for text, large tap targets, score and streak, and a one-line reason after every answer.

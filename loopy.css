@@ -1,4 +1,4 @@
-/* Loopy themes. Every page loads this after its own styles; the theme is set on <html data-theme>. */
+/* Loopy shared styles: themes, age picker, sound button, rewards. Load after each page's own styles. */
 :root[data-theme="black"] {
   --bg: #0a0a0c; --card: #16161b; --ink: #f5f5f7; --muted: #a1a1ab; --line: #2a2a33; --chip: #23232b; --key: #1c1c22;
   --c1: #5b9dff; --c2: #ff8a4c; --c3: #3fd68a; --c4: #e070ff; --c5: #ffd23f;
@@ -96,3 +96,20 @@
 .badge.got .medal { background: var(--tone); border: 3px solid var(--tone); }
 .badge.got .medal svg { fill: var(--card); }
 .badge small { font-weight: 400; color: var(--muted); }
+
+.cheer-actions { display: flex; flex-wrap: wrap; gap: 10px; justify-content: center; }
+.loopy-cheer button.quiet { background: transparent; color: var(--ink); border: 2px solid var(--line); }
+.sound-toggle {
+  width: 40px; height: 40px; border-radius: 50%; border: 0; cursor: pointer; display: grid; place-items: center;
+  background: var(--chip); color: var(--ink);
+}
+.sound-toggle svg { width: 22px; height: 22px; }
+.sound-toggle[aria-pressed="false"] { color: var(--muted); }
+.sound-toggle:focus-visible { outline: 3px solid var(--mark); outline-offset: 2px; }
+.transfer { border-top: 2px dashed var(--line); padding-top: 12px; }
+.transfer summary { cursor: pointer; font-weight: 600; color: var(--muted); min-height: 32px; }
+.transfer-body { display: flex; flex-direction: column; gap: 8px; margin-top: 8px; }
+.transfer-row { display: flex; gap: 8px; flex-wrap: wrap; }
+.transfer input { flex: 1; min-width: 0; font: inherit; font-size: 0.9rem; padding: 10px 12px; border-radius: 12px; border: 2px solid var(--line); background: var(--bg); color: var(--ink); }
+.transfer button { font: inherit; font-weight: 700; padding: 0 16px; min-height: 44px; border-radius: 12px; border: 0; background: var(--c1); color: var(--on-accent); cursor: pointer; }
+.transfer p { margin: 0; color: var(--muted); font-size: 0.9rem; }

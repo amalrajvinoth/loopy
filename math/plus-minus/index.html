@@ -1,0 +1,395 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<style>:root{color-scheme:light;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}body{margin:0}[hidden]{display:none!important}</style>
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 24 24%22%3E%3Cpath fill=%22%23ffd23f%22 d=%22M12 2.5l2.9 6 6.6.9-4.8 4.6 1.2 6.5L12 17.4l-5.9 3.1 1.2-6.5L2.5 9.4l6.6-.9z%22/%3E%3C/svg%3E">
+<title>Plus and Minus</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Lexend:wght@400;600;700&display=swap">
+<style>
+/* Layout: one centered column like a worksheet strip; problem written vertically on a card, big number pad below, toggles in a quiet bar on top. */
+:root {
+  --bg: #f3f6fb;
+  --card: #ffffff;
+  --ink: #1d2a3f;
+  --muted: #5d6b82;
+  --line: #d5dde9;
+  --accent: #2457c5;
+  --accent-ink: #ffffff;
+  --mark: #e2622b;
+  --good: #1f8a4c;
+  --good-bg: #e3f5ea;
+  --bad: #c23a3a;
+  --bad-bg: #fbe6e6;
+  --chip: #e6ecf6;
+  --key: #ffffff;
+  --font: "Lexend", "Segoe UI", "Helvetica Neue", Arial, sans-serif;
+}
+
+* { box-sizing: border-box; }
+body {
+  background: var(--bg); color: var(--ink); font-family: var(--font); font-size: 16px;
+  padding-left: max(16px, env(safe-area-inset-left, 0px));
+  padding-right: max(16px, env(safe-area-inset-right, 0px));
+  padding-block: 20px 32px;
+}
+.wrap { max-width: 520px; margin: 0 auto; display: flex; flex-direction: column; gap: 16px; }
+
+.top { display: flex; flex-wrap: wrap; gap: 12px; align-items: center; justify-content: space-between; }
+h1 { margin: 0; font-size: 1.6rem; font-weight: 700; text-wrap: balance; }
+.score { display: flex; flex-wrap: wrap; gap: 8px; font-variant-numeric: tabular-nums; }
+.pill { background: var(--card); border: 1px solid var(--line); border-radius: 999px; padding: 6px 14px; font-weight: 600; font-size: 1rem; white-space: nowrap; }
+.pill span { color: var(--muted); font-weight: 400; margin-right: 4px; }
+
+.settings { display: flex; flex-direction: column; gap: 8px; }
+.seg-label { font-size: 0.8rem; font-weight: 600; letter-spacing: 0.06em; text-transform: uppercase; color: var(--muted); margin: 0 0 4px 4px; }
+.seg { display: grid; grid-template-columns: repeat(3, 1fr); gap: 6px; background: var(--chip); padding: 5px; border-radius: 14px; }
+.seg button {
+  font: inherit; font-size: 0.95rem; font-weight: 600; color: var(--muted);
+  background: transparent; border: 0; border-radius: 10px; padding: 8px 6px; min-height: 44px; cursor: pointer;
+}
+.seg button[aria-pressed="true"] { background: var(--card); color: var(--ink); box-shadow: 0 1px 3px rgb(0 0 0 / 0.12); }
+
+.problem-card {
+  background: var(--card); border: 1px solid var(--line); border-radius: 24px;
+  padding: 20px 18px 18px; display: flex; flex-direction: column; align-items: center; gap: 14px;
+}
+.problem-card.good { border-color: var(--good); box-shadow: 0 0 0 2px var(--good) inset; }
+.problem-card.bad { border-color: var(--bad); box-shadow: 0 0 0 2px var(--bad) inset; }
+
+/* Vertical problem, written like the worksheets: operator on the left, digits right-aligned. */
+.vert {
+  display: grid; grid-template-columns: auto auto; column-gap: 0.35em;
+  font-size: clamp(3.4rem, 15vw, 4.6rem); font-weight: 600; line-height: 1.12;
+  font-variant-numeric: tabular-nums; letter-spacing: 0.04em;
+}
+.vert .num { grid-column: 2; text-align: right; min-width: 3ch; }
+.vert .op { grid-column: 1; grid-row: 2; color: var(--accent); }
+.vert .rule { grid-column: 1 / -1; height: 0.07em; background: var(--ink); border-radius: 2px; margin: 0.1em 0 0.12em; }
+.vert .ans {
+  grid-column: 2; text-align: right; min-width: 3ch; min-height: 1.12em;
+  color: var(--accent); position: relative;
+}
+.vert .ans.empty::after {
+  content: ""; position: absolute; right: 0; bottom: 0.12em; width: 0.55em; height: 0.07em;
+  background: var(--mark); border-radius: 2px; animation: blink 1s steps(2, start) infinite;
+}
+.problem-card.good .ans { color: var(--good); }
+.problem-card.bad .ans { color: var(--bad); text-decoration: line-through; text-decoration-thickness: 0.06em; }
+@keyframes blink { to { visibility: hidden; } }
+
+.feedback { min-height: 3.1em; text-align: center; font-size: 1.1rem; line-height: 1.45; margin: 0; max-width: 34ch; }
+.feedback strong { display: block; font-size: 1.45rem; }
+.feedback.good strong { color: var(--good); }
+.feedback.bad strong { color: var(--bad); }
+.feedback .hint { color: var(--muted); }
+
+.pad { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; }
+.pad button {
+  font: inherit; font-size: 2rem; font-weight: 700; font-variant-numeric: tabular-nums; color: var(--ink);
+  background: var(--key); border: 2px solid var(--line); border-radius: 18px; min-height: 72px; cursor: pointer;
+  transition: transform .08s ease, border-color .15s ease;
+  touch-action: manipulation; -webkit-tap-highlight-color: transparent;
+}
+.pad button:hover:not(:disabled) { border-color: var(--accent); }
+.pad button:active:not(:disabled) { transform: scale(0.96); }
+.pad button:disabled { opacity: 0.4; cursor: default; }
+.pad .erase { font-size: 1.15rem; color: var(--muted); }
+.pad .go { background: var(--accent); border-color: var(--accent); color: var(--accent-ink); font-size: 1.35rem; }
+.pad .go:hover:not(:disabled) { border-color: var(--accent); filter: brightness(1.08); }
+
+.foot { display: flex; justify-content: space-between; align-items: center; gap: 12px; flex-wrap: wrap; }
+.foot p { margin: 0; color: var(--muted); font-size: 0.9rem; }
+.reset { font: inherit; font-size: 0.95rem; color: var(--muted); background: transparent; border: 2px solid var(--line); border-radius: 14px; padding: 0 16px; min-height: 44px; cursor: pointer; }
+button:focus-visible { outline: 3px solid var(--mark); outline-offset: 3px; }
+
+@media (max-width: 420px) {
+  h1 { font-size: 1.35rem; }
+  .pad button { min-height: 64px; font-size: 1.8rem; }
+  .seg button { font-size: 0.85rem; }
+}
+@media (prefers-reduced-motion: reduce) {
+  * { transition: none !important; }
+  .vert .ans.empty::after { animation: none; }
+}
+</style>
+<style>.home-link{display:inline-flex;align-items:center;min-height:40px;color:var(--muted);font-weight:600;text-decoration:none;font-size:0.95rem}.home-link:hover{color:var(--ink)}</style>
+<link rel="stylesheet" href="../../loopy.css">
+<script src="../../loopy.js"></script>
+</head>
+<body>
+
+<div class="wrap">
+  <div class="top-row">
+    <a class="home-link" href="../../">&larr; Loopy</a>
+    <div class="controls"><div id="age-picker"></div><div id="theme-picker"></div><button id="sound-toggle"></button></div>
+  </div>
+  <div class="top">
+    <h1 id="title">Plus and Minus to 100</h1>
+    <div class="score" aria-live="polite">
+      <div class="pill"><span>Score</span><b id="score">0 / 0</b></div>
+      <div class="pill"><span>Streak</span><b id="streak">0</b></div>
+      <span id="star-chip"></span>
+    </div>
+  </div>
+
+  <div class="settings">
+    <div>
+      <p class="seg-label" id="op-label">Problems</p>
+      <div class="seg" role="group" aria-labelledby="op-label" id="op-seg">
+        <button type="button" id="op-add" data-op="add">Adding</button>
+        <button type="button" id="op-sub" data-op="sub">Taking away</button>
+        <button type="button" id="op-mix" data-op="mix">Both</button>
+      </div>
+    </div>
+    <div>
+      <p class="seg-label" id="rg-label">Regrouping</p>
+      <div class="seg" role="group" aria-labelledby="rg-label" id="rg-seg">
+        <button type="button" id="rg-no" data-rg="no">None</button>
+        <button type="button" id="rg-mix" data-rg="mix">Some</button>
+        <button type="button" id="rg-yes" data-rg="yes">Always</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="problem-card" id="card">
+    <div class="vert" id="vert" aria-live="polite">
+      <div class="num" id="top-num">47</div>
+      <div class="op" id="op-sign">+</div>
+      <div class="num" id="bot-num">25</div>
+      <div class="rule"></div>
+      <div class="ans empty" id="ans" aria-label="Your answer"></div>
+    </div>
+    <p class="feedback" id="feedback"><span class="hint">Tap the numbers to write your answer.</span></p>
+  </div>
+
+  <div class="pad" id="pad">
+    <button type="button" id="k1" data-d="1">1</button>
+    <button type="button" id="k2" data-d="2">2</button>
+    <button type="button" id="k3" data-d="3">3</button>
+    <button type="button" id="k4" data-d="4">4</button>
+    <button type="button" id="k5" data-d="5">5</button>
+    <button type="button" id="k6" data-d="6">6</button>
+    <button type="button" id="k7" data-d="7">7</button>
+    <button type="button" id="k8" data-d="8">8</button>
+    <button type="button" id="k9" data-d="9">9</button>
+    <button type="button" id="k-erase" class="erase" aria-label="Erase last digit">Erase</button>
+    <button type="button" id="k0" data-d="0">0</button>
+    <button type="button" id="k-go" class="go">Check</button>
+  </div>
+
+  <div class="foot">
+    <p>Keyboard works too: numbers, Backspace, Enter.</p>
+    <button type="button" class="reset" id="reset">Reset score</button>
+  </div>
+</div>
+
+<script>
+// GEN START
+const randInt = (lo, hi) => lo + Math.floor(Math.random() * (hi - lo + 1));
+
+// How big the numbers get for each age (grade 1 is about age 6).
+function maxForAge(age) {
+  if (age <= 6) return 20;
+  if (age <= 8) return 100;
+  if (age <= 10) return 1000;
+  return 10000;
+}
+function defaultsForAge(age) {
+  return { op: age <= 6 ? "add" : "mix", rg: age <= 7 ? "no" : "mix" };
+}
+
+const digitSum = (n) => String(n).split("").reduce((t, d) => t + +d, 0);
+// Does this problem need regrouping (carrying or trading) in any column?
+function needsRegroup(op, a, b) {
+  return op === "add" ? digitSum(a) + digitSum(b) !== digitSum(a + b) : digitSum(a - b) + digitSum(b) !== digitSum(a);
+}
+
+// One random problem: numbers and results up to max, never negative, never zero.
+function makeProblem(opMode, rgMode, avoid, max) {
+  max = max || 100;
+  const lo = max >= 1000 ? max / 10 : (max >= 100 ? 10 : 2);
+  for (let tries = 0; tries < 5000; tries++) {
+    const op = opMode === "mix" ? (Math.random() < 0.5 ? "add" : "sub") : opMode;
+    const wantRg = rgMode === "mix" ? Math.random() < 0.5 : rgMode === "yes";
+    const small = Math.random() < 0.2 ? 2 : lo;
+    let a, b;
+    if (op === "add") {
+      a = randInt(lo, max - lo);
+      if (max - a < small) continue;
+      b = randInt(small, max - a);
+    } else {
+      a = randInt(lo + 1, max);
+      if (a - 1 < small) continue;
+      b = randInt(small, a - 1);
+    }
+    if (needsRegroup(op, a, b) !== wantRg) continue;
+    const k = op + a + "," + b;
+    if (avoid && avoid.includes(k)) continue;
+    return { op, a, b, key: k, answer: op === "add" ? a + b : a - b };
+  }
+  return { op: "add", a: 12, b: 5, key: "add12,5", answer: 17 };
+}
+
+const PLACE = ["Ones", "Tens", "Hundreds", "Thousands", "Ten thousands"];
+const ONE = ["one", "ten", "hundred", "thousand", "ten thousand"];
+const digit = (n, i) => Math.floor(n / Math.pow(10, i)) % 10;
+
+// A short reason, column by column, the way it is done on paper.
+function explain(p) {
+  const cols = String(Math.max(p.a, p.b)).length;
+  const parts = [];
+  if (p.op === "add") {
+    let carry = 0;
+    for (let i = 0; i < cols; i++) {
+      const da = digit(p.a, i), db = digit(p.b, i), s = da + db + carry;
+      let t = PLACE[i] + ": " + da + " + " + db + (carry ? " + 1" : "") + " = " + s;
+      if (s >= 10 && i < cols - 1) t += ". Write " + (s - 10) + " and carry 1 " + ONE[i + 1];
+      parts.push(t + ".");
+      carry = s >= 10 ? 1 : 0;
+    }
+  } else {
+    let borrow = 0;
+    for (let i = 0; i < cols; i++) {
+      const da = digit(p.a, i) - borrow, db = digit(p.b, i);
+      if (i === cols - 1 && da === 0 && db === 0) break;
+      if (da < db) {
+        parts.push(PLACE[i] + ": " + (da >= 0 ? "you can't take " + db + " from " + da + ", so trade" : "trade") +
+          " 1 " + ONE[i + 1] + " for 10 " + PLACE[i].toLowerCase() + ": " + (da + 10) + " − " + db + " = " + (da + 10 - db) + ".");
+        borrow = 1;
+      } else {
+        parts.push(PLACE[i] + ": " + da + " − " + db + " = " + (da - db) + ".");
+        borrow = 0;
+      }
+    }
+  }
+  return parts.join(" ");
+}
+// GEN END
+
+(function () {
+  const $ = (id) => document.getElementById(id);
+  const card = $("card"), ansEl = $("ans"), feedbackEl = $("feedback"), goBtn = $("k-go");
+  const opBtns = [...document.querySelectorAll("#op-seg button")];
+  const rgBtns = [...document.querySelectorAll("#rg-seg button")];
+  const digitBtns = [...document.querySelectorAll("#pad [data-d]")];
+
+  const store = {
+    get(k, d) { try { const v = localStorage.getItem(k); return v === null ? d : JSON.parse(v); } catch (e) { return d; } },
+    set(k, v) { try { localStorage.setItem(k, JSON.stringify(v)); } catch (e) {} }
+  };
+
+  let age = window.Loopy ? Loopy.getAge() : 8;
+  let max, opMode, rgMode;
+  // Settings are remembered per age, so each age starts at the right level.
+  function loadForAge() {
+    const d = defaultsForAge(age);
+    max = maxForAge(age);
+    opMode = store.get("pm100.op.a" + age, d.op);
+    rgMode = store.get("pm100.rg.a" + age, d.rg);
+    $("title").textContent = "Plus and Minus to " + max.toLocaleString("en-US");
+  }
+  loadForAge();
+  let right = 0, tried = 0, streak = 0;
+  let current = null, typed = "", answered = false, recent = [];
+
+  function render() {
+    $("score").textContent = right + " / " + tried;
+    $("streak").textContent = streak;
+    opBtns.forEach(b => b.setAttribute("aria-pressed", String(b.dataset.op === opMode)));
+    rgBtns.forEach(b => b.setAttribute("aria-pressed", String(b.dataset.rg === rgMode)));
+    ansEl.textContent = typed === "" ? "" : parseInt(typed, 10).toLocaleString("en-US");
+    ansEl.classList.toggle("empty", !answered && typed === "");
+    goBtn.textContent = answered ? "Next" : "Check";
+    goBtn.disabled = !answered && typed === "";
+    digitBtns.forEach(b => b.disabled = answered);
+    $("k-erase").disabled = answered || typed === "";
+  }
+
+  function newRound() {
+    current = makeProblem(opMode, rgMode, recent, max);
+    recent.push(current.key);
+    if (recent.length > 15) recent.shift();
+    typed = ""; answered = false;
+    $("top-num").textContent = current.a.toLocaleString("en-US");
+    $("bot-num").textContent = current.b.toLocaleString("en-US");
+    $("op-sign").textContent = current.op === "add" ? "+" : "−";
+    $("vert").setAttribute("aria-label", current.a + (current.op === "add" ? " plus " : " minus ") + current.b);
+    card.className = "problem-card";
+    feedbackEl.className = "feedback";
+    feedbackEl.innerHTML = '<span class="hint">Tap the numbers to write your answer.</span>';
+    render();
+  }
+
+  function press(d) {
+    if (answered || typed.length >= String(max).length) return;
+    if (typed === "0") typed = "";
+    typed += d;
+    render();
+  }
+  function erase() {
+    if (answered) return;
+    typed = typed.slice(0, -1);
+    render();
+  }
+  function check() {
+    if (answered || typed === "") return;
+    answered = true; tried++;
+    const ok = parseInt(typed, 10) === current.answer;
+    if (ok) { right++; streak++; } else { streak = 0; }
+    if (window.Loopy && Loopy.rewards) ok ? Loopy.rewards.correct("plus-minus", streak, harder()) : Loopy.rewards.wrong();
+    card.className = "problem-card " + (ok ? "good" : "bad");
+    feedbackEl.className = "feedback " + (ok ? "good" : "bad");
+    const sign = current.op === "add" ? " + " : " − ";
+    const fmtN = (n) => n.toLocaleString("en-US");
+    const head = ok
+      ? (streak >= 3 ? "Correct! " + streak + " in a row!" : "Correct!")
+      : "Not quite. " + fmtN(current.a) + sign + fmtN(current.b) + " = " + fmtN(current.answer) + ".";
+    feedbackEl.innerHTML = "<strong></strong>";
+    feedbackEl.firstChild.textContent = head;
+    feedbackEl.appendChild(document.createTextNode(explain(current)));
+    render();
+  }
+  // What "Make it harder" does after 10 in a row: more regrouping first, then mixed adding and taking away.
+  function harder() {
+    if (rgMode !== "yes") {
+      const next = rgMode === "no" ? "mix" : "yes";
+      return { label: next === "mix" ? "Try some regrouping problems" : "Try regrouping in every problem",
+        apply: () => { rgMode = next; store.set("pm100.rg.a" + age, rgMode); render(); } };
+    }
+    if (opMode !== "mix") {
+      return { label: "Try adding and taking away mixed together",
+        apply: () => { opMode = "mix"; store.set("pm100.op.a" + age, opMode); render(); } };
+    }
+    return null;
+  }
+  function go() { answered ? newRound() : check(); }
+
+  digitBtns.forEach(b => b.addEventListener("click", () => press(b.dataset.d)));
+  $("k-erase").addEventListener("click", erase);
+  goBtn.addEventListener("click", go);
+  opBtns.forEach(b => b.addEventListener("click", () => {
+    opMode = b.dataset.op; store.set("pm100.op.a" + age, opMode); newRound();
+  }));
+  rgBtns.forEach(b => b.addEventListener("click", () => {
+    rgMode = b.dataset.rg; store.set("pm100.rg.a" + age, rgMode); newRound();
+  }));
+  window.addEventListener("loopy:age", (e) => { age = e.detail; recent = []; loadForAge(); newRound(); });
+  $("reset").addEventListener("click", () => { right = 0; tried = 0; streak = 0; newRound(); });
+  document.addEventListener("keydown", (e) => {
+    if (e.metaKey || e.ctrlKey || e.altKey || document.querySelector(".loopy-cheer.big")) return;
+    if (/^[0-9]$/.test(e.key)) { press(e.key); e.preventDefault(); }
+    else if (e.key === "Backspace") { erase(); e.preventDefault(); }
+    else if (e.key === "Enter") {
+      if (document.activeElement && document.activeElement.tagName === "BUTTON" && document.activeElement !== goBtn) return;
+      go(); e.preventDefault();
+    }
+  });
+
+  newRound();
+})();
+</script>
+</body>
+</html>

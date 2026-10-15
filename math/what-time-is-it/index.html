@@ -93,17 +93,15 @@ button:focus-visible, .helper input:focus-visible { outline: 3px solid var(--min
 @media (prefers-reduced-motion: reduce) { * { transition: none !important; } }
 </style>
 <style>.home-link{display:inline-flex;align-items:center;min-height:40px;color:var(--muted);font-weight:600;text-decoration:none;font-size:0.95rem}.home-link:hover{color:var(--ink)}</style>
-<link rel="stylesheet" href="../../theme.css">
-<script src="../../theme.js"></script>
-<script src="../../age.js"></script>
-<script src="../../rewards.js"></script>
+<link rel="stylesheet" href="../../loopy.css">
+<script src="../../loopy.js"></script>
 </head>
 <body>
 
 <div class="wrap">
   <div class="top-row">
     <a class="home-link" href="../../">&larr; Loopy</a>
-    <div class="controls"><div id="age-picker"></div><div id="theme-picker"></div></div>
+    <div class="controls"><div id="age-picker"></div><div id="theme-picker"></div><button id="sound-toggle"></button></div>
   </div>
   <div class="top">
     <h1>What Time Is It?</h1>
@@ -288,7 +286,7 @@ button:focus-visible, .helper input:focus-visible { outline: 3px solid var(--min
       else b.classList.add("faded");
     });
     if (ok) { right++; streak++; } else { streak = 0; }
-    if (ok && window.Loopy && Loopy.rewards) Loopy.rewards.correct("clock", streak);
+    if (window.Loopy && Loopy.rewards) ok ? Loopy.rewards.correct("clock", streak, harder()) : Loopy.rewards.wrong();
     feedbackEl.className = "feedback " + (ok ? "good" : "bad");
     const head = ok ? (streak >= 3 ? "Correct! " + streak + " in a row!" : "Correct!") : "Not quite. It is " + fmt(current.h, current.m) + ".";
     feedbackEl.innerHTML = "<strong></strong>";
@@ -299,6 +297,13 @@ button:focus-visible, .helper input:focus-visible { outline: 3px solid var(--min
     document.getElementById("next").focus({ preventScroll: true });
   }
 
+  // What "Make it harder" does after 10 in a row: move to the next level.
+  function harder() {
+    const steps = [30, 15, 5, 1], names = ["", "quarter hours", "every 5 minutes", "every minute"];
+    const i = steps.indexOf(step);
+    if (i < 0 || i === steps.length - 1) return null;
+    return { label: "Try " + names[i + 1], apply: () => { step = steps[i + 1]; store.set("clockquiz.step.a" + age, step); render(); } };
+  }
   levelBtns.forEach(b => b.addEventListener("click", () => {
     step = +b.dataset.step; store.set("clockquiz.step.a" + age, step); render(); newRound();
   }));

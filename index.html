@@ -61,17 +61,15 @@ h1 span:nth-child(5n)   { color: var(--c5); animation-delay: .48s; }
 footer { color: var(--muted); font-size: 0.95rem; text-align: center; }
 @media (prefers-reduced-motion: reduce) { * { transition: none !important; animation: none !important; } }
 </style>
-<link rel="stylesheet" href="theme.css">
-<script src="theme.js"></script>
-<script src="age.js"></script>
-<script src="rewards.js"></script>
+<link rel="stylesheet" href="loopy.css">
+<script src="loopy.js"></script>
 </head>
 <body>
 <div class="wrap">
   <header>
     <h1 aria-label="Loopy"><span>L</span><span>o</span><span>o</span><span>p</span><span>y</span></h1>
     <p class="lead">Learn. Play. Repeat.</p>
-    <div class="controls" style="justify-content:center"><div id="age-picker"></div><div id="theme-picker"></div></div>
+    <div class="controls" style="justify-content:center"><div id="age-picker"></div><div id="theme-picker"></div><button id="sound-toggle"></button></div>
   </header>
   <section class="shelf" aria-labelledby="shelf-title">
     <div class="shelf-top">
@@ -81,6 +79,15 @@ footer { color: var(--muted); font-size: 0.95rem; text-align: center; }
     <p class="shelf-next" id="shelf-next"></p>
     <div class="meter" aria-hidden="true"><i id="meter-fill"></i></div>
     <div class="badges" id="badges"></div>
+    <details class="transfer">
+      <summary>Move my stars to another device</summary>
+      <div class="transfer-body">
+        <p>Copy this code on this device, then paste it on the other one.</p>
+        <div class="transfer-row"><input id="code-out" readonly aria-label="Your stars code"><button type="button" id="code-copy">Copy</button></div>
+        <div class="transfer-row"><input id="code-in" placeholder="Paste a code here" aria-label="Paste a stars code"><button type="button" id="code-load">Load</button></div>
+        <p id="code-msg" aria-live="polite"></p>
+      </div>
+    </details>
   </section>
   <main id="list" style="display:flex;flex-direction:column;gap:28px"></main>
   <footer>More games are on the way!</footer>
@@ -89,7 +96,7 @@ footer { color: var(--muted); font-size: 0.95rem; text-align: center; }
 // To add a game: put it in <subject>/<folder>/index.html and add one line below.
 // ages: the youngest and oldest age it suits. Games for the picked age show first.
 const GAMES = [
-  { subject: "Math", path: "math/plus-minus-100/", title: "Plus and Minus", tag: "Adding and taking away", ages: [5, 16],
+  { subject: "Math", path: "math/plus-minus/", title: "Plus and Minus", tag: "Adding and taking away", ages: [5, 16],
     text: "Worksheet-style sums typed on a big number pad. The numbers grow with your age." },
   { subject: "Math", path: "math/what-time-is-it/", title: "What Time Is It?", tag: "Telling time", ages: [5, 10],
     text: "Read the hands on the clock and pick the right time, from half hours down to the minute." },
@@ -147,6 +154,16 @@ window.addEventListener("loopy:age", render);
     ? (next.stars - stars) + " more star" + (next.stars - stars === 1 ? "" : "s") + " to the " + next.name + " badge. Every right answer earns a star."
     : "You have every badge. You're a Loopy Master!";
   document.getElementById("meter-fill").style.width = next ? Math.round((stars - from) / (next.stars - from) * 100) + "%" : "100%";
+  const out = document.getElementById("code-out"), msg = document.getElementById("code-msg");
+  out.value = R.exportCode();
+  document.getElementById("code-copy").addEventListener("click", () => {
+    out.select();
+    navigator.clipboard.writeText(out.value).then(() => { msg.textContent = "Copied!"; }, () => { msg.textContent = "Select the code and copy it."; });
+  });
+  document.getElementById("code-load").addEventListener("click", () => {
+    if (R.importCode(document.getElementById("code-in").value)) location.reload();
+    else msg.textContent = "That code didn't work. Check it was copied in full.";
+  });
   const box = document.getElementById("badges");
   for (const b of R.BADGES) {
     const got = stars >= b.stars;
