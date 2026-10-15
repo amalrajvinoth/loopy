@@ -252,11 +252,11 @@ Age, language, color theme, sound and levels go behind the ⚙ button. The toggl
 What **Print worksheet** prints. Only the sheet prints; the game is hidden. It is always black on white, whatever the theme, and uses no background colors, because browsers do not print them by default. Lines are borders.
 
 - **Paper:** 12mm margins. Sized to fit both A4 and US Letter. Page 1 has the problems, page 2 the answers.
-- **Header:** the game's name in Fredoka 20pt, "loopy" on the right in grey, a 0.6mm rule, one grey line with the age and settings, then Name, Date and Score lines, then one bold line saying what to do.
+- **Header:** the game's name in Fredoka 20pt, the loopy bunny logo on the right (8mm tall, the same drawing as the back button, black lines with its green ears), a 0.6mm rule, one grey line with the age and settings, then Name, Date and Score lines, then one bold line saying what to do.
 - **Problems:** 20 boxes with a light grey 0.3mm border and 3mm radius, numbered small in the top left corner. Lexend, large: 24pt for sums in columns, 20pt for lines, 18pt for words.
 - **Layouts:** `vert` (Plus and Minus, 4 × 5, written in columns), `line` (Times and Share and Make 10, 2 × 10, "7 × 8 = ____" or "7 + ____ = 10"), `clock` (What Time Is It? and Coins and Change, 4 × 5, a 32mm picture and a line to write on: a clock and "____ : ____", or coins, notes and a price tag in black lines), `word` (Sound Spell, Word Match and Spell It, 4 × 5, a picture with a word with a gap and choices to circle, a picture with words to circle, one to a line, or a picture with a line to write the word and its letters mixed up underneath). Pizza Fractions uses `clock` boxes for a pizza or bar with a line for the fraction (Name it and Mix), and `line` for Compare and Add.
 - **Clocks:** black face line, ticks and numbers. The hour hand is short and thick, the minute hand long and thin.
-- **Answers:** two columns of ten, 16pt, with a light line under each.
+- **Answers:** the same header with the logo, without Name, Date and Score. Then two columns of ten, 16pt, with a light line under each.
 
 ### Rewards
 

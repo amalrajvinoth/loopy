@@ -740,6 +740,11 @@ document.documentElement.classList.add("loopy-building");
       a.innerHTML = '<span class="back-arrow">' + ARROW + "</span>" + LOGO;
     });
   }
+  // The same logo for other places, e.g. the printed worksheet. cls is its class; ids is a
+  // prefix for the clip paths inside, so two copies on one page do not share ids.
+  Loopy.logo = function (cls, ids) {
+    return LOGO.replace('class="back-logo"', 'class="' + cls + '"').replace(/lbk/g, ids);
+  };
   if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", build);
   else build();
 })();
@@ -799,7 +804,9 @@ document.documentElement.classList.add("loopy-building");
     var h = el("header", "sheet-head");
     var top = el("div", "sheet-top");
     top.appendChild(el("h1", "sheet-title", key ? Loopy.t("sheetAnswers") + ": " + opts.title() : opts.title()));
-    top.appendChild(el("span", "sheet-brand", "loopy"));
+    var brand = el("span", "sheet-brand");
+    brand.innerHTML = Loopy.logo("sheet-logo", key ? "lwk" : "lws");
+    top.appendChild(brand);
     h.appendChild(top);
     h.appendChild(el("p", "sheet-level", opts.level()));
     if (!key) {
