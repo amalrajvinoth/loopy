@@ -31,6 +31,7 @@ themes:
   ocean:  { bg: "#06263a", card: "#0d3550", ink: "#eaf6ff", c1: "#4cc9f0", scheme: dark }
   candy:  { bg: "#fff0f6", card: "#ffffff", ink: "#3a1d3f", c1: "#c2257a", scheme: light }
   forest: { bg: "#0f1f17", card: "#183024", ink: "#effaf2", c1: "#8ce99a", scheme: dark }
+  contrast: { bg: "#000000", card: "#000000", ink: "#ffffff", muted: "#e6e6e6", line: "#ffffff", c1: "#8cc8ff", hour: "#3d84ff", minute: "#e65c00", scheme: dark }
 
 typography:
   display:
@@ -121,7 +122,7 @@ Every page uses theme variables. Never hard-code a color in a game. Use a variab
 
 ### Themes
 
-There are five themes. Black is the default. The child picks one in Settings. It is saved in the browser.
+There are five color themes and one high contrast theme. Black is the default. The child picks one in Settings. It is saved in the browser.
 
 | Theme | Page (`--bg`) | Card (`--card`) | Text (`--ink`) | Main accent (`--c1`) | Mode |
 | --- | --- | --- | --- | --- | --- |
@@ -130,6 +131,14 @@ There are five themes. Black is the default. The child picks one in Settings. It
 | Ocean | #06263a | #0d3550 | #eaf6ff | #4cc9f0 | dark |
 | Candy | #fff0f6 | #ffffff | #3a1d3f | #c2257a | light |
 | Forest | #0f1f17 | #183024 | #effaf2 | #8ce99a | dark |
+| High contrast | #000000 | #000000 | #ffffff | #8cc8ff | dark |
+
+**High contrast** is for kids with low vision. Every text and button passes WCAG AA (checked with axe on every page). On top of its colors:
+
+- `--line` is white, `--muted` is #e6e6e6, and the other accents are bright: `c2` #ffb066, `c3` and `good` #5cf2a0, `c4` #ffa6f0, `c5` #ffe500, `bad` #ff9b9b. Text on an accent is black.
+- Buttons, pills, the level picker, the language and age pickers and the star counter get a 2px white edge (an inside outline, so nothing moves).
+- The clock face stays white, so the hands use mid colors that stand out on white and black: `--hour` #3d84ff and `--minute` #e65c00.
+- Theme swatches have a grey edge; the chosen one gets a white edge and a white ring.
 
 ### Roles
 
@@ -159,6 +168,7 @@ All fonts are stored on the site and cut down to English and German letters (`py
 
 - **Fredoka** (600 and 700): playful headings. Home page subject headings, game card titles, the "go" pills, cheer pop-ups, the star shelf, the Help page, the grown-ups' "How it's going" page and results screens.
 - **Lexend** (400 to 700): everything else. Body text, game titles, numbers, buttons. Pages preload `fonts/lexend-latin.woff2`.
+- **Atkinson Hyperlegible Next** (400 to 700): the "Easier to read" font. When it is on, it replaces Fredoka and Lexend for every text on the page, with 0.02em extra letter spacing. Letters that look alike (b d p q, I l 1, O 0) have different shapes. It is only downloaded when the setting is on. It is a little narrower than Lexend, so nothing grows.
 - **Nunito**: only in the wordmark, and only as shapes inside `logo.svg`. It is not loaded as a font.
 
 | Use | Font | Size | Weight |
@@ -246,7 +256,8 @@ Age, language, color theme, sound and levels go behind the ⚙ button. The toggl
 
 - **Age picker:** a chip pill with round minus and plus buttons and the age in the middle.
 - **Language picker:** EN and DE in a chip pill. The chosen one gets the card color.
-- **Theme picker:** five round 36px swatches. The chosen one gets an ink border.
+- **Theme picker:** six round 36px swatches (the last is High contrast, black with a white dot). The chosen one gets an ink border.
+- **Easier to read:** a chip pill right after the theme picker, styled like Read aloud: an "Aa" icon, "Easier to read", and an On or Off tag. loopy.js adds it to every page that has a theme picker.
 - **Level picker:** a segmented row of buttons in a chip box. The chosen one is raised on the card color.
 - **Read aloud:** a chip pill next to the sound toggle, at least 44px tall: a speaker icon, "Read aloud", and a small On or Off tag on the card color. Off greys the icon and tag. `Loopy.speech.question()` adds it.
 - **Print worksheet button:** a pill with a printer icon, a 2px `c1` border and `c1` text on no fill, at least 44px tall. A muted line next to it says what prints. It sits above the panel foot. `Loopy.worksheet()` adds it.

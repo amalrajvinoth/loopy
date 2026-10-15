@@ -21,12 +21,13 @@ SRC = ROOT / "src"
 
 # Letters the fonts keep: English, German (Ä Ö Ü ß), × ÷ · ° ±, dashes, quotes, the euro and minus signs.
 # Any other letter still shows, in the device's own font. To add one, add it here and to the
-# unicode-range of the two "-latin" @font-face rules in src/loopy.css, then run: python3 tools/build.py --fonts
+# unicode-range of the three "-latin" @font-face rules in src/loopy.css, then run: python3 tools/build.py --fonts
 UNICODES = ("U+0020-007E, U+00A0, U+00A9, U+00AB, U+00B0-00B1, U+00B7, U+00BB, U+00C4, U+00D6-00D7, U+00DC, "
             "U+00DF, U+00E4, U+00F6-00F7, U+00FC, U+2013-2014, U+2018-201A, U+201C-201E, U+2022, U+2026, "
             "U+20AC, U+2212")
 # font file -> the weights the site uses (the rest of each font's weight range is dropped)
-FONTS = {"lexend-latin.woff2": (400, 700), "fredoka-latin.woff2": (600, 700)}
+# atkinson-latin.woff2 is Atkinson Hyperlegible Next, the "Easier to read" font (only loaded when that setting is on).
+FONTS = {"lexend-latin.woff2": (400, 700), "fredoka-latin.woff2": (600, 700), "atkinson-latin.woff2": (400, 700)}
 
 
 def banner(name):

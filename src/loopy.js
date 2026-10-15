@@ -1,4 +1,4 @@
-/* Loopy shared script: languages, color themes, age picker, sounds, stars and badges.
+/* Loopy shared script: languages, color themes, easier-to-read font, age picker, sounds, stars and badges.
    Each part is its own block below. Load it in <head>. */
 
 // Hide the page until the shared parts below are built, so nothing jumps when they fill in.
@@ -33,7 +33,8 @@ document.documentElement.classList.add("loopy-building");
 
   Loopy.addStrings({
     en: {
-      theme: "Color theme", black: "Black", sunny: "Sunny", ocean: "Ocean", candy: "Candy", forest: "Forest",
+      theme: "Color theme", black: "Black", sunny: "Sunny", ocean: "Ocean", candy: "Candy", forest: "Forest", contrast: "High contrast",
+      easyRead: "Easier to read", easyOn: "On", easyOff: "Off",
       ageGroup: "Age", ageLabel: "Age {n}", younger: "Younger", older: "Older",
       soundOn: "Sound on", soundOff: "Sound off", settings: "Settings", language: "Language",
       starsEarned: "Stars earned",
@@ -49,7 +50,8 @@ document.documentElement.classList.add("loopy-building");
       erase: "Erase", eraseAria: "Erase last digit", check: "Check", next: "Next", yourAnswer: "Your answer", both: "Both"
     },
     de: {
-      theme: "Farbthema", black: "Schwarz", sunny: "Sonnig", ocean: "Ozean", candy: "Bonbon", forest: "Wald",
+      theme: "Farbthema", black: "Schwarz", sunny: "Sonnig", ocean: "Ozean", candy: "Bonbon", forest: "Wald", contrast: "Hoher Kontrast",
+      easyRead: "Leichter lesen", easyOn: "An", easyOff: "Aus",
       ageGroup: "Alter", ageLabel: "Alter {n}", younger: "Jünger", older: "Älter",
       soundOn: "Ton an", soundOff: "Ton aus", settings: "Einstellungen", language: "Sprache",
       starsEarned: "Gesammelte Sterne",
@@ -97,7 +99,8 @@ document.documentElement.classList.add("loopy-building");
     { id: "sunny",  name: "sunny",  bg: "#fff8ec", dot: "#d4561f" },
     { id: "ocean",  name: "ocean",  bg: "#06263a", dot: "#4cc9f0" },
     { id: "candy",  name: "candy",  bg: "#fff0f6", dot: "#c2257a" },
-    { id: "forest", name: "forest", bg: "#0f1f17", dot: "#8ce99a" }
+    { id: "forest", name: "forest", bg: "#0f1f17", dot: "#8ce99a" },
+    { id: "contrast", name: "contrast", bg: "#000000", dot: "#ffffff" }
   ];
   var KEY = "loopy.theme";
   var saved = null;
@@ -134,6 +137,48 @@ document.documentElement.classList.add("loopy-building");
       var b = document.getElementById("theme-" + t.id);
       if (b) b.setAttribute("aria-pressed", String(t.id === cur));
     });
+  }
+  if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", build);
+  else build();
+})();
+
+// "Easier to read": one font with clear letter shapes (Atkinson Hyperlegible Next) for all text.
+// An on/off pill after the color themes in Settings; the choice is remembered on this device.
+// The font file is only downloaded when it is on (see the end of loopy.css).
+(function () {
+  var KEY = "loopy.font";
+  var on = false;
+  try { on = localStorage.getItem(KEY) === "easy"; } catch (e) {}
+  var root = document.documentElement;
+  if (on) root.setAttribute("data-font", "easy");
+  var ICON = '<svg viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 19 8 5l5 14M4.8 14h6.4"/><circle cx="17.5" cy="15.5" r="3.5"/><path d="M21 12v7"/></svg>';
+  function sync(b, state) {
+    b.setAttribute("aria-pressed", String(on));
+    state.textContent = Loopy.t(on ? "easyOn" : "easyOff");
+  }
+  function build() {
+    var themes = document.getElementById("theme-picker");
+    if (!themes || document.getElementById("font-toggle")) return;
+    var b = document.createElement("button");
+    b.type = "button";
+    b.id = "font-toggle";
+    b.className = "read-toggle";
+    b.setAttribute("aria-label", Loopy.t("easyRead"));
+    b.innerHTML = ICON;
+    var label = document.createElement("span");
+    label.textContent = Loopy.t("easyRead");
+    b.appendChild(label);
+    var state = document.createElement("b");
+    state.setAttribute("aria-hidden", "true");
+    b.appendChild(state);
+    b.addEventListener("click", function () {
+      on = !on;
+      if (on) root.setAttribute("data-font", "easy"); else root.removeAttribute("data-font");
+      try { localStorage.setItem(KEY, on ? "easy" : "normal"); } catch (e) {}
+      sync(b, state);
+    });
+    themes.parentNode.insertBefore(b, themes.nextSibling);
+    sync(b, state);
   }
   if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", build);
   else build();

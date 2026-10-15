@@ -44,7 +44,8 @@ Open it from the link at the bottom of the home page.
 
 - **Age.** Pick the child's age. Each game gets easier or harder to match it. The age goes up by itself on each birthday.
 - **Language.** English is the default. Tap **DE** for German, or **EN** to go back.
-- **Colors.** Black is the default. You can also pick Sunny, Ocean, Candy or Forest.
+- **Colors.** Black is the default. You can also pick Sunny, Ocean, Candy, Forest or High contrast. High contrast is black and white with bright colors and white edges on every button.
+- **Easier to read.** In **Settings**, turn on **Easier to read** to switch every text to Atkinson Hyperlegible, a font made so letters like b and d, or I, l and 1, are easy to tell apart. The font is only downloaded when it is on.
 - **Stars.** Every right answer gives a star. More stars unlock badges. A streak of right answers sets off confetti.
 - **Sound.** Short happy sounds play. Tap the speaker to turn them off.
 - **Read aloud.** In Plus and Minus, Times and Share, What Time Is It?, Make 10, Bigger or Smaller, Pizza Fractions, Coins and Change, Quick Facts and Where Is It?, a speaker button reads the question out loud in the device's own voice, in English or German. Nothing is downloaded. It is on by itself for ages 5 to 7. Turn it on or off in **Settings**.
@@ -53,7 +54,7 @@ Open it from the link at the bottom of the home page.
 - **Back.** The big button with the loopy bunny at the top of a game goes back to all games.
 - **Worksheets.** In every game except Today's 10, tap **Settings**, then **Print worksheet**. You get 20 problems at the child's level on one page, and the answers on a second page. It works on A4 and US Letter paper, and you can save it as a PDF from the print window.
 
-In a game, tap **Settings** to change age, language, colors, sound or level.
+In a game, tap **Settings** to change age, language, colors, the reading font, sound or level.
 
 ## Help, feedback and safety
 
@@ -87,7 +88,7 @@ The site is plain HTML, CSS and JavaScript. One small build step makes the share
 | `logo.svg`, `logo-white.svg`, `icon.svg` | The logo (for light and dark backgrounds) and the app icon |
 | `help/index.html` | The Help page: FAQ and feedback links |
 | `progress/index.html` | How it's going: the grown-ups' page. Games log answers with `Loopy.rewards.wrong(game, { q, a, y, k })` |
-| `fonts/` | The Fredoka and Lexend fonts, stored here so no request goes to Google. The `-latin` files are made by the build from `src/fonts/` |
+| `fonts/` | The Fredoka, Lexend and Atkinson Hyperlegible Next fonts, stored here so no request goes to Google. The `-latin` files are made by the build from `src/fonts/`. Licence: `fonts/OFL.txt` |
 | `.github/` | Forms for problems, ideas and questions, the automatic checks, and Dependabot |
 | `tools/` | Small scripts: `build.py` makes the small files, `csp.py` updates each page's security policy, `check_external.py` makes sure nothing loads from other websites, `review.py` checks that all games follow the same rules |
 | `RELEASES.md` | What's new: one line per big change, for parents |
@@ -147,7 +148,7 @@ python3 tools/build.py
 
 The build also runs `tools/csp.py`. Commit the small files with your change. The GitHub check runs `python3 tools/build.py --check` and fails if they do not match `src/`.
 
-The fonts keep only the letters loopy uses (English and German). To rebuild them, for example after adding a letter to the list in `tools/build.py`, install `fonttools` and `brotli` and run `python3 tools/build.py --fonts`.
+The "Easier to read" font (Atkinson Hyperlegible Next, 13 KB) is only downloaded when that setting is on, so the sizes below do not change. The fonts keep only the letters loopy uses (English and German). To rebuild them, for example after adding a letter to the list in `tools/build.py`, install `fonttools` and `brotli` and run `python3 tools/build.py --fonts`.
 
 Page sizes, sent over the network with fonts:
 

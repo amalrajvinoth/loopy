@@ -38,7 +38,7 @@ Check:
 
 - **One screen.** A game never scrolls with Settings closed, in portrait or landscape. The pad or answers stay at the bottom in portrait.
 - **Colors.** Theme variables only (`--bg`, `--card`, `--ink`, `--c1`...). Green and red only mean right and wrong. Yellow only for rewards and Today's 10. Printed sheets are the one exception: black on white.
-- **Type.** Fredoka for headings, Lexend for text. No new fonts.
+- **Type.** Fredoka for headings, Lexend for text. No new fonts. The one exception is Atkinson Hyperlegible Next, used everywhere only when "Easier to read" is on.
 - **Shared parts.** Back button, star counter, Last 5, ⚙ Settings with age, theme, sound and language, Reset score. They look the same as in the other games.
 - **Touch.** Tap targets at least 44px. Focus ring with `:focus-visible`. `prefers-reduced-motion` turns movement off. No hover-only effects.
 - **Words.** Lowercase "loopy" on screen. Every word in English and German. Numbers through `Loopy.num()`.
