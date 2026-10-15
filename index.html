@@ -1,0 +1,110 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Loopy</title>
+<meta name="description" content="Loopy: free learning games for kids. Learn. Play. Repeat.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fredoka:wght@600;700&family=Lexend:wght@400;600;700&display=swap">
+<style>
+/* Layout: a big bouncy wordmark, then one section per subject with chunky colorful game cards. */
+:root {
+  --bg: #fff8ec; --card: #ffffff; --ink: #1d2a3f; --muted: #5d6b82; --line: #f0e2c8;
+  --c1: #2457c5; --c2: #e2622b; --c3: #1f8a4c; --c4: #b0359c; --c5: #d9a400;
+  --chip: #fdeccc; --mark: #e2622b;
+  --display: "Fredoka", "Lexend", "Segoe UI", Arial, sans-serif;
+  --font: "Lexend", "Segoe UI", "Helvetica Neue", Arial, sans-serif;
+  color-scheme: light;
+}
+@media (prefers-color-scheme: dark) { :root {
+  --bg: #161a2b; --card: #20263b; --ink: #f2f4fa; --muted: #a9b2c6; --line: #323a55;
+  --c1: #7ea6ff; --c2: #ff9a66; --c3: #5fd394; --c4: #e47bd2; --c5: #ffd257;
+  --chip: #2b3350; --mark: #ff9a66; color-scheme: dark } }
+* { box-sizing: border-box; }
+body {
+  margin: 0; background: var(--bg); color: var(--ink); font-family: var(--font); font-size: 16px;
+  padding-left: max(16px, env(safe-area-inset-left, 0px));
+  padding-right: max(16px, env(safe-area-inset-right, 0px));
+  padding-block: max(28px, env(safe-area-inset-top, 0px)) 40px;
+}
+.wrap { max-width: 760px; margin: 0 auto; display: flex; flex-direction: column; gap: 28px; }
+header { text-align: center; display: flex; flex-direction: column; gap: 10px; align-items: center; }
+h1 { margin: 0; font-family: var(--display); font-size: clamp(4rem, 20vw, 6.5rem); font-weight: 700; line-height: 1; letter-spacing: 0.01em; }
+h1 span { display: inline-block; animation: hop 2.4s ease-in-out infinite; }
+h1 span:nth-child(5n+1) { color: var(--c1); }
+h1 span:nth-child(5n+2) { color: var(--c2); animation-delay: .12s; }
+h1 span:nth-child(5n+3) { color: var(--c3); animation-delay: .24s; }
+h1 span:nth-child(5n+4) { color: var(--c4); animation-delay: .36s; }
+h1 span:nth-child(5n)   { color: var(--c5); animation-delay: .48s; }
+@keyframes hop { 0%, 70%, 100% { transform: translateY(0); } 80% { transform: translateY(-0.12em); } }
+.lead { margin: 0; font-family: var(--display); font-weight: 600; font-size: 1.35rem; color: var(--muted); text-wrap: balance; }
+.subject { display: flex; flex-direction: column; gap: 12px; }
+.subject h2.sub { margin: 0; font-family: var(--display); font-size: 1.6rem; font-weight: 700; }
+.grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 16px; }
+.quiz {
+  --tone: var(--c1);
+  display: flex; flex-direction: column; gap: 8px; padding: 20px; min-height: 170px;
+  background: var(--card); border: 3px solid var(--tone); border-radius: 24px;
+  box-shadow: 0 6px 0 var(--tone);
+  color: inherit; text-decoration: none; transition: transform .1s ease, box-shadow .1s ease;
+}
+.quiz:nth-child(5n+2) { --tone: var(--c2); }
+.quiz:nth-child(5n+3) { --tone: var(--c3); }
+.quiz:nth-child(5n+4) { --tone: var(--c4); }
+.quiz:nth-child(5n)   { --tone: var(--c5); }
+.quiz:hover { transform: translateY(-2px); box-shadow: 0 8px 0 var(--tone); }
+.quiz:active { transform: translateY(4px); box-shadow: 0 2px 0 var(--tone); }
+.quiz:focus-visible { outline: 3px solid var(--ink); outline-offset: 4px; }
+.tag { align-self: flex-start; background: var(--chip); color: var(--ink); font-size: 0.78rem; font-weight: 600; letter-spacing: 0.06em; text-transform: uppercase; padding: 4px 10px; border-radius: 999px; }
+.quiz h3 { margin: 0; font-family: var(--display); font-size: 1.6rem; font-weight: 700; color: var(--tone); }
+.quiz p { margin: 0; color: var(--muted); line-height: 1.45; }
+.go { margin-top: auto; align-self: flex-start; background: var(--tone); color: var(--card); font-family: var(--display); font-weight: 700; font-size: 1.1rem; padding: 6px 16px; border-radius: 999px; }
+footer { color: var(--muted); font-size: 0.95rem; text-align: center; }
+@media (prefers-reduced-motion: reduce) { * { transition: none !important; animation: none !important; } }
+</style>
+<link rel="stylesheet" href="theme.css">
+<script src="theme.js"></script>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <h1 aria-label="Loopy"><span>L</span><span>o</span><span>o</span><span>p</span><span>y</span></h1>
+    <p class="lead">Learn. Play. Repeat.</p>
+    <div id="theme-picker"></div>
+  </header>
+  <main id="list" style="display:flex;flex-direction:column;gap:28px"></main>
+  <footer>More games are on the way!</footer>
+</div>
+<script>
+// To add a game: put it in <subject>/<folder>/index.html and add one line below.
+// A new subject appears on its own the first time a line uses it.
+const GAMES = [
+  { subject: "Math", path: "math/plus-minus-100/", title: "Plus and Minus to 100", tag: "Adding and taking away",
+    text: "Solve problems written like your worksheet and type the answer on a big number pad." },
+  { subject: "Math", path: "math/what-time-is-it/", title: "What Time Is It?", tag: "Telling time",
+    text: "Read the hands on the clock and pick the right time." },
+];
+const list = document.getElementById("list");
+const groups = {};
+for (const g of GAMES) {
+  if (!groups[g.subject]) {
+    const sec = document.createElement("section");
+    sec.className = "subject";
+    sec.innerHTML = '<h2 class="sub"></h2><div class="grid"></div>';
+    sec.firstChild.textContent = g.subject;
+    list.appendChild(sec);
+    groups[g.subject] = sec.lastChild;
+  }
+  const a = document.createElement("a");
+  a.className = "quiz";
+  a.href = g.path;
+  a.innerHTML = '<span class="tag"></span><h3></h3><p></p><span class="go">Play &rarr;</span>';
+  a.children[0].textContent = g.tag;
+  a.children[1].textContent = g.title;
+  a.children[2].textContent = g.text;
+  groups[g.subject].appendChild(a);
+}
+</script>
+</body>
+</html>

@@ -1,0 +1,313 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<style>:root{color-scheme:light;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}body{margin:0}[hidden]{display:none!important}</style>
+<title>What Time Is It?</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Lexend:wght@400;600;700&display=swap">
+<style>
+/* Layout: one centered column; clock on top, four big answer buttons below, controls tucked into a quiet top bar. */
+:root {
+  --bg: #f3f6fb;
+  --card: #ffffff;
+  --ink: #1d2a3f;
+  --muted: #5d6b82;
+  --line: #d5dde9;
+  --hour: #2457c5;
+  --minute: #e2622b;
+  --face: #ffffff;
+  --rim: #1d2a3f;
+  --good: #1f8a4c;
+  --good-bg: #e3f5ea;
+  --bad: #c23a3a;
+  --bad-bg: #fbe6e6;
+  --chip: #e6ecf6;
+  --font: "Lexend", "Segoe UI", "Helvetica Neue", Arial, sans-serif;
+}
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) {
+  --bg: #121826; --card: #1b2335; --ink: #edf1f8; --muted: #a2adc2; --line: #2e3a52;
+  --hour: #6f9bff; --minute: #ff8a55; --face: #f7f9fc; --rim: #0b0f19;
+  --good: #57d08a; --good-bg: #173426; --bad: #ff7b7b; --bad-bg: #3a1d22; --chip: #26304a;
+  color-scheme: dark } }
+:root[data-theme="dark"] {
+  --bg: #121826; --card: #1b2335; --ink: #edf1f8; --muted: #a2adc2; --line: #2e3a52;
+  --hour: #6f9bff; --minute: #ff8a55; --face: #f7f9fc; --rim: #0b0f19;
+  --good: #57d08a; --good-bg: #173426; --bad: #ff7b7b; --bad-bg: #3a1d22; --chip: #26304a;
+  color-scheme: dark }
+
+* { box-sizing: border-box; }
+body {
+  background: var(--bg); color: var(--ink); font-family: var(--font); font-size: 16px;
+  padding-left: max(16px, env(safe-area-inset-left, 0px));
+  padding-right: max(16px, env(safe-area-inset-right, 0px));
+  padding-block: 20px 32px;
+}
+.wrap { max-width: 560px; margin: 0 auto; display: flex; flex-direction: column; gap: 18px; }
+
+.top { display: flex; flex-wrap: wrap; gap: 12px; align-items: center; justify-content: space-between; }
+h1 { margin: 0; font-size: 1.6rem; font-weight: 700; text-wrap: balance; }
+.score { display: flex; gap: 8px; font-variant-numeric: tabular-nums; }
+.pill { background: var(--card); border: 1px solid var(--line); border-radius: 999px; padding: 6px 14px; font-weight: 600; font-size: 1rem; white-space: nowrap; }
+.pill span { color: var(--muted); font-weight: 400; margin-right: 4px; }
+
+.levels { display: grid; grid-template-columns: repeat(3, 1fr); gap: 6px; background: var(--chip); padding: 5px; border-radius: 14px; }
+.levels button {
+  font: inherit; font-size: 0.95rem; font-weight: 600; color: var(--muted);
+  background: transparent; border: 0; border-radius: 10px; padding: 10px 6px; min-height: 48px; cursor: pointer;
+}
+.levels button[aria-pressed="true"] { background: var(--card); color: var(--ink); box-shadow: 0 1px 3px rgb(0 0 0 / 0.12); }
+
+.clock-card { background: var(--card); border: 1px solid var(--line); border-radius: 24px; padding: 18px; display: flex; flex-direction: column; align-items: center; gap: 10px; }
+.prompt { margin: 0; font-size: 1.35rem; font-weight: 600; }
+svg#clock { width: 100%; max-width: 360px; height: auto; aspect-ratio: 1; display: block; }
+.legend { display: flex; flex-wrap: wrap; gap: 16px; justify-content: center; font-size: 0.95rem; color: var(--muted); }
+.legend i { display: inline-block; width: 22px; height: 6px; border-radius: 3px; vertical-align: middle; margin-right: 6px; }
+.helper { display: flex; align-items: center; gap: 8px; font-size: 0.95rem; color: var(--muted); cursor: pointer; min-height: 40px; }
+.helper input { width: 22px; height: 22px; accent-color: var(--minute); }
+
+.answers { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+.answers button {
+  font: inherit; font-size: 2.1rem; font-weight: 700; font-variant-numeric: tabular-nums; color: var(--ink);
+  background: var(--card); border: 3px solid var(--line); border-radius: 18px; min-height: 84px; cursor: pointer;
+  transition: transform .08s ease, border-color .15s ease;
+}
+.answers button:hover:not(:disabled) { border-color: var(--hour); }
+.answers button:active:not(:disabled) { transform: scale(0.97); }
+.answers button:disabled { cursor: default; }
+.answers button.right { border-color: var(--good); background: var(--good-bg); color: var(--good); }
+.answers button.wrong { border-color: var(--bad); background: var(--bad-bg); color: var(--bad); }
+.answers button.faded { opacity: 0.45; }
+
+.feedback { min-height: 3.2em; text-align: center; font-size: 1.15rem; line-height: 1.45; margin: 0; }
+.feedback strong { display: block; font-size: 1.5rem; }
+.feedback.good strong { color: var(--good); }
+.feedback.bad strong { color: var(--bad); }
+
+.actions { display: flex; gap: 12px; }
+.next {
+  flex: 1; font: inherit; font-size: 1.3rem; font-weight: 700; color: #fff; background: var(--hour);
+  border: 0; border-radius: 16px; min-height: 64px; cursor: pointer;
+}
+.reset { font: inherit; font-size: 1rem; color: var(--muted); background: transparent; border: 2px solid var(--line); border-radius: 16px; padding: 0 18px; min-height: 64px; cursor: pointer; }
+button:focus-visible, .helper input:focus-visible { outline: 3px solid var(--minute); outline-offset: 3px; }
+
+@media (max-width: 420px) {
+  h1 { font-size: 1.35rem; }
+  .answers button { font-size: 1.8rem; min-height: 76px; }
+  .levels button { font-size: 0.85rem; }
+}
+@media (prefers-reduced-motion: reduce) { * { transition: none !important; } }
+</style>
+<style>.home-link{display:inline-flex;align-items:center;min-height:40px;color:var(--muted);font-weight:600;text-decoration:none;font-size:0.95rem}.home-link:hover{color:var(--ink)}</style>
+<link rel="stylesheet" href="../../theme.css">
+<script src="../../theme.js"></script>
+</head>
+<body>
+
+<div class="wrap">
+  <div class="top-row">
+    <a class="home-link" href="../../">&larr; Loopy</a>
+    <div id="theme-picker"></div>
+  </div>
+  <div class="top">
+    <h1>What Time Is It?</h1>
+    <div class="score" aria-live="polite">
+      <div class="pill"><span>Score</span><b id="score">0 / 0</b></div>
+      <div class="pill"><span>Streak</span><b id="streak">0</b></div>
+    </div>
+  </div>
+
+  <div class="levels" role="group" aria-label="Difficulty">
+    <button type="button" id="lv-half" data-step="30">Hours &amp; halves</button>
+    <button type="button" id="lv-quarter" data-step="15">Quarter hours</button>
+    <button type="button" id="lv-five" data-step="5">Every 5 min</button>
+  </div>
+
+  <div class="clock-card">
+    <p class="prompt">Read the clock. Pick the time.</p>
+    <svg id="clock" viewBox="0 0 400 400" role="img" aria-label="Analog clock"></svg>
+    <div class="legend">
+      <span><i style="background:var(--hour)"></i>Short hand = hour</span>
+      <span><i style="background:var(--minute)"></i>Long hand = minutes</span>
+    </div>
+    <label class="helper"><input type="checkbox" id="helper"> Show minute numbers</label>
+  </div>
+
+  <div class="answers" id="answers"></div>
+
+  <p class="feedback" id="feedback" aria-live="polite"></p>
+
+  <div class="actions">
+    <button type="button" class="next" id="next">New time</button>
+    <button type="button" class="reset" id="reset">Reset score</button>
+  </div>
+</div>
+
+<script>
+(function () {
+  const NS = "http://www.w3.org/2000/svg";
+  const svg = document.getElementById("clock");
+  const answersEl = document.getElementById("answers");
+  const feedbackEl = document.getElementById("feedback");
+  const helperEl = document.getElementById("helper");
+  const levelBtns = [...document.querySelectorAll(".levels button")];
+
+  const store = {
+    get(k, d) { try { const v = localStorage.getItem(k); return v === null ? d : JSON.parse(v); } catch (e) { return d; } },
+    set(k, v) { try { localStorage.setItem(k, JSON.stringify(v)); } catch (e) {} }
+  };
+
+  let step = store.get("clockquiz.step", 5);
+  let showHelper = store.get("clockquiz.helper", false);
+  let right = 0, tried = 0, streak = 0;
+  let current = null, answered = false, lastKey = "";
+
+  function el(tag, attrs, parent) {
+    const n = document.createElementNS(NS, tag);
+    for (const k in attrs) n.setAttribute(k, attrs[k]);
+    if (parent) parent.appendChild(n);
+    return n;
+  }
+  const pt = (deg, r) => { const a = (deg - 90) * Math.PI / 180; return [200 + r * Math.cos(a), 200 + r * Math.sin(a)]; };
+
+  // Static clock face, drawn once.
+  const face = el("g", {}, svg);
+  el("circle", { cx: 200, cy: 200, r: 186, fill: "var(--face)", stroke: "var(--rim)", "stroke-width": 10 }, face);
+  for (let i = 0; i < 60; i++) {
+    const major = i % 5 === 0;
+    const [x1, y1] = pt(i * 6, major ? 158 : 166);
+    const [x2, y2] = pt(i * 6, 176);
+    el("line", { x1, y1, x2, y2, stroke: "#1d2a3f", "stroke-width": major ? 5 : 2, "stroke-linecap": "round" }, face);
+  }
+  for (let h = 1; h <= 12; h++) {
+    const [x, y] = pt(h * 30, 128);
+    const t = el("text", { x, y, "text-anchor": "middle", "dominant-baseline": "central", "font-size": 38, "font-weight": 700, fill: "#1d2a3f", "font-family": "Lexend, sans-serif" }, face);
+    t.textContent = h;
+  }
+  const minuteLabels = el("g", {}, svg);
+  for (let m = 0; m < 60; m += 5) {
+    const [x, y] = pt(m * 6, 146);
+    const t = el("text", { x, y, "text-anchor": "middle", "dominant-baseline": "central", "font-size": 13, "font-weight": 600, fill: "#e2622b", "font-family": "Lexend, sans-serif" }, minuteLabels);
+    t.textContent = m === 0 ? "00" : (m < 10 ? "0" + m : m);
+  }
+  const hourHand = el("line", { x1: 200, y1: 200, x2: 200, y2: 110, stroke: "var(--hour)", "stroke-width": 14, "stroke-linecap": "round" }, svg);
+  const minuteHand = el("line", { x1: 200, y1: 200, x2: 200, y2: 50, stroke: "var(--minute)", "stroke-width": 8, "stroke-linecap": "round" }, svg);
+  el("circle", { cx: 200, cy: 200, r: 11, fill: "#1d2a3f" }, svg);
+
+  function setHands(h, m) {
+    const hDeg = (h % 12) * 30 + m * 0.5;
+    const mDeg = m * 6;
+    let [x, y] = pt(hDeg, 92); hourHand.setAttribute("x2", x); hourHand.setAttribute("y2", y);
+    [x, y] = pt(mDeg, 150); minuteHand.setAttribute("x2", x); minuteHand.setAttribute("y2", y);
+    svg.setAttribute("aria-label", "Analog clock showing a time to read");
+  }
+
+  const fmt = (h, m) => h + ":" + String(m).padStart(2, "0");
+  const key = (h, m) => h * 60 + m;
+  const randInt = (n) => Math.floor(Math.random() * n);
+  const wrapH = (h) => ((h - 1 + 12) % 12) + 1;
+  const randomTime = () => ({ h: randInt(12) + 1, m: randInt(60 / step) * step });
+
+  // Wrong choices based on the mistakes kids actually make.
+  function distractors(t) {
+    const out = [];
+    const seen = new Set([key(t.h, t.m)]);
+    const add = (h, m) => {
+      if (m % step !== 0 || m < 0 || m > 55) return;
+      const k = key(h, m);
+      if (!seen.has(k)) { seen.add(k); out.push({ h, m }); }
+    };
+    const cands = [];
+    // Hands swapped: minute hand read as the hour.
+    if (t.m !== 0) cands.push([t.m / 5 === 0 ? 12 : t.m / 5, ((t.h % 12) * 5)]);
+    // Hour hand already past the number: reading the next hour.
+    if (t.m >= 30) cands.push([wrapH(t.h + 1), t.m]);
+    cands.push([wrapH(t.h - 1), t.m]);
+    // Counting the long hand's number as minutes (e.g. 9 → 9 minutes isn't valid, so use the mirrored time).
+    cands.push([t.h, (60 - t.m) % 60]);
+    cands.push([t.h, (t.m + 30) % 60]);
+    // Shuffle candidates so the pattern isn't predictable.
+    cands.sort(() => Math.random() - 0.5);
+    for (const [h, m] of cands) { if (out.length < 3) add(h, m); }
+    while (out.length < 3) { const r = randomTime(); add(r.h, r.m); }
+    return out;
+  }
+
+  function explain(t) {
+    const hourWord = t.m === 0 ? "points to " + t.h : "is just past " + t.h;
+    const minWord = t.m === 0 ? "points to 12, so it is " + t.h + " o'clock" : "points to " + (t.m / 5 || 12) + ", which is " + t.m + " minutes";
+    return "The short hand " + hourWord + ". The long hand " + minWord + ".";
+  }
+
+  function render() {
+    document.getElementById("score").textContent = right + " / " + tried;
+    document.getElementById("streak").textContent = streak;
+    levelBtns.forEach(b => b.setAttribute("aria-pressed", String(+b.dataset.step === step)));
+    helperEl.checked = showHelper;
+    minuteLabels.style.display = showHelper ? "" : "none";
+  }
+
+  function newRound() {
+    let t;
+    do { t = randomTime(); } while (fmt(t.h, t.m) === lastKey);
+    lastKey = fmt(t.h, t.m);
+    current = t; answered = false;
+    setHands(t.h, t.m);
+    const choices = [t, ...distractors(t)].sort(() => Math.random() - 0.5);
+    answersEl.innerHTML = "";
+    choices.forEach((c, i) => {
+      const b = document.createElement("button");
+      b.type = "button";
+      b.id = "choice-" + i;
+      b.textContent = fmt(c.h, c.m);
+      b.dataset.correct = String(c === t);
+      b.addEventListener("click", () => choose(b));
+      answersEl.appendChild(b);
+    });
+    feedbackEl.className = "feedback";
+    feedbackEl.textContent = "";
+    document.getElementById("next").textContent = "New time";
+  }
+
+  function choose(btn) {
+    if (answered) return;
+    answered = true; tried++;
+    const ok = btn.dataset.correct === "true";
+    const buttons = [...answersEl.children];
+    buttons.forEach(b => {
+      b.disabled = true;
+      if (b.dataset.correct === "true") b.classList.add("right");
+      else if (b === btn) b.classList.add("wrong");
+      else b.classList.add("faded");
+    });
+    if (ok) { right++; streak++; } else { streak = 0; }
+    feedbackEl.className = "feedback " + (ok ? "good" : "bad");
+    const head = ok ? (streak >= 3 ? "Correct! " + streak + " in a row!" : "Correct!") : "Not quite. It is " + fmt(current.h, current.m) + ".";
+    feedbackEl.innerHTML = "<strong></strong>";
+    feedbackEl.firstChild.textContent = head;
+    feedbackEl.appendChild(document.createTextNode(explain(current)));
+    document.getElementById("next").textContent = "Next time";
+    render();
+    document.getElementById("next").focus({ preventScroll: true });
+  }
+
+  levelBtns.forEach(b => b.addEventListener("click", () => {
+    step = +b.dataset.step; store.set("clockquiz.step", step); render(); newRound();
+  }));
+  helperEl.addEventListener("change", () => { showHelper = helperEl.checked; store.set("clockquiz.helper", showHelper); render(); });
+  document.getElementById("next").addEventListener("click", newRound);
+  document.getElementById("reset").addEventListener("click", () => { right = 0; tried = 0; streak = 0; render(); newRound(); });
+  document.addEventListener("keydown", (e) => {
+    if (e.target.tagName === "INPUT") return;
+    const n = parseInt(e.key, 10);
+    if (n >= 1 && n <= 4 && !answered) { const b = answersEl.children[n - 1]; if (b) choose(b); }
+  });
+
+  render();
+  newRound();
+})();
+</script>
+</body>
+</html>
