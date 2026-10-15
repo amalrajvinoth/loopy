@@ -63,7 +63,8 @@ The site is plain HTML, CSS and JavaScript. There is no build step.
 | `logo.svg`, `logo-white.svg`, `icon.svg` | The logo (for light and dark backgrounds) and the app icon |
 | `help/index.html` | The Help page: FAQ and feedback links |
 | `fonts/` | The Fredoka and Lexend fonts, stored here so no request goes to Google |
-| `.github/` | Forms for problems, ideas and questions |
+| `.github/` | Forms for problems, ideas and questions, and the automatic checks |
+| `tools/` | Small scripts: `csp.py` updates each page's security policy, `check_external.py` makes sure nothing loads from other websites |
 | `math/<game>/index.html` | One game per folder |
 | `math/<game>/README.md` | What that game does |
 
@@ -91,9 +92,12 @@ Then open http://localhost:8000.
 5. Add words in both languages with `Loopy.addStrings({ en: {...}, de: {...} })`. Put `data-t="key"` on fixed text, and use `Loopy.t("key")` in code. Use `Loopy.num(n)` to show numbers.
 6. Add one line to the `GAMES` list in the home page `index.html`, with the ages the game fits.
 7. Add a `README.md` in the game folder, and a row to the table above.
+8. Run `python3 tools/csp.py` so the page's security policy knows about its code. Do this again after any edit to a page.
 
 ### Changing the site
 
 The `main` branch is what goes live. Make changes on a new branch and open a pull request. See [CONTRIBUTING.md](CONTRIBUTING.md).
+
+After editing any page, run `python3 tools/csp.py`. The GitHub check fails otherwise.
 
 Do not add outside scripts, fonts, trackers or analytics. The security rules on each page block them, and they would break the promise that nothing leaves the device.

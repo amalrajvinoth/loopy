@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; img-src 'self' data:; font-src 'self'; connect-src 'none'; object-src 'none'; base-uri 'none'; form-action 'none'; manifest-src 'self'; upgrade-insecure-requests">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'sha256-5VzASa8NeTB1TMEGBCu3cFoemn6jPB/t3SkIbmJ7GEE='; style-src 'self' 'sha256-z2P7kGW5Z05eCTjTZdYpc0vThTlOE9vmt97pVSvi2I4=' 'sha256-ER4UVxOAHVG2PpFuwsi/fNYnlP9iTYLytTr9Qx7YKqY=' 'sha256-RT1053JU5UiKvjrCUFx1rlhdFLMmgtuFJ9T8jnMeawQ=' 'sha256-EgU4y8/59HTZwV3AzcrjDFd0xMdOdzbadhnUxcmpZZs='; img-src 'self' data:; font-src 'self'; connect-src 'none'; object-src 'none'; base-uri 'none'; form-action 'none'; manifest-src 'self'; upgrade-insecure-requests">
 <meta name="referrer" content="strict-origin-when-cross-origin">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <style>:root{color-scheme:light;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}body{margin:0}[hidden]{display:none!important}</style>
@@ -392,7 +392,8 @@ function explain(p) {
   const TONES = ["--c1", "--c2", "--c3", "--c4", "--c5"];
 
   const store = {
-    get(k, d) { try { const v = localStorage.getItem(k); return v === null ? d : JSON.parse(v); } catch (e) { return d; } },
+    // ok: the values this setting may have; anything else falls back to the default.
+    get(k, d, ok) { try { const v = JSON.parse(localStorage.getItem(k)); return ok.includes(v) ? v : d; } catch (e) { return d; } },
     set(k, v) { try { localStorage.setItem(k, JSON.stringify(v)); } catch (e) {} }
   };
 
@@ -401,8 +402,8 @@ function explain(p) {
   // Settings are remembered per age, so each age starts at the right level.
   function loadForAge() {
     level = levelForAge(age);
-    opMode = store.get("ts.op.a" + age, age <= 7 ? "mul" : "mix");
-    dots = store.get("ts.dots.a" + age, level.dots);
+    opMode = store.get("ts.op.a" + age, age <= 7 ? "mul" : "mix", ["mul", "div", "mix"]);
+    dots = store.get("ts.dots.a" + age, level.dots, [true, false]);
     $("level-note").textContent = t("ageLabel", { n: age }) + ": " + t(level.note);
     dotsBox.disabled = level.kind !== "facts";
   }

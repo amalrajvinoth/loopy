@@ -168,9 +168,14 @@
     box.className = "age-picker";
     box.setAttribute("role", "group");
     box.setAttribute("aria-label", Loopy.t("ageGroup"));
-    box.innerHTML = '<button type="button" id="age-down" aria-label="' + Loopy.t("younger") + '">&minus;</button>' +
-      '<span id="age-label" aria-live="polite"></span>' +
-      '<button type="button" id="age-up" aria-label="' + Loopy.t("older") + '">+</button>';
+    box.textContent = "";
+    [["age-down", "younger", "\u2212"], ["age-label"], ["age-up", "older", "+"]].forEach(function (d) {
+      var el = document.createElement(d.length > 1 ? "button" : "span");
+      el.id = d[0];
+      if (d.length > 1) { el.type = "button"; el.setAttribute("aria-label", Loopy.t(d[1])); el.textContent = d[2]; }
+      else el.setAttribute("aria-live", "polite");
+      box.appendChild(el);
+    });
     document.getElementById("age-down").addEventListener("click", function () { Loopy.setAge(age - 1); });
     document.getElementById("age-up").addEventListener("click", function () { Loopy.setAge(age + 1); });
     sync();
@@ -261,8 +266,18 @@
 
   var data = { stars: 0, best: {} };
   var cheeredBest = {}; // one "new best" cheer per run
-  try { var raw = JSON.parse(localStorage.getItem(KEY)); if (raw && typeof raw.stars === "number") data = raw; } catch (e) {}
-  data.best = data.best || {};
+  var MAX_STARS = 1000000, GAMES = ["plus-minus", "times-share", "clock"];
+  var num = function (n) { return typeof n === "number" && isFinite(n) && n >= 0 ? Math.min(Math.floor(n), MAX_STARS) : 0; };
+  // Only known games and sane numbers are kept, whatever the stored text says.
+  function clean(raw) {
+    var out = { stars: 0, best: {} };
+    if (!raw || typeof raw !== "object") return out;
+    out.stars = num(raw.stars);
+    var b = raw.best && typeof raw.best === "object" ? raw.best : {};
+    GAMES.forEach(function (g) { if (b[g] !== undefined) out.best[g] = num(b[g]); });
+    return out;
+  }
+  try { data = clean(JSON.parse(localStorage.getItem(KEY))); } catch (e) {}
   function save() { try { localStorage.setItem(KEY, JSON.stringify(data)); } catch (e) {} }
 
   var reduced = window.matchMedia && matchMedia("(prefers-reduced-motion: reduce)").matches;
@@ -349,10 +364,13 @@
     exportCode: function () { return "LOOPY-" + btoa(JSON.stringify({ s: data.stars, b: data.best })); },
     importCode: function (code) {
       try {
-        var d = JSON.parse(atob(String(code).trim().replace(/^LOOPY-/i, "")));
-        if (typeof d.s !== "number" || d.s < 0) return false;
-        data.stars = Math.max(data.stars, Math.floor(d.s));
-        for (var k in (d.b || {})) if (typeof d.b[k] === "number") data.best[k] = Math.max(data.best[k] || 0, d.b[k]);
+        code = String(code).trim().replace(/^LOOPY-/i, "");
+        if (code.length > 2000 || !/^[A-Za-z0-9+/=]+$/.test(code)) return false;
+        var d = JSON.parse(atob(code));
+        if (!d || typeof d.s !== "number") return false;
+        var got = clean({ stars: d.s, best: d.b });
+        data.stars = Math.max(data.stars, got.stars);
+        GAMES.forEach(function (g) { if (got.best[g]) data.best[g] = Math.max(data.best[g] || 0, got.best[g]); });
         save(); updateChips();
         return true;
       } catch (e) { return false; }

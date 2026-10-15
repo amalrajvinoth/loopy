@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; img-src 'self' data:; font-src 'self'; connect-src 'none'; object-src 'none'; base-uri 'none'; form-action 'none'; manifest-src 'self'; upgrade-insecure-requests">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'sha256-YK69hNyyJGwP25ifyK9ZGxhEfk/00BYROcfiXqE4sn4='; style-src 'self' 'sha256-z2P7kGW5Z05eCTjTZdYpc0vThTlOE9vmt97pVSvi2I4=' 'sha256-doiVG4zcutbmTCcoolMEnNomGtX/ONwPUTnFFbAvY7E=' 'sha256-RT1053JU5UiKvjrCUFx1rlhdFLMmgtuFJ9T8jnMeawQ=' 'sha256-3iI72MbeVrAPw//q3UKvS1P5Fq+2Q3TjC/StXrlaA8o='; img-src 'self' data:; font-src 'self'; connect-src 'none'; object-src 'none'; base-uri 'none'; form-action 'none'; manifest-src 'self'; upgrade-insecure-requests">
 <meta name="referrer" content="strict-origin-when-cross-origin">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <style>:root{color-scheme:light;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}body{margin:0}[hidden]{display:none!important}</style>
@@ -119,6 +119,8 @@ body { min-height: 100vh; min-height: 100dvh; padding-block: 12px 16px; }
 .prompt { font-size: 1.15rem; }
 svg#clock { width: min(100%, 360px, 36vh); width: min(100%, 360px, 36dvh); }
 .legend { font-size: 0.85rem; gap: 4px 14px; }
+.sw-hour { background: var(--hour); }
+.sw-minute { background: var(--minute); }
 .side { display: flex; flex-direction: column; gap: 10px; }
 .answers { gap: 10px; }
 .answers button { min-height: clamp(56px, 8.5dvh, 96px); font-size: clamp(1.6rem, 4.2dvh, 2.4rem); }
@@ -212,8 +214,8 @@ svg#clock { width: min(100%, 360px, 36vh); width: min(100%, 360px, 36dvh); }
       <p class="prompt" data-t="clPrompt">Read the clock. Pick the time.</p>
       <svg id="clock" viewBox="0 0 400 400" role="img" aria-label="Analog clock" data-t-aria="clockAria"></svg>
       <div class="legend">
-        <span><i style="background:var(--hour)"></i><span data-t="clShort">Short hand = hour</span></span>
-        <span><i style="background:var(--minute)"></i><span data-t="clLong">Long hand = minutes</span></span>
+        <span><i class="sw-hour"></i><span data-t="clShort">Short hand = hour</span></span>
+        <span><i class="sw-minute"></i><span data-t="clLong">Long hand = minutes</span></span>
       </div>
     </div>
     <div class="side">
@@ -262,15 +264,16 @@ Loopy.addStrings({
   const levelBtns = [...document.querySelectorAll(".levels button")];
 
   const store = {
-    get(k, d) { try { const v = localStorage.getItem(k); return v === null ? d : JSON.parse(v); } catch (e) { return d; } },
+    // ok: the values this setting may have; anything else falls back to the default.
+    get(k, d, ok) { try { const v = JSON.parse(localStorage.getItem(k)); return ok.includes(v) ? v : d; } catch (e) { return d; } },
     set(k, v) { try { localStorage.setItem(k, JSON.stringify(v)); } catch (e) {} }
   };
 
   // Each age starts at its own level; a level picked by hand is remembered for that age.
   const stepForAge = (a) => a <= 6 ? 30 : a === 7 ? 15 : a === 8 ? 5 : 1;
   let age = window.Loopy ? Loopy.getAge() : 8;
-  let step = store.get("clockquiz.step.a" + age, stepForAge(age));
-  let showHelper = store.get("clockquiz.helper", false);
+  let step = store.get("clockquiz.step.a" + age, stepForAge(age), [30, 15, 5, 1]);
+  let showHelper = store.get("clockquiz.helper", false, [true, false]);
   let right = 0, tried = 0, streak = 0;
   let current = null, answered = false, lastKey = "";
 
@@ -420,7 +423,7 @@ Loopy.addStrings({
   }));
   helperEl.addEventListener("change", () => { showHelper = helperEl.checked; store.set("clockquiz.helper", showHelper); render(); });
   window.addEventListener("loopy:age", (e) => {
-    age = e.detail; step = store.get("clockquiz.step.a" + age, stepForAge(age)); render(); newRound();
+    age = e.detail; step = store.get("clockquiz.step.a" + age, stepForAge(age), [30, 15, 5, 1]); render(); newRound();
   });
   document.getElementById("next").addEventListener("click", newRound);
   document.getElementById("reset").addEventListener("click", () => { right = 0; tried = 0; streak = 0; render(); newRound(); });
