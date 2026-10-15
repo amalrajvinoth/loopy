@@ -90,6 +90,257 @@ document.documentElement.classList.add("loopy-building");
   else apply();
 })();
 
+// Children: each child who plays on this device has their own age, stars, badges, streaks,
+// progress and game settings. Theme, sound and language stay the same for everyone on the device.
+// The list is kept in this browser's localStorage "loopy.kids" as
+// { on: 1, next: 3, list: [{ id: 1, name: "Mia", pic: "🐰" }, { id: 2, name: "", pic: "🦊" }] }.
+// Each child's own things are kept under "loopy.kid.<id>." + key. Use Loopy.store.get / set / remove
+// instead of localStorage for anything that belongs to one child (scores, levels, settings in a game).
+// <div id="kid-picker"></div> becomes the "Who is playing?" row; add data-switch-only to hide add and edit.
+(function () {
+  var KEY = "loopy.kids", MAX = 6, LEN = 12, BIG_ID = 1000000;
+  var PICS = ["🐰", "🦊", "🐼", "🐯", "🐸", "🦄", "🐙", "🦖", "🐝", "🐧", "🦁", "🐨"];
+  // Keys saved before there were children. On the first visit they move to child 1, so no stars are lost.
+  var OLD = /^(?:loopy\.(?:rewards|daily|log|recent|ageOffset|readAloud)$|(?:bs|cc|clockquiz|mk|pm100|pz|qf|si|ss|ts|wi|wm)\.)/;
+  var Loopy = window.Loopy = window.Loopy || {};
+
+  Loopy.addStrings({
+    en: {
+      kidsGroup: "Who is playing?", kidN: "Player {n}", kidAdd: "Add a child", kidEditAria: "Change name or picture",
+      kidNew: "New child", kidEdit: "Change {name}", kidName: "Name", kidNameHint: "Name or nickname", kidPic: "Picture",
+      kidSave: "Save", kidCancel: "Cancel", kidRemove: "Remove",
+      kidSure: "Tap again to remove {name} and all their stars", kidStars: "{name}'s stars"
+    },
+    de: {
+      kidsGroup: "Wer spielt?", kidN: "Kind {n}", kidAdd: "Kind hinzufügen", kidEditAria: "Name oder Bild ändern",
+      kidNew: "Neues Kind", kidEdit: "{name} ändern", kidName: "Name", kidNameHint: "Name oder Spitzname", kidPic: "Bild",
+      kidSave: "Speichern", kidCancel: "Abbrechen", kidRemove: "Entfernen",
+      kidSure: "Nochmal tippen: {name} mit allen Sternen entfernen", kidStars: "Sterne von {name}"
+    }
+  });
+
+  // A name is plain text: no control characters, at most 12 letters (an emoji counts as one).
+  function cleanName(s) {
+    if (typeof s !== "string") return "";
+    return Array.from(s.replace(/[\u0000-\u001f\u007f-\u009f<>]/g, "").trim()).slice(0, LEN).join("").trim();
+  }
+  var whole = function (n) { return typeof n === "number" && isFinite(n) && n === Math.floor(n) && n >= 1 && n <= BIG_ID; };
+  // Only real ids, known pictures and short names are kept, whatever the stored text says.
+  function clean(raw) {
+    var out = { on: 1, next: 2, list: [] };
+    if (!raw || typeof raw !== "object") raw = {};
+    if (Array.isArray(raw.list)) raw.list.forEach(function (k) {
+      if (out.list.length >= MAX || !k || typeof k !== "object" || !whole(k.id)) return;
+      if (out.list.some(function (x) { return x.id === k.id; })) return;
+      out.list.push({ id: k.id, name: cleanName(k.name), pic: PICS.indexOf(k.pic) !== -1 ? k.pic : PICS[0] });
+    });
+    if (!out.list.length) out.list.push({ id: 1, name: "", pic: PICS[0] });
+    var top = Math.max.apply(null, out.list.map(function (k) { return k.id; }));
+    out.next = Math.min(Math.max(whole(raw.next) ? raw.next : 0, top + 1), BIG_ID);
+    out.on = out.list.some(function (k) { return k.id === raw.on; }) ? raw.on : out.list[0].id;
+    return out;
+  }
+  function pre(id) { return "loopy.kid." + id + "."; }
+  function save() { try { localStorage.setItem(KEY, JSON.stringify(data)); } catch (e) {} }
+
+  var data = clean(null), stored = null;
+  try { stored = localStorage.getItem(KEY); data = clean(JSON.parse(stored)); } catch (e) {}
+  if (stored === null) {
+    // First visit since children came in: move what was saved before to child 1.
+    try {
+      var keys = [];
+      for (var i = 0; i < localStorage.length; i++) { var k = localStorage.key(i); if (OLD.test(k)) keys.push(k); }
+      keys.forEach(function (k) {
+        if (localStorage.getItem(pre(1) + k) === null) localStorage.setItem(pre(1) + k, localStorage.getItem(k));
+        localStorage.removeItem(k);
+      });
+      save();
+    } catch (e) {}
+  }
+
+  Loopy.store = {
+    get: function (k) { try { return localStorage.getItem(pre(data.on) + k); } catch (e) { return null; } },
+    set: function (k, v) { try { localStorage.setItem(pre(data.on) + k, String(v)); } catch (e) {} },
+    remove: function (k) { try { localStorage.removeItem(pre(data.on) + k); } catch (e) {} }
+  };
+
+  function find(id) { return data.list.filter(function (k) { return k.id === id; })[0]; }
+  function copy(k) { return { id: k.id, name: k.name, pic: k.pic }; }
+  // Switching child reloads the page, so every part reads the new child's things from the start.
+  function use(id) { if (!find(id)) return; data.on = id; save(); location.reload(); }
+
+  Loopy.kids = {
+    PICS: PICS, MAX: MAX, cleanName: cleanName,
+    list: function () { return data.list.map(copy); },
+    current: function () { return copy(find(data.on)); },
+    // What to call a child: their name, or "Player 2" when they have none.
+    label: function (k) { return k.name || Loopy.t("kidN", { n: data.list.map(function (x) { return x.id; }).indexOf(k.id) + 1 }); },
+    use: use,
+    // age: the new child's age; saved as years from the default age, like the age picker does.
+    add: function (name, pic, age) {
+      if (data.list.length >= MAX) return;
+      var id = data.next++;
+      data.list.push({ id: id, name: cleanName(name), pic: PICS.indexOf(pic) !== -1 ? pic : PICS[0] });
+      if (typeof age === "number" && Loopy.defaultAge) {
+        try { localStorage.setItem(pre(id) + "loopy.ageOffset", String(Math.round(age) - Loopy.defaultAge())); } catch (e) {}
+      }
+      use(id);
+    },
+    edit: function (id, name, pic) {
+      var k = find(id);
+      if (!k) return;
+      k.name = cleanName(name);
+      if (PICS.indexOf(pic) !== -1) k.pic = pic;
+      save();
+    },
+    // Removes the child and everything saved for them. The last child can't be removed.
+    remove: function (id) {
+      if (data.list.length < 2 || !find(id)) return;
+      try {
+        var gone = [];
+        for (var i = 0; i < localStorage.length; i++) { var k = localStorage.key(i); if (k && k.indexOf(pre(id)) === 0) gone.push(k); }
+        gone.forEach(function (k) { localStorage.removeItem(k); });
+      } catch (e) {}
+      data.list = data.list.filter(function (k) { return k.id !== id; });
+      if (data.on === id) data.on = data.list[0].id;
+      save();
+      location.reload();
+    }
+  };
+
+  function el(tag, cls, text) {
+    var n = document.createElement(tag);
+    if (cls) n.className = cls;
+    if (text !== undefined) n.textContent = text;
+    return n;
+  }
+  function round(cls, label, text) {
+    var b = el("button", "kid-round " + cls, text);
+    b.type = "button";
+    b.setAttribute("aria-label", label);
+    b.title = label;
+    return b;
+  }
+
+  // The add and change box: a name, a picture, and the age for a new child.
+  function open(kid) {
+    var dlg = el("dialog", "kid-dialog"), pic = kid ? kid.pic : PICS[data.list.length % PICS.length];
+    var age = Loopy.defaultAge ? Loopy.defaultAge() : 8, armed = null;
+    dlg.setAttribute("aria-labelledby", "kid-dialog-title");
+    var form = el("form");
+    form.method = "dialog";
+    var h = el("h2", "", kid ? Loopy.t("kidEdit", { name: Loopy.kids.label(kid) }) : Loopy.t("kidNew"));
+    h.id = "kid-dialog-title";
+    form.appendChild(h);
+
+    var label = el("label", "kid-field");
+    label.appendChild(el("span", "", Loopy.t("kidName")));
+    var input = el("input");
+    input.type = "text"; input.maxLength = 24; input.autocomplete = "off";
+    input.placeholder = Loopy.t("kidNameHint");
+    input.value = kid ? kid.name : "";
+    label.appendChild(input);
+    form.appendChild(label);
+
+    var pics = el("div", "kid-pics");
+    pics.setAttribute("role", "group");
+    pics.setAttribute("aria-label", Loopy.t("kidPic"));
+    form.appendChild(el("span", "kid-label", Loopy.t("kidPic")));
+    PICS.forEach(function (p) {
+      var b = el("button", "", p);
+      b.type = "button";
+      b.setAttribute("aria-pressed", String(p === pic));
+      b.addEventListener("click", function () {
+        pic = p;
+        pics.querySelectorAll("button").forEach(function (x) { x.setAttribute("aria-pressed", String(x === b)); });
+      });
+      pics.appendChild(b);
+    });
+    form.appendChild(pics);
+
+    if (!kid) {
+      // The same − Age 8 + stepper as the age picker.
+      var row = el("div", "age-picker");
+      row.setAttribute("role", "group");
+      row.setAttribute("aria-label", Loopy.t("ageGroup"));
+      var down = round("", Loopy.t("younger"), "−"), up = round("", Loopy.t("older"), "+"), show = el("span");
+      down.className = up.className = "";
+      show.setAttribute("aria-live", "polite");
+      var sync = function () { show.textContent = Loopy.t("ageLabel", { n: age }); down.disabled = age <= 5; up.disabled = age >= 16; };
+      down.addEventListener("click", function () { age = Math.max(5, age - 1); sync(); });
+      up.addEventListener("click", function () { age = Math.min(16, age + 1); sync(); });
+      row.appendChild(down); row.appendChild(show); row.appendChild(up);
+      sync();
+      form.appendChild(el("span", "kid-label", Loopy.t("ageGroup")));
+      form.appendChild(row);
+    }
+
+    var foot = el("div", "kid-foot");
+    var ok = el("button", "kid-btn", Loopy.t("kidSave"));
+    ok.type = "submit";
+    var no = el("button", "kid-btn quiet", Loopy.t("kidCancel"));
+    no.type = "button";
+    no.addEventListener("click", function () { dlg.close(); });
+    if (kid && data.list.length > 1) {
+      var rm = el("button", "kid-btn danger", Loopy.t("kidRemove"));
+      rm.type = "button";
+      // Two taps, so a child's stars are not lost by mistake.
+      rm.addEventListener("click", function () {
+        if (armed) { clearTimeout(armed); Loopy.kids.remove(kid.id); return; }
+        rm.textContent = Loopy.t("kidSure", { name: Loopy.kids.label(kid) });
+        rm.classList.add("sure");
+        armed = setTimeout(function () { armed = null; rm.textContent = Loopy.t("kidRemove"); rm.classList.remove("sure"); }, 4000);
+      });
+      foot.appendChild(rm);
+    }
+    foot.appendChild(no);
+    foot.appendChild(ok);
+    form.appendChild(foot);
+    form.addEventListener("submit", function (e) {
+      e.preventDefault();
+      if (kid) { Loopy.kids.edit(kid.id, input.value, pic); dlg.close(); location.reload(); }
+      else Loopy.kids.add(input.value, pic, age);
+    });
+    dlg.appendChild(form);
+    dlg.addEventListener("close", function () { dlg.remove(); });
+    document.body.appendChild(dlg);
+    dlg.showModal();
+    if (!kid) input.focus();
+  }
+
+  function build() {
+    var box = document.getElementById("kid-picker");
+    if (!box) return;
+    var only = box.hasAttribute("data-switch-only");
+    if (only && data.list.length < 2) { box.hidden = true; return; }
+    box.className = "kid-picker";
+    box.setAttribute("role", "group");
+    box.setAttribute("aria-label", Loopy.t("kidsGroup"));
+    box.textContent = "";
+    box.appendChild(el("span", "kid-ask", Loopy.t("kidsGroup")));
+    data.list.forEach(function (k) {
+      var b = el("button", "kid");
+      b.type = "button";
+      b.setAttribute("aria-pressed", String(k.id === data.on));
+      b.appendChild(el("span", "kid-pic", k.pic)).setAttribute("aria-hidden", "true");
+      b.appendChild(el("span", "", Loopy.kids.label(k)));
+      b.addEventListener("click", function () { if (k.id !== data.on) use(k.id); });
+      box.appendChild(b);
+    });
+    if (only || typeof HTMLDialogElement !== "function") return;
+    var edit = round("edit", Loopy.t("kidEditAria"), "✎");
+    edit.addEventListener("click", function () { open(find(data.on)); });
+    box.appendChild(edit);
+    if (data.list.length < MAX) {
+      var add = round("add", Loopy.t("kidAdd"), "+");
+      add.addEventListener("click", function () { open(null); });
+      box.appendChild(add);
+    }
+  }
+  if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", build);
+  else build();
+})();
+
 // Loopy themes: black is the default, the choice is remembered on this device.
 (function () {
   var THEMES = [
@@ -154,16 +405,17 @@ document.documentElement.classList.add("loopy-building");
   }
   // A changed age is saved as years above or below the default, so it still goes up each birthday.
   var offset = 0;
-  try { offset = parseInt(localStorage.getItem(KEY), 10) || 0; } catch (e) {}
+  offset = parseInt(window.Loopy.store.get(KEY), 10) || 0;
   var age = clamp(defaultAge() + offset);
 
   var Loopy = window.Loopy = window.Loopy || {};
+  Loopy.defaultAge = defaultAge;
   Loopy.getAge = function () { return age; };
   Loopy.setAge = function (n) {
     n = clamp(n);
     if (n === age) return;
     age = n;
-    try { localStorage.setItem(KEY, String(age - defaultAge())); } catch (e) {}
+    Loopy.store.set(KEY, String(age - defaultAge()));
     sync();
     window.dispatchEvent(new CustomEvent("loopy:age", { detail: age }));
   };
@@ -267,7 +519,7 @@ document.documentElement.classList.add("loopy-building");
   var KEY = "loopy.readAloud", OLDEST_ON = 7;
   var can = "speechSynthesis" in window && "SpeechSynthesisUtterance" in window;
   var choice = null, opts = null, btn = null, toggle = null, tapped = false, talking = null;
-  try { var v = localStorage.getItem(KEY); if (v === "on" || v === "off") choice = v; } catch (e) {}
+  var v = Loopy.store.get(KEY); if (v === "on" || v === "off") choice = v;
   var SPEAKER = '<svg viewBox="0 0 24 24" aria-hidden="true" fill="currentColor"><path d="M4 9v6h4l5 4V5L8 9H4z"/><path d="M16 8.5a5 5 0 0 1 0 7M18.5 6a8.5 8.5 0 0 1 0 12" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>';
 
   Loopy.addStrings({
@@ -339,7 +591,7 @@ document.documentElement.classList.add("loopy-building");
       toggle.appendChild(state);
       toggle.addEventListener("click", function () {
         choice = isOn() ? "off" : "on";
-        try { localStorage.setItem(KEY, choice); } catch (e) {}
+        Loopy.store.set(KEY, choice);
         sync();
         if (isOn()) say(opts.text()); else speechSynthesis.cancel();
       });
@@ -396,8 +648,8 @@ document.documentElement.classList.add("loopy-building");
     GAMES.forEach(function (g) { if (b[g] !== undefined) out.best[g] = num(b[g]); });
     return out;
   }
-  try { data = clean(JSON.parse(localStorage.getItem(KEY))); } catch (e) {}
-  function save() { try { localStorage.setItem(KEY, JSON.stringify(data)); } catch (e) {} }
+  try { data = clean(JSON.parse(window.Loopy.store.get(KEY))); } catch (e) {}
+  function save() { window.Loopy.store.set(KEY, JSON.stringify(data)); }
 
   var reduced = window.matchMedia && matchMedia("(prefers-reduced-motion: reduce)").matches;
 
@@ -480,13 +732,20 @@ document.documentElement.classList.add("loopy-building");
     BADGES: BADGES, STAR_PATH: STAR_PATH,
     get: function () { return data; },
     // Moving progress to another device: a short code to copy, and loading one back.
-    exportCode: function () { return "LOOPY-" + btoa(JSON.stringify({ s: data.stars, b: data.best })); },
+    // The code holds one child's stars, best streaks, name and picture. Loading it adds to the child who is playing.
+    exportCode: function () {
+      var k = Loopy.kids.current();
+      return "LOOPY-" + btoa(unescape(encodeURIComponent(JSON.stringify({ s: data.stars, b: data.best, n: k.name, p: k.pic }))));
+    },
     importCode: function (code) {
       try {
         code = String(code).trim().replace(/^LOOPY-/i, "");
         if (code.length > 2000 || !/^[A-Za-z0-9+/=]+$/.test(code)) return false;
-        var d = JSON.parse(atob(code));
+        var d = JSON.parse(decodeURIComponent(escape(atob(code))));
         if (!d || typeof d.s !== "number") return false;
+        // A child with no name yet takes the name and picture from the code.
+        var k = Loopy.kids.current(), name = Loopy.kids.cleanName(d.n);
+        if (!k.name && name) Loopy.kids.edit(k.id, name, d.p);
         var got = clean({ stars: d.s, best: d.b });
         data.stars = Math.max(data.stars, got.stars);
         GAMES.forEach(function (g) { if (got.best[g]) data.best[g] = Math.max(data.best[g] || 0, got.best[g]); });
@@ -541,6 +800,15 @@ document.documentElement.classList.add("loopy-building");
       chip.className = "star-chip";
       chip.setAttribute("aria-label", Loopy.t("starsEarned"));
       chip.innerHTML = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="' + STAR_PATH + '"/></svg><b data-loopy-stars></b>';
+      // With more than one child, the chip shows whose stars they are.
+      if (Loopy.kids.list().length > 1) {
+        var k = Loopy.kids.current(), pic = document.createElement("span");
+        pic.className = "kid-pic";
+        pic.setAttribute("aria-hidden", "true");
+        pic.textContent = k.pic;
+        chip.insertBefore(pic, chip.firstChild);
+        chip.setAttribute("aria-label", Loopy.t("kidStars", { name: Loopy.kids.label(k) }));
+      }
     }
     updateChips();
   }
@@ -577,7 +845,7 @@ document.documentElement.classList.add("loopy-building");
     return out;
   }
   var data = clean(null);
-  try { data = clean(JSON.parse(localStorage.getItem(KEY))); } catch (e) {}
+  try { data = clean(JSON.parse(Loopy.store.get(KEY))); } catch (e) {}
 
   // A day as "2026-10-15" in local time. offset: days from today, e.g. -1 for yesterday.
   Loopy.dayKey = dayKey;
@@ -595,7 +863,7 @@ document.documentElement.classList.add("loopy-building");
         data.streak = data.last === dayKey(-1) ? data.streak + 1 : 1;
         data.last = today;
         data.best = Math.max(data.best, data.streak);
-        try { localStorage.setItem(KEY, JSON.stringify(data)); } catch (e) {}
+        Loopy.store.set(KEY, JSON.stringify(data));
       }
       var badge = null;
       DAY_BADGES.forEach(function (b) { if (before < b.days && data.best >= b.days) badge = b; });
@@ -640,8 +908,8 @@ document.documentElement.classList.add("loopy-building");
     return out;
   }
   var data = clean(null);
-  try { data = clean(JSON.parse(localStorage.getItem(KEY))); } catch (e) {}
-  function save() { try { localStorage.setItem(KEY, JSON.stringify(data)); } catch (e) {} }
+  try { data = clean(JSON.parse(Loopy.store.get(KEY))); } catch (e) {}
+  function save() { Loopy.store.set(KEY, JSON.stringify(data)); }
 
   Loopy.log = {
     get: function () { return clean(data); },
@@ -657,7 +925,7 @@ document.documentElement.classList.add("loopy-building");
       data = clean(data);
       save();
     },
-    clear: function () { data = clean(null); try { localStorage.removeItem(KEY); } catch (e) {} },
+    clear: function () { data = clean(null); Loopy.store.remove(KEY); },
     // The kind of a sum: "add" or "sub" with "-rg" when it needs carrying or regrouping,
     // "mul-7" or "div-7" for a times table fact, "mul-big" or "div-big" for bigger numbers.
     kind: function (op, a, b) {
@@ -692,8 +960,8 @@ document.documentElement.classList.add("loopy-building");
     return out;
   }
   var data = {};
-  try { data = clean(JSON.parse(localStorage.getItem(KEY))); } catch (e) {}
-  function save() { try { localStorage.setItem(KEY, JSON.stringify(data)); } catch (e) {} }
+  try { data = clean(JSON.parse(Loopy.store.get(KEY))); } catch (e) {}
+  function save() { Loopy.store.set(KEY, JSON.stringify(data)); }
 
   function render() {
     var box = document.getElementById("last5");

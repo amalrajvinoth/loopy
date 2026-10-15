@@ -18,6 +18,10 @@ Kids from about age 5 to 16 (grades 1 to 10). Pick an age on the home page. Game
 
 Tap − or + next to Age on the home page or in a game's Settings. The games get easier or harder to match. The age goes up by itself on each birthday.
 
+## Can brothers and sisters share one device?
+
+Yes. On the home page, under "Who is playing?", tap **+** to add a child. Give them a name (or a nickname), a picture and their age. Each child has their own stars, badges, streaks, age and game settings. Tap a child's name to switch. Tap ✎ to change the name or picture, or to remove a child. Removing a child deletes their stars on this device. The theme, sound and language are the same for everyone.
+
 ## How do I change the language?
 
 Tap EN for English or DE for German. You find it on the home page and in each game's Settings. Loopy remembers your choice.
@@ -28,7 +32,7 @@ Stars are saved in your browser. If you clear your browser data or use a private
 
 ## How do I move stars to another device?
 
-On the home page, open "Move my stars to another device". Copy the code, then paste it on the other device and tap Load.
+On the home page, open "Move my stars to another device". Copy the code, then paste it on the other device and tap Load. The code moves one child at a time: pick the child first, on both devices. A child with no name yet takes the name and picture from the code.
 
 ## Can I use Loopy like an app?
 
