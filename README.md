@@ -1,3 +1,10 @@
+<p align="center">
+  <picture>
+    <source media="(prefers-color-scheme: dark)" srcset="logo-white.svg">
+    <img src="logo.svg" alt="loopy" width="320">
+  </picture>
+</p>
+
 # Loopy
 
 **Learn. Play. Repeat.**
@@ -53,6 +60,7 @@ The site is plain HTML, CSS and JavaScript. There is no build step.
 | `index.html` | The home page and the list of games |
 | `loopy.js` | Shared code: languages, colors, age, sound, stars and badges |
 | `loopy.css` | Shared styles |
+| `logo.svg`, `logo-white.svg`, `icon.svg` | The logo (for light and dark backgrounds) and the app icon |
 | `help/index.html` | The Help page: FAQ and feedback links |
 | `fonts/` | The Fredoka and Lexend fonts, stored here so no request goes to Google |
 | `.github/` | Forms for problems, ideas and questions |
