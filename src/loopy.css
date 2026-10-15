@@ -191,6 +191,29 @@ a.home-link.loopy-back:focus-visible { outline: 3px solid var(--mark); outline-o
 .last5 i.new { outline: 2px solid var(--ink); outline-offset: 2px; }
 .last5 svg { width: 15px; height: 15px; fill: none; stroke: currentColor; stroke-width: 3.2; stroke-linecap: round; stroke-linejoin: round; }
 
+/* Read aloud (Loopy.speech in loopy.js): a speaker button in the question card's top right corner,
+   and an on/off pill next to the sound button in Settings. */
+.read-host { position: relative; }
+.read-btn {
+  position: absolute; top: 8px; right: 8px; width: 44px; height: 44px; border-radius: 50%; border: 0; cursor: pointer;
+  display: grid; place-items: center; background: var(--chip); color: var(--ink); touch-action: manipulation;
+}
+.read-btn svg { width: 24px; height: 24px; }
+.read-btn.speaking { color: var(--accent); }
+.read-btn[hidden] { display: none; }
+/* Inline, after a one-line prompt: the full 44px tap area, but it only adds a little height to the line. */
+.read-btn.inline { position: static; display: inline-grid; vertical-align: middle; margin: -10px 0 -10px 6px; }
+.read-btn:focus-visible { outline: 3px solid var(--mark); outline-offset: 2px; }
+.read-toggle {
+  display: inline-flex; align-items: center; gap: 8px; min-height: 44px; padding: 0 14px 0 10px; border-radius: 999px; border: 0;
+  background: var(--chip); color: var(--ink); font: inherit; font-size: 0.95rem; font-weight: 600; cursor: pointer; touch-action: manipulation;
+}
+.read-toggle svg { width: 22px; height: 22px; }
+.read-toggle b { min-width: 2.2em; padding: 2px 8px; border-radius: 999px; background: var(--card); font-size: 0.85rem; }
+.read-toggle[aria-pressed="false"] svg, .read-toggle[aria-pressed="false"] b { color: var(--muted); }
+.read-toggle[hidden] { display: none; }
+.read-toggle:focus-visible { outline: 3px solid var(--mark); outline-offset: 2px; }
+
 /* Print worksheet button, in each game's Settings (Loopy.worksheet in loopy.js). */
 .print-row { display: flex; flex-wrap: wrap; align-items: center; gap: 8px 12px; }
 .print-row p { margin: 0; color: var(--muted); font-size: 0.9rem; }

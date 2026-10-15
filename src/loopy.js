@@ -254,6 +254,119 @@ document.documentElement.classList.add("loopy-building");
   else build();
 })();
 
+// Read aloud: a speaker button on the question reads it out with the device's own voice,
+// in English or German to match the page. Nothing is downloaded. If the browser has no voice,
+// neither the button nor the setting shows.
+// "Read aloud" in Settings shows the button and reads each new question by itself (only while
+// the sound is on). It starts on for ages 5 to 7 and off from age 8. A changed choice is remembered.
+// A game calls Loopy.speech.question({ host: card, text: function () { return "What is 4 plus 3?"; } })
+// once, then Loopy.speech.read() each time a new question shows. The button sits in the host's top
+// right corner; with inline: true it sits after the host's text instead (for a one-line prompt).
+(function () {
+  var Loopy = window.Loopy;
+  var KEY = "loopy.readAloud", OLDEST_ON = 7;
+  var can = "speechSynthesis" in window && "SpeechSynthesisUtterance" in window;
+  var choice = null, opts = null, btn = null, toggle = null, tapped = false, talking = null;
+  try { var v = localStorage.getItem(KEY); if (v === "on" || v === "off") choice = v; } catch (e) {}
+  var SPEAKER = '<svg viewBox="0 0 24 24" aria-hidden="true" fill="currentColor"><path d="M4 9v6h4l5 4V5L8 9H4z"/><path d="M16 8.5a5 5 0 0 1 0 7M18.5 6a8.5 8.5 0 0 1 0 12" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>';
+
+  Loopy.addStrings({
+    en: { readAloud: "Read aloud", readOn: "On", readOff: "Off", readQuestion: "Read the question aloud", whatIs: "What is {q}?", orWord: "or" },
+    de: { readAloud: "Vorlesen", readOn: "An", readOff: "Aus", readQuestion: "Frage vorlesen", whatIs: "Wie viel ist {q}?", orWord: "oder" }
+  });
+
+  function isOn() { return choice ? choice === "on" : Loopy.getAge() <= OLDEST_ON; }
+  function voices() { try { return speechSynthesis.getVoices() || []; } catch (e) { return []; } }
+  function hasVoice() { return can && voices().length > 0; }
+  // An English or German voice for the page's language. Some phones write "de_DE" instead of "de-DE".
+  function voiceFor(lang) {
+    var list = voices().map(function (v) { return { v: v, l: String(v.lang).toLowerCase().replace("_", "-") }; });
+    var mine = list.filter(function (x) { return x.l === lang || x.l.indexOf(lang + "-") === 0; });
+    var pick = mine.filter(function (x) { return x.v.default; })[0] || mine.filter(function (x) { return x.v.localService; })[0] || mine[0];
+    return pick ? pick.v : null;
+  }
+  function say(text) {
+    if (!hasVoice() || !text) return;
+    try {
+      speechSynthesis.cancel();
+      var u = new SpeechSynthesisUtterance(text);
+      u.lang = Loopy.lang === "de" ? "de-DE" : "en-US";
+      var v = voiceFor(Loopy.lang);
+      if (v) u.voice = v;
+      u.rate = 0.9;
+      talking = u;
+      if (btn) btn.classList.add("speaking");
+      u.onend = u.onerror = function () { if (talking === u && btn) btn.classList.remove("speaking"); };
+      speechSynthesis.speak(u);
+    } catch (e) {}
+  }
+  function sync() {
+    var show = hasVoice();
+    if (btn) btn.hidden = !show || !isOn();
+    if (toggle) {
+      toggle.hidden = !show;
+      toggle.setAttribute("aria-pressed", String(isOn()));
+      toggle.lastChild.textContent = Loopy.t(isOn() ? "readOn" : "readOff");
+    }
+  }
+  function build() {
+    if (!opts || !can) return;
+    // Browsers only let a page speak after a tap or key press.
+    ["pointerdown", "keydown"].forEach(function (k) { document.addEventListener(k, function () { tapped = true; }, true); });
+    btn = document.createElement("button");
+    btn.type = "button";
+    btn.className = "read-btn" + (opts.inline ? " inline" : "");
+    btn.setAttribute("aria-label", Loopy.t("readQuestion"));
+    btn.title = Loopy.t("readQuestion");
+    btn.innerHTML = SPEAKER;
+    btn.addEventListener("click", function () { say(opts.text()); });
+    if (!opts.inline) opts.host.classList.add("read-host");
+    opts.host.appendChild(btn);
+
+    var sound = document.getElementById("sound-toggle");
+    if (sound) {
+      toggle = document.createElement("button");
+      toggle.type = "button";
+      toggle.id = "read-toggle";
+      toggle.className = "read-toggle";
+      toggle.setAttribute("aria-label", Loopy.t("readAloud"));
+      toggle.innerHTML = SPEAKER;
+      var label = document.createElement("span");
+      label.textContent = Loopy.t("readAloud");
+      toggle.appendChild(label);
+      var state = document.createElement("b");
+      state.setAttribute("aria-hidden", "true");
+      toggle.appendChild(state);
+      toggle.addEventListener("click", function () {
+        choice = isOn() ? "off" : "on";
+        try { localStorage.setItem(KEY, choice); } catch (e) {}
+        sync();
+        if (isOn()) say(opts.text()); else speechSynthesis.cancel();
+      });
+      sound.parentNode.insertBefore(toggle, sound.nextSibling);
+    }
+    // Some browsers load their voices a moment after the page.
+    try { speechSynthesis.addEventListener("voiceschanged", sync); } catch (e) {}
+    window.addEventListener("loopy:age", sync);
+    window.addEventListener("pagehide", function () { try { speechSynthesis.cancel(); } catch (e) {} });
+    sync();
+  }
+
+  Loopy.speech = {
+    question: function (o) {
+      opts = o;
+      if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", build);
+      else build();
+    },
+    // Reads the new question by itself when Read aloud and the sound are on.
+    read: function () {
+      if (!opts || !btn) return;
+      if (!isOn() || !Loopy.sound.isOn() || !tapped) { try { speechSynthesis.cancel(); } catch (e) {} return; }
+      say(opts.text());
+    }
+  };
+})();
+
 // Loopy rewards: a star for every right answer, badges for star totals, confetti for streaks.
 // Progress is kept in this browser's localStorage (no account, nothing sent anywhere).
 (function () {

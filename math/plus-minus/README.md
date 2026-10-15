@@ -37,6 +37,7 @@ Tap **Settings** to choose:
 
 - **Problems:** Adding, Taking away, or Both.
 - **Regrouping:** None, Some, or Always. Regrouping means carrying or trading, like 47 + 25.
+- **Read aloud:** On or Off. When it is on, a speaker button sits in the corner of the sum. It says, for example, "What is 47 plus 25?". Tap it to hear the question in the device's own voice, in English or German. Each new question is also read by itself while the sound is on. It starts on for ages 5 to 7 and off from 8. If the device has no voice, the button and the setting do not show.
 
 After 10 right in a row, the game asks if you want to make it harder.
 
