@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'sha256-PoqCbioUG8PYUVqB/HKc/ZnzG4lcKo5nBY32iDLvFKg='; style-src 'self' 'sha256-icQGlgV4MVFS9w/qYBgrhpLPpZURhGcpNY9cfTUodVo='; img-src 'self' data:; font-src 'self'; connect-src 'none'; worker-src 'self'; object-src 'none'; base-uri 'none'; form-action 'none'; manifest-src 'self'; upgrade-insecure-requests">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'sha256-NHtnnja+iJHbe4B82ZaoGriPT1jACbNC+a+l4AK0rto='; style-src 'self' 'sha256-icQGlgV4MVFS9w/qYBgrhpLPpZURhGcpNY9cfTUodVo='; img-src 'self' data:; font-src 'self'; connect-src 'none'; worker-src 'self'; object-src 'none'; base-uri 'none'; form-action 'none'; manifest-src 'self'; upgrade-insecure-requests">
 <meta name="referrer" content="strict-origin-when-cross-origin">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <link rel="icon" href="../icon.svg" type="image/svg+xml">
@@ -88,6 +88,7 @@ section { background: var(--card); border: 2px solid var(--line); border-radius:
     <h1 data-t="prHeading">How it's going</h1>
     <p class="muted" data-t="prLead">For grown-ups. Answers from this device in the last 30 days.</p>
   </div>
+  <div id="kid-picker" data-switch-only></div>
   <div class="chips" id="chips"></div>
 
   <section aria-labelledby="weeks-title">
@@ -112,7 +113,7 @@ section { background: var(--card); border: 2px solid var(--line); border-radius:
 <script>
 Loopy.addStrings({
   en: {
-    prTitle: "How it's going · loopy", prHeading: "How it's going", prLead: "For grown-ups. Answers from this device in the last 30 days.",
+    prTitle: "How it's going · loopy", prHeading: "How it's going", prHeadingKid: "How it's going for {name}", prLead: "For grown-ups. Answers from this device in the last 30 days.",
     prWeeks: "This week and last week", prThis: "This week", prLast: "Last week", prRight: "✓ {n}", prWrong: "✗ {n}",
     prRightAria: "{r} right, {w} wrong", prNone: "Not played",
     prMisses: "Answers to practise", prMissesText: "Each wrong answer, with the right answer next to it. Newest first.",
@@ -153,7 +154,7 @@ Loopy.addStrings({
     "tip-wi-wdc": "Practise capitals around the world, one continent at a time."
   },
   de: {
-    prTitle: "So läuft es · loopy", prHeading: "So läuft es", prLead: "Für Erwachsene. Antworten auf diesem Gerät aus den letzten 30 Tagen.",
+    prTitle: "So läuft es · loopy", prHeading: "So läuft es", prHeadingKid: "So läuft es bei {name}", prLead: "Für Erwachsene. Antworten auf diesem Gerät aus den letzten 30 Tagen.",
     prWeeks: "Diese Woche und letzte Woche", prThis: "Diese Woche", prLast: "Letzte Woche", prRight: "✓ {n}", prWrong: "✗ {n}",
     prRightAria: "{r} richtig, {w} falsch", prNone: "Nicht gespielt",
     prMisses: "Das üben wir noch", prMissesText: "Jede falsche Antwort, mit der richtigen daneben. Die neuesten zuerst.",
@@ -219,6 +220,12 @@ Loopy.addStrings({
   for (let i = 0; i <= dow; i++) thisWeek.push(Loopy.dayKey(-i));
   for (let i = dow + 1; i <= dow + 7; i++) lastWeek.push(Loopy.dayKey(-i));
 
+  // With more than one child, the page is about the child picked above.
+  if (Loopy.kids.list().length > 1) {
+    const h1 = document.querySelector("h1");
+    h1.removeAttribute("data-t");
+    h1.textContent = t("prHeadingKid", { name: Loopy.kids.label(Loopy.kids.current()) });
+  }
   let log = Loopy.log.get(), shown = 20;
 
   function totals(days, game) {

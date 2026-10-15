@@ -42,6 +42,7 @@ Open it from the link at the bottom of the home page.
 
 ## How it works
 
+- **Children.** More than one child can play on the same device. It starts with Dio and Dia. Tap **+** under "Who is playing?" on the home page to add a child with a name, a picture and an age. Each child has their own age, stars, badges, streaks, progress and game settings. Tap a name to switch. Theme, sound and language are shared.
 - **Age.** Pick the child's age. Each game gets easier or harder to match it. The age goes up by itself on each birthday.
 - **Language.** English is the default. Tap **DE** for German, or **EN** to go back.
 - **Colors.** Black is the default. You can also pick Sunny, Ocean, Candy, Forest or High contrast. High contrast is black and white with bright colors and white edges on every button.
@@ -65,8 +66,8 @@ In a game, tap **Settings** to change age, language, colors, the reading font, s
 
 ## Your data stays on your device
 
-Stars, settings and the answers on the grown-ups' page are saved in your browser. Nothing is sent anywhere. There are no ads, no tracking and no outside services. Even the fonts are stored on the site.
-To move stars to another device, open the home page, tap **Move my stars to another device**, and copy the code across. The code also carries the day streak, progress, Last 5, the age and the settings. Loading a code only adds, it never takes anything away.
+Stars, settings, children's names and the answers on the grown-ups' page are saved in your browser. Nothing is sent anywhere. There are no ads, no tracking and no outside services. Even the fonts are stored on the site.
+To move stars to another device, open the home page, tap **Move my stars to another device**, and copy the code across. The code also carries the day streak, progress, Last 5, the age and the settings. The code holds every child on the device. Loading a code only adds, it never takes anything away.
 
 ## Add Loopy to your home screen
 
@@ -126,6 +127,7 @@ Read [DESIGN.md](DESIGN.md) first. It lists the colors, fonts, buttons and layou
    - Call `Loopy.rewards.correct("game-id", streak)` after a right answer, and `Loopy.rewards.wrong("game-id", detail)` after a wrong one. These also fill in the Last 5 dots and the grown-ups' page.
    - `detail` tells the grown-ups' page what was missed: `{ q: "52 − 17", a: "35", y: "45", k: "sub-rg" }` is the problem, the right answer, the answer given, and the kind of problem. `Loopy.log.kind(op, a, b)` gives the kind for a sum. A new kind needs a `tip-` line in `progress/index.html` and in the check in `src/loopy.js`.
    - To add a **Print worksheet** button, call `Loopy.worksheet({ title, level, how, layout, make, cell, answer })` once. `make(20)` uses the game's own problem maker. See the comment above `Loopy.worksheet` in `src/loopy.js`.
+   - Save the game's own settings with `Loopy.store.get(key)` and `Loopy.store.set(key, text)`, never `localStorage` directly. They keep each child's settings apart.
    - In the **Reset score** button, call `Loopy.recent.clear("game-id")`. Add the game id to the `GAMES` lists in `src/loopy.js`, and to the list in `progress/index.html`.
 5. Add words in both languages with `Loopy.addStrings({ en: {...}, de: {...} })`. Put `data-t="key"` on fixed text, and use `Loopy.t("key")` in code. Use `Loopy.num(n)` to show numbers.
 6. Add one line to the `GAMES` list in the home page `index.html`, with the ages the game fits.
