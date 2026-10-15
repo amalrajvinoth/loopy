@@ -52,7 +52,7 @@ h1 { margin: 0; font-size: 1.6rem; font-weight: 700; text-wrap: balance; }
 .pill { background: var(--card); border: 1px solid var(--line); border-radius: 999px; padding: 6px 14px; font-weight: 600; font-size: 1rem; white-space: nowrap; }
 .pill span { color: var(--muted); font-weight: 400; margin-right: 4px; }
 
-.levels { display: grid; grid-template-columns: repeat(3, 1fr); gap: 6px; background: var(--chip); padding: 5px; border-radius: 14px; }
+.levels { display: grid; grid-template-columns: repeat(4, 1fr); gap: 6px; background: var(--chip); padding: 5px; border-radius: 14px; }
 .levels button {
   font: inherit; font-size: 0.95rem; font-weight: 600; color: var(--muted);
   background: transparent; border: 0; border-radius: 10px; padding: 10px 6px; min-height: 48px; cursor: pointer;
@@ -96,6 +96,7 @@ button:focus-visible, .helper input:focus-visible { outline: 3px solid var(--min
 @media (max-width: 420px) {
   h1 { font-size: 1.35rem; }
   .answers button { font-size: 1.8rem; min-height: 76px; }
+  .levels { grid-template-columns: repeat(2, 1fr); }
   .levels button { font-size: 0.85rem; }
 }
 @media (prefers-reduced-motion: reduce) { * { transition: none !important; } }
@@ -103,13 +104,14 @@ button:focus-visible, .helper input:focus-visible { outline: 3px solid var(--min
 <style>.home-link{display:inline-flex;align-items:center;min-height:40px;color:var(--muted);font-weight:600;text-decoration:none;font-size:0.95rem}.home-link:hover{color:var(--ink)}</style>
 <link rel="stylesheet" href="../../theme.css">
 <script src="../../theme.js"></script>
+<script src="../../age.js"></script>
 </head>
 <body>
 
 <div class="wrap">
   <div class="top-row">
     <a class="home-link" href="../../">&larr; Loopy</a>
-    <div id="theme-picker"></div>
+    <div class="controls"><div id="age-picker"></div><div id="theme-picker"></div></div>
   </div>
   <div class="top">
     <h1>What Time Is It?</h1>
@@ -123,6 +125,7 @@ button:focus-visible, .helper input:focus-visible { outline: 3px solid var(--min
     <button type="button" id="lv-half" data-step="30">Hours &amp; halves</button>
     <button type="button" id="lv-quarter" data-step="15">Quarter hours</button>
     <button type="button" id="lv-five" data-step="5">Every 5 min</button>
+    <button type="button" id="lv-one" data-step="1">Every minute</button>
   </div>
 
   <div class="clock-card">
@@ -159,7 +162,10 @@ button:focus-visible, .helper input:focus-visible { outline: 3px solid var(--min
     set(k, v) { try { localStorage.setItem(k, JSON.stringify(v)); } catch (e) {} }
   };
 
-  let step = store.get("clockquiz.step", 5);
+  // Each age starts at its own level; a level picked by hand is remembered for that age.
+  const stepForAge = (a) => a <= 6 ? 30 : a === 7 ? 15 : a === 8 ? 5 : 1;
+  let age = window.Loopy ? Loopy.getAge() : 8;
+  let step = store.get("clockquiz.step.a" + age, stepForAge(age));
   let showHelper = store.get("clockquiz.helper", false);
   let right = 0, tried = 0, streak = 0;
   let current = null, answered = false, lastKey = "";
@@ -221,7 +227,7 @@ button:focus-visible, .helper input:focus-visible { outline: 3px solid var(--min
     };
     const cands = [];
     // Hands swapped: minute hand read as the hour.
-    if (t.m !== 0) cands.push([t.m / 5 === 0 ? 12 : t.m / 5, ((t.h % 12) * 5)]);
+    if (t.m !== 0 && t.m % 5 === 0) cands.push([t.m / 5 === 0 ? 12 : t.m / 5, ((t.h % 12) * 5)]);
     // Hour hand already past the number: reading the next hour.
     if (t.m >= 30) cands.push([wrapH(t.h + 1), t.m]);
     cands.push([wrapH(t.h - 1), t.m]);
@@ -237,6 +243,12 @@ button:focus-visible, .helper input:focus-visible { outline: 3px solid var(--min
 
   function explain(t) {
     const hourWord = t.m === 0 ? "points to " + t.h : "is just past " + t.h;
+    if (t.m % 5 !== 0) {
+      const base = Math.floor(t.m / 5);
+      const marks = t.m % 5;
+      return "The short hand " + hourWord + ". The long hand is " + marks + " small mark" + (marks > 1 ? "s" : "") +
+        " past the " + (base || 12) + ", so " + (base * 5) + " + " + marks + " = " + t.m + " minutes.";
+    }
     const minWord = t.m === 0 ? "points to 12, so it is " + t.h + " o'clock" : "points to " + (t.m / 5 || 12) + ", which is " + t.m + " minutes";
     return "The short hand " + hourWord + ". The long hand " + minWord + ".";
   }
@@ -294,9 +306,12 @@ button:focus-visible, .helper input:focus-visible { outline: 3px solid var(--min
   }
 
   levelBtns.forEach(b => b.addEventListener("click", () => {
-    step = +b.dataset.step; store.set("clockquiz.step", step); render(); newRound();
+    step = +b.dataset.step; store.set("clockquiz.step.a" + age, step); render(); newRound();
   }));
   helperEl.addEventListener("change", () => { showHelper = helperEl.checked; store.set("clockquiz.helper", showHelper); render(); });
+  window.addEventListener("loopy:age", (e) => {
+    age = e.detail; step = store.get("clockquiz.step.a" + age, stepForAge(age)); render(); newRound();
+  });
   document.getElementById("next").addEventListener("click", newRound);
   document.getElementById("reset").addEventListener("click", () => { right = 0; tried = 0; streak = 0; render(); newRound(); });
   document.addEventListener("keydown", (e) => {

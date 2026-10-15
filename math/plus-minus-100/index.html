@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <style>:root{color-scheme:light;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}body{margin:0}[hidden]{display:none!important}</style>
-<title>Plus and Minus to 100</title>
+<title>Plus and Minus</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Lexend:wght@400;600;700&display=swap">
 <style>
@@ -127,16 +127,17 @@ button:focus-visible { outline: 3px solid var(--mark); outline-offset: 3px; }
 <style>.home-link{display:inline-flex;align-items:center;min-height:40px;color:var(--muted);font-weight:600;text-decoration:none;font-size:0.95rem}.home-link:hover{color:var(--ink)}</style>
 <link rel="stylesheet" href="../../theme.css">
 <script src="../../theme.js"></script>
+<script src="../../age.js"></script>
 </head>
 <body>
 
 <div class="wrap">
   <div class="top-row">
     <a class="home-link" href="../../">&larr; Loopy</a>
-    <div id="theme-picker"></div>
+    <div class="controls"><div id="age-picker"></div><div id="theme-picker"></div></div>
   </div>
   <div class="top">
-    <h1>Plus and Minus to 100</h1>
+    <h1 id="title">Plus and Minus to 100</h1>
     <div class="score" aria-live="polite">
       <div class="pill"><span>Score</span><b id="score">0 / 0</b></div>
       <div class="pill"><span>Streak</span><b id="streak">0</b></div>
@@ -198,50 +199,82 @@ button:focus-visible { outline: 3px solid var(--mark); outline-offset: 3px; }
 // GEN START
 const randInt = (lo, hi) => lo + Math.floor(Math.random() * (hi - lo + 1));
 
-// Does this problem need regrouping in the ones place?
-function needsRegroup(op, a, b) {
-  return op === "add" ? (a % 10) + (b % 10) >= 10 : (a % 10) < (b % 10);
+// How big the numbers get for each age (grade 1 is about age 6).
+function maxForAge(age) {
+  if (age <= 6) return 20;
+  if (age <= 8) return 100;
+  if (age <= 10) return 1000;
+  return 10000;
+}
+function defaultsForAge(age) {
+  return { op: age <= 6 ? "add" : "mix", rg: age <= 7 ? "no" : "mix" };
 }
 
-// One random problem: numbers and results within 100, never negative, never zero.
-function makeProblem(opMode, rgMode, avoid) {
-  for (let tries = 0; tries < 2000; tries++) {
+const digitSum = (n) => String(n).split("").reduce((t, d) => t + +d, 0);
+// Does this problem need regrouping (carrying or trading) in any column?
+function needsRegroup(op, a, b) {
+  return op === "add" ? digitSum(a) + digitSum(b) !== digitSum(a + b) : digitSum(a - b) + digitSum(b) !== digitSum(a);
+}
+
+// One random problem: numbers and results up to max, never negative, never zero.
+function makeProblem(opMode, rgMode, avoid, max) {
+  max = max || 100;
+  const lo = max >= 1000 ? max / 10 : (max >= 100 ? 10 : 2);
+  for (let tries = 0; tries < 5000; tries++) {
     const op = opMode === "mix" ? (Math.random() < 0.5 ? "add" : "sub") : opMode;
     const wantRg = rgMode === "mix" ? Math.random() < 0.5 : rgMode === "yes";
+    const small = Math.random() < 0.2 ? 2 : lo;
     let a, b;
     if (op === "add") {
-      a = randInt(10, 95);
-      b = Math.random() < 0.2 ? randInt(2, 9) : randInt(10, 90);
-      if (a + b > 100) continue;
+      a = randInt(lo, max - lo);
+      if (max - a < small) continue;
+      b = randInt(small, max - a);
     } else {
-      a = randInt(11, 100);
-      b = Math.random() < 0.2 ? randInt(2, 9) : randInt(10, a - 1);
-      if (b >= a) continue;
+      a = randInt(lo + 1, max);
+      if (a - 1 < small) continue;
+      b = randInt(small, a - 1);
     }
     if (needsRegroup(op, a, b) !== wantRg) continue;
     const k = op + a + "," + b;
     if (avoid && avoid.includes(k)) continue;
     return { op, a, b, key: k, answer: op === "add" ? a + b : a - b };
   }
-  return { op: "add", a: 23, b: 14, key: "add23,14", answer: 37 };
+  return { op: "add", a: 12, b: 5, key: "add12,5", answer: 17 };
 }
 
-// One short reason, place by place, the way it is done on paper.
+const PLACE = ["Ones", "Tens", "Hundreds", "Thousands", "Ten thousands"];
+const ONE = ["one", "ten", "hundred", "thousand", "ten thousand"];
+const digit = (n, i) => Math.floor(n / Math.pow(10, i)) % 10;
+
+// A short reason, column by column, the way it is done on paper.
 function explain(p) {
-  const aO = p.a % 10, aT = Math.floor(p.a / 10), bO = p.b % 10, bT = Math.floor(p.b / 10);
+  const cols = String(Math.max(p.a, p.b)).length;
+  const parts = [];
   if (p.op === "add") {
-    const ones = aO + bO;
-    if (ones >= 10) {
-      return "Ones: " + aO + " + " + bO + " = " + ones + ". Write " + (ones - 10) + " and carry 1 ten. Tens: " +
-        aT + " + " + bT + " + 1 = " + (aT + bT + 1) + ".";
+    let carry = 0;
+    for (let i = 0; i < cols; i++) {
+      const da = digit(p.a, i), db = digit(p.b, i), s = da + db + carry;
+      let t = PLACE[i] + ": " + da + " + " + db + (carry ? " + 1" : "") + " = " + s;
+      if (s >= 10 && i < cols - 1) t += ". Write " + (s - 10) + " and carry 1 " + ONE[i + 1];
+      parts.push(t + ".");
+      carry = s >= 10 ? 1 : 0;
     }
-    return "Ones: " + aO + " + " + bO + " = " + ones + ". Tens: " + aT + " + " + bT + " = " + (aT + bT) + ".";
+  } else {
+    let borrow = 0;
+    for (let i = 0; i < cols; i++) {
+      const da = digit(p.a, i) - borrow, db = digit(p.b, i);
+      if (i === cols - 1 && da === 0 && db === 0) break;
+      if (da < db) {
+        parts.push(PLACE[i] + ": " + (da >= 0 ? "you can't take " + db + " from " + da + ", so trade" : "trade") +
+          " 1 " + ONE[i + 1] + " for 10 " + PLACE[i].toLowerCase() + ": " + (da + 10) + " − " + db + " = " + (da + 10 - db) + ".");
+        borrow = 1;
+      } else {
+        parts.push(PLACE[i] + ": " + da + " − " + db + " = " + (da - db) + ".");
+        borrow = 0;
+      }
+    }
   }
-  if (aO < bO) {
-    return "You can't take " + bO + " from " + aO + ", so trade 1 ten for 10 ones: " + (aO + 10) + " − " + bO + " = " +
-      (aO + 10 - bO) + ". Tens: " + (aT - 1) + " − " + bT + " = " + (aT - 1 - bT) + ".";
-  }
-  return "Ones: " + aO + " − " + bO + " = " + (aO - bO) + ". Tens: " + aT + " − " + bT + " = " + (aT - bT) + ".";
+  return parts.join(" ");
 }
 // GEN END
 
@@ -257,8 +290,17 @@ function explain(p) {
     set(k, v) { try { localStorage.setItem(k, JSON.stringify(v)); } catch (e) {} }
   };
 
-  let opMode = store.get("pm100.op", "mix");
-  let rgMode = store.get("pm100.rg", "mix");
+  let age = window.Loopy ? Loopy.getAge() : 8;
+  let max, opMode, rgMode;
+  // Settings are remembered per age, so each age starts at the right level.
+  function loadForAge() {
+    const d = defaultsForAge(age);
+    max = maxForAge(age);
+    opMode = store.get("pm100.op.a" + age, d.op);
+    rgMode = store.get("pm100.rg.a" + age, d.rg);
+    $("title").textContent = "Plus and Minus to " + max.toLocaleString("en-US");
+  }
+  loadForAge();
   let right = 0, tried = 0, streak = 0;
   let current = null, typed = "", answered = false, recent = [];
 
@@ -267,7 +309,7 @@ function explain(p) {
     $("streak").textContent = streak;
     opBtns.forEach(b => b.setAttribute("aria-pressed", String(b.dataset.op === opMode)));
     rgBtns.forEach(b => b.setAttribute("aria-pressed", String(b.dataset.rg === rgMode)));
-    ansEl.textContent = typed;
+    ansEl.textContent = typed === "" ? "" : parseInt(typed, 10).toLocaleString("en-US");
     ansEl.classList.toggle("empty", !answered && typed === "");
     goBtn.textContent = answered ? "Next" : "Check";
     goBtn.disabled = !answered && typed === "";
@@ -276,12 +318,12 @@ function explain(p) {
   }
 
   function newRound() {
-    current = makeProblem(opMode, rgMode, recent);
+    current = makeProblem(opMode, rgMode, recent, max);
     recent.push(current.key);
     if (recent.length > 15) recent.shift();
     typed = ""; answered = false;
-    $("top-num").textContent = current.a;
-    $("bot-num").textContent = current.b;
+    $("top-num").textContent = current.a.toLocaleString("en-US");
+    $("bot-num").textContent = current.b.toLocaleString("en-US");
     $("op-sign").textContent = current.op === "add" ? "+" : "−";
     $("vert").setAttribute("aria-label", current.a + (current.op === "add" ? " plus " : " minus ") + current.b);
     card.className = "problem-card";
@@ -291,7 +333,7 @@ function explain(p) {
   }
 
   function press(d) {
-    if (answered || typed.length >= 3) return;
+    if (answered || typed.length >= String(max).length) return;
     if (typed === "0") typed = "";
     typed += d;
     render();
@@ -309,9 +351,10 @@ function explain(p) {
     card.className = "problem-card " + (ok ? "good" : "bad");
     feedbackEl.className = "feedback " + (ok ? "good" : "bad");
     const sign = current.op === "add" ? " + " : " − ";
+    const fmtN = (n) => n.toLocaleString("en-US");
     const head = ok
       ? (streak >= 3 ? "Correct! " + streak + " in a row!" : "Correct!")
-      : "Not quite. " + current.a + sign + current.b + " = " + current.answer + ".";
+      : "Not quite. " + fmtN(current.a) + sign + fmtN(current.b) + " = " + fmtN(current.answer) + ".";
     feedbackEl.innerHTML = "<strong></strong>";
     feedbackEl.firstChild.textContent = head;
     feedbackEl.appendChild(document.createTextNode(explain(current)));
@@ -323,11 +366,12 @@ function explain(p) {
   $("k-erase").addEventListener("click", erase);
   goBtn.addEventListener("click", go);
   opBtns.forEach(b => b.addEventListener("click", () => {
-    opMode = b.dataset.op; store.set("pm100.op", opMode); newRound();
+    opMode = b.dataset.op; store.set("pm100.op.a" + age, opMode); newRound();
   }));
   rgBtns.forEach(b => b.addEventListener("click", () => {
-    rgMode = b.dataset.rg; store.set("pm100.rg", rgMode); newRound();
+    rgMode = b.dataset.rg; store.set("pm100.rg.a" + age, rgMode); newRound();
   }));
+  window.addEventListener("loopy:age", (e) => { age = e.detail; recent = []; loadForAge(); newRound(); });
   $("reset").addEventListener("click", () => { right = 0; tried = 0; streak = 0; newRound(); });
   document.addEventListener("keydown", (e) => {
     if (e.metaKey || e.ctrlKey || e.altKey) return;

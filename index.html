@@ -60,51 +60,73 @@ h1 span:nth-child(5n)   { color: var(--c5); animation-delay: .48s; }
 .quiz h3 { margin: 0; font-family: var(--display); font-size: 1.6rem; font-weight: 700; color: var(--tone); }
 .quiz p { margin: 0; color: var(--muted); line-height: 1.45; }
 .go { margin-top: auto; align-self: flex-start; background: var(--tone); color: var(--card); font-family: var(--display); font-weight: 700; font-size: 1.1rem; padding: 6px 16px; border-radius: 999px; }
+.empty { margin: 0; color: var(--muted); font-size: 1.1rem; text-align: center; }
 footer { color: var(--muted); font-size: 0.95rem; text-align: center; }
 @media (prefers-reduced-motion: reduce) { * { transition: none !important; animation: none !important; } }
 </style>
 <link rel="stylesheet" href="theme.css">
 <script src="theme.js"></script>
+<script src="age.js"></script>
 </head>
 <body>
 <div class="wrap">
   <header>
     <h1 aria-label="Loopy"><span>L</span><span>o</span><span>o</span><span>p</span><span>y</span></h1>
     <p class="lead">Learn. Play. Repeat.</p>
-    <div id="theme-picker"></div>
+    <div class="controls" style="justify-content:center"><div id="age-picker"></div><div id="theme-picker"></div></div>
   </header>
   <main id="list" style="display:flex;flex-direction:column;gap:28px"></main>
   <footer>More games are on the way!</footer>
 </div>
 <script>
 // To add a game: put it in <subject>/<folder>/index.html and add one line below.
-// A new subject appears on its own the first time a line uses it.
+// ages: the youngest and oldest age it suits. Games for the picked age show first.
 const GAMES = [
-  { subject: "Math", path: "math/plus-minus-100/", title: "Plus and Minus to 100", tag: "Adding and taking away",
-    text: "Solve problems written like your worksheet and type the answer on a big number pad." },
-  { subject: "Math", path: "math/what-time-is-it/", title: "What Time Is It?", tag: "Telling time",
-    text: "Read the hands on the clock and pick the right time." },
+  { subject: "Math", path: "math/plus-minus-100/", title: "Plus and Minus", tag: "Adding and taking away", ages: [5, 16],
+    text: "Worksheet-style sums typed on a big number pad. The numbers grow with your age." },
+  { subject: "Math", path: "math/what-time-is-it/", title: "What Time Is It?", tag: "Telling time", ages: [5, 10],
+    text: "Read the hands on the clock and pick the right time, from half hours down to the minute." },
 ];
 const list = document.getElementById("list");
-const groups = {};
-for (const g of GAMES) {
-  if (!groups[g.subject]) {
-    const sec = document.createElement("section");
-    sec.className = "subject";
-    sec.innerHTML = '<h2 class="sub"></h2><div class="grid"></div>';
-    sec.firstChild.textContent = g.subject;
-    list.appendChild(sec);
-    groups[g.subject] = sec.lastChild;
-  }
+
+function card(g) {
   const a = document.createElement("a");
   a.className = "quiz";
   a.href = g.path;
   a.innerHTML = '<span class="tag"></span><h3></h3><p></p><span class="go">Play &rarr;</span>';
-  a.children[0].textContent = g.tag;
+  a.children[0].textContent = g.tag + " · Ages " + g.ages[0] + "–" + g.ages[1];
   a.children[1].textContent = g.title;
   a.children[2].textContent = g.text;
-  groups[g.subject].appendChild(a);
+  return a;
 }
+function section(title) {
+  const sec = document.createElement("section");
+  sec.className = "subject";
+  sec.innerHTML = '<h2 class="sub"></h2><div class="grid"></div>';
+  sec.firstChild.textContent = title;
+  list.appendChild(sec);
+  return sec.lastChild;
+}
+function render() {
+  const age = window.Loopy ? Loopy.getAge() : 8;
+  list.innerHTML = "";
+  const fits = GAMES.filter(g => age >= g.ages[0] && age <= g.ages[1]);
+  const others = GAMES.filter(g => !fits.includes(g));
+  const groups = {};
+  for (const g of fits) (groups[g.subject] = groups[g.subject] || section(g.subject)).appendChild(card(g));
+  if (!fits.length) {
+    const p = document.createElement("p");
+    p.className = "empty";
+    p.textContent = "No games for age " + age + " yet. Try the ones below.";
+    list.appendChild(p);
+  }
+  if (others.length) {
+    const grid = section("More to explore");
+    for (const g of others) grid.appendChild(card(g));
+  }
+}
+render();
+window.addEventListener("loopy:age", render);
 </script>
 </body>
 </html>
