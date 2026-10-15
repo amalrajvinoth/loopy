@@ -27,6 +27,7 @@ It works on phones, tablets and computers. There is no sign-up and no ads.
 | [Coins and Change](math/coins-change/) | Counting coins and notes, and giving change, in euros, pounds or dollars | [README](math/coins-change/README.md) |
 | [Sound Spell](languages/sound-spell/) | Starting and ending sounds of English and German words | [README](languages/sound-spell/README.md) |
 | [Word Match](languages/word-match/) | 100 words for animals, food, home and school, in English or German | [README](languages/word-match/README.md) |
+| [Quick Facts](science/quick-facts/) | Short science quizzes about space, animals and the body, with one line of why after each answer | [README](science/quick-facts/README.md) |
 | [Today's 10](mix/daily-mix/) | A daily mix of 10 problems from the games for your age, with a day streak | [README](mix/daily-mix/README.md) |
 
 ## For grown-ups
@@ -44,7 +45,7 @@ Open it from the link at the bottom of the home page.
 - **Colors.** Black is the default. You can also pick Sunny, Ocean, Candy or Forest.
 - **Stars.** Every right answer gives a star. More stars unlock badges. A streak of right answers sets off confetti.
 - **Sound.** Short happy sounds play. Tap the speaker to turn them off.
-- **Read aloud.** In Plus and Minus, Times and Share, What Time Is It?, Make 10, Bigger or Smaller, Pizza Fractions and Coins and Change, a speaker button reads the question out loud in the device's own voice, in English or German. Nothing is downloaded. It is on by itself for ages 5 to 7. Turn it on or off in **Settings**.
+- **Read aloud.** In Plus and Minus, Times and Share, What Time Is It?, Make 10, Bigger or Smaller, Pizza Fractions, Coins and Change and Quick Facts, a speaker button reads the question out loud in the device's own voice, in English or German. Nothing is downloaded. It is on by itself for ages 5 to 7. Turn it on or off in **Settings**.
 - **Help.** After each answer, the game shows a short reason, so kids learn from mistakes.
 - **Last 5.** Each game shows the last 5 answers as green and red dots.
 - **Back.** The big button with the loopy bunny at the top of a game goes back to all games.
