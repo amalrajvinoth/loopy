@@ -1,0 +1,20 @@
+# What's new in loopy
+
+The big changes, newest first. Small fixes are not listed.
+
+| Date | What's new | Where | PR |
+| --- | --- | --- | --- |
+| 2026-10-15 | Print a worksheet: 20 problems at your child's level on one page, and the answers on a second page. Works on A4 and Letter, or save it as a PDF. | Plus and Minus, Times and Share, What Time Is It?, Sound Spell | #30 |
+| 2026-10-15 | "How it's going", a page for grown-ups: right and wrong answers per game this week and last week, the problems that were missed, and what to practise next. | Home page (link at the bottom) | #29 |
+| 2026-10-15 | A bigger back button with the loopy bunny, and a "Last 5" row of green and red dots under the score. | Every game | #26 |
+| 2026-10-15 | Pages load faster on slow mobile data. | Every page | #23 |
+| 2026-10-15 | Today's 10: ten problems a day from the games that fit your child's age, with a day streak and day badges. | Home page | #22 |
+| 2026-10-15 | Sound Spell: find the missing starting or ending sound of a word, with the word read out loud. English and German. | Sound Spell | — |
+| 2026-10-15 | A Help page with common questions, and links to send feedback or report a problem. | Home page | — |
+| 2026-10-15 | A new logo: the loopy bunny. | Every page | — |
+| 2026-10-15 | German, next to English. | Every page | — |
+| 2026-10-15 | Times and Share: times tables and sharing, with dots to count. | Times and Share | — |
+| 2026-10-15 | Games fit one screen on phones and tablets. | Every game | — |
+| 2026-10-15 | Stars, badges, confetti, sounds, and a code to move stars to another device. | Every game | — |
+| 2026-10-15 | The age picker: games get easier or harder to match your child's age. | Every game | — |
+| 2026-10-15 | loopy opens with Plus and Minus and What Time Is It?, in five color themes. | — | — |
