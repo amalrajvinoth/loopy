@@ -63,7 +63,7 @@ The site is plain HTML, CSS and JavaScript. There is no build step.
 | `logo.svg`, `logo-white.svg`, `icon.svg` | The logo (for light and dark backgrounds) and the app icon |
 | `help/index.html` | The Help page: FAQ and feedback links |
 | `fonts/` | The Fredoka and Lexend fonts, stored here so no request goes to Google |
-| `.github/` | Forms for problems, ideas and questions, and the automatic checks |
+| `.github/` | Forms for problems, ideas and questions, the automatic checks, and Dependabot |
 | `tools/` | Small scripts: `csp.py` updates each page's security policy, `check_external.py` makes sure nothing loads from other websites |
 | `math/<game>/index.html` | One game per folder |
 | `math/<game>/README.md` | What that game does |

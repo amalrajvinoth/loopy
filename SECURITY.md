@@ -25,7 +25,8 @@ We aim to reply within 7 days. We will tell you when it is fixed, and thank you 
 - **No outside code.** Loopy uses no libraries or packages, so there are no supply-chain risks to patch.
 - **Safe text handling.** Game text is added with `textContent`, not as HTML, so pasted codes cannot run scripts.
 - **Checked saved data.** Settings and stars read from the browser are checked before use. A stars code is only accepted if it is short, well formed, and holds sane numbers for known games.
-- **Automatic checks.** Every push and pull request runs `tools/csp.py --check` and `tools/check_external.py` on GitHub.
+- **Automatic checks.** Every push and pull request runs `tools/csp.py --check` and `tools/check_external.py` on GitHub. The action they use is pinned to an exact version, and Dependabot proposes updates to it.
+- **security.txt.** Security researchers can find how to reach us at `/.well-known/security.txt`, the standard place.
 - **HTTPS only.** GitHub Pages serves the site over HTTPS.
 - **Reviewed changes.** Changes to `main` go through a pull request reviewed by the owner.
 

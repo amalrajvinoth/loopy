@@ -1,0 +1,5 @@
+# How to report a security problem in loopy (RFC 9116)
+Contact: https://github.com/amalrajvinoth/loopy/security/advisories/new
+Policy: https://github.com/amalrajvinoth/loopy/blob/main/SECURITY.md
+Preferred-Languages: en, de
+Expires: 2027-10-15T00:00:00.000Z
