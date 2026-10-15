@@ -223,6 +223,18 @@ Age, language, color theme, sound and levels go behind the ⚙ button. The toggl
 - **Language picker:** EN and DE in a chip pill. The chosen one gets the card color.
 - **Theme picker:** five round 36px swatches. The chosen one gets an ink border.
 - **Level picker:** a segmented row of buttons in a chip box. The chosen one is raised on the card color.
+- **Print worksheet button:** a pill with a printer icon, a 2px `c1` border and `c1` text on no fill, at least 44px tall. A muted line next to it says what prints. It sits above the panel foot. `Loopy.worksheet()` adds it.
+
+### Worksheet (print)
+
+What **Print worksheet** prints. Only the sheet prints; the game is hidden. It is always black on white, whatever the theme, and uses no background colors, because browsers do not print them by default. Lines are borders.
+
+- **Paper:** 12mm margins. Sized to fit both A4 and US Letter. Page 1 has the problems, page 2 the answers.
+- **Header:** the game's name in Fredoka 20pt, "loopy" on the right in grey, a 0.6mm rule, one grey line with the age and settings, then Name, Date and Score lines, then one bold line saying what to do.
+- **Problems:** 20 boxes with a light grey 0.3mm border and 3mm radius, numbered small in the top left corner. Lexend, large: 24pt for sums in columns, 20pt for lines, 18pt for words.
+- **Layouts:** `vert` (Plus and Minus, 4 × 5, written in columns), `line` (Times and Share, 2 × 10, "7 × 8 = ____"), `clock` (What Time Is It?, 4 × 5, a 32mm clock and "____ : ____"), `word` (Sound Spell, 4 × 5, picture, word with a gap, choices to circle).
+- **Clocks:** black face line, ticks and numbers. The hour hand is short and thick, the minute hand long and thin.
+- **Answers:** two columns of ten, 16pt, with a light line under each.
 
 ### Rewards
 
@@ -303,6 +315,7 @@ Test every page at these sizes:
 | Phone landscape | 844 × 390 | Two columns |
 | Tablet portrait | 820 × 1180 | One column up to 640px. Bigger keys and numbers |
 | Tablet landscape | 1180 × 820 | Two columns up to 1100px |
+| Print | A4 and US Letter | Only the worksheet prints, on two pages |
 
 - Short phones (under 760px tall) use smaller feedback text, so the pad stays on screen.
 - Buttons use `touch-action: manipulation`, so a double tap does not zoom.

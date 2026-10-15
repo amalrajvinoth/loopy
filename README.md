@@ -42,6 +42,7 @@ Open it from the link at the bottom of the home page.
 - **Help.** After each answer, the game shows a short reason, so kids learn from mistakes.
 - **Last 5.** Each game shows the last 5 answers as green and red dots.
 - **Back.** The big button with the loopy bunny at the top of a game goes back to all games.
+- **Worksheets.** In Plus and Minus, Times and Share, What Time Is It? and Sound Spell, tap **Settings**, then **Print worksheet**. You get 20 problems at the child's level on one page, and the answers on a second page. It works on A4 and US Letter paper, and you can save it as a PDF from the print window.
 
 In a game, tap **Settings** to change age, language, colors, sound or level.
 
@@ -70,7 +71,7 @@ The site is plain HTML, CSS and JavaScript. One small build step makes the share
 | File | What it is |
 | --- | --- |
 | `index.html` | The home page and the list of games |
-| `src/loopy.js` | Shared code: languages, colors, age, sound, stars and badges, Last 5 dots, the back button. Edit this one |
+| `src/loopy.js` | Shared code: languages, colors, age, sound, stars and badges, Last 5 dots, the back button, printable worksheets. Edit this one |
 | `src/loopy.css` | Shared styles and fonts. Edit this one |
 | `loopy.js`, `loopy.css` | Small copies made by the build. Pages load these. Do not edit them |
 | `DESIGN.md` | How loopy looks: colors, fonts, buttons, layout and rules. Read it before you change a page |
@@ -107,6 +108,7 @@ Read [DESIGN.md](DESIGN.md) first. It lists the colors, fonts, buttons and layou
    - `Loopy.getAge()` gives the age. The `loopy:age` event fires when it changes.
    - Call `Loopy.rewards.correct("game-id", streak)` after a right answer, and `Loopy.rewards.wrong("game-id", detail)` after a wrong one. These also fill in the Last 5 dots and the grown-ups' page.
    - `detail` tells the grown-ups' page what was missed: `{ q: "52 − 17", a: "35", y: "45", k: "sub-rg" }` is the problem, the right answer, the answer given, and the kind of problem. `Loopy.log.kind(op, a, b)` gives the kind for a sum. A new kind needs a `tip-` line in `progress/index.html` and in the check in `src/loopy.js`.
+   - To add a **Print worksheet** button, call `Loopy.worksheet({ title, level, how, layout, make, cell, answer })` once. `make(20)` uses the game's own problem maker. See the comment above `Loopy.worksheet` in `src/loopy.js`.
    - In the **Reset score** button, call `Loopy.recent.clear("game-id")`. Add the game id to the `GAMES` lists in `src/loopy.js`, and to the list in `progress/index.html`.
 5. Add words in both languages with `Loopy.addStrings({ en: {...}, de: {...} })`. Put `data-t="key"` on fixed text, and use `Loopy.t("key")` in code. Use `Loopy.num(n)` to show numbers.
 6. Add one line to the `GAMES` list in the home page `index.html`, with the ages the game fits.

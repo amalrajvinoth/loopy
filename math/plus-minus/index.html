@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'sha256-7B05g1NWY3OpD83ukaoSaTadMVevjt2ewPjMLog+PfU='; style-src 'self' 'sha256-z2P7kGW5Z05eCTjTZdYpc0vThTlOE9vmt97pVSvi2I4=' 'sha256-ER4UVxOAHVG2PpFuwsi/fNYnlP9iTYLytTr9Qx7YKqY=' 'sha256-RT1053JU5UiKvjrCUFx1rlhdFLMmgtuFJ9T8jnMeawQ=' 'sha256-2y0S46bt/3uF+mnug5iE3kMK8Qv9O2M7B7z/9Ujp8V4='; img-src 'self' data:; font-src 'self'; connect-src 'none'; object-src 'none'; base-uri 'none'; form-action 'none'; manifest-src 'self'; upgrade-insecure-requests">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'sha256-sWL8xEFJjXNvIdr035S4wUFGsHKawTBXeUFTHopY43I='; style-src 'self' 'sha256-z2P7kGW5Z05eCTjTZdYpc0vThTlOE9vmt97pVSvi2I4=' 'sha256-ER4UVxOAHVG2PpFuwsi/fNYnlP9iTYLytTr9Qx7YKqY=' 'sha256-RT1053JU5UiKvjrCUFx1rlhdFLMmgtuFJ9T8jnMeawQ=' 'sha256-2y0S46bt/3uF+mnug5iE3kMK8Qv9O2M7B7z/9Ujp8V4='; img-src 'self' data:; font-src 'self'; connect-src 'none'; object-src 'none'; base-uri 'none'; form-action 'none'; manifest-src 'self'; upgrade-insecure-requests">
 <meta name="referrer" content="strict-origin-when-cross-origin">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <style>:root{color-scheme:light;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}body{margin:0}[hidden]{display:none!important}</style>
@@ -274,7 +274,8 @@ Loopy.addStrings({
     pmCant: "you can't take {b} from {a}, so trade 1 {next} for 10 {place}",
     pmTrade: "trade 1 {next} for 10 {place}",
     pmTrySome: "Try some regrouping problems", pmTryAll: "Try regrouping in every problem",
-    pmTryMix: "Try adding and taking away mixed together", plus: "plus", minus: "minus"
+    pmTryMix: "Try adding and taking away mixed together", plus: "plus", minus: "minus",
+    pmHow: "Work out each sum. Write the answer under the line."
   },
   de: {
     pmName: "Plus und Minus", pmTitle: "Plus und Minus bis {max}",
@@ -286,7 +287,8 @@ Loopy.addStrings({
     pmCant: "{b} von {a} geht nicht, also tausche 1 {next} gegen 10 {place}",
     pmTrade: "tausche 1 {next} gegen 10 {place}",
     pmTrySome: "Probiere ein paar Aufgaben mit Übertrag", pmTryAll: "Probiere Übertrag in jeder Aufgabe",
-    pmTryMix: "Probiere Plus und Minus gemischt", plus: "plus", minus: "minus"
+    pmTryMix: "Probiere Plus und Minus gemischt", plus: "plus", minus: "minus",
+    pmHow: "Rechne jede Aufgabe aus. Schreibe das Ergebnis unter den Strich."
   }
 });
 
@@ -491,6 +493,29 @@ function explain(p) {
       if (document.activeElement && document.activeElement.tagName === "BUTTON" && document.activeElement !== goBtn) return;
       go(); e.preventDefault();
     }
+  });
+
+  // Print worksheet: 20 problems with the same numbers, problems and regrouping as the game.
+  Loopy.worksheet({
+    title: () => t("pmTitle", { max: Loopy.num(max) }),
+    level: () => [t("ageLabel", { n: age }),
+      t("problems") + ": " + t({ add: "adding", sub: "takingAway", mix: "both" }[opMode]),
+      t("regrouping") + ": " + t({ no: "none", mix: "some", yes: "always" }[rgMode])].join(" · "),
+    how: () => t("pmHow"),
+    layout: "vert",
+    make: (n) => { const list = [], keys = []; while (list.length < n) { const p = makeProblem(opMode, rgMode, keys, max); keys.push(p.key); list.push(p); } return list; },
+    cell: (p) => {
+      const box = document.createElement("div");
+      box.className = "ws-sv";
+      [["", Loopy.num(p.a)], ["ws-op", p.op === "add" ? "+" : "−"], ["", Loopy.num(p.b)], ["ws-rule", ""], ["ws-room", ""]].forEach(([c, x]) => {
+        const s = document.createElement("span");
+        if (c) s.className = c;
+        s.textContent = x;
+        box.appendChild(s);
+      });
+      return box;
+    },
+    answer: (p) => Loopy.num(p.a) + (p.op === "add" ? " + " : " − ") + Loopy.num(p.b) + " = " + Loopy.num(p.answer)
   });
 
   newRound();

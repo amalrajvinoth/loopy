@@ -40,6 +40,15 @@ Tap **Settings** to choose:
 
 After 10 right in a row, the game asks if you want to make it harder.
 
+## Print a worksheet
+
+Tap **Settings**, then **Print worksheet**. The print window opens. Print it, or save it as a PDF.
+
+- Page 1 has 20 sums written in columns, like in the game, with room to write the answer under the line.
+- The numbers, problems and regrouping are the same as the game's settings for that age.
+- Page 2 has the answers, for example "47 + 25 = 72".
+- Each tap makes a new set of sums.
+
 ## The reason after each answer
 
 The game explains the answer column by column, the way you do it on paper.

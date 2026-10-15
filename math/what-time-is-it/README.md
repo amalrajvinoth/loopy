@@ -37,6 +37,15 @@ Tap **Settings** to choose:
 
 After 10 right in a row, the game asks if you want to try the next level.
 
+## Print a worksheet
+
+Tap **Settings**, then **Print worksheet**. The print window opens. Print it, or save it as a PDF.
+
+- Page 1 has 20 clocks in black and white, each with a line to write the time: "____ : ____".
+- The times follow the level you picked. If minute numbers are on, they are printed too.
+- Page 2 has the times, for example "4:30".
+- Each tap makes a new set of clocks.
+
 ## The reason after each answer
 
 The game explains how to read the clock.
