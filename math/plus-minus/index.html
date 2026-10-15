@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'sha256-cJXUzLgAHuA/vIgeqtfDK3jxZo88SlMQwUbQs8TpBak='; style-src 'self' 'sha256-z2P7kGW5Z05eCTjTZdYpc0vThTlOE9vmt97pVSvi2I4=' 'sha256-ER4UVxOAHVG2PpFuwsi/fNYnlP9iTYLytTr9Qx7YKqY=' 'sha256-RT1053JU5UiKvjrCUFx1rlhdFLMmgtuFJ9T8jnMeawQ=' 'sha256-2y0S46bt/3uF+mnug5iE3kMK8Qv9O2M7B7z/9Ujp8V4='; img-src 'self' data:; font-src 'self'; connect-src 'none'; object-src 'none'; base-uri 'none'; form-action 'none'; manifest-src 'self'; upgrade-insecure-requests">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'sha256-EFfM6xwt8p5GweYATozMwUGrPaIdgZyAzJmxLk/PtmE='; style-src 'self' 'sha256-z2P7kGW5Z05eCTjTZdYpc0vThTlOE9vmt97pVSvi2I4=' 'sha256-ER4UVxOAHVG2PpFuwsi/fNYnlP9iTYLytTr9Qx7YKqY=' 'sha256-RT1053JU5UiKvjrCUFx1rlhdFLMmgtuFJ9T8jnMeawQ=' 'sha256-2y0S46bt/3uF+mnug5iE3kMK8Qv9O2M7B7z/9Ujp8V4='; img-src 'self' data:; font-src 'self'; connect-src 'none'; object-src 'none'; base-uri 'none'; form-action 'none'; manifest-src 'self'; upgrade-insecure-requests">
 <meta name="referrer" content="strict-origin-when-cross-origin">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <style>:root{color-scheme:light;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}body{margin:0}[hidden]{display:none!important}</style>
@@ -206,6 +206,7 @@ body { min-height: 100vh; min-height: 100dvh; padding-block: 12px 16px; }
     <div class="score" aria-live="polite">
       <div class="pill"><span data-t="score">Score</span><b id="score">0 / 0</b></div>
       <div class="pill"><span data-t="streak">Streak</span><b id="streak">0</b></div>
+      <div id="last5" data-game="plus-minus"></div>
     </div>
   </div>
   <div class="settings-panel" id="settings-panel" hidden>
@@ -273,7 +274,8 @@ Loopy.addStrings({
     pmCant: "you can't take {b} from {a}, so trade 1 {next} for 10 {place}",
     pmTrade: "trade 1 {next} for 10 {place}",
     pmTrySome: "Try some regrouping problems", pmTryAll: "Try regrouping in every problem",
-    pmTryMix: "Try adding and taking away mixed together", plus: "plus", minus: "minus"
+    pmTryMix: "Try adding and taking away mixed together", plus: "plus", minus: "minus",
+    pmHow: "Work out each sum. Write the answer under the line."
   },
   de: {
     pmName: "Plus und Minus", pmTitle: "Plus und Minus bis {max}",
@@ -285,7 +287,8 @@ Loopy.addStrings({
     pmCant: "{b} von {a} geht nicht, also tausche 1 {next} gegen 10 {place}",
     pmTrade: "tausche 1 {next} gegen 10 {place}",
     pmTrySome: "Probiere ein paar Aufgaben mit Übertrag", pmTryAll: "Probiere Übertrag in jeder Aufgabe",
-    pmTryMix: "Probiere Plus und Minus gemischt", plus: "plus", minus: "minus"
+    pmTryMix: "Probiere Plus und Minus gemischt", plus: "plus", minus: "minus",
+    pmHow: "Rechne jede Aufgabe aus. Schreibe das Ergebnis unter den Strich."
   }
 });
 
@@ -425,6 +428,7 @@ function explain(p) {
     feedbackEl.innerHTML = '<span class="hint"></span>';
     feedbackEl.firstChild.textContent = t("tapHint");
     render();
+    Loopy.speech.read();
   }
 
   function press(d) {
@@ -443,7 +447,7 @@ function explain(p) {
     answered = true; tried++;
     const ok = parseInt(typed, 10) === current.answer;
     if (ok) { right++; streak++; } else { streak = 0; }
-    if (window.Loopy && Loopy.rewards) ok ? Loopy.rewards.correct("plus-minus", streak, harder()) : Loopy.rewards.wrong();
+    if (window.Loopy && Loopy.rewards) ok ? Loopy.rewards.correct("plus-minus", streak, harder()) : Loopy.rewards.wrong("plus-minus", { q: Loopy.num(current.a) + (current.op === "add" ? " + " : " − ") + Loopy.num(current.b), a: Loopy.num(current.answer), y: Loopy.num(parseInt(typed, 10)), k: Loopy.log.kind(current.op, current.a, current.b) });
     card.className = "problem-card " + (ok ? "good" : "bad");
     feedbackEl.className = "feedback " + (ok ? "good" : "bad");
     const sign = current.op === "add" ? " + " : " − ";
@@ -481,7 +485,7 @@ function explain(p) {
     rgMode = b.dataset.rg; store.set("pm100.rg.a" + age, rgMode); newRound();
   }));
   window.addEventListener("loopy:age", (e) => { age = e.detail; recent = []; loadForAge(); newRound(); });
-  $("reset").addEventListener("click", () => { right = 0; tried = 0; streak = 0; newRound(); });
+  $("reset").addEventListener("click", () => { right = 0; tried = 0; streak = 0; if (window.Loopy && Loopy.recent) Loopy.recent.clear("plus-minus"); newRound(); });
   document.addEventListener("keydown", (e) => {
     if (e.metaKey || e.ctrlKey || e.altKey || document.querySelector(".loopy-cheer.big")) return;
     if (/^[0-9]$/.test(e.key)) { press(e.key); e.preventDefault(); }
@@ -490,6 +494,32 @@ function explain(p) {
       if (document.activeElement && document.activeElement.tagName === "BUTTON" && document.activeElement !== goBtn) return;
       go(); e.preventDefault();
     }
+  });
+
+  // Read aloud: "What is 47 plus 25?"
+  Loopy.speech.question({ host: card, text: () => t("whatIs", { q: current.a + " " + t(current.op === "add" ? "plus" : "minus") + " " + current.b }) });
+
+  // Print worksheet: 20 problems with the same numbers, problems and regrouping as the game.
+  Loopy.worksheet({
+    title: () => t("pmTitle", { max: Loopy.num(max) }),
+    level: () => [t("ageLabel", { n: age }),
+      t("problems") + ": " + t({ add: "adding", sub: "takingAway", mix: "both" }[opMode]),
+      t("regrouping") + ": " + t({ no: "none", mix: "some", yes: "always" }[rgMode])].join(" · "),
+    how: () => t("pmHow"),
+    layout: "vert",
+    make: (n) => { const list = [], keys = []; while (list.length < n) { const p = makeProblem(opMode, rgMode, keys, max); keys.push(p.key); list.push(p); } return list; },
+    cell: (p) => {
+      const box = document.createElement("div");
+      box.className = "ws-sv";
+      [["", Loopy.num(p.a)], ["ws-op", p.op === "add" ? "+" : "−"], ["", Loopy.num(p.b)], ["ws-rule", ""], ["ws-room", ""]].forEach(([c, x]) => {
+        const s = document.createElement("span");
+        if (c) s.className = c;
+        s.textContent = x;
+        box.appendChild(s);
+      });
+      return box;
+    },
+    answer: (p) => Loopy.num(p.a) + (p.op === "add" ? " + " : " − ") + Loopy.num(p.b) + " = " + Loopy.num(p.answer)
   });
 
   newRound();

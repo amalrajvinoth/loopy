@@ -13,7 +13,7 @@ Practice adding and taking away.
 
 You can also type on a keyboard. Use the number keys, **Backspace** to erase and **Enter** to check.
 
-## How hard it is
+## Age levels
 
 The numbers grow with age.
 
@@ -26,16 +26,31 @@ The numbers grow with age.
 
 Younger kids start with adding only and no regrouping.
 
+## Last 5
+
+At the top, **Last 5** shows your last 5 answers as dots: green for right, red for wrong. The newest one is on the right.
+They stay there next time you play. **Reset score** in Settings clears them.
+
 ## Settings
 
 Tap **Settings** to choose:
 
 - **Problems:** Adding, Taking away, or Both.
 - **Regrouping:** None, Some, or Always. Regrouping means carrying or trading, like 47 + 25.
+- **Read aloud:** On or Off. When it is on, a speaker button sits in the corner of the sum. It says, for example, "What is 47 plus 25?". Tap it to hear the question in the device's own voice, in English or German. Each new question is also read by itself while the sound is on. It starts on for ages 5 to 7 and off from 8. If the device has no voice, the button and the setting do not show.
 
 After 10 right in a row, the game asks if you want to make it harder.
 
-## The reason after each answer
+## Print a worksheet
+
+Tap **Settings**, then **Print worksheet**. The print window opens. Print it, or save it as a PDF.
+
+- Page 1 has 20 sums written in columns, like in the game, with room to write the answer under the line.
+- The numbers, problems and regrouping are the same as the game's settings for that age.
+- Page 2 has the answers, for example "47 + 25 = 72".
+- Each tap makes a new set of sums.
+
+## Example help text
 
 The game explains the answer column by column, the way you do it on paper.
 For example: "Ones: 7 + 5 = 12. Write 2 and carry 1 ten. Tens: 4 + 2 + 1 = 7."

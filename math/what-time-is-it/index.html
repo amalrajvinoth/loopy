@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'sha256-YK69hNyyJGwP25ifyK9ZGxhEfk/00BYROcfiXqE4sn4='; style-src 'self' 'sha256-z2P7kGW5Z05eCTjTZdYpc0vThTlOE9vmt97pVSvi2I4=' 'sha256-doiVG4zcutbmTCcoolMEnNomGtX/ONwPUTnFFbAvY7E=' 'sha256-RT1053JU5UiKvjrCUFx1rlhdFLMmgtuFJ9T8jnMeawQ=' 'sha256-3iI72MbeVrAPw//q3UKvS1P5Fq+2Q3TjC/StXrlaA8o='; img-src 'self' data:; font-src 'self'; connect-src 'none'; object-src 'none'; base-uri 'none'; form-action 'none'; manifest-src 'self'; upgrade-insecure-requests">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'sha256-vHgWeDpD/kpegGI7WK3g++rHpHFX6jU+qxnbOFuLNJc='; style-src 'self' 'sha256-z2P7kGW5Z05eCTjTZdYpc0vThTlOE9vmt97pVSvi2I4=' 'sha256-doiVG4zcutbmTCcoolMEnNomGtX/ONwPUTnFFbAvY7E=' 'sha256-RT1053JU5UiKvjrCUFx1rlhdFLMmgtuFJ9T8jnMeawQ=' 'sha256-3iI72MbeVrAPw//q3UKvS1P5Fq+2Q3TjC/StXrlaA8o='; img-src 'self' data:; font-src 'self'; connect-src 'none'; object-src 'none'; base-uri 'none'; form-action 'none'; manifest-src 'self'; upgrade-insecure-requests">
 <meta name="referrer" content="strict-origin-when-cross-origin">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <style>:root{color-scheme:light;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}body{margin:0}[hidden]{display:none!important}</style>
@@ -189,6 +189,7 @@ svg#clock { width: min(100%, 360px, 36vh); width: min(100%, 360px, 36dvh); }
     <div class="score" aria-live="polite">
       <div class="pill"><span data-t="score">Score</span><b id="score">0 / 0</b></div>
       <div class="pill"><span data-t="streak">Streak</span><b id="streak">0</b></div>
+      <div id="last5" data-game="clock"></div>
     </div>
   </div>
   <div class="settings-panel" id="settings-panel" hidden>
@@ -238,7 +239,8 @@ Loopy.addStrings({
     clOclock: "The long hand points to 12, so it is {h} o'clock.", clMin: "The long hand points to {n}, which is {m} minutes.",
     clMark: "The long hand is 1 small mark past the {n}, so {b} + 1 = {m} minutes.",
     clMarks: "The long hand is {k} small marks past the {n}, so {b} + {k} = {m} minutes.",
-    clTry15: "Try quarter hours", clTry5: "Try every 5 minutes", clTry1: "Try every minute"
+    clTry15: "Try quarter hours", clTry5: "Try every 5 minutes", clTry1: "Try every minute",
+    clHow: "Read each clock. Write the time on the line.", clReadQ: "Read the clock. Is it {list}?"
   },
   de: {
     clName: "Wie spät ist es?", level: "Stufe", lvHalf: "Volle & halbe Stunden", lvQuarter: "Viertelstunden", lvFive: "Alle 5 Min.", lvOne: "Jede Minute",
@@ -250,7 +252,8 @@ Loopy.addStrings({
     clOclock: "Der lange Zeiger zeigt auf die 12, also ist es {h} Uhr.", clMin: "Der lange Zeiger zeigt auf die {n}, das sind {m} Minuten.",
     clMark: "Der lange Zeiger steht 1 kleinen Strich nach der {n}, also {b} + 1 = {m} Minuten.",
     clMarks: "Der lange Zeiger steht {k} kleine Striche nach der {n}, also {b} + {k} = {m} Minuten.",
-    clTry15: "Probiere Viertelstunden", clTry5: "Probiere alle 5 Minuten", clTry1: "Probiere jede Minute"
+    clTry15: "Probiere Viertelstunden", clTry5: "Probiere alle 5 Minuten", clTry1: "Probiere jede Minute",
+    clHow: "Lies jede Uhr ab. Schreibe die Uhrzeit auf die Linie.", clReadQ: "Lies die Uhr. Ist es {list}?"
   }
 });
 
@@ -275,7 +278,7 @@ Loopy.addStrings({
   let step = store.get("clockquiz.step.a" + age, stepForAge(age), [30, 15, 5, 1]);
   let showHelper = store.get("clockquiz.helper", false, [true, false]);
   let right = 0, tried = 0, streak = 0;
-  let current = null, answered = false, lastKey = "";
+  let current = null, answered = false, lastKey = "", choices = [];
 
   function el(tag, attrs, parent) {
     const n = document.createElementNS(NS, tag);
@@ -372,7 +375,7 @@ Loopy.addStrings({
     lastKey = fmt(t.h, t.m);
     current = t; answered = false;
     setHands(t.h, t.m);
-    const choices = [t, ...distractors(t)].sort(() => Math.random() - 0.5);
+    choices = [t, ...distractors(t)].sort(() => Math.random() - 0.5);
     answersEl.innerHTML = "";
     choices.forEach((c, i) => {
       const b = document.createElement("button");
@@ -386,6 +389,7 @@ Loopy.addStrings({
     feedbackEl.className = "feedback";
     feedbackEl.textContent = "";
     document.getElementById("next").textContent = L("newTime");
+    Loopy.speech.read();
   }
 
   function choose(btn) {
@@ -400,7 +404,7 @@ Loopy.addStrings({
       else b.classList.add("faded");
     });
     if (ok) { right++; streak++; } else { streak = 0; }
-    if (window.Loopy && Loopy.rewards) ok ? Loopy.rewards.correct("clock", streak, harder()) : Loopy.rewards.wrong();
+    if (window.Loopy && Loopy.rewards) ok ? Loopy.rewards.correct("clock", streak, harder()) : Loopy.rewards.wrong("clock", { q: "🕒", a: fmt(current.h, current.m), y: btn.textContent, k: Loopy.log.timeKind(current.m) });
     feedbackEl.className = "feedback " + (ok ? "good" : "bad");
     const head = ok ? (streak >= 3 ? L("correctRow", { n: streak }) : L("correct")) : L("clItIs", { time: fmt(current.h, current.m) });
     feedbackEl.innerHTML = "<strong></strong>";
@@ -426,12 +430,67 @@ Loopy.addStrings({
     age = e.detail; step = store.get("clockquiz.step.a" + age, stepForAge(age), [30, 15, 5, 1]); render(); newRound();
   });
   document.getElementById("next").addEventListener("click", newRound);
-  document.getElementById("reset").addEventListener("click", () => { right = 0; tried = 0; streak = 0; render(); newRound(); });
+  document.getElementById("reset").addEventListener("click", () => { right = 0; tried = 0; streak = 0; if (window.Loopy && Loopy.recent) Loopy.recent.clear("clock"); render(); newRound(); });
   document.addEventListener("keydown", (e) => {
     if (e.target.tagName === "INPUT" || document.querySelector(".loopy-cheer.big")) return;
     if (e.key === "Enter" && answered && e.target.tagName !== "BUTTON") { newRound(); return; }
     const n = parseInt(e.key, 10);
     if (n >= 1 && n <= 4 && !answered) { const b = answersEl.children[n - 1]; if (b) choose(b); }
+  });
+
+  // Print worksheet: 20 clocks at the same level, in black and white, with minute numbers if they are on.
+  function printClock(h, m) {
+    const c = el("svg", { viewBox: "0 0 400 400", class: "ws-clock" });
+    el("circle", { cx: 200, cy: 200, r: 186, fill: "#fff", stroke: "#000", "stroke-width": 10 }, c);
+    for (let i = 0; i < 60; i++) {
+      const major = i % 5 === 0, [x1, y1] = pt(i * 6, major ? 156 : 166), [x2, y2] = pt(i * 6, 178);
+      el("line", { x1, y1, x2, y2, stroke: "#000", "stroke-width": major ? 6 : 2.5, "stroke-linecap": "round" }, c);
+    }
+    for (let n = 1; n <= 12; n++) {
+      const [x, y] = pt(n * 30, showHelper ? 120 : 126);
+      el("text", { x, y, "text-anchor": "middle", "dominant-baseline": "central", "font-size": showHelper ? 36 : 42, "font-weight": 700, fill: "#000", "font-family": "Lexend, sans-serif" }, c).textContent = n;
+    }
+    if (showHelper) for (let k = 0; k < 60; k += 5) {
+      const [x, y] = pt(k * 6, 146);
+      el("text", { x, y, "text-anchor": "middle", "dominant-baseline": "central", "font-size": 15, "font-weight": 600, fill: "#555", "font-family": "Lexend, sans-serif" }, c).textContent = k === 0 ? "00" : (k < 10 ? "0" + k : k);
+    }
+    const [hx, hy] = pt((h % 12) * 30 + m * 0.5, 92), [mx, my] = pt(m * 6, 150);
+    el("line", { x1: 200, y1: 200, x2: hx, y2: hy, stroke: "#000", "stroke-width": 18, "stroke-linecap": "round" }, c);
+    el("line", { x1: 200, y1: 200, x2: mx, y2: my, stroke: "#000", "stroke-width": 8, "stroke-linecap": "round" }, c);
+    el("circle", { cx: 200, cy: 200, r: 13, fill: "#000" }, c);
+    return c;
+  }
+  // Read aloud: "Read the clock. Is it 3:30, 4:30, 2:30 or 3:00?"
+  Loopy.speech.question({ host: document.querySelector(".prompt"), inline: true, text: () => {
+    const times = choices.map(c => fmt(c.h, c.m));
+    return L("clReadQ", { list: times.slice(0, -1).join(", ") + " " + L("orWord") + " " + times[times.length - 1] });
+  } });
+
+  const LEVELS = { 30: "lvHalf", 15: "lvQuarter", 5: "lvFive", 1: "lvOne" };
+  Loopy.worksheet({
+    title: () => L("clName"),
+    level: () => [L("ageLabel", { n: age }), L("level") + ": " + L(LEVELS[step])].join(" · "),
+    how: () => L("clHow"),
+    layout: "clock",
+    make: (n) => {
+      const list = [], seen = new Set();
+      for (let tries = 0; list.length < n; tries++) {
+        const r = randomTime();
+        if (seen.has(key(r.h, r.m)) && tries < 500) continue;
+        seen.add(key(r.h, r.m)); list.push(r);
+      }
+      return list;
+    },
+    cell: (p) => {
+      const box = document.createElement("div");
+      box.appendChild(printClock(p.h, p.m));
+      const line = document.createElement("div");
+      line.className = "ws-time";
+      line.textContent = "____ : ____";
+      box.appendChild(line);
+      return box;
+    },
+    answer: (p) => fmt(p.h, p.m)
   });
 
   render();

@@ -12,7 +12,7 @@ Practice reading a clock with hands.
 
 You can also use a keyboard. Press **1** to **4** to pick an answer, and **Enter** to go on.
 
-## How hard it is
+## Age levels
 
 | Age | Times on the clock |
 | --- | --- |
@@ -23,16 +23,31 @@ You can also use a keyboard. Press **1** to **4** to pick an answer, and **Enter
 
 The wrong answers are the mistakes kids often make, like mixing up the two hands.
 
+## Last 5
+
+At the top, **Last 5** shows your last 5 answers as dots: green for right, red for wrong. The newest one is on the right.
+They stay there next time you play. **Reset score** in Settings clears them.
+
 ## Settings
 
 Tap **Settings** to choose:
 
 - **Level:** Hours & halves, Quarter hours, Every 5 min, or Every minute.
 - **Show minute numbers on the clock:** adds small minute numbers around the edge to help count.
+- **Read aloud:** On or Off. When it is on, a speaker button sits after "Read the clock. Pick the time." It reads the four choices, for example "Read the clock. Is it 3:30, 4:30, 2:30 or 3:00?", so a child who cannot read yet can still pick. Tap it to hear the question in the device's own voice, in English or German. Each new question is also read by itself while the sound is on. It starts on for ages 5 to 7 and off from 8. If the device has no voice, the button and the setting do not show.
 
 After 10 right in a row, the game asks if you want to try the next level.
 
-## The reason after each answer
+## Print a worksheet
+
+Tap **Settings**, then **Print worksheet**. The print window opens. Print it, or save it as a PDF.
+
+- Page 1 has 20 clocks in black and white, each with a line to write the time: "____ : ____".
+- The times follow the level you picked. If minute numbers are on, they are printed too.
+- Page 2 has the times, for example "4:30".
+- Each tap makes a new set of clocks.
+
+## Example help text
 
 The game explains how to read the clock.
 For example: "The short hand is just past 3. The long hand points to 5, which is 25 minutes."

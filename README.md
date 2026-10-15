@@ -20,8 +20,22 @@ It works on phones, tablets and computers. There is no sign-up and no ads.
 | --- | --- | --- |
 | [Plus and Minus](math/plus-minus/) | Adding and taking away | [README](math/plus-minus/README.md) |
 | [Times and Share](math/times-share/) | Times tables and sharing (division) | [README](math/times-share/README.md) |
+| [Make 10](math/make-10/) | Number pairs that make 10, 20 and 100, with ten-frames to count | [README](math/make-10/README.md) |
 | [What Time Is It?](math/what-time-is-it/) | Reading a clock with hands | [README](math/what-time-is-it/README.md) |
+| [Bigger or Smaller](math/bigger-or-smaller/) | Comparing, ordering and rounding numbers, with a number line | [README](math/bigger-or-smaller/README.md) |
+| [Pizza Fractions](math/pizza-fractions/) | Naming, comparing and adding fractions, with pizzas and bars | [README](math/pizza-fractions/README.md) |
+| [Coins and Change](math/coins-change/) | Counting coins and notes, and giving change, in euros, pounds or dollars | [README](math/coins-change/README.md) |
 | [Sound Spell](languages/sound-spell/) | Starting and ending sounds of English and German words | [README](languages/sound-spell/README.md) |
+| [Word Match](languages/word-match/) | 100 words for animals, food, home and school, in English or German | [README](languages/word-match/README.md) |
+| [Today's 10](mix/daily-mix/) | A daily mix of 10 problems from the games for your age, with a day streak | [README](mix/daily-mix/README.md) |
+
+## For grown-ups
+
+| Page | What it shows | Read more |
+| --- | --- | --- |
+| [How it's going](progress/) | Right and wrong answers per game this week and last week, each wrong answer with the right one, and one line of what to practise | [README](progress/README.md) |
+
+Open it from the link at the bottom of the home page.
 
 ## How it works
 
@@ -30,7 +44,11 @@ It works on phones, tablets and computers. There is no sign-up and no ads.
 - **Colors.** Black is the default. You can also pick Sunny, Ocean, Candy or Forest.
 - **Stars.** Every right answer gives a star. More stars unlock badges. A streak of right answers sets off confetti.
 - **Sound.** Short happy sounds play. Tap the speaker to turn them off.
+- **Read aloud.** In Plus and Minus, Times and Share, What Time Is It?, Make 10, Bigger or Smaller, Pizza Fractions and Coins and Change, a speaker button reads the question out loud in the device's own voice, in English or German. Nothing is downloaded. It is on by itself for ages 5 to 7. Turn it on or off in **Settings**.
 - **Help.** After each answer, the game shows a short reason, so kids learn from mistakes.
+- **Last 5.** Each game shows the last 5 answers as green and red dots.
+- **Back.** The big button with the loopy bunny at the top of a game goes back to all games.
+- **Worksheets.** In every game except Today's 10, tap **Settings**, then **Print worksheet**. You get 20 problems at the child's level on one page, and the answers on a second page. It works on A4 and US Letter paper, and you can save it as a PDF from the print window.
 
 In a game, tap **Settings** to change age, language, colors, sound or level.
 
@@ -43,7 +61,7 @@ In a game, tap **Settings** to change age, language, colors, sound or level.
 
 ## Your data stays on your device
 
-Stars and settings are saved in your browser. Nothing is sent anywhere. There are no ads, no tracking and no outside services. Even the fonts are stored on the site.
+Stars, settings and the answers on the grown-ups' page are saved in your browser. Nothing is sent anywhere. There are no ads, no tracking and no outside services. Even the fonts are stored on the site.
 To move stars to another device, open the home page, tap **Move my stars to another device**, and copy the code across.
 
 ## Add Loopy to your home screen
@@ -59,15 +77,19 @@ The site is plain HTML, CSS and JavaScript. One small build step makes the share
 | File | What it is |
 | --- | --- |
 | `index.html` | The home page and the list of games |
-| `src/loopy.js` | Shared code: languages, colors, age, sound, stars and badges. Edit this one |
+| `src/loopy.js` | Shared code: languages, colors, age, sound, read aloud, stars and badges, Last 5 dots, the back button, printable worksheets. Edit this one |
 | `src/loopy.css` | Shared styles and fonts. Edit this one |
 | `loopy.js`, `loopy.css` | Small copies made by the build. Pages load these. Do not edit them |
+| `DESIGN.md` | How loopy looks: colors, fonts, buttons, layout and rules. Read it before you change a page |
 | `logo.svg`, `logo-white.svg`, `icon.svg` | The logo (for light and dark backgrounds) and the app icon |
 | `help/index.html` | The Help page: FAQ and feedback links |
+| `progress/index.html` | How it's going: the grown-ups' page. Games log answers with `Loopy.rewards.wrong(game, { q, a, y, k })` |
 | `fonts/` | The Fredoka and Lexend fonts, stored here so no request goes to Google. The `-latin` files are made by the build from `src/fonts/` |
 | `.github/` | Forms for problems, ideas and questions, the automatic checks, and Dependabot |
-| `tools/` | Small scripts: `build.py` makes the small files, `csp.py` updates each page's security policy, `check_external.py` makes sure nothing loads from other websites |
-| `math/<game>/index.html` | One game per folder |
+| `tools/` | Small scripts: `build.py` makes the small files, `csp.py` updates each page's security policy, `check_external.py` makes sure nothing loads from other websites, `review.py` checks that all games follow the same rules |
+| `RELEASES.md` | What's new: one line per big change, for parents |
+| `.claude/skills/loopy-review/` | The review checklist for every change: design, architecture, docs, games alike, and release notes after a merge |
+| `math/<game>/index.html` | One game per folder (also `languages/` and `mix/`) |
 | `math/<game>/README.md` | What that game does |
 
 ### Try it on your computer
@@ -80,6 +102,8 @@ Then open http://localhost:8000.
 
 ### Add a new game
 
+Read [DESIGN.md](DESIGN.md) first. It lists the colors, fonts, buttons and layout rules every game follows.
+
 1. Make a folder, for example `reading/sight-words/`, with an `index.html`. Copying an existing game is the easiest start.
 2. Copy the two security `<meta>` tags from an existing game, then load the shared files in `<head>`:
    ```html
@@ -87,10 +111,13 @@ Then open http://localhost:8000.
    <link rel="stylesheet" href="../../loopy.css">
    <script src="../../loopy.js"></script>
    ```
-3. Add the shared controls: `#star-chip`, `#settings-toggle`, and inside `#settings-panel` add `#age-picker`, `#theme-picker`, `#sound-toggle` and `#lang-picker`.
+3. Add the shared controls: the `.home-link` back button, `#star-chip`, `<div id="last5" data-game="game-id">` in the score row, `#settings-toggle`, and inside `#settings-panel` add `#age-picker`, `#theme-picker`, `#sound-toggle` and `#lang-picker`.
 4. In your script:
    - `Loopy.getAge()` gives the age. The `loopy:age` event fires when it changes.
-   - Call `Loopy.rewards.correct("game-id", streak)` after a right answer, and `Loopy.rewards.wrong()` after a wrong one.
+   - Call `Loopy.rewards.correct("game-id", streak)` after a right answer, and `Loopy.rewards.wrong("game-id", detail)` after a wrong one. These also fill in the Last 5 dots and the grown-ups' page.
+   - `detail` tells the grown-ups' page what was missed: `{ q: "52 − 17", a: "35", y: "45", k: "sub-rg" }` is the problem, the right answer, the answer given, and the kind of problem. `Loopy.log.kind(op, a, b)` gives the kind for a sum. A new kind needs a `tip-` line in `progress/index.html` and in the check in `src/loopy.js`.
+   - To add a **Print worksheet** button, call `Loopy.worksheet({ title, level, how, layout, make, cell, answer })` once. `make(20)` uses the game's own problem maker. See the comment above `Loopy.worksheet` in `src/loopy.js`.
+   - In the **Reset score** button, call `Loopy.recent.clear("game-id")`. Add the game id to the `GAMES` lists in `src/loopy.js`, and to the list in `progress/index.html`.
 5. Add words in both languages with `Loopy.addStrings({ en: {...}, de: {...} })`. Put `data-t="key"` on fixed text, and use `Loopy.t("key")` in code. Use `Loopy.num(n)` to show numbers.
 6. Add one line to the `GAMES` list in the home page `index.html`, with the ages the game fits.
 7. Add a `README.md` in the game folder, and a row to the table above.
@@ -99,6 +126,8 @@ Then open http://localhost:8000.
 ### Changing the site
 
 The `main` branch is what goes live. Make changes on a new branch and open a pull request. See [CONTRIBUTING.md](CONTRIBUTING.md).
+
+Before a pull request is ready, review it with `.claude/skills/loopy-review/SKILL.md` and run `python3 tools/review.py`. After a big change is merged, add a line to [RELEASES.md](RELEASES.md).
 
 After editing any page, run `python3 tools/csp.py`. The GitHub check fails otherwise.
 

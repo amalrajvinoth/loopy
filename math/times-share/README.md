@@ -19,7 +19,7 @@ For times, 3 × 4 shows 3 rows of 4 dots.
 For sharing, 12 ÷ 3 shows 12 dots shared into 3 groups.
 Dots are on for kids aged 8 and under. You can turn them on or off in **Settings**.
 
-## How hard it is
+## Age levels
 
 | Age | What comes up |
 | --- | --- |
@@ -31,16 +31,31 @@ Dots are on for kids aged 8 and under. You can turn them on or off in **Settings
 | 11 to 12 | Two-digit numbers times or shared by one digit |
 | 13 and up | Three digits by one, or two digits by two |
 
+## Last 5
+
+At the top, **Last 5** shows your last 5 answers as dots: green for right, red for wrong. The newest one is on the right.
+They stay there next time you play. **Reset score** in Settings clears them.
+
 ## Settings
 
 Tap **Settings** to choose:
 
 - **Problems:** Times, Share, or Both.
 - **Show dots:** turn the counting dots on or off.
+- **Read aloud:** On or Off. When it is on, a speaker button sits in the corner of the problem. It says, for example, "What is 7 times 8?". Tap it to hear the question in the device's own voice, in English or German. Each new question is also read by itself while the sound is on. It starts on for ages 5 to 7 and off from 8. If the device has no voice, the button and the setting do not show.
 
 After 10 right in a row, the game asks if you want to make it harder.
 
-## The reason after each answer
+## Print a worksheet
+
+Tap **Settings**, then **Print worksheet**. The print window opens. Print it, or save it as a PDF.
+
+- Page 1 has 20 problems in two columns, like "7 × 8 = ____", with a line to write the answer.
+- The tables, number sizes and problems (Times, Share or Both) are the same as the game's settings for that age.
+- Page 2 has the answers.
+- Each tap makes a new set of problems.
+
+## Example help text
 
 The game shows a simple way to get the answer. For example:
 

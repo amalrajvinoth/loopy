@@ -1,0 +1,329 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'sha256-oVL0fJDN08S2Vb6oCDq17tcWO+S6gGN5b/dOgPt2U3M='; style-src 'self' 'sha256-icQGlgV4MVFS9w/qYBgrhpLPpZURhGcpNY9cfTUodVo='; img-src 'self' data:; font-src 'self'; connect-src 'none'; object-src 'none'; base-uri 'none'; form-action 'none'; manifest-src 'self'; upgrade-insecure-requests">
+<meta name="referrer" content="strict-origin-when-cross-origin">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<link rel="icon" href="../icon.svg" type="image/svg+xml">
+<link rel="manifest" href="../manifest.webmanifest">
+<link rel="apple-touch-icon" href="../apple-touch-icon.png">
+<meta name="theme-color" content="#0a0a0c">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="loopy">
+<title data-t="prTitle">How it's going · loopy</title>
+<meta name="description" content="loopy for grown-ups: right and wrong answers per game this week, and what to practise.">
+<link rel="preload" href="../fonts/lexend-latin.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="../fonts/fredoka-latin.woff2" as="font" type="font/woff2" crossorigin>
+<style>
+/* A page for grown-ups: it may scroll. Summary chips, one card per game, the wrong answers, then Clear. */
+:root {
+  --bg: #fff8ec; --card: #ffffff; --ink: #1d2a3f; --muted: #5d6b82; --line: #f0e2c8;
+  --c1: #2457c5; --c2: #e2622b; --c3: #1f8a4c; --c4: #b0359c; --c5: #d9a400; --chip: #fdeccc;
+  --good: #1f8a4c; --bad: #c92a2a;
+  --display: "Fredoka", "Lexend", "Segoe UI", Arial, sans-serif;
+  --font: "Lexend", "Segoe UI", "Helvetica Neue", Arial, sans-serif;
+}
+* { box-sizing: border-box; }
+body {
+  margin: 0; background: var(--bg); color: var(--ink); font-family: var(--font); font-size: 16px; line-height: 1.5;
+  padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px));
+  padding-block: max(16px, env(safe-area-inset-top, 0px)) 40px;
+}
+.wrap { max-width: 760px; margin: 0 auto; display: flex; flex-direction: column; gap: 20px; }
+.bar { display: flex; align-items: center; justify-content: space-between; gap: 8px; flex-wrap: wrap; }
+h1 { margin: 0; font-family: var(--display); font-size: clamp(2rem, 8vw, 2.8rem); line-height: 1.1; }
+h2 { margin: 0; font-family: var(--display); font-size: 1.5rem; }
+p { margin: 0; }
+.muted { color: var(--muted); }
+section { background: var(--card); border: 2px solid var(--line); border-radius: 20px; padding: 18px; display: flex; flex-direction: column; gap: 12px; }
+.chips { display: flex; flex-wrap: wrap; gap: 8px; }
+.chips span { display: inline-flex; align-items: center; gap: 6px; padding: 6px 14px; border-radius: 999px; background: var(--chip); font-weight: 600; }
+.games { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 14px; }
+.game {
+  --tone: var(--c1); display: flex; flex-direction: column; gap: 10px; padding: 16px;
+  background: var(--card); border: 3px solid var(--tone); border-radius: 24px; box-shadow: 0 6px 0 var(--tone);
+}
+.game:nth-child(5n+2) { --tone: var(--c2); }
+.game:nth-child(5n+3) { --tone: var(--c3); }
+.game:nth-child(5n+4) { --tone: var(--c4); }
+.game:nth-child(5n)   { --tone: var(--c5); }
+.game h3 { margin: 0; font-family: var(--display); font-size: 1.4rem; color: var(--tone); }
+.weeks { margin: 0; display: grid; grid-template-columns: auto 1fr; gap: 6px 12px; align-items: center; }
+.weeks dt { color: var(--muted); font-size: 0.9rem; }
+.weeks dd { margin: 0; display: flex; align-items: center; gap: 10px; font-variant-numeric: tabular-nums; }
+.ok { color: var(--good); font-weight: 700; }
+.no { color: var(--bad); font-weight: 700; }
+.split { flex: 1; min-width: 40px; height: 10px; border-radius: 999px; background: var(--line); overflow: hidden; display: flex; }
+.split i { display: block; height: 100%; background: var(--good); }
+.tip { padding: 8px 12px; border-radius: 12px; background: var(--chip); font-weight: 600; }
+.play { align-self: flex-start; color: var(--ink); font-weight: 600; min-height: 44px; display: inline-flex; align-items: center; }
+.misses { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; }
+.misses h3 { margin: 10px 0 4px; font-size: 0.8rem; font-weight: 600; letter-spacing: 0.06em; text-transform: uppercase; color: var(--muted); }
+.misses li:first-child h3 { margin-top: 0; }
+.miss { display: grid; grid-template-columns: minmax(0, 1.4fr) minmax(0, 1fr) minmax(0, 1fr); gap: 4px 12px; padding: 8px 0; border-top: 2px solid var(--line); align-items: baseline; }
+.miss .q { font-weight: 600; font-variant-numeric: tabular-nums; overflow-wrap: anywhere; }
+.miss small { display: block; color: var(--muted); font-size: 0.8rem; font-weight: 400; }
+.miss span { font-variant-numeric: tabular-nums; overflow-wrap: anywhere; }
+.btn {
+  align-self: flex-start; min-height: 48px; padding: 8px 20px; border-radius: 999px; border: 2px solid var(--line);
+  background: var(--chip); color: var(--ink); font: inherit; font-weight: 600; cursor: pointer;
+}
+.btn.danger { border-color: var(--bad); color: var(--bad); }
+.btn.sure { background: var(--bad); border-color: var(--bad); color: var(--card); }
+.btn:focus-visible, .play:focus-visible { outline: 3px solid var(--mark, var(--c2)); outline-offset: 3px; }
+</style>
+<link rel="stylesheet" href="../loopy.css">
+<script src="../loopy.js"></script>
+</head>
+<body>
+<div class="wrap">
+  <header class="bar">
+    <a class="home-link" href="../">&larr; loopy</a>
+    <div class="controls"><div id="theme-picker"></div><div id="lang-picker"></div></div>
+  </header>
+  <div>
+    <h1 data-t="prHeading">How it's going</h1>
+    <p class="muted" data-t="prLead">For grown-ups. Answers from this device in the last 30 days.</p>
+  </div>
+  <div class="chips" id="chips"></div>
+
+  <section aria-labelledby="weeks-title">
+    <h2 id="weeks-title" data-t="prWeeks">This week and last week</h2>
+    <div class="games" id="games"></div>
+  </section>
+
+  <section aria-labelledby="miss-title">
+    <h2 id="miss-title" data-t="prMisses">Answers to practise</h2>
+    <p class="muted" data-t="prMissesText">Each wrong answer, with the right answer next to it. Newest first.</p>
+    <ul class="misses" id="misses"></ul>
+    <button type="button" class="btn" id="more" hidden></button>
+  </section>
+
+  <section aria-labelledby="clear-title">
+    <h2 id="clear-title" data-t="prClearTitle">Your data</h2>
+    <p class="muted" data-t="prPrivacy">These answers are saved only in this browser. Nothing is sent anywhere. They are not in the stars code, and answers older than 30 days are deleted by themselves.</p>
+    <button type="button" class="btn danger" id="clear" data-t="prClear">Clear answers</button>
+    <p class="muted" id="clear-msg" aria-live="polite"></p>
+  </section>
+</div>
+<script>
+Loopy.addStrings({
+  en: {
+    prTitle: "How it's going · loopy", prHeading: "How it's going", prLead: "For grown-ups. Answers from this device in the last 30 days.",
+    prWeeks: "This week and last week", prThis: "This week", prLast: "Last week", prRight: "✓ {n}", prWrong: "✗ {n}",
+    prRightAria: "{r} right, {w} wrong", prNone: "Not played",
+    prMisses: "Answers to practise", prMissesText: "Each wrong answer, with the right answer next to it. Newest first.",
+    prRightAns: "Right answer", prTheirs: "Answer given", prNoMisses: "No wrong answers in the last 30 days.",
+    prMore: "Show {n} more", prToday: "Today", prYesterday: "Yesterday",
+    prClearTitle: "Your data", prClear: "Clear answers", prSure: "Tap again to clear all answers", prCleared: "Cleared. Stars and badges are kept.",
+    prPrivacy: "These answers are saved only in this browser. Nothing is sent anywhere. They are not in the stars code, and answers older than 30 days are deleted by themselves.",
+    prStars: "⭐ {n} stars", prDays: "🔥 {n} days in a row", prDay: "🔥 1 day in a row", prBadge: "🏅 {name}", prPlay: "Play →",
+    gPlusMinus: "Plus and Minus", gTimesShare: "Times and Share", gClock: "What Time Is It?", gSoundSpell: "Sound Spell", gDailyMix: "Today's 10", gMake10: "Make 10", gBiggerSmaller: "Bigger or Smaller", gPizza: "Pizza Fractions", gCoinsChange: "Coins and Change", gWordMatch: "Word Match",
+    tipNone: "Not played this week. A few minutes a day helps.", tipAll: "All right this week. Try a harder level in Settings.",
+    tipLast: "Mostly right. Keep going.",
+    "tip-add": "Practise adding.", "tip-add-rg": "Practise adding with carrying, like 38 + 25.",
+    "tip-sub": "Practise taking away.", "tip-sub-rg": "Practise taking away with regrouping, like 52 − 17.",
+    "tip-mul": "Practise the {n} times table.", "tip-mul-big": "Practise times with bigger numbers.",
+    "tip-div": "Practise sharing by {n}.", "tip-div-big": "Practise sharing bigger numbers.",
+    "tip-cl-0": "Practise o'clock times: the long hand points to 12.", "tip-cl-30": "Practise half past: the long hand points to 6.",
+    "tip-cl-15": "Practise quarter past and quarter to.", "tip-cl-5": "Practise counting the minutes in fives.",
+    "tip-cl-1": "Practise reading single minutes between the numbers.",
+    "tip-ss-start": "Practise the sound at the start of a word.", "tip-ss-end": "Practise the sound at the end of a word.",
+    "tip-mk-10": "Practise pairs that make 10, like 7 + 3.", "tip-mk-20": "Practise pairs that make 20, like 13 + 7.",
+    "tip-mk-100": "Practise pairs that make 100, like 64 + 36.",
+    "tip-bs-cmp": "Practise comparing numbers: count the digits, then look at the biggest place.", "tip-bs-ord": "Practise putting numbers in order on a number line.",
+    "tip-bs-rnd": "Practise rounding: find the halfway point first.", "tip-bs-dec": "Practise comparing decimals: give them the same number of places.",
+    "tip-bs-neg": "Practise minus numbers: closer to 0 is bigger.",
+    "tip-pz-name": "Practise naming fractions: count all the pieces for the bottom, the colored ones for the top.",
+    "tip-pz-cmp": "Practise comparing fractions: more pieces means smaller pieces.",
+    "tip-pz-add": "Practise adding fractions: make the pieces the same size, then add only the top numbers.",
+    "tip-cc-small": "Practise adding small coins, biggest first.", "tip-cc-count": "Practise counting notes and coins: big money first, then the cents.",
+    "tip-cc-ch10": "Practise giving change: count up from the price.", "tip-cc-ch": "Practise change with any price: count up to the next 10 cents first.",
+    "tip-wm-animals": "Practise words for animals.", "tip-wm-food": "Practise words for food.",
+    "tip-wm-home": "Practise words for things at home.", "tip-wm-school": "Practise words for school."
+  },
+  de: {
+    prTitle: "So läuft es · loopy", prHeading: "So läuft es", prLead: "Für Erwachsene. Antworten auf diesem Gerät aus den letzten 30 Tagen.",
+    prWeeks: "Diese Woche und letzte Woche", prThis: "Diese Woche", prLast: "Letzte Woche", prRight: "✓ {n}", prWrong: "✗ {n}",
+    prRightAria: "{r} richtig, {w} falsch", prNone: "Nicht gespielt",
+    prMisses: "Das üben wir noch", prMissesText: "Jede falsche Antwort, mit der richtigen daneben. Die neuesten zuerst.",
+    prRightAns: "Richtig", prTheirs: "Gegeben", prNoMisses: "Keine falschen Antworten in den letzten 30 Tagen.",
+    prMore: "{n} weitere zeigen", prToday: "Heute", prYesterday: "Gestern",
+    prClearTitle: "Deine Daten", prClear: "Antworten löschen", prSure: "Nochmal tippen, um alle Antworten zu löschen", prCleared: "Gelöscht. Sterne und Abzeichen bleiben.",
+    prPrivacy: "Diese Antworten liegen nur in diesem Browser. Nichts wird gesendet. Sie sind nicht im Sterne-Code, und Antworten älter als 30 Tage werden von selbst gelöscht.",
+    prStars: "⭐ {n} Sterne", prDays: "🔥 {n} Tage hintereinander", prDay: "🔥 1 Tag hintereinander", prBadge: "🏅 {name}", prPlay: "Spielen →",
+    gPlusMinus: "Plus und Minus", gTimesShare: "Mal und Teilen", gClock: "Wie spät ist es?", gSoundSpell: "Anlaut und Endlaut", gDailyMix: "Die 10 von heute", gMake10: "Ergänze bis 10", gBiggerSmaller: "Größer oder kleiner", gPizza: "Pizza-Brüche", gCoinsChange: "Münzen und Wechselgeld", gWordMatch: "Bild und Wort",
+    tipNone: "Diese Woche nicht gespielt. Ein paar Minuten am Tag helfen.", tipAll: "Diese Woche alles richtig. Probiert in den Einstellungen eine schwerere Stufe.",
+    tipLast: "Fast alles richtig. Weiter so.",
+    "tip-add": "Übt Plusrechnen.", "tip-add-rg": "Übt Plusrechnen mit Übertrag, wie 38 + 25.",
+    "tip-sub": "Übt Minusrechnen.", "tip-sub-rg": "Übt Minusrechnen mit Zehnerübergang, wie 52 − 17.",
+    "tip-mul": "Übt die {n}er-Reihe.", "tip-mul-big": "Übt Malrechnen mit größeren Zahlen.",
+    "tip-div": "Übt Teilen durch {n}.", "tip-div-big": "Übt Teilen mit größeren Zahlen.",
+    "tip-cl-0": "Übt volle Stunden: der lange Zeiger zeigt auf die 12.", "tip-cl-30": "Übt halbe Stunden: der lange Zeiger zeigt auf die 6.",
+    "tip-cl-15": "Übt Viertel nach und Viertel vor.", "tip-cl-5": "Übt, die Minuten in Fünferschritten zu zählen.",
+    "tip-cl-1": "Übt, einzelne Minuten zwischen den Zahlen abzulesen.",
+    "tip-ss-start": "Übt den Laut am Wortanfang.", "tip-ss-end": "Übt den Laut am Wortende.",
+    "tip-mk-10": "Übt Zahlenpartner bis 10, wie 7 + 3.", "tip-mk-20": "Übt Ergänzen bis 20, wie 13 + 7.",
+    "tip-mk-100": "Übt Ergänzen bis 100, wie 64 + 36.",
+    "tip-bs-cmp": "Übt Zahlen vergleichen: erst die Stellen zählen, dann die größte Stelle ansehen.", "tip-bs-ord": "Übt Zahlen am Zahlenstrahl ordnen.",
+    "tip-bs-rnd": "Übt Runden: zuerst die Mitte finden.", "tip-bs-dec": "Übt Kommazahlen vergleichen: gleich viele Stellen nach dem Komma schreiben.",
+    "tip-bs-neg": "Übt Minuszahlen: näher an 0 ist größer.",
+    "tip-pz-name": "Übt Brüche benennen: alle Stücke zählen für unten, die bunten für oben.",
+    "tip-pz-cmp": "Übt Brüche vergleichen: mehr Stücke heißt kleinere Stücke.",
+    "tip-pz-add": "Übt Brüche addieren: die Stücke gleich groß machen, dann nur die oberen Zahlen zusammenzählen.",
+    "tip-cc-small": "Übt kleine Münzen zusammenzählen, die größte zuerst.", "tip-cc-count": "Übt Scheine und Münzen zählen: erst das große Geld, dann die Cent.",
+    "tip-cc-ch10": "Übt Wechselgeld: vom Preis aus hochzählen.", "tip-cc-ch": "Übt Wechselgeld mit jedem Preis: erst bis zu den nächsten 10 Cent hochzählen.",
+    "tip-wm-animals": "Übt Wörter für Tiere.", "tip-wm-food": "Übt Wörter für Essen.",
+    "tip-wm-home": "Übt Wörter für Dinge zu Hause.", "tip-wm-school": "Übt Wörter für die Schule."
+  }
+});
+(function () {
+  const t = Loopy.t, num = Loopy.num, $ = (id) => document.getElementById(id);
+  // The games, in the same order as the home page. Today's 10 is its own row.
+  const GAMES = [
+    { id: "plus-minus", name: "gPlusMinus", path: "../math/plus-minus/" },
+    { id: "times-share", name: "gTimesShare", path: "../math/times-share/" },
+    { id: "make-10", name: "gMake10", path: "../math/make-10/" },
+    { id: "clock", name: "gClock", path: "../math/what-time-is-it/" },
+    { id: "bigger-smaller", name: "gBiggerSmaller", path: "../math/bigger-or-smaller/" },
+    { id: "pizza-fractions", name: "gPizza", path: "../math/pizza-fractions/" },
+    { id: "coins-change", name: "gCoinsChange", path: "../math/coins-change/" },
+    { id: "sound-spell", name: "gSoundSpell", path: "../languages/sound-spell/" },
+    { id: "word-match", name: "gWordMatch", path: "../languages/word-match/" },
+    { id: "daily-mix", name: "gDailyMix", path: "../mix/daily-mix/" }
+  ];
+  const nameOf = (id) => t(GAMES.find(g => g.id === id).name);
+  // Weeks start on Monday. This week: Monday to today. Last week: the 7 days before.
+  const dow = (new Date().getDay() + 6) % 7;
+  const thisWeek = [], lastWeek = [];
+  for (let i = 0; i <= dow; i++) thisWeek.push(Loopy.dayKey(-i));
+  for (let i = dow + 1; i <= dow + 7; i++) lastWeek.push(Loopy.dayKey(-i));
+
+  let log = Loopy.log.get(), shown = 20;
+
+  function totals(days, game) {
+    let r = 0, w = 0;
+    days.forEach(d => { const c = log.days[d] && log.days[d][game]; if (c) { r += c[0]; w += c[1]; } });
+    return { r, w };
+  }
+  // One line of what to practise: the kind of problem missed most this week, the newest one on a tie.
+  function tip(game, week) {
+    if (!week.r && !week.w) return t("tipNone");
+    const count = {};
+    let best = null;
+    log.wrong.filter(x => x.g === game && thisWeek.includes(x.d)).forEach(x => {
+      count[x.k] = (count[x.k] || 0) + 1;
+      if (!best || count[x.k] >= count[best]) best = x.k;
+    });
+    if (!best) return t(week.w ? "tipLast" : "tipAll");
+    const m = /^(mul|div)-(\d+)$/.exec(best);
+    return m ? t("tip-" + m[1], { n: num(+m[2]) }) : t("tip-" + best);
+  }
+
+  function chips() {
+    const box = $("chips"), stars = Loopy.rewards.get().stars, day = Loopy.daily.get(), badge = Loopy.rewards.badgeFor(stars);
+    box.textContent = "";
+    const add = (s) => { const c = document.createElement("span"); c.textContent = s; box.appendChild(c); };
+    add(t("prStars", { n: num(stars) }));
+    if (day.streak) add(day.streak === 1 ? t("prDay") : t("prDays", { n: day.streak }));
+    if (badge) add(t("prBadge", { name: badge.name }));
+  }
+
+  function weekRow(dl, label, c) {
+    const dt = document.createElement("dt"), dd = document.createElement("dd");
+    dt.textContent = label;
+    if (!c.r && !c.w) { dd.className = "muted"; dd.textContent = t("prNone"); }
+    else {
+      dd.setAttribute("aria-label", t("prRightAria", { r: num(c.r), w: num(c.w) }));
+      const ok = document.createElement("span"), no = document.createElement("span"), bar = document.createElement("span"), fill = document.createElement("i");
+      ok.className = "ok"; ok.textContent = t("prRight", { n: num(c.r) }); ok.setAttribute("aria-hidden", "true");
+      no.className = "no"; no.textContent = t("prWrong", { n: num(c.w) }); no.setAttribute("aria-hidden", "true");
+      bar.className = "split"; bar.setAttribute("aria-hidden", "true");
+      fill.style.width = Math.round(c.r / (c.r + c.w) * 100) + "%";
+      bar.appendChild(fill);
+      dd.append(ok, no, bar);
+    }
+    dl.append(dt, dd);
+  }
+
+  function games() {
+    const box = $("games");
+    box.textContent = "";
+    GAMES.forEach(g => {
+      const now = totals(thisWeek, g.id), before = totals(lastWeek, g.id);
+      const card = document.createElement("article"), h = document.createElement("h3"), dl = document.createElement("dl");
+      const p = document.createElement("p"), a = document.createElement("a");
+      card.className = "game";
+      h.textContent = t(g.name);
+      dl.className = "weeks";
+      weekRow(dl, t("prThis"), now);
+      weekRow(dl, t("prLast"), before);
+      p.className = "tip"; p.textContent = tip(g.id, now);
+      a.className = "play"; a.href = g.path; a.textContent = t("prPlay");
+      card.append(h, dl, p, a);
+      box.appendChild(card);
+    });
+  }
+
+  function dayLabel(d) {
+    if (d === Loopy.dayKey(0)) return t("prToday");
+    if (d === Loopy.dayKey(-1)) return t("prYesterday");
+    const [y, m, day] = d.split("-").map(Number);
+    return new Date(y, m - 1, day).toLocaleDateString(Loopy.lang === "de" ? "de-DE" : "en-US", { weekday: "long", day: "numeric", month: "long" });
+  }
+
+  function misses() {
+    const list = $("misses"), more = $("more"), all = log.wrong.slice().reverse();
+    list.textContent = "";
+    if (!all.length) {
+      const li = document.createElement("li");
+      li.className = "muted"; li.textContent = t("prNoMisses");
+      list.appendChild(li);
+    }
+    let last = "";
+    all.slice(0, shown).forEach(x => {
+      if (x.d !== last) {
+        last = x.d;
+        const li = document.createElement("li"), h = document.createElement("h3");
+        h.textContent = dayLabel(x.d);
+        li.appendChild(h); list.appendChild(li);
+      }
+      const li = document.createElement("li"), q = document.createElement("div"), g = document.createElement("small");
+      const a = document.createElement("span"), y = document.createElement("span");
+      li.className = "miss";
+      q.className = "q"; q.textContent = x.q; g.textContent = nameOf(x.g); q.appendChild(g);
+      a.className = "ok"; a.textContent = "✓ " + x.a; a.setAttribute("aria-label", t("prRightAns") + ": " + x.a);
+      y.className = "no"; y.textContent = x.y ? "✗ " + x.y : ""; if (x.y) y.setAttribute("aria-label", t("prTheirs") + ": " + x.y);
+      li.append(q, a, y);
+      list.appendChild(li);
+    });
+    more.hidden = all.length <= shown;
+    more.textContent = t("prMore", { n: num(Math.min(20, all.length - shown)) });
+  }
+
+  function render() { log = Loopy.log.get(); chips(); games(); misses(); }
+
+  $("more").addEventListener("click", () => { shown += 20; misses(); });
+  // Clear needs two taps, so one stray tap does not wipe the answers.
+  const clear = $("clear");
+  let armed = null;
+  clear.addEventListener("click", () => {
+    if (!armed) {
+      clear.classList.add("sure"); clear.textContent = t("prSure");
+      armed = setTimeout(() => { armed = null; clear.classList.remove("sure"); clear.textContent = t("prClear"); }, 4000);
+      return;
+    }
+    clearTimeout(armed); armed = null;
+    Loopy.log.clear();
+    clear.classList.remove("sure"); clear.textContent = t("prClear");
+    $("clear-msg").textContent = t("prCleared");
+    shown = 20; render();
+  });
+  render();
+})();
+</script>
+</body>
+</html>

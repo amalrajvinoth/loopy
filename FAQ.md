@@ -34,6 +34,10 @@ On the home page, open "Move my stars to another device". Copy the code, then pa
 
 Yes. On a phone or tablet, open Loopy in the browser and choose "Add to Home Screen". It then opens full screen. It needs the internet to open.
 
+## Can Loopy read the questions out loud?
+
+Yes, in Plus and Minus, Times and Share, What Time Is It?, Make 10, Bigger or Smaller, Pizza Fractions and Coins and Change. Open Settings and turn on **Read aloud**. A speaker button shows next to the question. It uses the device's own voice, in English or German, and nothing is downloaded. It is on by itself for ages 5 to 7.
+
 ## How do I turn the sound off?
 
 Tap the speaker button. On a game page, it is inside Settings.

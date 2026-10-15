@@ -1,0 +1,548 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'sha256-KoFcjco+8dFnoDUg3ykOScsUlb3w1ZEifhgulX9Gl0s='; style-src 'self' 'sha256-z2P7kGW5Z05eCTjTZdYpc0vThTlOE9vmt97pVSvi2I4=' 'sha256-W+M0+NGBKbL1fCGEKkbWgDUCO62JWeFSLj5trGkqXRE=' 'sha256-RT1053JU5UiKvjrCUFx1rlhdFLMmgtuFJ9T8jnMeawQ=' 'sha256-fFSVzTPb+NUFT7306QiPLPT03y2KA45S+xTD2LMEDEc='; img-src 'self' data:; font-src 'self'; connect-src 'none'; object-src 'none'; base-uri 'none'; form-action 'none'; manifest-src 'self'; upgrade-insecure-requests">
+<meta name="referrer" content="strict-origin-when-cross-origin">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<style>:root{color-scheme:light;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}body{margin:0}[hidden]{display:none!important}</style>
+<link rel="icon" href="../../icon.svg" type="image/svg+xml">
+<link rel="manifest" href="../../manifest.webmanifest">
+<link rel="apple-touch-icon" href="../../apple-touch-icon.png">
+<meta name="theme-color" content="#0a0a0c">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="loopy">
+<title data-t="wmName">Word Match</title>
+<link rel="preload" href="../../fonts/lexend-latin.woff2" as="font" type="font/woff2" crossorigin>
+<style>
+/* Layout: a picture card, word buttons below. Shared look with the other games. */
+:root {
+  --bg: #f3f6fb;
+  --card: #ffffff;
+  --ink: #1d2a3f;
+  --muted: #5d6b82;
+  --line: #d5dde9;
+  --accent: #2457c5;
+  --accent-ink: #ffffff;
+  --mark: #e2622b;
+  --good: #1f8a4c;
+  --good-bg: #e3f5ea;
+  --bad: #c23a3a;
+  --bad-bg: #fbe6e6;
+  --chip: #e6ecf6;
+  --key: #ffffff;
+  --font: "Lexend", "Segoe UI", "Helvetica Neue", Arial, sans-serif;
+}
+
+* { box-sizing: border-box; }
+body {
+  background: var(--bg); color: var(--ink); font-family: var(--font); font-size: 16px;
+  padding-left: max(16px, env(safe-area-inset-left, 0px));
+  padding-right: max(16px, env(safe-area-inset-right, 0px));
+  padding-block: 20px 32px;
+}
+.wrap { max-width: 520px; margin: 0 auto; display: flex; flex-direction: column; gap: 16px; }
+
+.top { display: flex; flex-wrap: wrap; gap: 12px; align-items: center; justify-content: space-between; }
+h1 { margin: 0; font-size: 1.6rem; font-weight: 700; text-wrap: balance; }
+.score { display: flex; flex-wrap: wrap; gap: 8px; font-variant-numeric: tabular-nums; }
+.pill { background: var(--card); border: 1px solid var(--line); border-radius: 999px; padding: 6px 14px; font-weight: 600; font-size: 1rem; white-space: nowrap; }
+.pill span { color: var(--muted); font-weight: 400; margin-right: 4px; }
+
+.settings { display: flex; flex-direction: column; gap: 8px; }
+.seg-label { font-size: 0.8rem; font-weight: 600; letter-spacing: 0.06em; text-transform: uppercase; color: var(--muted); margin: 0 0 4px 4px; }
+.seg { display: grid; grid-template-columns: repeat(3, 1fr); gap: 6px; background: var(--chip); padding: 5px; border-radius: 14px; }
+.seg.two { grid-template-columns: repeat(2, 1fr); }
+.seg button {
+  font: inherit; font-size: 0.95rem; font-weight: 600; color: var(--muted);
+  background: transparent; border: 0; border-radius: 10px; padding: 8px 6px; min-height: 44px; cursor: pointer;
+}
+.seg button[aria-pressed="true"] { background: var(--card); color: var(--ink); box-shadow: 0 1px 3px rgb(0 0 0 / 0.12); }
+
+.problem-card {
+  background: var(--card); border: 1px solid var(--line); border-radius: 24px;
+  padding: 20px 18px 18px; display: flex; flex-direction: column; align-items: center; gap: 14px;
+}
+.problem-card.good { border-color: var(--good); box-shadow: 0 0 0 2px var(--good) inset; }
+.problem-card.bad { border-color: var(--bad); box-shadow: 0 0 0 2px var(--bad) inset; }
+
+/* Vertical problem, written like the worksheets: operator on the left, digits right-aligned. */
+.vert {
+  display: grid; grid-template-columns: auto auto; column-gap: 0.35em;
+  font-size: clamp(3.4rem, 15vw, 4.6rem); font-weight: 600; line-height: 1.12;
+  font-variant-numeric: tabular-nums; letter-spacing: 0.04em;
+}
+.vert .num { grid-column: 2; text-align: right; min-width: 3ch; }
+.vert .op { grid-column: 1; grid-row: 2; color: var(--accent); }
+.vert .rule { grid-column: 1 / -1; height: 0.07em; background: var(--ink); border-radius: 2px; margin: 0.1em 0 0.12em; }
+.vert .ans {
+  grid-column: 2; text-align: right; min-width: 3ch; min-height: 1.12em;
+  color: var(--accent); position: relative;
+}
+.vert .ans.empty::after {
+  content: ""; position: absolute; right: 0; bottom: 0.12em; width: 0.55em; height: 0.07em;
+  background: var(--mark); border-radius: 2px; animation: blink 1s steps(2, start) infinite;
+}
+.problem-card.good .ans { color: var(--good); }
+.problem-card.bad .ans { color: var(--bad); text-decoration: line-through; text-decoration-thickness: 0.06em; }
+@keyframes blink { to { visibility: hidden; } }
+
+.feedback { min-height: 3.1em; text-align: center; font-size: 1.1rem; line-height: 1.45; margin: 0; max-width: 34ch; }
+.feedback strong { display: block; font-size: 1.45rem; }
+.feedback.good strong { color: var(--good); }
+.feedback.bad strong { color: var(--bad); }
+.feedback .hint { color: var(--muted); }
+
+.pad { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; }
+.pad button {
+  font: inherit; font-size: 2rem; font-weight: 700; font-variant-numeric: tabular-nums; color: var(--ink);
+  background: var(--key); border: 2px solid var(--line); border-radius: 18px; min-height: 72px; cursor: pointer;
+  transition: transform .08s ease, border-color .15s ease;
+  touch-action: manipulation; -webkit-tap-highlight-color: transparent;
+}
+.pad button:hover:not(:disabled) { border-color: var(--accent); }
+.pad button:active:not(:disabled) { transform: scale(0.96); }
+.pad button:disabled { opacity: 0.4; cursor: default; }
+.pad .erase { font-size: 1.15rem; color: var(--muted); }
+.pad .go { background: var(--accent); border-color: var(--accent); color: var(--accent-ink); font-size: 1.35rem; }
+.pad .go:hover:not(:disabled) { border-color: var(--accent); filter: brightness(1.08); }
+
+.foot { display: flex; justify-content: space-between; align-items: center; gap: 12px; flex-wrap: wrap; }
+.foot p { margin: 0; color: var(--muted); font-size: 0.9rem; }
+.reset { font: inherit; font-size: 0.95rem; color: var(--muted); background: transparent; border: 2px solid var(--line); border-radius: 14px; padding: 0 16px; min-height: 44px; cursor: pointer; }
+button:focus-visible { outline: 3px solid var(--mark); outline-offset: 3px; }
+
+@media (max-width: 420px) {
+  h1 { font-size: 1.35rem; }
+  .pad button { min-height: 64px; font-size: 1.8rem; }
+  .seg button { font-size: 0.85rem; }
+}
+@media (prefers-reduced-motion: reduce) {
+  * { transition: none !important; }
+  .vert .ans.empty::after { animation: none; }
+}
+</style>
+<style>.home-link{display:inline-flex;align-items:center;min-height:40px;color:var(--muted);font-weight:600;text-decoration:none;font-size:0.95rem}.home-link:hover{color:var(--ink)}</style>
+<style>
+/* Phones and tablets: the game fills one screen; settings sit behind a button. */
+body { min-height: 100vh; min-height: 100dvh; padding-block: 12px 16px; }
+.wrap { gap: 12px; }
+.game-bar { display: flex; align-items: center; justify-content: space-between; gap: 8px; }
+.bar-right { display: flex; align-items: center; gap: 8px; }
+.top { gap: 8px 12px; }
+.play { display: flex; flex-direction: column; gap: 12px; -webkit-user-select: none; user-select: none; }
+@media (min-width: 600px) and (orientation: portrait) { .wrap { max-width: 640px; } }
+@media (orientation: landscape) and (min-width: 640px) {
+  .wrap { max-width: 1100px; }
+  .play { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; align-items: center; }
+}
+
+.problem-card { padding: 14px 14px 12px; gap: 8px; }
+.vert { font-size: clamp(2.4rem, min(15vw, 8.5vh), 5rem); font-size: clamp(2.4rem, min(15vw, 8.5dvh), 5rem); }
+.feedback { min-height: 2.9em; font-size: 1.05rem; }
+.feedback strong { font-size: 1.3rem; }
+.pad { gap: 8px; }
+.pad button { min-height: clamp(50px, 8vh, 92px); min-height: clamp(50px, 8dvh, 92px); }
+@media (min-width: 600px) and (orientation: portrait) {
+  .vert { font-size: clamp(3rem, 10dvh, 7rem); }
+  .pad button { min-height: clamp(60px, 10dvh, 120px); font-size: 2.4rem; }
+}
+@media (orientation: landscape) and (min-width: 640px) {
+  .problem-card { height: 100%; justify-content: center; }
+  .vert { font-size: clamp(2.2rem, min(7vw, 13dvh), 7rem); }
+  .pad button { min-height: clamp(44px, calc((100dvh - 150px) / 4.4), 130px); }
+}
+/* Short phones: keep long explanations from pushing the number pad off screen. */
+@media (max-height: 760px) and (orientation: portrait) {
+  .feedback { font-size: 0.95rem; line-height: 1.35; }
+  .feedback strong { font-size: 1.15rem; }
+}
+
+/* Portrait: the page is exactly one screen tall; the pad or answers stay at the bottom
+   and the top part shrinks to fit. With settings open, the page scrolls normally. */
+@media (orientation: portrait) {
+  body { height: calc(100dvh - env(safe-area-inset-top, 0px) - env(safe-area-inset-bottom, 0px)); min-height: 0; display: flex; flex-direction: column; overflow: hidden; }
+  body:has(#settings-panel:not([hidden])) { height: auto; overflow: visible; }
+  .wrap { flex: 1 1 auto; min-height: 0; width: 100%; }
+  .play { flex: 1 1 auto; min-height: 0; }
+}
+@media (orientation: portrait) {
+  .problem-card { flex: 1 1 auto; min-height: 0; justify-content: center; overflow: hidden; }
+  .feedback { flex: 0 1 auto; min-height: 0; overflow-y: auto; }
+}
+@media (orientation: landscape) and (min-width: 640px) {
+  body { height: calc(100dvh - env(safe-area-inset-top, 0px) - env(safe-area-inset-bottom, 0px)); min-height: 0; display: flex; flex-direction: column; overflow: hidden; }
+  body:has(#settings-panel:not([hidden])) { height: auto; overflow: visible; }
+  .wrap { flex: 1 1 auto; min-height: 0; width: 100%; }
+  .play { flex: 1 1 auto; min-height: 0; grid-template-rows: minmax(0, 1fr); }
+  .problem-card { min-height: 0; overflow: hidden; }
+  .feedback { flex: 0 1 auto; min-height: 0; overflow-y: auto; }
+}
+/* After answering on smaller screens, shrink the sum so the reason has room. */
+@media (max-height: 900px), (max-width: 599px) {
+  .problem-card.good .vert, .problem-card.bad .vert { zoom: 0.7; }
+}
+@media (max-height: 500px) {
+  .feedback { font-size: 0.9rem; line-height: 1.3; }
+  .feedback strong { font-size: 1.05rem; }
+}
+
+
+/* Word Match: a big picture, a speaker button, and word buttons to pick from. */
+.pic { font-size: clamp(3.5rem, 18dvh, 10rem); line-height: 1.15; }
+.speak { font: inherit; display: inline-flex; align-items: center; gap: 8px; min-height: 44px; padding: 0 16px; border-radius: 999px;
+  border: 2px solid var(--line); background: var(--key); color: var(--ink); cursor: pointer; font-weight: 600; font-size: 0.95rem; }
+.speak svg { width: 22px; height: 22px; fill: currentColor; }
+.speak:hover { border-color: var(--accent); }
+.speak[hidden] { display: none; }
+.side { display: flex; flex-direction: column; gap: 10px; }
+.choices { display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; }
+.choices.three button:last-child { grid-column: 1 / -1; }
+.choices button {
+  font: inherit; font-size: clamp(1.15rem, min(5.4vw, 3.6dvh), 1.9rem); font-weight: 700; color: var(--ink); line-height: 1.15;
+  background: var(--key); border: 2px solid var(--line); border-radius: 18px; min-height: clamp(56px, 9dvh, 96px); padding: 6px 8px; cursor: pointer;
+  overflow-wrap: anywhere; hyphens: auto;
+  transition: transform .08s ease, border-color .15s ease; touch-action: manipulation; -webkit-tap-highlight-color: transparent;
+}
+.choices button:hover:not(:disabled) { border-color: var(--accent); }
+.choices button:active:not(:disabled) { transform: scale(0.96); }
+.choices button:disabled { cursor: default; }
+.choices button.right { border-color: var(--good); background: var(--good-bg); color: var(--good); }
+.choices button.wrong { border-color: var(--bad); background: var(--bad-bg); color: var(--bad); }
+.choices button.faded { opacity: 0.45; }
+.next { font: inherit; font-size: 1.25rem; font-weight: 700; color: var(--accent-ink); background: var(--accent); border: 0; border-radius: 16px; min-height: clamp(52px, 7dvh, 72px); cursor: pointer; width: 100%; }
+.helper { display: flex; align-items: center; gap: 8px; min-height: 40px; cursor: pointer; }
+.helper input { width: 22px; height: 22px; accent-color: var(--c2); }
+.seg button { padding-inline: 4px; }
+@media (min-width: 600px) and (orientation: portrait) {
+  .choices button { min-height: clamp(64px, 10dvh, 120px); }
+}
+@media (orientation: landscape) and (min-width: 640px) {
+  .problem-card { height: 100%; justify-content: center; }
+  .side { height: 100%; justify-content: center; }
+  .choices button { min-height: clamp(52px, 14dvh, 130px); }
+}
+@media (max-height: 900px), (max-width: 599px) {
+  .problem-card.good .pic, .problem-card.bad .pic { zoom: 0.7; }
+}
+/* Short phones: a smaller picture after the answer, so the explanation has room. */
+@media (max-height: 700px) {
+  .pic { font-size: clamp(3rem, 13dvh, 6rem); }
+  .speak { min-height: 40px; }
+  .problem-card.good .pic, .problem-card.bad .pic { zoom: 0.6; }
+}
+</style>
+<link rel="stylesheet" href="../../loopy.css">
+<script src="../../loopy.js"></script>
+</head>
+<body>
+
+<div class="wrap">
+  <header class="game-bar">
+    <a class="home-link" href="../../">&larr; loopy</a>
+    <div class="bar-right">
+      <span id="star-chip"></span>
+      <button type="button" id="settings-toggle" aria-controls="settings-panel"></button>
+    </div>
+  </header>
+  <div class="top">
+    <h1 id="title" data-t="wmName">Word Match</h1>
+    <div class="score" aria-live="polite">
+      <div class="pill"><span data-t="score">Score</span><b id="score">0 / 0</b></div>
+      <div class="pill"><span data-t="streak">Streak</span><b id="streak">0</b></div>
+      <div id="last5" data-game="word-match"></div>
+    </div>
+  </div>
+  <div class="settings-panel" id="settings-panel" hidden>
+    <div class="controls"><div id="age-picker"></div><div id="theme-picker"></div><button id="sound-toggle"></button><div id="lang-picker"></div></div>
+    <div>
+      <p class="seg-label" id="words-label" data-t="wmWords">Words in</p>
+      <div class="seg two" role="group" aria-labelledby="words-label" id="words-seg">
+        <button type="button" data-words="en">English</button>
+        <button type="button" data-words="de">Deutsch</button>
+      </div>
+    </div>
+    <div>
+      <p class="seg-label" id="topic-label" data-t="wmTopic">Topic</p>
+      <div class="seg" role="group" aria-labelledby="topic-label" id="topic-seg">
+        <button type="button" data-topic="all" data-t="wmAll">All</button>
+        <button type="button" data-topic="animals" data-t="wmAnimals">Animals</button>
+        <button type="button" data-topic="food" data-t="wmFood">Food</button>
+        <button type="button" data-topic="home" data-t="wmHome">Home</button>
+        <button type="button" data-topic="school" data-t="wmSchool">School</button>
+      </div>
+    </div>
+    <div>
+      <p class="seg-label" id="level-label" data-t="wmChoices">Choices</p>
+      <div class="seg" role="group" aria-labelledby="level-label" id="level-seg">
+        <button type="button" data-level="3" data-t="wmThree">3 words</button>
+        <button type="button" data-level="4" data-t="wmFour">4 words</button>
+        <button type="button" data-level="5" data-t="wmTricky">4, tricky</button>
+      </div>
+    </div>
+    <label class="helper"><input type="checkbox" id="auto-read"> <span data-t="wmAutoRead">Read the word out loud after each answer</span></label>
+    <div class="panel-foot">
+      <p data-t="wmKbd">Keyboard works too: 1 to 4 picks a word, Enter goes on.</p>
+      <button type="button" class="reset" id="reset" data-t="resetScore">Reset score</button>
+    </div>
+  </div>
+
+  <main class="play">
+    <div class="problem-card" id="card">
+      <div class="pic" id="pic" role="img" aria-label=""></div>
+      <button type="button" class="speak" id="speak"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 9v6h4l5 4V5L7 9H3zm13.5 3a4.5 4.5 0 0 0-2.5-4v8a4.5 4.5 0 0 0 2.5-4zM14 3.2v2.1a7 7 0 0 1 0 13.4v2.1a9 9 0 0 0 0-17.6z"/></svg><span data-t="wmHear">Hear the word</span></button>
+      <p class="feedback" id="feedback"><span class="hint"></span></p>
+    </div>
+    <div class="side">
+      <div class="choices" id="choices"></div>
+      <button type="button" class="next" id="next" data-t="wmNew">New picture</button>
+    </div>
+  </main>
+</div>
+
+<script>
+Loopy.addStrings({
+  en: {
+    wmName: "Word Match", wmWords: "Words in", wmTopic: "Topic", wmAll: "All", wmAnimals: "Animals", wmFood: "Food", wmHome: "Home", wmSchool: "School",
+    wmChoices: "Choices", wmThree: "3 words", wmFour: "4 words", wmTricky: "4, tricky",
+    wmAutoRead: "Read the word out loud after each answer", wmHear: "Hear the word", wmNew: "New picture", wmNext: "Next picture",
+    wmKbd: "Keyboard works too: 1 to 4 picks a word, Enter goes on.",
+    wmAsk: "Which word goes with the picture?", wmPic: "Picture",
+    wmIs: "It is “{w}”.", wmInEn: "In English:\u00a0{w}", wmInDe: "In German:\u00a0{w}",
+    wmHow: "Look at each picture. Circle the word that goes with it.",
+    wmTryFour: "Try it with four words", wmTryTricky: "Try tricky words from the same topic"
+  },
+  de: {
+    wmName: "Bild und Wort", wmWords: "Wörter auf", wmTopic: "Thema", wmAll: "Alle", wmAnimals: "Tiere", wmFood: "Essen", wmHome: "Zuhause", wmSchool: "Schule",
+    wmChoices: "Auswahl", wmThree: "3 Wörter", wmFour: "4 Wörter", wmTricky: "4, knifflig",
+    wmAutoRead: "Nach jeder Antwort das Wort vorlesen", wmHear: "Wort anhören", wmNew: "Neues Bild", wmNext: "Nächstes Bild",
+    wmKbd: "Die Tastatur geht auch: 1 bis 4 wählt ein Wort, Enter geht weiter.",
+    wmAsk: "Welches Wort passt zum Bild?", wmPic: "Bild",
+    wmIs: "Das ist „{w}“.", wmInEn: "Auf Englisch:\u00a0{w}", wmInDe: "Auf Deutsch:\u00a0{w}",
+    wmHow: "Schau dir jedes Bild an. Kreise das passende Wort ein.",
+    wmTryFour: "Probiere es mit vier Wörtern", wmTryTricky: "Probiere knifflige Wörter aus demselben Thema"
+  }
+});
+
+// GEN START
+// Each word: [picture, English, German with its article, level]. Level 2 words are longer or less common,
+// so they come at age 7 and up. 25 words in each of the four topics.
+const WORDS = {
+  animals: [
+    ["🐶","dog","der Hund",1],["🐱","cat","die Katze",1],["🐟","fish","der Fisch",1],["🐦","bird","der Vogel",1],["🐄","cow","die Kuh",1],
+    ["🐷","pig","das Schwein",1],["🐴","horse","das Pferd",1],["🐑","sheep","das Schaf",1],["🐭","mouse","die Maus",1],["🐰","rabbit","der Hase",1],
+    ["🦆","duck","die Ente",1],["🐸","frog","der Frosch",1],["🐻","bear","der Bär",1],["🦁","lion","der Löwe",1],["🐵","monkey","der Affe",1],
+    ["🐝","bee","die Biene",1],["🐔","hen","das Huhn",1],["🦊","fox","der Fuchs",1],["🐘","elephant","der Elefant",2],["🦒","giraffe","die Giraffe",2],
+    ["🐍","snake","die Schlange",2],["🐢","turtle","die Schildkröte",2],["🦋","butterfly","der Schmetterling",2],["🦉","owl","die Eule",2],["🐧","penguin","der Pinguin",2]
+  ],
+  food: [
+    ["🍎","apple","der Apfel",1],["🍌","banana","die Banane",1],["🍞","bread","das Brot",1],["🧀","cheese","der Käse",1],["🥚","egg","das Ei",1],
+    ["🥛","milk","die Milch",1],["🍐","pear","die Birne",1],["🥕","carrot","die Karotte",1],["🍅","tomato","die Tomate",1],["🍕","pizza","die Pizza",1],
+    ["🍰","cake","der Kuchen",1],["🍦","ice cream","das Eis",1],["🍊","orange","die Orange",1],["🍪","cookie","der Keks",1],["🧈","butter","die Butter",1],
+    ["🍓","strawberry","die Erdbeere",2],["🍇","grapes","die Trauben",2],["🥔","potato","die Kartoffel",2],["🍋","lemon","die Zitrone",2],["🥒","cucumber","die Gurke",2],
+    ["🍯","honey","der Honig",2],["🍫","chocolate","die Schokolade",2],["🍒","cherries","die Kirschen",2],["🍚","rice","der Reis",2],["🍝","noodles","die Nudeln",2]
+  ],
+  home: [
+    ["🏠","house","das Haus",1],["🚪","door","die Tür",1],["🪟","window","das Fenster",1],["🛏️","bed","das Bett",1],["🪑","chair","der Stuhl",1],
+    ["🛋️","sofa","das Sofa",1],["🔑","key","der Schlüssel",1],["💡","lamp","die Lampe",1],["🕰️","clock","die Uhr",1],["🧸","teddy bear","der Teddy",1],
+    ["🥄","spoon","der Löffel",1],["☕","cup","die Tasse",1],["🧼","soap","die Seife",1],["🕯️","candle","die Kerze",1],["🧦","sock","die Socke",1],
+    ["👕","T-shirt","das T-Shirt",1],["🛁","bathtub","die Badewanne",2],["🚿","shower","die Dusche",2],["🚽","toilet","die Toilette",2],["🍽️","plate","der Teller",2],
+    ["🧹","broom","der Besen",2],["🧺","basket","der Korb",2],["🪞","mirror","der Spiegel",2],["📺","TV","der Fernseher",2],["☂️","umbrella","der Regenschirm",2]
+  ],
+  school: [
+    ["📖","book","das Buch",1],["✂️","scissors","die Schere",1],["🎒","backpack","der Rucksack",1],["🖊️","pen","der Stift",1],["💻","computer","der Computer",1],
+    ["🔔","bell","die Glocke",1],["⚽","ball","der Ball",1],["🧩","puzzle","das Puzzle",1],["📓","notebook","das Heft",1],["🏫","school","die Schule",1],
+    ["🚌","bus","der Bus",1],["🥁","drum","die Trommel",1],["✏️","pencil","der Bleistift",2],["📏","ruler","das Lineal",2],["🗺️","map","die Landkarte",2],
+    ["🌍","globe","der Globus",2],["📎","paper clip","die Büroklammer",2],["🖌️","paintbrush","der Pinsel",2],["🎨","paints","die Farben",2],["🔢","numbers","die Zahlen",2],
+    ["🎈","balloon","der Luftballon",2],["📅","calendar","der Kalender",2],["🎹","piano","das Klavier",2],["🎺","trumpet","die Trompete",2],["🔬","microscope","das Mikroskop",2]
+  ]
+};
+const TOPICS = Object.keys(WORDS);
+const randInt = (n) => Math.floor(Math.random() * n);
+const pick = (arr) => arr[randInt(arr.length)];
+const shuffle = (arr) => arr.slice().sort(() => Math.random() - 0.5);
+// One word as { pic, en, de, level, topic }, and the word in the language being learned.
+const ALL = TOPICS.flatMap(topic => WORDS[topic].map(w => ({ pic: w[0], en: w[1], de: w[2], level: w[3], topic })));
+const say = (w, lang) => lang === "de" ? w.de : w.en;
+
+// Words that fit the age: level 2 words need age 7 or more.
+function wordsFor(topic, age) {
+  return ALL.filter(w => (topic === "all" || w.topic === topic) && (age >= 7 || w.level === 1));
+}
+// Wrong choices: other words at this age. Level 5 ("tricky") takes them from the same topic as the picture,
+// the easier levels from the other topics, so they are easy to tell apart.
+function distractors(word, lang, age, level, n) {
+  const pool = ALL.filter(w => w !== word && say(w, lang) !== say(word, lang) && (age >= 7 || w.level === 1) &&
+    (level === 5 ? w.topic === word.topic : w.topic !== word.topic));
+  return shuffle(pool).slice(0, n);
+}
+// level: 3 (three words), 4 (four words) or 5 (four words from the same topic).
+function makeProblem(lang, topic, age, level, avoid) {
+  const list = wordsFor(topic, age);
+  let word = pick(list);
+  for (let tries = 0; tries < 40 && avoid && avoid.includes(word.en); tries++) word = pick(list);
+  const options = shuffle([word, ...distractors(word, lang, age, level, level === 3 ? 2 : 3)]);
+  return { word, options, key: word.en, answer: say(word, lang) };
+}
+// GEN END
+
+(function () {
+  const $ = (id) => document.getElementById(id);
+  const card = $("card"), picEl = $("pic"), choicesEl = $("choices"), feedbackEl = $("feedback"), nextBtn = $("next"), speakBtn = $("speak"), autoBox = $("auto-read");
+  const wordsBtns = [...document.querySelectorAll("#words-seg button")];
+  const topicBtns = [...document.querySelectorAll("#topic-seg button")];
+  const levelBtns = [...document.querySelectorAll("#level-seg button")];
+  const t = Loopy.t;
+  const store = {
+    // ok: the values this setting may have; anything else falls back to the default.
+    get(k, d, ok) { try { const v = JSON.parse(localStorage.getItem(k)); return ok.includes(v) ? v : d; } catch (e) { return d; } },
+    set(k, v) { try { localStorage.setItem(k, JSON.stringify(v)); } catch (e) {} }
+  };
+
+  let age = Loopy.getAge();
+  let wordsLang = store.get("wm.words", Loopy.lang === "de" ? "de" : "en", ["en", "de"]);
+  let topic = store.get("wm.topic", "all", ["all", ...TOPICS]);
+  let autoRead = store.get("wm.autoRead", true, [true, false]);
+  let level;
+  // The number of choices is remembered per age, so each age starts at the right level.
+  function loadForAge() { level = store.get("wm.level.a" + age, age <= 6 ? 3 : age <= 8 ? 4 : 5, [3, 4, 5]); }
+  loadForAge();
+  let right = 0, tried = 0, streak = 0;
+  let current = null, answered = false, recent = [], interacted = false;
+
+  // Read the word aloud with the browser's own voice, in the language being learned.
+  // Nothing is downloaded. If there is no voice for that language, the button hides.
+  const canSpeak = "speechSynthesis" in window && "SpeechSynthesisUtterance" in window;
+  function voiceFor(lang) {
+    const list = speechSynthesis.getVoices().map(v => ({ v, l: String(v.lang).toLowerCase().replace("_", "-") }));
+    const mine = list.filter(x => x.l === lang || x.l.startsWith(lang + "-"));
+    const best = mine.find(x => x.v.default) || mine.find(x => x.v.localService) || mine[0];
+    return best ? best.v : null;
+  }
+  function voiceOk() {
+    if (!canSpeak) return false;
+    try { const all = speechSynthesis.getVoices(); return !all.length || !!voiceFor(wordsLang); } catch (e) { return false; }
+  }
+  function speak() {
+    if (!canSpeak || !current) return;
+    try {
+      speechSynthesis.cancel();
+      const u = new SpeechSynthesisUtterance(current.answer);
+      u.lang = wordsLang === "de" ? "de-DE" : "en-US";
+      const v = voiceFor(wordsLang);
+      if (v) u.voice = v;
+      u.rate = 0.85;
+      speechSynthesis.speak(u);
+    } catch (e) {}
+  }
+
+  function render() {
+    $("score").textContent = right + " / " + tried;
+    $("streak").textContent = streak;
+    wordsBtns.forEach(b => b.setAttribute("aria-pressed", String(b.dataset.words === wordsLang)));
+    topicBtns.forEach(b => b.setAttribute("aria-pressed", String(b.dataset.topic === topic)));
+    levelBtns.forEach(b => b.setAttribute("aria-pressed", String(+b.dataset.level === level)));
+    autoBox.checked = autoRead;
+    speakBtn.hidden = !voiceOk();
+    nextBtn.textContent = t(answered ? "wmNext" : "wmNew");
+  }
+  function newRound() {
+    current = makeProblem(wordsLang, topic, age, level, recent);
+    recent.push(current.key);
+    if (recent.length > 15) recent.shift();
+    answered = false;
+    picEl.textContent = current.word.pic;
+    picEl.setAttribute("aria-label", t("wmPic"));
+    choicesEl.textContent = "";
+    choicesEl.classList.toggle("three", current.options.length === 3);
+    current.options.forEach((w, i) => {
+      const b = document.createElement("button");
+      b.type = "button"; b.id = "choice-" + i; b.textContent = say(w, wordsLang);
+      b.lang = wordsLang;
+      b.dataset.correct = String(w === current.word);
+      b.addEventListener("click", () => choose(b));
+      choicesEl.appendChild(b);
+    });
+    card.classList.remove("good", "bad");
+    feedbackEl.className = "feedback";
+    feedbackEl.innerHTML = '<span class="hint"></span>';
+    feedbackEl.firstChild.textContent = t("wmAsk");
+    render();
+  }
+  function choose(btn) {
+    if (answered) return;
+    answered = true; tried++;
+    const ok = btn.dataset.correct === "true";
+    [...choicesEl.children].forEach(b => {
+      b.disabled = true;
+      if (b.dataset.correct === "true") b.classList.add("right");
+      else if (b === btn) b.classList.add("wrong");
+      else b.classList.add("faded");
+    });
+    if (ok) { right++; streak++; } else { streak = 0; }
+    if (ok) Loopy.rewards.correct("word-match", streak, harder());
+    else Loopy.rewards.wrong("word-match", { q: current.word.pic, a: current.answer, y: btn.textContent, k: "wm-" + current.word.topic });
+    card.classList.remove("good", "bad");
+    card.classList.add(ok ? "good" : "bad");
+    feedbackEl.className = "feedback " + (ok ? "good" : "bad");
+    feedbackEl.innerHTML = "<strong></strong>";
+    feedbackEl.firstChild.textContent = ok ? (streak >= 3 ? t("correctRow", { n: streak }) : t("correct")) : t("notQuite");
+    // The answer, then the same word in the other language, so every round teaches a word in both.
+    const other = wordsLang === "de" ? t("wmInEn", { w: current.word.en }) : t("wmInDe", { w: current.word.de });
+    feedbackEl.appendChild(document.createTextNode(t("wmIs", { w: current.answer }) + " " + other));
+    render();
+    nextBtn.focus({ preventScroll: true });
+    if (autoRead && interacted && Loopy.sound.isOn()) speak();
+  }
+  // What "Make it harder" does after 10 in a row: four words first, then tricky words from the same topic.
+  function harder() {
+    if (level < 5) return { label: t(level === 3 ? "wmTryFour" : "wmTryTricky"), apply: () => { level++; store.set("wm.level.a" + age, level); render(); } };
+    return null;
+  }
+
+  document.addEventListener("pointerdown", () => { interacted = true; }, { once: true });
+  document.addEventListener("keydown", () => { interacted = true; }, { once: true });
+  speakBtn.addEventListener("click", speak);
+  nextBtn.addEventListener("click", newRound);
+  wordsBtns.forEach(b => b.addEventListener("click", () => { wordsLang = b.dataset.words; store.set("wm.words", wordsLang); newRound(); }));
+  topicBtns.forEach(b => b.addEventListener("click", () => { topic = b.dataset.topic; store.set("wm.topic", topic); recent = []; newRound(); }));
+  levelBtns.forEach(b => b.addEventListener("click", () => { level = +b.dataset.level; store.set("wm.level.a" + age, level); newRound(); }));
+  autoBox.addEventListener("change", () => { autoRead = autoBox.checked; store.set("wm.autoRead", autoRead); });
+  window.addEventListener("loopy:age", (e) => { age = e.detail; recent = []; loadForAge(); newRound(); });
+  $("reset").addEventListener("click", () => { right = 0; tried = 0; streak = 0; Loopy.recent.clear("word-match"); newRound(); });
+  document.addEventListener("keydown", (e) => {
+    if (e.target.tagName === "INPUT" || document.querySelector(".loopy-cheer.big")) return;
+    if (e.key === "Enter" && answered && e.target.tagName !== "BUTTON") { newRound(); return; }
+    const n = parseInt(e.key, 10);
+    if (n >= 1 && n <= 4 && !answered) { const b = choicesEl.children[n - 1]; if (b) choose(b); }
+  });
+  // Some browsers load their voices a moment after the page.
+  if (canSpeak) speechSynthesis.addEventListener("voiceschanged", render);
+  window.addEventListener("pagehide", () => { try { speechSynthesis.cancel(); } catch (e) {} });
+
+  // Print worksheet: 20 pictures, each with the same number of words to circle as in the game.
+  const part = (cls, text) => { const n = document.createElement("span"); n.className = cls; if (text) n.textContent = text; return n; };
+  Loopy.worksheet({
+    title: () => t("wmName"),
+    level: () => [t("ageLabel", { n: age }), t("wmTopic") + ": " + t({ all: "wmAll", animals: "wmAnimals", food: "wmFood", home: "wmHome", school: "wmSchool" }[topic]),
+      t("wmWords") + ": " + (wordsLang === "de" ? "Deutsch" : "English"), t("wmChoices") + ": " + t({ 3: "wmThree", 4: "wmFour", 5: "wmTricky" }[level])].join(" · "),
+    how: () => t("wmHow"),
+    layout: "word",
+    make: (n) => { const list = [], keys = []; while (list.length < n) { const p = makeProblem(wordsLang, topic, age, level, keys); keys.push(p.key); list.push(p); } return list; },
+    cell: (p) => {
+      const box = document.createElement("div");
+      box.appendChild(part("ws-pic", p.word.pic));
+      // One word per line, so long German words fit the box. "der" always stays with "Hund".
+      p.options.forEach(w => { const row = part("ws-opts"); row.appendChild(part("", say(w, wordsLang).replace(/ /g, " "))); box.appendChild(row); });
+      return box;
+    },
+    answer: (p) => p.word.pic + " " + p.answer
+  });
+
+  newRound();
+})();
+</script>
+</body>
+</html>
