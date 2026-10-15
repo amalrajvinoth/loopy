@@ -67,6 +67,7 @@ footer { color: var(--muted); font-size: 0.95rem; text-align: center; }
 <link rel="stylesheet" href="theme.css">
 <script src="theme.js"></script>
 <script src="age.js"></script>
+<script src="rewards.js"></script>
 </head>
 <body>
 <div class="wrap">
@@ -75,6 +76,15 @@ footer { color: var(--muted); font-size: 0.95rem; text-align: center; }
     <p class="lead">Learn. Play. Repeat.</p>
     <div class="controls" style="justify-content:center"><div id="age-picker"></div><div id="theme-picker"></div></div>
   </header>
+  <section class="shelf" aria-labelledby="shelf-title">
+    <div class="shelf-top">
+      <h2 id="shelf-title">My stars</h2>
+      <span id="star-chip"></span>
+    </div>
+    <p class="shelf-next" id="shelf-next"></p>
+    <div class="meter" aria-hidden="true"><i id="meter-fill"></i></div>
+    <div class="badges" id="badges"></div>
+  </section>
   <main id="list" style="display:flex;flex-direction:column;gap:28px"></main>
   <footer>More games are on the way!</footer>
 </div>
@@ -127,6 +137,31 @@ function render() {
 }
 render();
 window.addEventListener("loopy:age", render);
+
+// Badge shelf: every right answer in any game earns a star.
+(function shelf() {
+  const R = window.Loopy && Loopy.rewards;
+  if (!R) return;
+  const stars = R.get().stars;
+  const next = R.nextBadge(stars);
+  const prev = R.BADGES.filter(b => b.stars <= stars).pop();
+  const from = prev ? prev.stars : 0;
+  document.getElementById("shelf-next").textContent = next
+    ? (next.stars - stars) + " more star" + (next.stars - stars === 1 ? "" : "s") + " to the " + next.name + " badge. Every right answer earns a star."
+    : "You have every badge. You're a Loopy Master!";
+  document.getElementById("meter-fill").style.width = next ? Math.round((stars - from) / (next.stars - from) * 100) + "%" : "100%";
+  const box = document.getElementById("badges");
+  for (const b of R.BADGES) {
+    const got = stars >= b.stars;
+    const d = document.createElement("div");
+    d.className = "badge" + (got ? " got" : "");
+    d.style.setProperty("--tone", "var(" + b.color + ")");
+    d.innerHTML = '<span class="medal"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="' + R.STAR_PATH + '"/></svg></span><span></span><small></small>';
+    d.children[1].textContent = b.name;
+    d.children[2].textContent = got ? "Earned" : b.stars + " stars";
+    box.appendChild(d);
+  }
+})();
 </script>
 </body>
 </html>

@@ -17,6 +17,10 @@ Free, interactive learning games for kids at amalrajvinoth.github.io/loopy, publ
 4. Load `../../age.js` in `<head>` and add `<div id="age-picker"></div>`. Read the age with `Loopy.getAge()` and listen for the `loopy:age` event to change difficulty when it changes.
 5. Add a row to the table above.
 
+## Rewards
+
+Every right answer in any game earns a star. Star totals unlock badges (10, 25, 50, 100, 250, 500, 1000), and streaks of 5, 10, 15, 20, 30 and 50 in a row set off confetti. Progress is saved in the browser with `localStorage`, so it stays on that device and nothing is sent anywhere. New games load `../../rewards.js`, add `<span id="star-chip"></span>`, and call `Loopy.rewards.correct("<game-id>", streak)` after each right answer.
+
 ## Age
 
 The age picker defaults to the age of a child born in August 2018 and goes up by itself each year. A child can change it with the − and + buttons, and the choice is remembered on that device. The default lives at the top of `age.js`.

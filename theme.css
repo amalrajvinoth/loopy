@@ -54,3 +54,45 @@
 .age-picker button:disabled { opacity: 0.35; cursor: default; }
 .age-picker button:focus-visible { outline: 3px solid var(--mark); outline-offset: 2px; }
 .controls { display: flex; flex-wrap: wrap; gap: 12px; align-items: center; }
+
+/* Rewards */
+.star-chip { display: inline-flex; align-items: center; gap: 6px; background: var(--chip); border-radius: 999px; padding: 6px 14px 6px 10px; font-weight: 700; font-variant-numeric: tabular-nums; }
+.star-chip svg { width: 22px; height: 22px; fill: var(--c5); }
+.loopy-confetti { position: fixed; inset: 0; width: 100vw; height: 100vh; pointer-events: none; z-index: 50; }
+.loopy-cheer {
+  position: fixed; left: 50%; top: 42%; transform: translate(-50%, -50%); z-index: 60;
+  width: min(88vw, 360px); display: flex; flex-direction: column; align-items: center; gap: 8px; text-align: center;
+  background: var(--card); color: var(--ink); border: 4px solid var(--c5); border-radius: 28px; padding: 22px 20px;
+  box-shadow: 0 8px 0 var(--c5), 0 20px 60px rgb(0 0 0 / 0.35);
+  animation: cheer-in .35s cubic-bezier(.2, 1.6, .4, 1) both; pointer-events: none;
+}
+.loopy-cheer.big { pointer-events: auto; }
+.loopy-cheer.out { animation: cheer-out .25s ease both; }
+.loopy-cheer svg { width: 64px; height: 64px; fill: var(--c5); animation: spin-star 1.2s ease-in-out infinite alternate; }
+.loopy-cheer strong { font-family: "Fredoka", "Lexend", sans-serif; font-size: 1.8rem; line-height: 1.15; }
+.loopy-cheer span { color: var(--muted); font-size: 1.05rem; }
+.loopy-cheer button {
+  margin-top: 6px; font: inherit; font-weight: 700; font-size: 1.2rem; min-height: 52px; padding: 0 32px;
+  border: 0; border-radius: 999px; background: var(--c5); color: var(--on-accent); cursor: pointer;
+}
+.loopy-cheer button:focus-visible { outline: 3px solid var(--ink); outline-offset: 3px; }
+@keyframes cheer-in { from { transform: translate(-50%, -50%) scale(.5); opacity: 0; } }
+@keyframes cheer-out { to { transform: translate(-50%, -50%) scale(.85); opacity: 0; } }
+@keyframes spin-star { from { transform: rotate(-12deg) scale(.95); } to { transform: rotate(12deg) scale(1.08); } }
+@media (prefers-reduced-motion: reduce) { .loopy-cheer, .loopy-cheer svg { animation: none; } }
+
+/* Badge shelf on the home page */
+.shelf { background: var(--card); border: 2px solid var(--line); border-radius: 24px; padding: 18px; display: flex; flex-direction: column; gap: 14px; }
+.shelf-top { display: flex; flex-wrap: wrap; gap: 10px 16px; align-items: center; justify-content: space-between; }
+.shelf h2 { margin: 0; font-family: "Fredoka", "Lexend", sans-serif; font-size: 1.5rem; }
+.shelf-next { margin: 0; color: var(--muted); }
+.meter { height: 12px; background: var(--chip); border-radius: 999px; overflow: hidden; }
+.meter i { display: block; height: 100%; background: var(--c5); border-radius: 999px; }
+.badges { display: grid; grid-template-columns: repeat(auto-fill, minmax(92px, 1fr)); gap: 10px; }
+.badge { display: flex; flex-direction: column; align-items: center; gap: 4px; text-align: center; font-size: 0.82rem; font-weight: 600; color: var(--muted); }
+.badge .medal { width: 56px; height: 56px; border-radius: 50%; display: grid; place-items: center; background: var(--chip); border: 3px dashed var(--line); }
+.badge .medal svg { width: 30px; height: 30px; fill: var(--line); }
+.badge.got { color: var(--ink); }
+.badge.got .medal { background: var(--tone); border: 3px solid var(--tone); }
+.badge.got .medal svg { fill: var(--card); }
+.badge small { font-weight: 400; color: var(--muted); }
