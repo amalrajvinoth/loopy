@@ -1,0 +1,23 @@
+title: "Idea: "
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Got an idea for Loopy? We would love to hear it.
+        **Everything here is public.** Please do not share your child's name, photo, school or any other personal details.
+  - type: textarea
+    id: idea
+    attributes:
+      label: What is your idea?
+      placeholder: "A spelling game where kids hear a word and type it."
+    validations:
+      required: true
+  - type: input
+    id: ages
+    attributes:
+      label: What ages is it for? (optional)
+      placeholder: "6 to 9"
+  - type: textarea
+    id: why
+    attributes:
+      label: Why would it help? (optional)

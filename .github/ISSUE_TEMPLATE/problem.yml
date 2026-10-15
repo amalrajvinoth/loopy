@@ -1,0 +1,59 @@
+name: Report a problem
+description: Something in Loopy is broken or wrong.
+title: "Problem: "
+labels: ["bug"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for helping make Loopy better!
+        **Everything here is public.** Please do not share your child's name, photo, school or any other personal details.
+        Found a security problem? Do not post it here. [Report it privately](https://github.com/amalrajvinoth/loopy/security/advisories/new) instead.
+  - type: dropdown
+    id: game
+    attributes:
+      label: Where did it happen?
+      options:
+        - Home page
+        - Plus and Minus
+        - Times and Share
+        - What Time Is It?
+        - Help page
+        - Somewhere else
+    validations:
+      required: true
+  - type: textarea
+    id: what
+    attributes:
+      label: What went wrong?
+      description: Tell us what you did, what you expected, and what happened instead.
+      placeholder: "I tapped Check on 47 + 25, and it said my answer 72 was wrong."
+    validations:
+      required: true
+  - type: dropdown
+    id: device
+    attributes:
+      label: What device?
+      options:
+        - Phone
+        - Tablet
+        - Computer
+    validations:
+      required: true
+  - type: input
+    id: browser
+    attributes:
+      label: Which browser? (optional)
+      placeholder: "Safari, Chrome, Firefox, Edge..."
+  - type: dropdown
+    id: lang
+    attributes:
+      label: Which language was Loopy in?
+      options:
+        - English
+        - German
+  - type: textarea
+    id: screenshot
+    attributes:
+      label: Screenshot (optional)
+      description: Drag a picture here. Check it does not show anything personal.

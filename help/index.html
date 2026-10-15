@@ -1,0 +1,137 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; img-src 'self' data:; font-src 'self'; connect-src 'none'; object-src 'none'; base-uri 'none'; form-action 'none'; manifest-src 'self'; upgrade-insecure-requests">
+<meta name="referrer" content="strict-origin-when-cross-origin">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 24 24%22%3E%3Cpath fill=%22%23ffd23f%22 d=%22M12 2.5l2.9 6 6.6.9-4.8 4.6 1.2 6.5L12 17.4l-5.9 3.1 1.2-6.5L2.5 9.4l6.6-.9z%22/%3E%3C/svg%3E">
+<link rel="manifest" href="../manifest.webmanifest">
+<link rel="apple-touch-icon" href="../apple-touch-icon.png">
+<meta name="theme-color" content="#0a0a0c">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Loopy">
+<title data-t="helpTitle">Help and feedback · Loopy</title>
+<meta name="description" content="Loopy help: common questions, privacy, and how to send feedback.">
+<link rel="stylesheet" href="../fonts/fonts.css">
+<style>
+:root {
+  --bg: #fff8ec; --card: #ffffff; --ink: #1d2a3f; --muted: #5d6b82; --line: #f0e2c8;
+  --c1: #2457c5; --c2: #e2622b; --c3: #1f8a4c; --c4: #b0359c; --c5: #d9a400; --chip: #fdeccc;
+  --display: "Fredoka", "Lexend", "Segoe UI", Arial, sans-serif;
+  --font: "Lexend", "Segoe UI", "Helvetica Neue", Arial, sans-serif;
+}
+* { box-sizing: border-box; }
+body {
+  margin: 0; background: var(--bg); color: var(--ink); font-family: var(--font); font-size: 16px; line-height: 1.5;
+  padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px));
+  padding-block: max(16px, env(safe-area-inset-top, 0px)) 40px;
+}
+.wrap { max-width: 760px; margin: 0 auto; display: flex; flex-direction: column; gap: 24px; }
+.bar { display: flex; align-items: center; justify-content: space-between; gap: 8px; flex-wrap: wrap; }
+.home-link { display: inline-flex; align-items: center; min-height: 40px; color: var(--muted); font-weight: 600; text-decoration: none; }
+.home-link:hover { color: var(--ink); }
+h1 { margin: 0; font-family: var(--display); font-size: clamp(2rem, 8vw, 2.8rem); line-height: 1.1; }
+h2 { margin: 0 0 12px; font-family: var(--display); font-size: 1.5rem; }
+p { margin: 0; }
+.muted { color: var(--muted); }
+section { background: var(--card); border: 2px solid var(--line); border-radius: 20px; padding: 18px; }
+.links { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 10px; margin-top: 14px; }
+.links a {
+  --tone: var(--c1); display: flex; flex-direction: column; gap: 2px; padding: 12px 14px; min-height: 64px;
+  border: 2px solid var(--tone); border-radius: 14px; color: var(--ink); text-decoration: none;
+}
+.links a:nth-child(2) { --tone: var(--c3); } .links a:nth-child(3) { --tone: var(--c4); } .links a:nth-child(4) { --tone: var(--c2); }
+.links a b { color: var(--tone); font-family: var(--display); font-size: 1.15rem; }
+.links a span { color: var(--muted); font-size: 0.9rem; }
+.links a:focus-visible, summary:focus-visible { outline: 3px solid var(--ink); outline-offset: 3px; }
+.note { margin-top: 14px; padding: 10px 14px; border-radius: 12px; background: var(--chip); font-size: 0.95rem; }
+details { border-top: 2px solid var(--line); }
+details:first-of-type { border-top: 0; }
+summary { cursor: pointer; padding: 12px 0; font-weight: 600; font-size: 1.05rem; min-height: 44px; }
+details p { padding: 0 0 14px; color: var(--muted); }
+</style>
+<link rel="stylesheet" href="../loopy.css">
+<script src="../loopy.js"></script>
+</head>
+<body>
+<div class="wrap">
+  <header class="bar">
+    <a class="home-link" href="../">&larr; Loopy</a>
+    <div class="controls"><div id="theme-picker"></div><div id="lang-picker"></div></div>
+  </header>
+  <h1 data-t="helpTitleShort">Help and feedback</h1>
+
+  <section aria-labelledby="faq-title">
+    <h2 id="faq-title" data-t="faqTitle">Questions and answers</h2>
+    <div id="faq"></div>
+  </section>
+
+  <section aria-labelledby="fb-title">
+    <h2 id="fb-title" data-t="fbTitle">Tell us what you think</h2>
+    <p class="muted" data-t="fbIntro">Found a problem or have an idea for a new game? We read everything.</p>
+    <div class="links">
+      <a href="https://github.com/amalrajvinoth/loopy/issues/new?template=problem.yml" target="_blank" rel="noopener noreferrer"><b data-t="fbBug">Report a problem</b><span data-t="fbBugText">Something broken or wrong</span></a>
+      <a href="https://github.com/amalrajvinoth/loopy/discussions/new?category=ideas" target="_blank" rel="noopener noreferrer"><b data-t="fbIdea">Share an idea</b><span data-t="fbIdeaText">A new game, subject or feature</span></a>
+      <a href="https://github.com/amalrajvinoth/loopy/discussions/new?category=q-a" target="_blank" rel="noopener noreferrer"><b data-t="fbAsk">Ask a question</b><span data-t="fbAskText">Not answered above</span></a>
+      <a href="https://github.com/amalrajvinoth/loopy/discussions" target="_blank" rel="noopener noreferrer"><b data-t="fbAll">See all talks</b><span data-t="fbAllText">Read what others said</span></a>
+    </div>
+    <p class="note" data-t="fbNote">These links open GitHub, a separate website. You need a free GitHub account, and GitHub accounts are for ages 13 and up, so a grown-up should post. Everything you post there is public. Please do not share your child's name, photo, school or other personal details.</p>
+    <p class="note" data-t="fbSecurity">Found a security problem? Please do not post it in public. Report it privately on GitHub's security page for Loopy.</p>
+    <div class="links"><a href="https://github.com/amalrajvinoth/loopy/security/advisories/new" target="_blank" rel="noopener noreferrer"><b data-t="fbSecLink">Report a security problem</b><span data-t="fbSecText">Only the owner can see it</span></a></div>
+  </section>
+</div>
+<script>
+Loopy.addStrings({
+  en: {
+    helpTitle: "Help and feedback · Loopy", helpTitleShort: "Help and feedback", faqTitle: "Questions and answers",
+    q1: "Is Loopy free?", a1: "Yes. Loopy is free. There are no ads, no sign-up and nothing to buy.",
+    q2: "Does Loopy collect data about my child?", a2: "No. There are no accounts, no ads, no tracking and no analytics. Stars and settings are saved only in this browser on this device. Even the fonts are stored on the Loopy site, so your browser only talks to Loopy.",
+    q3: "Which ages is Loopy for?", a3: "Kids from about age 5 to 16 (grades 1 to 10). Pick an age on the home page. Games that fit that age are shown first.",
+    q4: "How do I set my child's age?", a4: "Tap − or + next to Age on the home page or in a game's Settings. The games get easier or harder to match. The age goes up by itself on each birthday.",
+    q5: "How do I change the language?", a5: "Tap EN for English or DE for German. You find it on the home page and in each game's Settings. Loopy remembers your choice.",
+    q6: "Where are the stars saved? Can I lose them?", a6: "Stars are saved in your browser. If you clear your browser data or use a private window, they go away. To keep a backup, copy your stars code from the home page.",
+    q7: "How do I move stars to another device?", a7: "On the home page, open \"Move my stars to another device\". Copy the code, then paste it on the other device and tap Load.",
+    q8: "Can I use Loopy like an app?", a8: "Yes. On a phone or tablet, open Loopy in the browser and choose \"Add to Home Screen\". It then opens full screen. It needs the internet to open.",
+    q9: "How do I turn the sound off?", a9: "Tap the speaker button. On a game page, it is inside Settings.",
+    q10: "Who makes Loopy?", a10: "Loopy was made by a parent for their own child. It is open source, so anyone can read the code on GitHub.",
+    fbTitle: "Tell us what you think", fbIntro: "Found a problem or have an idea for a new game? We read everything.",
+    fbBug: "Report a problem", fbBugText: "Something broken or wrong", fbIdea: "Share an idea", fbIdeaText: "A new game, subject or feature",
+    fbAsk: "Ask a question", fbAskText: "Not answered above", fbAll: "See all talks", fbAllText: "Read what others said",
+    fbNote: "These links open GitHub, a separate website. You need a free GitHub account, and GitHub accounts are for ages 13 and up, so a grown-up should post. Everything you post there is public. Please do not share your child's name, photo, school or other personal details.",
+    fbSecurity: "Found a security problem? Please do not post it in public. Report it privately on GitHub's security page for Loopy.",
+    fbSecLink: "Report a security problem", fbSecText: "Only the owner can see it"
+  },
+  de: {
+    helpTitle: "Hilfe und Feedback · Loopy", helpTitleShort: "Hilfe und Feedback", faqTitle: "Fragen und Antworten",
+    q1: "Ist Loopy kostenlos?", a1: "Ja. Loopy ist kostenlos. Es gibt keine Werbung, keine Anmeldung und nichts zu kaufen.",
+    q2: "Sammelt Loopy Daten über mein Kind?", a2: "Nein. Es gibt keine Konten, keine Werbung, kein Tracking und keine Analyse. Sterne und Einstellungen werden nur in diesem Browser auf diesem Gerät gespeichert. Sogar die Schriften liegen auf der Loopy-Seite, also spricht dein Browser nur mit Loopy.",
+    q3: "Für welches Alter ist Loopy?", a3: "Für Kinder von etwa 5 bis 16 Jahren (Klasse 1 bis 10). Wähle auf der Startseite ein Alter. Passende Spiele stehen dann oben.",
+    q4: "Wie stelle ich das Alter meines Kindes ein?", a4: "Tippe auf − oder + neben Alter, auf der Startseite oder in den Einstellungen eines Spiels. Die Spiele werden leichter oder schwerer. Das Alter steigt an jedem Geburtstag von selbst.",
+    q5: "Wie ändere ich die Sprache?", a5: "Tippe auf EN für Englisch oder DE für Deutsch. Du findest das auf der Startseite und in den Einstellungen jedes Spiels. Loopy merkt sich deine Wahl.",
+    q6: "Wo werden die Sterne gespeichert? Können sie verloren gehen?", a6: "Die Sterne liegen in deinem Browser. Wenn du die Browserdaten löschst oder ein privates Fenster nutzt, sind sie weg. Als Sicherung kopiere den Sterne-Code auf der Startseite.",
+    q7: "Wie bringe ich Sterne auf ein anderes Gerät?", a7: "Öffne auf der Startseite \"Sterne auf ein anderes Gerät bringen\". Kopiere den Code, füge ihn auf dem anderen Gerät ein und tippe auf Laden.",
+    q8: "Kann ich Loopy wie eine App nutzen?", a8: "Ja. Öffne Loopy auf dem Handy oder Tablet im Browser und wähle \"Zum Home-Bildschirm\". Dann öffnet es sich im Vollbild. Zum Öffnen braucht es Internet.",
+    q9: "Wie schalte ich den Ton aus?", a9: "Tippe auf den Lautsprecher-Knopf. In einem Spiel ist er in den Einstellungen.",
+    q10: "Wer macht Loopy?", a10: "Loopy wurde von einem Elternteil für das eigene Kind gemacht. Es ist Open Source, also kann jeder den Code auf GitHub lesen.",
+    fbTitle: "Sag uns deine Meinung", fbIntro: "Ein Fehler gefunden oder eine Idee für ein neues Spiel? Wir lesen alles.",
+    fbBug: "Fehler melden", fbBugText: "Etwas geht nicht oder ist falsch", fbIdea: "Idee teilen", fbIdeaText: "Ein neues Spiel, Fach oder eine Funktion",
+    fbAsk: "Frage stellen", fbAskText: "Oben nicht beantwortet", fbAll: "Alle Beiträge", fbAllText: "Lies, was andere geschrieben haben",
+    fbNote: "Diese Links öffnen GitHub, eine andere Website (auf Englisch). Du brauchst ein kostenloses GitHub-Konto. GitHub-Konten gibt es ab 13 Jahren, also sollte ein Erwachsener schreiben. Alles dort ist öffentlich. Bitte teile nicht den Namen, ein Foto, die Schule oder andere persönliche Daten deines Kindes.",
+    fbSecurity: "Ein Sicherheitsproblem gefunden? Bitte nicht öffentlich posten. Melde es privat auf der GitHub-Sicherheitsseite von Loopy.",
+    fbSecLink: "Sicherheitsproblem melden", fbSecText: "Nur der Besitzer kann es sehen"
+  }
+});
+(function () {
+  const box = document.getElementById("faq");
+  for (let i = 1; i <= 10; i++) {
+    const d = document.createElement("details"), s = document.createElement("summary"), p = document.createElement("p");
+    s.textContent = Loopy.t("q" + i); p.textContent = Loopy.t("a" + i);
+    d.append(s, p); box.appendChild(d);
+  }
+})();
+</script>
+</body>
+</html>

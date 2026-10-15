@@ -26,9 +26,16 @@ It works on phones, tablets and computers. There is no sign-up and no ads.
 
 In a game, tap **Settings** to change age, language, colors, sound or level.
 
+## Help, feedback and safety
+
+- **Questions:** see the [FAQ](FAQ.md), also on the site's [Help page](https://amalrajvinoth.github.io/loopy/help/).
+- **Feedback:** report problems, share ideas or ask questions. See [Helping with Loopy](CONTRIBUTING.md).
+- **Security:** please report problems privately. See [SECURITY.md](SECURITY.md).
+- **Be kind:** see the [code of conduct](CODE_OF_CONDUCT.md).
+
 ## Your data stays on your device
 
-Stars and settings are saved in your browser. Nothing is sent anywhere.
+Stars and settings are saved in your browser. Nothing is sent anywhere. There are no ads, no tracking and no outside services. Even the fonts are stored on the site.
 To move stars to another device, open the home page, tap **Move my stars to another device**, and copy the code across.
 
 ## Add Loopy to your home screen
@@ -46,6 +53,9 @@ The site is plain HTML, CSS and JavaScript. There is no build step.
 | `index.html` | The home page and the list of games |
 | `loopy.js` | Shared code: languages, colors, age, sound, stars and badges |
 | `loopy.css` | Shared styles |
+| `help/index.html` | The Help page: FAQ and feedback links |
+| `fonts/` | The Fredoka and Lexend fonts, stored here so no request goes to Google |
+| `.github/` | Forms for problems, ideas and questions |
 | `math/<game>/index.html` | One game per folder |
 | `math/<game>/README.md` | What that game does |
 
@@ -60,8 +70,9 @@ Then open http://localhost:8000.
 ### Add a new game
 
 1. Make a folder, for example `reading/sight-words/`, with an `index.html`. Copying an existing game is the easiest start.
-2. Load the shared files in `<head>`:
+2. Copy the two security `<meta>` tags from an existing game, then load the shared files in `<head>`:
    ```html
+   <link rel="stylesheet" href="../../fonts/fonts.css">
    <link rel="stylesheet" href="../../loopy.css">
    <script src="../../loopy.js"></script>
    ```
@@ -75,4 +86,6 @@ Then open http://localhost:8000.
 
 ### Changing the site
 
-The `main` branch is what goes live. Make changes on a new branch and open a pull request.
+The `main` branch is what goes live. Make changes on a new branch and open a pull request. See [CONTRIBUTING.md](CONTRIBUTING.md).
+
+Do not add outside scripts, fonts, trackers or analytics. The security rules on each page block them, and they would break the promise that nothing leaves the device.

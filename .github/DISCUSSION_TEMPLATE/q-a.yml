@@ -1,0 +1,13 @@
+title: "Question: "
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Please check the [FAQ](https://amalrajvinoth.github.io/loopy/help/) first. Your question may already be answered.
+        **Everything here is public.** Please do not share your child's name, photo, school or any other personal details.
+  - type: textarea
+    id: question
+    attributes:
+      label: What is your question?
+    validations:
+      required: true

@@ -1,0 +1,14 @@
+blank_issues_enabled: false
+contact_links:
+  - name: Share an idea
+    url: https://github.com/amalrajvinoth/loopy/discussions/new?category=ideas
+    about: Ideas for new games, subjects or features go here.
+  - name: Ask a question
+    url: https://github.com/amalrajvinoth/loopy/discussions/new?category=q-a
+    about: Questions about using Loopy. Check the FAQ first.
+  - name: Read the FAQ
+    url: https://amalrajvinoth.github.io/loopy/help/
+    about: Answers to common questions.
+  - name: Report a security problem privately
+    url: https://github.com/amalrajvinoth/loopy/security/advisories/new
+    about: Please do not post security problems in public.

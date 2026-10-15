@@ -2,6 +2,8 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; img-src 'self' data:; font-src 'self'; connect-src 'none'; object-src 'none'; base-uri 'none'; form-action 'none'; manifest-src 'self'; upgrade-insecure-requests">
+<meta name="referrer" content="strict-origin-when-cross-origin">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 24 24%22%3E%3Cpath fill=%22%23ffd23f%22 d=%22M12 2.5l2.9 6 6.6.9-4.8 4.6 1.2 6.5L12 17.4l-5.9 3.1 1.2-6.5L2.5 9.4l6.6-.9z%22/%3E%3C/svg%3E">
 <link rel="manifest" href="manifest.webmanifest">
@@ -13,8 +15,7 @@
 <meta name="apple-mobile-web-app-title" content="Loopy">
 <title>Loopy</title>
 <meta name="description" content="Loopy: free learning games for kids. Learn. Play. Repeat.">
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fredoka:wght@600;700&family=Lexend:wght@400;600;700&display=swap">
+<link rel="stylesheet" href="fonts/fonts.css">
 <style>
 /* Layout: a big bouncy wordmark, then one section per subject with chunky colorful game cards. */
 :root {
@@ -65,7 +66,9 @@ h1 span:nth-child(5n)   { color: var(--c5); animation-delay: .48s; }
 .quiz p { margin: 0; color: var(--muted); line-height: 1.45; }
 .go { margin-top: auto; align-self: flex-start; background: var(--tone); color: var(--card); font-family: var(--display); font-weight: 700; font-size: 1.1rem; padding: 6px 16px; border-radius: 999px; }
 .empty { margin: 0; color: var(--muted); font-size: 1.1rem; text-align: center; }
-footer { color: var(--muted); font-size: 0.95rem; text-align: center; }
+footer { color: var(--muted); font-size: 0.95rem; text-align: center; display: flex; flex-direction: column; gap: 8px; }
+footer p { margin: 0; }
+.help-link { display: inline-flex; align-items: center; min-height: 44px; color: var(--ink); font-weight: 600; }
 @media (prefers-reduced-motion: reduce) { * { transition: none !important; animation: none !important; } }
 </style>
 <link rel="stylesheet" href="loopy.css">
@@ -97,14 +100,14 @@ footer { color: var(--muted); font-size: 0.95rem; text-align: center; }
     </details>
   </section>
   <main id="list" style="display:flex;flex-direction:column;gap:28px"></main>
-  <footer data-t="moreSoon">More games are on the way!</footer>
+  <footer><p data-t="moreSoon">More games are on the way!</p><p><a class="help-link" href="help/" data-t="helpLink">Help and feedback</a></p></footer>
 </div>
 <script>
 Loopy.addStrings({
   en: {
     tagline: "Learn. Play. Repeat.", myStars: "My stars", moveStars: "Move my stars to another device",
     moveHow: "Copy this code on this device, then paste it on the other one.", yourCode: "Your stars code", copy: "Copy",
-    pasteHere: "Paste a code here", pasteCode: "Paste a stars code", load: "Load", moreSoon: "More games are on the way!",
+    pasteHere: "Paste a code here", pasteCode: "Paste a stars code", load: "Load", moreSoon: "More games are on the way!", helpLink: "Help and feedback",
     copied: "Copied!", copyByHand: "Select the code and copy it.", badCode: "That code didn't work. Check it was copied in full.",
     toNext: "{n} more stars to the {name} badge. Every right answer earns a star.", toNextOne: "1 more star to the {name} badge. Every right answer earns a star.",
     allBadges: "You have every badge. You're a Loopy Master!", earned: "Earned", nStars: "{n} stars",
@@ -117,7 +120,7 @@ Loopy.addStrings({
   de: {
     tagline: "Lernen. Spielen. Wiederholen.", myStars: "Meine Sterne", moveStars: "Sterne auf ein anderes Gerät bringen",
     moveHow: "Kopiere diesen Code hier und füge ihn auf dem anderen Gerät ein.", yourCode: "Dein Sterne-Code", copy: "Kopieren",
-    pasteHere: "Code hier einfügen", pasteCode: "Sterne-Code einfügen", load: "Laden", moreSoon: "Bald kommen mehr Spiele!",
+    pasteHere: "Code hier einfügen", pasteCode: "Sterne-Code einfügen", load: "Laden", moreSoon: "Bald kommen mehr Spiele!", helpLink: "Hilfe und Feedback",
     copied: "Kopiert!", copyByHand: "Markiere den Code und kopiere ihn.", badCode: "Der Code hat nicht geklappt. Prüfe, ob er ganz kopiert wurde.",
     toNext: "Noch {n} Sterne bis zum Abzeichen {name}. Jede richtige Antwort gibt einen Stern.", toNextOne: "Noch 1 Stern bis zum Abzeichen {name}. Jede richtige Antwort gibt einen Stern.",
     allBadges: "Du hast alle Abzeichen. Du bist ein Loopy-Meister!", earned: "Geschafft", nStars: "{n} Sterne",
