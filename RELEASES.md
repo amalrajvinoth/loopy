@@ -4,6 +4,7 @@ The big changes, newest first. Small fixes are not listed.
 
 | Date | What's new | Where | PR |
 | --- | --- | --- | --- |
+| 2026-10-15 | Word Match: see a picture and pick its word, from 100 words about animals, food, home and school. Learn the words in English or German, hear them read out loud, and see each word in the other language too. | Word Match (new game), How it's going | #37 |
 | 2026-10-15 | Coins and Change: count coins and notes, then give change from 5 or 10 by counting up from the price. Euros by default, or pounds and dollars in Settings. Read aloud and a printable worksheet. English and German. | Coins and Change (new game), How it's going | #35 |
 | 2026-10-15 | Pizza Fractions: name the part of a pizza or bar, compare two fractions, and add halves and quarters. A picture shows why after each answer. Read aloud and a printable worksheet too. English and German. | Pizza Fractions (new game), How it's going | #36 |
 | 2026-10-15 | Bigger or Smaller: pick <, = or >, put three numbers in order, and round numbers. A number line shows why after each answer. Read aloud works here too. English and German. | Bigger or Smaller | #34 |
