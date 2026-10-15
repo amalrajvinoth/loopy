@@ -5,6 +5,13 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <style>:root{color-scheme:light;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}body{margin:0}[hidden]{display:none!important}</style>
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 24 24%22%3E%3Cpath fill=%22%23ffd23f%22 d=%22M12 2.5l2.9 6 6.6.9-4.8 4.6 1.2 6.5L12 17.4l-5.9 3.1 1.2-6.5L2.5 9.4l6.6-.9z%22/%3E%3C/svg%3E">
+<link rel="manifest" href="../../manifest.webmanifest">
+<link rel="apple-touch-icon" href="../../apple-touch-icon.png">
+<meta name="theme-color" content="#0a0a0c">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Loopy">
 <title>What Time Is It?</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Lexend:wght@400;600;700&display=swap">
@@ -93,50 +100,113 @@ button:focus-visible, .helper input:focus-visible { outline: 3px solid var(--min
 @media (prefers-reduced-motion: reduce) { * { transition: none !important; } }
 </style>
 <style>.home-link{display:inline-flex;align-items:center;min-height:40px;color:var(--muted);font-weight:600;text-decoration:none;font-size:0.95rem}.home-link:hover{color:var(--ink)}</style>
+<style>
+/* Phones and tablets: the game fills one screen; settings sit behind a button. */
+body { min-height: 100vh; min-height: 100dvh; padding-block: 12px 16px; }
+.wrap { gap: 12px; }
+.game-bar { display: flex; align-items: center; justify-content: space-between; gap: 8px; }
+.bar-right { display: flex; align-items: center; gap: 8px; }
+.top { gap: 8px 12px; }
+.play { display: flex; flex-direction: column; gap: 12px; -webkit-user-select: none; user-select: none; }
+@media (min-width: 600px) and (orientation: portrait) { .wrap { max-width: 640px; } }
+@media (orientation: landscape) and (min-width: 640px) {
+  .wrap { max-width: 1100px; }
+  .play { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; align-items: center; }
+}
+
+.clock-card { padding: 12px; gap: 6px; }
+.prompt { font-size: 1.15rem; }
+svg#clock { width: min(100%, 360px, 36vh); width: min(100%, 360px, 36dvh); }
+.legend { font-size: 0.85rem; gap: 4px 14px; }
+.side { display: flex; flex-direction: column; gap: 10px; }
+.answers { gap: 10px; }
+.answers button { min-height: clamp(56px, 8.5dvh, 96px); font-size: clamp(1.6rem, 4.2dvh, 2.4rem); }
+.feedback { min-height: 2.9em; font-size: 1.05rem; }
+.feedback strong { font-size: 1.3rem; }
+.next { min-height: clamp(52px, 7dvh, 72px); width: 100%; flex: none; }
+.helper { color: var(--ink); }
+@media (min-width: 600px) and (orientation: portrait) {
+  svg#clock { width: min(100%, 480px, 40dvh); }
+  .answers button { min-height: clamp(64px, 10dvh, 120px); font-size: 2.6rem; }
+}
+@media (orientation: landscape) and (min-width: 640px) {
+  svg#clock { width: min(100%, 580px, calc(100dvh - 190px)); }
+  .answers button { min-height: clamp(52px, 14dvh, 130px); }
+}
+@media (max-height: 760px) and (orientation: portrait) {
+  svg#clock { width: min(100%, 300px, 31dvh); }
+  .prompt { font-size: 1rem; }
+  .feedback { font-size: 0.95rem; line-height: 1.35; }
+  .feedback strong { font-size: 1.15rem; }
+}
+
+/* Portrait: the page is exactly one screen tall; the pad or answers stay at the bottom
+   and the top part shrinks to fit. With settings open, the page scrolls normally. */
+@media (orientation: portrait) {
+  body { height: calc(100dvh - env(safe-area-inset-top, 0px) - env(safe-area-inset-bottom, 0px)); min-height: 0; display: flex; flex-direction: column; overflow: hidden; }
+  body:has(#settings-panel:not([hidden])) { height: auto; overflow: visible; }
+  .wrap { flex: 1 1 auto; min-height: 0; width: 100%; }
+  .play { flex: 1 1 auto; min-height: 0; }
+}
+@media (orientation: portrait) {
+  .clock-card { flex: 1 1 auto; min-height: 0; }
+  svg#clock { flex: 1 1 0; min-height: 120px; width: 100%; max-width: 520px; height: auto; }
+  .feedback { min-height: 4.2em; max-height: 6.5em; overflow-y: auto; }
+}
+</style>
 <link rel="stylesheet" href="../../loopy.css">
 <script src="../../loopy.js"></script>
 </head>
 <body>
 
 <div class="wrap">
-  <div class="top-row">
+  <header class="game-bar">
     <a class="home-link" href="../../">&larr; Loopy</a>
-    <div class="controls"><div id="age-picker"></div><div id="theme-picker"></div><button id="sound-toggle"></button></div>
-  </div>
+    <div class="bar-right">
+      <span id="star-chip"></span>
+      <button type="button" id="settings-toggle" aria-controls="settings-panel"></button>
+    </div>
+  </header>
   <div class="top">
     <h1>What Time Is It?</h1>
     <div class="score" aria-live="polite">
       <div class="pill"><span>Score</span><b id="score">0 / 0</b></div>
       <div class="pill"><span>Streak</span><b id="streak">0</b></div>
-      <span id="star-chip"></span>
+    </div>
+  </div>
+  <div class="settings-panel" id="settings-panel" hidden>
+    <div class="controls"><div id="age-picker"></div><div id="theme-picker"></div><button id="sound-toggle"></button></div>
+    <div>
+      <p class="seg-label" id="lv-label">Level</p>
+      <div class="levels" role="group" aria-labelledby="lv-label">
+        <button type="button" id="lv-half" data-step="30">Hours &amp; halves</button>
+        <button type="button" id="lv-quarter" data-step="15">Quarter hours</button>
+        <button type="button" id="lv-five" data-step="5">Every 5 min</button>
+        <button type="button" id="lv-one" data-step="1">Every minute</button>
+      </div>
+    </div>
+    <label class="helper"><input type="checkbox" id="helper"> Show minute numbers on the clock</label>
+    <div class="panel-foot">
+      <p>Keyboard works too: 1 to 4 picks an answer, Enter goes on.</p>
+      <button type="button" class="reset" id="reset">Reset score</button>
     </div>
   </div>
 
-  <div class="levels" role="group" aria-label="Difficulty">
-    <button type="button" id="lv-half" data-step="30">Hours &amp; halves</button>
-    <button type="button" id="lv-quarter" data-step="15">Quarter hours</button>
-    <button type="button" id="lv-five" data-step="5">Every 5 min</button>
-    <button type="button" id="lv-one" data-step="1">Every minute</button>
-  </div>
-
-  <div class="clock-card">
-    <p class="prompt">Read the clock. Pick the time.</p>
-    <svg id="clock" viewBox="0 0 400 400" role="img" aria-label="Analog clock"></svg>
-    <div class="legend">
-      <span><i style="background:var(--hour)"></i>Short hand = hour</span>
-      <span><i style="background:var(--minute)"></i>Long hand = minutes</span>
+  <main class="play">
+    <div class="clock-card">
+      <p class="prompt">Read the clock. Pick the time.</p>
+      <svg id="clock" viewBox="0 0 400 400" role="img" aria-label="Analog clock"></svg>
+      <div class="legend">
+        <span><i style="background:var(--hour)"></i>Short hand = hour</span>
+        <span><i style="background:var(--minute)"></i>Long hand = minutes</span>
+      </div>
     </div>
-    <label class="helper"><input type="checkbox" id="helper"> Show minute numbers</label>
-  </div>
-
-  <div class="answers" id="answers"></div>
-
-  <p class="feedback" id="feedback" aria-live="polite"></p>
-
-  <div class="actions">
-    <button type="button" class="next" id="next">New time</button>
-    <button type="button" class="reset" id="reset">Reset score</button>
-  </div>
+    <div class="side">
+      <div class="answers" id="answers"></div>
+      <p class="feedback" id="feedback" aria-live="polite"></p>
+      <button type="button" class="next" id="next">New time</button>
+    </div>
+  </main>
 </div>
 
 <script>

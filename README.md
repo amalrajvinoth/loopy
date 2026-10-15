@@ -39,6 +39,10 @@ Free, interactive learning games for kids in grades 1 to 10, at **amalrajvinoth.
 - **Stars and badges:** every right answer earns a star. Badges unlock at 10, 25, 50, 100, 250, 500 and 1000 stars, and streaks of 5, 10, 15, 20, 30 and 50 set off confetti.
 - **Saving:** progress is kept in the browser's `localStorage`, so nothing is sent anywhere. To move stars to another device, use "Move my stars to another device" on the home page and copy the code across.
 
+## Phones and tablets
+
+Each game fits one screen in portrait and landscape: the number pad or answers stay at the bottom and the top part shrinks to fit. Age, theme, sound and levels sit behind the Settings button. Loopy can be added to a phone or tablet home screen, where it opens full screen with its own star icon (`manifest.webmanifest`, `icon-*.png`, `apple-touch-icon.png`). New games should follow the same pattern: wrap the game in `<main class="play">` and put level controls inside `#settings-panel`.
+
 ## Style
 
 Fredoka for headings, Lexend for text, large tap targets, score and streak, and a one-line reason after every answer.

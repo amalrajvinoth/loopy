@@ -113,3 +113,17 @@
 .transfer input { flex: 1; min-width: 0; font: inherit; font-size: 0.9rem; padding: 10px 12px; border-radius: 12px; border: 2px solid var(--line); background: var(--bg); color: var(--ink); }
 .transfer button { font: inherit; font-weight: 700; padding: 0 16px; min-height: 44px; border-radius: 12px; border: 0; background: var(--c1); color: var(--on-accent); cursor: pointer; }
 .transfer p { margin: 0; color: var(--muted); font-size: 0.9rem; }
+
+/* Touch screens: no double-tap zoom or grey flash on buttons. */
+button, a, label, summary { touch-action: manipulation; -webkit-tap-highlight-color: transparent; }
+.settings-toggle {
+  display: inline-flex; align-items: center; gap: 6px; min-height: 44px; padding: 0 14px; border-radius: 999px; cursor: pointer;
+  border: 0; background: var(--chip); color: var(--ink); font: inherit; font-weight: 600;
+}
+.settings-toggle svg { width: 20px; height: 20px; }
+.settings-toggle[aria-expanded="true"] { background: var(--c1); color: var(--on-accent); }
+.settings-toggle:focus-visible { outline: 3px solid var(--mark); outline-offset: 2px; }
+.settings-panel { display: flex; flex-direction: column; gap: 12px; background: var(--card); border: 2px solid var(--line); border-radius: 20px; padding: 14px; }
+.panel-foot { display: flex; flex-wrap: wrap; gap: 10px; align-items: center; justify-content: space-between; }
+.panel-foot p { margin: 0; color: var(--muted); font-size: 0.9rem; }
+@media (max-width: 380px) { .settings-toggle span { display: none; } .settings-toggle { padding: 0 11px; } }
