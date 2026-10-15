@@ -7,6 +7,7 @@ Free, interactive learning games for kids in grades 1 to 10, at **amalrajvinoth.
 | Subject | Game | What it practices |
 | --- | --- | --- |
 | Math | [Plus and Minus](math/plus-minus/) | Addition and subtraction, with or without regrouping. Numbers go up to 20 (age 6), 100 (ages 7 to 8), 1,000 (ages 9 to 10) and 10,000 (age 11 and up) |
+| Math | [Times and Share](math/times-share/) | Multiplication and division. Tables of 1, 2, 5 and 10 (age 6), 2, 5 and 10 (7), 2 to 5 and 10 (8), 2 to 10 (9), 2 to 12 (10), two digits by one (11 to 12), three digits by one or two digits by two (13 and up). Dots to count for younger kids |
 | Math | [What Time Is It?](math/what-time-is-it/) | Reading an analog clock: half hours (age 6), quarter hours (7), 5 minutes (8), every minute (9 and up) |
 
 ## Adding a game

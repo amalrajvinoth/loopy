@@ -1,0 +1,496 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<style>:root{color-scheme:light;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}body{margin:0}[hidden]{display:none!important}</style>
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 24 24%22%3E%3Cpath fill=%22%23ffd23f%22 d=%22M12 2.5l2.9 6 6.6.9-4.8 4.6 1.2 6.5L12 17.4l-5.9 3.1 1.2-6.5L2.5 9.4l6.6-.9z%22/%3E%3C/svg%3E">
+<link rel="manifest" href="../../manifest.webmanifest">
+<link rel="apple-touch-icon" href="../../apple-touch-icon.png">
+<meta name="theme-color" content="#0a0a0c">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Loopy">
+<title>Times and Share</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Lexend:wght@400;600;700&display=swap">
+<style>
+/* Layout: one centered column like a worksheet strip; problem written vertically on a card, big number pad below, toggles in a quiet bar on top. */
+:root {
+  --bg: #f3f6fb;
+  --card: #ffffff;
+  --ink: #1d2a3f;
+  --muted: #5d6b82;
+  --line: #d5dde9;
+  --accent: #2457c5;
+  --accent-ink: #ffffff;
+  --mark: #e2622b;
+  --good: #1f8a4c;
+  --good-bg: #e3f5ea;
+  --bad: #c23a3a;
+  --bad-bg: #fbe6e6;
+  --chip: #e6ecf6;
+  --key: #ffffff;
+  --font: "Lexend", "Segoe UI", "Helvetica Neue", Arial, sans-serif;
+}
+
+* { box-sizing: border-box; }
+body {
+  background: var(--bg); color: var(--ink); font-family: var(--font); font-size: 16px;
+  padding-left: max(16px, env(safe-area-inset-left, 0px));
+  padding-right: max(16px, env(safe-area-inset-right, 0px));
+  padding-block: 20px 32px;
+}
+.wrap { max-width: 520px; margin: 0 auto; display: flex; flex-direction: column; gap: 16px; }
+
+.top { display: flex; flex-wrap: wrap; gap: 12px; align-items: center; justify-content: space-between; }
+h1 { margin: 0; font-size: 1.6rem; font-weight: 700; text-wrap: balance; }
+.score { display: flex; flex-wrap: wrap; gap: 8px; font-variant-numeric: tabular-nums; }
+.pill { background: var(--card); border: 1px solid var(--line); border-radius: 999px; padding: 6px 14px; font-weight: 600; font-size: 1rem; white-space: nowrap; }
+.pill span { color: var(--muted); font-weight: 400; margin-right: 4px; }
+
+.settings { display: flex; flex-direction: column; gap: 8px; }
+.seg-label { font-size: 0.8rem; font-weight: 600; letter-spacing: 0.06em; text-transform: uppercase; color: var(--muted); margin: 0 0 4px 4px; }
+.seg { display: grid; grid-template-columns: repeat(3, 1fr); gap: 6px; background: var(--chip); padding: 5px; border-radius: 14px; }
+.seg button {
+  font: inherit; font-size: 0.95rem; font-weight: 600; color: var(--muted);
+  background: transparent; border: 0; border-radius: 10px; padding: 8px 6px; min-height: 44px; cursor: pointer;
+}
+.seg button[aria-pressed="true"] { background: var(--card); color: var(--ink); box-shadow: 0 1px 3px rgb(0 0 0 / 0.12); }
+
+.problem-card {
+  background: var(--card); border: 1px solid var(--line); border-radius: 24px;
+  padding: 20px 18px 18px; display: flex; flex-direction: column; align-items: center; gap: 14px;
+}
+.problem-card.good { border-color: var(--good); box-shadow: 0 0 0 2px var(--good) inset; }
+.problem-card.bad { border-color: var(--bad); box-shadow: 0 0 0 2px var(--bad) inset; }
+
+/* Vertical problem, written like the worksheets: operator on the left, digits right-aligned. */
+.vert {
+  display: grid; grid-template-columns: auto auto; column-gap: 0.35em;
+  font-size: clamp(3.4rem, 15vw, 4.6rem); font-weight: 600; line-height: 1.12;
+  font-variant-numeric: tabular-nums; letter-spacing: 0.04em;
+}
+.vert .num { grid-column: 2; text-align: right; min-width: 3ch; }
+.vert .op { grid-column: 1; grid-row: 2; color: var(--accent); }
+.vert .rule { grid-column: 1 / -1; height: 0.07em; background: var(--ink); border-radius: 2px; margin: 0.1em 0 0.12em; }
+.vert .ans {
+  grid-column: 2; text-align: right; min-width: 3ch; min-height: 1.12em;
+  color: var(--accent); position: relative;
+}
+.vert .ans.empty::after {
+  content: ""; position: absolute; right: 0; bottom: 0.12em; width: 0.55em; height: 0.07em;
+  background: var(--mark); border-radius: 2px; animation: blink 1s steps(2, start) infinite;
+}
+.problem-card.good .ans { color: var(--good); }
+.problem-card.bad .ans { color: var(--bad); text-decoration: line-through; text-decoration-thickness: 0.06em; }
+@keyframes blink { to { visibility: hidden; } }
+
+.feedback { min-height: 3.1em; text-align: center; font-size: 1.1rem; line-height: 1.45; margin: 0; max-width: 34ch; }
+.feedback strong { display: block; font-size: 1.45rem; }
+.feedback.good strong { color: var(--good); }
+.feedback.bad strong { color: var(--bad); }
+.feedback .hint { color: var(--muted); }
+
+.pad { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; }
+.pad button {
+  font: inherit; font-size: 2rem; font-weight: 700; font-variant-numeric: tabular-nums; color: var(--ink);
+  background: var(--key); border: 2px solid var(--line); border-radius: 18px; min-height: 72px; cursor: pointer;
+  transition: transform .08s ease, border-color .15s ease;
+  touch-action: manipulation; -webkit-tap-highlight-color: transparent;
+}
+.pad button:hover:not(:disabled) { border-color: var(--accent); }
+.pad button:active:not(:disabled) { transform: scale(0.96); }
+.pad button:disabled { opacity: 0.4; cursor: default; }
+.pad .erase { font-size: 1.15rem; color: var(--muted); }
+.pad .go { background: var(--accent); border-color: var(--accent); color: var(--accent-ink); font-size: 1.35rem; }
+.pad .go:hover:not(:disabled) { border-color: var(--accent); filter: brightness(1.08); }
+
+.foot { display: flex; justify-content: space-between; align-items: center; gap: 12px; flex-wrap: wrap; }
+.foot p { margin: 0; color: var(--muted); font-size: 0.9rem; }
+.reset { font: inherit; font-size: 0.95rem; color: var(--muted); background: transparent; border: 2px solid var(--line); border-radius: 14px; padding: 0 16px; min-height: 44px; cursor: pointer; }
+button:focus-visible { outline: 3px solid var(--mark); outline-offset: 3px; }
+
+@media (max-width: 420px) {
+  h1 { font-size: 1.35rem; }
+  .pad button { min-height: 64px; font-size: 1.8rem; }
+  .seg button { font-size: 0.85rem; }
+}
+@media (prefers-reduced-motion: reduce) {
+  * { transition: none !important; }
+  .vert .ans.empty::after { animation: none; }
+}
+</style>
+<style>.home-link{display:inline-flex;align-items:center;min-height:40px;color:var(--muted);font-weight:600;text-decoration:none;font-size:0.95rem}.home-link:hover{color:var(--ink)}</style>
+<style>
+/* Phones and tablets: the game fills one screen; settings sit behind a button. */
+body { min-height: 100vh; min-height: 100dvh; padding-block: 12px 16px; }
+.wrap { gap: 12px; }
+.game-bar { display: flex; align-items: center; justify-content: space-between; gap: 8px; }
+.bar-right { display: flex; align-items: center; gap: 8px; }
+.top { gap: 8px 12px; }
+.play { display: flex; flex-direction: column; gap: 12px; -webkit-user-select: none; user-select: none; }
+@media (min-width: 600px) and (orientation: portrait) { .wrap { max-width: 640px; } }
+@media (orientation: landscape) and (min-width: 640px) {
+  .wrap { max-width: 1100px; }
+  .play { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; align-items: center; }
+}
+
+.problem-card { padding: 14px 14px 12px; gap: 8px; }
+.vert { font-size: clamp(2.4rem, min(15vw, 8.5vh), 5rem); font-size: clamp(2.4rem, min(15vw, 8.5dvh), 5rem); }
+.feedback { min-height: 2.9em; font-size: 1.05rem; }
+.feedback strong { font-size: 1.3rem; }
+.pad { gap: 8px; }
+.pad button { min-height: clamp(50px, 8vh, 92px); min-height: clamp(50px, 8dvh, 92px); }
+@media (min-width: 600px) and (orientation: portrait) {
+  .vert { font-size: clamp(3rem, 10dvh, 7rem); }
+  .pad button { min-height: clamp(60px, 10dvh, 120px); font-size: 2.4rem; }
+}
+@media (orientation: landscape) and (min-width: 640px) {
+  .problem-card { height: 100%; justify-content: center; }
+  .vert { font-size: clamp(2.2rem, min(7vw, 13dvh), 7rem); }
+  .pad button { min-height: clamp(44px, calc((100dvh - 150px) / 4.4), 130px); }
+}
+/* Short phones: keep long explanations from pushing the number pad off screen. */
+@media (max-height: 760px) and (orientation: portrait) {
+  .feedback { font-size: 0.95rem; line-height: 1.35; }
+  .feedback strong { font-size: 1.15rem; }
+}
+
+/* Portrait: the page is exactly one screen tall; the pad or answers stay at the bottom
+   and the top part shrinks to fit. With settings open, the page scrolls normally. */
+@media (orientation: portrait) {
+  body { height: calc(100dvh - env(safe-area-inset-top, 0px) - env(safe-area-inset-bottom, 0px)); min-height: 0; display: flex; flex-direction: column; overflow: hidden; }
+  body:has(#settings-panel:not([hidden])) { height: auto; overflow: visible; }
+  .wrap { flex: 1 1 auto; min-height: 0; width: 100%; }
+  .play { flex: 1 1 auto; min-height: 0; }
+}
+@media (orientation: portrait) {
+  .problem-card { flex: 1 1 auto; min-height: 0; justify-content: center; overflow: hidden; }
+  .feedback { flex: 0 1 auto; min-height: 0; overflow-y: auto; }
+}
+@media (orientation: landscape) and (min-width: 640px) {
+  body { height: calc(100dvh - env(safe-area-inset-top, 0px) - env(safe-area-inset-bottom, 0px)); min-height: 0; display: flex; flex-direction: column; overflow: hidden; }
+  body:has(#settings-panel:not([hidden])) { height: auto; overflow: visible; }
+  .wrap { flex: 1 1 auto; min-height: 0; width: 100%; }
+  .play { flex: 1 1 auto; min-height: 0; grid-template-rows: minmax(0, 1fr); }
+  .problem-card { min-height: 0; overflow: hidden; }
+  .feedback { flex: 0 1 auto; min-height: 0; overflow-y: auto; }
+}
+/* After answering on smaller screens, shrink the sum so the reason has room. */
+@media (max-height: 900px), (max-width: 599px) {
+  .problem-card.good .vert, .problem-card.bad .vert { zoom: 0.7; }
+}
+@media (max-height: 500px) {
+  .feedback { font-size: 0.9rem; line-height: 1.3; }
+  .feedback strong { font-size: 1.05rem; }
+}
+
+/* Times and Share: the problem is written in one line, with an optional dot picture to count. */
+.eq { display: flex; align-items: baseline; justify-content: center; flex-wrap: wrap; gap: 0 0.28em;
+  font-size: clamp(2.4rem, min(12vw, 8dvh), 5rem); font-weight: 600; font-variant-numeric: tabular-nums; line-height: 1.15; }
+.eq .op { color: var(--accent); }
+.eq .eqs { color: var(--muted); }
+.eq .ans { min-width: 1.6ch; text-align: center; color: var(--accent); border-bottom: 0.07em solid var(--ink); position: relative; padding: 0 0.1em; }
+.eq .ans.empty::after { content: "?"; color: var(--muted); }
+.problem-card.good .eq .ans { color: var(--good); border-color: var(--good); }
+.problem-card.bad .eq .ans { color: var(--bad); border-color: var(--bad); text-decoration: line-through; text-decoration-thickness: 0.06em; }
+.dots { display: flex; flex-direction: column; gap: calc(var(--dot) * 0.45); align-items: center; }
+.dots[hidden] { display: none; }
+.dots .row { display: flex; gap: calc(var(--dot) * 0.35); padding: calc(var(--dot) * 0.15) calc(var(--dot) * 0.3); border-radius: 999px; }
+.dots.groups .row { background: var(--chip); }
+.dots i { width: var(--dot); height: var(--dot); border-radius: 50%; background: var(--tone); display: block; }
+.level-note { margin: 0; color: var(--muted); font-size: 0.9rem; }
+.helper { display: flex; align-items: center; gap: 8px; min-height: 40px; cursor: pointer; }
+.helper input { width: 22px; height: 22px; accent-color: var(--c2); }
+@media (max-height: 900px), (max-width: 599px) {
+  .problem-card.good .eq, .problem-card.bad .eq { zoom: 0.75; }
+}
+</style>
+<link rel="stylesheet" href="../../loopy.css">
+<script src="../../loopy.js"></script>
+</head>
+<body>
+
+<div class="wrap">
+  <header class="game-bar">
+    <a class="home-link" href="../../">&larr; Loopy</a>
+    <div class="bar-right">
+      <span id="star-chip"></span>
+      <button type="button" id="settings-toggle" aria-controls="settings-panel"></button>
+    </div>
+  </header>
+  <div class="top">
+    <h1 id="title">Times and Share</h1>
+    <div class="score" aria-live="polite">
+      <div class="pill"><span>Score</span><b id="score">0 / 0</b></div>
+      <div class="pill"><span>Streak</span><b id="streak">0</b></div>
+    </div>
+  </div>
+  <div class="settings-panel" id="settings-panel" hidden>
+    <div class="controls"><div id="age-picker"></div><div id="theme-picker"></div><button id="sound-toggle"></button></div>
+    <div>
+      <p class="seg-label" id="op-label">Problems</p>
+      <div class="seg" role="group" aria-labelledby="op-label" id="op-seg">
+        <button type="button" id="op-mul" data-op="mul">Times &times;</button>
+        <button type="button" id="op-div" data-op="div">Share &divide;</button>
+        <button type="button" id="op-mix" data-op="mix">Both</button>
+      </div>
+    </div>
+    <label class="helper"><input type="checkbox" id="dots-on"> Show dots to count (times tables only)</label>
+    <p class="level-note" id="level-note"></p>
+    <div class="panel-foot">
+      <p>Keyboard works too: numbers, Backspace, Enter.</p>
+      <button type="button" class="reset" id="reset">Reset score</button>
+    </div>
+  </div>
+
+  <main class="play">
+    <div class="problem-card" id="card">
+      <div class="eq" id="eq" aria-live="polite">
+        <span id="eq-a">7</span><span class="op" id="op-sign">&times;</span><span id="eq-b">8</span><span class="eqs">=</span><span class="ans empty" id="ans" aria-label="Your answer"></span>
+      </div>
+      <div class="dots" id="dots" aria-hidden="true"></div>
+      <p class="feedback" id="feedback"><span class="hint">Tap the numbers to write your answer.</span></p>
+    </div>
+
+    <div class="pad" id="pad">
+      <button type="button" id="k1" data-d="1">1</button>
+      <button type="button" id="k2" data-d="2">2</button>
+      <button type="button" id="k3" data-d="3">3</button>
+      <button type="button" id="k4" data-d="4">4</button>
+      <button type="button" id="k5" data-d="5">5</button>
+      <button type="button" id="k6" data-d="6">6</button>
+      <button type="button" id="k7" data-d="7">7</button>
+      <button type="button" id="k8" data-d="8">8</button>
+      <button type="button" id="k9" data-d="9">9</button>
+      <button type="button" id="k-erase" class="erase" aria-label="Erase last digit">Erase</button>
+      <button type="button" id="k0" data-d="0">0</button>
+      <button type="button" id="k-go" class="go">Check</button>
+    </div>
+  </main>
+</div>
+
+<script>
+// GEN START
+const randInt = (lo, hi) => lo + Math.floor(Math.random() * (hi - lo + 1));
+const pick = (arr) => arr[Math.floor(Math.random() * arr.length)];
+const fmt = (n) => n.toLocaleString("en-US");
+
+// What each age practices. "facts" are times tables; "big" uses larger numbers.
+function levelForAge(age) {
+  if (age <= 6) return { kind: "facts", tables: [1, 2, 5, 10], upTo: 5, dots: true, note: "Tables of 1, 2, 5 and 10, up to 5 times." };
+  if (age === 7) return { kind: "facts", tables: [2, 5, 10], upTo: 10, dots: true, note: "Tables of 2, 5 and 10." };
+  if (age === 8) return { kind: "facts", tables: [2, 3, 4, 5, 10], upTo: 10, dots: true, note: "Tables of 2, 3, 4, 5 and 10." };
+  if (age === 9) return { kind: "facts", tables: [2, 3, 4, 5, 6, 7, 8, 9, 10], upTo: 10, dots: false, note: "All tables from 2 to 10." };
+  if (age === 10) return { kind: "facts", tables: [2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12], upTo: 12, dots: false, note: "All tables from 2 to 12." };
+  if (age <= 12) return { kind: "big", size: 2, dots: false, note: "Two-digit numbers times or shared by one digit." };
+  return { kind: "big", size: 3, dots: false, note: "Bigger numbers: three digits by one, or two digits by two." };
+}
+
+function makeProblem(opMode, level, avoid) {
+  for (let tries = 0; tries < 300; tries++) {
+    const op = opMode === "mix" ? (Math.random() < 0.5 ? "mul" : "div") : opMode;
+    let a, b;
+    if (level.kind === "facts") {
+      const t = pick(level.tables), n = randInt(1, level.upTo);
+      if (op === "mul") { if (Math.random() < 0.5) { a = t; b = n; } else { a = n; b = t; } }
+      else { b = t; a = t * n; }
+    } else if (level.size === 2) {
+      b = randInt(2, 9);
+      a = op === "mul" ? randInt(12, 99) : b * randInt(11, 99);
+    } else if (op === "mul") {
+      if (Math.random() < 0.5) { a = randInt(100, 999); b = randInt(2, 9); }
+      else { a = randInt(12, 99); b = randInt(11, 19); }
+    } else {
+      b = randInt(2, 9); a = b * randInt(100, 999);
+    }
+    const key = op + a + "," + b;
+    if (avoid && avoid.includes(key) && tries < 250) continue;
+    return { op, a, b, key, answer: op === "mul" ? a * b : a / b };
+  }
+}
+
+// Split a number into its place-value parts: 345 -> [300, 40, 5].
+const parts = (n) => String(n).split("").map((d, i, s) => +d * Math.pow(10, s.length - 1 - i)).filter(Boolean);
+
+// A short, friendly reason for the answer.
+function explain(p) {
+  if (p.op === "mul") {
+    if (p.a <= 12 && p.b <= 12) {
+      if (p.a === 1 || p.b === 1) return "Times 1 keeps a number the same: " + p.a + " × " + p.b + " = " + p.answer + ".";
+      const g = p.a, size = p.b, list = []; // read a × b as "a groups of b", matching the dot picture
+      for (let i = 1; i <= g; i++) list.push(size * i);
+      return p.a + " × " + p.b + " is " + g + " groups of " + size + ". Count by " + size + "s: " + list.join(", ") + ".";
+    }
+    // Bigger numbers: split the one with more places, multiply each part, add.
+    const [big, small] = p.b >= 10 ? [p.b, p.a] : [p.a, p.b];
+    const ps = parts(big), prods = ps.map(x => x * small);
+    if (ps.length === 1) {
+      const zeros = String(big).length - 1, d = big / Math.pow(10, zeros);
+      return "Think: " + d + " × " + small + " = " + d * small + ", then add " + zeros + " zero" + (zeros > 1 ? "s" : "") + ": " + fmt(p.answer) + ".";
+    }
+    const times = ps.map((x, i) => (big === p.a ? fmt(x) + " × " + small : small + " × " + fmt(x)) + " = " + fmt(prods[i]));
+    return "Split " + fmt(big) + " into " + ps.map(fmt).join(" + ") + ". " + times.join(", ") + ". Add them: " +
+      prods.map(fmt).join(" + ") + " = " + fmt(p.answer) + ".";
+  }
+  if (p.a <= 144 && p.answer <= 12) {
+    return "Share " + p.a + " into " + p.b + " equal groups. " + p.b + " × " + p.answer + " = " + p.a + ", so each group gets " + p.answer + ".";
+  }
+  const qs = parts(p.answer);
+  if (qs.length === 1) return "Think: " + p.b + " × " + fmt(p.answer) + " = " + fmt(p.a) + ", so " + fmt(p.a) + " ÷ " + p.b + " = " + fmt(p.answer) + ".";
+  const pieces = qs.map(q => q * p.b);
+  return "Split " + fmt(p.a) + " into " + pieces.map(fmt).join(" + ") + ". " +
+    pieces.map((x, i) => fmt(x) + " ÷ " + p.b + " = " + fmt(qs[i])).join(", ") + ". Add them: " +
+    qs.map(fmt).join(" + ") + " = " + fmt(p.answer) + ".";
+}
+// GEN END
+
+(function () {
+  const $ = (id) => document.getElementById(id);
+  const card = $("card"), ansEl = $("ans"), feedbackEl = $("feedback"), goBtn = $("k-go"), dotsEl = $("dots"), dotsBox = $("dots-on");
+  const opBtns = [...document.querySelectorAll("#op-seg button")];
+  const digitBtns = [...document.querySelectorAll("#pad [data-d]")];
+  const TONES = ["--c1", "--c2", "--c3", "--c4", "--c5"];
+
+  const store = {
+    get(k, d) { try { const v = localStorage.getItem(k); return v === null ? d : JSON.parse(v); } catch (e) { return d; } },
+    set(k, v) { try { localStorage.setItem(k, JSON.stringify(v)); } catch (e) {} }
+  };
+
+  let age = window.Loopy ? Loopy.getAge() : 8;
+  let level, opMode, dots;
+  // Settings are remembered per age, so each age starts at the right level.
+  function loadForAge() {
+    level = levelForAge(age);
+    opMode = store.get("ts.op.a" + age, age <= 7 ? "mul" : "mix");
+    dots = store.get("ts.dots.a" + age, level.dots);
+    $("level-note").textContent = "Age " + age + ": " + level.note;
+    dotsBox.disabled = level.kind !== "facts";
+  }
+  loadForAge();
+
+  let right = 0, tried = 0, streak = 0;
+  let current = null, typed = "", answered = false, recent = [];
+  const maxLen = () => String(level.kind === "facts" ? 144 : 9999).length;
+
+  // Dot picture: a x b is a rows of b dots; a ÷ b is b groups sharing the dots.
+  function drawDots() {
+    const p = current;
+    const show = dots && level.kind === "facts" && p && (p.op === "mul" ? Math.max(p.a, p.b) : Math.max(p.b, p.answer)) <= 12;
+    dotsEl.hidden = !show;
+    if (!show) return;
+    const rows = p.op === "mul" ? p.a : p.b, cols = p.op === "mul" ? p.b : p.answer;
+    const w = card.clientWidth - 40, h = Math.max(90, innerHeight * 0.26);
+    const size = Math.max(6, Math.min(24, Math.floor(w / (cols * 1.45 + 0.6)), Math.floor(h / (rows * 1.6))));
+    dotsEl.style.setProperty("--dot", size + "px");
+    dotsEl.classList.toggle("groups", p.op === "div");
+    dotsEl.innerHTML = "";
+    for (let r = 0; r < rows; r++) {
+      const row = document.createElement("div");
+      row.className = "row";
+      row.style.setProperty("--tone", "var(" + TONES[r % TONES.length] + ")");
+      for (let c = 0; c < cols; c++) row.appendChild(document.createElement("i"));
+      dotsEl.appendChild(row);
+    }
+  }
+
+  function render() {
+    $("score").textContent = right + " / " + tried;
+    $("streak").textContent = streak;
+    opBtns.forEach(b => b.setAttribute("aria-pressed", String(b.dataset.op === opMode)));
+    dotsBox.checked = dots && level.kind === "facts";
+    ansEl.textContent = typed === "" ? "" : fmt(parseInt(typed, 10));
+    ansEl.classList.toggle("empty", !answered && typed === "");
+    goBtn.textContent = answered ? "Next" : "Check";
+    goBtn.disabled = !answered && typed === "";
+    digitBtns.forEach(b => b.disabled = answered);
+    $("k-erase").disabled = answered || typed === "";
+  }
+
+  function newRound() {
+    current = makeProblem(opMode, level, recent);
+    recent.push(current.key);
+    if (recent.length > 12) recent.shift();
+    typed = ""; answered = false;
+    $("eq-a").textContent = fmt(current.a);
+    $("eq-b").textContent = fmt(current.b);
+    $("op-sign").textContent = current.op === "mul" ? "×" : "÷";
+    $("eq").setAttribute("aria-label", current.a + (current.op === "mul" ? " times " : " divided by ") + current.b);
+    card.className = "problem-card";
+    feedbackEl.className = "feedback";
+    render();
+    drawDots();
+    feedbackEl.innerHTML = '<span class="hint"></span>';
+    feedbackEl.firstChild.textContent = current.op === "div" ? "How many in each group?"
+      : (dotsEl.hidden ? "Tap the numbers to write your answer." : "Count the dots, or use what you know.");
+  }
+
+  function press(d) {
+    if (answered || typed.length >= maxLen()) return;
+    if (typed === "0") typed = "";
+    typed += d;
+    render();
+  }
+  function erase() {
+    if (answered) return;
+    typed = typed.slice(0, -1);
+    render();
+  }
+  function check() {
+    if (answered || typed === "") return;
+    answered = true; tried++;
+    const ok = parseInt(typed, 10) === current.answer;
+    if (ok) { right++; streak++; } else { streak = 0; }
+    if (window.Loopy && Loopy.rewards) ok ? Loopy.rewards.correct("times-share", streak, harder()) : Loopy.rewards.wrong();
+    card.className = "problem-card " + (ok ? "good" : "bad");
+    feedbackEl.className = "feedback " + (ok ? "good" : "bad");
+    const sign = current.op === "mul" ? " × " : " ÷ ";
+    const head = ok
+      ? (streak >= 3 ? "Correct! " + streak + " in a row!" : "Correct!")
+      : "Not quite. " + fmt(current.a) + sign + fmt(current.b) + " = " + fmt(current.answer) + ".";
+    feedbackEl.innerHTML = "<strong></strong>";
+    feedbackEl.firstChild.textContent = head;
+    feedbackEl.appendChild(document.createTextNode(explain(current)));
+    render();
+    drawDots();
+  }
+  // What "Make it harder" does after 10 in a row: mix times and sharing, then hide the dots.
+  function harder() {
+    if (opMode !== "mix") {
+      return { label: "Try times and sharing mixed together", apply: () => { opMode = "mix"; store.set("ts.op.a" + age, opMode); render(); } };
+    }
+    if (dots && level.kind === "facts") {
+      return { label: "Try it without the dots", apply: () => { dots = false; store.set("ts.dots.a" + age, dots); render(); } };
+    }
+    return null;
+  }
+  function go() { answered ? newRound() : check(); }
+
+  digitBtns.forEach(b => b.addEventListener("click", () => press(b.dataset.d)));
+  $("k-erase").addEventListener("click", erase);
+  goBtn.addEventListener("click", go);
+  opBtns.forEach(b => b.addEventListener("click", () => {
+    opMode = b.dataset.op; store.set("ts.op.a" + age, opMode); newRound();
+  }));
+  dotsBox.addEventListener("change", () => { dots = dotsBox.checked; store.set("ts.dots.a" + age, dots); render(); drawDots(); });
+  window.addEventListener("loopy:age", (e) => { age = e.detail; recent = []; loadForAge(); newRound(); });
+  window.addEventListener("resize", drawDots);
+  $("reset").addEventListener("click", () => { right = 0; tried = 0; streak = 0; newRound(); });
+  document.addEventListener("keydown", (e) => {
+    if (e.metaKey || e.ctrlKey || e.altKey || document.querySelector(".loopy-cheer.big")) return;
+    if (e.target.tagName === "INPUT") return;
+    if (/^[0-9]$/.test(e.key)) { press(e.key); e.preventDefault(); }
+    else if (e.key === "Backspace") { erase(); e.preventDefault(); }
+    else if (e.key === "Enter") {
+      if (document.activeElement && document.activeElement.tagName === "BUTTON" && document.activeElement !== goBtn) return;
+      go(); e.preventDefault();
+    }
+  });
+
+  newRound();
+})();
+</script>
+</body>
+</html>
