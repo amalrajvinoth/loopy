@@ -42,6 +42,7 @@ Open it from the link at the bottom of the home page.
 
 ## How it works
 
+- **Children.** More than one child can play on the same device. It starts with Dio and Dia. Tap **+** under "Who is playing?" on the home page to add a child with a name, a picture and an age. Each child has their own age, stars, badges, streaks, progress and game settings. Tap a name to switch. Theme, sound and language are shared.
 - **Age.** Pick the child's age. Each game gets easier or harder to match it. The age goes up by itself on each birthday.
 - **Language.** English is the default. Tap **DE** for German, or **EN** to go back.
 - **Colors.** Black is the default. You can also pick Sunny, Ocean, Candy or Forest.
@@ -64,8 +65,8 @@ In a game, tap **Settings** to change age, language, colors, sound or level.
 
 ## Your data stays on your device
 
-Stars, settings and the answers on the grown-ups' page are saved in your browser. Nothing is sent anywhere. There are no ads, no tracking and no outside services. Even the fonts are stored on the site.
-To move stars to another device, open the home page, tap **Move my stars to another device**, and copy the code across.
+Stars, settings, children's names and the answers on the grown-ups' page are saved in your browser. Nothing is sent anywhere. There are no ads, no tracking and no outside services. Even the fonts are stored on the site.
+To move stars to another device, open the home page, tap **Move my stars to another device**, and copy the code across. The code also carries the day streak, progress, Last 5, the age and the settings. The code holds every child on the device. Loading a code only adds, it never takes anything away.
 
 ## Screen readers and keyboards
 
@@ -74,6 +75,10 @@ Every game works without touching the screen. Tab moves between buttons, Enter p
 ## Add Loopy to your home screen
 
 On a phone or tablet, open the site and choose **Add to Home Screen**. Loopy then opens full screen like an app.
+
+## Works offline
+
+After one visit with internet, loopy opens with no internet too: on a plane, in the car, anywhere. Every game, Today's 10, Help and the grown-ups' page work. The browser keeps a copy of the site on the device. When you are online, loopy checks for a new version each time it opens, and the next page you open shows it.
 
 ## For developers
 
@@ -84,7 +89,7 @@ The site is plain HTML, CSS and JavaScript. One small build step makes the share
 | File | What it is |
 | --- | --- |
 | `index.html` | The home page and the list of games |
-| `src/loopy.js` | Shared code: languages, colors, age, sound, read aloud, stars and badges, Last 5 dots, the back button, printable worksheets. Edit this one |
+| `src/loopy.js` | Shared code: languages, colors, age, sound, read aloud, stars and badges, Last 5 dots, the stars code, the back button, printable worksheets. Edit this one |
 | `src/loopy.css` | Shared styles and fonts. Edit this one |
 | `loopy.js`, `loopy.css` | Small copies made by the build. Pages load these. Do not edit them |
 | `DESIGN.md` | How loopy looks: colors, fonts, buttons, layout and rules. Read it before you change a page |
@@ -93,7 +98,8 @@ The site is plain HTML, CSS and JavaScript. One small build step makes the share
 | `progress/index.html` | How it's going: the grown-ups' page. Games log answers with `Loopy.rewards.wrong(game, { q, a, y, k })` |
 | `fonts/` | The Fredoka and Lexend fonts, stored here so no request goes to Google. The `-latin` files are made by the build from `src/fonts/` |
 | `.github/` | Forms for problems, ideas and questions, the automatic checks, and Dependabot |
-| `tools/` | Small scripts: `build.py` makes the small files, `csp.py` updates each page's security policy, `check_external.py` makes sure nothing loads from other websites, `review.py` checks that all games follow the same rules, `a11y/` checks every page with a keyboard and a screen reader checker ([how](tools/a11y/README.md)) |
+| `sw.js` | The offline helper (a service worker). Made by the build from `src/sw.js` |
+| `tools/` | Small scripts: `build.py` makes the small files and the offline list, `csp.py` updates each page's security policy, `check_external.py` makes sure nothing loads from other websites, `review.py` checks that all games follow the same rules, `a11y/` checks every page with a keyboard and a screen reader checker ([how](tools/a11y/README.md)) |
 | `RELEASES.md` | What's new: one line per big change, for parents |
 | `.claude/skills/loopy-review/` | The review checklist for every change: design, architecture, docs, games alike, and release notes after a merge |
 | `math/<game>/index.html` | One game per folder (also `languages/` and `mix/`) |
@@ -124,11 +130,12 @@ Read [DESIGN.md](DESIGN.md) first. It lists the colors, fonts, buttons and layou
    - Call `Loopy.rewards.correct("game-id", streak)` after a right answer, and `Loopy.rewards.wrong("game-id", detail)` after a wrong one. These also fill in the Last 5 dots and the grown-ups' page.
    - `detail` tells the grown-ups' page what was missed: `{ q: "52 − 17", a: "35", y: "45", k: "sub-rg" }` is the problem, the right answer, the answer given, and the kind of problem. `Loopy.log.kind(op, a, b)` gives the kind for a sum. A new kind needs a `tip-` line in `progress/index.html` and in the check in `src/loopy.js`.
    - To add a **Print worksheet** button, call `Loopy.worksheet({ title, level, how, layout, make, cell, answer })` once. `make(20)` uses the game's own problem maker. See the comment above `Loopy.worksheet` in `src/loopy.js`.
+   - Save the game's own settings with `Loopy.store.get(key)` and `Loopy.store.set(key, text)`, never `localStorage` directly. They keep each child's settings apart.
    - In the **Reset score** button, call `Loopy.recent.clear("game-id")`. Add the game id to the `GAMES` lists in `src/loopy.js`, and to the list in `progress/index.html`.
 5. Add words in both languages with `Loopy.addStrings({ en: {...}, de: {...} })`. Put `data-t="key"` on fixed text, and use `Loopy.t("key")` in code. Use `Loopy.num(n)` to show numbers.
 6. Add one line to the `GAMES` list in the home page `index.html`, with the ages the game fits.
 7. Add a `README.md` in the game folder, and a row to the table above.
-8. Run `python3 tools/csp.py` so the page's security policy knows about its code. Do this again after any edit to a page.
+8. Run `python3 tools/build.py`. It updates the page's security policy and adds the page to the offline list. Do this again after any edit to a page.
 
 ### Changing the site
 
@@ -136,7 +143,7 @@ The `main` branch is what goes live. Make changes on a new branch and open a pul
 
 Before a pull request is ready, review it with `.claude/skills/loopy-review/SKILL.md` and run `python3 tools/review.py`. If you changed a page, also run the screen reader and keyboard check: see [tools/a11y/README.md](tools/a11y/README.md). After a big change is merged, add a line to [RELEASES.md](RELEASES.md).
 
-After editing any page, run `python3 tools/csp.py`. The GitHub check fails otherwise.
+After editing any page, run `python3 tools/build.py` (or at least `python3 tools/csp.py`). The GitHub check fails otherwise.
 
 ### Build the small files
 
@@ -149,7 +156,7 @@ python3 -m pip install --require-hashes --no-binary :all: -r tools/requirements.
 python3 tools/build.py
 ```
 
-The build also runs `tools/csp.py`. Commit the small files with your change. The GitHub check runs `python3 tools/build.py --check` and fails if they do not match `src/`.
+The build also runs `tools/csp.py`, then writes `sw.js`, the offline helper. `sw.js` holds the list of files to keep offline and a hash of all of them. Any change to a page, script, style, font or icon changes the hash, so visitors get the new version and their offline copy is replaced. Commit the small files and `sw.js` with your change. The GitHub check runs `python3 tools/build.py --check` and fails if they do not match `src/`.
 
 The fonts keep only the letters loopy uses (English and German). To rebuild them, for example after adding a letter to the list in `tools/build.py`, install `fonttools` and `brotli` and run `python3 tools/build.py --fonts`.
 

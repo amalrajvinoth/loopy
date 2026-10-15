@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'sha256-xItnPGEDYTf9/SNk8Skvn4FsMoRikS07hKozjkpJaVs='; style-src 'self' 'sha256-32e3zv5TY5yTtQyzSRi/gQinJZol07tw1wV96llyjr4='; img-src 'self' data:; font-src 'self'; connect-src 'none'; object-src 'none'; base-uri 'none'; form-action 'none'; manifest-src 'self'; upgrade-insecure-requests">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'sha256-NHtnnja+iJHbe4B82ZaoGriPT1jACbNC+a+l4AK0rto='; style-src 'self' 'sha256-32e3zv5TY5yTtQyzSRi/gQinJZol07tw1wV96llyjr4='; img-src 'self' data:; font-src 'self'; connect-src 'none'; worker-src 'self'; object-src 'none'; base-uri 'none'; form-action 'none'; manifest-src 'self'; upgrade-insecure-requests">
 <meta name="referrer" content="strict-origin-when-cross-origin">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <link rel="icon" href="../icon.svg" type="image/svg+xml">
@@ -88,6 +88,7 @@ section { background: var(--card); border: 2px solid var(--line); border-radius:
     <h1 data-t="prHeading">How it's going</h1>
     <p class="muted" data-t="prLead">For grown-ups. Answers from this device in the last 30 days.</p>
   </div>
+  <div id="kid-picker" data-switch-only></div>
   <div class="chips" id="chips"></div>
 
   <section aria-labelledby="weeks-title">
@@ -104,7 +105,7 @@ section { background: var(--card); border: 2px solid var(--line); border-radius:
 
   <section aria-labelledby="clear-title">
     <h2 id="clear-title" data-t="prClearTitle">Your data</h2>
-    <p class="muted" data-t="prPrivacy">These answers are saved only in this browser. Nothing is sent anywhere. They are not in the stars code, and answers older than 30 days are deleted by themselves.</p>
+    <p class="muted" data-t="prPrivacy">These answers are saved only in this browser. Nothing is sent anywhere. They move with the stars code, and answers older than 30 days are deleted by themselves.</p>
     <button type="button" class="btn danger" id="clear" data-t="prClear">Clear answers</button>
     <p class="muted" id="clear-msg" aria-live="polite"></p>
   </section>
@@ -112,14 +113,14 @@ section { background: var(--card); border: 2px solid var(--line); border-radius:
 <script>
 Loopy.addStrings({
   en: {
-    prTitle: "How it's going · loopy", prHeading: "How it's going", prLead: "For grown-ups. Answers from this device in the last 30 days.",
+    prTitle: "How it's going · loopy", prHeading: "How it's going", prHeadingKid: "How it's going for {name}", prLead: "For grown-ups. Answers from this device in the last 30 days.",
     prWeeks: "This week and last week", prThis: "This week", prLast: "Last week", prRight: "✓ {n}", prWrong: "✗ {n}",
     prRightAria: "{r} right, {w} wrong", prNone: "Not played",
     prMisses: "Answers to practise", prMissesText: "Each wrong answer, with the right answer next to it. Newest first.",
     prRightAns: "Right answer", prTheirs: "Answer given", prNoMisses: "No wrong answers in the last 30 days.",
     prMore: "Show {n} more", prToday: "Today", prYesterday: "Yesterday",
     prClearTitle: "Your data", prClear: "Clear answers", prSure: "Tap again to clear all answers", prCleared: "Cleared. Stars and badges are kept.",
-    prPrivacy: "These answers are saved only in this browser. Nothing is sent anywhere. They are not in the stars code, and answers older than 30 days are deleted by themselves.",
+    prPrivacy: "These answers are saved only in this browser. Nothing is sent anywhere. They move with the stars code, and answers older than 30 days are deleted by themselves.",
     prStars: "⭐ {n} stars", prDays: "🔥 {n} days in a row", prDay: "🔥 1 day in a row", prBadge: "🏅 {name}", prPlay: "Play →",
     gPlusMinus: "Plus and Minus", gTimesShare: "Times and Share", gClock: "What Time Is It?", gSoundSpell: "Sound Spell", gDailyMix: "Today's 10", gMake10: "Make 10", gBiggerSmaller: "Bigger or Smaller", gPizza: "Pizza Fractions", gCoinsChange: "Coins and Change", gWordMatch: "Word Match", gSpellIt: "Spell It", gQuickFacts: "Quick Facts", gWhereIsIt: "Where Is It?",
     tipNone: "Not played this week. A few minutes a day helps.", tipAll: "All right this week. Try a harder level in Settings.",
@@ -153,14 +154,14 @@ Loopy.addStrings({
     "tip-wi-wdc": "Practise capitals around the world, one continent at a time."
   },
   de: {
-    prTitle: "So läuft es · loopy", prHeading: "So läuft es", prLead: "Für Erwachsene. Antworten auf diesem Gerät aus den letzten 30 Tagen.",
+    prTitle: "So läuft es · loopy", prHeading: "So läuft es", prHeadingKid: "So läuft es bei {name}", prLead: "Für Erwachsene. Antworten auf diesem Gerät aus den letzten 30 Tagen.",
     prWeeks: "Diese Woche und letzte Woche", prThis: "Diese Woche", prLast: "Letzte Woche", prRight: "✓ {n}", prWrong: "✗ {n}",
     prRightAria: "{r} richtig, {w} falsch", prNone: "Nicht gespielt",
     prMisses: "Das üben wir noch", prMissesText: "Jede falsche Antwort, mit der richtigen daneben. Die neuesten zuerst.",
     prRightAns: "Richtig", prTheirs: "Gegeben", prNoMisses: "Keine falschen Antworten in den letzten 30 Tagen.",
     prMore: "{n} weitere zeigen", prToday: "Heute", prYesterday: "Gestern",
     prClearTitle: "Deine Daten", prClear: "Antworten löschen", prSure: "Nochmal tippen, um alle Antworten zu löschen", prCleared: "Gelöscht. Sterne und Abzeichen bleiben.",
-    prPrivacy: "Diese Antworten liegen nur in diesem Browser. Nichts wird gesendet. Sie sind nicht im Sterne-Code, und Antworten älter als 30 Tage werden von selbst gelöscht.",
+    prPrivacy: "Diese Antworten liegen nur in diesem Browser. Nichts wird gesendet. Sie ziehen mit dem Sterne-Code um, und Antworten älter als 30 Tage werden von selbst gelöscht.",
     prStars: "⭐ {n} Sterne", prDays: "🔥 {n} Tage hintereinander", prDay: "🔥 1 Tag hintereinander", prBadge: "🏅 {name}", prPlay: "Spielen →",
     gPlusMinus: "Plus und Minus", gTimesShare: "Mal und Teilen", gClock: "Wie spät ist es?", gSoundSpell: "Anlaut und Endlaut", gDailyMix: "Die 10 von heute", gMake10: "Ergänze bis 10", gBiggerSmaller: "Größer oder kleiner", gPizza: "Pizza-Brüche", gCoinsChange: "Münzen und Wechselgeld", gWordMatch: "Bild und Wort", gSpellIt: "Wörter schreiben", gQuickFacts: "Blitzwissen", gWhereIsIt: "Wo liegt das?",
     tipNone: "Diese Woche nicht gespielt. Ein paar Minuten am Tag helfen.", tipAll: "Diese Woche alles richtig. Probiert in den Einstellungen eine schwerere Stufe.",
@@ -219,6 +220,12 @@ Loopy.addStrings({
   for (let i = 0; i <= dow; i++) thisWeek.push(Loopy.dayKey(-i));
   for (let i = dow + 1; i <= dow + 7; i++) lastWeek.push(Loopy.dayKey(-i));
 
+  // With more than one child, the page is about the child picked above.
+  if (Loopy.kids.list().length > 1) {
+    const h1 = document.querySelector("h1");
+    h1.removeAttribute("data-t");
+    h1.textContent = t("prHeadingKid", { name: Loopy.kids.label(Loopy.kids.current()) });
+  }
   let log = Loopy.log.get(), shown = 20;
 
   function totals(days, game) {

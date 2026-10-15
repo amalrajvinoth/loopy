@@ -28,7 +28,7 @@ Open it from the link **For grown-ups: how it's going** at the bottom of the hom
 
 - The answers are saved only in this browser on this device. Nothing is sent anywhere.
 - Answers older than 30 days are deleted by themselves.
-- They are not in the stars code, so moving stars to another device does not move them.
+- They are in the stars code, so moving stars to another device moves them too.
 - **Clear answers** deletes them. Tap it twice, so one stray tap does nothing. Stars and badges stay.
 
 ## Settings

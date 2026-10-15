@@ -94,6 +94,9 @@ for (const page of PAGES) {
       const where = `${page || "home"} [${theme}, ${lang}]`;
       await axe(p, where);
       if (await p.$("#settings-toggle")) { await p.click("#settings-toggle"); await axe(p, where + " Settings open"); }
+      // The "Add a child" window on the home page.
+      const add = await p.$("#kid-picker button:last-child");
+      if (add) { await add.click(); await p.waitForTimeout(100); if (await p.$("dialog[open]")) await axe(p, where + " Add a child open"); }
       await p.context().close();
     }
   }

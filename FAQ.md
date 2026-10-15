@@ -18,21 +18,27 @@ Kids from about age 5 to 16 (grades 1 to 10). Pick an age on the home page. Game
 
 Tap − or + next to Age on the home page or in a game's Settings. The games get easier or harder to match. The age goes up by itself on each birthday.
 
+## Can brothers and sisters share one device?
+
+Yes. A new device starts with two children, Dio and Dia. Tap ✎ to rename them. On the home page, under "Who is playing?", tap **+** to add a child. Give them a name (or a nickname), a picture and their age. Each child has their own stars, badges, streaks, age and game settings. Tap a child's name to switch. Tap ✎ to change the name or picture, or to remove a child. Removing a child deletes their stars on this device. The theme, sound and language are the same for everyone.
+
 ## How do I change the language?
 
 Tap EN for English or DE for German. You find it on the home page and in each game's Settings. Loopy remembers your choice.
 
 ## Where are the stars saved? Can I lose them?
 
-Stars are saved in your browser. If you clear your browser data or use a private window, they go away. To keep a backup, copy your stars code from the home page.
+Stars are saved in your browser. If you clear your browser data or use a private window, they go away. To keep a backup, copy your stars code from the home page. It also keeps the day streak and progress.
 
 ## How do I move stars to another device?
 
-On the home page, open "Move my stars to another device". Copy the code, then paste it on the other device and tap Load.
+On the home page, open "Move my stars to another device". Copy the code, then paste it on the other device and tap Load. The code holds every child on the device. Each child's stars go to the child with the same name on the other device, or a new child is added.
+
+The code carries stars, badges, best scores, the day streak, the answers on the grown-ups' page, the Last 5 dots, the age and the settings. Loading a code only adds. It never takes stars or answers away, and loading the same code twice counts nothing twice. Codes from before still work: they move stars and best scores.
 
 ## Can I use Loopy like an app?
 
-Yes. On a phone or tablet, open Loopy in the browser and choose "Add to Home Screen". It then opens full screen. It needs the internet to open.
+Yes. On a phone or tablet, open Loopy in the browser and choose "Add to Home Screen". It then opens full screen. After one visit with internet, it also works offline, on a plane or in the car. When you are online, it gets the newest version by itself.
 
 ## Can Loopy read the questions out loud?
 
