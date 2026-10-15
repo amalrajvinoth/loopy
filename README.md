@@ -63,6 +63,7 @@ The site is plain HTML, CSS and JavaScript. One small build step makes the share
 | `src/loopy.js` | Shared code: languages, colors, age, sound, stars and badges. Edit this one |
 | `src/loopy.css` | Shared styles and fonts. Edit this one |
 | `loopy.js`, `loopy.css` | Small copies made by the build. Pages load these. Do not edit them |
+| `DESIGN.md` | How loopy looks: colors, fonts, buttons, layout and rules. Read it before you change a page |
 | `logo.svg`, `logo-white.svg`, `icon.svg` | The logo (for light and dark backgrounds) and the app icon |
 | `help/index.html` | The Help page: FAQ and feedback links |
 | `fonts/` | The Fredoka and Lexend fonts, stored here so no request goes to Google. The `-latin` files are made by the build from `src/fonts/` |
@@ -80,6 +81,8 @@ python3 -m http.server 8000
 Then open http://localhost:8000.
 
 ### Add a new game
+
+Read [DESIGN.md](DESIGN.md) first. It lists the colors, fonts, buttons and layout rules every game follows.
 
 1. Make a folder, for example `reading/sight-words/`, with an `index.html`. Copying an existing game is the easiest start.
 2. Copy the two security `<meta>` tags from an existing game, then load the shared files in `<head>`:
