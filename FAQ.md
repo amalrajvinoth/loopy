@@ -44,6 +44,10 @@ Yes. On a phone or tablet, open Loopy in the browser and choose "Add to Home Scr
 
 Yes, in Plus and Minus, Times and Share, What Time Is It?, Make 10, Bigger or Smaller, Pizza Fractions, Coins and Change, Quick Facts and Where Is It?. Open Settings and turn on **Read aloud**. A speaker button shows next to the question. It uses the device's own voice, in English or German, and nothing is downloaded. It is on by itself for ages 5 to 7.
 
+## Can Loopy be easier to see or read?
+
+Yes. Open **Settings**. The last color, **High contrast**, uses black, white and bright colors with clear white edges. **Easier to read** switches every text to Atkinson Hyperlegible, a font with letters that are easy to tell apart, like b and d or I, l and 1. Both are remembered on this device and work on every page.
+
 ## How do I turn the sound off?
 
 Tap the speaker button. On a game page, it is inside Settings.

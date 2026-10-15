@@ -4,7 +4,7 @@
 //   node tools/a11y/check.mjs         (exit code 1 if anything fails)
 //
 // It serves the site on a random local port, opens every page in Chrome or Chromium and checks:
-//   1. axe-core (WCAG 2.1 A and AA, plus best practices) in all 5 themes, with Settings closed and open,
+//   1. axe-core (WCAG 2.1 A and AA, plus best practices) in every theme, with Settings closed and open,
 //      in English and German.
 //   2. Keyboard: Tab reaches every control, each one has a name and a visible focus ring with
 //      at least 3:1 contrast against the page.
@@ -23,7 +23,9 @@ const require = createRequire(path.join(process.env.A11Y_DEPS || HERE, "package.
 const { chromium } = require("playwright-core");
 const AXE = fs.readFileSync(require.resolve("axe-core/axe.min.js"), "utf8");
 
-const THEMES = ["black", "sunny", "ocean", "candy", "forest"];
+// Every theme in src/loopy.css (a theme sets its own --bg).
+const THEMES = [...new Set([...fs.readFileSync(path.join(ROOT, "src/loopy.css"), "utf8")
+  .matchAll(/:root\[data-theme="([a-z]+)"\]\s*\{[^}]*--bg:/g)].map(m => m[1]))];
 const PAGES = ["", "help/", "progress/"];
 for (const subject of fs.readdirSync(ROOT).sort()) {
   const dir = path.join(ROOT, subject);
@@ -216,8 +218,8 @@ server.close();
 
 console.log(`| Check | Pages | Result |\n|---|---|---|`);
 const ok = what => problems.some(x => x.includes(what)) ? "problems" : "pass";
-console.log(`| axe-core, WCAG 2.1 AA + best practice (5 themes, EN + DE, Settings open and closed) | ${PAGES.length} | ${results.axe} runs |`);
-console.log(`| Tab order, names, focus ring (3:1), 5 themes | ${PAGES.length} | ${results.tab} runs |`);
+console.log(`| axe-core, WCAG 2.1 AA + best practice (${THEMES.length} themes, EN + DE, Settings open and closed) | ${PAGES.length} | ${results.axe} runs |`);
+console.log(`| Tab order, names, focus ring (3:1), ${THEMES.length} themes | ${PAGES.length} | ${results.tab} runs |`);
 console.log(`| Escape closes Settings | ${results.esc} | ${ok("Escape")} |`);
 console.log(`| Keyboard-only play, answer announced | ${results.play} | ${ok("keyboard play")} |`);
 if (problems.length) {

@@ -17,7 +17,7 @@ The two packages are only for this check. No page loads them, and `node_modules`
 
 ## What it checks
 
-1. **axe-core** on every page: WCAG 2.1 A and AA, plus best practices. In all five themes, in English and German, with Settings closed and open.
+1. **axe-core** on every page: WCAG 2.1 A and AA, plus best practices. In every theme (High contrast too), in English and German, with Settings closed and open.
 2. **Tab order.** Tab goes through every control. Each one has a name for screen readers and a visible focus ring with at least 3:1 contrast against the page.
 3. **Escape** closes Settings and puts focus back on the ⚙ button.
 4. **Play with the keyboard only.** In every game: Tab to the answers, answer, press Next. The answer must be read out ("Correct!" or "Not quite." and the reason), and focus must land on the new problem's first answer.

@@ -1,4 +1,4 @@
-/* Loopy shared script: languages, color themes, age picker, sounds, stars and badges.
+/* Loopy shared script: languages, color themes, easier-to-read font, age picker, sounds, stars and badges.
    Each part is its own block below. Load it in <head>. */
 
 // Hide the page until the shared parts below are built, so nothing jumps when they fill in.
@@ -33,7 +33,8 @@ document.documentElement.classList.add("loopy-building");
 
   Loopy.addStrings({
     en: {
-      theme: "Color theme", black: "Black", sunny: "Sunny", ocean: "Ocean", candy: "Candy", forest: "Forest",
+      theme: "Color theme", black: "Black", sunny: "Sunny", ocean: "Ocean", candy: "Candy", forest: "Forest", contrast: "High contrast",
+      easyRead: "Easier to read", easyOn: "On", easyOff: "Off",
       ageGroup: "Age", ageLabel: "Age {n}", younger: "Younger", older: "Older",
       soundOn: "Sound on", soundOff: "Sound off", settings: "Settings", language: "Language",
       starsEarned: "Stars earned",
@@ -49,7 +50,8 @@ document.documentElement.classList.add("loopy-building");
       erase: "Erase", eraseAria: "Erase last digit", check: "Check", next: "Next", yourAnswer: "Your answer", both: "Both"
     },
     de: {
-      theme: "Farbthema", black: "Schwarz", sunny: "Sonnig", ocean: "Ozean", candy: "Bonbon", forest: "Wald",
+      theme: "Farbthema", black: "Schwarz", sunny: "Sonnig", ocean: "Ozean", candy: "Bonbon", forest: "Wald", contrast: "Hoher Kontrast",
+      easyRead: "Leichter lesen", easyOn: "An", easyOff: "Aus",
       ageGroup: "Alter", ageLabel: "Alter {n}", younger: "Jünger", older: "Älter",
       soundOn: "Ton an", soundOff: "Ton aus", settings: "Einstellungen", language: "Sprache",
       starsEarned: "Gesammelte Sterne",
@@ -360,7 +362,8 @@ document.documentElement.classList.add("loopy-building");
     { id: "sunny",  name: "sunny",  bg: "#fff8ec", dot: "#d4561f" },
     { id: "ocean",  name: "ocean",  bg: "#06263a", dot: "#4cc9f0" },
     { id: "candy",  name: "candy",  bg: "#fff0f6", dot: "#c2257a" },
-    { id: "forest", name: "forest", bg: "#0f1f17", dot: "#8ce99a" }
+    { id: "forest", name: "forest", bg: "#0f1f17", dot: "#8ce99a" },
+    { id: "contrast", name: "contrast", bg: "#000000", dot: "#ffffff" }
   ];
   var KEY = "loopy.theme";
   var saved = null;
@@ -397,6 +400,48 @@ document.documentElement.classList.add("loopy-building");
       var b = document.getElementById("theme-" + t.id);
       if (b) b.setAttribute("aria-pressed", String(t.id === cur));
     });
+  }
+  if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", build);
+  else build();
+})();
+
+// "Easier to read": one font with clear letter shapes (Atkinson Hyperlegible Next) for all text.
+// An on/off pill after the color themes in Settings; the choice is remembered on this device.
+// A page only loads the font file when it is on (see the end of loopy.css).
+(function () {
+  var KEY = "loopy.font";
+  var on = false;
+  try { on = localStorage.getItem(KEY) === "easy"; } catch (e) {}
+  var root = document.documentElement;
+  if (on) root.setAttribute("data-font", "easy");
+  var ICON = '<svg viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 19 8 5l5 14M4.8 14h6.4"/><circle cx="17.5" cy="15.5" r="3.5"/><path d="M21 12v7"/></svg>';
+  function sync(b, state) {
+    b.setAttribute("aria-pressed", String(on));
+    state.textContent = Loopy.t(on ? "easyOn" : "easyOff");
+  }
+  function build() {
+    var themes = document.getElementById("theme-picker");
+    if (!themes || document.getElementById("font-toggle")) return;
+    var b = document.createElement("button");
+    b.type = "button";
+    b.id = "font-toggle";
+    b.className = "read-toggle";
+    b.setAttribute("aria-label", Loopy.t("easyRead"));
+    b.innerHTML = ICON;
+    var label = document.createElement("span");
+    label.textContent = Loopy.t("easyRead");
+    b.appendChild(label);
+    var state = document.createElement("b");
+    state.setAttribute("aria-hidden", "true");
+    b.appendChild(state);
+    b.addEventListener("click", function () {
+      on = !on;
+      if (on) root.setAttribute("data-font", "easy"); else root.removeAttribute("data-font");
+      try { localStorage.setItem(KEY, on ? "easy" : "normal"); } catch (e) {}
+      sync(b, state);
+    });
+    themes.parentNode.insertBefore(b, themes.nextSibling);
+    sync(b, state);
   }
   if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", build);
   else build();
@@ -1045,6 +1090,9 @@ document.documentElement.classList.add("loopy-building");
     if (!btn || !panel) return;
     btn.className = "settings-toggle";
     btn.innerHTML = GEAR + "<span>" + Loopy.t("settings") + "</span>";
+    // On small phones only the gear shows, so the button also needs its name for screen readers.
+    btn.setAttribute("data-t-aria", "settings");
+    btn.setAttribute("aria-label", Loopy.t("settings"));
     var sync = function () { btn.setAttribute("aria-expanded", String(!panel.hidden)); };
     btn.addEventListener("click", function () { panel.hidden = !panel.hidden; sync(); });
     sync();
@@ -1218,7 +1266,7 @@ document.documentElement.classList.add("loopy-building");
 // No account and nothing sent anywhere: the code is copied by hand and pasted on the other device.
 // "LOOPY2-Z..." is the data packed small (deflate) and written as letters; "LOOPY2-J..." is the same
 // data unpacked, for browsers that can't pack. Old "LOOPY-..." codes (stars and best scores only) still load.
-// Inside: { v: 2, p: [child, ...], theme, sound, lang }, child = { n, pic, rewards, daily, log, recent, age, read }.
+// Inside: { v: 2, p: [child, ...], theme, font, sound, lang }, child = { n, pic, rewards, daily, log, recent, age, read }.
 // p holds every child on the device (see Loopy.kids). Loading a code gives each child's things to the child
 // here with the same name, or adds that child. A child with no name, and an old code, go to the child playing.
 // Loading a code adds to what is here and never takes anything away: the bigger number wins,
@@ -1227,10 +1275,10 @@ document.documentElement.classList.add("loopy-building");
   var Loopy = window.Loopy = window.Loopy || {};
   var MAX_CODE = 40000, MAX_JSON = 200000, MAX_P = 10;
   var KEYS = { rewards: "loopy.rewards", daily: "loopy.daily", log: "loopy.log", recent: "loopy.recent",
-    age: "loopy.ageOffset", read: "loopy.readAloud", theme: "loopy.theme", sound: "loopy.sound", lang: "loopy.lang" };
-  var CHOICES = { read: ["on", "off"], theme: ["black", "sunny", "ocean", "candy", "forest"], sound: ["on", "off"], lang: ["en", "de"] };
-  // Theme, sound and language are for the whole device; the rest belongs to child id.
-  var DEVICE = { theme: true, sound: true, lang: true };
+    age: "loopy.ageOffset", read: "loopy.readAloud", theme: "loopy.theme", font: "loopy.font", sound: "loopy.sound", lang: "loopy.lang" };
+  var CHOICES = { read: ["on", "off"], theme: ["black", "sunny", "ocean", "candy", "forest", "contrast"], font: ["easy", "normal"], sound: ["on", "off"], lang: ["en", "de"] };
+  // Theme, reading font, sound and language are for the whole device; the rest belongs to child id.
+  var DEVICE = { theme: true, font: true, sound: true, lang: true };
   var keyOf = function (k, id) { return DEVICE[k] ? KEYS[k] : Loopy.kids.key(id, KEYS[k]); };
   var get = function (k, id) { try { return localStorage.getItem(keyOf(k, id)); } catch (e) { return null; } };
   var read = function (k, id) { try { return JSON.parse(get(k, id)); } catch (e) { return null; } };
@@ -1280,7 +1328,7 @@ document.documentElement.classList.add("loopy-building");
         read: choice("read", get("read", id))
       };
     });
-    return { v: 2, p: p, theme: choice("theme", get("theme")), sound: choice("sound", get("sound")), lang: choice("lang", get("lang")) };
+    return { v: 2, p: p, theme: choice("theme", get("theme")), font: choice("font", get("font")), sound: choice("sound", get("sound")), lang: choice("lang", get("lang")) };
   }
 
   // Adds a checked child from a code to what this device has. Everything is cleaned again before it is saved.
@@ -1329,7 +1377,7 @@ document.documentElement.classList.add("loopy-building");
       var id = !name ? now : (here.filter(same)[0] || {}).id || Loopy.kids.create(name, c.pic);
       if (id) merge(c, id);
     });
-    ["theme", "sound", "lang"].forEach(function (k) { if (get(k) === null && choice(k, d[k])) put(k, d[k]); });
+    ["theme", "font", "sound", "lang"].forEach(function (k) { if (get(k) === null && choice(k, d[k])) put(k, d[k]); });
     return true;
   }
   // Codes from before: { s: stars, b: { game: best } }.
