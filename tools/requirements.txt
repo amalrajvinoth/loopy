@@ -1,0 +1,4 @@
+# Minifiers used by tools/build.py. Pinned to one exact file each, checked by hash.
+# Install:  python3 -m pip install --require-hashes --no-binary :all: -r tools/requirements.txt
+rjsmin==1.2.5 --hash=sha256:a3f8040b0273dec773e0e807e86a4d0a9535516c0a0a35aa1bb6de6e15bb1f09
+rcssmin==1.2.2 --hash=sha256:806986eaf7414545edc28a1d29523e9560e49e151ff4a337d9d1f0271d6e1cc4
