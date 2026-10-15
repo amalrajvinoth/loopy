@@ -199,13 +199,15 @@ The "loopy" bunny logo sits at the top of the home page. Its letters hop one aft
 - **Pill buttons** (radius 999px): the "go" pill, the settings toggle, the language picker, the cheer buttons. At least 44px tall.
 - **Number pad keys:** key color, 2px line border, radius 18px. They shrink a little (`scale(0.96)`) when pressed. The "check" key is filled with `c1`. The erase key is muted.
 - **Answer buttons** (the clock and multiple-choice games): card color, 3px line border, radius 18px, big bold text. Right turns green, wrong turns red, the rest fade to 45%.
-- **Round icon buttons:** the sound toggle (40px) and the age picker plus and minus (38px).
+- **Round icon buttons:** the sound toggle (40px), the age picker plus and minus (38px), and the Read aloud speaker (44px).
 - **Quiet buttons:** transparent with a 2px line border. Used for Reset and "Not now".
 - **Disabled:** 35% to 40% opacity.
 
 ### Problem card
 
 The question sits on a card with a 1px line border and radius 24px. After an answer the border turns green or red. In Plus and Minus the sum is written like a worksheet: the sign on the left, the digits on the right, a line, then the answer with a blinking orange cursor.
+
+**Read aloud speaker:** when Read aloud is on, a round 44px chip button with a speaker icon sits 8px from the card's top right corner. While it speaks the icon turns `accent`. In What Time Is It? it sits after the one-line prompt instead, so it never covers the words. `Loopy.speech.question()` adds it. It is hidden when the device has no voice.
 
 ### Feedback line
 
@@ -223,6 +225,7 @@ Age, language, color theme, sound and levels go behind the ⚙ button. The toggl
 - **Language picker:** EN and DE in a chip pill. The chosen one gets the card color.
 - **Theme picker:** five round 36px swatches. The chosen one gets an ink border.
 - **Level picker:** a segmented row of buttons in a chip box. The chosen one is raised on the card color.
+- **Read aloud:** a chip pill next to the sound toggle, at least 44px tall: a speaker icon, "Read aloud", and a small On or Off tag on the card color. Off greys the icon and tag. `Loopy.speech.question()` adds it.
 - **Print worksheet button:** a pill with a printer icon, a 2px `c1` border and `c1` text on no fill, at least 44px tall. A muted line next to it says what prints. It sits above the panel foot. `Loopy.worksheet()` adds it.
 
 ### Worksheet (print)
