@@ -13,7 +13,7 @@ Practice adding and taking away.
 
 You can also type on a keyboard. Use the number keys, **Backspace** to erase and **Enter** to check.
 
-## How hard it is
+## Age levels
 
 The numbers grow with age.
 
@@ -49,7 +49,7 @@ Tap **Settings**, then **Print worksheet**. The print window opens. Print it, or
 - Page 2 has the answers, for example "47 + 25 = 72".
 - Each tap makes a new set of sums.
 
-## The reason after each answer
+## Example help text
 
 The game explains the answer column by column, the way you do it on paper.
 For example: "Ones: 7 + 5 = 12. Write 2 and carry 1 ten. Tens: 4 + 2 + 1 = 7."

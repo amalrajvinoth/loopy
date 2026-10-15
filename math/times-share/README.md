@@ -19,7 +19,7 @@ For times, 3 × 4 shows 3 rows of 4 dots.
 For sharing, 12 ÷ 3 shows 12 dots shared into 3 groups.
 Dots are on for kids aged 8 and under. You can turn them on or off in **Settings**.
 
-## How hard it is
+## Age levels
 
 | Age | What comes up |
 | --- | --- |
@@ -54,7 +54,7 @@ Tap **Settings**, then **Print worksheet**. The print window opens. Print it, or
 - Page 2 has the answers.
 - Each tap makes a new set of problems.
 
-## The reason after each answer
+## Example help text
 
 The game shows a simple way to get the answer. For example:
 
