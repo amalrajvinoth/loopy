@@ -4,7 +4,7 @@ The big changes, newest first. Small fixes are not listed.
 
 | Date | What's new | Where | PR |
 | --- | --- | --- | --- |
-| 2026-10-15 | Bigger stars code: moving to a new phone or tablet now keeps the day streak, the answers on the grown-ups' page, the Last 5 dots, the age and the settings, not just stars. The code is packed small so it still copies in one tap. Loading a code only adds, and old codes still work. | Home (Move my stars), How it's going | #PR |
+| 2026-10-15 | Bigger stars code: moving to a new phone or tablet now keeps the day streak, the answers on the grown-ups' page, the Last 5 dots, the age and the settings, not just stars. The code is packed small so it still copies in one tap. Loading a code only adds, and old codes still work. | Home (Move my stars), How it's going | #42 |
 | 2026-10-15 | Where Is It?, the first geography game: tap continents, oceans, countries and capitals on a map. Europe first, then the whole world, one region at a time. Read aloud and a printable worksheet. English and German. | Where Is It? (new game), How it's going | #41 |
 | 2026-10-15 | Quick Facts, the first science game: short picture quizzes about space, animals and the body, with one line of why after each answer. Three levels by age, Read aloud and a printable worksheet. English and German. | Quick Facts (new game), Home (new Science section), How it's going | #39 |
 | 2026-10-15 | Spell It: hear a word and spell it on a letter pad, from 3-letter words up to 8 letters as your child grows. A wrong answer shows the right spelling letter by letter. English or German, with a printable worksheet. | Spell It (new game), How it's going | #38 |
