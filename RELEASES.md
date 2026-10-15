@@ -4,6 +4,7 @@ The big changes, newest first. Small fixes are not listed.
 
 | Date | What's new | Where | PR |
 | --- | --- | --- | --- |
+| 2026-10-15 | Make 10: find the number that makes 10, then 20 and 100 as your child grows. Ten-frames help younger kids count. English and German. | Make 10 (new game), How it's going | #33 |
 | 2026-10-15 | Read aloud: a speaker button reads the question out loud in the device's own voice, in English or German. On by itself for ages 5 to 7; turn it on or off in Settings. | Plus and Minus, Times and Share, What Time Is It? | #32 |
 | 2026-10-15 | Print a worksheet: 20 problems at your child's level on one page, and the answers on a second page. Works on A4 and Letter, or save it as a PDF. | Plus and Minus, Times and Share, What Time Is It?, Sound Spell | #30 |
 | 2026-10-15 | "How it's going", a page for grown-ups: right and wrong answers per game this week and last week, the problems that were missed, and what to practise next. | Home page (link at the bottom) | #29 |
