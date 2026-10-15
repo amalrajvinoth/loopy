@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'sha256-6a5R5ZX9TloIxGjMx9zfoKvAhMchVvTeC9tc16drHjY='; style-src 'self' 'sha256-jJV23ytjR5k4ldb6SK9y5o4ubpBlQ4f2dO2pHCt03Tw='; img-src 'self' data:; font-src 'self'; connect-src 'none'; object-src 'none'; base-uri 'none'; form-action 'none'; manifest-src 'self'; upgrade-insecure-requests">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'sha256-hQVNaHZNyL6pqA65itrsOVizzSjsdhyVun6m76oLGFc='; style-src 'self' 'sha256-jJV23ytjR5k4ldb6SK9y5o4ubpBlQ4f2dO2pHCt03Tw='; img-src 'self' data:; font-src 'self'; connect-src 'none'; object-src 'none'; base-uri 'none'; form-action 'none'; manifest-src 'self'; upgrade-insecure-requests">
 <meta name="referrer" content="strict-origin-when-cross-origin">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <link rel="icon" href="icon.svg" type="image/svg+xml">
@@ -138,6 +138,7 @@ Loopy.addStrings({
     clTitle: "What Time Is It?", clTag: "Telling time", clText: "Read the hands on the clock and pick the right time, from half hours down to the minute.",
     bsTitle: "Bigger or Smaller", bsTag: "Comparing numbers", bsText: "Pick <, = or >, put numbers in order and round them, with a number line to show why.",
     pzTitle: "Pizza Fractions", pzTag: "Fractions", pzText: "Name the part of a pizza or bar, compare two fractions, and add halves and quarters.",
+    ccTitle: "Coins and Change", ccTag: "Money", ccText: "Count coins and notes, then give change from 5 or 10. Euros, pounds or dollars.",
     dmTag: "Every day", dmTitle: "Today's 10", dmText: "10 quick problems from the games that fit your age. Play every day to grow your day streak!",
     dmGo: "Start →", dmAgain: "Done today! Play again →", dmStreak: "🔥 {n} days", dmStreakOne: "🔥 1 day",
     dayLine: "Day streak: {n} days in a row. Best: {best}.", dayLineOne: "Day streak: 1 day in a row. Best: {best}.",
@@ -160,6 +161,7 @@ Loopy.addStrings({
     clTitle: "Wie spät ist es?", clTag: "Uhr lesen", clText: "Lies die Zeiger der Uhr und wähle die richtige Zeit, von halben Stunden bis zur Minute.",
     bsTitle: "Größer oder kleiner", bsTag: "Zahlen vergleichen", bsText: "Wähle <, = oder >, ordne Zahlen und runde sie, mit einem Zahlenstrahl, der zeigt warum.",
     pzTitle: "Pizza-Brüche", pzTag: "Brüche", pzText: "Benenne den Teil einer Pizza oder eines Streifens, vergleiche zwei Brüche und rechne Halbe und Viertel zusammen.",
+    ccTitle: "Münzen und Wechselgeld", ccTag: "Geld", ccText: "Zähle Münzen und Scheine und gib Wechselgeld von 5 oder 10 heraus. Euro, Pfund oder Dollar.",
     dmTag: "Jeden Tag", dmTitle: "Die 10 von heute", dmText: "10 schnelle Aufgaben aus den Spielen für dein Alter. Spiel jeden Tag, damit deine Tage-Serie wächst!",
     dmGo: "Los →", dmAgain: "Heute geschafft! Nochmal →", dmStreak: "🔥 {n} Tage", dmStreakOne: "🔥 1 Tag",
     dayLine: "Tage-Serie: {n} Tage hintereinander. Beste: {best}.", dayLineOne: "Tage-Serie: 1 Tag hintereinander. Beste: {best}.",
@@ -179,6 +181,7 @@ const GAMES = [
   { subject: "math", path: "math/make-10/", id: "mk", ages: [5, 9] },
   { subject: "math", path: "math/bigger-or-smaller/", id: "bs", ages: [6, 12] },
   { subject: "math", path: "math/pizza-fractions/", id: "pz", ages: [7, 11] },
+  { subject: "math", path: "math/coins-change/", id: "cc", ages: [6, 10] },
   { subject: "languages", path: "languages/sound-spell/", id: "ss", ages: [5, 8] },
   { subject: "languages", path: "languages/word-match/", id: "wm", ages: [5, 10] },
 ];

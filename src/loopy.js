@@ -385,7 +385,7 @@ document.documentElement.classList.add("loopy-building");
 
   var data = { stars: 0, best: {} };
   var cheeredBest = {}; // one "new best" cheer per run
-  var MAX_STARS = 1000000, GAMES = ["plus-minus", "times-share", "clock", "sound-spell", "daily-mix", "make-10", "bigger-smaller", "pizza-fractions", "word-match"];
+  var MAX_STARS = 1000000, GAMES = ["plus-minus", "times-share", "clock", "sound-spell", "daily-mix", "make-10", "bigger-smaller", "pizza-fractions", "coins-change", "word-match"];
   var num = function (n) { return typeof n === "number" && isFinite(n) && n >= 0 ? Math.min(Math.floor(n), MAX_STARS) : 0; };
   // Only known games and sane numbers are kept, whatever the stored text says.
   function clean(raw) {
@@ -610,9 +610,9 @@ document.documentElement.classList.add("loopy-building");
 // { days: { "2026-10-15": { "plus-minus": [right, wrong] } }, wrong: [{ d: day, g: game, q, a: right answer, y: their answer, k: kind }] }.
 (function () {
   var KEY = "loopy.log", DAYS = 30, MAX_WRONG = 300, MAX_N = 100000, LEN = 40;
-  var GAMES = ["plus-minus", "times-share", "clock", "sound-spell", "daily-mix", "make-10", "bigger-smaller", "pizza-fractions", "word-match"];
+  var GAMES = ["plus-minus", "times-share", "clock", "sound-spell", "daily-mix", "make-10", "bigger-smaller", "pizza-fractions", "coins-change", "word-match"];
   // What kind of problem it was, so the page can say what to practise. See Loopy.log.kind.
-  var KIND = /^(?:(?:add|sub)(?:-rg)?|(?:mul|div)-(?:big|\d{1,2})|cl-(?:0|30|15|5|1)|ss-(?:start|end)|mk-(?:10|20|100)|bs-(?:cmp|ord|rnd|dec|neg)|pz-(?:name|cmp|add)|wm-(?:animals|food|home|school))$/;
+  var KIND = /^(?:(?:add|sub)(?:-rg)?|(?:mul|div)-(?:big|\d{1,2})|cl-(?:0|30|15|5|1)|ss-(?:start|end)|mk-(?:10|20|100)|bs-(?:cmp|ord|rnd|dec|neg)|pz-(?:name|cmp|add)|cc-(?:small|count|ch10|ch)|wm-(?:animals|food|home|school))$/;
   var DAY = /^\d{4}-\d{2}-\d{2}$/;
   var Loopy = window.Loopy = window.Loopy || {};
   var whole = function (n) { return typeof n === "number" && isFinite(n) && n >= 0 ? Math.min(Math.floor(n), MAX_N) : 0; };
@@ -678,7 +678,7 @@ document.documentElement.classList.add("loopy-building");
 // green for right and red for wrong, newest on the right. rewards.correct / wrong fill it in.
 // Kept in this browser's localStorage as { "plus-minus": [1, 1, 0, 1, 1], ... }.
 (function () {
-  var KEY = "loopy.recent", N = 5, GAMES = ["plus-minus", "times-share", "clock", "sound-spell", "daily-mix", "make-10", "bigger-smaller", "pizza-fractions", "word-match"];
+  var KEY = "loopy.recent", N = 5, GAMES = ["plus-minus", "times-share", "clock", "sound-spell", "daily-mix", "make-10", "bigger-smaller", "pizza-fractions", "coins-change", "word-match"];
   var TICK = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 12.5l4 4 8-9"/></svg>';
   var CROSS = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M7 7l10 10M17 7L7 17"/></svg>';
   var Loopy = window.Loopy = window.Loopy || {};

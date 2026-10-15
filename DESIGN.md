@@ -82,6 +82,8 @@ components:
   settings-toggle: { background: "{colors.chip}", rounded: "{rounded.pill}", minHeight: 44px, open: "{colors.c1}" }
   settings-panel: { background: "{colors.card}", border: "2px solid {colors.line}", rounded: "{rounded.panel}", padding: 14px }
   cheer:          { background: "{colors.card}", border: "4px solid {colors.c5}", shadow: "0 8px 0 {colors.c5}", rounded: "{rounded.cheer}" }
+  back-button:    { background: "{colors.chip}", border: "2px solid {colors.line}", rounded: "{rounded.pill}", minHeight: 48px, arrow: "36px circle in {colors.c1}", logo: 30px tall }
+  last5-pill:     { dots: 5, dotSize: 22px, right: "{colors.good}", wrong: "{colors.bad}", empty: "2px dashed {colors.muted} at 45%", newest: "2px {colors.ink} ring" }
   focus-ring:     { outline: "3px solid {colors.c2}", offset: 2-3px }
 ---
 
@@ -148,7 +150,7 @@ Each theme sets the same names. Use the name, not the hex.
 
 ### Logo colors
 
-The logo has fixed colors and does not follow the theme.
+The logo has fixed colors and does not follow the theme. The one exception is the small logo in the game back button: its outlines and letters use the theme's text color, so it shows on every theme.
 Ink #1d2a3f (white in `logo-white.svg`), ears #3ddc84, eyes white. The app icon is the bunny face on a #0a0a0c tile.
 
 ## 3. Typography
@@ -222,10 +224,13 @@ Bigger or Smaller explains each answer with a number line drawn in SVG. It stays
 ### Fraction pictures
 
 Pizza Fractions draws pizzas and bars in SVG. A pizza is a `c2` crust ring with equal slices from the top, going round clockwise. Slices with toppings are `c1` with small `c2` pepperoni dots; the others are `chip`. Cut lines are `muted`. A bar is equal pieces side by side, colored in from the left, with a `muted` outline (radius 6) and cut lines. When comparing, the second fraction is `c4`; when adding, the second part is `c4`, cut into the same size pieces as the first. Fractions are written stacked (top number, a line in the text color, bottom number) in the problem and on the answer buttons, and as "3/4" in sentences. Like the number line, a picture that is not shown first keeps its room until the answer is in. On the printed sheet the pictures are black lines with grey parts.
+### Coins and notes
+
+Coins and Change draws money in SVG. Coins and notes keep fixed metal and paper colors in every theme, so they look like real money: copper, gold and silver coins, with two metals for the €1, €2, £1 and £2. Euro and pound notes have their own soft colors; dollar bills are a pale grey-green (never the `good` green). The coins keep their real sizes compared to each other, within limits, so the small ones stay readable. The value sits in the middle in dark ink, with the unit (c, ct, p, ¢) under it. A price tag is a `c2` tag with `on-accent` text. All pictures size themselves to the room left on the card. The answer is written in boxes, "€_.__" or "_,__ €", which fill from left to right.
 
 ### Top bar
 
-Each game has a top bar with the way home on the left, and the star counter and the ⚙ Settings button on the right.
+Each game has a top bar with the back button on the left, and the star counter and the ⚙ Settings button on the right. The score row under the title holds the score, the streak and the Last 5 pill.
 
 ### Settings
 
@@ -245,7 +250,7 @@ What **Print worksheet** prints. Only the sheet prints; the game is hidden. It i
 - **Paper:** 12mm margins. Sized to fit both A4 and US Letter. Page 1 has the problems, page 2 the answers.
 - **Header:** the game's name in Fredoka 20pt, "loopy" on the right in grey, a 0.6mm rule, one grey line with the age and settings, then Name, Date and Score lines, then one bold line saying what to do.
 - **Problems:** 20 boxes with a light grey 0.3mm border and 3mm radius, numbered small in the top left corner. Lexend, large: 24pt for sums in columns, 20pt for lines, 18pt for words.
-- **Layouts:** `vert` (Plus and Minus, 4 × 5, written in columns), `line` (Times and Share and Make 10, 2 × 10, "7 × 8 = ____" or "7 + ____ = 10"), `clock` (What Time Is It?, 4 × 5, a 32mm clock and "____ : ____"), `word` (Sound Spell and Word Match, 4 × 5, a picture with a word with a gap and choices to circle, or a picture with words to circle, one to a line). Pizza Fractions uses `clock` boxes for a pizza or bar with a line for the fraction (Name it and Mix), and `line` for Compare and Add.
+- **Layouts:** `vert` (Plus and Minus, 4 × 5, written in columns), `line` (Times and Share and Make 10, 2 × 10, "7 × 8 = ____" or "7 + ____ = 10"), `clock` (What Time Is It? and Coins and Change, 4 × 5, a 32mm picture and a line to write on: a clock and "____ : ____", or coins, notes and a price tag in black lines), `word` (Sound Spell and Word Match, 4 × 5, a picture with a word with a gap and choices to circle, or a picture with words to circle, one to a line). Pizza Fractions uses `clock` boxes for a pizza or bar with a line for the fraction (Name it and Mix), and `line` for Compare and Add.
 - **Clocks:** black face line, ticks and numbers. The hour hand is short and thick, the minute hand long and thin.
 - **Answers:** two columns of ten, 16pt, with a light line under each.
 
@@ -259,14 +264,28 @@ What **Print worksheet** prints. Only the sheet prints; the game is hidden. It i
 - **"Ready to level up?"** card after 10 right answers in a row.
 - **Chimes:** short tones made in the browser. No sound files. "Right" goes up, "wrong" goes gently down, cheers and badges play a little tune. The speaker button mutes them.
 
-### Coming soon
+### Back button
 
-Another piece of work is changing the game page top bar. Do not copy these until they are merged:
+Every game has the same big back button in the top-left corner. It takes you to the home page.
 
-- A bigger back button: a pill with the bunny logo that takes you home.
-- A pill in the game that shows the last 5 answers as green and red dots.
+- A chip pill with a 2px line border, at least 48px tall.
+- On the left, a 36px round `c1` circle with a back arrow in `on-accent`.
+- Next to it, the bunny logo, 30px tall, drawn in the theme's text color. It does not hop.
+- The border turns `c1` on hover. It gets the usual focus ring.
+- Screen readers hear "Back to all games" ("Zurück zu allen Spielen").
+- In the page, write `<a class="home-link" href="../../">&larr; loopy</a>`. `loopy.js` turns it into the button, so the plain link still works if the script fails. Do not build your own.
 
-Both will live in `src/loopy.css` so every game gets them.
+### Last 5 pill
+
+The score row shows the last 5 answers in this game as dots.
+
+- A pill with the label "Last 5" ("Letzte 5") and five 22px dots, 5px apart.
+- Right: a green (`good`) dot with a tick. Wrong: a red (`bad`) dot with a cross. The icon is in `on-accent`.
+- Not played yet: a dashed `muted` circle at 45%.
+- The newest answer is on the right, with a 2px `ink` ring around it.
+- Screen readers hear how many of the last 5 were right.
+- In the page, add `<div id="last5" data-game="game-id"></div>`. `Loopy.rewards.correct()` and `.wrong()` fill it in. "Reset score" clears it with `Loopy.recent.clear()`.
+- It is saved in the browser (`loopy.recent`), one list per game. Today's 10 does not use it: it has its own 10 dots.
 
 ## 5. Layout
 
@@ -304,6 +323,7 @@ loopy is mostly flat. Depth comes from solid offset shadows, not blur.
 - Explain every answer in one plain sentence.
 - Give green and red a second signal too, like a word or a line-through.
 - Put settings behind the ⚙ button.
+- Use the shared back button and Last 5 pill. Do not make your own.
 
 ### Don't
 
@@ -346,6 +366,5 @@ Example prompts:
 
 ## Known gaps
 
-- Each game page still has its own copy of some base styles (pad, problem card, top bar). Only themes, rewards and settings are shared today.
+- Each game page still has its own copy of some base styles (pad, problem card, top bar). Only themes, rewards, settings, the back button and the Last 5 pill are shared today.
 - Some pages set light fallback colors in their own `:root`. The theme from `loopy.css` replaces them.
-- The new back button and last-5-answers pill are still being built (see "Coming soon").

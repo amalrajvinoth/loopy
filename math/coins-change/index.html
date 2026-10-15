@@ -1,0 +1,813 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'sha256-jJQh2KurtGMoyU0YjA+IvH4HqHFAQSuScCSUSL5DLEw='; style-src 'self' 'sha256-z2P7kGW5Z05eCTjTZdYpc0vThTlOE9vmt97pVSvi2I4=' 'sha256-ER4UVxOAHVG2PpFuwsi/fNYnlP9iTYLytTr9Qx7YKqY=' 'sha256-RT1053JU5UiKvjrCUFx1rlhdFLMmgtuFJ9T8jnMeawQ=' 'sha256-hyy9jzvL9jP8AdsG42qy+OWI85m+DGPn0KZLmAYDqFY='; img-src 'self' data:; font-src 'self'; connect-src 'none'; object-src 'none'; base-uri 'none'; form-action 'none'; manifest-src 'self'; upgrade-insecure-requests">
+<meta name="referrer" content="strict-origin-when-cross-origin">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<style>:root{color-scheme:light;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}body{margin:0}[hidden]{display:none!important}</style>
+<link rel="icon" href="../../icon.svg" type="image/svg+xml">
+<link rel="manifest" href="../../manifest.webmanifest">
+<link rel="apple-touch-icon" href="../../apple-touch-icon.png">
+<meta name="theme-color" content="#0a0a0c">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="loopy">
+<title data-t="ccName">Coins and Change</title>
+<link rel="preload" href="../../fonts/lexend-latin.woff2" as="font" type="font/woff2" crossorigin>
+<style>
+/* Layout: one centered column like a worksheet strip; problem written vertically on a card, big number pad below, toggles in a quiet bar on top. */
+:root {
+  --bg: #f3f6fb;
+  --card: #ffffff;
+  --ink: #1d2a3f;
+  --muted: #5d6b82;
+  --line: #d5dde9;
+  --accent: #2457c5;
+  --accent-ink: #ffffff;
+  --mark: #e2622b;
+  --good: #1f8a4c;
+  --good-bg: #e3f5ea;
+  --bad: #c23a3a;
+  --bad-bg: #fbe6e6;
+  --chip: #e6ecf6;
+  --key: #ffffff;
+  --font: "Lexend", "Segoe UI", "Helvetica Neue", Arial, sans-serif;
+}
+
+* { box-sizing: border-box; }
+body {
+  background: var(--bg); color: var(--ink); font-family: var(--font); font-size: 16px;
+  padding-left: max(16px, env(safe-area-inset-left, 0px));
+  padding-right: max(16px, env(safe-area-inset-right, 0px));
+  padding-block: 20px 32px;
+}
+.wrap { max-width: 520px; margin: 0 auto; display: flex; flex-direction: column; gap: 16px; }
+
+.top { display: flex; flex-wrap: wrap; gap: 12px; align-items: center; justify-content: space-between; }
+h1 { margin: 0; font-size: 1.6rem; font-weight: 700; text-wrap: balance; }
+.score { display: flex; flex-wrap: wrap; gap: 8px; font-variant-numeric: tabular-nums; }
+.pill { background: var(--card); border: 1px solid var(--line); border-radius: 999px; padding: 6px 14px; font-weight: 600; font-size: 1rem; white-space: nowrap; }
+.pill span { color: var(--muted); font-weight: 400; margin-right: 4px; }
+
+.settings { display: flex; flex-direction: column; gap: 8px; }
+.seg-label { font-size: 0.8rem; font-weight: 600; letter-spacing: 0.06em; text-transform: uppercase; color: var(--muted); margin: 0 0 4px 4px; }
+.seg { display: grid; grid-template-columns: repeat(3, 1fr); gap: 6px; background: var(--chip); padding: 5px; border-radius: 14px; }
+.seg button {
+  font: inherit; font-size: 0.95rem; font-weight: 600; color: var(--muted);
+  background: transparent; border: 0; border-radius: 10px; padding: 8px 6px; min-height: 44px; cursor: pointer;
+}
+.seg button[aria-pressed="true"] { background: var(--card); color: var(--ink); box-shadow: 0 1px 3px rgb(0 0 0 / 0.12); }
+
+.problem-card {
+  background: var(--card); border: 1px solid var(--line); border-radius: 24px;
+  padding: 20px 18px 18px; display: flex; flex-direction: column; align-items: center; gap: 14px;
+}
+.problem-card.good { border-color: var(--good); box-shadow: 0 0 0 2px var(--good) inset; }
+.problem-card.bad { border-color: var(--bad); box-shadow: 0 0 0 2px var(--bad) inset; }
+
+/* Vertical problem, written like the worksheets: operator on the left, digits right-aligned. */
+.vert {
+  display: grid; grid-template-columns: auto auto; column-gap: 0.35em;
+  font-size: clamp(3.4rem, 15vw, 4.6rem); font-weight: 600; line-height: 1.12;
+  font-variant-numeric: tabular-nums; letter-spacing: 0.04em;
+}
+.vert .num { grid-column: 2; text-align: right; min-width: 3ch; }
+.vert .op { grid-column: 1; grid-row: 2; color: var(--accent); }
+.vert .rule { grid-column: 1 / -1; height: 0.07em; background: var(--ink); border-radius: 2px; margin: 0.1em 0 0.12em; }
+.vert .ans {
+  grid-column: 2; text-align: right; min-width: 3ch; min-height: 1.12em;
+  color: var(--accent); position: relative;
+}
+.vert .ans.empty::after {
+  content: ""; position: absolute; right: 0; bottom: 0.12em; width: 0.55em; height: 0.07em;
+  background: var(--mark); border-radius: 2px; animation: blink 1s steps(2, start) infinite;
+}
+.problem-card.good .ans { color: var(--good); }
+.problem-card.bad .ans { color: var(--bad); text-decoration: line-through; text-decoration-thickness: 0.06em; }
+@keyframes blink { to { visibility: hidden; } }
+
+.feedback { min-height: 3.1em; text-align: center; font-size: 1.1rem; line-height: 1.45; margin: 0; max-width: 34ch; }
+.feedback strong { display: block; font-size: 1.45rem; }
+.feedback.good strong { color: var(--good); }
+.feedback.bad strong { color: var(--bad); }
+.feedback .hint { color: var(--muted); }
+
+.pad { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; }
+.pad button {
+  font: inherit; font-size: 2rem; font-weight: 700; font-variant-numeric: tabular-nums; color: var(--ink);
+  background: var(--key); border: 2px solid var(--line); border-radius: 18px; min-height: 72px; cursor: pointer;
+  transition: transform .08s ease, border-color .15s ease;
+  touch-action: manipulation; -webkit-tap-highlight-color: transparent;
+}
+.pad button:hover:not(:disabled) { border-color: var(--accent); }
+.pad button:active:not(:disabled) { transform: scale(0.96); }
+.pad button:disabled { opacity: 0.4; cursor: default; }
+.pad .erase { font-size: 1.15rem; color: var(--muted); }
+.pad .go { background: var(--accent); border-color: var(--accent); color: var(--accent-ink); font-size: 1.35rem; }
+.pad .go:hover:not(:disabled) { border-color: var(--accent); filter: brightness(1.08); }
+
+.foot { display: flex; justify-content: space-between; align-items: center; gap: 12px; flex-wrap: wrap; }
+.foot p { margin: 0; color: var(--muted); font-size: 0.9rem; }
+.reset { font: inherit; font-size: 0.95rem; color: var(--muted); background: transparent; border: 2px solid var(--line); border-radius: 14px; padding: 0 16px; min-height: 44px; cursor: pointer; }
+button:focus-visible { outline: 3px solid var(--mark); outline-offset: 3px; }
+
+@media (max-width: 420px) {
+  h1 { font-size: 1.35rem; }
+  .pad button { min-height: 64px; font-size: 1.8rem; }
+  .seg button { font-size: 0.85rem; }
+}
+@media (prefers-reduced-motion: reduce) {
+  * { transition: none !important; }
+  .vert .ans.empty::after { animation: none; }
+}
+</style>
+<style>.home-link{display:inline-flex;align-items:center;min-height:40px;color:var(--muted);font-weight:600;text-decoration:none;font-size:0.95rem}.home-link:hover{color:var(--ink)}</style>
+<style>
+/* Phones and tablets: the game fills one screen; settings sit behind a button. */
+body { min-height: 100vh; min-height: 100dvh; padding-block: 12px 16px; }
+.wrap { gap: 12px; }
+.game-bar { display: flex; align-items: center; justify-content: space-between; gap: 8px; }
+.bar-right { display: flex; align-items: center; gap: 8px; }
+.top { gap: 8px 12px; }
+.play { display: flex; flex-direction: column; gap: 12px; -webkit-user-select: none; user-select: none; }
+@media (min-width: 600px) and (orientation: portrait) { .wrap { max-width: 640px; } }
+@media (orientation: landscape) and (min-width: 640px) {
+  .wrap { max-width: 1100px; }
+  .play { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; align-items: center; }
+}
+
+.problem-card { padding: 14px 14px 12px; gap: 8px; }
+.vert { font-size: clamp(2.4rem, min(15vw, 8.5vh), 5rem); font-size: clamp(2.4rem, min(15vw, 8.5dvh), 5rem); }
+.feedback { min-height: 2.9em; font-size: 1.05rem; }
+.feedback strong { font-size: 1.3rem; }
+.pad { gap: 8px; }
+.pad button { min-height: clamp(50px, 8vh, 92px); min-height: clamp(50px, 8dvh, 92px); }
+@media (min-width: 600px) and (orientation: portrait) {
+  .vert { font-size: clamp(3rem, 10dvh, 7rem); }
+  .pad button { min-height: clamp(60px, 10dvh, 120px); font-size: 2.4rem; }
+}
+@media (orientation: landscape) and (min-width: 640px) {
+  .problem-card { height: 100%; justify-content: center; }
+  .vert { font-size: clamp(2.2rem, min(7vw, 13dvh), 7rem); }
+  .pad button { min-height: clamp(44px, calc((100dvh - 150px) / 4.4), 130px); }
+}
+/* Short phones: keep long explanations from pushing the number pad off screen. */
+@media (max-height: 760px) and (orientation: portrait) {
+  .feedback { font-size: 0.95rem; line-height: 1.35; }
+  .feedback strong { font-size: 1.15rem; }
+}
+
+/* Portrait: the page is exactly one screen tall; the pad or answers stay at the bottom
+   and the top part shrinks to fit. With settings open, the page scrolls normally. */
+@media (orientation: portrait) {
+  body { height: calc(100dvh - env(safe-area-inset-top, 0px) - env(safe-area-inset-bottom, 0px)); min-height: 0; display: flex; flex-direction: column; overflow: hidden; }
+  body:has(#settings-panel:not([hidden])) { height: auto; overflow: visible; }
+  .wrap { flex: 1 1 auto; min-height: 0; width: 100%; }
+  .play { flex: 1 1 auto; min-height: 0; }
+}
+@media (orientation: portrait) {
+  .problem-card { flex: 1 1 auto; min-height: 0; justify-content: center; overflow: hidden; }
+  .feedback { flex: 0 1 auto; min-height: 0; overflow-y: auto; }
+}
+@media (orientation: landscape) and (min-width: 640px) {
+  body { height: calc(100dvh - env(safe-area-inset-top, 0px) - env(safe-area-inset-bottom, 0px)); min-height: 0; display: flex; flex-direction: column; overflow: hidden; }
+  body:has(#settings-panel:not([hidden])) { height: auto; overflow: visible; }
+  .wrap { flex: 1 1 auto; min-height: 0; width: 100%; }
+  .play { flex: 1 1 auto; min-height: 0; grid-template-rows: minmax(0, 1fr); }
+  .problem-card { min-height: 0; overflow: hidden; }
+  .feedback { flex: 0 1 auto; min-height: 0; overflow-y: auto; }
+}
+/* After answering on smaller screens, shrink the sum so the reason has room. */
+@media (max-height: 900px), (max-width: 599px) {
+  .problem-card.good .vert, .problem-card.bad .vert { zoom: 0.7; }
+}
+@media (max-height: 500px) {
+  .feedback { font-size: 0.9rem; line-height: 1.3; }
+  .feedback strong { font-size: 1.05rem; }
+}
+
+
+/* Coins and Change: coins and notes drawn in SVG fill the card; the answer is written in money boxes ("3,75 €"). */
+/* Coins and notes keep fixed metal and paper colors in every theme, so they look like real money. */
+.money-area { --copper: #c8743e; --copper-dark: #8e4a22; --gold: #e2b84a; --gold-dark: #9a7420; --silver: #c9ced6; --silver-dark: #7d8592; --coin-ink: #2b2112; }
+.prompt { margin: 0; text-align: center; font-size: 1.1rem; font-weight: 600; line-height: 1.35; color: var(--ink); }
+.prompt b { color: var(--accent); white-space: nowrap; }
+.money-area { flex: 1 1 0; min-height: 44px; width: 100%; display: flex; flex-wrap: wrap; align-content: center; align-items: center; justify-content: center; gap: var(--gap, 8px); overflow: hidden; }
+.money-area svg { display: block; flex: none; overflow: visible; }
+.money-area .arrow { color: var(--muted); font-size: calc(var(--base, 60px) * 0.5); font-weight: 700; line-height: 1; }
+.coin .m-cu { fill: var(--copper); stroke: var(--copper-dark); }
+.coin .m-au { fill: var(--gold); stroke: var(--gold-dark); }
+.coin .m-ag { fill: var(--silver); stroke: var(--silver-dark); }
+.coin .rim { fill: none; stroke: rgb(0 0 0 / 0.18); stroke-width: 2.5; }
+.coin text, .note text { fill: var(--coin-ink); font-family: var(--font); font-weight: 700; text-anchor: middle; }
+.note .paper { stroke: rgb(0 0 0 / 0.35); stroke-width: 2; }
+.note .frame { fill: none; stroke: rgb(0 0 0 / 0.25); stroke-width: 2; }
+.note .seal { fill: rgb(255 255 255 / 0.45); }
+.note .n-eur5 { fill: #bfc3cb; } .note .n-eur10 { fill: #eaa595; } .note .n-eur20 { fill: #a9c1ea; }
+.note .n-gbp5 { fill: #a6d8cf; } .note .n-gbp10 { fill: #f1bd80; } .note .n-gbp20 { fill: #c9b0e6; }
+.note .n-usd { fill: #cfd8c4; }
+.tag .tag-bg { fill: var(--c2); }
+.tag .tag-hole { fill: var(--card); }
+.tag text { fill: var(--on-accent); font-family: var(--font); font-weight: 700; text-anchor: middle; }
+
+/* The answer: money boxes that fill from left to right, like "3,75 €". */
+.eq { display: flex; align-items: baseline; justify-content: center; flex-wrap: wrap; gap: 0 0.3em;
+  font-size: clamp(2.2rem, min(11vw, 7.5dvh), 4.6rem); font-weight: 600; font-variant-numeric: tabular-nums; line-height: 1.15; }
+.eq .lbl { font-size: 0.42em; font-weight: 600; color: var(--muted); }
+.eq .ans { display: inline-flex; align-items: baseline; color: var(--accent); }
+.eq .ans .slot { display: inline-block; min-width: 0.72em; text-align: center; border-bottom: 0.07em solid var(--ink); margin: 0 0.04em; }
+.eq .ans .slot.next { border-color: var(--mark); }
+.eq .ans .sym { color: var(--ink); margin: 0 0.06em; }
+.problem-card.good .eq .ans { color: var(--good); }
+.problem-card.good .eq .ans .slot { border-color: var(--good); }
+.problem-card.bad .eq .ans { color: var(--bad); text-decoration: line-through; text-decoration-thickness: 0.06em; }
+.problem-card.bad .eq .ans .slot { border-color: var(--bad); }
+.seg.four { grid-template-columns: repeat(4, 1fr); }
+@media (max-height: 900px), (max-width: 599px) {
+  .problem-card.good .eq, .problem-card.bad .eq { zoom: 0.75; }
+}
+@media (max-height: 760px) and (orientation: portrait) {
+  .prompt { font-size: 1rem; }
+  /* Short phones: after answering, the reason needs the room more than the question does. */
+  .problem-card.good .prompt, .problem-card.bad .prompt, .problem-card.good .eq .lbl, .problem-card.bad .eq .lbl { display: none; }
+}
+@media (max-height: 700px) and (orientation: portrait) {
+  .feedback { font-size: 0.88rem; line-height: 1.3; }
+  .feedback strong { font-size: 1.05rem; }
+}
+@media (max-height: 500px) {
+  .prompt { font-size: 0.95rem; }
+}
+</style>
+<link rel="stylesheet" href="../../loopy.css">
+<script src="../../loopy.js"></script>
+</head>
+<body>
+
+<div class="wrap">
+  <header class="game-bar">
+    <a class="home-link" href="../../">&larr; loopy</a>
+    <div class="bar-right">
+      <span id="star-chip"></span>
+      <button type="button" id="settings-toggle" aria-controls="settings-panel"></button>
+    </div>
+  </header>
+  <div class="top">
+    <h1 id="title" data-t="ccName">Coins and Change</h1>
+    <div class="score" aria-live="polite">
+      <div class="pill"><span data-t="score">Score</span><b id="score">0 / 0</b></div>
+      <div class="pill"><span data-t="streak">Streak</span><b id="streak">0</b></div>
+      <div id="last5" data-game="coins-change"></div>
+    </div>
+  </div>
+  <div class="settings-panel" id="settings-panel" hidden>
+    <div class="controls"><div id="age-picker"></div><div id="theme-picker"></div><button id="sound-toggle"></button><div id="lang-picker"></div></div>
+    <div>
+      <p class="seg-label" id="lv-label" data-t="ccLevel">Level</p>
+      <div class="seg four" role="group" aria-labelledby="lv-label" id="lv-seg">
+        <button type="button" id="lv-small" data-lv="small" data-t="ccLvSmall">Small coins</button>
+        <button type="button" id="lv-count" data-lv="count" data-t="ccLvCount">Count it all</button>
+        <button type="button" id="lv-easy" data-lv="easy" data-t="ccLvEasy">Easy change</button>
+        <button type="button" id="lv-change" data-lv="change" data-t="ccLvChange">Change</button>
+      </div>
+    </div>
+    <div>
+      <p class="seg-label" id="cur-label" data-t="ccMoney">Money</p>
+      <div class="seg" role="group" aria-labelledby="cur-label" id="cur-seg">
+        <button type="button" id="cur-eur" data-cur="eur" data-t="ccEur">€ Euro</button>
+        <button type="button" id="cur-gbp" data-cur="gbp" data-t="ccGbp">£ Pound</button>
+        <button type="button" id="cur-usd" data-cur="usd" data-t="ccUsd">$ Dollar</button>
+      </div>
+    </div>
+    <div class="panel-foot">
+      <p data-t="kbdHint">Keyboard works too: numbers, Backspace, Enter.</p>
+      <button type="button" class="reset" id="reset" data-t="resetScore">Reset score</button>
+    </div>
+  </div>
+
+  <main class="play">
+    <div class="problem-card" id="card">
+      <p class="prompt" id="prompt"></p>
+      <div class="money-area" id="money" aria-hidden="true"></div>
+      <div class="eq" id="eq" aria-live="polite">
+        <span class="lbl" id="ans-lbl"></span><span class="ans" id="ans" aria-label="Your answer" data-t-aria="yourAnswer"></span>
+      </div>
+      <p class="feedback" id="feedback"><span class="hint" data-t="tapHint">Tap the numbers to write your answer.</span></p>
+    </div>
+
+    <div class="pad" id="pad">
+      <button type="button" id="k1" data-d="1">1</button>
+      <button type="button" id="k2" data-d="2">2</button>
+      <button type="button" id="k3" data-d="3">3</button>
+      <button type="button" id="k4" data-d="4">4</button>
+      <button type="button" id="k5" data-d="5">5</button>
+      <button type="button" id="k6" data-d="6">6</button>
+      <button type="button" id="k7" data-d="7">7</button>
+      <button type="button" id="k8" data-d="8">8</button>
+      <button type="button" id="k9" data-d="9">9</button>
+      <button type="button" id="k-erase" class="erase" aria-label="Erase last digit" data-t-aria="eraseAria" data-t="erase">Erase</button>
+      <button type="button" id="k0" data-d="0">0</button>
+      <button type="button" id="k-go" class="go" data-t="check">Check</button>
+    </div>
+  </main>
+</div>
+
+<script>
+Loopy.addStrings({
+  en: {
+    ccName: "Coins and Change", ccLevel: "Level", ccMoney: "Money",
+    ccLvSmall: "Small coins", ccLvCount: "Count it all", ccLvEasy: "Easy change", ccLvChange: "Change",
+    ccEur: "€ Euro", ccGbp: "£ Pound", ccUsd: "$ Dollar",
+    ccHowMuch: "How much money is this?", ccTotal: "Total", ccChange: "Change",
+    ccDeal: "It costs {price}. You pay with {paid}. How much change do you get?",
+    ccDealShort: "It costs {price}. You pay {paid}.", ccHowChange: "How much change?",
+    ccHintSmall: "Add the coins. Start with the biggest.", ccHintCount: "Count the notes and big coins first, then the small ones.",
+    ccHintBoxes: "Write the {unit}, then the {sub}.", ccHintChange: "Count up from the price to what you pay.",
+    ccSum: "{sum} = {total}.", ccBoth: "Big money first: {big}. Then the {sub}: {small}.", ccTogether: "Together that is {total}.",
+    ccUp: "Count up from {from}.", ccStep: "{add} makes {to}.", ccChangeIs: "The change is {sum} = {total}.", ccChangeOne: "The change is {total}.",
+    ccSayCount: "How much money is this? {list}.", ccAnswerIs: "The answer is {a}.",
+    ccTryCount: "Try counting notes and coins", ccTryEasy: "Try giving change", ccTryChange: "Try change with any price",
+    ccHowCount: "Count the money. Write the total.", ccHowChangeSheet: "Write the change.", ccCosts: "Costs", ccPay: "Pay",
+    ccEurU1: "euro", ccEurUn: "euros", ccEurS1: "cent", ccEurSn: "cents",
+    ccGbpU1: "pound", ccGbpUn: "pounds", ccGbpS1: "penny", ccGbpSn: "pence",
+    ccUsdU1: "dollar", ccUsdUn: "dollars", ccUsdS1: "cent", ccUsdSn: "cents"
+  },
+  de: {
+    ccName: "Münzen und Wechselgeld", ccLevel: "Stufe", ccMoney: "Geld",
+    ccLvSmall: "Kleine Münzen", ccLvCount: "Alles zählen", ccLvEasy: "Leichtes Wechselgeld", ccLvChange: "Wechselgeld",
+    ccEur: "€ Euro", ccGbp: "£ Pfund", ccUsd: "$ Dollar",
+    ccHowMuch: "Wie viel Geld ist das?", ccTotal: "Zusammen", ccChange: "Zurück",
+    ccDeal: "Es kostet {price}. Du zahlst mit {paid}. Wie viel bekommst du zurück?",
+    ccDealShort: "Es kostet {price}. Du zahlst {paid}.", ccHowChange: "Wie viel bekommst du zurück?",
+    ccHintSmall: "Zähle die Münzen zusammen. Fang mit der größten an.", ccHintCount: "Zähle erst die Scheine und großen Münzen, dann die kleinen.",
+    ccHintBoxes: "Schreibe erst die {unit}, dann die {sub}.", ccHintChange: "Zähle vom Preis hoch bis zu dem, was du zahlst.",
+    ccSum: "{sum} = {total}.", ccBoth: "Erst das große Geld: {big}. Dann die {sub}: {small}.", ccTogether: "Zusammen sind das {total}.",
+    ccUp: "Zähle hoch von {from}.", ccStep: "{add} bis {to}.", ccChangeIs: "Zurück bekommst du {sum} = {total}.", ccChangeOne: "Zurück bekommst du {total}.",
+    ccSayCount: "Wie viel Geld ist das? {list}.", ccAnswerIs: "Richtig ist {a}.",
+    ccTryCount: "Probiere Scheine und Münzen zählen", ccTryEasy: "Probiere Wechselgeld", ccTryChange: "Probiere Wechselgeld mit jedem Preis",
+    ccHowCount: "Zähle das Geld. Schreibe, wie viel es ist.", ccHowChangeSheet: "Schreibe das Wechselgeld.", ccCosts: "Preis", ccPay: "Zahlen",
+    ccEurU1: "Euro", ccEurUn: "Euro", ccEurS1: "Cent", ccEurSn: "Cent",
+    ccGbpU1: "Pfund", ccGbpUn: "Pfund", ccGbpS1: "Penny", ccGbpSn: "Pence",
+    ccUsdU1: "Dollar", ccUsdUn: "Dollar", ccUsdS1: "Cent", ccUsdSn: "Cent"
+  }
+});
+
+// GEN START
+const randInt = (lo, hi) => lo + Math.floor(Math.random() * (hi - lo + 1));
+const pick = (list) => list[Math.floor(Math.random() * list.length)];
+const t = Loopy.t;
+
+// The money, in cents (or pence). Size: the real coin's width in mm, so the pictures keep their real sizes.
+// Shape: "round", "seven" (the 20p and 50p) or "twelve" (the £1). Metal: cu copper, au gold, ag silver;
+// two metals for the bimetal coins (outer ring, then middle).
+const CUR = {
+  eur: { sym: "€", key: "Eur",
+    coins: { 1: [16.3, "cu"], 2: [18.8, "cu"], 5: [21.3, "cu"], 10: [19.8, "au"], 20: [22.3, "au"], 50: [24.3, "au"], 100: [23.3, "ag", "au"], 200: [25.8, "au", "ag"] },
+    notes: [500, 1000, 2000] },
+  gbp: { sym: "£", key: "Gbp",
+    coins: { 1: [20.3, "cu"], 2: [25.9, "cu"], 5: [18, "ag"], 10: [24.5, "ag"], 20: [21.4, "ag", null, "seven"], 50: [27.3, "ag", null, "seven"], 100: [23.4, "au", "ag", "twelve"], 200: [28.4, "au", "ag"] },
+    notes: [500, 1000, 2000] },
+  usd: { sym: "$", key: "Usd",
+    coins: { 1: [19.1, "cu"], 5: [21.2, "ag"], 10: [17.9, "ag"], 25: [24.3, "ag"] },
+    notes: [100, 500, 1000, 2000] }
+};
+const CURS = ["eur", "gbp", "usd"];
+// Everything there is, biggest first, for counting change out.
+const allMoney = (cur) => CUR[cur].notes.concat(Object.keys(CUR[cur].coins).map(Number)).sort((a, b) => b - a);
+
+// Money as text, in the page's language: "€3.75" or "3,75 €". Whole amounts drop the cents: "€3", "3 €".
+// Amounts under 1 are written in cents: "75c", "75 ct", "75p", "75¢".
+function money(c, cur, full) {
+  const de = Loopy.lang === "de", sym = CUR[cur].sym;
+  const v = c % 100 === 0 && !full ? String(c / 100) : (c / 100).toFixed(2);
+  const n = de ? v.replace(".", ",") : v;
+  return de ? n + " " + sym : sym + n;
+}
+function cents(c, cur) {
+  const de = Loopy.lang === "de";
+  const s = { eur: de ? " ct" : "c", gbp: de ? " p" : "p", usd: de ? " ¢" : "¢" }[cur];
+  return c + s;
+}
+const amount = (c, cur) => c < 100 ? cents(c, cur) : money(c, cur);
+// Spoken: "2 euros 50 cents", "2 Pfund 50 Pence".
+function spoken(c, cur) {
+  const k = "cc" + CUR[cur].key, u = Math.floor(c / 100), s = c % 100, out = [];
+  if (u) out.push(u + " " + t(k + (u === 1 ? "U1" : "Un")));
+  if (s) out.push(s + " " + t(k + (s === 1 ? "S1" : "Sn")));
+  return out.join(" ") || "0 " + t(k + "Un");
+}
+
+// The levels, easiest first.
+//   small   add up 2 to 4 small coins (under 1)
+//   count   add up 3 to 6 notes and coins (under 10)
+//   easy    change from 5 or 10, the price in steps of 10 cents
+//   change  change from 5 or 10, any price
+const LEVELS = ["small", "count", "easy", "change"];
+const levelName = (lv) => ({ small: "ccLvSmall", count: "ccLvCount", easy: "ccLvEasy", change: "ccLvChange" })[lv];
+const isChange = (lv) => lv === "easy" || lv === "change";
+function levelForAge(age) {
+  if (age <= 6) return "small";
+  if (age === 7) return "count";
+  if (age === 8) return "easy";
+  return "change";
+}
+
+// One problem. Counting: items (biggest first) and their total. Change: price, paid and the change.
+function makeProblem(lv, cur, avoid, age) {
+  const c = CUR[cur], coins = Object.keys(c.coins).map(Number);
+  for (let tries = 0; tries < 300; tries++) {
+    let p;
+    if (lv === "small") {
+      const pool = coins.filter(v => v < 100), n = randInt(2, age <= 5 ? 3 : 4), items = [];
+      for (let i = 0; i < n; i++) items.push(pick(pool));
+      p = { items };
+    } else if (lv === "count") {
+      const pool = coins.concat(c.notes).filter(v => v <= 500), n = randInt(3, 6), items = [];
+      for (let i = 0; i < n; i++) items.push(pick(pool));
+      if (!items.some(v => v >= 100) || !items.some(v => v < 100)) continue;
+      p = { items };
+    } else {
+      const paid = pick([500, 1000]);
+      const price = lv === "easy" ? randInt(1, paid / 10 - 1) * 10 : randInt(1, paid - 1);
+      if (lv === "change" && price % 10 === 0 && Math.random() < 0.8) continue;
+      if (lv === "easy" && price % 100 === 0 && Math.random() < 0.6) continue;
+      p = { price, paid, answer: paid - price, key: lv + ":" + price + ":" + paid };
+    }
+    if (p.items) {
+      p.items.sort((a, b) => b - a);
+      p.answer = p.items.reduce((s, v) => s + v, 0);
+      if (lv === "small" ? p.answer >= 100 : p.answer >= 1000) continue;
+      p.key = lv + ":" + p.items.join(",");
+    }
+    p.lv = lv; p.cur = cur;
+    if (avoid && avoid.includes(p.key) && tries < 250) continue;
+    return p;
+  }
+  return { lv, cur, items: [20, 5], answer: 25, key: lv + ":20,5" };
+}
+
+// Counting up from the price: to the next 10 cents, the next whole euro, then to what was paid.
+function countUp(p) {
+  const steps = [];
+  let at = p.price;
+  if (at % 10) { steps.push({ add: 10 - at % 10, to: at + 10 - at % 10 }); at = steps[steps.length - 1].to; }
+  if (at % 100 && at < p.paid) { steps.push({ add: 100 - at % 100, to: at + 100 - at % 100 }); at = steps[steps.length - 1].to; }
+  if (at < p.paid) steps.push({ add: p.paid - at, to: p.paid });
+  return steps;
+}
+// The fewest coins and notes for an amount.
+function coinsFor(c, cur) {
+  const out = [];
+  for (const v of allMoney(cur)) while (c >= v) { out.push(v); c -= v; }
+  return out;
+}
+
+// A short, friendly reason: big money first, then the small coins; for change, count up from the price.
+function explain(p, ok) {
+  const cur = p.cur;
+  if (p.items) {
+    const big = p.items.filter(v => v >= 100), small = p.items.filter(v => v < 100);
+    const bigSum = big.reduce((s, v) => s + v, 0), smallSum = small.reduce((s, v) => s + v, 0);
+    const smallText = small.length > 1 ? small.join(" + ") + " = " + cents(smallSum, cur) : cents(smallSum, cur);
+    if (!big.length) return t("ccSum", { sum: small.join(" + "), total: cents(smallSum, cur) });
+    const bigText = big.length > 1 ? big.map(v => money(v, cur)).join(" + ") + " = " + money(bigSum, cur) : money(bigSum, cur);
+    const why = t("ccBoth", { big: bigText, sub: t("cc" + CUR[cur].key + "Sn"), small: smallText });
+    return ok === false ? why : why + " " + t("ccTogether", { total: money(p.answer, cur, true) });
+  }
+  const steps = countUp(p);
+  const parts = [t("ccUp", { from: money(p.price, cur) })];
+  steps.forEach(s => parts.push(t("ccStep", { add: amount(s.add, cur), to: money(s.to, cur) })));
+  // After a wrong answer the right one is already in the heading, so the last sentence is left out.
+  if (ok !== false) parts.push(steps.length > 1
+    ? t("ccChangeIs", { sum: steps.map(s => amount(s.add, cur)).join(" + "), total: money(p.answer, cur, true) })
+    : t("ccChangeOne", { total: money(p.answer, cur, true) }));
+  return parts.join(" ");
+}
+// GEN END
+
+// Pictures: one SVG per coin, note or price tag. Sizes are in px; "base" is the width of a big coin.
+const SVGNS = "http://www.w3.org/2000/svg";
+function svgEl(tag, attrs, parent) {
+  const n = document.createElementNS(SVGNS, tag);
+  for (const k in attrs) n.setAttribute(k, attrs[k]);
+  if (parent) parent.appendChild(n);
+  return n;
+}
+function polygon(sides, r) {
+  const pts = [];
+  for (let i = 0; i < sides; i++) {
+    const a = -Math.PI / 2 + i * 2 * Math.PI / sides;
+    pts.push((50 + r * Math.cos(a)).toFixed(1) + "," + (50 + r * Math.sin(a)).toFixed(1));
+  }
+  return pts.join(" ");
+}
+// The size of one picture compared to a big coin: coins keep their real sizes (within limits), notes are wider.
+function shapeOf(v, cur) {
+  const coin = CUR[cur].coins[v];
+  if (!coin) return { w: 2, h: 1.05 };
+  const s = Math.max(0.72, Math.min(1.08, coin[0] / 26));
+  return { w: s, h: s };
+}
+function coinSvg(v, cur, px) {
+  const [, outer, inner, shape] = CUR[cur].coins[v];
+  const svg = svgEl("svg", { viewBox: "0 0 100 100", width: px, height: px, class: "coin" });
+  const ring = shape === "seven" ? svgEl("polygon", { points: polygon(7, 47) }, svg)
+    : shape === "twelve" ? svgEl("polygon", { points: polygon(12, 47) }, svg)
+    : svgEl("circle", { cx: 50, cy: 50, r: 47 }, svg);
+  ring.setAttribute("class", "m-" + outer);
+  ring.setAttribute("stroke-width", "3");
+  if (inner) svgEl("circle", { cx: 50, cy: 50, r: 31, class: "m-" + inner, "stroke-width": "2" }, svg);
+  svgEl("circle", { cx: 50, cy: 50, r: 40, class: "rim" }, svg);
+  const big = v >= 100, de = Loopy.lang === "de";
+  const value = svgEl("text", { x: 50, y: big ? 60 : 56, "font-size": big ? 42 : String(v).length > 1 ? 36 : 42 }, svg);
+  value.textContent = big ? (de ? v / 100 + " " + CUR[cur].sym : CUR[cur].sym + v / 100) : String(v);
+  if (big && value.textContent.length > 2) value.setAttribute("font-size", value.textContent.length > 3 ? "26" : "30");
+  if (!big) {
+    const unit = svgEl("text", { x: 50, y: 78, "font-size": 18 }, svg);
+    unit.textContent = cents(v, cur).replace(/^\d+\s?/, "");
+  }
+  return svg;
+}
+function noteSvg(v, cur, px) {
+  const svg = svgEl("svg", { viewBox: "0 0 200 105", width: px, height: Math.round(px * 105 / 200), class: "note" });
+  svgEl("rect", { x: 2, y: 2, width: 196, height: 101, rx: 10, class: "paper " + (cur === "usd" ? "n-usd" : "n-" + cur + v / 100) }, svg);
+  svgEl("rect", { x: 12, y: 12, width: 176, height: 81, rx: 6, class: "frame" }, svg);
+  svgEl("circle", { cx: 164, cy: 52, r: 18, class: "seal" }, svg);
+  const label = svgEl("text", { x: 82, y: 70, "font-size": money(v, cur).length > 3 ? 44 : 50 }, svg);
+  label.textContent = money(v, cur);
+  return svg;
+}
+function tagSvg(c, cur, px) {
+  const svg = svgEl("svg", { viewBox: "0 0 200 100", width: px, height: Math.round(px / 2), class: "tag" });
+  svgEl("path", { d: "M30 4 H190 a6 6 0 0 1 6 6 V90 a6 6 0 0 1 -6 6 H30 L4 50 Z", class: "tag-bg" }, svg);
+  svgEl("circle", { cx: 26, cy: 50, r: 7, class: "tag-hole" }, svg);
+  const label = svgEl("text", { x: 116, y: 66, "font-size": money(c, cur, true).length > 6 ? 40 : 46 }, svg);
+  label.textContent = money(c, cur, true);
+  return svg;
+}
+
+(function () {
+  const $ = (id) => document.getElementById(id);
+  const card = $("card"), ansEl = $("ans"), feedbackEl = $("feedback"), goBtn = $("k-go"), moneyEl = $("money"), promptEl = $("prompt");
+  const lvBtns = [...document.querySelectorAll("#lv-seg button")];
+  const curBtns = [...document.querySelectorAll("#cur-seg button")];
+  const digitBtns = [...document.querySelectorAll("#pad [data-d]")];
+
+  const store = {
+    // ok: the values this setting may have; anything else falls back to the default.
+    get(k, d, ok) { try { const v = JSON.parse(localStorage.getItem(k)); return ok.includes(v) ? v : d; } catch (e) { return d; } },
+    set(k, v) { try { localStorage.setItem(k, JSON.stringify(v)); } catch (e) {} }
+  };
+
+  let age = window.Loopy ? Loopy.getAge() : 8;
+  // The money is the same for every age; the level is remembered per age.
+  let cur = store.get("cc.cur", "eur", CURS);
+  let lv;
+  function loadForAge() { lv = store.get("cc.lv.a" + age, levelForAge(age), LEVELS); }
+  loadForAge();
+
+  let right = 0, tried = 0, streak = 0;
+  let current = null, typed = "", answered = false, recent = [];
+  // Small coins: type the cents freely (up to 2 digits). Every other level: 3 boxes, "_,__ €".
+  const boxes = () => current && current.lv !== "small";
+  const maxDigits = () => boxes() ? 3 : 2;
+
+  // What the money area shows: the coins to count; for change, the price tag and what is paid,
+  // and after answering, the change counted out.
+  function pictures() {
+    const p = current;
+    if (p.items) return p.items.map(v => ({ v }));
+    if (!answered) return [{ tag: p.price }, { arrow: true }, { v: p.paid }];
+    // In the same order as the reason: the small coins up to the next 10 cents first.
+    return countUp(p).flatMap(s => coinsFor(s.add, p.cur).reverse()).map(v => ({ v }));
+  }
+  // Find the biggest size at which all the pictures fit the room on the card, row by row.
+  function fit(list, W, H) {
+    for (let base = 120; base > 18; base -= 2) {
+      const gap = Math.round(base * 0.14);
+      let rowW = 0, rowH = 0, total = 0, ok = true;
+      for (const it of list) {
+        const s = it.tag ? { w: 2, h: 1 } : it.arrow ? { w: 0.5, h: 0.5 } : shapeOf(it.v, current.cur);
+        const w = s.w * base, h = s.h * base;
+        if (w > W) { ok = false; break; }
+        if (rowW && rowW + gap + w > W) { total += rowH + gap; rowW = 0; rowH = 0; }
+        rowW += (rowW ? gap : 0) + w; rowH = Math.max(rowH, h);
+      }
+      total += rowH;
+      if (ok && total <= H) return { base, gap };
+    }
+    return { base: 18, gap: 3 };
+  }
+  function drawMoney() {
+    if (!current) return;
+    const list = pictures();
+    moneyEl.textContent = "";
+    const W = moneyEl.clientWidth - 8, H = moneyEl.clientHeight - 4;
+    const { base, gap } = fit(list, W, Math.max(H, 40));
+    moneyEl.style.setProperty("--gap", gap + "px");
+    moneyEl.style.setProperty("--base", base + "px");
+    for (const it of list) {
+      if (it.arrow) { const a = document.createElement("span"); a.className = "arrow"; a.textContent = "→"; moneyEl.appendChild(a); continue; }
+      if (it.tag) { moneyEl.appendChild(tagSvg(it.tag, current.cur, Math.floor(base * 2))); continue; }
+      const s = shapeOf(it.v, current.cur);
+      moneyEl.appendChild(CUR[current.cur].coins[it.v] ? coinSvg(it.v, current.cur, Math.floor(base * s.w)) : noteSvg(it.v, current.cur, Math.floor(base * s.w)));
+    }
+  }
+
+  // The answer as money boxes: "€_.__" in English, "_,__ €" in German, or "__ ct" for small coins.
+  function drawAnswer() {
+    ansEl.textContent = "";
+    const add = (cls, text) => { const s = document.createElement("span"); s.className = cls; s.textContent = text; ansEl.appendChild(s); return s; };
+    const de = Loopy.lang === "de", sym = CUR[current.cur].sym;
+    if (!boxes()) {
+      for (const d of typed) add("dig", d);
+      if (!answered && typed.length < maxDigits()) add("slot" + (typed === "" ? " next" : ""), "");
+      add("sym", cents(1, current.cur).replace(/^1/, ""));
+      return;
+    }
+    if (!de) add("sym", sym);
+    for (let i = 0; i < 3; i++) {
+      add("slot" + (!answered && i === typed.length ? " next" : ""), typed[i] || "");
+      if (i === 0) add("sep", de ? "," : ".");
+    }
+    if (de) add("sym", " " + sym);
+  }
+  const typedValue = () => parseInt(typed, 10);
+
+  function render() {
+    $("score").textContent = right + " / " + tried;
+    $("streak").textContent = streak;
+    lvBtns.forEach(b => b.setAttribute("aria-pressed", String(b.dataset.lv === lv)));
+    curBtns.forEach(b => b.setAttribute("aria-pressed", String(b.dataset.cur === cur)));
+    drawAnswer();
+    goBtn.textContent = t(answered ? "next" : "check");
+    goBtn.disabled = !answered && (boxes() ? typed.length < 3 : typed === "");
+    digitBtns.forEach(b => b.disabled = answered);
+    $("k-erase").disabled = answered || typed === "";
+  }
+
+  // The question, for the screen and for Read aloud.
+  function sayText() {
+    const p = current;
+    if (p.items) return t("ccSayCount", { list: p.items.map(v => spoken(v, p.cur)).join(", ") });
+    return t("ccDeal", { price: spoken(p.price, p.cur), paid: spoken(p.paid, p.cur) });
+  }
+  function hintText() {
+    const p = current, k = "cc" + CUR[p.cur].key;
+    if (p.lv === "small") return t("ccHintSmall");
+    if (p.lv === "count") return t("ccHintCount") + " " + t("ccHintBoxes", { unit: t(k + "Un"), sub: t(k + "Sn") });
+    return t("ccHintChange");
+  }
+
+  function newRound() {
+    current = makeProblem(lv, cur, recent, age);
+    recent.push(current.key);
+    while (recent.length > 8) recent.shift();
+    typed = ""; answered = false;
+    promptEl.textContent = "";
+    if (current.items) promptEl.textContent = t("ccHowMuch");
+    else {
+      const parts = t("ccDealShort", { price: "\u0001", paid: "\u0002" }).split(/(\u0001|\u0002)/);
+      parts.forEach(s => {
+        if (s === "\u0001" || s === "\u0002") { const b = document.createElement("b"); b.textContent = money(s === "\u0001" ? current.price : current.paid, cur, s === "\u0001"); promptEl.appendChild(b); }
+        else promptEl.appendChild(document.createTextNode(s));
+      });
+      promptEl.appendChild(document.createTextNode(" " + t("ccHowChange")));
+    }
+    promptEl.setAttribute("aria-label", sayText());
+    $("ans-lbl").textContent = t(current.items ? "ccTotal" : "ccChange");
+    card.classList.remove("good", "bad");
+    feedbackEl.classList.remove("good", "bad");
+    feedbackEl.innerHTML = '<span class="hint"></span>';
+    feedbackEl.firstChild.textContent = hintText();
+    render();
+    drawMoney();
+    Loopy.speech.read();
+  }
+
+  function press(d) {
+    if (answered || typed.length >= maxDigits()) return;
+    if (!boxes() && typed === "0") typed = "";
+    typed += d;
+    render();
+  }
+  function erase() {
+    if (answered) return;
+    typed = typed.slice(0, -1);
+    render();
+  }
+  // How the answer and the child's answer look in the log and the feedback.
+  const asMoney = (c) => current.lv === "small" ? cents(c, current.cur) : money(c, current.cur, true);
+  function question() {
+    const p = current;
+    return p.items ? p.items.map(v => amount(v, p.cur)).join(" + ") : money(p.paid, p.cur) + " − " + money(p.price, p.cur, true);
+  }
+  function check() {
+    if (answered || goBtn.disabled) return;
+    answered = true; tried++;
+    const ok = typedValue() === current.answer;
+    if (ok) { right++; streak++; } else { streak = 0; }
+    const kind = { small: "small", count: "count", easy: "ch10", change: "ch" }[current.lv];
+    if (window.Loopy && Loopy.rewards) ok ? Loopy.rewards.correct("coins-change", streak, harder()) : Loopy.rewards.wrong("coins-change", { q: question(), a: asMoney(current.answer), y: asMoney(typedValue()), k: "cc-" + kind });
+    card.classList.add(ok ? "good" : "bad");
+    feedbackEl.classList.add(ok ? "good" : "bad");
+    const head = ok
+      ? (streak >= 3 ? t("correctRow", { n: streak }) : t("correct"))
+      : t("notQuite") + " " + t("ccAnswerIs", { a: asMoney(current.answer) });
+    feedbackEl.innerHTML = "<strong></strong>";
+    feedbackEl.firstChild.textContent = head;
+    feedbackEl.appendChild(document.createTextNode(explain(current, ok)));
+    render();
+    drawMoney();
+  }
+  // What "Make it harder" does after 10 in a row: the next level.
+  function harder() {
+    const i = LEVELS.indexOf(lv);
+    if (i >= LEVELS.length - 1) return null;
+    const next = LEVELS[i + 1];
+    return { label: t({ count: "ccTryCount", easy: "ccTryEasy", change: "ccTryChange" }[next]),
+      apply: () => { lv = next; store.set("cc.lv.a" + age, lv); recent = []; render(); } };
+  }
+  function go() { answered ? newRound() : check(); }
+
+  digitBtns.forEach(b => b.addEventListener("click", () => press(b.dataset.d)));
+  $("k-erase").addEventListener("click", erase);
+  goBtn.addEventListener("click", go);
+  lvBtns.forEach(b => b.addEventListener("click", () => {
+    lv = b.dataset.lv; store.set("cc.lv.a" + age, lv); recent = []; newRound();
+  }));
+  curBtns.forEach(b => b.addEventListener("click", () => {
+    cur = b.dataset.cur; store.set("cc.cur", cur); recent = []; newRound();
+  }));
+  window.addEventListener("loopy:age", (e) => { age = e.detail; recent = []; loadForAge(); newRound(); });
+  window.addEventListener("resize", drawMoney);
+  // The shared top bar and the fonts change the room on the card, so measure again once they are in.
+  window.addEventListener("load", drawMoney);
+  if (document.fonts) document.fonts.ready.then(drawMoney);
+  $("reset").addEventListener("click", () => { right = 0; tried = 0; streak = 0; if (window.Loopy && Loopy.recent) Loopy.recent.clear("coins-change"); newRound(); });
+  document.addEventListener("keydown", (e) => {
+    if (e.metaKey || e.ctrlKey || e.altKey || document.querySelector(".loopy-cheer.big")) return;
+    if (e.target.tagName === "INPUT") return;
+    if (/^[0-9]$/.test(e.key)) { press(e.key); e.preventDefault(); }
+    else if (e.key === "Backspace") { erase(); e.preventDefault(); }
+    else if (e.key === "Enter") {
+      if (document.activeElement && document.activeElement.tagName === "BUTTON" && document.activeElement !== goBtn) return;
+      go(); e.preventDefault();
+    }
+  });
+
+  // Read aloud: "How much money is this? 2 euros, 50 cents, 20 cents."
+  Loopy.speech.question({ host: card, text: sayText });
+
+  // Print worksheet: 20 problems at the same level, drawn in black lines, with a line to write the answer.
+  function sheetPicture(p) {
+    const svg = svgEl("svg", { viewBox: "0 0 100 100", class: "ws-clock", "aria-hidden": "true" });
+    const ink = { fill: "none", stroke: "#000", "stroke-width": "1.4" };
+    const label = (x, y, size, text) => { const n = svgEl("text", { x, y, "font-size": size, "text-anchor": "middle", "font-weight": "700", fill: "#000" }, svg); n.textContent = text; };
+    if (p.items) {
+      // Up to 6 pictures, 3 to a row: coins as circles, notes as rectangles.
+      const rows = Math.ceil(p.items.length / 3), rowH = 100 / Math.max(rows, 2);
+      p.items.forEach((v, i) => {
+        const r = Math.floor(i / 3), inRow = Math.min(3, p.items.length - r * 3), col = i % 3;
+        const cx = 50 + (col - (inRow - 1) / 2) * 33, cy = (100 - rows * rowH) / 2 + r * rowH + rowH / 2;
+        if (v >= 100 && !CUR[p.cur].coins[v]) svgEl("rect", Object.assign({ x: cx - 15.5, y: cy - 9, width: 31, height: 18, rx: 2 }, ink), svg);
+        else svgEl("circle", Object.assign({ cx, cy, r: Math.min(14.5, rowH / 2 - 1.5) }, ink), svg);
+        label(cx, cy + 3.5, v >= 100 ? 9.5 : 10, amount(v, p.cur));
+      });
+    } else {
+      svgEl("path", Object.assign({ d: "M20 8 H90 V40 H20 L8 24 Z" }, ink), svg);
+      svgEl("circle", Object.assign({ cx: 17, cy: 24, r: 2.5 }, ink), svg);
+      label(55, 22, 9, t("ccCosts"));
+      label(55, 35, 12, money(p.price, p.cur, true));
+      svgEl("rect", Object.assign({ x: 14, y: 54, width: 72, height: 40, rx: 3 }, ink), svg);
+      label(50, 70, 9, t("ccPay"));
+      label(50, 86, 14, money(p.paid, p.cur));
+    }
+    return svg;
+  }
+  Loopy.worksheet({
+    title: () => t("ccName"),
+    level: () => [t("ageLabel", { n: age }), t(levelName(lv)), t("cc" + CUR[cur].key)].join(" · "),
+    how: () => t(isChange(lv) ? "ccHowChangeSheet" : "ccHowCount"),
+    layout: "clock",
+    make: (n) => { const list = [], keys = []; while (list.length < n) { const p = makeProblem(lv, cur, keys, age); keys.push(p.key); if (keys.length > 8) keys.shift(); list.push(p); } return list; },
+    cell: (p) => {
+      const box = document.createElement("div");
+      box.appendChild(sheetPicture(p));
+      const line = document.createElement("span");
+      line.className = "ws-time";
+      line.textContent = "______";
+      box.appendChild(line);
+      return box;
+    },
+    answer: (p) => p.items ? p.items.map(v => amount(v, p.cur)).join(" + ") + " = " + (p.lv === "small" ? cents(p.answer, p.cur) : money(p.answer, p.cur, true))
+      : money(p.paid, p.cur) + " − " + money(p.price, p.cur, true) + " = " + money(p.answer, p.cur, true)
+  });
+
+  newRound();
+})();
+</script>
+</body>
+</html>

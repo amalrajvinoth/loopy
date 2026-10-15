@@ -18,6 +18,7 @@ Open it from the link **For grown-ups: how it's going** at the bottom of the hom
 | Plus and Minus | Adding, adding with carrying, taking away, taking away with regrouping |
 | Times and Share | A times table (for example the 7 times table), sharing by a number, times or sharing with bigger numbers |
 | Make 10 | Pairs that make 10, pairs that make 20, pairs that make 100 |
+| Coins and Change | Adding small coins, counting notes and coins, change with prices in tens of cents, change with any price |
 | What Time Is It? | O'clock, half past, quarter past and quarter to, minutes in fives, single minutes |
 | Sound Spell | The sound at the start of a word, the sound at the end of a word |
 | Today's 10 | Any of the tips above, for the problems missed in Today's 10 |
