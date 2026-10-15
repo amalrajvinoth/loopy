@@ -23,6 +23,7 @@ It works on phones, tablets and computers. There is no sign-up and no ads.
 | [Make 10](math/make-10/) | Number pairs that make 10, 20 and 100, with ten-frames to count | [README](math/make-10/README.md) |
 | [What Time Is It?](math/what-time-is-it/) | Reading a clock with hands | [README](math/what-time-is-it/README.md) |
 | [Bigger or Smaller](math/bigger-or-smaller/) | Comparing, ordering and rounding numbers, with a number line | [README](math/bigger-or-smaller/README.md) |
+| [Pizza Fractions](math/pizza-fractions/) | Naming, comparing and adding fractions, with pizzas and bars | [README](math/pizza-fractions/README.md) |
 | [Sound Spell](languages/sound-spell/) | Starting and ending sounds of English and German words | [README](languages/sound-spell/README.md) |
 | [Word Match](languages/word-match/) | 100 words for animals, food, home and school, in English or German | [README](languages/word-match/README.md) |
 | [Today's 10](mix/daily-mix/) | A daily mix of 10 problems from the games for your age, with a day streak | [README](mix/daily-mix/README.md) |
@@ -42,11 +43,11 @@ Open it from the link at the bottom of the home page.
 - **Colors.** Black is the default. You can also pick Sunny, Ocean, Candy or Forest.
 - **Stars.** Every right answer gives a star. More stars unlock badges. A streak of right answers sets off confetti.
 - **Sound.** Short happy sounds play. Tap the speaker to turn them off.
-- **Read aloud.** In Plus and Minus, Times and Share, What Time Is It?, Make 10 and Bigger or Smaller, a speaker button reads the question out loud in the device's own voice, in English or German. Nothing is downloaded. It is on by itself for ages 5 to 7. Turn it on or off in **Settings**.
+- **Read aloud.** In Plus and Minus, Times and Share, What Time Is It?, Make 10, Bigger or Smaller and Pizza Fractions, a speaker button reads the question out loud in the device's own voice, in English or German. Nothing is downloaded. It is on by itself for ages 5 to 7. Turn it on or off in **Settings**.
 - **Help.** After each answer, the game shows a short reason, so kids learn from mistakes.
 - **Last 5.** Each game shows the last 5 answers as green and red dots.
 - **Back.** The big button with the loopy bunny at the top of a game goes back to all games.
-- **Worksheets.** In Plus and Minus, Times and Share, What Time Is It?, Sound Spell and Word Match, tap **Settings**, then **Print worksheet**. You get 20 problems at the child's level on one page, and the answers on a second page. It works on A4 and US Letter paper, and you can save it as a PDF from the print window.
+- **Worksheets.** In every game except Today's 10, tap **Settings**, then **Print worksheet**. You get 20 problems at the child's level on one page, and the answers on a second page. It works on A4 and US Letter paper, and you can save it as a PDF from the print window.
 
 In a game, tap **Settings** to change age, language, colors, sound or level.
 
