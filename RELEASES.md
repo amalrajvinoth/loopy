@@ -4,6 +4,7 @@ The big changes, newest first. Small fixes are not listed.
 
 | Date | What's new | Where | PR |
 | --- | --- | --- | --- |
+| 2026-10-15 | Works with a keyboard and a screen reader: a clear focus ring on every button in every theme, right and wrong answers read out, Escape closes Settings, and after Next the keyboard lands on the new problem. Continents on the map are one stop each. | Every page | #46 |
 | 2026-10-15 | More than one child: brothers and sisters can share one device. Add a child with a name, a picture and an age, and tap a name to switch. Each child has their own stars, badges, streaks, age, progress and game settings. A new device starts with Dio and Dia. Stars already earned go to Dio. The stars code holds every child, and each one lands on the child with the same name. | Home page (Who is playing?), every game, How it's going | #17 |
 | 2026-10-15 | Bigger stars code: moving to a new phone or tablet now keeps the day streak, the answers on the grown-ups' page, the Last 5 dots, the age and the settings, not just stars. The code is packed small so it still copies in one tap. Loading a code only adds, and old codes still work. | Home (Move my stars), How it's going | #42 |
 | 2026-10-15 | Works offline: after one visit with internet, loopy opens with no internet too. Every game, Today's 10, Help and the grown-ups' page work on a plane or in the car. New versions arrive by themselves the next time you are online. | Every page | #43 |
