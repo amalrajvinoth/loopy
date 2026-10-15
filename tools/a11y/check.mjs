@@ -78,6 +78,7 @@ async function open(page, theme = "black", lang = "en", size = { width: 390, hei
   p.on("pageerror", e => fail(page || "home", `script error: ${e.message}`));
   await p.goto(BASE + page);
   await p.waitForFunction(() => !document.documentElement.classList.contains("loopy-building"));
+  await p.evaluate(() => document.fonts.ready.then(() => null));
   await p.waitForTimeout(150);
   return p;
 }

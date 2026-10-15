@@ -1135,7 +1135,7 @@ document.documentElement.classList.add("loopy-building");
   function scrollable() {
     var fb = document.getElementById("feedback");
     if (!fb) return;
-    if (fb.scrollHeight > fb.clientHeight + 1) fb.setAttribute("tabindex", "0");
+    if (fb.scrollHeight > fb.clientHeight || fb.scrollWidth > fb.clientWidth) fb.setAttribute("tabindex", "0");
     else fb.removeAttribute("tabindex");
   }
   function build() {
@@ -1143,6 +1143,9 @@ document.documentElement.classList.add("loopy-building");
     if (!fb || !window.MutationObserver) return;
     new MutationObserver(scrollable).observe(fb, { childList: true, subtree: true, characterData: true });
     window.addEventListener("resize", scrollable);
+    // The line's size also changes when the layout settles or a font finishes loading.
+    if (window.ResizeObserver) new ResizeObserver(scrollable).observe(fb);
+    if (document.fonts) document.fonts.addEventListener("loadingdone", scrollable);
     scrollable();
   }
   if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", build);
