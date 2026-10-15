@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'sha256-S5cJl9zWV5NZHFgqZu7BEfwlo4mvs6TENvZEiBKAT6U='; style-src 'self' 'sha256-HMK98GHBTbAlbH/4aII8tuFBE+bwPwShvPIRVspa9t4='; img-src 'self' data:; font-src 'self'; connect-src 'none'; object-src 'none'; base-uri 'none'; form-action 'none'; manifest-src 'self'; upgrade-insecure-requests">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'sha256-nTQsMWJ/qv6/OHylNDPiPwEdE9U8ySW/LlbQZ3gM3hU='; style-src 'self' 'sha256-jJV23ytjR5k4ldb6SK9y5o4ubpBlQ4f2dO2pHCt03Tw='; img-src 'self' data:; font-src 'self'; connect-src 'none'; object-src 'none'; base-uri 'none'; form-action 'none'; manifest-src 'self'; upgrade-insecure-requests">
 <meta name="referrer" content="strict-origin-when-cross-origin">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <link rel="icon" href="icon.svg" type="image/svg+xml">
@@ -67,6 +67,14 @@ h1 { margin: 0; line-height: 0; color: var(--ink); }
 .quiz h3 { margin: 0; font-family: var(--display); font-size: 1.6rem; font-weight: 700; color: var(--tone); }
 .quiz p { margin: 0; color: var(--muted); line-height: 1.45; }
 .go { margin-top: auto; align-self: flex-start; background: var(--tone); color: var(--card); font-family: var(--display); font-weight: 700; font-size: 1.1rem; padding: 6px 16px; border-radius: 999px; }
+/* Today's 10: one big button above the shelf. */
+.wrap > .today { --tone: var(--c5); min-height: 0; }
+.today .row { display: flex; flex-wrap: wrap; gap: 8px 12px; align-items: center; justify-content: space-between; margin-top: auto; }
+.today .go { margin-top: 0; }
+.day-streak { font-weight: 700; }
+.days { display: flex; flex-direction: column; gap: 10px; border-top: 2px solid var(--line); padding-top: 14px; }
+.days p { margin: 0; color: var(--muted); }
+.days b { color: var(--ink); }
 .empty { margin: 0; color: var(--muted); font-size: 1.1rem; text-align: center; }
 footer { color: var(--muted); font-size: 0.95rem; text-align: center; display: flex; flex-direction: column; gap: 8px; }
 footer p { margin: 0; }
@@ -83,6 +91,12 @@ footer p { margin: 0; }
     <p class="lead" data-t="tagline">Learn. Play. Repeat.</p>
     <div class="controls center"><div id="age-picker"></div><div id="theme-picker"></div><button id="sound-toggle"></button><div id="lang-picker"></div></div>
   </header>
+  <a class="quiz today" id="today" href="mix/daily-mix/">
+    <span class="tag" data-t="dmTag">Every day</span>
+    <h3 data-t="dmTitle">Today's 10</h3>
+    <p data-t="dmText">10 quick problems from the games that fit your age. Play every day to grow your day streak!</p>
+    <div class="row"><span class="go" id="today-go">Start →</span><span class="day-streak" id="today-streak"></span></div>
+  </a>
   <section class="shelf" aria-labelledby="shelf-title">
     <div class="shelf-top">
       <h2 id="shelf-title" data-t="myStars">My stars</h2>
@@ -91,6 +105,10 @@ footer p { margin: 0; }
     <p class="shelf-next" id="shelf-next"></p>
     <div class="meter" aria-hidden="true"><i id="meter-fill"></i></div>
     <div class="badges" id="badges"></div>
+    <div class="days">
+      <p id="day-line"></p>
+      <div class="badges" id="day-badges"></div>
+    </div>
     <details class="transfer">
       <summary data-t="moveStars">Move my stars to another device</summary>
       <div class="transfer-body">
@@ -118,6 +136,10 @@ Loopy.addStrings({
     pmTitle: "Plus and Minus", pmTag: "Adding and taking away", pmText: "Worksheet-style sums typed on a big number pad. The numbers grow with your age.",
     tsTitle: "Times and Share", tsTag: "Times and division", tsText: "Times tables with dots to count, and sharing into equal groups. Bigger numbers as you grow.",
     clTitle: "What Time Is It?", clTag: "Telling time", clText: "Read the hands on the clock and pick the right time, from half hours down to the minute.",
+    dmTag: "Every day", dmTitle: "Today's 10", dmText: "10 quick problems from the games that fit your age. Play every day to grow your day streak!",
+    dmGo: "Start →", dmAgain: "Done today! Play again →", dmStreak: "🔥 {n} days", dmStreakOne: "🔥 1 day",
+    dayLine: "Day streak: {n} days in a row. Best: {best}.", dayLineOne: "Day streak: 1 day in a row. Best: {best}.",
+    dayNone: "Play Today's 10 on days in a row to earn day badges.", nDays: "{n} days",
     ssTitle: "Sound Spell", ssTag: "Starting and ending sounds", ssText: "See a picture, hear the word, and pick the sound it starts or ends with. English and German words."
   },
   de: {
@@ -132,6 +154,10 @@ Loopy.addStrings({
     pmTitle: "Plus und Minus", pmTag: "Plus und Minus rechnen", pmText: "Aufgaben wie auf dem Arbeitsblatt, getippt auf einem großen Zahlenfeld. Die Zahlen wachsen mit deinem Alter.",
     tsTitle: "Mal und Teilen", tsTag: "Malnehmen und Teilen", tsText: "Einmaleins mit Punkten zum Zählen und Teilen in gleiche Gruppen. Größere Zahlen, wenn du wächst.",
     clTitle: "Wie spät ist es?", clTag: "Uhr lesen", clText: "Lies die Zeiger der Uhr und wähle die richtige Zeit, von halben Stunden bis zur Minute.",
+    dmTag: "Jeden Tag", dmTitle: "Die 10 von heute", dmText: "10 schnelle Aufgaben aus den Spielen für dein Alter. Spiel jeden Tag, damit deine Tage-Serie wächst!",
+    dmGo: "Los →", dmAgain: "Heute geschafft! Nochmal →", dmStreak: "🔥 {n} Tage", dmStreakOne: "🔥 1 Tag",
+    dayLine: "Tage-Serie: {n} Tage hintereinander. Beste: {best}.", dayLineOne: "Tage-Serie: 1 Tag hintereinander. Beste: {best}.",
+    dayNone: "Spiele die 10 von heute an Tagen hintereinander, um Tage-Abzeichen zu bekommen.", nDays: "{n} Tage",
     ssTitle: "Anlaut und Endlaut", ssTag: "Anlaute und Endlaute", ssText: "Sieh ein Bild, hör das Wort und wähle den Laut, mit dem es beginnt oder endet. Deutsche und englische Wörter."
   }
 });
@@ -219,6 +245,25 @@ window.addEventListener("loopy:age", render);
     d.children[1].textContent = b.name;
     d.children[2].textContent = got ? t("earned") : t("nStars", { n: Loopy.num(b.stars) });
     box.appendChild(d);
+  }
+
+  // Day streak: Today's 10 finished on days in a row, with badges at 3, 7 and 30 days.
+  const D = Loopy.daily, day = D.get();
+  document.getElementById("today-streak").textContent = day.streak ? t(day.streak === 1 ? "dmStreakOne" : "dmStreak", { n: day.streak }) : "";
+  document.getElementById("today-go").textContent = t(day.doneToday ? "dmAgain" : "dmGo");
+  document.getElementById("day-line").textContent = day.best
+    ? t(day.streak === 1 ? "dayLineOne" : "dayLine", { n: day.streak, best: day.best })
+    : t("dayNone");
+  const days = document.getElementById("day-badges");
+  for (const b of D.BADGES) {
+    const got = day.best >= b.days;
+    const d = document.createElement("div");
+    d.className = "badge" + (got ? " got" : "");
+    d.style.setProperty("--tone", "var(" + b.color + ")");
+    d.innerHTML = '<span class="medal"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M13.5 2s1 3.5-1.5 6.5C10 11 9 12.5 9 14.5a3 3 0 0 0 6 0c0-1-.4-2-1-2.8 2.6 1 4 3.6 4 6.3A6 6 0 0 1 6 18c0-4 2.5-6.5 4.5-9S13.5 2 13.5 2z"/></svg></span><span></span><small></small>';
+    d.children[1].textContent = b.name;
+    d.children[2].textContent = got ? t("earned") : t("nDays", { n: b.days });
+    days.appendChild(d);
   }
 })();
 </script>

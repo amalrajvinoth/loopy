@@ -1,0 +1,621 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'sha256-oEgp9R3rB1t67Dde/q2s6SRtp6boiJhr+wct01e1sso='; style-src 'self' 'sha256-z2P7kGW5Z05eCTjTZdYpc0vThTlOE9vmt97pVSvi2I4=' 'sha256-xiQ/+AzzVFvamMSKxKU68FfPajpV8TA12Ri8gQSSYQY='; img-src 'self' data:; font-src 'self'; connect-src 'none'; object-src 'none'; base-uri 'none'; form-action 'none'; manifest-src 'self'; upgrade-insecure-requests">
+<meta name="referrer" content="strict-origin-when-cross-origin">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<style>:root{color-scheme:light;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}body{margin:0}[hidden]{display:none!important}</style>
+<link rel="icon" href="../../icon.svg" type="image/svg+xml">
+<link rel="manifest" href="../../manifest.webmanifest">
+<link rel="apple-touch-icon" href="../../apple-touch-icon.png">
+<meta name="theme-color" content="#0a0a0c">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="loopy">
+<title data-t="dmName">Today's 10</title>
+<link rel="preload" href="../../fonts/lexend-latin.woff2" as="font" type="font/woff2" crossorigin>
+<style>
+/* Layout: one problem card (a sum, a clock or a picture word), answer buttons beside or below it,
+   and a results card after the tenth problem. Same look as the other games. */
+:root {
+  --bg: #f3f6fb; --card: #ffffff; --ink: #1d2a3f; --muted: #5d6b82; --line: #d5dde9;
+  --accent: #2457c5; --accent-ink: #ffffff; --mark: #e2622b;
+  --good: #1f8a4c; --good-bg: #e3f5ea; --bad: #c23a3a; --bad-bg: #fbe6e6; --chip: #e6ecf6; --key: #ffffff;
+  --font: "Lexend", "Segoe UI", "Helvetica Neue", Arial, sans-serif;
+}
+* { box-sizing: border-box; }
+body {
+  background: var(--bg); color: var(--ink); font-family: var(--font); font-size: 16px;
+  padding-left: max(16px, env(safe-area-inset-left, 0px));
+  padding-right: max(16px, env(safe-area-inset-right, 0px));
+  min-height: 100vh; min-height: 100dvh; padding-block: 12px 16px;
+}
+.wrap { max-width: 520px; margin: 0 auto; display: flex; flex-direction: column; gap: 12px; }
+.game-bar { display: flex; align-items: center; justify-content: space-between; gap: 8px; }
+.bar-right { display: flex; align-items: center; gap: 8px; }
+.home-link { display: inline-flex; align-items: center; min-height: 40px; color: var(--muted); font-weight: 600; text-decoration: none; font-size: 0.95rem; }
+.home-link:hover { color: var(--ink); }
+.top { display: flex; flex-wrap: wrap; gap: 8px 12px; align-items: center; justify-content: space-between; }
+h1 { margin: 0; font-size: 1.6rem; font-weight: 700; text-wrap: balance; }
+.pill { background: var(--card); border: 1px solid var(--line); border-radius: 999px; padding: 6px 14px; font-weight: 600; white-space: nowrap; font-variant-numeric: tabular-nums; }
+.pill span { color: var(--muted); font-weight: 400; margin-right: 4px; }
+/* Ten dots: one per problem, green for right, red for wrong, ringed for the one being played. */
+.dots { display: flex; gap: 6px; align-items: center; }
+.dots i { width: 14px; height: 14px; border-radius: 50%; background: var(--chip); border: 2px solid var(--line); }
+.dots i.now { border-color: var(--accent); background: var(--card); }
+.dots i.good { background: var(--good); border-color: var(--good); }
+.dots i.bad { background: var(--bad); border-color: var(--bad); }
+
+.play { display: flex; flex-direction: column; gap: 12px; -webkit-user-select: none; user-select: none; }
+.problem-card {
+  background: var(--card); border: 1px solid var(--line); border-radius: 24px;
+  padding: 14px 14px 12px; display: flex; flex-direction: column; align-items: center; gap: 8px;
+}
+.problem-card.good { border-color: var(--good); box-shadow: 0 0 0 2px var(--good) inset; }
+.problem-card.bad { border-color: var(--bad); box-shadow: 0 0 0 2px var(--bad) inset; }
+.kind { align-self: center; background: var(--chip); color: var(--ink); font-size: 0.78rem; font-weight: 600; letter-spacing: 0.06em; text-transform: uppercase; padding: 4px 10px; border-radius: 999px; }
+.stage { display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 6px; flex: 1 1 auto; min-height: 0; width: 100%; }
+.sum { font-size: clamp(2.2rem, min(11vw, 9dvh), 4.4rem); font-weight: 700; font-variant-numeric: tabular-nums; white-space: nowrap; letter-spacing: 0.02em; }
+.sum .op { color: var(--accent); }
+.sum .q { color: var(--mark); }
+.problem-card.good .sum .q { color: var(--good); }
+.problem-card.bad .sum .q { color: var(--bad); }
+svg.clock { width: min(100%, 300px, 30dvh); height: auto; aspect-ratio: 1; display: block; }
+.pic { font-size: clamp(3.4rem, 13dvh, 7rem); line-height: 1.15; }
+.word { display: flex; gap: 0.06em; align-items: baseline; font-size: clamp(2rem, 7dvh, 3.4rem); font-weight: 700; letter-spacing: 0.03em; }
+.word .blank { display: inline-block; min-width: 1.2ch; border-bottom: 0.08em solid var(--accent); color: var(--accent); text-align: center; }
+.word .blank.empty::after { content: "?"; color: var(--muted); }
+.problem-card.good .blank { color: var(--good); border-color: var(--good); }
+.problem-card.bad .blank { color: var(--bad); border-color: var(--bad); }
+.speak { font: inherit; display: inline-flex; align-items: center; gap: 8px; min-height: 44px; padding: 0 16px; border-radius: 999px;
+  border: 2px solid var(--line); background: var(--key); color: var(--ink); cursor: pointer; font-weight: 600; font-size: 0.95rem; }
+.speak svg { width: 22px; height: 22px; fill: currentColor; }
+.feedback { min-height: 2.9em; text-align: center; font-size: 1.05rem; line-height: 1.4; margin: 0; max-width: 34ch; }
+.feedback strong { display: block; font-size: 1.3rem; }
+.feedback.good strong { color: var(--good); }
+.feedback.bad strong { color: var(--bad); }
+.feedback .hint { color: var(--muted); }
+
+.side { display: flex; flex-direction: column; gap: 10px; }
+.choices { display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; }
+.choices button {
+  font: inherit; font-size: clamp(1.5rem, 4.5dvh, 2.4rem); font-weight: 700; color: var(--ink); font-variant-numeric: tabular-nums;
+  background: var(--key); border: 2px solid var(--line); border-radius: 18px; min-height: clamp(56px, 9dvh, 96px); cursor: pointer;
+  transition: transform .08s ease, border-color .15s ease; touch-action: manipulation; -webkit-tap-highlight-color: transparent;
+}
+.choices button:hover:not(:disabled) { border-color: var(--accent); }
+.choices button:active:not(:disabled) { transform: scale(0.96); }
+.choices button:disabled { cursor: default; }
+.choices button.right { border-color: var(--good); background: var(--good-bg); color: var(--good); }
+.choices button.wrong { border-color: var(--bad); background: var(--bad-bg); color: var(--bad); }
+.choices button.faded { opacity: 0.45; }
+.next { font: inherit; font-size: 1.25rem; font-weight: 700; color: var(--accent-ink); background: var(--accent); border: 0; border-radius: 16px; min-height: clamp(52px, 7dvh, 72px); cursor: pointer; width: 100%; }
+.next:disabled { opacity: 0.4; cursor: default; }
+button:focus-visible, a:focus-visible { outline: 3px solid var(--mark); outline-offset: 3px; }
+
+/* Results after the tenth problem. */
+.results { background: var(--card); border: 3px solid var(--c5, #d9a400); border-radius: 28px; padding: 22px 18px; display: flex; flex-direction: column; align-items: center; gap: 12px; text-align: center; }
+.results h2 { margin: 0; font-family: "Fredoka", "Lexend", sans-serif; font-size: 2rem; }
+.big-score { font-size: clamp(3rem, 12dvh, 5rem); font-weight: 700; line-height: 1; font-variant-numeric: tabular-nums; }
+.results p { margin: 0; font-size: 1.1rem; line-height: 1.45; max-width: 32ch; }
+.results .muted { color: var(--muted); }
+.results .practise a { color: var(--accent); font-weight: 700; }
+.got-stars { display: inline-flex; align-items: center; gap: 6px; font-weight: 700; font-size: 1.3rem; }
+.got-stars svg { width: 28px; height: 28px; fill: var(--c5, #d9a400); }
+.day { display: inline-flex; align-items: center; gap: 8px; background: var(--chip); border-radius: 999px; padding: 8px 16px; font-weight: 700; }
+.res-actions { display: flex; flex-wrap: wrap; gap: 10px; justify-content: center; width: 100%; }
+.res-actions .next, .res-actions .quiet { flex: 1 1 140px; display: inline-flex; align-items: center; justify-content: center; text-decoration: none; }
+.reset { font: inherit; font-size: 0.95rem; color: var(--muted); background: transparent; border: 2px solid var(--line); border-radius: 14px; padding: 0 16px; min-height: 44px; cursor: pointer; }
+.quiet { font: inherit; font-size: 1.15rem; font-weight: 700; color: var(--ink); background: transparent; border: 2px solid var(--line); border-radius: 16px; min-height: clamp(52px, 7dvh, 72px); cursor: pointer; }
+
+@media (max-width: 420px) { h1 { font-size: 1.35rem; } .dots { gap: 4px; } .dots i { width: 12px; height: 12px; } }
+@media (min-width: 600px) and (orientation: portrait) {
+  .wrap { max-width: 640px; }
+  svg.clock { width: min(100%, 440px, 36dvh); }
+  .choices button { min-height: clamp(60px, 10dvh, 120px); }
+}
+@media (orientation: landscape) and (min-width: 640px) {
+  .wrap { max-width: 1100px; }
+  .play { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; align-items: center; }
+  .problem-card { height: 100%; justify-content: center; }
+  .side { height: 100%; justify-content: center; }
+  .choices button { min-height: clamp(52px, 14dvh, 130px); }
+  svg.clock { width: min(100%, 460px, calc(100dvh - 260px)); }
+}
+/* One screen tall in portrait and landscape: the answers stay on screen and the top part shrinks.
+   With settings open, the page scrolls normally. */
+@media (orientation: portrait), (orientation: landscape) and (min-width: 640px) {
+  body { height: calc(100dvh - env(safe-area-inset-top, 0px) - env(safe-area-inset-bottom, 0px)); min-height: 0; display: flex; flex-direction: column; overflow: hidden; }
+  body:has(#settings-panel:not([hidden])) { height: auto; overflow: visible; }
+  .wrap { flex: 1 1 auto; min-height: 0; width: 100%; }
+  .play { flex: 1 1 auto; min-height: 0; }
+  .problem-card { flex: 1 1 auto; min-height: 0; overflow: hidden; }
+  .feedback { flex: 0 1 auto; min-height: 0; overflow-y: auto; }
+  .results { flex: 0 1 auto; min-height: 0; overflow-y: auto; margin-block: auto; }
+}
+@media (orientation: landscape) and (min-width: 640px) { .play { grid-template-rows: minmax(0, 1fr); } }
+@media (max-height: 760px) and (orientation: portrait) {
+  .feedback { font-size: 0.95rem; line-height: 1.35; }
+  .feedback strong { font-size: 1.15rem; }
+}
+@media (max-height: 500px) {
+  .top h1 { font-size: 1.2rem; }
+  .feedback { font-size: 0.9rem; line-height: 1.3; }
+  .feedback strong { font-size: 1.05rem; }
+  .results { padding: 10px 14px; gap: 4px; }
+  .results h2 { font-size: 1.3rem; }
+  .results p { font-size: 0.95rem; }
+  .results .muted { display: none; }
+  .big-score { font-size: 2.4rem; }
+  .day { padding: 4px 12px; }
+  .res-actions .next, .res-actions .quiet { min-height: 44px; font-size: 1rem; }
+}
+/* After answering on smaller screens, shrink the problem so the reason has room. */
+@media (max-height: 900px), (max-width: 599px) {
+  .problem-card.good .stage, .problem-card.bad .stage { zoom: 0.75; }
+}
+@media (prefers-reduced-motion: reduce) { * { transition: none !important; } }
+</style>
+<link rel="stylesheet" href="../../loopy.css">
+<script src="../../loopy.js"></script>
+</head>
+<body>
+
+<div class="wrap">
+  <header class="game-bar">
+    <a class="home-link" href="../../">&larr; loopy</a>
+    <div class="bar-right">
+      <span id="star-chip"></span>
+      <button type="button" id="settings-toggle" aria-controls="settings-panel"></button>
+    </div>
+  </header>
+  <div class="top">
+    <h1 id="title" data-t="dmName">Today's 10</h1>
+    <div class="dots" id="dots" role="img"></div>
+  </div>
+  <div class="settings-panel" id="settings-panel" hidden>
+    <div class="controls"><div id="age-picker"></div><div id="theme-picker"></div><button id="sound-toggle"></button><div id="lang-picker"></div></div>
+    <div class="panel-foot">
+      <p data-t="dmKbd">Keyboard works too: 1 to 4 picks an answer, Enter goes on.</p>
+      <button type="button" class="reset" id="restart" data-t="dmRestart">Start again</button>
+    </div>
+  </div>
+
+  <main class="play" id="play">
+    <div class="problem-card" id="card">
+      <span class="kind" id="kind"></span>
+      <div class="stage" id="stage" aria-live="polite"></div>
+      <p class="feedback" id="feedback"></p>
+    </div>
+    <div class="side">
+      <div class="choices" id="choices"></div>
+      <button type="button" class="next" id="next" data-t="next">Next</button>
+    </div>
+  </main>
+
+  <section class="results" id="results" hidden aria-live="polite">
+    <h2 data-t="dmDone">Today's 10 done!</h2>
+    <div class="big-score" id="res-score"></div>
+    <div class="got-stars"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2.5l2.9 6 6.6.9-4.8 4.6 1.2 6.5L12 17.4l-5.9 3.1 1.2-6.5L2.5 9.4l6.6-.9z"/></svg><span id="res-stars"></span></div>
+    <p class="practise" id="res-practise"></p>
+    <div class="day" id="res-day"></div>
+    <p class="muted" data-t="dmComeBack">Come back tomorrow for a new 10.</p>
+    <div class="res-actions">
+      <button type="button" class="next" id="again" data-t="dmAgain">Play again</button>
+      <a class="quiet" href="../../" data-t="dmHome">Home</a>
+    </div>
+  </section>
+</div>
+
+<script>
+Loopy.addStrings({
+  en: {
+    dmName: "Today's 10", dmKbd: "Keyboard works too: 1 to 4 picks an answer, Enter goes on.", dmRestart: "Start again",
+    dmDone: "Today's 10 done!", dmAgain: "Play again", dmHome: "Home", dmComeBack: "Come back tomorrow for a new 10.",
+    dmOf: "Problem {n} of 10", dmSeeResults: "See results", dmStars: "+{n} stars", dmStar: "+1 star",
+    dmPerfect: "All 10 right! Nothing to practise today.", dmPractise: "Practise next: {game}.",
+    dmDays: "🔥 {n} days in a row", dmDay: "🔥 1 day in a row",
+    pmName: "Plus and Minus", tsName: "Times and Share", clName: "What Time Is It?", ssName: "Sound Spell",
+    dmWhat: "Pick the answer.", dmIs: "{eq}.",
+    clPrompt: "Read the clock. Pick the time.", clItIs: "Not quite. It is {time}.", clockAsk: "Analog clock showing a time to read",
+    clHourOn: "The short hand points to {h}.", clHourPast: "The short hand is just past {h}.",
+    clOclock: "The long hand points to 12, so it is {h} o'clock.", clMin: "The long hand points to {n}, which is {m} minutes.",
+    clMark: "The long hand is 1 small mark past the {n}, so {b} + 1 = {m} minutes.",
+    clMarks: "The long hand is {k} small marks past the {n}, so {b} + {k} = {m} minutes.",
+    ssHear: "Hear the word", ssAskStart: "Which sound does it start with?", ssAskEnd: "Which sound does it end with?",
+    ssStartsWith: "{word} starts with {u}.", ssEndsWith: "{word} ends with {u}.",
+    plus: "plus", minus: "minus", timesWord: "times", dividedBy: "divided by"
+  },
+  de: {
+    dmName: "Die 10 von heute", dmKbd: "Die Tastatur geht auch: 1 bis 4 wählt eine Antwort, Enter geht weiter.", dmRestart: "Neu anfangen",
+    dmDone: "Die 10 von heute geschafft!", dmAgain: "Nochmal spielen", dmHome: "Startseite", dmComeBack: "Komm morgen wieder für neue 10.",
+    dmOf: "Aufgabe {n} von 10", dmSeeResults: "Ergebnis zeigen", dmStars: "+{n} Sterne", dmStar: "+1 Stern",
+    dmPerfect: "Alle 10 richtig! Heute gibt es nichts zu üben.", dmPractise: "Als Nächstes üben: {game}.",
+    dmDays: "🔥 {n} Tage hintereinander", dmDay: "🔥 1 Tag hintereinander",
+    pmName: "Plus und Minus", tsName: "Mal und Teilen", clName: "Wie spät ist es?", ssName: "Anlaut und Endlaut",
+    dmWhat: "Wähle die Antwort.", dmIs: "{eq}.",
+    clPrompt: "Lies die Uhr. Wähle die Uhrzeit.", clItIs: "Nicht ganz. Es ist {time}.", clockAsk: "Analoguhr mit einer Uhrzeit zum Ablesen",
+    clHourOn: "Der kurze Zeiger zeigt auf die {h}.", clHourPast: "Der kurze Zeiger ist kurz nach der {h}.",
+    clOclock: "Der lange Zeiger zeigt auf die 12, also ist es {h} Uhr.", clMin: "Der lange Zeiger zeigt auf die {n}, das sind {m} Minuten.",
+    clMark: "Der lange Zeiger steht 1 kleinen Strich nach der {n}, also {b} + 1 = {m} Minuten.",
+    clMarks: "Der lange Zeiger steht {k} kleine Striche nach der {n}, also {b} + {k} = {m} Minuten.",
+    ssHear: "Wort anhören", ssAskStart: "Mit welchem Laut beginnt das Wort?", ssAskEnd: "Mit welchem Laut endet das Wort?",
+    ssStartsWith: "{word} beginnt mit {u}.", ssEndsWith: "{word} endet mit {u}.",
+    plus: "plus", minus: "minus", timesWord: "mal", dividedBy: "geteilt durch"
+  }
+});
+
+// GEN START
+// The games Today's 10 draws from, with the ages each one suits (the same as on the home page).
+const KINDS = [
+  { id: "pm", path: "../../math/plus-minus/", ages: [5, 16] },
+  { id: "ts", path: "../../math/times-share/", ages: [6, 16] },
+  { id: "cl", path: "../../math/what-time-is-it/", ages: [5, 10] },
+  { id: "ss", path: "../../languages/sound-spell/", ages: [5, 8] }
+];
+const randInt = (lo, hi) => lo + Math.floor(Math.random() * (hi - lo + 1));
+const pick = (arr) => arr[Math.floor(Math.random() * arr.length)];
+const shuffle = (arr) => { const a = arr.slice(); for (let i = a.length - 1; i > 0; i--) { const j = randInt(0, i); [a[i], a[j]] = [a[j], a[i]]; } return a; };
+
+// Wrong answers for number problems: the likely slips first, never negative, never the answer.
+function numberChoices(answer, slips, n) {
+  const seen = new Set([answer]), out = [];
+  const add = (x) => { if (Number.isInteger(x) && x >= 0 && !seen.has(x)) { seen.add(x); out.push(x); } };
+  shuffle(slips).forEach(x => { if (out.length < n) add(x); });
+  for (let k = 1; out.length < n; k++) { add(answer + k); if (out.length < n) add(answer - k); }
+  return shuffle([answer, ...out]);
+}
+
+// Plus and Minus: same number sizes as that game for each age.
+function maxForAge(age) { return age <= 6 ? 20 : age <= 8 ? 100 : age <= 10 ? 1000 : 10000; }
+function makePM(age) {
+  const max = maxForAge(age), lo = max >= 1000 ? max / 10 : (max >= 100 ? 10 : 2);
+  const op = age <= 6 || Math.random() < 0.5 ? "add" : "sub";
+  let a, b;
+  if (op === "add") { a = randInt(lo, max - lo); b = randInt(Math.min(lo, max - a), max - a); }
+  else { a = randInt(lo + 1, max); b = randInt(Math.min(lo, a - 1), a - 1); }
+  const answer = op === "add" ? a + b : a - b;
+  const slips = [answer + 1, answer - 1, answer + 10, answer - 10, answer + 2, answer - 2];
+  if (max >= 1000) slips.push(answer + 100, answer - 100);
+  if (op === "sub") slips.push(a + b);
+  return { kind: "pm", op, a, b, answer, choices: numberChoices(answer, slips, 3) };
+}
+
+// Times and Share: same tables and number sizes as that game for each age.
+function levelForAge(age) {
+  if (age <= 6) return { kind: "facts", tables: [1, 2, 5, 10], upTo: 5 };
+  if (age === 7) return { kind: "facts", tables: [2, 5, 10], upTo: 10 };
+  if (age === 8) return { kind: "facts", tables: [2, 3, 4, 5, 10], upTo: 10 };
+  if (age === 9) return { kind: "facts", tables: [2, 3, 4, 5, 6, 7, 8, 9, 10], upTo: 10 };
+  if (age === 10) return { kind: "facts", tables: [2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12], upTo: 12 };
+  return { kind: "big", size: age <= 12 ? 2 : 3 };
+}
+function makeTS(age) {
+  const level = levelForAge(age);
+  const op = age <= 6 || Math.random() < 0.5 ? "mul" : "div";
+  let a, b;
+  if (level.kind === "facts") {
+    const t = pick(level.tables), n = randInt(1, level.upTo);
+    if (op === "mul") { if (Math.random() < 0.5) { a = t; b = n; } else { a = n; b = t; } }
+    else { b = t; a = t * n; }
+  } else if (level.size === 2) {
+    b = randInt(2, 9); a = op === "mul" ? randInt(12, 99) : b * randInt(11, 99);
+  } else if (op === "mul") {
+    if (Math.random() < 0.5) { a = randInt(100, 999); b = randInt(2, 9); } else { a = randInt(12, 99); b = randInt(11, 19); }
+  } else { b = randInt(2, 9); a = b * randInt(100, 999); }
+  const answer = op === "mul" ? a * b : a / b;
+  const slips = op === "mul" ? [answer + a, answer - a, answer + b, answer - b, a + b, answer + 10, answer - 10]
+    : [answer + 1, answer - 1, answer + 2, answer - 2, answer + 10, answer - 10, a - b];
+  return { kind: "ts", op, a, b, answer, choices: numberChoices(answer, slips, 3) };
+}
+
+// What Time Is It?: same steps as that game for each age, and wrong times from real mistakes.
+const stepForAge = (a) => a <= 6 ? 30 : a === 7 ? 15 : a === 8 ? 5 : 1;
+const wrapH = (h) => ((h - 1 + 12) % 12) + 1;
+const fmtTime = (h, m) => h + ":" + String(m).padStart(2, "0");
+function makeCL(age) {
+  const step = stepForAge(age);
+  const rnd = () => ({ h: randInt(1, 12), m: randInt(0, 60 / step - 1) * step });
+  const t = rnd(), seen = new Set([fmtTime(t.h, t.m)]), out = [];
+  const add = (h, m) => { if (m % step || m < 0 || m > 59 || seen.has(fmtTime(h, m))) return; seen.add(fmtTime(h, m)); out.push({ h, m }); };
+  const cands = [];
+  if (t.m !== 0 && t.m % 5 === 0) cands.push([t.m / 5, (t.h % 12) * 5]); // hands swapped
+  if (t.m >= 30) cands.push([wrapH(t.h + 1), t.m]); // hour hand already past the number
+  cands.push([wrapH(t.h - 1), t.m], [t.h, (60 - t.m) % 60], [t.h, (t.m + 30) % 60]);
+  shuffle(cands).forEach(([h, m]) => { if (out.length < 3) add(h, m); });
+  while (out.length < 3) { const r = rnd(); add(r.h, r.m); }
+  return { kind: "cl", h: t.h, m: t.m, answer: fmtTime(t.h, t.m), choices: shuffle([t, ...out]).map(c => fmtTime(c.h, c.m)) };
+}
+
+// Sound Spell: the same words. [picture, word, starting sound, ending sound, level]; level 2 is for age 7 and up.
+const WORDS = {
+  en: [
+    ["🍎","apple","a","",1],["🐜","ant","a","t",1],["⚽","ball","b","",1],["🦇","bat","b","t",1],["🛏️","bed","b","d",1],
+    ["🐝","bee","b","",1],["🚌","bus","b","s",1],["👜","bag","b","g",1],["📦","box","b","x",1],["🐱","cat","c","t",1],
+    ["🐄","cow","c","",1],["☕","cup","c","p",1],["🚗","car","c","r",1],["🐶","dog","d","g",1],["🦆","duck","d","",1],
+    ["🥁","drum","d","m",1],["🥚","egg","e","",1],["🐘","elephant","e","t",2],["🦊","fox","f","x",1],["🐟","fish","f","sh",2],
+    ["🐸","frog","f","g",1],["🎁","gift","g","t",1],["🐐","goat","g","t",1],["🎩","hat","h","t",1],["🐔","hen","h","n",1],
+    ["🏠","house","h","",1],["🍯","jam","j","m",1],["✈️","jet","j","t",1],["🪁","kite","k","",1],["🔑","key","k","",1],
+    ["👑","king","k","",1],["🦁","lion","l","n",1],["🍃","leaf","l","f",1],["💡","lamp","l","p",1],["🌙","moon","m","n",1],
+    ["🗺️","map","m","p",1],["🥛","milk","m","k",1],["🥜","nut","n","t",1],["🥅","net","n","t",1],["👃","nose","n","",1],
+    ["🦉","owl","o","l",1],["🐙","octopus","o","s",2],["🐷","pig","p","g",1],["🖊️","pen","p","n",1],["🍳","pan","p","n",1],
+    ["🐀","rat","r","t",1],["💍","ring","r","",1],["🌧️","rain","r","n",1],["☀️","sun","s","n",1],["🧦","sock","s","",1],
+    ["⭐","star","s","r",1],["6️⃣","six","s","x",1],["🚢","ship","sh","p",2],["👟","shoe","sh","",2],["🪑","chair","ch","r",2],
+    ["🧀","cheese","ch","",2],["3️⃣","three","th","",2],["⛺","tent","t","t",1],["🌳","tree","t","",1],["🔟","ten","t","n",1],
+    ["☂️","umbrella","u","",2],["⬆️","up","u","p",1],["🚐","van","v","n",1],["🕸️","web","w","b",1],["🐺","wolf","w","f",1],
+    ["🤐","zip","z","p",1],["🦓","zebra","z","",1]
+  ],
+  de: [
+    ["🍎","Apfel","A","l",1],["🐜","Ameise","A","e",1],["🐵","Affe","A","e",1],["🍍","Ananas","A","s",1],["⚽","Ball","B","",1],
+    ["🌳","Baum","B","m",1],["🍞","Brot","B","t",1],["🌸","Blume","B","e",1],["🚌","Bus","B","s",1],["⛵","Boot","B","t",1],
+    ["🍌","Banane","B","e",1],["🍐","Birne","B","e",1],["📖","Buch","B","ch",2],["🐉","Drache","D","e",1],["🦖","Dino","D","o",1],
+    ["🐟","Fisch","F","sch",2],["🐸","Frosch","F","sch",2],["🦶","Fuß","F","",1],["🥛","Glas","G","s",1],["🦒","Giraffe","G","e",1],
+    ["🐶","Hund","H","d",1],["🏠","Haus","H","s",1],["🎩","Hut","H","t",1],["✋","Hand","H","d",1],["❤️","Herz","H","z",1],
+    ["🦔","Igel","I","l",1],["🏝️","Insel","I","l",1],["🧥","Jacke","J","e",1],["🐱","Katze","K","e",1],["🐄","Kuh","K","",1],
+    ["🕯️","Kerze","K","e",1],["👑","Krone","K","e",1],["🍒","Kirsche","K","e",1],["🧀","Käse","K","e",1],["💡","Lampe","L","e",1],
+    ["🦁","Löwe","L","e",1],["🐭","Maus","M","s",1],["🌙","Mond","M","d",1],["🥛","Milch","M","ch",2],["👃","Nase","N","e",1],
+    ["🥜","Nuss","N","",1],["🍊","Orange","O","e",1],["🍄","Pilz","P","z",1],["🐧","Pinguin","P","n",1],["🚲","Rad","R","d",1],
+    ["💍","Ring","R","",1],["🌹","Rose","R","e",1],["☀️","Sonne","S","e",1],["🥗","Salat","S","t",1],["🧦","Socke","S","e",1],
+    ["🐑","Schaf","Sch","f",2],["👟","Schuh","Sch","",2],["❄️","Schnee","Sch","",2],["🔑","Schlüssel","Sch","l",2],["⭐","Stern","St","n",2],
+    ["🪑","Stuhl","St","l",2],["☕","Tasse","T","e",1],["🍅","Tomate","T","e",1],["🐯","Tiger","T","r",1],["⌚","Uhr","U","r",1],
+    ["🐦","Vogel","V","l",1],["☁️","Wolke","W","e",1],["🐺","Wolf","W","f",1],["🦓","Zebra","Z","a",1],["🚂","Zug","Z","g",1],
+    ["🍋","Zitrone","Z","e",1],["🚗","Auto","Au","o",2],["👁️","Auge","Au","e",2]
+  ]
+};
+// Letters that sound the same in that place, so they are never offered against each other.
+const ALIKE = { en: { start: [["c", "k"]], end: [] }, de: { start: [["V", "F"]], end: [["d", "t"], ["g", "k"], ["b", "p"]] } };
+const unitOf = (w, mode) => mode === "start" ? w[2] : w[3];
+const restOf = (w, mode) => mode === "start" ? w[1].slice(w[2].length) : w[1].slice(0, w[1].length - w[3].length);
+function makeSS(age, lang) {
+  const mode = age <= 6 || Math.random() < 0.5 ? "start" : "end";
+  const word = pick(WORDS[lang].filter(w => (mode === "start" || w[3] !== "") && (age >= 7 || w[4] === 1)));
+  const want = unitOf(word, mode), rest = restOf(word, mode);
+  const alike = ALIKE[lang][mode].find(g => g.includes(want)) || [];
+  const spelled = new Set(WORDS[lang].map(w => w[1].toLowerCase()));
+  const pool = [...new Set(WORDS[lang].map(w => unitOf(w, mode)).filter(Boolean))].filter(u =>
+    u !== want && !alike.includes(u) && !spelled.has((mode === "start" ? u + rest : rest + u).toLowerCase()));
+  const same = pool.filter(u => (u.length > 1) === (want.length > 1));
+  const wrong = shuffle(same.length >= 3 ? same : pool).slice(0, age <= 6 ? 2 : 3);
+  return { kind: "ss", word, mode, rest, lang, answer: want, choices: shuffle([want, ...wrong]) };
+}
+
+// Ten problems from the games that fit the age, spread as evenly as possible, in a mixed order.
+function makeSet(age, lang) {
+  let fits = KINDS.filter(k => age >= k.ages[0] && age <= k.ages[1]);
+  if (!fits.length) fits = KINDS.filter(k => k.id !== "ss");
+  const order = shuffle(fits), kinds = [];
+  for (let i = 0; i < 10; i++) kinds.push(order[i % order.length].id);
+  const make = { pm: makePM, ts: makeTS, cl: makeCL, ss: makeSS };
+  // Mix the order, but never the same game three times in a row.
+  let list;
+  do { list = shuffle(kinds); } while (fits.length > 1 && list.some((k, i) => i > 1 && k === list[i - 1] && k === list[i - 2]));
+  return list.map(k => make[k](age, lang));
+}
+// GEN END
+
+(function () {
+  const $ = (id) => document.getElementById(id);
+  const t = Loopy.t, num = Loopy.num, NS = "http://www.w3.org/2000/svg";
+  const card = $("card"), stage = $("stage"), kindEl = $("kind"), choicesEl = $("choices"), feedbackEl = $("feedback"), nextBtn = $("next");
+  const dotsEl = $("dots");
+  for (let i = 0; i < 10; i++) dotsEl.appendChild(document.createElement("i"));
+
+  let age = Loopy.getAge();
+  let set = [], index = 0, answered = false, streak = 0, results = [];
+
+  // A clock face drawn with SVG, the same as in What Time Is It?.
+  function el(tag, attrs, parent) {
+    const n = document.createElementNS(NS, tag);
+    for (const k in attrs) n.setAttribute(k, attrs[k]);
+    if (parent) parent.appendChild(n);
+    return n;
+  }
+  const pt = (deg, r) => { const a = (deg - 90) * Math.PI / 180; return [200 + r * Math.cos(a), 200 + r * Math.sin(a)]; };
+  function clock(h, m) {
+    const svg = el("svg", { viewBox: "0 0 400 400", class: "clock", role: "img", "aria-label": t("clockAsk") });
+    el("circle", { cx: 200, cy: 200, r: 186, fill: "var(--face)", stroke: "var(--rim)", "stroke-width": 10 }, svg);
+    for (let i = 0; i < 60; i++) {
+      const major = i % 5 === 0, [x1, y1] = pt(i * 6, major ? 158 : 166), [x2, y2] = pt(i * 6, 176);
+      el("line", { x1, y1, x2, y2, stroke: "#1d2a3f", "stroke-width": major ? 5 : 2, "stroke-linecap": "round" }, svg);
+    }
+    for (let n = 1; n <= 12; n++) {
+      const [x, y] = pt(n * 30, 128);
+      el("text", { x, y, "text-anchor": "middle", "dominant-baseline": "central", "font-size": 38, "font-weight": 700, fill: "#1d2a3f", "font-family": "Lexend, sans-serif" }, svg).textContent = n;
+    }
+    const [hx, hy] = pt((h % 12) * 30 + m * 0.5, 92), [mx, my] = pt(m * 6, 150);
+    el("line", { x1: 200, y1: 200, x2: hx, y2: hy, stroke: "var(--hour)", "stroke-width": 14, "stroke-linecap": "round" }, svg);
+    el("line", { x1: 200, y1: 200, x2: mx, y2: my, stroke: "var(--minute)", "stroke-width": 8, "stroke-linecap": "round" }, svg);
+    el("circle", { cx: 200, cy: 200, r: 11, fill: "#1d2a3f" }, svg);
+    return svg;
+  }
+  function clockReason(p) {
+    const hour = t(p.m === 0 ? "clHourOn" : "clHourPast", { h: p.h });
+    if (p.m % 5) {
+      const base = Math.floor(p.m / 5), marks = p.m % 5;
+      return hour + " " + t(marks > 1 ? "clMarks" : "clMark", { k: marks, n: base || 12, b: base * 5, m: p.m });
+    }
+    return hour + " " + (p.m === 0 ? t("clOclock", { h: p.h }) : t("clMin", { n: p.m / 5 || 12, m: p.m }));
+  }
+
+  // Read a Sound Spell word aloud with the browser's own voice. Nothing is downloaded.
+  const canSpeak = "speechSynthesis" in window && "SpeechSynthesisUtterance" in window;
+  let interacted = false;
+  function speak(p) {
+    if (!canSpeak) return;
+    try {
+      speechSynthesis.cancel();
+      const u = new SpeechSynthesisUtterance(p.word[1]);
+      u.lang = p.lang === "de" ? "de-DE" : "en-US";
+      const code = p.lang === "de" ? "de" : "en";
+      const v = speechSynthesis.getVoices().find(x => x.lang.toLowerCase().startsWith(code));
+      if (v) u.voice = v;
+      u.rate = 0.85;
+      speechSynthesis.speak(u);
+    } catch (e) {}
+  }
+
+  const sign = { add: " + ", sub: " − ", mul: " × ", div: " ÷ " };
+  const word = { add: "plus", sub: "minus", mul: "timesWord", div: "dividedBy" };
+  const label = (p, c) => p.kind === "pm" || p.kind === "ts" ? num(c) : c;
+
+  function showWord(p, fill) {
+    const w = stage.querySelector(".word");
+    w.textContent = "";
+    const blank = document.createElement("span");
+    blank.className = "blank" + (fill ? "" : " empty");
+    if (fill) blank.textContent = fill;
+    const rest = document.createElement("span");
+    rest.textContent = p.rest;
+    if (p.mode === "start") w.append(blank, rest); else w.append(rest, blank);
+  }
+
+  function renderDots() {
+    [...dotsEl.children].forEach((d, i) => { d.className = i < results.length ? (results[i].ok ? "good" : "bad") : (i === index ? "now" : ""); });
+    dotsEl.setAttribute("aria-label", t("dmOf", { n: Math.min(index + 1, 10) }));
+  }
+
+  function show() {
+    const p = set[index];
+    answered = false;
+    card.className = "problem-card";
+    kindEl.textContent = t(p.kind + "Name");
+    stage.textContent = "";
+    let ask = t("dmWhat");
+    if (p.kind === "pm" || p.kind === "ts") {
+      const s = document.createElement("div");
+      s.className = "sum";
+      s.innerHTML = '<span></span><span class="op"></span><span></span> = <span class="q">?</span>';
+      s.children[0].textContent = num(p.a);
+      s.children[1].textContent = sign[p.op].trim();
+      s.children[2].textContent = num(p.b);
+      s.children[1].before(" "); s.children[1].after(" ");
+      s.setAttribute("aria-label", p.a + " " + t(word[p.op]) + " " + p.b);
+      stage.appendChild(s);
+    } else if (p.kind === "cl") {
+      stage.appendChild(clock(p.h, p.m));
+      ask = t("clPrompt");
+    } else {
+      const pic = document.createElement("div");
+      pic.className = "pic"; pic.setAttribute("aria-hidden", "true"); pic.textContent = p.word[0];
+      const w = document.createElement("div");
+      w.className = "word"; w.setAttribute("aria-label", p.word[1]);
+      stage.append(pic, w);
+      showWord(p, "");
+      if (canSpeak) {
+        const b = document.createElement("button");
+        b.type = "button"; b.className = "speak";
+        b.innerHTML = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 9v6h4l5 4V5L7 9H3zm13.5 3a4.5 4.5 0 0 0-2.5-4v8a4.5 4.5 0 0 0 2.5-4zM14 3.2v2.1a7 7 0 0 1 0 13.4v2.1a9 9 0 0 0 0-17.6z"/></svg><span></span>';
+        b.lastChild.textContent = t("ssHear");
+        b.addEventListener("click", () => speak(p));
+        stage.appendChild(b);
+        if (interacted) speak(p);
+      }
+      ask = t(p.mode === "start" ? "ssAskStart" : "ssAskEnd");
+    }
+    feedbackEl.className = "feedback";
+    feedbackEl.innerHTML = '<span class="hint"></span>';
+    feedbackEl.firstChild.textContent = ask;
+    choicesEl.textContent = "";
+    p.choices.forEach((c, i) => {
+      const b = document.createElement("button");
+      b.type = "button"; b.id = "choice-" + i; b.textContent = label(p, c);
+      b.dataset.correct = String(c === p.answer);
+      b.addEventListener("click", () => choose(b));
+      choicesEl.appendChild(b);
+    });
+    nextBtn.disabled = true;
+    nextBtn.textContent = t(index === 9 ? "dmSeeResults" : "next");
+    renderDots();
+  }
+
+  function choose(btn) {
+    if (answered) return;
+    answered = true;
+    const p = set[index], ok = btn.dataset.correct === "true";
+    [...choicesEl.children].forEach(b => {
+      b.disabled = true;
+      if (b.dataset.correct === "true") b.classList.add("right");
+      else if (b === btn) b.classList.add("wrong");
+      else b.classList.add("faded");
+    });
+    streak = ok ? streak + 1 : 0;
+    results.push({ kind: p.kind, ok });
+    ok ? Loopy.rewards.correct("daily-mix", streak) : Loopy.rewards.wrong();
+    card.className = "problem-card " + (ok ? "good" : "bad");
+    feedbackEl.className = "feedback " + (ok ? "good" : "bad");
+    let why;
+    if (p.kind === "pm" || p.kind === "ts") {
+      stage.querySelector(".q").textContent = num(p.answer);
+      why = t("dmIs", { eq: num(p.a) + sign[p.op] + num(p.b) + " = " + num(p.answer) });
+    } else if (p.kind === "cl") why = clockReason(p);
+    else { showWord(p, p.answer); why = t(p.mode === "start" ? "ssStartsWith" : "ssEndsWith", { word: p.word[1], u: p.answer }); }
+    const head = ok ? (streak >= 3 ? t("correctRow", { n: streak }) : t("correct")) : (p.kind === "cl" ? t("clItIs", { time: p.answer }) : t("notQuite"));
+    feedbackEl.innerHTML = "<strong></strong>";
+    feedbackEl.firstChild.textContent = head;
+    feedbackEl.appendChild(document.createTextNode(why));
+    nextBtn.disabled = false;
+    renderDots();
+    nextBtn.focus({ preventScroll: true });
+  }
+
+  function finish() {
+    $("play").hidden = true;
+    $("results").hidden = false;
+    index = 10; renderDots();
+    const right = results.filter(r => r.ok).length;
+    $("res-score").textContent = right + " / 10";
+    $("res-stars").textContent = right === 1 ? t("dmStar") : t("dmStars", { n: right });
+    // One line of what to practise: the game with the most wrong answers today.
+    const misses = {};
+    results.forEach(r => { if (!r.ok) misses[r.kind] = (misses[r.kind] || 0) + 1; });
+    const worst = Object.keys(misses).sort((a, b) => misses[b] - misses[a])[0];
+    const pr = $("res-practise");
+    pr.textContent = "";
+    if (!worst) pr.textContent = t("dmPerfect");
+    else {
+      const [before, after] = t("dmPractise").split("{game}");
+      const a = document.createElement("a");
+      a.href = KINDS.find(k => k.id === worst).path;
+      a.textContent = t(worst + "Name");
+      pr.append(before, a, after);
+    }
+    const day = Loopy.daily.finish();
+    $("res-day").textContent = day.streak === 1 ? t("dmDay") : t("dmDays", { n: day.streak });
+    $("again").focus({ preventScroll: true });
+    if (day.badge) {
+      Loopy.sound.play("badge");
+      Loopy.rewards.celebrate(t("newBadge", { name: day.badge.name }), t("dayStreakBadge", { n: day.badge.days }), true);
+    } else if (right >= 8) {
+      Loopy.sound.play("cheer");
+      Loopy.rewards.confetti(90);
+    }
+  }
+
+  function start() {
+    set = makeSet(age, Loopy.lang === "de" ? "de" : "en");
+    index = 0; streak = 0; results = [];
+    $("play").hidden = false;
+    $("results").hidden = true;
+    show();
+  }
+  function go() { if (!answered) return; index++; index >= 10 ? finish() : show(); }
+
+  nextBtn.addEventListener("click", go);
+  $("again").addEventListener("click", start);
+  $("restart").addEventListener("click", start);
+  window.addEventListener("loopy:age", (e) => { age = e.detail; start(); });
+  document.addEventListener("pointerdown", () => { interacted = true; }, { once: true });
+  document.addEventListener("keydown", (e) => {
+    if (e.metaKey || e.ctrlKey || e.altKey || document.querySelector(".loopy-cheer.big") || index >= 10) return;
+    if (e.key === "Enter" && answered && e.target.tagName !== "BUTTON") { go(); e.preventDefault(); return; }
+    const n = parseInt(e.key, 10);
+    if (n >= 1 && n <= 4 && !answered) { const b = choicesEl.children[n - 1]; if (b) choose(b); }
+  });
+
+  start();
+})();
+</script>
+</body>
+</html>

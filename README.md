@@ -22,6 +22,7 @@ It works on phones, tablets and computers. There is no sign-up and no ads.
 | [Times and Share](math/times-share/) | Times tables and sharing (division) | [README](math/times-share/README.md) |
 | [What Time Is It?](math/what-time-is-it/) | Reading a clock with hands | [README](math/what-time-is-it/README.md) |
 | [Sound Spell](languages/sound-spell/) | Starting and ending sounds of English and German words | [README](languages/sound-spell/README.md) |
+| [Today's 10](mix/daily-mix/) | A daily mix of 10 problems from the games for your age, with a day streak | [README](mix/daily-mix/README.md) |
 
 ## How it works
 
@@ -67,7 +68,7 @@ The site is plain HTML, CSS and JavaScript. One small build step makes the share
 | `fonts/` | The Fredoka and Lexend fonts, stored here so no request goes to Google. The `-latin` files are made by the build from `src/fonts/` |
 | `.github/` | Forms for problems, ideas and questions, the automatic checks, and Dependabot |
 | `tools/` | Small scripts: `build.py` makes the small files, `csp.py` updates each page's security policy, `check_external.py` makes sure nothing loads from other websites |
-| `math/<game>/index.html` | One game per folder |
+| `math/<game>/index.html` | One game per folder (also `languages/` and `mix/`) |
 | `math/<game>/README.md` | What that game does |
 
 ### Try it on your computer
