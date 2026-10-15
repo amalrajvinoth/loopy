@@ -383,11 +383,17 @@ document.documentElement.classList.add("loopy-building");
     },
     badgeFor: badgeFor, nextBadge: nextBadge, confetti: confetti, celebrate: celebrate,
     // Call after a wrong answer, with the game's name.
-    wrong: function (game) { if (Loopy.recent) Loopy.recent.add(game, false); Loopy.sound.play("wrong"); },
+    // detail: optional { q: "52 − 17", a: "35", y: "45", k: "sub-rg" } for the grown-ups' progress page (see Loopy.log).
+    wrong: function (game, detail) {
+      if (Loopy.recent) Loopy.recent.add(game, false);
+      if (Loopy.log) Loopy.log.add(game, false, detail);
+      Loopy.sound.play("wrong");
+    },
     // Call after each right answer with the current streak.
     // harder: optional { label, apply } offered after 10 in a row, e.g. { label: "Try quarter hours", apply: fn }.
     correct: function (game, streak, harder) {
       if (Loopy.recent) Loopy.recent.add(game, true);
+      if (Loopy.log) Loopy.log.add(game, true);
       var before = badgeFor(data.stars);
       data.stars++;
       if (streak <= 1) cheeredBest[game] = false;
@@ -460,6 +466,8 @@ document.documentElement.classList.add("loopy-building");
   var data = clean(null);
   try { data = clean(JSON.parse(localStorage.getItem(KEY))); } catch (e) {}
 
+  // A day as "2026-10-15" in local time. offset: days from today, e.g. -1 for yesterday.
+  Loopy.dayKey = dayKey;
   Loopy.daily = {
     BADGES: DAY_BADGES,
     // streak: days in a row that are still alive (finished today or yesterday). doneToday: today's 10 is finished.
@@ -480,6 +488,76 @@ document.documentElement.classList.add("loopy-building");
       DAY_BADGES.forEach(function (b) { if (before < b.days && data.best >= b.days) badge = b; });
       return { streak: data.streak, badge: badge };
     }
+  };
+})();
+
+// Answer log for the grown-ups' progress page: right and wrong answers per game per day, and each
+// wrong answer with the right one, for the last 30 days. It is not in the stars code and never sent anywhere.
+// Kept in this browser's localStorage as
+// { days: { "2026-10-15": { "plus-minus": [right, wrong] } }, wrong: [{ d: day, g: game, q, a: right answer, y: their answer, k: kind }] }.
+(function () {
+  var KEY = "loopy.log", DAYS = 30, MAX_WRONG = 300, MAX_N = 100000, LEN = 40;
+  var GAMES = ["plus-minus", "times-share", "clock", "sound-spell", "daily-mix"];
+  // What kind of problem it was, so the page can say what to practise. See Loopy.log.kind.
+  var KIND = /^(?:(?:add|sub)(?:-rg)?|(?:mul|div)-(?:big|\d{1,2})|cl-(?:0|30|15|5|1)|ss-(?:start|end))$/;
+  var DAY = /^\d{4}-\d{2}-\d{2}$/;
+  var Loopy = window.Loopy = window.Loopy || {};
+  var whole = function (n) { return typeof n === "number" && isFinite(n) && n >= 0 ? Math.min(Math.floor(n), MAX_N) : 0; };
+  var text = function (s) { return typeof s === "string" ? s.slice(0, LEN) : ""; };
+  // Only known games, real dates in the last 30 days, sane numbers and short texts are kept, whatever the stored text says.
+  function clean(raw) {
+    var out = { days: {}, wrong: [] };
+    if (!raw || typeof raw !== "object") return out;
+    var oldest = Loopy.dayKey(1 - DAYS);
+    var days = raw.days && typeof raw.days === "object" ? raw.days : {};
+    Object.keys(days).forEach(function (d) {
+      var row = days[d], keep = {}, any = false;
+      if (!DAY.test(d) || d < oldest || !row || typeof row !== "object") return;
+      GAMES.forEach(function (g) {
+        var v = row[g];
+        if (Array.isArray(v) && v.length === 2) { keep[g] = [whole(v[0]), whole(v[1])]; any = true; }
+      });
+      if (any) out.days[d] = keep;
+    });
+    if (Array.isArray(raw.wrong)) raw.wrong.slice(-MAX_WRONG).forEach(function (w) {
+      if (!w || typeof w !== "object" || typeof w.d !== "string" || !DAY.test(w.d) || w.d < oldest) return;
+      if (GAMES.indexOf(w.g) === -1 || !text(w.q) || !text(w.a) || !KIND.test(w.k)) return;
+      out.wrong.push({ d: w.d, g: w.g, q: text(w.q), a: text(w.a), y: text(w.y), k: w.k });
+    });
+    return out;
+  }
+  var data = clean(null);
+  try { data = clean(JSON.parse(localStorage.getItem(KEY))); } catch (e) {}
+  function save() { try { localStorage.setItem(KEY, JSON.stringify(data)); } catch (e) {} }
+
+  Loopy.log = {
+    get: function () { return clean(data); },
+    // rewards.correct / wrong call this. detail: { q, a, y, k } for a wrong answer, see rewards.wrong.
+    add: function (game, ok, detail) {
+      if (GAMES.indexOf(game) === -1) return;
+      var today = Loopy.dayKey(0), row = data.days[today] = data.days[today] || {};
+      var c = row[game] = row[game] || [0, 0];
+      c[ok ? 0 : 1] = whole(c[ok ? 0 : 1] + 1);
+      if (!ok && detail && typeof detail === "object") {
+        data.wrong.push({ d: today, g: game, q: detail.q, a: detail.a, y: detail.y, k: detail.k });
+      }
+      data = clean(data);
+      save();
+    },
+    clear: function () { data = clean(null); try { localStorage.removeItem(KEY); } catch (e) {} },
+    // The kind of a sum: "add" or "sub" with "-rg" when it needs carrying or regrouping,
+    // "mul-7" or "div-7" for a times table fact, "mul-big" or "div-big" for bigger numbers.
+    kind: function (op, a, b) {
+      if (op === "add" || op === "sub") {
+        var rg = false;
+        for (var p = 10; p <= 1e6; p *= 10) if (op === "add" ? a % p + b % p >= p : a % p < b % p) rg = true;
+        return op + (rg ? "-rg" : "");
+      }
+      if (op === "mul") return a <= 12 && b <= 12 ? "mul-" + (a === 1 || a === 10 ? b : b === 1 || b === 10 ? a : Math.max(a, b)) : "mul-big";
+      return b <= 12 && a / b <= 12 ? "div-" + b : "div-big";
+    },
+    // The kind of a clock time: o'clock, half past, quarter past or to, five-minute steps, single minutes.
+    timeKind: function (m) { return "cl-" + (m === 0 ? 0 : m === 30 ? 30 : m % 15 === 0 ? 15 : m % 5 === 0 ? 5 : 1); }
   };
 })();
 
