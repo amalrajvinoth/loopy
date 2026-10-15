@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'sha256-1OU3oyUvLiAe+Ri+v3I2zggXCDxgpXQTqcEl5cYDJQw='; style-src 'self' 'sha256-z2P7kGW5Z05eCTjTZdYpc0vThTlOE9vmt97pVSvi2I4=' 'sha256-3n6O/b/d92Cb+2cNnD86Oj0PaKx9wZ1I7GrhXLhTt5g='; img-src 'self' data:; font-src 'self'; connect-src 'none'; object-src 'none'; base-uri 'none'; form-action 'none'; manifest-src 'self'; upgrade-insecure-requests">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'sha256-QUyxT8MZwxBA6eeeUoBtJp1mljbSRgpKhcKZQU4zpkM='; style-src 'self' 'sha256-z2P7kGW5Z05eCTjTZdYpc0vThTlOE9vmt97pVSvi2I4=' 'sha256-3n6O/b/d92Cb+2cNnD86Oj0PaKx9wZ1I7GrhXLhTt5g='; img-src 'self' data:; font-src 'self'; connect-src 'none'; object-src 'none'; base-uri 'none'; form-action 'none'; manifest-src 'self'; upgrade-insecure-requests">
 <meta name="referrer" content="strict-origin-when-cross-origin">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <style>:root{color-scheme:light;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}body{margin:0}[hidden]{display:none!important}</style>
@@ -749,7 +749,7 @@ function makeProblem(map, find, age, avoid) {
   // Names and capital dots after an answer. Sizes are in screen pixels, so they read well on every view.
   function drawMarks() {
     markLayer.textContent = "";
-    const vb = svg.viewBox.baseVal;
+    const vb = svg.viewBox.baseVal, placed = [];
     marks.forEach(m => {
       let x = px(m.lon), y = py(m.lat);
       if (m.dot) el("circle", { class: "cap-dot", cx: x, cy: y, r: 5 * upp, "stroke-width": 2 * upp }, markLayer);
@@ -760,6 +760,9 @@ function makeProblem(map, find, age, avoid) {
       // Keep the name inside the map.
       x = Math.min(Math.max(x, vb.x + half + 6 * upp), vb.x + vb.width - half - 6 * upp);
       y = Math.min(Math.max(y, vb.y + size), vb.y + vb.height - size);
+      // Move down a name that would sit on top of one already drawn.
+      for (const o of placed) if (Math.abs(o.x - x) < o.half + half && Math.abs(o.y - y) < size * 1.1) y = o.y + size * 1.2;
+      placed.push({ x, y, half });
       const txt = el("text", { class: "lbl", x, y, "font-size": size, "stroke-width": 4 * upp }, markLayer);
       txt.textContent = m.text;
     });
@@ -784,8 +787,8 @@ function makeProblem(map, find, age, avoid) {
     set("--wi-pool", mix(rgb("--ink"), sea, 0.4));
     ["c1", "c2", "c4"].forEach(c => set("--wi-" + c, mix(rgb("--" + c), sea, 0.6)));
     set("--wi-muted", mix(rgb("--muted"), sea, 0.6));
-    set("--wi-sea-good", mix(rgb("--good"), sea, 0.45));
-    set("--wi-sea-bad", mix(rgb("--bad"), sea, 0.45));
+    set("--wi-sea-good", mix(rgb("--good"), sea, 0.35));
+    set("--wi-sea-bad", mix(rgb("--bad"), sea, 0.35));
   }
   paint();
   // The theme can change from Settings while playing.
