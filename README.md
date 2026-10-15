@@ -20,6 +20,7 @@ It works on phones, tablets and computers. There is no sign-up and no ads.
 | --- | --- | --- |
 | [Plus and Minus](math/plus-minus/) | Adding and taking away | [README](math/plus-minus/README.md) |
 | [Times and Share](math/times-share/) | Times tables and sharing (division) | [README](math/times-share/README.md) |
+| [Make 10](math/make-10/) | Number pairs that make 10, 20 and 100, with ten-frames to count | [README](math/make-10/README.md) |
 | [What Time Is It?](math/what-time-is-it/) | Reading a clock with hands | [README](math/what-time-is-it/README.md) |
 | [Bigger or Smaller](math/bigger-or-smaller/) | Comparing, ordering and rounding numbers, with a number line | [README](math/bigger-or-smaller/README.md) |
 | [Sound Spell](languages/sound-spell/) | Starting and ending sounds of English and German words | [README](languages/sound-spell/README.md) |
@@ -40,7 +41,7 @@ Open it from the link at the bottom of the home page.
 - **Colors.** Black is the default. You can also pick Sunny, Ocean, Candy or Forest.
 - **Stars.** Every right answer gives a star. More stars unlock badges. A streak of right answers sets off confetti.
 - **Sound.** Short happy sounds play. Tap the speaker to turn them off.
-- **Read aloud.** In Plus and Minus, Times and Share, What Time Is It? and Bigger or Smaller, a speaker button reads the question out loud in the device's own voice, in English or German. Nothing is downloaded. It is on by itself for ages 5 to 7. Turn it on or off in **Settings**.
+- **Read aloud.** In Plus and Minus, Times and Share, What Time Is It?, Make 10 and Bigger or Smaller, a speaker button reads the question out loud in the device's own voice, in English or German. Nothing is downloaded. It is on by itself for ages 5 to 7. Turn it on or off in **Settings**.
 - **Help.** After each answer, the game shows a short reason, so kids learn from mistakes.
 - **Last 5.** Each game shows the last 5 answers as green and red dots.
 - **Back.** The big button with the loopy bunny at the top of a game goes back to all games.
