@@ -1,0 +1,542 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'sha256-ETwqSKVfTWtjkt9cGysZtodZmtqH/VNECXEaj9XGL54='; style-src 'self' 'sha256-z2P7kGW5Z05eCTjTZdYpc0vThTlOE9vmt97pVSvi2I4=' 'sha256-ER4UVxOAHVG2PpFuwsi/fNYnlP9iTYLytTr9Qx7YKqY=' 'sha256-RT1053JU5UiKvjrCUFx1rlhdFLMmgtuFJ9T8jnMeawQ=' 'sha256-GurFyntsoOwZmlM9rIsWmyQI2o7WD+6AstbwSwZ7nC8='; img-src 'self' data:; font-src 'self'; connect-src 'none'; object-src 'none'; base-uri 'none'; form-action 'none'; manifest-src 'self'; upgrade-insecure-requests">
+<meta name="referrer" content="strict-origin-when-cross-origin">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<style>:root{color-scheme:light;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}body{margin:0}[hidden]{display:none!important}</style>
+<link rel="icon" href="../../icon.svg" type="image/svg+xml">
+<link rel="manifest" href="../../manifest.webmanifest">
+<link rel="apple-touch-icon" href="../../apple-touch-icon.png">
+<meta name="theme-color" content="#0a0a0c">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="loopy">
+<title data-t="mkName">Make 10</title>
+<link rel="preload" href="../../fonts/lexend-latin.woff2" as="font" type="font/woff2" crossorigin>
+<style>
+/* Layout: one centered column like a worksheet strip; problem written vertically on a card, big number pad below, toggles in a quiet bar on top. */
+:root {
+  --bg: #f3f6fb;
+  --card: #ffffff;
+  --ink: #1d2a3f;
+  --muted: #5d6b82;
+  --line: #d5dde9;
+  --accent: #2457c5;
+  --accent-ink: #ffffff;
+  --mark: #e2622b;
+  --good: #1f8a4c;
+  --good-bg: #e3f5ea;
+  --bad: #c23a3a;
+  --bad-bg: #fbe6e6;
+  --chip: #e6ecf6;
+  --key: #ffffff;
+  --font: "Lexend", "Segoe UI", "Helvetica Neue", Arial, sans-serif;
+}
+
+* { box-sizing: border-box; }
+body {
+  background: var(--bg); color: var(--ink); font-family: var(--font); font-size: 16px;
+  padding-left: max(16px, env(safe-area-inset-left, 0px));
+  padding-right: max(16px, env(safe-area-inset-right, 0px));
+  padding-block: 20px 32px;
+}
+.wrap { max-width: 520px; margin: 0 auto; display: flex; flex-direction: column; gap: 16px; }
+
+.top { display: flex; flex-wrap: wrap; gap: 12px; align-items: center; justify-content: space-between; }
+h1 { margin: 0; font-size: 1.6rem; font-weight: 700; text-wrap: balance; }
+.score { display: flex; flex-wrap: wrap; gap: 8px; font-variant-numeric: tabular-nums; }
+.pill { background: var(--card); border: 1px solid var(--line); border-radius: 999px; padding: 6px 14px; font-weight: 600; font-size: 1rem; white-space: nowrap; }
+.pill span { color: var(--muted); font-weight: 400; margin-right: 4px; }
+
+.settings { display: flex; flex-direction: column; gap: 8px; }
+.seg-label { font-size: 0.8rem; font-weight: 600; letter-spacing: 0.06em; text-transform: uppercase; color: var(--muted); margin: 0 0 4px 4px; }
+.seg { display: grid; grid-template-columns: repeat(3, 1fr); gap: 6px; background: var(--chip); padding: 5px; border-radius: 14px; }
+.seg button {
+  font: inherit; font-size: 0.95rem; font-weight: 600; color: var(--muted);
+  background: transparent; border: 0; border-radius: 10px; padding: 8px 6px; min-height: 44px; cursor: pointer;
+}
+.seg button[aria-pressed="true"] { background: var(--card); color: var(--ink); box-shadow: 0 1px 3px rgb(0 0 0 / 0.12); }
+
+.problem-card {
+  background: var(--card); border: 1px solid var(--line); border-radius: 24px;
+  padding: 20px 18px 18px; display: flex; flex-direction: column; align-items: center; gap: 14px;
+}
+.problem-card.good { border-color: var(--good); box-shadow: 0 0 0 2px var(--good) inset; }
+.problem-card.bad { border-color: var(--bad); box-shadow: 0 0 0 2px var(--bad) inset; }
+
+/* Vertical problem, written like the worksheets: operator on the left, digits right-aligned. */
+.vert {
+  display: grid; grid-template-columns: auto auto; column-gap: 0.35em;
+  font-size: clamp(3.4rem, 15vw, 4.6rem); font-weight: 600; line-height: 1.12;
+  font-variant-numeric: tabular-nums; letter-spacing: 0.04em;
+}
+.vert .num { grid-column: 2; text-align: right; min-width: 3ch; }
+.vert .op { grid-column: 1; grid-row: 2; color: var(--accent); }
+.vert .rule { grid-column: 1 / -1; height: 0.07em; background: var(--ink); border-radius: 2px; margin: 0.1em 0 0.12em; }
+.vert .ans {
+  grid-column: 2; text-align: right; min-width: 3ch; min-height: 1.12em;
+  color: var(--accent); position: relative;
+}
+.vert .ans.empty::after {
+  content: ""; position: absolute; right: 0; bottom: 0.12em; width: 0.55em; height: 0.07em;
+  background: var(--mark); border-radius: 2px; animation: blink 1s steps(2, start) infinite;
+}
+.problem-card.good .ans { color: var(--good); }
+.problem-card.bad .ans { color: var(--bad); text-decoration: line-through; text-decoration-thickness: 0.06em; }
+@keyframes blink { to { visibility: hidden; } }
+
+.feedback { min-height: 3.1em; text-align: center; font-size: 1.1rem; line-height: 1.45; margin: 0; max-width: 34ch; }
+.feedback strong { display: block; font-size: 1.45rem; }
+.feedback.good strong { color: var(--good); }
+.feedback.bad strong { color: var(--bad); }
+.feedback .hint { color: var(--muted); }
+
+.pad { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; }
+.pad button {
+  font: inherit; font-size: 2rem; font-weight: 700; font-variant-numeric: tabular-nums; color: var(--ink);
+  background: var(--key); border: 2px solid var(--line); border-radius: 18px; min-height: 72px; cursor: pointer;
+  transition: transform .08s ease, border-color .15s ease;
+  touch-action: manipulation; -webkit-tap-highlight-color: transparent;
+}
+.pad button:hover:not(:disabled) { border-color: var(--accent); }
+.pad button:active:not(:disabled) { transform: scale(0.96); }
+.pad button:disabled { opacity: 0.4; cursor: default; }
+.pad .erase { font-size: 1.15rem; color: var(--muted); }
+.pad .go { background: var(--accent); border-color: var(--accent); color: var(--accent-ink); font-size: 1.35rem; }
+.pad .go:hover:not(:disabled) { border-color: var(--accent); filter: brightness(1.08); }
+
+.foot { display: flex; justify-content: space-between; align-items: center; gap: 12px; flex-wrap: wrap; }
+.foot p { margin: 0; color: var(--muted); font-size: 0.9rem; }
+.reset { font: inherit; font-size: 0.95rem; color: var(--muted); background: transparent; border: 2px solid var(--line); border-radius: 14px; padding: 0 16px; min-height: 44px; cursor: pointer; }
+button:focus-visible { outline: 3px solid var(--mark); outline-offset: 3px; }
+
+@media (max-width: 420px) {
+  h1 { font-size: 1.35rem; }
+  .pad button { min-height: 64px; font-size: 1.8rem; }
+  .seg button { font-size: 0.85rem; }
+}
+@media (prefers-reduced-motion: reduce) {
+  * { transition: none !important; }
+  .vert .ans.empty::after { animation: none; }
+}
+</style>
+<style>.home-link{display:inline-flex;align-items:center;min-height:40px;color:var(--muted);font-weight:600;text-decoration:none;font-size:0.95rem}.home-link:hover{color:var(--ink)}</style>
+<style>
+/* Phones and tablets: the game fills one screen; settings sit behind a button. */
+body { min-height: 100vh; min-height: 100dvh; padding-block: 12px 16px; }
+.wrap { gap: 12px; }
+.game-bar { display: flex; align-items: center; justify-content: space-between; gap: 8px; }
+.bar-right { display: flex; align-items: center; gap: 8px; }
+.top { gap: 8px 12px; }
+.play { display: flex; flex-direction: column; gap: 12px; -webkit-user-select: none; user-select: none; }
+@media (min-width: 600px) and (orientation: portrait) { .wrap { max-width: 640px; } }
+@media (orientation: landscape) and (min-width: 640px) {
+  .wrap { max-width: 1100px; }
+  .play { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; align-items: center; }
+}
+
+.problem-card { padding: 14px 14px 12px; gap: 8px; }
+.vert { font-size: clamp(2.4rem, min(15vw, 8.5vh), 5rem); font-size: clamp(2.4rem, min(15vw, 8.5dvh), 5rem); }
+.feedback { min-height: 2.9em; font-size: 1.05rem; }
+.feedback strong { font-size: 1.3rem; }
+.pad { gap: 8px; }
+.pad button { min-height: clamp(50px, 8vh, 92px); min-height: clamp(50px, 8dvh, 92px); }
+@media (min-width: 600px) and (orientation: portrait) {
+  .vert { font-size: clamp(3rem, 10dvh, 7rem); }
+  .pad button { min-height: clamp(60px, 10dvh, 120px); font-size: 2.4rem; }
+}
+@media (orientation: landscape) and (min-width: 640px) {
+  .problem-card { height: 100%; justify-content: center; }
+  .vert { font-size: clamp(2.2rem, min(7vw, 13dvh), 7rem); }
+  .pad button { min-height: clamp(44px, calc((100dvh - 150px) / 4.4), 130px); }
+}
+/* Short phones: keep long explanations from pushing the number pad off screen. */
+@media (max-height: 760px) and (orientation: portrait) {
+  .feedback { font-size: 0.95rem; line-height: 1.35; }
+  .feedback strong { font-size: 1.15rem; }
+}
+
+/* Portrait: the page is exactly one screen tall; the pad or answers stay at the bottom
+   and the top part shrinks to fit. With settings open, the page scrolls normally. */
+@media (orientation: portrait) {
+  body { height: calc(100dvh - env(safe-area-inset-top, 0px) - env(safe-area-inset-bottom, 0px)); min-height: 0; display: flex; flex-direction: column; overflow: hidden; }
+  body:has(#settings-panel:not([hidden])) { height: auto; overflow: visible; }
+  .wrap { flex: 1 1 auto; min-height: 0; width: 100%; }
+  .play { flex: 1 1 auto; min-height: 0; }
+}
+@media (orientation: portrait) {
+  .problem-card { flex: 1 1 auto; min-height: 0; justify-content: center; overflow: hidden; }
+  .feedback { flex: 0 1 auto; min-height: 0; overflow-y: auto; }
+}
+@media (orientation: landscape) and (min-width: 640px) {
+  body { height: calc(100dvh - env(safe-area-inset-top, 0px) - env(safe-area-inset-bottom, 0px)); min-height: 0; display: flex; flex-direction: column; overflow: hidden; }
+  body:has(#settings-panel:not([hidden])) { height: auto; overflow: visible; }
+  .wrap { flex: 1 1 auto; min-height: 0; width: 100%; }
+  .play { flex: 1 1 auto; min-height: 0; grid-template-rows: minmax(0, 1fr); }
+  .problem-card { min-height: 0; overflow: hidden; }
+  .feedback { flex: 0 1 auto; min-height: 0; overflow-y: auto; }
+}
+/* After answering on smaller screens, shrink the sum so the reason has room. */
+@media (max-height: 900px), (max-width: 599px) {
+  .problem-card.good .vert, .problem-card.bad .vert { zoom: 0.7; }
+}
+@media (max-height: 500px) {
+  .feedback { font-size: 0.9rem; line-height: 1.3; }
+  .feedback strong { font-size: 1.05rem; }
+}
+
+
+/* Make 10: the problem is written in one line ("7 + ? = 10"), with an optional ten-frame picture. */
+.eq { display: flex; align-items: baseline; justify-content: center; flex-wrap: wrap; gap: 0 0.28em;
+  font-size: clamp(2.4rem, min(12vw, 8dvh), 5rem); font-weight: 600; font-variant-numeric: tabular-nums; line-height: 1.15; }
+.eq .op { color: var(--accent); }
+.eq .eqs { color: var(--muted); }
+.eq .ans { min-width: 1.6ch; text-align: center; color: var(--accent); border-bottom: 0.07em solid var(--ink); position: relative; padding: 0 0.1em; }
+.eq .ans.empty::after { content: "?"; color: var(--muted); }
+.problem-card.good .eq .ans { color: var(--good); border-color: var(--good); }
+.problem-card.bad .eq .ans { color: var(--bad); border-color: var(--bad); text-decoration: line-through; text-decoration-thickness: 0.06em; }
+/* Ten-frames: each box of 10 is 2 rows of 5. Make 20 shows two side by side, Make 100 shows ten (a hundred square).
+   Filled boxes are the number shown; after answering, the missing part fills in a second color. */
+.frames { display: grid; grid-template-columns: repeat(var(--across), auto); gap: calc(var(--cell) * 0.5) calc(var(--cell) * 0.7); justify-content: center; }
+.frames[hidden] { display: none; }
+.frames .ten { display: grid; grid-template-columns: repeat(5, var(--cell)); gap: calc(var(--cell) * 0.16); padding: calc(var(--cell) * 0.16); background: var(--chip); border-radius: calc(var(--cell) * 0.3); }
+.frames i { width: var(--cell); height: var(--cell); border-radius: 22%; border: max(1.5px, calc(var(--cell) * 0.08)) solid var(--line); background: var(--card); display: block; box-sizing: border-box; }
+.frames i.on { background: var(--c1); border-color: var(--c1); }
+.frames i.add { background: var(--c4); border-color: var(--c4); }
+.seg.four { grid-template-columns: repeat(4, 1fr); }
+.helper { display: flex; align-items: center; gap: 8px; min-height: 40px; cursor: pointer; }
+.helper input { width: 22px; height: 22px; accent-color: var(--c2); }
+@media (max-height: 900px), (max-width: 599px) {
+  .problem-card.good .eq, .problem-card.bad .eq { zoom: 0.75; }
+}
+</style>
+<link rel="stylesheet" href="../../loopy.css">
+<script src="../../loopy.js"></script>
+</head>
+<body>
+
+<div class="wrap">
+  <header class="game-bar">
+    <a class="home-link" href="../../">&larr; loopy</a>
+    <div class="bar-right">
+      <span id="star-chip"></span>
+      <button type="button" id="settings-toggle" aria-controls="settings-panel"></button>
+    </div>
+  </header>
+  <div class="top">
+    <h1 id="title">Make 10</h1>
+    <div class="score" aria-live="polite">
+      <div class="pill"><span data-t="score">Score</span><b id="score">0 / 0</b></div>
+      <div class="pill"><span data-t="streak">Streak</span><b id="streak">0</b></div>
+      <div id="last5" data-game="make-10"></div>
+    </div>
+  </div>
+  <div class="settings-panel" id="settings-panel" hidden>
+    <div class="controls"><div id="age-picker"></div><div id="theme-picker"></div><button id="sound-toggle"></button><div id="lang-picker"></div></div>
+    <div>
+      <p class="seg-label" id="lv-label" data-t="mkMake">Make</p>
+      <div class="seg four" role="group" aria-labelledby="lv-label" id="lv-seg">
+        <button type="button" id="lv-10" data-lv="10" data-t="mk10">Make 10</button>
+        <button type="button" id="lv-20" data-lv="20" data-t="mk20">Make 20</button>
+        <button type="button" id="lv-tens" data-lv="tens" data-t="mkTens">Tens to 100</button>
+        <button type="button" id="lv-100" data-lv="100" data-t="mk100">Make 100</button>
+      </div>
+    </div>
+    <label class="helper"><input type="checkbox" id="pics-on"> <span data-t="picsLabel">Show the ten-frame picture</span></label>
+    <div class="panel-foot">
+      <p data-t="kbdHint">Keyboard works too: numbers, Backspace, Enter.</p>
+      <button type="button" class="reset" id="reset" data-t="resetScore">Reset score</button>
+    </div>
+  </div>
+
+  <main class="play">
+    <div class="problem-card" id="card">
+      <div class="eq" id="eq" aria-live="polite">
+        <span id="eq-a">7</span><span class="op">+</span><span class="ans empty" id="ans" aria-label="Your answer" data-t-aria="yourAnswer"></span><span class="eqs">=</span><span id="eq-n">10</span>
+      </div>
+      <div class="frames" id="frames" aria-hidden="true"></div>
+      <p class="feedback" id="feedback"><span class="hint" data-t="tapHint">Tap the numbers to write your answer.</span></p>
+    </div>
+
+    <div class="pad" id="pad">
+      <button type="button" id="k1" data-d="1">1</button>
+      <button type="button" id="k2" data-d="2">2</button>
+      <button type="button" id="k3" data-d="3">3</button>
+      <button type="button" id="k4" data-d="4">4</button>
+      <button type="button" id="k5" data-d="5">5</button>
+      <button type="button" id="k6" data-d="6">6</button>
+      <button type="button" id="k7" data-d="7">7</button>
+      <button type="button" id="k8" data-d="8">8</button>
+      <button type="button" id="k9" data-d="9">9</button>
+      <button type="button" id="k-erase" class="erase" aria-label="Erase last digit" data-t-aria="eraseAria" data-t="erase">Erase</button>
+      <button type="button" id="k0" data-d="0">0</button>
+      <button type="button" id="k-go" class="go" data-t="check">Check</button>
+    </div>
+  </main>
+</div>
+
+<script>
+Loopy.addStrings({
+  en: {
+    mkName: "Make 10", mkTitle: "Make {n}", mkMake: "Make",
+    mk10: "Make 10", mk20: "Make 20", mkTens: "Tens to 100", mk100: "Make 100",
+    picsLabel: "Show the ten-frame picture",
+    mkAria: "{a} plus what makes {n}?", mkHint: "What number makes {n}?", mkCount: "Count the empty boxes, or use what you know.",
+    mkPair: "{a} and {b} make {n}.",
+    mkVia10: "{a} needs {c} more to make 10. Then 10 more makes 20. {c} + 10 = {b}.",
+    mkTeen: "{a} is 10 and {o}. {o} needs {b} more to make 10, and 10 + 10 = 20.",
+    mkTensWhy: "{x} tens and {y} tens make 10 tens, and 10 tens are 100.",
+    mkVia: "{a} needs {o} more to make {next}. Then {r} more makes 100. {o} + {r} = {b}.",
+    mkEmpty: "The boxes that filled in show {b}.",
+    mkTry20: "Try Make 20", mkTryTens: "Try tens to 100", mkTry100: "Try Make 100", mkNoPics: "Try it without the picture",
+    mkHow: "Write the missing number."
+  },
+  de: {
+    mkName: "Ergänze bis 10", mkTitle: "Ergänze bis {n}", mkMake: "Ergänze",
+    mk10: "Bis 10", mk20: "Bis 20", mkTens: "Zehner bis 100", mk100: "Bis 100",
+    picsLabel: "Zehnerfeld-Bild zeigen",
+    mkAria: "{a} plus wie viel ergibt {n}?", mkHint: "Welche Zahl fehlt bis {n}?", mkCount: "Zähle die leeren Kästchen oder rechne im Kopf.",
+    mkPair: "{a} und {b} ergeben {n}.",
+    mkVia10: "{a} braucht {c} bis zur 10. Dann noch 10 bis zur 20. {c} + 10 = {b}.",
+    mkTeen: "{a} ist 10 und {o}. {o} braucht {b} bis zur 10, und 10 + 10 = 20.",
+    mkTensWhy: "{x} Zehner und {y} Zehner sind 10 Zehner, und 10 Zehner sind 100.",
+    mkVia: "{a} braucht {o} bis zur {next}. Dann noch {r} bis zur 100. {o} + {r} = {b}.",
+    mkEmpty: "Die neu gefüllten Kästchen zeigen {b}.",
+    mkTry20: "Probiere Ergänzen bis 20", mkTryTens: "Probiere Zehner bis 100", mkTry100: "Probiere Ergänzen bis 100", mkNoPics: "Probiere es ohne Bild",
+    mkHow: "Schreibe die Zahl, die fehlt."
+  }
+});
+
+// GEN START
+const randInt = (lo, hi) => lo + Math.floor(Math.random() * (hi - lo + 1));
+const fmt = (n) => Loopy.num(n);
+const t = Loopy.t;
+
+// The levels, easiest first. "tens" is Make 100 with whole tens only (30 + 70).
+const LEVELS = ["10", "20", "tens", "100"];
+const targetOf = (lv) => lv === "10" ? 10 : lv === "20" ? 20 : 100;
+const levelName = (lv) => ({ "10": "mk10", "20": "mk20", tens: "mkTens", "100": "mk100" })[lv];
+// What each age starts with, and whether the ten-frame picture is on.
+function levelForAge(age) {
+  if (age <= 6) return "10";
+  if (age === 7) return "20";
+  if (age === 8) return "tens";
+  return "100";
+}
+const picsForAge = (age) => age <= 8;
+
+// One problem: the number shown (a), the total (n) and the missing part (answer).
+function makeProblem(lv, avoid) {
+  const n = targetOf(lv);
+  for (let tries = 0; tries < 300; tries++) {
+    let a;
+    if (lv === "10") a = randInt(1, 9);
+    else if (lv === "20") a = randInt(1, 19);
+    else if (lv === "tens") a = randInt(1, 9) * 10;
+    else a = Math.random() < 0.8 ? randInt(11, 99) : randInt(1, 9) * 10;
+    if (lv === "100" && a % 10 === 0 && a > 10 && Math.random() < 0.5) continue;
+    const key = lv + ":" + a;
+    if (avoid && avoid.includes(key) && tries < 250) continue;
+    return { lv, n, a, key, answer: n - a };
+  }
+  return { lv, n, a: 7, key: lv + ":7", answer: n - 7 };
+}
+
+// A short, friendly reason: pairs to 10 first, then the next ten, then the rest.
+function explain(p) {
+  const a = p.a, b = p.answer;
+  if (p.n === 10) return t("mkPair", { a, b, n: 10 });
+  if (p.n === 20) {
+    if (a === 10) return t("mkPair", { a, b, n: 20 });
+    if (a < 10) return t("mkVia10", { a, b, c: 10 - a });
+    return t("mkTeen", { a, b, o: a - 10 });
+  }
+  if (a % 10 === 0) return t("mkTensWhy", { x: a / 10, y: b / 10 });
+  const next = Math.ceil(a / 10) * 10;
+  if (next === 100) return t("mkPair", { a, b, n: 100 });
+  return t("mkVia", { a, b, o: next - a, next, r: 100 - next });
+}
+// GEN END
+
+(function () {
+  const $ = (id) => document.getElementById(id);
+  const card = $("card"), ansEl = $("ans"), feedbackEl = $("feedback"), goBtn = $("k-go"), framesEl = $("frames"), picsBox = $("pics-on");
+  const lvBtns = [...document.querySelectorAll("#lv-seg button")];
+  const digitBtns = [...document.querySelectorAll("#pad [data-d]")];
+
+  const store = {
+    // ok: the values this setting may have; anything else falls back to the default.
+    get(k, d, ok) { try { const v = JSON.parse(localStorage.getItem(k)); return ok.includes(v) ? v : d; } catch (e) { return d; } },
+    set(k, v) { try { localStorage.setItem(k, JSON.stringify(v)); } catch (e) {} }
+  };
+
+  let age = window.Loopy ? Loopy.getAge() : 8;
+  let lv, pics;
+  // Settings are remembered per age, so each age starts at the right level.
+  function loadForAge() {
+    lv = store.get("mk.lv.a" + age, levelForAge(age), LEVELS);
+    pics = store.get("mk.pics.a" + age, picsForAge(age), [true, false]);
+  }
+  loadForAge();
+
+  let right = 0, tried = 0, streak = 0;
+  let current = null, typed = "", answered = false, recent = [];
+  const recentMax = () => lv === "10" || lv === "tens" ? 5 : 12;
+
+  // Ten-frame picture: one frame per 10, filled boxes for the number shown.
+  // After answering, the missing part fills in too, so the whole total is full.
+  function drawFrames() {
+    const p = current;
+    framesEl.hidden = !(pics && p);
+    if (framesEl.hidden) return;
+    const frames = p.n / 10, across = frames === 1 ? 1 : 2, down = Math.ceil(frames / across);
+    const cols = across * 5, rows = down * 2;
+    // Room left in the card once the sum and the words have their space.
+    framesEl.hidden = true;
+    const free = card.clientHeight - $("eq").offsetHeight - feedbackEl.offsetHeight - 50;
+    framesEl.hidden = false;
+    const w = card.clientWidth - 48, h = Math.max(rows * 7, Math.min(free, innerHeight * 0.4));
+    const size = Math.max(5, Math.min(48, Math.floor(w / (cols * 1.35 + 1)), Math.floor(h / (rows * 1.35 + down * 0.6))));
+    framesEl.style.setProperty("--cell", size + "px");
+    framesEl.style.setProperty("--across", String(across));
+    framesEl.innerHTML = "";
+    for (let f = 0; f < frames; f++) {
+      const ten = document.createElement("div");
+      ten.className = "ten";
+      for (let c = 0; c < 10; c++) {
+        const i = document.createElement("i"), k = f * 10 + c;
+        if (k < p.a) i.className = "on";
+        else if (answered) i.className = "add";
+        ten.appendChild(i);
+      }
+      framesEl.appendChild(ten);
+    }
+  }
+
+  function render() {
+    $("score").textContent = right + " / " + tried;
+    $("streak").textContent = streak;
+    lvBtns.forEach(b => b.setAttribute("aria-pressed", String(b.dataset.lv === lv)));
+    picsBox.checked = pics;
+    $("title").textContent = t("mkTitle", { n: fmt(targetOf(lv)) });
+    ansEl.textContent = typed === "" ? "" : fmt(parseInt(typed, 10));
+    ansEl.classList.toggle("empty", !answered && typed === "");
+    goBtn.textContent = t(answered ? "next" : "check");
+    goBtn.disabled = !answered && typed === "";
+    digitBtns.forEach(b => b.disabled = answered);
+    $("k-erase").disabled = answered || typed === "";
+  }
+
+  function newRound() {
+    current = makeProblem(lv, recent);
+    recent.push(current.key);
+    while (recent.length > recentMax()) recent.shift();
+    typed = ""; answered = false;
+    $("eq-a").textContent = fmt(current.a);
+    $("eq-n").textContent = fmt(current.n);
+    $("eq").setAttribute("aria-label", t("mkAria", { a: current.a, n: current.n }));
+    card.className = "problem-card";
+    feedbackEl.className = "feedback";
+    feedbackEl.innerHTML = '<span class="hint"></span>';
+    feedbackEl.firstChild.textContent = pics ? t("mkCount") : t("mkHint", { n: fmt(current.n) });
+    render();
+    drawFrames();
+  }
+
+  function press(d) {
+    if (answered || typed.length >= String(current.n).length) return;
+    if (typed === "0") typed = "";
+    typed += d;
+    render();
+  }
+  function erase() {
+    if (answered) return;
+    typed = typed.slice(0, -1);
+    render();
+  }
+  function check() {
+    if (answered || typed === "") return;
+    answered = true; tried++;
+    const ok = parseInt(typed, 10) === current.answer;
+    if (ok) { right++; streak++; } else { streak = 0; }
+    if (window.Loopy && Loopy.rewards) ok ? Loopy.rewards.correct("make-10", streak, harder()) : Loopy.rewards.wrong("make-10", { q: fmt(current.a) + " + ? = " + fmt(current.n), a: fmt(current.answer), y: fmt(parseInt(typed, 10)), k: "mk-" + current.n });
+    card.className = "problem-card " + (ok ? "good" : "bad");
+    feedbackEl.className = "feedback " + (ok ? "good" : "bad");
+    const head = ok
+      ? (streak >= 3 ? t("correctRow", { n: streak }) : t("correct"))
+      : t("notQuite") + " " + fmt(current.a) + " + " + fmt(current.answer) + " = " + fmt(current.n) + ".";
+    feedbackEl.innerHTML = "<strong></strong>";
+    feedbackEl.firstChild.textContent = head;
+    let why = explain(current);
+    if (pics && current.n <= 20) why += " " + t("mkEmpty", { b: current.answer });
+    feedbackEl.appendChild(document.createTextNode(why));
+    render();
+    drawFrames();
+  }
+  // What "Make it harder" does after 10 in a row: the next bigger total, then hide the picture.
+  function harder() {
+    const i = LEVELS.indexOf(lv);
+    if (i < LEVELS.length - 1) {
+      const next = LEVELS[i + 1];
+      return { label: t({ "20": "mkTry20", tens: "mkTryTens", "100": "mkTry100" }[next]),
+        apply: () => { lv = next; store.set("mk.lv.a" + age, lv); recent = []; render(); } };
+    }
+    if (pics) {
+      return { label: t("mkNoPics"), apply: () => { pics = false; store.set("mk.pics.a" + age, pics); render(); } };
+    }
+    return null;
+  }
+  function go() { answered ? newRound() : check(); }
+
+  digitBtns.forEach(b => b.addEventListener("click", () => press(b.dataset.d)));
+  $("k-erase").addEventListener("click", erase);
+  goBtn.addEventListener("click", go);
+  lvBtns.forEach(b => b.addEventListener("click", () => {
+    lv = b.dataset.lv; store.set("mk.lv.a" + age, lv); recent = []; newRound();
+  }));
+  picsBox.addEventListener("change", () => { pics = picsBox.checked; store.set("mk.pics.a" + age, pics); render(); drawFrames(); });
+  window.addEventListener("loopy:age", (e) => { age = e.detail; recent = []; loadForAge(); newRound(); });
+  window.addEventListener("resize", drawFrames);
+  // The shared top bar and the fonts change the room on the card, so measure again once they are in.
+  window.addEventListener("load", drawFrames);
+  if (document.fonts) document.fonts.ready.then(drawFrames);
+  $("reset").addEventListener("click", () => { right = 0; tried = 0; streak = 0; if (window.Loopy && Loopy.recent) Loopy.recent.clear("make-10"); newRound(); });
+  document.addEventListener("keydown", (e) => {
+    if (e.metaKey || e.ctrlKey || e.altKey || document.querySelector(".loopy-cheer.big")) return;
+    if (e.target.tagName === "INPUT") return;
+    if (/^[0-9]$/.test(e.key)) { press(e.key); e.preventDefault(); }
+    else if (e.key === "Backspace") { erase(); e.preventDefault(); }
+    else if (e.key === "Enter") {
+      if (document.activeElement && document.activeElement.tagName === "BUTTON" && document.activeElement !== goBtn) return;
+      go(); e.preventDefault();
+    }
+  });
+
+  // Print worksheet: 20 problems at the same level as the game, like "7 + ____ = 10".
+  Loopy.worksheet({
+    title: () => t("mkTitle", { n: fmt(targetOf(lv)) }),
+    level: () => [t("ageLabel", { n: age }), t(levelName(lv))].join(" · "),
+    how: () => t("mkHow"),
+    layout: "line",
+    make: (n) => { const list = [], keys = []; while (list.length < n) { const p = makeProblem(lv, keys); keys.push(p.key); if (keys.length > recentMax()) keys.shift(); list.push(p); } return list; },
+    cell: (p) => {
+      const line = document.createElement("span");
+      line.className = "ws-sl";
+      line.appendChild(document.createTextNode(fmt(p.a) + " +"));
+      const blank = document.createElement("span");
+      blank.className = "ws-blank";
+      line.appendChild(blank);
+      line.appendChild(document.createTextNode(" = " + fmt(p.n)));
+      return line;
+    },
+    answer: (p) => fmt(p.a) + " + " + fmt(p.answer) + " = " + fmt(p.n)
+  });
+
+  newRound();
+})();
+</script>
+</body>
+</html>

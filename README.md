@@ -20,6 +20,7 @@ It works on phones, tablets and computers. There is no sign-up and no ads.
 | --- | --- | --- |
 | [Plus and Minus](math/plus-minus/) | Adding and taking away | [README](math/plus-minus/README.md) |
 | [Times and Share](math/times-share/) | Times tables and sharing (division) | [README](math/times-share/README.md) |
+| [Make 10](math/make-10/) | Number pairs that make 10, 20 and 100, with ten-frames to count | [README](math/make-10/README.md) |
 | [What Time Is It?](math/what-time-is-it/) | Reading a clock with hands | [README](math/what-time-is-it/README.md) |
 | [Sound Spell](languages/sound-spell/) | Starting and ending sounds of English and German words | [README](languages/sound-spell/README.md) |
 | [Today's 10](mix/daily-mix/) | A daily mix of 10 problems from the games for your age, with a day streak | [README](mix/daily-mix/README.md) |

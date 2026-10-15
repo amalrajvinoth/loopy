@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'sha256-lVsiuQmdtFTsN8WJtJB0aL3iobuixlY84IsLB+fDYsY='; style-src 'self' 'sha256-jJV23ytjR5k4ldb6SK9y5o4ubpBlQ4f2dO2pHCt03Tw='; img-src 'self' data:; font-src 'self'; connect-src 'none'; object-src 'none'; base-uri 'none'; form-action 'none'; manifest-src 'self'; upgrade-insecure-requests">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'sha256-elG3J/DVAJEr49ZjLLo3bnlq3ST9i9PuK4ci9g2yZGE='; style-src 'self' 'sha256-jJV23ytjR5k4ldb6SK9y5o4ubpBlQ4f2dO2pHCt03Tw='; img-src 'self' data:; font-src 'self'; connect-src 'none'; object-src 'none'; base-uri 'none'; form-action 'none'; manifest-src 'self'; upgrade-insecure-requests">
 <meta name="referrer" content="strict-origin-when-cross-origin">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <link rel="icon" href="icon.svg" type="image/svg+xml">
@@ -140,6 +140,7 @@ Loopy.addStrings({
     dmGo: "Start →", dmAgain: "Done today! Play again →", dmStreak: "🔥 {n} days", dmStreakOne: "🔥 1 day",
     dayLine: "Day streak: {n} days in a row. Best: {best}.", dayLineOne: "Day streak: 1 day in a row. Best: {best}.",
     dayNone: "Play Today's 10 on days in a row to earn day badges.", nDays: "{n} days",
+    mkTitle: "Make 10", mkTag: "Number pairs", mkText: "See a number and find the one that makes 10, with ten-frames to count. Grows to 20 and 100 as you grow.",
     ssTitle: "Sound Spell", ssTag: "Starting and ending sounds", ssText: "See a picture, hear the word, and pick the sound it starts or ends with. English and German words."
   },
   de: {
@@ -158,6 +159,7 @@ Loopy.addStrings({
     dmGo: "Los →", dmAgain: "Heute geschafft! Nochmal →", dmStreak: "🔥 {n} Tage", dmStreakOne: "🔥 1 Tag",
     dayLine: "Tage-Serie: {n} Tage hintereinander. Beste: {best}.", dayLineOne: "Tage-Serie: 1 Tag hintereinander. Beste: {best}.",
     dayNone: "Spiele die 10 von heute an Tagen hintereinander, um Tage-Abzeichen zu bekommen.", nDays: "{n} Tage",
+    mkTitle: "Ergänze bis 10", mkTag: "Zahlenpartner", mkText: "Sieh eine Zahl und finde die, die bis 10 fehlt, mit Zehnerfeldern zum Zählen. Später bis 20 und 100.",
     ssTitle: "Anlaut und Endlaut", ssTag: "Anlaute und Endlaute", ssText: "Sieh ein Bild, hör das Wort und wähle den Laut, mit dem es beginnt oder endet. Deutsche und englische Wörter."
   }
 });
@@ -168,6 +170,7 @@ const GAMES = [
   { subject: "math", path: "math/plus-minus/", id: "pm", ages: [5, 16] },
   { subject: "math", path: "math/times-share/", id: "ts", ages: [6, 16] },
   { subject: "math", path: "math/what-time-is-it/", id: "cl", ages: [5, 10] },
+  { subject: "math", path: "math/make-10/", id: "mk", ages: [5, 9] },
   { subject: "languages", path: "languages/sound-spell/", id: "ss", ages: [5, 8] },
 ];
 const t = Loopy.t;
