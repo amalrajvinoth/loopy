@@ -1,0 +1,788 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'sha256-/OQ7PV65RDd0LFnpoEV3RCin/AIWBNokE8eXmO2ahn8='; style-src 'self' 'sha256-z2P7kGW5Z05eCTjTZdYpc0vThTlOE9vmt97pVSvi2I4=' 'sha256-xdz6NJtbgC2AXNgW1qW6AuselSrvLLByNzzsLTqBwEY=' 'sha256-RT1053JU5UiKvjrCUFx1rlhdFLMmgtuFJ9T8jnMeawQ=' 'sha256-3KG381CUtjqBA89CGSEeePMjJDH4mtBX1ixxVdZ02kE='; img-src 'self' data:; font-src 'self'; connect-src 'none'; object-src 'none'; base-uri 'none'; form-action 'none'; manifest-src 'self'; upgrade-insecure-requests">
+<meta name="referrer" content="strict-origin-when-cross-origin">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<style>:root{color-scheme:light;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}body{margin:0}[hidden]{display:none!important}</style>
+<link rel="icon" href="../../icon.svg" type="image/svg+xml">
+<link rel="manifest" href="../../manifest.webmanifest">
+<link rel="apple-touch-icon" href="../../apple-touch-icon.png">
+<meta name="theme-color" content="#0a0a0c">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="loopy">
+<title data-t="pzName">Pizza Fractions</title>
+<link rel="preload" href="../../fonts/lexend-latin.woff2" as="font" type="font/woff2" crossorigin>
+<style>
+/* Layout: a problem card with a pizza or bar picture, answer buttons below. Shared look with the other games. */
+:root {
+  --bg: #f3f6fb;
+  --card: #ffffff;
+  --ink: #1d2a3f;
+  --muted: #5d6b82;
+  --line: #d5dde9;
+  --accent: #2457c5;
+  --accent-ink: #ffffff;
+  --mark: #e2622b;
+  --good: #1f8a4c;
+  --good-bg: #e3f5ea;
+  --bad: #c23a3a;
+  --bad-bg: #fbe6e6;
+  --chip: #e6ecf6;
+  --key: #ffffff;
+  --font: "Lexend", "Segoe UI", "Helvetica Neue", Arial, sans-serif;
+}
+
+* { box-sizing: border-box; }
+body {
+  background: var(--bg); color: var(--ink); font-family: var(--font); font-size: 16px;
+  padding-left: max(16px, env(safe-area-inset-left, 0px));
+  padding-right: max(16px, env(safe-area-inset-right, 0px));
+  padding-block: 20px 32px;
+}
+.wrap { max-width: 520px; margin: 0 auto; display: flex; flex-direction: column; gap: 16px; }
+
+.top { display: flex; flex-wrap: wrap; gap: 12px; align-items: center; justify-content: space-between; }
+h1 { margin: 0; font-size: 1.6rem; font-weight: 700; text-wrap: balance; }
+.score { display: flex; flex-wrap: wrap; gap: 8px; font-variant-numeric: tabular-nums; }
+.pill { background: var(--card); border: 1px solid var(--line); border-radius: 999px; padding: 6px 14px; font-weight: 600; font-size: 1rem; white-space: nowrap; }
+.pill span { color: var(--muted); font-weight: 400; margin-right: 4px; }
+
+.seg-label { font-size: 0.8rem; font-weight: 600; letter-spacing: 0.06em; text-transform: uppercase; color: var(--muted); margin: 0 0 4px 4px; }
+.seg { display: grid; grid-template-columns: repeat(4, 1fr); gap: 6px; background: var(--chip); padding: 5px; border-radius: 14px; }
+.seg.three { grid-template-columns: repeat(3, 1fr); }
+.seg button {
+  font: inherit; font-size: 0.95rem; font-weight: 600; color: var(--muted);
+  background: transparent; border: 0; border-radius: 10px; padding: 8px 6px; min-height: 44px; cursor: pointer;
+}
+.seg button[aria-pressed="true"] { background: var(--card); color: var(--ink); box-shadow: 0 1px 3px rgb(0 0 0 / 0.12); }
+.helper { display: flex; align-items: center; gap: 8px; min-height: 40px; cursor: pointer; }
+.helper input { width: 22px; height: 22px; accent-color: var(--c2); }
+
+.problem-card {
+  background: var(--card); border: 1px solid var(--line); border-radius: 24px;
+  padding: 14px; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 8px;
+}
+.problem-card.good { border-color: var(--good); box-shadow: 0 0 0 2px var(--good) inset; }
+.problem-card.bad { border-color: var(--bad); box-shadow: 0 0 0 2px var(--bad) inset; }
+.prompt { margin: 0; color: var(--muted); font-size: 1rem; text-align: center; padding: 0 48px; }
+
+/* A fraction is written stacked: the top number, a line, the bottom number. */
+.fr { display: inline-flex; flex-direction: column; align-items: center; line-height: 1; vertical-align: middle; font-variant-numeric: tabular-nums; }
+.fr > span { padding: 0 0.14em; }
+.fr .de { border-top: 0.08em solid currentColor; margin-top: 0.08em; padding-top: 0.08em; }
+
+/* The problem: "3/4 ( ) 5/8" or "1/2 + 1/4 = ?". Naming a fraction shows only the picture. */
+.show {
+  display: flex; flex-wrap: wrap; align-items: center; justify-content: center; gap: 0.25em 0.4em;
+  font-size: clamp(1.6rem, min(8vw, 7dvh), 3.6rem); font-weight: 700; line-height: 1.15; text-align: center;
+}
+.show:empty { display: none; }
+.show .ring {
+  display: inline-grid; place-items: center; width: 1.3em; height: 1.3em; border-radius: 50%;
+  border: 0.07em solid var(--line); color: var(--accent);
+}
+.show .ring.empty::after, .show .gap.empty::after { content: "?"; color: var(--muted); }
+.show .gap { display: inline-grid; place-items: center; min-width: 1.6em; min-height: 1.6em; border-bottom: 0.08em solid var(--accent); color: var(--accent); }
+.show .sign { color: var(--muted); }
+/* After an answer the circle or gap shows the right answer, so it is always green. */
+.problem-card.good .ring, .problem-card.good .gap, .problem-card.bad .ring, .problem-card.bad .gap { color: var(--good); border-color: var(--good); }
+
+/* The picture: pizzas or bars drawn in SVG. When it is not shown first, it keeps its room until the answer is in. */
+.pic { width: 100%; max-width: 520px; display: block; flex: 1 1 0; min-height: 80px; }
+.pic.off { visibility: hidden; }
+
+.feedback { min-height: 3.1em; text-align: center; font-size: 1.1rem; line-height: 1.45; margin: 0; max-width: 40ch; }
+.feedback strong { display: block; font-size: 1.45rem; }
+.feedback.good strong { color: var(--good); }
+.feedback.bad strong { color: var(--bad); }
+
+.side { display: flex; flex-direction: column; gap: 10px; }
+.choices { display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; }
+.choices.three { grid-template-columns: repeat(3, 1fr); }
+.choices button {
+  font: inherit; font-size: clamp(1.3rem, min(6vw, 4.2dvh), 2.4rem); font-weight: 700; font-variant-numeric: tabular-nums; color: var(--ink);
+  background: var(--key); border: 3px solid var(--line); border-radius: 18px; min-height: clamp(56px, 9dvh, 96px); cursor: pointer;
+  display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 2px; padding: 4px 6px;
+  transition: transform .08s ease, border-color .15s ease; touch-action: manipulation; -webkit-tap-highlight-color: transparent;
+}
+.choices button .sym { font-size: 1.5em; line-height: 1; }
+.choices button small { font-size: 0.85rem; font-weight: 600; color: var(--muted); }
+.choices button:hover:not(:disabled) { border-color: var(--accent); }
+.choices button:active:not(:disabled) { transform: scale(0.96); }
+.choices button:disabled { cursor: default; }
+.choices button.right { border-color: var(--good); background: var(--good-bg); color: var(--good); }
+.choices button.wrong { border-color: var(--bad); background: var(--bad-bg); color: var(--bad); }
+.choices button.faded { opacity: 0.45; }
+.choices button.right small, .choices button.wrong small { color: inherit; }
+
+.next { font: inherit; font-size: 1.25rem; font-weight: 700; color: var(--accent-ink); background: var(--accent); border: 0; border-radius: 16px; min-height: clamp(52px, 7dvh, 72px); cursor: pointer; width: 100%; }
+.reset { font: inherit; font-size: 0.95rem; color: var(--muted); background: transparent; border: 2px solid var(--line); border-radius: 14px; padding: 0 16px; min-height: 44px; cursor: pointer; }
+button:focus-visible { outline: 3px solid var(--mark); outline-offset: 3px; }
+
+@media (max-width: 420px) {
+  h1 { font-size: 1.35rem; }
+  .seg button { font-size: 0.85rem; }
+}
+@media (prefers-reduced-motion: reduce) { * { transition: none !important; } }
+</style>
+<style>.home-link{display:inline-flex;align-items:center;min-height:40px;color:var(--muted);font-weight:600;text-decoration:none;font-size:0.95rem}.home-link:hover{color:var(--ink)}</style>
+<style>
+/* Phones and tablets: the game fills one screen; settings sit behind a button. */
+body { min-height: 100vh; min-height: 100dvh; padding-block: 12px 16px; }
+.wrap { gap: 12px; }
+.game-bar { display: flex; align-items: center; justify-content: space-between; gap: 8px; }
+.bar-right { display: flex; align-items: center; gap: 8px; }
+.top { gap: 8px 12px; }
+.play { display: flex; flex-direction: column; gap: 12px; -webkit-user-select: none; user-select: none; }
+@media (min-width: 600px) and (orientation: portrait) { .wrap { max-width: 640px; } }
+@media (orientation: landscape) and (min-width: 640px) {
+  .wrap { max-width: 1100px; }
+  .play { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; align-items: center; }
+}
+.feedback { min-height: 2.9em; font-size: 1.05rem; }
+.feedback strong { font-size: 1.3rem; }
+@media (min-width: 600px) and (orientation: portrait) {
+  .choices button { min-height: clamp(64px, 10dvh, 120px); }
+}
+@media (max-height: 760px) and (orientation: portrait) {
+  .problem-card.good .prompt, .problem-card.bad .prompt { display: none; }
+  .feedback { font-size: 0.95rem; line-height: 1.35; }
+  .feedback strong { font-size: 1.15rem; }
+}
+
+/* Portrait: the page is exactly one screen tall; the answers stay at the bottom
+   and the top part shrinks to fit. With settings open, the page scrolls normally. */
+@media (orientation: portrait) {
+  body { height: calc(100dvh - env(safe-area-inset-top, 0px) - env(safe-area-inset-bottom, 0px)); min-height: 0; display: flex; flex-direction: column; overflow: hidden; }
+  body:has(#settings-panel:not([hidden])) { height: auto; overflow: visible; }
+  .wrap { flex: 1 1 auto; min-height: 0; width: 100%; }
+  .play { flex: 1 1 auto; min-height: 0; }
+  .problem-card { flex: 1 1 auto; min-height: 0; overflow: hidden; }
+  .feedback { flex: 0 1 auto; min-height: 0; max-height: 6.5em; overflow-y: auto; }
+}
+/* Landscape: the same one-screen fit, problem on the left, answers on the right. */
+@media (orientation: landscape) and (min-width: 640px) {
+  body { height: calc(100dvh - env(safe-area-inset-top, 0px) - env(safe-area-inset-bottom, 0px)); min-height: 0; display: flex; flex-direction: column; overflow: hidden; }
+  body:has(#settings-panel:not([hidden])) { height: auto; overflow: visible; }
+  .wrap { flex: 1 1 auto; min-height: 0; width: 100%; }
+  .play { flex: 1 1 auto; min-height: 0; grid-template-rows: minmax(0, 1fr); }
+  .problem-card, .side { height: 100%; min-height: 0; justify-content: center; }
+  .problem-card { overflow: hidden; }
+  .pic { min-height: 40px; }
+  .feedback { flex: 0 1 auto; min-height: 0; overflow-y: auto; }
+  .choices button { min-height: clamp(52px, 14dvh, 130px); }
+}
+/* Small phones: a little less room around the problem, so the whole reason fits. */
+@media (max-height: 700px) and (orientation: portrait) {
+  .problem-card { padding: 10px 12px; gap: 4px; }
+  .pic { min-height: 60px; }
+}
+/* After answering on smaller screens, shrink the problem so the picture and the reason have room. */
+@media (max-height: 900px), (max-width: 599px) {
+  .problem-card.good .show, .problem-card.bad .show { zoom: 0.7; }
+}
+@media (max-height: 500px) {
+  .problem-card.good .prompt, .problem-card.bad .prompt { display: none; }
+  .feedback { font-size: 0.9rem; line-height: 1.3; }
+  .feedback strong { font-size: 1.05rem; }
+  .prompt { font-size: 0.9rem; }
+  .choices button small { display: none; }
+}
+
+/* Worksheet cells (only printed): a picture with a line to write the fraction, "3/4 ( ) 5/8" or "1/2 + 1/4 = ___". */
+@media print {
+  .ws-pz { display: flex; flex-direction: column; align-items: center; gap: 2mm; }
+  .ws-pic { width: 34mm; height: 26mm; }
+  .ws-pic.bar { height: 14mm; }
+  .ws-pz .ws-blank { display: inline-block; width: 16mm; border-bottom: 0.4mm solid #000; height: 7mm; }
+  .ws-line { display: inline-flex; align-items: center; gap: 2mm; font-size: 16pt; font-weight: 600; white-space: nowrap; }
+  .sheet-line .ws-line { font-size: 18pt; }
+  .ws-line .ws-blank { display: inline-block; width: 14mm; height: 9mm; border-bottom: 0.4mm solid #000; margin: 0; }
+  .ws-ring { display: inline-block; width: 9mm; height: 9mm; border: 0.4mm solid #000; border-radius: 50%; margin: 0 1mm; }
+}
+</style>
+<link rel="stylesheet" href="../../loopy.css">
+<script src="../../loopy.js"></script>
+</head>
+<body>
+
+<div class="wrap">
+  <header class="game-bar">
+    <a class="home-link" href="../../">&larr; loopy</a>
+    <div class="bar-right">
+      <span id="star-chip"></span>
+      <button type="button" id="settings-toggle" aria-controls="settings-panel"></button>
+    </div>
+  </header>
+  <div class="top">
+    <h1 data-t="pzName">Pizza Fractions</h1>
+    <div class="score" aria-live="polite">
+      <div class="pill"><span data-t="score">Score</span><b id="score">0 / 0</b></div>
+      <div class="pill"><span data-t="streak">Streak</span><b id="streak">0</b></div>
+      <div id="last5" data-game="pizza-fractions"></div>
+    </div>
+  </div>
+  <div class="settings-panel" id="settings-panel" hidden>
+    <div class="controls"><div id="age-picker"></div><div id="theme-picker"></div><button id="sound-toggle"></button><div id="lang-picker"></div></div>
+    <div>
+      <p class="seg-label" id="mode-label" data-t="pzProblems">Problems</p>
+      <div class="seg" role="group" aria-labelledby="mode-label" id="mode-seg">
+        <button type="button" data-mode="name" data-t="pzNameIt">Name it</button>
+        <button type="button" data-mode="cmp" data-t="pzCmp">Compare</button>
+        <button type="button" data-mode="add" data-t="pzAdd">Add</button>
+        <button type="button" data-mode="mix" data-t="pzMix">Mix</button>
+      </div>
+    </div>
+    <div>
+      <p class="seg-label" id="lv-label" data-t="pzPieces">Pieces</p>
+      <div class="seg three" role="group" aria-labelledby="lv-label" id="lv-seg">
+        <button type="button" data-lv="0"></button>
+        <button type="button" data-lv="1"></button>
+        <button type="button" data-lv="2"></button>
+      </div>
+    </div>
+    <div>
+      <p class="seg-label" id="look-label" data-t="pzPicture">Picture</p>
+      <div class="seg three" role="group" aria-labelledby="look-label" id="look-seg">
+        <button type="button" data-look="pizza" data-t="pzPizza">Pizza</button>
+        <button type="button" data-look="bar" data-t="pzBar">Bar</button>
+        <button type="button" data-look="both" data-t="pzBoth">Both</button>
+      </div>
+    </div>
+    <label class="helper"><input type="checkbox" id="pics-on"> <span data-t="pzPicsLabel">Show the picture before answering</span></label>
+    <div class="panel-foot">
+      <p data-t="pzKbd">Keyboard works too: 1 to 4 or &lt; = &gt; picks an answer, Enter goes on.</p>
+      <button type="button" class="reset" id="reset" data-t="resetScore">Reset score</button>
+    </div>
+  </div>
+
+  <main class="play">
+    <div class="problem-card" id="card">
+      <p class="prompt" id="prompt"></p>
+      <div class="show" id="show" aria-live="polite"></div>
+      <svg class="pic" id="pic" viewBox="0 0 200 200" role="img" aria-label="Picture" data-t-aria="pzPicAria"></svg>
+      <p class="feedback" id="feedback"></p>
+    </div>
+    <div class="side">
+      <div class="choices" id="choices"></div>
+      <button type="button" class="next" id="next" data-t="pzNew">New problem</button>
+    </div>
+  </main>
+</div>
+
+<script>
+Loopy.addStrings({
+  en: {
+    pzName: "Pizza Fractions", pzProblems: "Problems", pzNameIt: "Name it", pzCmp: "Compare", pzAdd: "Add", pzMix: "Mix",
+    pzPieces: "Pieces", pzUpTo: "Up to {n}", pzPicture: "Picture", pzPizza: "Pizza", pzBar: "Bar", pzBoth: "Both",
+    pzPicsLabel: "Show the picture before answering", pzPicAria: "Picture",
+    pzKbd: "Keyboard works too: 1 to 4 or < = > picks an answer, Enter goes on.",
+    pzNew: "New problem", pzNext: "Next problem",
+    pzAskPizza: "What part of the pizza has toppings?", pzAskBar: "What part of the bar is colored in?",
+    pzAskCmp: "Which sign goes in the circle?", pzAskAdd: "Add the two parts.",
+    pzLess: "smaller", pzEq: "equal", pzMore: "bigger",
+    pzLessAria: "{a} is smaller than {b}", pzEqAria: "{a} is equal to {b}", pzMoreAria: "{a} is bigger than {b}",
+    pzWhyPizza: "The pizza has {d} equal slices, and {n} have toppings. That is {w}: {f}.",
+    pzWhyBar: "The bar has {d} equal pieces, and {n} are colored in. That is {w}: {f}.",
+    pzWhyPizza1: "The pizza has {d} equal slices, and 1 has toppings. That is {w}: {f}.",
+    pzWhyBar1: "The bar has {d} equal pieces, and 1 is colored in. That is {w}: {f}.",
+    pzOther: "{y} is the part that is left over.",
+    pzSameD: "Both are cut into {d} equal pieces. {n1} pieces are more than {n2}, so {big} is bigger.",
+    pzSameN1: "Both have 1 piece. Cut into {d1}, the pieces are bigger than cut into {d2}. So {big} is bigger.",
+    pzSameN: "Both have {n} pieces. Cut into {d1}, the pieces are bigger than cut into {d2}. So {big} is bigger.",
+    pzEqual: "{a} and {b} are the same amount, so they are equal.",
+    pzSplit: "Cut each piece of {a} into {k}, and you get {b}.",
+    pzSame: "Both are the same fraction, so they are equal.",
+    pzCommon: "Cut both into {D} pieces: {a} is {a2} and {b} is {b2}. {n1} is more than {n2}, so {big} is bigger.",
+    pzAddSame: "The pieces are the same size, so add the top numbers: {a} + {b} = {s}. The bottom stays {d}: {f}.",
+    pzAddDiff: "First make the pieces the same size: {x} is {x2}. Then {x2} + {y} = {f}.",
+    pzWhole: "{f} is one whole.",
+    pzBottoms: "Don't add the bottom numbers. They tell the size of the pieces, and that stays the same.",
+    pzReadCmp: "Is {a} smaller than, equal to, or bigger than {b}?", pzReadAdd: "What is {a} plus {b}?", pzReadName: "{q} {list}.",
+    pzTryUpTo: "Try up to {n} pieces", pzTryMix: "Try all three mixed", pzNoPics: "Try it without the picture first",
+    pzHowName: "Write the fraction that is shaded.", pzHowCmp: "Write <, > or = in each circle.", pzHowAdd: "Add the fractions.",
+    pzHowMix: "Write the fraction that is shaded, write <, > or = in the circles, and add.",
+    pzW2: "half", pzW2s: "halves", pzW3: "third", pzW3s: "thirds", pzW4: "quarter", pzW4s: "quarters",
+    pzW5: "fifth", pzW5s: "fifths", pzW6: "sixth", pzW6s: "sixths", pzW7: "seventh", pzW7s: "sevenths",
+    pzW8: "eighth", pzW8s: "eighths", pzW9: "ninth", pzW9s: "ninths", pzW10: "tenth", pzW10s: "tenths",
+    pzW11: "eleventh", pzW11s: "elevenths", pzW12: "twelfth", pzW12s: "twelfths"
+  },
+  de: {
+    pzName: "Pizza-Brüche", pzProblems: "Aufgaben", pzNameIt: "Benennen", pzCmp: "Vergleichen", pzAdd: "Plus", pzMix: "Gemischt",
+    pzPieces: "Stücke", pzUpTo: "Bis {n}", pzPicture: "Bild", pzPizza: "Pizza", pzBar: "Streifen", pzBoth: "Beides",
+    pzPicsLabel: "Das Bild vor der Antwort zeigen", pzPicAria: "Bild",
+    pzKbd: "Die Tastatur geht auch: 1 bis 4 oder < = > wählt eine Antwort, Enter geht weiter.",
+    pzNew: "Neue Aufgabe", pzNext: "Nächste Aufgabe",
+    pzAskPizza: "Welcher Teil der Pizza hat Belag?", pzAskBar: "Welcher Teil des Streifens ist bunt?",
+    pzAskCmp: "Welches Zeichen gehört in den Kreis?", pzAskAdd: "Rechne die zwei Teile zusammen.",
+    pzLess: "kleiner", pzEq: "gleich", pzMore: "größer",
+    pzLessAria: "{a} ist kleiner als {b}", pzEqAria: "{a} ist gleich {b}", pzMoreAria: "{a} ist größer als {b}",
+    pzWhyPizza: "Die Pizza hat {d} gleiche Stücke, und {n} haben Belag. Das sind {w}: {f}.",
+    pzWhyBar: "Der Streifen hat {d} gleiche Stücke, und {n} sind bunt. Das sind {w}: {f}.",
+    pzWhyPizza1: "Die Pizza hat {d} gleiche Stücke, und 1 hat Belag. Das ist {w}: {f}.",
+    pzWhyBar1: "Der Streifen hat {d} gleiche Stücke, und 1 ist bunt. Das ist {w}: {f}.",
+    pzOther: "{y} ist der Teil, der übrig bleibt.",
+    pzSameD: "Beide sind in {d} gleiche Stücke geteilt. {n1} Stücke sind mehr als {n2}, also ist {big} größer.",
+    pzSameN1: "Beide haben 1 Stück. In {d1} geteilt sind die Stücke größer als in {d2}. Also ist {big} größer.",
+    pzSameN: "Beide haben {n} Stücke. In {d1} geteilt sind die Stücke größer als in {d2}. Also ist {big} größer.",
+    pzEqual: "{a} und {b} sind gleich viel, also sind sie gleich.",
+    pzSplit: "Teile jedes Stück von {a} in {k}, dann bekommst du {b}.",
+    pzSame: "Beide sind derselbe Bruch, also sind sie gleich.",
+    pzCommon: "Teile beide in {D} Stücke: {a} ist {a2} und {b} ist {b2}. {n1} ist mehr als {n2}, also ist {big} größer.",
+    pzAddSame: "Die Stücke sind gleich groß, also rechne die oberen Zahlen zusammen: {a} + {b} = {s}. Unten bleibt {d}: {f}.",
+    pzAddDiff: "Mach zuerst die Stücke gleich groß: {x} ist {x2}. Dann {x2} + {y} = {f}.",
+    pzWhole: "{f} ist ein Ganzes.",
+    pzBottoms: "Die unteren Zahlen werden nicht zusammengezählt. Sie sagen, wie groß die Stücke sind, und das bleibt gleich.",
+    pzReadCmp: "Ist {a} kleiner als, gleich oder größer als {b}?", pzReadAdd: "Wie viel ist {a} plus {b}?", pzReadName: "{q} {list}.",
+    pzTryUpTo: "Probiere bis {n} Stücke", pzTryMix: "Probiere alle drei gemischt", pzNoPics: "Probiere es ohne Bild vorher",
+    pzHowName: "Schreibe den Bruch, der markiert ist.", pzHowCmp: "Schreibe <, > oder = in jeden Kreis.", pzHowAdd: "Rechne die Brüche zusammen.",
+    pzHowMix: "Schreibe den markierten Bruch, setze <, > oder = in die Kreise und rechne zusammen.",
+    pzW2: "halb", pzW2s: "Halbe", pzW3: "Drittel", pzW3s: "Drittel", pzW4: "Viertel", pzW4s: "Viertel",
+    pzW5: "Fünftel", pzW5s: "Fünftel", pzW6: "Sechstel", pzW6s: "Sechstel", pzW7: "Siebtel", pzW7s: "Siebtel",
+    pzW8: "Achtel", pzW8s: "Achtel", pzW9: "Neuntel", pzW9s: "Neuntel", pzW10: "Zehntel", pzW10s: "Zehntel",
+    pzW11: "Elftel", pzW11s: "Elftel", pzW12: "Zwölftel", pzW12s: "Zwölftel"
+  }
+});
+
+(function () {
+  const t = Loopy.t;
+  const NS = "http://www.w3.org/2000/svg";
+  const $ = (id) => document.getElementById(id);
+  const card = $("card"), showEl = $("show"), promptEl = $("prompt"), pic = $("pic"), feedbackEl = $("feedback"), choicesEl = $("choices");
+  const modeBtns = [...document.querySelectorAll("#mode-seg button")], lvBtns = [...document.querySelectorAll("#lv-seg button")];
+  const lookBtns = [...document.querySelectorAll("#look-seg button")], picsBox = $("pics-on");
+
+  const store = {
+    // ok: the values this setting may have; anything else falls back to the default.
+    get(k, d, ok) { try { const v = JSON.parse(localStorage.getItem(k)); return ok.includes(v) ? v : d; } catch (e) { return d; } },
+    set(k, v) { try { localStorage.setItem(k, JSON.stringify(v)); } catch (e) {} }
+  };
+
+  // How many pieces a pizza or bar may be cut into, for each level.
+  const LEVELS = [
+    { max: 4, dens: [2, 3, 4] },
+    { max: 8, dens: [2, 3, 4, 5, 6, 8] },
+    { max: 12, dens: [2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12] }
+  ];
+  const MODES = ["name", "cmp", "add", "mix"], LVS = [0, 1, 2], LOOKS = ["pizza", "bar", "both"];
+  // Each age starts at its own level: name fractions first, then compare them, then add them.
+  // A level, kind of problem or picture picked by hand is remembered for that age.
+  const levelForAge = (a) => a <= 7 ? 0 : a <= 10 ? 1 : 2;
+  const modeForAge = (a) => a <= 8 ? "name" : a === 9 ? "cmp" : a === 10 ? "add" : "mix";
+  const lookForAge = (a) => a <= 8 ? "pizza" : "both";
+  const picsForAge = (a) => a <= 8;
+  let age = Loopy.getAge();
+  let lv, mode, look, pics;
+  function loadForAge() {
+    lv = store.get("pz.level.a" + age, levelForAge(age), LVS);
+    mode = store.get("pz.mode.a" + age, modeForAge(age), MODES);
+    look = store.get("pz.look.a" + age, lookForAge(age), LOOKS);
+    pics = store.get("pz.pics.a" + age, picsForAge(age), [true, false]);
+  }
+  loadForAge();
+  let right = 0, tried = 0, streak = 0;
+  let cur = null, answered = false, lastKey = "";
+
+  const rand = (a, b) => a + Math.floor(Math.random() * (b - a + 1));
+  const pick = (list) => list[rand(0, list.length - 1)];
+  const shuffle = (list) => { for (let i = list.length - 1; i > 0; i--) { const j = rand(0, i); [list[i], list[j]] = [list[j], list[i]]; } return list; };
+  const gcd = (a, b) => b ? gcd(b, a % b) : a;
+  const lcm = (a, b) => a / gcd(a, b) * b;
+  // A fraction is { n: top, d: bottom }. Written "3/4" in sentences, stacked on the buttons and in the problem.
+  const fr = (n, d) => ({ n, d });
+  const val = (x) => x.n / x.d;
+  const txt = (x) => Loopy.num(x.n) + "/" + Loopy.num(x.d);
+  // In words, for sentences and Read aloud: "3 quarters", "1 half".
+  const words = (x) => Loopy.num(x.n) + " " + t("pzW" + x.d + (x.n === 1 ? "" : "s"));
+  const same = (x, y) => x.n * y.d === y.n * x.d;
+  const signOf = (a, b) => val(a) < val(b) - 1e-9 ? "<" : val(a) > val(b) + 1e-9 ? ">" : "=";
+
+  // ---- Problems ----
+  // Name: a picture cut into d pieces with n colored in; four fractions to pick from.
+  function makeName(L) {
+    const d = pick(L.dens), n = rand(1, d - 1), x = fr(n, d);
+    const opts = [x];
+    // Common mix-ups first: the part left over, colored over not colored, the numbers swapped, one piece off.
+    const wrong = shuffle([fr(d - n, d), fr(n, d - n), fr(n, d + 1)]).concat(shuffle([fr(n + 1, d), fr(n - 1, d), fr(n, d - 1), fr(n + 1, d + 1)]));
+    for (const w of wrong) {
+      if (opts.length < 4 && w.n >= 1 && w.d >= 2 && w.n < w.d && !opts.some(o => o.n === w.n && o.d === w.d) && !same(w, x)) opts.push(w);
+    }
+    // Halves have few close mix-ups, so fill up with other fractions at this level.
+    for (let tries = 0; opts.length < 4 && tries < 100; tries++) {
+      const e = pick(L.dens.concat([3, 4])), w = fr(rand(1, e - 1), e);
+      if (!opts.some(o => same(o, w))) opts.push(w);
+    }
+    return { type: "name", x, opts: shuffle(opts), kind: "pz-name", key: "n" + txt(x) };
+  }
+
+  // Compare: two fractions, pick <, = or >. Same bottoms, same tops, equal ones, or any two.
+  function makeCmp(L) {
+    const r = Math.random();
+    let a, b;
+    if (r < 0.35) {
+      const d = pick(L.dens.filter(x => x > 2)), n1 = rand(1, d - 1);
+      let n2 = rand(1, d - 1);
+      if (n2 === n1) n2 = n1 === 1 ? 2 : n1 - 1;
+      a = fr(n1, d); b = fr(n2, d);
+    } else if (r < 0.65) {
+      const ds = shuffle(L.dens.slice()), n = Math.random() < 0.6 ? 1 : rand(1, Math.min(ds[0], ds[1]) - 1);
+      a = fr(n, ds[0]); b = fr(n, ds[1]);
+    } else if (r < 0.8 || L.max === 4) {
+      // Equal amounts: 1/2 and 2/4, 2/3 and 4/6.
+      const pairs = [];
+      L.dens.forEach(d => L.dens.forEach(e => { if (e > d && e % d === 0) for (let n = 1; n < d; n++) pairs.push([fr(n, d), fr(n * e / d, e)]); }));
+      [a, b] = pick(pairs);
+    } else {
+      // Any two, as long as both fit in 24 pieces or fewer, so the common pieces stay easy to picture.
+      let d1, d2;
+      do { d1 = pick(L.dens); d2 = pick(L.dens); } while (lcm(d1, d2) > 24);
+      a = fr(rand(1, d1 - 1), d1); b = fr(rand(1, d2 - 1), d2);
+    }
+    if (Math.random() < 0.5) [a, b] = [b, a];
+    return { type: "cmp", a, b, kind: "pz-cmp", key: "c" + txt(a) + txt(b) };
+  }
+
+  // Add: two fractions whose bottoms fit together (one is a multiple of the other), and the sum is at most one whole.
+  // The answer has the bigger bottom, so 1/2 + 1/4 = 3/4 and 1/4 + 1/4 = 2/4.
+  function makeAdd(L) {
+    const dens = L.max === 4 ? [2, 4] : L.dens;
+    for (let tries = 0; tries < 200; tries++) {
+      const d1 = pick(dens), d2 = pick(dens);
+      if (Math.max(d1, d2) % Math.min(d1, d2)) continue;
+      const D = Math.max(d1, d2), a = fr(rand(1, d1 - 1), d1), b = fr(rand(1, d2 - 1), d2);
+      const s = a.n * D / d1 + b.n * D / d2;
+      if (s > D) continue;
+      const ans = fr(s, D), opts = [ans];
+      // The classic slip first: adding the bottoms too.
+      const wrong = [fr(a.n + b.n, d1 + d2)];
+      if (d1 !== d2) wrong.push(fr(a.n + b.n, D));
+      wrong.push(...shuffle([fr(s + 1, D), fr(s - 1, D), fr(s, D * 2), fr(s - 2, D)]));
+      for (const w of wrong) {
+        if (opts.length < 4 && w.n >= 1 && w.n <= w.d && !opts.some(o => same(o, w))) opts.push(w);
+      }
+      if (opts.length < 4) continue;
+      return { type: "add", a, b, ans, opts: shuffle(opts), kind: "pz-add", key: "a" + txt(a) + txt(b) };
+    }
+    return { type: "add", a: fr(1, 2), b: fr(1, 4), ans: fr(3, 4), opts: shuffle([fr(3, 4), fr(2, 6), fr(2, 4), fr(1, 4)]), kind: "pz-add", key: "a1/21/4" };
+  }
+
+  // What comes up in each mode. A picture kind is picked for each problem when the setting is Both.
+  function makeProblem() {
+    const L = LEVELS[lv];
+    const type = mode !== "mix" ? mode : pick(["name", "cmp", "add"]);
+    const p = type === "name" ? makeName(L) : type === "cmp" ? makeCmp(L) : makeAdd(L);
+    p.look = look === "both" ? pick(["pizza", "bar"]) : look;
+    return p;
+  }
+
+  // The short reason under the answer.
+  function explain(p, yours) {
+    if (p.type === "name") {
+      let why = t((p.look === "bar" ? "pzWhyBar" : "pzWhyPizza") + (p.x.n === 1 ? "1" : ""), { d: Loopy.num(p.x.d), n: Loopy.num(p.x.n), w: words(p.x), f: txt(p.x) });
+      if (yours && yours.n === p.x.d - p.x.n && yours.d === p.x.d) why += " " + t("pzOther", { y: txt(yours) });
+      return why;
+    }
+    if (p.type === "add") {
+      const { a, b, ans } = p, D = ans.d;
+      let why;
+      if (a.d === b.d) why = t("pzAddSame", { a: Loopy.num(a.n), b: Loopy.num(b.n), s: Loopy.num(ans.n), d: Loopy.num(D), f: txt(ans) });
+      else {
+        const [x, y] = a.d < b.d ? [a, b] : [b, a];
+        why = t("pzAddDiff", { x: txt(x), x2: txt(fr(x.n * D / x.d, D)), y: txt(y), f: txt(ans) });
+      }
+      if (ans.n === D) why += " " + t("pzWhole", { f: txt(ans) });
+      if (yours && yours.d === a.d + b.d && yours.n === a.n + b.n) why += " " + t("pzBottoms");
+      return why;
+    }
+    const { a, b } = p, s = signOf(a, b);
+    if (s === "=") {
+      if (a.n === b.n && a.d === b.d) return t("pzSame");
+      const [lo, hi] = a.d < b.d ? [a, b] : [b, a];
+      let why = t("pzEqual", { a: txt(a), b: txt(b) });
+      if (hi.d % lo.d === 0) why += " " + t("pzSplit", { a: txt(lo), b: txt(hi), k: Loopy.num(hi.d / lo.d) });
+      return why;
+    }
+    const big = s === ">" ? a : b, small = s === ">" ? b : a;
+    if (a.d === b.d) return t("pzSameD", { d: Loopy.num(a.d), n1: Loopy.num(big.n), n2: Loopy.num(small.n), big: txt(big) });
+    if (a.n === b.n) return t(a.n === 1 ? "pzSameN1" : "pzSameN", { n: Loopy.num(a.n), d1: Loopy.num(big.d), d2: Loopy.num(small.d), big: txt(big) });
+    const D = lcm(a.d, b.d), a2 = fr(a.n * D / a.d, D), b2 = fr(b.n * D / b.d, D);
+    return t("pzCommon", { D: Loopy.num(D), a: txt(a), b: txt(b), a2: txt(a2), b2: txt(b2),
+      n1: Loopy.num(Math.max(a2.n, b2.n)), n2: Loopy.num(Math.min(a2.n, b2.n)), big: txt(big) });
+  }
+  // The answer as one line: "3/4", "3/4 > 5/8" or "1/2 + 1/4 = 3/4".
+  function answerText(p) {
+    if (p.type === "name") return txt(p.x);
+    if (p.type === "cmp") return txt(p.a) + " " + signOf(p.a, p.b) + " " + txt(p.b);
+    return txt(p.a) + " + " + txt(p.b) + " = " + txt(p.ans);
+  }
+
+  // ---- Pictures ----
+  function svgEl(tag, attrs, parent) {
+    const n = document.createElementNS(NS, tag);
+    for (const k in attrs) n.setAttribute(k, attrs[k]);
+    if (parent) parent.appendChild(n);
+    return n;
+  }
+  // The colors: on screen the theme's; on a printed sheet black, white and grey.
+  const SCREEN = { crust: "var(--c2)", empty: "var(--chip)", cut: "var(--muted)", parts: ["var(--c1)", "var(--c4)"], dot: "var(--c2)" };
+  const PAPER = { crust: "#000", empty: "#fff", cut: "#000", parts: ["#9a9a9a", "#cfcfcf"], dot: "#555" };
+  // fill(i): which part piece i belongs to (0 or 1), or -1 when it is not colored in.
+  // A pizza: a crust ring, slices from the top going round clockwise, pepperoni dots on the slices with toppings.
+  function pizza(svg, cx, cy, r, d, fill, c) {
+    svgEl("circle", { cx, cy, r, fill: c.crust }, svg);
+    const ri = r * 0.86;
+    const at = (k, rr) => { const ang = -Math.PI / 2 + k / d * 2 * Math.PI; return [cx + rr * Math.cos(ang), cy + rr * Math.sin(ang)]; };
+    for (let i = 0; i < d; i++) {
+      const part = fill(i), [x1, y1] = at(i, ri), [x2, y2] = at(i + 1, ri);
+      svgEl("path", { d: `M${cx} ${cy}L${x1.toFixed(2)} ${y1.toFixed(2)}A${ri} ${ri} 0 ${d === 1 ? 1 : 0} 1 ${x2.toFixed(2)} ${y2.toFixed(2)}Z`,
+        fill: part < 0 ? c.empty : c.parts[part] }, svg);
+      if (part >= 0) {
+        const dots = d <= 3 ? 3 : d <= 6 ? 2 : 1, mid = i + 0.5;
+        for (let k = 0; k < dots; k++) {
+          const off = dots === 1 ? 0 : (k - (dots - 1) / 2) * 0.32, rr = ri * (dots === 3 && k === 1 ? 0.35 : 0.62);
+          const [x, y] = at(mid + off * (dots === 3 && k === 1 ? 0 : 1), rr);
+          svgEl("circle", { cx: x.toFixed(2), cy: y.toFixed(2), r: (r * (d > 8 ? 0.06 : 0.085)).toFixed(2), fill: c.dot }, svg);
+        }
+      }
+    }
+    if (d > 1) for (let i = 0; i < d; i++) {
+      const [x, y] = at(i, ri);
+      svgEl("line", { x1: cx, y1: cy, x2: x.toFixed(2), y2: y.toFixed(2), stroke: c.cut, "stroke-width": r * 0.03, "stroke-linecap": "round" }, svg);
+    }
+  }
+  // A bar: d equal pieces side by side, colored in from the left.
+  function bar(svg, x, y, w, h, d, fill, c) {
+    for (let i = 0; i < d; i++) {
+      const part = fill(i);
+      svgEl("rect", { x: (x + i * w / d).toFixed(2), y, width: (w / d).toFixed(2), height: h, fill: part < 0 ? c.empty : c.parts[part] }, svg);
+    }
+    for (let i = 1; i < d; i++) svgEl("line", { x1: (x + i * w / d).toFixed(2), y1: y, x2: (x + i * w / d).toFixed(2), y2: y + h, stroke: c.cut, "stroke-width": 2.5 }, svg);
+    svgEl("rect", { x, y, width: w, height: h, rx: 6, fill: "none", stroke: c.cut, "stroke-width": 3 }, svg);
+  }
+  // Draws problem p: one picture to name, two to compare, or the sum cut into the common pieces.
+  function draw(svg, p, c) {
+    svg.textContent = "";
+    const one = (x) => (i) => i < x.n ? 0 : -1;
+    const isBar = p.look === "bar";
+    if (p.type === "cmp") {
+      const both = (x, part) => (i) => i < x.n ? part : -1;
+      if (isBar) {
+        svg.setAttribute("viewBox", "0 0 400 150");
+        bar(svg, 4, 8, 392, 58, p.a.d, both(p.a, 0), c);
+        bar(svg, 4, 84, 392, 58, p.b.d, both(p.b, 1), c);
+      } else {
+        svg.setAttribute("viewBox", "0 0 420 200");
+        pizza(svg, 105, 100, 96, p.a.d, both(p.a, 0), c);
+        pizza(svg, 315, 100, 96, p.b.d, both(p.b, 1), c);
+      }
+      return;
+    }
+    let d, fill;
+    if (p.type === "name") { d = p.x.d; fill = one(p.x); }
+    else {
+      d = p.ans.d;
+      const first = p.a.n * d / p.a.d, second = p.b.n * d / p.b.d;
+      fill = (i) => i < first ? 0 : i < first + second ? 1 : -1;
+    }
+    if (isBar) { svg.setAttribute("viewBox", "0 0 400 90"); bar(svg, 4, 8, 392, 74, d, fill, c); }
+    else { svg.setAttribute("viewBox", "0 0 200 200"); pizza(svg, 100, 100, 96, d, fill, c); }
+  }
+
+  // ---- One round ----
+  function render() {
+    $("score").textContent = right + " / " + tried;
+    $("streak").textContent = streak;
+    modeBtns.forEach(b => b.setAttribute("aria-pressed", String(b.dataset.mode === mode)));
+    lookBtns.forEach(b => b.setAttribute("aria-pressed", String(b.dataset.look === look)));
+    lvBtns.forEach(b => {
+      b.setAttribute("aria-pressed", String(+b.dataset.lv === lv));
+      b.textContent = t("pzUpTo", { n: Loopy.num(LEVELS[+b.dataset.lv].max) });
+    });
+    picsBox.checked = pics;
+  }
+  function span(cls, text) {
+    const s = document.createElement("span");
+    s.className = cls;
+    if (text !== undefined) s.textContent = text;
+    return s;
+  }
+  // A stacked fraction: top number, line, bottom number. Screen readers hear "3/4".
+  function frac(x) {
+    const f = span("fr");
+    f.append(span("nu", Loopy.num(x.n)), span("de", Loopy.num(x.d)));
+    f.setAttribute("aria-label", txt(x));
+    return f;
+  }
+  function button(i, main, small, aria) {
+    const b = document.createElement("button");
+    b.type = "button";
+    b.id = "choice-" + i;
+    if (typeof main === "string") b.appendChild(span("sym", main)); else b.appendChild(main);
+    if (small) { const s = document.createElement("small"); s.textContent = small; b.appendChild(s); }
+    if (aria) b.setAttribute("aria-label", aria);
+    choicesEl.appendChild(b);
+    return b;
+  }
+
+  function newRound() {
+    let p;
+    do { p = makeProblem(); } while (p.key === lastKey);
+    lastKey = p.key; cur = p; answered = false;
+    card.classList.remove("good", "bad");
+    feedbackEl.className = "feedback";
+    feedbackEl.textContent = "";
+    showEl.textContent = "";
+    choicesEl.textContent = "";
+    choicesEl.className = "choices" + (p.type === "cmp" ? " three" : "");
+    draw(pic, p, SCREEN);
+    // Naming always shows the picture: it is the question. Compare and Add show it first only when the setting is on.
+    pic.classList.toggle("off", p.type !== "name" && !pics);
+    if (p.type === "name") {
+      promptEl.textContent = t(p.look === "bar" ? "pzAskBar" : "pzAskPizza");
+      p.opts.forEach((o, i) => {
+        const b = button(i, frac(o), words(o), txt(o));
+        b.dataset.answer = txt(o);
+        b.addEventListener("click", () => choose(b, o));
+      });
+    } else if (p.type === "cmp") {
+      promptEl.textContent = t("pzAskCmp");
+      showEl.append(frac(p.a), span("ring empty"), frac(p.b));
+      const v = { a: txt(p.a), b: txt(p.b) };
+      [["<", "pzLess"], ["=", "pzEq"], [">", "pzMore"]].forEach(([s, k], i) => {
+        const b = button(i, s, t(k), t(k + "Aria", v));
+        b.dataset.answer = s;
+        b.addEventListener("click", () => choose(b, s));
+      });
+    } else {
+      promptEl.textContent = t("pzAskAdd");
+      showEl.append(frac(p.a), span("sign", "+"), frac(p.b), span("sign", "="), span("gap empty"));
+      p.opts.forEach((o, i) => {
+        const b = button(i, frac(o), "", txt(o));
+        b.dataset.answer = txt(o);
+        b.addEventListener("click", () => choose(b, o));
+      });
+    }
+    $("next").textContent = t("pzNew");
+    Loopy.speech.read();
+  }
+
+  // One tap picks the answer.
+  function choose(btn, picked) {
+    if (answered) return;
+    const good = cur.type === "name" ? txt(cur.x) : cur.type === "cmp" ? signOf(cur.a, cur.b) : txt(cur.ans);
+    [...choicesEl.children].forEach(b => {
+      b.disabled = true;
+      b.classList.add(b.dataset.answer === good ? "right" : b === btn ? "wrong" : "faded");
+    });
+    const slot = showEl.querySelector(".ring, .gap");
+    if (slot) {
+      slot.classList.remove("empty");
+      slot.textContent = "";
+      if (cur.type === "cmp") slot.textContent = good; else slot.appendChild(frac(cur.ans));
+    }
+    const ok = btn.dataset.answer === good;
+    const yours = cur.type === "cmp" ? txt(cur.a) + " " + picked + " " + txt(cur.b) : txt(picked);
+    finish(ok, yours, typeof picked === "string" ? null : picked);
+  }
+
+  function finish(ok, yours, pickedFrac) {
+    answered = true; tried++;
+    if (ok) { right++; streak++; } else { streak = 0; }
+    if (ok) Loopy.rewards.correct("pizza-fractions", streak, harder());
+    else Loopy.rewards.wrong("pizza-fractions", {
+      q: cur.type === "name" ? t(cur.look === "bar" ? "pzBar" : "pzPizza") + " " + txt(cur.x) : cur.type === "cmp" ? txt(cur.a) + " ? " + txt(cur.b) : txt(cur.a) + " + " + txt(cur.b),
+      a: answerText(cur), y: yours, k: cur.kind
+    });
+    card.classList.add(ok ? "good" : "bad");
+    pic.classList.remove("off");
+    feedbackEl.className = "feedback " + (ok ? "good" : "bad");
+    feedbackEl.innerHTML = "<strong></strong>";
+    feedbackEl.firstChild.textContent = ok ? (streak >= 3 ? t("correctRow", { n: streak }) : t("correct")) : t("notQuite");
+    feedbackEl.appendChild(document.createTextNode(explain(cur, ok ? null : pickedFrac)));
+    $("next").textContent = t("pzNext");
+    render();
+    $("next").focus({ preventScroll: true });
+  }
+
+  // What "Make it harder" does after 10 in a row: more pieces, then all three kinds mixed, then no picture first.
+  function harder() {
+    if (lv < 2) return { label: t("pzTryUpTo", { n: Loopy.num(LEVELS[lv + 1].max) }), apply: () => { lv++; store.set("pz.level.a" + age, lv); render(); } };
+    if (mode !== "mix") return { label: t("pzTryMix"), apply: () => { mode = "mix"; store.set("pz.mode.a" + age, mode); render(); } };
+    if (pics) return { label: t("pzNoPics"), apply: () => { pics = false; store.set("pz.pics.a" + age, pics); render(); } };
+    return null;
+  }
+
+  modeBtns.forEach(b => b.addEventListener("click", () => { mode = b.dataset.mode; store.set("pz.mode.a" + age, mode); render(); newRound(); }));
+  lvBtns.forEach(b => b.addEventListener("click", () => { lv = +b.dataset.lv; store.set("pz.level.a" + age, lv); render(); newRound(); }));
+  lookBtns.forEach(b => b.addEventListener("click", () => { look = b.dataset.look; store.set("pz.look.a" + age, look); render(); newRound(); }));
+  picsBox.addEventListener("change", () => {
+    pics = picsBox.checked; store.set("pz.pics.a" + age, pics);
+    if (!answered) pic.classList.toggle("off", cur.type !== "name" && !pics);
+  });
+  window.addEventListener("loopy:age", (e) => { age = e.detail; loadForAge(); render(); newRound(); });
+  $("next").addEventListener("click", newRound);
+  $("reset").addEventListener("click", () => { right = 0; tried = 0; streak = 0; Loopy.recent.clear("pizza-fractions"); render(); newRound(); });
+  document.addEventListener("keydown", (e) => {
+    if (e.target.tagName === "INPUT" || document.querySelector(".loopy-cheer.big")) return;
+    if (e.key === "Enter" && answered && e.target.tagName !== "BUTTON") { newRound(); return; }
+    if (answered) return;
+    const sign = ["<", "=", ">"].indexOf(e.key);
+    const n = cur.type === "cmp" && sign !== -1 ? sign + 1 : parseInt(e.key, 10);
+    const b = n >= 1 && choicesEl.children[n - 1];
+    if (b && !b.disabled) b.click();
+  });
+
+  // Read aloud: "What part of the pizza has toppings? 1 half, 1 third, 2 thirds or 1 quarter.",
+  // "Is 3 quarters smaller than, equal to, or bigger than 5 eighths?" or "What is 1 half plus 1 quarter?"
+  Loopy.speech.question({ host: card, text: () => {
+    if (cur.type === "cmp") return t("pzReadCmp", { a: words(cur.a), b: words(cur.b) });
+    if (cur.type === "add") return t("pzReadAdd", { a: words(cur.a), b: words(cur.b) });
+    const w = cur.opts.map(words);
+    return t("pzReadName", { q: t(cur.look === "bar" ? "pzAskBar" : "pzAskPizza"), list: w.slice(0, -1).join(", ") + " " + t("orWord") + " " + w[w.length - 1] });
+  } });
+
+  // Print worksheet: 20 problems at the same level and kind, in black and white.
+  // Pictures to name go in a grid of boxes; comparing and adding go one per line.
+  const MODE_NAME = { name: "pzNameIt", cmp: "pzCmp", add: "pzAdd", mix: "pzMix" };
+  Loopy.worksheet({
+    title: () => t("pzName"),
+    level: () => [t("ageLabel", { n: age }), t("pzProblems") + ": " + t(MODE_NAME[mode]),
+      t("pzPieces") + ": " + t("pzUpTo", { n: Loopy.num(LEVELS[lv].max) })].join(" · "),
+    how: () => t({ name: "pzHowName", cmp: "pzHowCmp", add: "pzHowAdd", mix: "pzHowMix" }[mode]),
+    get layout() { return mode === "name" || mode === "mix" ? "clock" : "line"; },
+    make: (n) => {
+      const list = [], keys = new Set();
+      for (let tries = 0; list.length < n; tries++) {
+        const p = makeProblem();
+        if (keys.has(p.key) && tries < 500) continue;
+        keys.add(p.key); list.push(p);
+      }
+      return list;
+    },
+    cell: (p) => {
+      const box = span("ws-pz");
+      if (p.type === "name") {
+        const svg = svgEl("svg", { class: "ws-pic" + (p.look === "bar" ? " bar" : ""), "aria-hidden": "true" });
+        draw(svg, p, PAPER);
+        box.append(svg, span("ws-blank"));
+        return box;
+      }
+      const line = span("ws-line");
+      if (p.type === "cmp") line.append(frac(p.a), span("ws-ring"), frac(p.b));
+      else line.append(frac(p.a), "+", frac(p.b), "=", span("ws-blank"));
+      box.appendChild(line);
+      return box;
+    },
+    answer: answerText
+  });
+
+  render();
+  newRound();
+})();
+</script>
+</body>
+</html>
