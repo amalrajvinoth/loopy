@@ -1,0 +1,38 @@
+# What Time Is It?
+
+Practice reading a clock with hands.
+
+[Play it](https://amalrajvinoth.github.io/loopy/math/what-time-is-it/)
+
+## How to play
+
+1. Look at the clock. The short hand shows the hour. The long hand shows the minutes.
+2. Tap the time that matches the clock.
+3. Read the short reason, then tap **Next time**.
+
+You can also use a keyboard. Press **1** to **4** to pick an answer, and **Enter** to go on.
+
+## How hard it is
+
+| Age | Times on the clock |
+| --- | --- |
+| 6 and under | Hours and half hours, like 3:00 and 3:30 |
+| 7 | Quarter hours, like 3:15 and 3:45 |
+| 8 | Every 5 minutes, like 3:25 |
+| 9 and up | Every minute, like 3:27 |
+
+The wrong answers are the mistakes kids often make, like mixing up the two hands.
+
+## Settings
+
+Tap **Settings** to choose:
+
+- **Level:** Hours & halves, Quarter hours, Every 5 min, or Every minute.
+- **Show minute numbers on the clock:** adds small minute numbers around the edge to help count.
+
+After 10 right in a row, the game asks if you want to try the next level.
+
+## The reason after each answer
+
+The game explains how to read the clock.
+For example: "The short hand is just past 3. The long hand points to 5, which is 25 minutes."

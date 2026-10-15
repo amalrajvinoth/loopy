@@ -75,51 +75,79 @@ footer { color: var(--muted); font-size: 0.95rem; text-align: center; }
 <div class="wrap">
   <header>
     <h1 aria-label="Loopy"><span>L</span><span>o</span><span>o</span><span>p</span><span>y</span></h1>
-    <p class="lead">Learn. Play. Repeat.</p>
-    <div class="controls" style="justify-content:center"><div id="age-picker"></div><div id="theme-picker"></div><button id="sound-toggle"></button></div>
+    <p class="lead" data-t="tagline">Learn. Play. Repeat.</p>
+    <div class="controls" style="justify-content:center"><div id="age-picker"></div><div id="theme-picker"></div><button id="sound-toggle"></button><div id="lang-picker"></div></div>
   </header>
   <section class="shelf" aria-labelledby="shelf-title">
     <div class="shelf-top">
-      <h2 id="shelf-title">My stars</h2>
+      <h2 id="shelf-title" data-t="myStars">My stars</h2>
       <span id="star-chip"></span>
     </div>
     <p class="shelf-next" id="shelf-next"></p>
     <div class="meter" aria-hidden="true"><i id="meter-fill"></i></div>
     <div class="badges" id="badges"></div>
     <details class="transfer">
-      <summary>Move my stars to another device</summary>
+      <summary data-t="moveStars">Move my stars to another device</summary>
       <div class="transfer-body">
-        <p>Copy this code on this device, then paste it on the other one.</p>
-        <div class="transfer-row"><input id="code-out" readonly aria-label="Your stars code"><button type="button" id="code-copy">Copy</button></div>
-        <div class="transfer-row"><input id="code-in" placeholder="Paste a code here" aria-label="Paste a stars code"><button type="button" id="code-load">Load</button></div>
+        <p data-t="moveHow">Copy this code on this device, then paste it on the other one.</p>
+        <div class="transfer-row"><input id="code-out" readonly data-t-aria="yourCode" aria-label="Your stars code"><button type="button" id="code-copy" data-t="copy">Copy</button></div>
+        <div class="transfer-row"><input id="code-in" placeholder="Paste a code here" data-t-placeholder="pasteHere" data-t-aria="pasteCode" aria-label="Paste a stars code"><button type="button" id="code-load" data-t="load">Load</button></div>
         <p id="code-msg" aria-live="polite"></p>
       </div>
     </details>
   </section>
   <main id="list" style="display:flex;flex-direction:column;gap:28px"></main>
-  <footer>More games are on the way!</footer>
+  <footer data-t="moreSoon">More games are on the way!</footer>
 </div>
 <script>
+Loopy.addStrings({
+  en: {
+    tagline: "Learn. Play. Repeat.", myStars: "My stars", moveStars: "Move my stars to another device",
+    moveHow: "Copy this code on this device, then paste it on the other one.", yourCode: "Your stars code", copy: "Copy",
+    pasteHere: "Paste a code here", pasteCode: "Paste a stars code", load: "Load", moreSoon: "More games are on the way!",
+    copied: "Copied!", copyByHand: "Select the code and copy it.", badCode: "That code didn't work. Check it was copied in full.",
+    toNext: "{n} more stars to the {name} badge. Every right answer earns a star.", toNextOne: "1 more star to the {name} badge. Every right answer earns a star.",
+    allBadges: "You have every badge. You're a Loopy Master!", earned: "Earned", nStars: "{n} stars",
+    play: "Play →", ages: "Ages {a}–{b}", more: "More to explore", noneForAge: "No games for age {n} yet. Try the ones below.",
+    math: "Math",
+    pmTitle: "Plus and Minus", pmTag: "Adding and taking away", pmText: "Worksheet-style sums typed on a big number pad. The numbers grow with your age.",
+    tsTitle: "Times and Share", tsTag: "Times and division", tsText: "Times tables with dots to count, and sharing into equal groups. Bigger numbers as you grow.",
+    clTitle: "What Time Is It?", clTag: "Telling time", clText: "Read the hands on the clock and pick the right time, from half hours down to the minute."
+  },
+  de: {
+    tagline: "Lernen. Spielen. Wiederholen.", myStars: "Meine Sterne", moveStars: "Sterne auf ein anderes Gerät bringen",
+    moveHow: "Kopiere diesen Code hier und füge ihn auf dem anderen Gerät ein.", yourCode: "Dein Sterne-Code", copy: "Kopieren",
+    pasteHere: "Code hier einfügen", pasteCode: "Sterne-Code einfügen", load: "Laden", moreSoon: "Bald kommen mehr Spiele!",
+    copied: "Kopiert!", copyByHand: "Markiere den Code und kopiere ihn.", badCode: "Der Code hat nicht geklappt. Prüfe, ob er ganz kopiert wurde.",
+    toNext: "Noch {n} Sterne bis zum Abzeichen {name}. Jede richtige Antwort gibt einen Stern.", toNextOne: "Noch 1 Stern bis zum Abzeichen {name}. Jede richtige Antwort gibt einen Stern.",
+    allBadges: "Du hast alle Abzeichen. Du bist ein Loopy-Meister!", earned: "Geschafft", nStars: "{n} Sterne",
+    play: "Spielen →", ages: "{a}–{b} Jahre", more: "Mehr entdecken", noneForAge: "Noch keine Spiele für {n} Jahre. Probier die unten.",
+    math: "Mathe",
+    pmTitle: "Plus und Minus", pmTag: "Plus und Minus rechnen", pmText: "Aufgaben wie auf dem Arbeitsblatt, getippt auf einem großen Zahlenfeld. Die Zahlen wachsen mit deinem Alter.",
+    tsTitle: "Mal und Teilen", tsTag: "Malnehmen und Teilen", tsText: "Einmaleins mit Punkten zum Zählen und Teilen in gleiche Gruppen. Größere Zahlen, wenn du wächst.",
+    clTitle: "Wie spät ist es?", clTag: "Uhr lesen", clText: "Lies die Zeiger der Uhr und wähle die richtige Zeit, von halben Stunden bis zur Minute."
+  }
+});
 // To add a game: put it in <subject>/<folder>/index.html and add one line below.
 // ages: the youngest and oldest age it suits. Games for the picked age show first.
+// The words for each game (title, tag, text) live in the strings above, under the game's "id" prefix.
 const GAMES = [
-  { subject: "Math", path: "math/plus-minus/", title: "Plus and Minus", tag: "Adding and taking away", ages: [5, 16],
-    text: "Worksheet-style sums typed on a big number pad. The numbers grow with your age." },
-  { subject: "Math", path: "math/times-share/", title: "Times and Share", tag: "Times and division", ages: [6, 16],
-    text: "Times tables with dots to count, and sharing into equal groups. Bigger numbers as you grow." },
-  { subject: "Math", path: "math/what-time-is-it/", title: "What Time Is It?", tag: "Telling time", ages: [5, 10],
-    text: "Read the hands on the clock and pick the right time, from half hours down to the minute." },
+  { subject: "math", path: "math/plus-minus/", id: "pm", ages: [5, 16] },
+  { subject: "math", path: "math/times-share/", id: "ts", ages: [6, 16] },
+  { subject: "math", path: "math/what-time-is-it/", id: "cl", ages: [5, 10] },
 ];
+const t = Loopy.t;
 const list = document.getElementById("list");
 
 function card(g) {
   const a = document.createElement("a");
   a.className = "quiz";
   a.href = g.path;
-  a.innerHTML = '<span class="tag"></span><h3></h3><p></p><span class="go">Play &rarr;</span>';
-  a.children[0].textContent = g.tag + " · Ages " + g.ages[0] + "–" + g.ages[1];
-  a.children[1].textContent = g.title;
-  a.children[2].textContent = g.text;
+  a.innerHTML = '<span class="tag"></span><h3></h3><p></p><span class="go"></span>';
+  a.children[0].textContent = t(g.id + "Tag") + " · " + t("ages", { a: g.ages[0], b: g.ages[1] });
+  a.children[1].textContent = t(g.id + "Title");
+  a.children[2].textContent = t(g.id + "Text");
+  a.children[3].textContent = t("play");
   return a;
 }
 function section(title) {
@@ -136,15 +164,15 @@ function render() {
   const fits = GAMES.filter(g => age >= g.ages[0] && age <= g.ages[1]);
   const others = GAMES.filter(g => !fits.includes(g));
   const groups = {};
-  for (const g of fits) (groups[g.subject] = groups[g.subject] || section(g.subject)).appendChild(card(g));
+  for (const g of fits) (groups[g.subject] = groups[g.subject] || section(t(g.subject))).appendChild(card(g));
   if (!fits.length) {
     const p = document.createElement("p");
     p.className = "empty";
-    p.textContent = "No games for age " + age + " yet. Try the ones below.";
+    p.textContent = t("noneForAge", { n: age });
     list.appendChild(p);
   }
   if (others.length) {
-    const grid = section("More to explore");
+    const grid = section(t("more"));
     for (const g of others) grid.appendChild(card(g));
   }
 }
@@ -160,18 +188,18 @@ window.addEventListener("loopy:age", render);
   const prev = R.BADGES.filter(b => b.stars <= stars).pop();
   const from = prev ? prev.stars : 0;
   document.getElementById("shelf-next").textContent = next
-    ? (next.stars - stars) + " more star" + (next.stars - stars === 1 ? "" : "s") + " to the " + next.name + " badge. Every right answer earns a star."
-    : "You have every badge. You're a Loopy Master!";
+    ? t(next.stars - stars === 1 ? "toNextOne" : "toNext", { n: next.stars - stars, name: next.name })
+    : t("allBadges");
   document.getElementById("meter-fill").style.width = next ? Math.round((stars - from) / (next.stars - from) * 100) + "%" : "100%";
   const out = document.getElementById("code-out"), msg = document.getElementById("code-msg");
   out.value = R.exportCode();
   document.getElementById("code-copy").addEventListener("click", () => {
     out.select();
-    navigator.clipboard.writeText(out.value).then(() => { msg.textContent = "Copied!"; }, () => { msg.textContent = "Select the code and copy it."; });
+    navigator.clipboard.writeText(out.value).then(() => { msg.textContent = t("copied"); }, () => { msg.textContent = t("copyByHand"); });
   });
   document.getElementById("code-load").addEventListener("click", () => {
     if (R.importCode(document.getElementById("code-in").value)) location.reload();
-    else msg.textContent = "That code didn't work. Check it was copied in full.";
+    else msg.textContent = t("badCode");
   });
   const box = document.getElementById("badges");
   for (const b of R.BADGES) {
@@ -181,7 +209,7 @@ window.addEventListener("loopy:age", render);
     d.style.setProperty("--tone", "var(" + b.color + ")");
     d.innerHTML = '<span class="medal"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="' + R.STAR_PATH + '"/></svg></span><span></span><small></small>';
     d.children[1].textContent = b.name;
-    d.children[2].textContent = got ? "Earned" : b.stars + " stars";
+    d.children[2].textContent = got ? t("earned") : t("nStars", { n: Loopy.num(b.stars) });
     box.appendChild(d);
   }
 })();

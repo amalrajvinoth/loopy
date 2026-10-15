@@ -1,14 +1,97 @@
-/* Loopy shared script: color themes, age picker, sounds, stars and badges.
+/* Loopy shared script: languages, color themes, age picker, sounds, stars and badges.
    Each part is its own block below. Load it in <head>. */
+
+// Languages: English (default) and German. Pages add their own words with Loopy.addStrings,
+// mark fixed text with data-t="key", and use Loopy.t("key", { name: value }) in scripts.
+(function () {
+  var KEY = "loopy.lang", LANGS = ["en", "de"];
+  var lang = "en";
+  try { var saved = localStorage.getItem(KEY); if (LANGS.indexOf(saved) !== -1) lang = saved; } catch (e) {}
+  document.documentElement.lang = lang;
+  var dict = { en: {}, de: {} };
+
+  var Loopy = window.Loopy = window.Loopy || {};
+  Loopy.lang = lang;
+  Loopy.addStrings = function (d) { LANGS.forEach(function (l) { if (d[l]) for (var k in d[l]) dict[l][k] = d[l][k]; }); };
+  Loopy.t = function (key, vars) {
+    var s = dict[lang][key];
+    if (s === undefined) s = dict.en[key];
+    if (s === undefined) return key;
+    if (vars) s = s.replace(/\{(\w+)\}/g, function (m, k) { return vars[k] !== undefined ? vars[k] : m; });
+    return s;
+  };
+  Loopy.num = function (n) { return n.toLocaleString(lang === "de" ? "de-DE" : "en-US"); };
+  Loopy.setLang = function (l) {
+    if (LANGS.indexOf(l) === -1 || l === lang) return;
+    try { localStorage.setItem(KEY, l); } catch (e) {}
+    location.reload();
+  };
+
+  Loopy.addStrings({
+    en: {
+      theme: "Color theme", black: "Black", sunny: "Sunny", ocean: "Ocean", candy: "Candy", forest: "Forest",
+      ageGroup: "Age", ageLabel: "Age {n}", younger: "Younger", older: "Older",
+      soundOn: "Sound on", soundOff: "Sound off", settings: "Settings", language: "Language",
+      starsEarned: "Stars earned",
+      b10: "First Steps", b25: "Rising Star", b50: "Super Learner", b100: "Brain Builder", b250: "Champion", b500: "Legend", b1000: "Loopy Master",
+      newBadge: "New badge: {name}!", badgeText: "You have earned {n} stars. Keep going!",
+      levelUp: "{n} in a row! Ready to level up?", makeHarder: "Make it harder", keepGoing: "Keep going", yay: "Yay!",
+      inARow: "{n} in a row!", bestYet: "That's your best streak yet!", amazing: "Amazing work!",
+      newBest: "New best streak: {n}!", keepItGoing: "Keep it going!",
+      correct: "Correct!", correctRow: "Correct! {n} in a row!", notQuite: "Not quite.",
+      score: "Score", streak: "Streak", home: "← Loopy", resetScore: "Reset score",
+      tapHint: "Tap the numbers to write your answer.", kbdHint: "Keyboard works too: numbers, Backspace, Enter.",
+      erase: "Erase", eraseAria: "Erase last digit", check: "Check", next: "Next", yourAnswer: "Your answer", both: "Both"
+    },
+    de: {
+      theme: "Farbthema", black: "Schwarz", sunny: "Sonnig", ocean: "Ozean", candy: "Bonbon", forest: "Wald",
+      ageGroup: "Alter", ageLabel: "Alter {n}", younger: "Jünger", older: "Älter",
+      soundOn: "Ton an", soundOff: "Ton aus", settings: "Einstellungen", language: "Sprache",
+      starsEarned: "Gesammelte Sterne",
+      b10: "Erste Schritte", b25: "Aufsteiger", b50: "Super-Lerner", b100: "Denk-Profi", b250: "Champion", b500: "Legende", b1000: "Loopy-Meister",
+      newBadge: "Neues Abzeichen: {name}!", badgeText: "Du hast {n} Sterne gesammelt. Weiter so!",
+      levelUp: "{n} richtig hintereinander! Bereit für mehr?", makeHarder: "Schwieriger machen", keepGoing: "Weiter so", yay: "Juhu!",
+      inARow: "{n} richtig hintereinander!", bestYet: "Das ist deine beste Serie!", amazing: "Super gemacht!",
+      newBest: "Neue beste Serie: {n}!", keepItGoing: "Mach weiter so!",
+      correct: "Richtig!", correctRow: "Richtig! {n} hintereinander!", notQuite: "Nicht ganz.",
+      score: "Punkte", streak: "Serie", home: "← Loopy", resetScore: "Punkte zurücksetzen",
+      tapHint: "Tippe auf die Zahlen, um deine Antwort zu schreiben.", kbdHint: "Die Tastatur geht auch: Zahlen, Rücktaste, Enter.",
+      erase: "Löschen", eraseAria: "Letzte Ziffer löschen", check: "Prüfen", next: "Weiter", yourAnswer: "Deine Antwort", both: "Beides"
+    }
+  });
+
+  function apply() {
+    document.querySelectorAll("[data-t]").forEach(function (el) { el.textContent = Loopy.t(el.getAttribute("data-t")); });
+    document.querySelectorAll("[data-t-aria]").forEach(function (el) { el.setAttribute("aria-label", Loopy.t(el.getAttribute("data-t-aria"))); });
+    document.querySelectorAll("[data-t-placeholder]").forEach(function (el) { el.setAttribute("placeholder", Loopy.t(el.getAttribute("data-t-placeholder"))); });
+    var box = document.getElementById("lang-picker");
+    if (box) {
+      box.className = "lang-picker";
+      box.setAttribute("role", "group");
+      box.setAttribute("aria-label", Loopy.t("language"));
+      box.innerHTML = "";
+      [["en", "EN", "English"], ["de", "DE", "Deutsch"]].forEach(function (o) {
+        var b = document.createElement("button");
+        b.type = "button"; b.id = "lang-" + o[0]; b.textContent = o[1]; b.title = o[2];
+        b.setAttribute("aria-label", o[2]);
+        b.setAttribute("aria-pressed", String(o[0] === lang));
+        b.addEventListener("click", function () { Loopy.setLang(o[0]); });
+        box.appendChild(b);
+      });
+    }
+  }
+  if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", apply);
+  else apply();
+})();
 
 // Loopy themes: black is the default, the choice is remembered on this device.
 (function () {
   var THEMES = [
-    { id: "black",  name: "Black",  bg: "#0a0a0c", dot: "#5b9dff" },
-    { id: "sunny",  name: "Sunny",  bg: "#fff8ec", dot: "#d4561f" },
-    { id: "ocean",  name: "Ocean",  bg: "#06263a", dot: "#4cc9f0" },
-    { id: "candy",  name: "Candy",  bg: "#fff0f6", dot: "#c2257a" },
-    { id: "forest", name: "Forest", bg: "#0f1f17", dot: "#8ce99a" }
+    { id: "black",  name: "black",  bg: "#0a0a0c", dot: "#5b9dff" },
+    { id: "sunny",  name: "sunny",  bg: "#fff8ec", dot: "#d4561f" },
+    { id: "ocean",  name: "ocean",  bg: "#06263a", dot: "#4cc9f0" },
+    { id: "candy",  name: "candy",  bg: "#fff0f6", dot: "#c2257a" },
+    { id: "forest", name: "forest", bg: "#0f1f17", dot: "#8ce99a" }
   ];
   var KEY = "loopy.theme";
   var saved = null;
@@ -21,13 +104,13 @@
     if (!box) return;
     box.className = "themes";
     box.setAttribute("role", "group");
-    box.setAttribute("aria-label", "Color theme");
+    box.setAttribute("aria-label", Loopy.t("theme"));
     THEMES.forEach(function (t) {
       var b = document.createElement("button");
       b.type = "button";
       b.id = "theme-" + t.id;
-      b.title = t.name;
-      b.setAttribute("aria-label", t.name + " theme");
+      b.title = Loopy.t(t.name);
+      b.setAttribute("aria-label", Loopy.t(t.name));
       b.style.setProperty("--sw-bg", t.bg);
       b.style.setProperty("--sw-dot", t.dot);
       b.addEventListener("click", function () {
@@ -84,10 +167,10 @@
     if (!box) return;
     box.className = "age-picker";
     box.setAttribute("role", "group");
-    box.setAttribute("aria-label", "Age");
-    box.innerHTML = '<button type="button" id="age-down" aria-label="Younger">&minus;</button>' +
+    box.setAttribute("aria-label", Loopy.t("ageGroup"));
+    box.innerHTML = '<button type="button" id="age-down" aria-label="' + Loopy.t("younger") + '">&minus;</button>' +
       '<span id="age-label" aria-live="polite"></span>' +
-      '<button type="button" id="age-up" aria-label="Older">+</button>';
+      '<button type="button" id="age-up" aria-label="' + Loopy.t("older") + '">+</button>';
     document.getElementById("age-down").addEventListener("click", function () { Loopy.setAge(age - 1); });
     document.getElementById("age-up").addEventListener("click", function () { Loopy.setAge(age + 1); });
     sync();
@@ -95,7 +178,7 @@
   function sync() {
     var l = document.getElementById("age-label");
     if (!l) return;
-    l.textContent = "Age " + age;
+    l.textContent = Loopy.t("ageLabel", { n: age });
     document.getElementById("age-down").disabled = age <= MIN;
     document.getElementById("age-up").disabled = age >= MAX;
   }
@@ -138,8 +221,8 @@
     if (!b) return;
     b.innerHTML = '<svg viewBox="0 0 24 24" aria-hidden="true" fill="currentColor">' + (on ? ON_ICON : OFF_ICON) + "</svg>";
     b.setAttribute("aria-pressed", String(on));
-    b.setAttribute("aria-label", on ? "Sound on" : "Sound off");
-    b.title = on ? "Sound on" : "Sound off";
+    b.setAttribute("aria-label", Loopy.t(on ? "soundOn" : "soundOff"));
+    b.title = Loopy.t(on ? "soundOn" : "soundOff");
   }
   function build() {
     var b = document.getElementById("sound-toggle");
@@ -165,13 +248,13 @@
 (function () {
   var KEY = "loopy.rewards";
   var BADGES = [
-    { stars: 10,   name: "First Steps",   color: "--c3" },
-    { stars: 25,   name: "Rising Star",   color: "--c1" },
-    { stars: 50,   name: "Super Learner", color: "--c2" },
-    { stars: 100,  name: "Brain Builder", color: "--c4" },
-    { stars: 250,  name: "Champion",      color: "--c5" },
-    { stars: 500,  name: "Legend",        color: "--c1" },
-    { stars: 1000, name: "Loopy Master",  color: "--c2" }
+    { stars: 10,   key: "b10",   color: "--c3" },
+    { stars: 25,   key: "b25",   color: "--c1" },
+    { stars: 50,   key: "b50", color: "--c2" },
+    { stars: 100,  key: "b100", color: "--c4" },
+    { stars: 250,  key: "b250",      color: "--c5" },
+    { stars: 500,  key: "b500",        color: "--c1" },
+    { stars: 1000, key: "b1000",  color: "--c2" }
   ];
   var STREAKS = [5, 10, 15, 20, 30, 50];
   var STAR_PATH = "M12 2.5l2.9 6 6.6.9-4.8 4.6 1.2 6.5L12 17.4l-5.9 3.1 1.2-6.5L2.5 9.4l6.6-.9z";
@@ -236,7 +319,7 @@
     var close = function () { el.classList.add("out"); setTimeout(function () { el.remove(); }, 250); };
     if (big) {
       var row = el.querySelector(".cheer-actions");
-      (actions || [{ label: "Yay!" }]).forEach(function (a, i) {
+      (actions || [{ label: Loopy.t("yay") }]).forEach(function (a, i) {
         var b = document.createElement("button");
         b.type = "button";
         b.textContent = a.label;
@@ -250,6 +333,7 @@
     confetti(big ? 160 : 70);
   }
 
+  BADGES.forEach(function (b) { Object.defineProperty(b, "name", { get: function () { return Loopy.t(b.key); } }); });
   function badgeFor(stars) { var got = null; BADGES.forEach(function (b) { if (stars >= b.stars) got = b; }); return got; }
   function nextBadge(stars) { for (var i = 0; i < BADGES.length; i++) if (stars < BADGES[i].stars) return BADGES[i]; return null; }
 
@@ -288,18 +372,18 @@
       var after = badgeFor(data.stars);
       if (after && after !== before) {
         Loopy.sound.play("badge");
-        celebrate("New badge: " + after.name + "!", "You have earned " + data.stars + " stars. Keep going!", true);
+        celebrate(Loopy.t("newBadge", { name: after.name }), Loopy.t("badgeText", { n: data.stars }), true);
       } else if (streak % 10 === 0 && harder) {
         Loopy.sound.play("badge");
-        celebrate(streak + " in a row! Ready to level up?", harder.label + ".", true,
-          [{ label: "Make it harder", fn: harder.apply }, { label: "Keep going" }]);
+        celebrate(Loopy.t("levelUp", { n: streak }), harder.label + ".", true,
+          [{ label: Loopy.t("makeHarder"), fn: harder.apply }, { label: Loopy.t("keepGoing") }]);
       } else if (STREAKS.indexOf(streak) !== -1) {
         Loopy.sound.play("cheer");
-        celebrate(streak + " in a row!", newBest ? "That's your best streak yet!" : "Amazing work!", false);
+        celebrate(Loopy.t("inARow", { n: streak }), Loopy.t(newBest ? "bestYet" : "amazing"), false);
       } else if (newBest && streak > 5 && !cheeredBest[game]) {
         cheeredBest[game] = true;
         Loopy.sound.play("cheer");
-        celebrate("New best streak: " + streak + "!", "Keep it going!", false);
+        celebrate(Loopy.t("newBest", { n: streak }), Loopy.t("keepItGoing"), false);
       } else {
         Loopy.sound.play("right");
       }
@@ -311,7 +395,7 @@
     var chip = document.getElementById("star-chip");
     if (chip) {
       chip.className = "star-chip";
-      chip.setAttribute("aria-label", "Stars earned");
+      chip.setAttribute("aria-label", Loopy.t("starsEarned"));
       chip.innerHTML = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="' + STAR_PATH + '"/></svg><b data-loopy-stars></b>';
     }
     updateChips();
@@ -327,7 +411,7 @@
     var btn = document.getElementById("settings-toggle"), panel = document.getElementById("settings-panel");
     if (!btn || !panel) return;
     btn.className = "settings-toggle";
-    btn.innerHTML = GEAR + "<span>Settings</span>";
+    btn.innerHTML = GEAR + "<span>" + Loopy.t("settings") + "</span>";
     var sync = function () { btn.setAttribute("aria-expanded", String(!panel.hidden)); };
     btn.addEventListener("click", function () { panel.hidden = !panel.hidden; sync(); });
     sync();

@@ -12,7 +12,7 @@
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="apple-mobile-web-app-title" content="Loopy">
-<title>Times and Share</title>
+<title data-t="tsName">Times and Share</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Lexend:wght@400;600;700&display=swap">
 <style>
@@ -222,37 +222,37 @@ body { min-height: 100vh; min-height: 100dvh; padding-block: 12px 16px; }
     </div>
   </header>
   <div class="top">
-    <h1 id="title">Times and Share</h1>
+    <h1 id="title" data-t="tsName">Times and Share</h1>
     <div class="score" aria-live="polite">
-      <div class="pill"><span>Score</span><b id="score">0 / 0</b></div>
-      <div class="pill"><span>Streak</span><b id="streak">0</b></div>
+      <div class="pill"><span data-t="score">Score</span><b id="score">0 / 0</b></div>
+      <div class="pill"><span data-t="streak">Streak</span><b id="streak">0</b></div>
     </div>
   </div>
   <div class="settings-panel" id="settings-panel" hidden>
-    <div class="controls"><div id="age-picker"></div><div id="theme-picker"></div><button id="sound-toggle"></button></div>
+    <div class="controls"><div id="age-picker"></div><div id="theme-picker"></div><button id="sound-toggle"></button><div id="lang-picker"></div></div>
     <div>
-      <p class="seg-label" id="op-label">Problems</p>
+      <p class="seg-label" id="op-label" data-t="problems">Problems</p>
       <div class="seg" role="group" aria-labelledby="op-label" id="op-seg">
-        <button type="button" id="op-mul" data-op="mul">Times &times;</button>
-        <button type="button" id="op-div" data-op="div">Share &divide;</button>
-        <button type="button" id="op-mix" data-op="mix">Both</button>
+        <button type="button" id="op-mul" data-op="mul" data-t="times">Times &times;</button>
+        <button type="button" id="op-div" data-op="div" data-t="share">Share &divide;</button>
+        <button type="button" id="op-mix" data-op="mix" data-t="both">Both</button>
       </div>
     </div>
-    <label class="helper"><input type="checkbox" id="dots-on"> Show dots to count (times tables only)</label>
+    <label class="helper"><input type="checkbox" id="dots-on"> <span data-t="dotsLabel">Show dots to count (times tables only)</span></label>
     <p class="level-note" id="level-note"></p>
     <div class="panel-foot">
-      <p>Keyboard works too: numbers, Backspace, Enter.</p>
-      <button type="button" class="reset" id="reset">Reset score</button>
+      <p data-t="kbdHint">Keyboard works too: numbers, Backspace, Enter.</p>
+      <button type="button" class="reset" id="reset" data-t="resetScore">Reset score</button>
     </div>
   </div>
 
   <main class="play">
     <div class="problem-card" id="card">
       <div class="eq" id="eq" aria-live="polite">
-        <span id="eq-a">7</span><span class="op" id="op-sign">&times;</span><span id="eq-b">8</span><span class="eqs">=</span><span class="ans empty" id="ans" aria-label="Your answer"></span>
+        <span id="eq-a">7</span><span class="op" id="op-sign">&times;</span><span id="eq-b">8</span><span class="eqs">=</span><span class="ans empty" id="ans" aria-label="Your answer" data-t-aria="yourAnswer"></span>
       </div>
       <div class="dots" id="dots" aria-hidden="true"></div>
-      <p class="feedback" id="feedback"><span class="hint">Tap the numbers to write your answer.</span></p>
+      <p class="feedback" id="feedback"><span class="hint" data-t="tapHint">Tap the numbers to write your answer.</span></p>
     </div>
 
     <div class="pad" id="pad">
@@ -265,28 +265,64 @@ body { min-height: 100vh; min-height: 100dvh; padding-block: 12px 16px; }
       <button type="button" id="k7" data-d="7">7</button>
       <button type="button" id="k8" data-d="8">8</button>
       <button type="button" id="k9" data-d="9">9</button>
-      <button type="button" id="k-erase" class="erase" aria-label="Erase last digit">Erase</button>
+      <button type="button" id="k-erase" class="erase" aria-label="Erase last digit" data-t-aria="eraseAria" data-t="erase">Erase</button>
       <button type="button" id="k0" data-d="0">0</button>
-      <button type="button" id="k-go" class="go">Check</button>
+      <button type="button" id="k-go" class="go" data-t="check">Check</button>
     </div>
   </main>
 </div>
 
 <script>
+Loopy.addStrings({
+  en: {
+    tsName: "Times and Share", problems: "Problems", times: "Times ×", share: "Share ÷",
+    dotsLabel: "Show dots to count (times tables only)",
+    note6: "Tables of 1, 2, 5 and 10, up to 5 times.", note7: "Tables of 2, 5 and 10.", note8: "Tables of 2, 3, 4, 5 and 10.",
+    note9: "All tables from 2 to 10.", note10: "All tables from 2 to 12.",
+    noteBig2: "Two-digit numbers times or shared by one digit.", noteBig3: "Bigger numbers: three digits by one, or two digits by two.",
+    tsOne: "Times 1 keeps a number the same: {eq}.",
+    tsGroups: "{a} × {b} is {g} groups of {size}. Count by {size}s: {list}.",
+    tsZero: "Think: {d} × {s} = {p}, then add 1 zero: {ans}.", tsZeros: "Think: {d} × {s} = {p}, then add {z} zeros: {ans}.",
+    tsSplit: "Split {n} into {parts}. {steps}. Add them: {sum}.",
+    tsShare: "Share {a} into {b} equal groups. {b} × {q} = {a}, so each group gets {q}.",
+    tsThink: "Think: {b} × {q} = {a}, so {a} ÷ {b} = {q}.",
+    tsHowMany: "How many in each group?", tsCount: "Count the dots, or use what you know.",
+    tsTryMix: "Try times and sharing mixed together", tsNoDots: "Try it without the dots",
+    timesWord: "times", dividedBy: "divided by"
+  },
+  de: {
+    tsName: "Mal und Teilen", problems: "Aufgaben", times: "Mal ×", share: "Teilen ÷",
+    dotsLabel: "Punkte zum Zählen zeigen (nur beim Einmaleins)",
+    note6: "Reihen 1, 2, 5 und 10, bis 5 mal.", note7: "Reihen 2, 5 und 10.", note8: "Reihen 2, 3, 4, 5 und 10.",
+    note9: "Alle Reihen von 2 bis 10.", note10: "Alle Reihen von 2 bis 12.",
+    noteBig2: "Zweistellige Zahlen mal oder geteilt durch eine Ziffer.", noteBig3: "Größere Zahlen: dreistellig mal einstellig oder zweistellig mal zweistellig.",
+    tsOne: "Mal 1 bleibt die Zahl gleich: {eq}.",
+    tsGroups: "{a} × {b} sind {g} Gruppen mit {size}. Zähle in {size}er-Schritten: {list}.",
+    tsZero: "Denke: {d} × {s} = {p}, dann hänge 1 Null an: {ans}.", tsZeros: "Denke: {d} × {s} = {p}, dann hänge {z} Nullen an: {ans}.",
+    tsSplit: "Zerlege {n} in {parts}. {steps}. Zusammen: {sum}.",
+    tsShare: "Teile {a} in {b} gleiche Gruppen. {b} × {q} = {a}, also bekommt jede Gruppe {q}.",
+    tsThink: "Denke: {b} × {q} = {a}, also {a} ÷ {b} = {q}.",
+    tsHowMany: "Wie viele sind in jeder Gruppe?", tsCount: "Zähle die Punkte oder nutze, was du schon weißt.",
+    tsTryMix: "Probiere Mal und Teilen gemischt", tsNoDots: "Probiere es ohne Punkte",
+    timesWord: "mal", dividedBy: "geteilt durch"
+  }
+});
+
 // GEN START
 const randInt = (lo, hi) => lo + Math.floor(Math.random() * (hi - lo + 1));
 const pick = (arr) => arr[Math.floor(Math.random() * arr.length)];
-const fmt = (n) => n.toLocaleString("en-US");
+const fmt = (n) => Loopy.num(n);
+const t = Loopy.t;
 
 // What each age practices. "facts" are times tables; "big" uses larger numbers.
 function levelForAge(age) {
-  if (age <= 6) return { kind: "facts", tables: [1, 2, 5, 10], upTo: 5, dots: true, note: "Tables of 1, 2, 5 and 10, up to 5 times." };
-  if (age === 7) return { kind: "facts", tables: [2, 5, 10], upTo: 10, dots: true, note: "Tables of 2, 5 and 10." };
-  if (age === 8) return { kind: "facts", tables: [2, 3, 4, 5, 10], upTo: 10, dots: true, note: "Tables of 2, 3, 4, 5 and 10." };
-  if (age === 9) return { kind: "facts", tables: [2, 3, 4, 5, 6, 7, 8, 9, 10], upTo: 10, dots: false, note: "All tables from 2 to 10." };
-  if (age === 10) return { kind: "facts", tables: [2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12], upTo: 12, dots: false, note: "All tables from 2 to 12." };
-  if (age <= 12) return { kind: "big", size: 2, dots: false, note: "Two-digit numbers times or shared by one digit." };
-  return { kind: "big", size: 3, dots: false, note: "Bigger numbers: three digits by one, or two digits by two." };
+  if (age <= 6) return { kind: "facts", tables: [1, 2, 5, 10], upTo: 5, dots: true, note: "note6" };
+  if (age === 7) return { kind: "facts", tables: [2, 5, 10], upTo: 10, dots: true, note: "note7" };
+  if (age === 8) return { kind: "facts", tables: [2, 3, 4, 5, 10], upTo: 10, dots: true, note: "note8" };
+  if (age === 9) return { kind: "facts", tables: [2, 3, 4, 5, 6, 7, 8, 9, 10], upTo: 10, dots: false, note: "note9" };
+  if (age === 10) return { kind: "facts", tables: [2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12], upTo: 12, dots: false, note: "note10" };
+  if (age <= 12) return { kind: "big", size: 2, dots: false, note: "noteBig2" };
+  return { kind: "big", size: 3, dots: false, note: "noteBig3" };
 }
 
 function makeProblem(opMode, level, avoid) {
@@ -319,31 +355,31 @@ const parts = (n) => String(n).split("").map((d, i, s) => +d * Math.pow(10, s.le
 function explain(p) {
   if (p.op === "mul") {
     if (p.a <= 12 && p.b <= 12) {
-      if (p.a === 1 || p.b === 1) return "Times 1 keeps a number the same: " + p.a + " × " + p.b + " = " + p.answer + ".";
+      if (p.a === 1 || p.b === 1) return t("tsOne", { eq: p.a + " × " + p.b + " = " + p.answer });
       const g = p.a, size = p.b, list = []; // read a × b as "a groups of b", matching the dot picture
       for (let i = 1; i <= g; i++) list.push(size * i);
-      return p.a + " × " + p.b + " is " + g + " groups of " + size + ". Count by " + size + "s: " + list.join(", ") + ".";
+      return t("tsGroups", { a: p.a, b: p.b, g, size, list: list.join(", ") });
     }
     // Bigger numbers: split the one with more places, multiply each part, add.
     const [big, small] = p.b >= 10 ? [p.b, p.a] : [p.a, p.b];
     const ps = parts(big), prods = ps.map(x => x * small);
     if (ps.length === 1) {
       const zeros = String(big).length - 1, d = big / Math.pow(10, zeros);
-      return "Think: " + d + " × " + small + " = " + d * small + ", then add " + zeros + " zero" + (zeros > 1 ? "s" : "") + ": " + fmt(p.answer) + ".";
+      return t(zeros > 1 ? "tsZeros" : "tsZero", { d, s: small, p: d * small, z: zeros, ans: fmt(p.answer) });
     }
     const times = ps.map((x, i) => (big === p.a ? fmt(x) + " × " + small : small + " × " + fmt(x)) + " = " + fmt(prods[i]));
-    return "Split " + fmt(big) + " into " + ps.map(fmt).join(" + ") + ". " + times.join(", ") + ". Add them: " +
-      prods.map(fmt).join(" + ") + " = " + fmt(p.answer) + ".";
+    return t("tsSplit", { n: fmt(big), parts: ps.map(fmt).join(" + "), steps: times.join(", "),
+      sum: prods.map(fmt).join(" + ") + " = " + fmt(p.answer) });
   }
   if (p.a <= 144 && p.answer <= 12) {
-    return "Share " + p.a + " into " + p.b + " equal groups. " + p.b + " × " + p.answer + " = " + p.a + ", so each group gets " + p.answer + ".";
+    return t("tsShare", { a: p.a, b: p.b, q: p.answer });
   }
   const qs = parts(p.answer);
-  if (qs.length === 1) return "Think: " + p.b + " × " + fmt(p.answer) + " = " + fmt(p.a) + ", so " + fmt(p.a) + " ÷ " + p.b + " = " + fmt(p.answer) + ".";
+  if (qs.length === 1) return t("tsThink", { a: fmt(p.a), b: p.b, q: fmt(p.answer) });
   const pieces = qs.map(q => q * p.b);
-  return "Split " + fmt(p.a) + " into " + pieces.map(fmt).join(" + ") + ". " +
-    pieces.map((x, i) => fmt(x) + " ÷ " + p.b + " = " + fmt(qs[i])).join(", ") + ". Add them: " +
-    qs.map(fmt).join(" + ") + " = " + fmt(p.answer) + ".";
+  return t("tsSplit", { n: fmt(p.a), parts: pieces.map(fmt).join(" + "),
+    steps: pieces.map((x, i) => fmt(x) + " ÷ " + p.b + " = " + fmt(qs[i])).join(", "),
+    sum: qs.map(fmt).join(" + ") + " = " + fmt(p.answer) });
 }
 // GEN END
 
@@ -366,7 +402,7 @@ function explain(p) {
     level = levelForAge(age);
     opMode = store.get("ts.op.a" + age, age <= 7 ? "mul" : "mix");
     dots = store.get("ts.dots.a" + age, level.dots);
-    $("level-note").textContent = "Age " + age + ": " + level.note;
+    $("level-note").textContent = t("ageLabel", { n: age }) + ": " + t(level.note);
     dotsBox.disabled = level.kind !== "facts";
   }
   loadForAge();
@@ -403,7 +439,7 @@ function explain(p) {
     dotsBox.checked = dots && level.kind === "facts";
     ansEl.textContent = typed === "" ? "" : fmt(parseInt(typed, 10));
     ansEl.classList.toggle("empty", !answered && typed === "");
-    goBtn.textContent = answered ? "Next" : "Check";
+    goBtn.textContent = t(answered ? "next" : "check");
     goBtn.disabled = !answered && typed === "";
     digitBtns.forEach(b => b.disabled = answered);
     $("k-erase").disabled = answered || typed === "";
@@ -417,14 +453,13 @@ function explain(p) {
     $("eq-a").textContent = fmt(current.a);
     $("eq-b").textContent = fmt(current.b);
     $("op-sign").textContent = current.op === "mul" ? "×" : "÷";
-    $("eq").setAttribute("aria-label", current.a + (current.op === "mul" ? " times " : " divided by ") + current.b);
+    $("eq").setAttribute("aria-label", current.a + " " + t(current.op === "mul" ? "timesWord" : "dividedBy") + " " + current.b);
     card.className = "problem-card";
     feedbackEl.className = "feedback";
     render();
     drawDots();
     feedbackEl.innerHTML = '<span class="hint"></span>';
-    feedbackEl.firstChild.textContent = current.op === "div" ? "How many in each group?"
-      : (dotsEl.hidden ? "Tap the numbers to write your answer." : "Count the dots, or use what you know.");
+    feedbackEl.firstChild.textContent = t(current.op === "div" ? "tsHowMany" : (dotsEl.hidden ? "tapHint" : "tsCount"));
   }
 
   function press(d) {
@@ -448,8 +483,8 @@ function explain(p) {
     feedbackEl.className = "feedback " + (ok ? "good" : "bad");
     const sign = current.op === "mul" ? " × " : " ÷ ";
     const head = ok
-      ? (streak >= 3 ? "Correct! " + streak + " in a row!" : "Correct!")
-      : "Not quite. " + fmt(current.a) + sign + fmt(current.b) + " = " + fmt(current.answer) + ".";
+      ? (streak >= 3 ? t("correctRow", { n: streak }) : t("correct"))
+      : t("notQuite") + " " + fmt(current.a) + sign + fmt(current.b) + " = " + fmt(current.answer) + ".";
     feedbackEl.innerHTML = "<strong></strong>";
     feedbackEl.firstChild.textContent = head;
     feedbackEl.appendChild(document.createTextNode(explain(current)));
@@ -459,10 +494,10 @@ function explain(p) {
   // What "Make it harder" does after 10 in a row: mix times and sharing, then hide the dots.
   function harder() {
     if (opMode !== "mix") {
-      return { label: "Try times and sharing mixed together", apply: () => { opMode = "mix"; store.set("ts.op.a" + age, opMode); render(); } };
+      return { label: t("tsTryMix"), apply: () => { opMode = "mix"; store.set("ts.op.a" + age, opMode); render(); } };
     }
     if (dots && level.kind === "facts") {
-      return { label: "Try it without the dots", apply: () => { dots = false; store.set("ts.dots.a" + age, dots); render(); } };
+      return { label: t("tsNoDots"), apply: () => { dots = false; store.set("ts.dots.a" + age, dots); render(); } };
     }
     return null;
   }

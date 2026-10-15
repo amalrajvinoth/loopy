@@ -12,7 +12,7 @@
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="apple-mobile-web-app-title" content="Loopy">
-<title>Plus and Minus</title>
+<title data-t="pmName">Plus and Minus</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Lexend:wght@400;600;700&display=swap">
 <style>
@@ -203,31 +203,31 @@ body { min-height: 100vh; min-height: 100dvh; padding-block: 12px 16px; }
   <div class="top">
     <h1 id="title">Plus and Minus to 100</h1>
     <div class="score" aria-live="polite">
-      <div class="pill"><span>Score</span><b id="score">0 / 0</b></div>
-      <div class="pill"><span>Streak</span><b id="streak">0</b></div>
+      <div class="pill"><span data-t="score">Score</span><b id="score">0 / 0</b></div>
+      <div class="pill"><span data-t="streak">Streak</span><b id="streak">0</b></div>
     </div>
   </div>
   <div class="settings-panel" id="settings-panel" hidden>
-    <div class="controls"><div id="age-picker"></div><div id="theme-picker"></div><button id="sound-toggle"></button></div>
+    <div class="controls"><div id="age-picker"></div><div id="theme-picker"></div><button id="sound-toggle"></button><div id="lang-picker"></div></div>
     <div>
-      <p class="seg-label" id="op-label">Problems</p>
+      <p class="seg-label" id="op-label" data-t="problems">Problems</p>
       <div class="seg" role="group" aria-labelledby="op-label" id="op-seg">
-        <button type="button" id="op-add" data-op="add">Adding</button>
-        <button type="button" id="op-sub" data-op="sub">Taking away</button>
-        <button type="button" id="op-mix" data-op="mix">Both</button>
+        <button type="button" id="op-add" data-op="add" data-t="adding">Adding</button>
+        <button type="button" id="op-sub" data-op="sub" data-t="takingAway">Taking away</button>
+        <button type="button" id="op-mix" data-op="mix" data-t="both">Both</button>
       </div>
     </div>
     <div>
-      <p class="seg-label" id="rg-label">Regrouping</p>
+      <p class="seg-label" id="rg-label" data-t="regrouping">Regrouping</p>
       <div class="seg" role="group" aria-labelledby="rg-label" id="rg-seg">
-        <button type="button" id="rg-no" data-rg="no">None</button>
-        <button type="button" id="rg-mix" data-rg="mix">Some</button>
-        <button type="button" id="rg-yes" data-rg="yes">Always</button>
+        <button type="button" id="rg-no" data-rg="no" data-t="none">None</button>
+        <button type="button" id="rg-mix" data-rg="mix" data-t="some">Some</button>
+        <button type="button" id="rg-yes" data-rg="yes" data-t="always">Always</button>
       </div>
     </div>
     <div class="panel-foot">
-      <p>Keyboard works too: numbers, Backspace, Enter.</p>
-      <button type="button" class="reset" id="reset">Reset score</button>
+      <p data-t="kbdHint">Keyboard works too: numbers, Backspace, Enter.</p>
+      <button type="button" class="reset" id="reset" data-t="resetScore">Reset score</button>
     </div>
   </div>
 
@@ -238,9 +238,9 @@ body { min-height: 100vh; min-height: 100dvh; padding-block: 12px 16px; }
         <div class="op" id="op-sign">+</div>
         <div class="num" id="bot-num">25</div>
         <div class="rule"></div>
-        <div class="ans empty" id="ans" aria-label="Your answer"></div>
+        <div class="ans empty" id="ans" aria-label="Your answer" data-t-aria="yourAnswer"></div>
       </div>
-      <p class="feedback" id="feedback"><span class="hint">Tap the numbers to write your answer.</span></p>
+      <p class="feedback" id="feedback"><span class="hint" data-t="tapHint">Tap the numbers to write your answer.</span></p>
     </div>
 
     <div class="pad" id="pad">
@@ -253,14 +253,41 @@ body { min-height: 100vh; min-height: 100dvh; padding-block: 12px 16px; }
       <button type="button" id="k7" data-d="7">7</button>
       <button type="button" id="k8" data-d="8">8</button>
       <button type="button" id="k9" data-d="9">9</button>
-      <button type="button" id="k-erase" class="erase" aria-label="Erase last digit">Erase</button>
+      <button type="button" id="k-erase" class="erase" aria-label="Erase last digit" data-t-aria="eraseAria" data-t="erase">Erase</button>
       <button type="button" id="k0" data-d="0">0</button>
-      <button type="button" id="k-go" class="go">Check</button>
+      <button type="button" id="k-go" class="go" data-t="check">Check</button>
     </div>
   </main>
 </div>
 
 <script>
+Loopy.addStrings({
+  en: {
+    pmName: "Plus and Minus", pmTitle: "Plus and Minus to {max}",
+    problems: "Problems", adding: "Adding", takingAway: "Taking away",
+    regrouping: "Regrouping", none: "None", some: "Some", always: "Always",
+    place0: "Ones", place1: "Tens", place2: "Hundreds", place3: "Thousands", place4: "Ten thousands",
+    one1: "ten", one2: "hundred", one3: "thousand", one4: "ten thousand",
+    pmCarry: "Write {w} and carry 1 {next}",
+    pmCant: "you can't take {b} from {a}, so trade 1 {next} for 10 {place}",
+    pmTrade: "trade 1 {next} for 10 {place}",
+    pmTrySome: "Try some regrouping problems", pmTryAll: "Try regrouping in every problem",
+    pmTryMix: "Try adding and taking away mixed together", plus: "plus", minus: "minus"
+  },
+  de: {
+    pmName: "Plus und Minus", pmTitle: "Plus und Minus bis {max}",
+    problems: "Aufgaben", adding: "Plus", takingAway: "Minus",
+    regrouping: "Übertrag", none: "Nie", some: "Manchmal", always: "Immer",
+    place0: "Einer", place1: "Zehner", place2: "Hunderter", place3: "Tausender", place4: "Zehntausender",
+    one1: "Zehner", one2: "Hunderter", one3: "Tausender", one4: "Zehntausender",
+    pmCarry: "Schreibe {w} und übertrage 1 {next}",
+    pmCant: "{b} von {a} geht nicht, also tausche 1 {next} gegen 10 {place}",
+    pmTrade: "tausche 1 {next} gegen 10 {place}",
+    pmTrySome: "Probiere ein paar Aufgaben mit Übertrag", pmTryAll: "Probiere Übertrag in jeder Aufgabe",
+    pmTryMix: "Probiere Plus und Minus gemischt", plus: "plus", minus: "minus"
+  }
+});
+
 // GEN START
 const randInt = (lo, hi) => lo + Math.floor(Math.random() * (hi - lo + 1));
 
@@ -307,8 +334,8 @@ function makeProblem(opMode, rgMode, avoid, max) {
   return { op: "add", a: 12, b: 5, key: "add12,5", answer: 17 };
 }
 
-const PLACE = ["Ones", "Tens", "Hundreds", "Thousands", "Ten thousands"];
-const ONE = ["one", "ten", "hundred", "thousand", "ten thousand"];
+const t = Loopy.t;
+const place = (i) => t("place" + i);
 const digit = (n, i) => Math.floor(n / Math.pow(10, i)) % 10;
 
 // A short reason, column by column, the way it is done on paper.
@@ -319,9 +346,9 @@ function explain(p) {
     let carry = 0;
     for (let i = 0; i < cols; i++) {
       const da = digit(p.a, i), db = digit(p.b, i), s = da + db + carry;
-      let t = PLACE[i] + ": " + da + " + " + db + (carry ? " + 1" : "") + " = " + s;
-      if (s >= 10 && i < cols - 1) t += ". Write " + (s - 10) + " and carry 1 " + ONE[i + 1];
-      parts.push(t + ".");
+      let line = place(i) + ": " + da + " + " + db + (carry ? " + 1" : "") + " = " + s;
+      if (s >= 10 && i < cols - 1) line += ". " + t("pmCarry", { w: s - 10, next: t("one" + (i + 1)) });
+      parts.push(line + ".");
       carry = s >= 10 ? 1 : 0;
     }
   } else {
@@ -330,11 +357,11 @@ function explain(p) {
       const da = digit(p.a, i) - borrow, db = digit(p.b, i);
       if (i === cols - 1 && da === 0 && db === 0) break;
       if (da < db) {
-        parts.push(PLACE[i] + ": " + (da >= 0 ? "you can't take " + db + " from " + da + ", so trade" : "trade") +
-          " 1 " + ONE[i + 1] + " for 10 " + PLACE[i].toLowerCase() + ": " + (da + 10) + " − " + db + " = " + (da + 10 - db) + ".");
+        const v = { a: da, b: db, next: t("one" + (i + 1)), place: Loopy.lang === "de" ? place(i) : place(i).toLowerCase() };
+        parts.push(place(i) + ": " + t(da >= 0 ? "pmCant" : "pmTrade", v) + ": " + (da + 10) + " − " + db + " = " + (da + 10 - db) + ".");
         borrow = 1;
       } else {
-        parts.push(PLACE[i] + ": " + da + " − " + db + " = " + (da - db) + ".");
+        parts.push(place(i) + ": " + da + " − " + db + " = " + (da - db) + ".");
         borrow = 0;
       }
     }
@@ -363,7 +390,7 @@ function explain(p) {
     max = maxForAge(age);
     opMode = store.get("pm100.op.a" + age, d.op);
     rgMode = store.get("pm100.rg.a" + age, d.rg);
-    $("title").textContent = "Plus and Minus to " + max.toLocaleString("en-US");
+    $("title").textContent = t("pmTitle", { max: Loopy.num(max) });
   }
   loadForAge();
   let right = 0, tried = 0, streak = 0;
@@ -374,9 +401,9 @@ function explain(p) {
     $("streak").textContent = streak;
     opBtns.forEach(b => b.setAttribute("aria-pressed", String(b.dataset.op === opMode)));
     rgBtns.forEach(b => b.setAttribute("aria-pressed", String(b.dataset.rg === rgMode)));
-    ansEl.textContent = typed === "" ? "" : parseInt(typed, 10).toLocaleString("en-US");
+    ansEl.textContent = typed === "" ? "" : Loopy.num(parseInt(typed, 10));
     ansEl.classList.toggle("empty", !answered && typed === "");
-    goBtn.textContent = answered ? "Next" : "Check";
+    goBtn.textContent = t(answered ? "next" : "check");
     goBtn.disabled = !answered && typed === "";
     digitBtns.forEach(b => b.disabled = answered);
     $("k-erase").disabled = answered || typed === "";
@@ -387,13 +414,14 @@ function explain(p) {
     recent.push(current.key);
     if (recent.length > 15) recent.shift();
     typed = ""; answered = false;
-    $("top-num").textContent = current.a.toLocaleString("en-US");
-    $("bot-num").textContent = current.b.toLocaleString("en-US");
+    $("top-num").textContent = Loopy.num(current.a);
+    $("bot-num").textContent = Loopy.num(current.b);
     $("op-sign").textContent = current.op === "add" ? "+" : "−";
-    $("vert").setAttribute("aria-label", current.a + (current.op === "add" ? " plus " : " minus ") + current.b);
+    $("vert").setAttribute("aria-label", current.a + " " + t(current.op === "add" ? "plus" : "minus") + " " + current.b);
     card.className = "problem-card";
     feedbackEl.className = "feedback";
-    feedbackEl.innerHTML = '<span class="hint">Tap the numbers to write your answer.</span>';
+    feedbackEl.innerHTML = '<span class="hint"></span>';
+    feedbackEl.firstChild.textContent = t("tapHint");
     render();
   }
 
@@ -417,10 +445,10 @@ function explain(p) {
     card.className = "problem-card " + (ok ? "good" : "bad");
     feedbackEl.className = "feedback " + (ok ? "good" : "bad");
     const sign = current.op === "add" ? " + " : " − ";
-    const fmtN = (n) => n.toLocaleString("en-US");
+    const fmtN = Loopy.num;
     const head = ok
-      ? (streak >= 3 ? "Correct! " + streak + " in a row!" : "Correct!")
-      : "Not quite. " + fmtN(current.a) + sign + fmtN(current.b) + " = " + fmtN(current.answer) + ".";
+      ? (streak >= 3 ? t("correctRow", { n: streak }) : t("correct"))
+      : t("notQuite") + " " + fmtN(current.a) + sign + fmtN(current.b) + " = " + fmtN(current.answer) + ".";
     feedbackEl.innerHTML = "<strong></strong>";
     feedbackEl.firstChild.textContent = head;
     feedbackEl.appendChild(document.createTextNode(explain(current)));
@@ -430,11 +458,11 @@ function explain(p) {
   function harder() {
     if (rgMode !== "yes") {
       const next = rgMode === "no" ? "mix" : "yes";
-      return { label: next === "mix" ? "Try some regrouping problems" : "Try regrouping in every problem",
+      return { label: t(next === "mix" ? "pmTrySome" : "pmTryAll"),
         apply: () => { rgMode = next; store.set("pm100.rg.a" + age, rgMode); render(); } };
     }
     if (opMode !== "mix") {
-      return { label: "Try adding and taking away mixed together",
+      return { label: t("pmTryMix"),
         apply: () => { opMode = "mix"; store.set("pm100.op.a" + age, opMode); render(); } };
     }
     return null;

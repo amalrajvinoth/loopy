@@ -1,49 +1,78 @@
 # Loopy
 
-Learn. Play. Repeat.
+**Learn. Play. Repeat.**
 
-Free, interactive learning games for kids in grades 1 to 10, at **amalrajvinoth.github.io/loopy**. Each game is one HTML page with no build step, grouped by subject. Every page shares two files: `loopy.css` and `loopy.js`.
+Loopy is a set of free learning games for kids from grade 1 to grade 10.
+Play it here: **https://amalrajvinoth.github.io/loopy**
 
-| Subject | Game | What it practices |
+It works on phones, tablets and computers. There is no sign-up and no ads.
+
+## The games
+
+| Game | What kids practice | Read more |
 | --- | --- | --- |
-| Math | [Plus and Minus](math/plus-minus/) | Addition and subtraction, with or without regrouping. Numbers go up to 20 (age 6), 100 (ages 7 to 8), 1,000 (ages 9 to 10) and 10,000 (age 11 and up) |
-| Math | [Times and Share](math/times-share/) | Multiplication and division. Tables of 1, 2, 5 and 10 (age 6), 2, 5 and 10 (7), 2 to 5 and 10 (8), 2 to 10 (9), 2 to 12 (10), two digits by one (11 to 12), three digits by one or two digits by two (13 and up). Dots to count for younger kids |
-| Math | [What Time Is It?](math/what-time-is-it/) | Reading an analog clock: half hours (age 6), quarter hours (7), 5 minutes (8), every minute (9 and up) |
+| [Plus and Minus](math/plus-minus/) | Adding and taking away | [README](math/plus-minus/README.md) |
+| [Times and Share](math/times-share/) | Times tables and sharing (division) | [README](math/times-share/README.md) |
+| [What Time Is It?](math/what-time-is-it/) | Reading a clock with hands | [README](math/what-time-is-it/README.md) |
 
-## Adding a game
+## How it works
 
-1. Create `<subject>/<short-name>/index.html`, for example `reading/sight-words/index.html`. Use lowercase folder names.
-2. In `<head>`, after your own styles, add:
+- **Age.** Pick the child's age. Each game gets easier or harder to match it. The age goes up by itself on each birthday.
+- **Language.** English is the default. Tap **DE** for German, or **EN** to go back.
+- **Colors.** Black is the default. You can also pick Sunny, Ocean, Candy or Forest.
+- **Stars.** Every right answer gives a star. More stars unlock badges. A streak of right answers sets off confetti.
+- **Sound.** Short happy sounds play. Tap the speaker to turn them off.
+- **Help.** After each answer, the game shows a short reason, so kids learn from mistakes.
+
+In a game, tap **Settings** to change age, language, colors, sound or level.
+
+## Your data stays on your device
+
+Stars and settings are saved in your browser. Nothing is sent anywhere.
+To move stars to another device, open the home page, tap **Move my stars to another device**, and copy the code across.
+
+## Add Loopy to your home screen
+
+On a phone or tablet, open the site and choose **Add to Home Screen**. Loopy then opens full screen like an app.
+
+## For developers
+
+The site is plain HTML, CSS and JavaScript. There is no build step.
+
+### Files
+
+| File | What it is |
+| --- | --- |
+| `index.html` | The home page and the list of games |
+| `loopy.js` | Shared code: languages, colors, age, sound, stars and badges |
+| `loopy.css` | Shared styles |
+| `math/<game>/index.html` | One game per folder |
+| `math/<game>/README.md` | What that game does |
+
+### Try it on your computer
+
+```sh
+python3 -m http.server 8000
+```
+
+Then open http://localhost:8000.
+
+### Add a new game
+
+1. Make a folder, for example `reading/sight-words/`, with an `index.html`. Copying an existing game is the easiest start.
+2. Load the shared files in `<head>`:
    ```html
    <link rel="stylesheet" href="../../loopy.css">
    <script src="../../loopy.js"></script>
    ```
-3. At the top of the page, add the home link and the shared controls:
-   ```html
-   <a href="../../">← Loopy</a>
-   <div class="controls"><div id="age-picker"></div><div id="theme-picker"></div><button id="sound-toggle"></button></div>
-   <span id="star-chip"></span>
-   ```
+3. Add the shared controls: `#star-chip`, `#settings-toggle`, and inside `#settings-panel` add `#age-picker`, `#theme-picker`, `#sound-toggle` and `#lang-picker`.
 4. In your script:
-   - `Loopy.getAge()` gives the age. Listen for the `loopy:age` event to change difficulty when it changes.
-   - After each right answer, call `Loopy.rewards.correct("<game-id>", streak, harder)`. `harder` is optional: `{ label: "Try quarter hours", apply: fn }`, offered after every 10 in a row.
-   - After each wrong answer, call `Loopy.rewards.wrong()`.
-   - Use the theme colors: `--bg`, `--card`, `--ink`, `--muted`, `--line`, `--chip`, `--c1` to `--c5`, `--good`, `--bad`.
-5. Add one line to the `GAMES` list in the root `index.html`, with the `ages` it suits. A new subject gets its own section automatically.
-6. Add a row to the table above.
+   - `Loopy.getAge()` gives the age. The `loopy:age` event fires when it changes.
+   - Call `Loopy.rewards.correct("game-id", streak)` after a right answer, and `Loopy.rewards.wrong()` after a wrong one.
+5. Add words in both languages with `Loopy.addStrings({ en: {...}, de: {...} })`. Put `data-t="key"` on fixed text, and use `Loopy.t("key")` in code. Use `Loopy.num(n)` to show numbers.
+6. Add one line to the `GAMES` list in the home page `index.html`, with the ages the game fits.
+7. Add a `README.md` in the game folder, and a row to the table above.
 
-## What `loopy.js` does
+### Changing the site
 
-- **Themes:** Black (default), Sunny, Ocean, Candy and Forest.
-- **Age:** defaults to the age of a child born in August 2018 and goes up each year. A change is saved as years above or below that default, so it keeps growing. The default is at the top of the age block.
-- **Sound:** short tones made in the browser for right, wrong, streak and badge moments, with a mute button.
-- **Stars and badges:** every right answer earns a star. Badges unlock at 10, 25, 50, 100, 250, 500 and 1000 stars, and streaks of 5, 10, 15, 20, 30 and 50 set off confetti.
-- **Saving:** progress is kept in the browser's `localStorage`, so nothing is sent anywhere. To move stars to another device, use "Move my stars to another device" on the home page and copy the code across.
-
-## Phones and tablets
-
-Each game fits one screen in portrait and landscape: the number pad or answers stay at the bottom and the top part shrinks to fit. Age, theme, sound and levels sit behind the Settings button. Loopy can be added to a phone or tablet home screen, where it opens full screen with its own star icon (`manifest.webmanifest`, `icon-*.png`, `apple-touch-icon.png`). New games should follow the same pattern: wrap the game in `<main class="play">` and put level controls inside `#settings-panel`.
-
-## Style
-
-Fredoka for headings, Lexend for text, large tap targets, score and streak, and a one-line reason after every answer.
+The `main` branch is what goes live. Make changes on a new branch and open a pull request.
