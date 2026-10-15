@@ -18,3 +18,9 @@ jobs:
         run: python3 tools/csp.py --check
       - name: Nothing is loaded from other websites
         run: python3 tools/check_external.py
+      - name: Install the minifiers (exact versions, checked by hash)
+        run: |
+          python3 -m venv "$RUNNER_TEMP/venv"
+          "$RUNNER_TEMP/venv/bin/pip" install --require-hashes --no-binary :all: -r tools/requirements.txt
+      - name: loopy.js and loopy.css match their sources in src/
+        run: '"$RUNNER_TEMP/venv/bin/python" tools/build.py --check'
