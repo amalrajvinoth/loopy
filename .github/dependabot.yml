@@ -1,9 +1,14 @@
-# Dependabot keeps the GitHub Actions used by the checks up to date.
-# Loopy has no npm or pip packages, so GitHub Actions is the only thing to watch.
+# Dependabot keeps the GitHub Actions used by the checks, and the two minifiers in
+# tools/requirements.txt, up to date.
 version: 2
 updates:
   - package-ecosystem: "github-actions"
     directory: "/"
+    schedule:
+      interval: "weekly"
+    labels: ["dependencies"]
+  - package-ecosystem: "pip"
+    directory: "/tools"
     schedule:
       interval: "weekly"
     labels: ["dependencies"]

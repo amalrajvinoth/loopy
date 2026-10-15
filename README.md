@@ -52,20 +52,21 @@ On a phone or tablet, open the site and choose **Add to Home Screen**. Loopy the
 
 ## For developers
 
-The site is plain HTML, CSS and JavaScript. There is no build step.
+The site is plain HTML, CSS and JavaScript. One small build step makes the shared files smaller, so pages load fast on slow mobile data.
 
 ### Files
 
 | File | What it is |
 | --- | --- |
 | `index.html` | The home page and the list of games |
-| `loopy.js` | Shared code: languages, colors, age, sound, stars and badges |
-| `loopy.css` | Shared styles |
+| `src/loopy.js` | Shared code: languages, colors, age, sound, stars and badges. Edit this one |
+| `src/loopy.css` | Shared styles and fonts. Edit this one |
+| `loopy.js`, `loopy.css` | Small copies made by the build. Pages load these. Do not edit them |
 | `logo.svg`, `logo-white.svg`, `icon.svg` | The logo (for light and dark backgrounds) and the app icon |
 | `help/index.html` | The Help page: FAQ and feedback links |
-| `fonts/` | The Fredoka and Lexend fonts, stored here so no request goes to Google |
+| `fonts/` | The Fredoka and Lexend fonts, stored here so no request goes to Google. The `-latin` files are made by the build from `src/fonts/` |
 | `.github/` | Forms for problems, ideas and questions, the automatic checks, and Dependabot |
-| `tools/` | Small scripts: `csp.py` updates each page's security policy, `check_external.py` makes sure nothing loads from other websites |
+| `tools/` | Small scripts: `build.py` makes the small files, `csp.py` updates each page's security policy, `check_external.py` makes sure nothing loads from other websites |
 | `math/<game>/index.html` | One game per folder |
 | `math/<game>/README.md` | What that game does |
 
@@ -82,7 +83,7 @@ Then open http://localhost:8000.
 1. Make a folder, for example `reading/sight-words/`, with an `index.html`. Copying an existing game is the easiest start.
 2. Copy the two security `<meta>` tags from an existing game, then load the shared files in `<head>`:
    ```html
-   <link rel="stylesheet" href="../../fonts/fonts.css">
+   <link rel="preload" href="../../fonts/lexend-latin.woff2" as="font" type="font/woff2" crossorigin>
    <link rel="stylesheet" href="../../loopy.css">
    <script src="../../loopy.js"></script>
    ```
@@ -100,5 +101,33 @@ Then open http://localhost:8000.
 The `main` branch is what goes live. Make changes on a new branch and open a pull request. See [CONTRIBUTING.md](CONTRIBUTING.md).
 
 After editing any page, run `python3 tools/csp.py`. The GitHub check fails otherwise.
+
+### Build the small files
+
+Pages load `loopy.js` and `loopy.css`. These are small copies of `src/loopy.js` and `src/loopy.css`, made by a script. Never edit them by hand.
+
+After editing anything in `src/`, run:
+
+```sh
+python3 -m pip install --require-hashes --no-binary :all: -r tools/requirements.txt   # once
+python3 tools/build.py
+```
+
+The build also runs `tools/csp.py`. Commit the small files with your change. The GitHub check runs `python3 tools/build.py --check` and fails if they do not match `src/`.
+
+The fonts keep only the letters loopy uses (English and German). To rebuild them, for example after adding a letter to the list in `tools/build.py`, install `fonttools` and `brotli` and run `python3 tools/build.py --fonts`.
+
+Page sizes, sent over the network with fonts:
+
+| Page | Before | After | Lighthouse (phone, slow 4G) |
+| --- | --- | --- | --- |
+| Home | 87 KB | 51 KB | 93 → 100 |
+| Help | 85 KB | 50 KB | 98 → 100 |
+| What Time Is It? | 59 KB | 33 KB | 92 → 100 |
+| Plus and Minus | 59 KB | 33 KB | 92 → 100 |
+| Times and Share | 60 KB | 34 KB | 92 → 100 |
+| Sound Spell | 61 KB | 35 KB | 92 → 100 |
+
+Measured with Lighthouse 12 on a local server that compresses files like GitHub Pages does. First content shows in 0.9 seconds on every page (was 1.4 to 1.5).
 
 Do not add outside scripts, fonts, trackers or analytics. The security rules on each page block them, and they would break the promise that nothing leaves the device.
