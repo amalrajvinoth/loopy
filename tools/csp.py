@@ -8,7 +8,7 @@ Check without changing anything (used by the GitHub check):   python3 tools/csp.
 import base64, hashlib, pathlib, re, sys
 
 ROOT = pathlib.Path(__file__).resolve().parent.parent
-PAGES = sorted(p for p in ROOT.rglob("*.html") if ".git" not in p.parts)
+PAGES = sorted(p for p in ROOT.rglob("*.html") if ".git" not in p.parts and "node_modules" not in p.parts)
 META = re.compile(r'<meta http-equiv="Content-Security-Policy" content="[^"]*">')
 BLOCK = re.compile(r"<(script|style)(\s[^>]*)?>(.*?)</\1>", re.S)
 INLINE_ATTR = re.compile(r'<[^>]+\sstyle="', re.I)

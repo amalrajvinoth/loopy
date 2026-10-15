@@ -226,14 +226,14 @@ body { min-height: 100vh; min-height: 100dvh; padding-block: 12px 16px; }
       <button type="button" id="settings-toggle" aria-controls="settings-panel"></button>
     </div>
   </header>
-  <div class="top">
+  <section class="top" aria-labelledby="title">
     <h1 id="title">Make 10</h1>
     <div class="score" aria-live="polite">
       <div class="pill"><span data-t="score">Score</span><b id="score">0 / 0</b></div>
       <div class="pill"><span data-t="streak">Streak</span><b id="streak">0</b></div>
       <div id="last5" data-game="make-10"></div>
     </div>
-  </div>
+  </section>
   <div class="settings-panel" id="settings-panel" hidden>
     <div class="controls"><div id="age-picker"></div><div id="theme-picker"></div><button id="sound-toggle"></button><div id="lang-picker"></div></div>
     <div>
@@ -255,7 +255,7 @@ body { min-height: 100vh; min-height: 100dvh; padding-block: 12px 16px; }
   <main class="play">
     <div class="problem-card" id="card">
       <div class="eq" id="eq" aria-live="polite">
-        <span id="eq-a">7</span><span class="op">+</span><span class="ans empty" id="ans" aria-label="Your answer" data-t-aria="yourAnswer"></span><span class="eqs">=</span><span id="eq-n">10</span>
+        <span id="eq-a">7</span><span class="op">+</span><span class="ans empty" id="ans" role="textbox" aria-readonly="true" aria-label="Your answer" data-t-aria="yourAnswer"></span><span class="eqs">=</span><span id="eq-n">10</span>
       </div>
       <div class="frames" id="frames" aria-hidden="true"></div>
       <p class="feedback" id="feedback"><span class="hint" data-t="tapHint">Tap the numbers to write your answer.</span></p>

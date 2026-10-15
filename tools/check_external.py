@@ -7,7 +7,7 @@ the one exception (they are plain links, not files the page loads).
 import pathlib, re, sys
 
 ROOT = pathlib.Path(__file__).resolve().parent.parent
-FILES = [p for p in ROOT.rglob("*") if p.suffix in (".html", ".js", ".css", ".webmanifest") and ".git" not in p.parts]
+FILES = [p for p in ROOT.rglob("*") if p.suffix in (".html", ".js", ".css", ".webmanifest") and ".git" not in p.parts and "node_modules" not in p.parts]
 URL = re.compile(r"https?://[^\s\"'()<>]+")
 ALLOWED_LINK_HOSTS = ("github.com/amalrajvinoth/loopy",)
 LOADS = re.compile(r'\b(src|href)\s*=\s*"(https?://[^"]+)"|url\(\s*["\']?(https?://[^)"\']+)', re.I)

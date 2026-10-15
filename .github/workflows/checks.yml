@@ -24,3 +24,17 @@ jobs:
           "$RUNNER_TEMP/venv/bin/pip" install --require-hashes --no-binary :all: -r tools/requirements.txt
       - name: loopy.js and loopy.css match their sources in src/
         run: '"$RUNNER_TEMP/venv/bin/python" tools/build.py --check'
+
+  accessibility:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - name: Install the checker (exact versions from the lock file, no browser download)
+        run: |
+          mkdir -p "$RUNNER_TEMP/a11y"
+          cp tools/a11y/package.json tools/a11y/package-lock.json "$RUNNER_TEMP/a11y/"
+          npm ci --prefix "$RUNNER_TEMP/a11y" --ignore-scripts --no-audit --no-fund
+      - name: Every page works with a keyboard and a screen reader
+        run: node tools/a11y/check.mjs
+        env:
+          A11Y_DEPS: ${{ runner.temp }}/a11y

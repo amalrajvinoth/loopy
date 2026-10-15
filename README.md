@@ -67,6 +67,10 @@ In a game, tap **Settings** to change age, language, colors, sound or level.
 Stars, settings and the answers on the grown-ups' page are saved in your browser. Nothing is sent anywhere. There are no ads, no tracking and no outside services. Even the fonts are stored on the site.
 To move stars to another device, open the home page, tap **Move my stars to another device**, and copy the code across.
 
+## Screen readers and keyboards
+
+Every game works without touching the screen. Tab moves between buttons, Enter picks an answer, and number keys type into the number pad. Escape closes Settings. After an answer, screen readers such as VoiceOver and NVDA read out "Correct!" or "Not quite." and why, and the new score. An automatic check (`tools/a11y/`) tests every page in every theme on each change.
+
 ## Add Loopy to your home screen
 
 On a phone or tablet, open the site and choose **Add to Home Screen**. Loopy then opens full screen like an app.
@@ -89,7 +93,7 @@ The site is plain HTML, CSS and JavaScript. One small build step makes the share
 | `progress/index.html` | How it's going: the grown-ups' page. Games log answers with `Loopy.rewards.wrong(game, { q, a, y, k })` |
 | `fonts/` | The Fredoka and Lexend fonts, stored here so no request goes to Google. The `-latin` files are made by the build from `src/fonts/` |
 | `.github/` | Forms for problems, ideas and questions, the automatic checks, and Dependabot |
-| `tools/` | Small scripts: `build.py` makes the small files, `csp.py` updates each page's security policy, `check_external.py` makes sure nothing loads from other websites, `review.py` checks that all games follow the same rules |
+| `tools/` | Small scripts: `build.py` makes the small files, `csp.py` updates each page's security policy, `check_external.py` makes sure nothing loads from other websites, `review.py` checks that all games follow the same rules, `a11y/` checks every page with a keyboard and a screen reader checker ([how](tools/a11y/README.md)) |
 | `RELEASES.md` | What's new: one line per big change, for parents |
 | `.claude/skills/loopy-review/` | The review checklist for every change: design, architecture, docs, games alike, and release notes after a merge |
 | `math/<game>/index.html` | One game per folder (also `languages/` and `mix/`) |
@@ -130,7 +134,7 @@ Read [DESIGN.md](DESIGN.md) first. It lists the colors, fonts, buttons and layou
 
 The `main` branch is what goes live. Make changes on a new branch and open a pull request. See [CONTRIBUTING.md](CONTRIBUTING.md).
 
-Before a pull request is ready, review it with `.claude/skills/loopy-review/SKILL.md` and run `python3 tools/review.py`. After a big change is merged, add a line to [RELEASES.md](RELEASES.md).
+Before a pull request is ready, review it with `.claude/skills/loopy-review/SKILL.md` and run `python3 tools/review.py`. If you changed a page, also run the screen reader and keyboard check: see [tools/a11y/README.md](tools/a11y/README.md). After a big change is merged, add a line to [RELEASES.md](RELEASES.md).
 
 After editing any page, run `python3 tools/csp.py`. The GitHub check fails otherwise.
 

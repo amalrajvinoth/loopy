@@ -452,6 +452,12 @@ document.documentElement.classList.add("loopy-building");
     document.body.appendChild(el);
     var close = function () { el.classList.add("out"); setTimeout(function () { el.remove(); }, 250); };
     if (big) {
+      // The card takes focus; when it closes, focus goes back to where the child was.
+      var back = document.activeElement;
+      close = function () {
+        el.classList.add("out"); setTimeout(function () { el.remove(); }, 250);
+        if (back && back !== document.body && document.contains(back) && !back.disabled) back.focus({ preventScroll: true });
+      };
       var row = el.querySelector(".cheer-actions");
       (actions || [{ label: Loopy.t("yay") }]).forEach(function (a, i) {
         var b = document.createElement("button");
@@ -465,6 +471,25 @@ document.documentElement.classList.add("loopy-building");
     }
     else setTimeout(close, 2200);
     confetti(big ? 160 : 70);
+  }
+
+  // Screen readers: after each answer, read the game's feedback line (or "Right!" / "Not quite.").
+  // A hidden live region does this, so games do not need aria-live on their feedback, and the
+  // tap hints that fill the line between problems are not read out every time.
+  var said = null;
+  function announce(right) {
+    if (!said) {
+      said = document.createElement("div");
+      said.className = "loopy-sr";
+      said.setAttribute("aria-live", "polite");
+      document.body.appendChild(said);
+    }
+    setTimeout(function () {
+      var fb = document.getElementById("feedback");
+      if (fb && fb.getAttribute("aria-live")) return; // the page reads its own feedback
+      var text = fb ? fb.textContent.trim() : "";
+      said.textContent = text || Loopy.t(right ? "correct" : "notQuite");
+    }, 80);
   }
 
   BADGES.forEach(function (b) { Object.defineProperty(b, "name", { get: function () { return Loopy.t(b.key); } }); });
@@ -501,6 +526,7 @@ document.documentElement.classList.add("loopy-building");
       if (Loopy.recent) Loopy.recent.add(game, false);
       if (Loopy.log) Loopy.log.add(game, false, detail);
       Loopy.sound.play("wrong");
+      announce(false);
     },
     // Call after each right answer with the current streak.
     // harder: optional { label, apply } offered after 10 in a row, e.g. { label: "Try quarter hours", apply: fn }.
@@ -513,6 +539,7 @@ document.documentElement.classList.add("loopy-building");
       var newBest = streak > (data.best[game] || 0);
       if (newBest) data.best[game] = streak;
       save(); updateChips();
+      announce(true);
       var after = badgeFor(data.stars);
       if (after && after !== before) {
         Loopy.sound.play("badge");
@@ -760,6 +787,54 @@ document.documentElement.classList.add("loopy-building");
     var sync = function () { btn.setAttribute("aria-expanded", String(!panel.hidden)); };
     btn.addEventListener("click", function () { panel.hidden = !panel.hidden; sync(); });
     sync();
+    // A named region, so screen readers can jump to it. Escape closes it and puts focus back on the button.
+    panel.setAttribute("role", "region");
+    panel.setAttribute("data-t-aria", "settings");
+    panel.setAttribute("aria-label", Loopy.t("settings"));
+    document.addEventListener("keydown", function (e) {
+      if (e.key !== "Escape" || panel.hidden || document.querySelector(".loopy-cheer.big")) return;
+      var inside = panel.contains(document.activeElement) || document.activeElement === document.body;
+      panel.hidden = true; sync();
+      if (inside) btn.focus({ preventScroll: true });
+    });
+  }
+  if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", build);
+  else build();
+})();
+
+// Keyboard: after Next is pressed with the keyboard, focus moves to the first answer of the new
+// problem. Otherwise focus stays on the button (now "New problem"), and a second Enter skips the problem.
+// In the number and letter pads, Check turns into Next and is off until something is typed, so focus
+// moves to the first key instead of getting lost.
+(function () {
+  var FIRST = '#choices button:not(:disabled), #answers button:not(:disabled), #map [tabindex="0"]';
+  var PAD = "#pad button:not(:disabled), #letters button:not(:disabled)";
+  function after(from) {
+    if (!from || (from.id !== "next" && from.id !== "k-go")) return;
+    setTimeout(function () {
+      var lost = document.activeElement === document.body || document.activeElement === from;
+      var to = null;
+      if (from.id === "next" && lost) to = document.querySelector(FIRST);
+      if (from.id === "k-go" && (from.disabled || document.activeElement === document.body)) to = document.querySelector(PAD);
+      if (to && to.getClientRects().length) to.focus({ preventScroll: true });
+    }, 0);
+  }
+  document.addEventListener("click", function (e) { if (e.detail === 0) after(e.target.closest ? e.target.closest("#next, #k-go") : null); });
+  document.addEventListener("keydown", function (e) { if (e.key === "Enter") after(document.activeElement); }, true);
+  // On small screens a long explanation can scroll inside the feedback line. Then it must take
+  // keyboard focus, so it can be scrolled without a mouse.
+  function scrollable() {
+    var fb = document.getElementById("feedback");
+    if (!fb) return;
+    if (fb.scrollHeight > fb.clientHeight + 1) fb.setAttribute("tabindex", "0");
+    else fb.removeAttribute("tabindex");
+  }
+  function build() {
+    var fb = document.getElementById("feedback");
+    if (!fb || !window.MutationObserver) return;
+    new MutationObserver(scrollable).observe(fb, { childList: true, subtree: true, characterData: true });
+    window.addEventListener("resize", scrollable);
+    scrollable();
   }
   if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", build);
   else build();

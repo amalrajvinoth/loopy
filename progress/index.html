@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'sha256-xItnPGEDYTf9/SNk8Skvn4FsMoRikS07hKozjkpJaVs='; style-src 'self' 'sha256-icQGlgV4MVFS9w/qYBgrhpLPpZURhGcpNY9cfTUodVo='; img-src 'self' data:; font-src 'self'; connect-src 'none'; object-src 'none'; base-uri 'none'; form-action 'none'; manifest-src 'self'; upgrade-insecure-requests">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'sha256-xItnPGEDYTf9/SNk8Skvn4FsMoRikS07hKozjkpJaVs='; style-src 'self' 'sha256-32e3zv5TY5yTtQyzSRi/gQinJZol07tw1wV96llyjr4='; img-src 'self' data:; font-src 'self'; connect-src 'none'; object-src 'none'; base-uri 'none'; form-action 'none'; manifest-src 'self'; upgrade-insecure-requests">
 <meta name="referrer" content="strict-origin-when-cross-origin">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <link rel="icon" href="../icon.svg" type="image/svg+xml">
@@ -71,7 +71,7 @@ section { background: var(--card); border: 2px solid var(--line); border-radius:
   align-self: flex-start; min-height: 48px; padding: 8px 20px; border-radius: 999px; border: 2px solid var(--line);
   background: var(--chip); color: var(--ink); font: inherit; font-weight: 600; cursor: pointer;
 }
-.btn.danger { border-color: var(--bad); color: var(--bad); }
+.btn.danger { border-color: var(--bad); color: var(--bad); background: var(--card); }
 .btn.sure { background: var(--bad); border-color: var(--bad); color: var(--card); }
 .btn:focus-visible, .play:focus-visible { outline: 3px solid var(--mark, var(--c2)); outline-offset: 3px; }
 </style>
@@ -79,7 +79,7 @@ section { background: var(--card); border: 2px solid var(--line); border-radius:
 <script src="../loopy.js"></script>
 </head>
 <body>
-<div class="wrap">
+<main class="wrap">
   <header class="bar">
     <a class="home-link" href="../">&larr; loopy</a>
     <div class="controls"><div id="theme-picker"></div><div id="lang-picker"></div></div>
@@ -108,7 +108,7 @@ section { background: var(--card); border: 2px solid var(--line); border-radius:
     <button type="button" class="btn danger" id="clear" data-t="prClear">Clear answers</button>
     <p class="muted" id="clear-msg" aria-live="polite"></p>
   </section>
-</div>
+</main>
 <script>
 Loopy.addStrings({
   en: {

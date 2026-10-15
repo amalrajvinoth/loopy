@@ -254,14 +254,14 @@ body { min-height: 100vh; min-height: 100dvh; padding-block: 12px 16px; }
       <button type="button" id="settings-toggle" aria-controls="settings-panel"></button>
     </div>
   </header>
-  <div class="top">
+  <section class="top" aria-labelledby="title">
     <h1 id="title" data-t="ccName">Coins and Change</h1>
     <div class="score" aria-live="polite">
       <div class="pill"><span data-t="score">Score</span><b id="score">0 / 0</b></div>
       <div class="pill"><span data-t="streak">Streak</span><b id="streak">0</b></div>
       <div id="last5" data-game="coins-change"></div>
     </div>
-  </div>
+  </section>
   <div class="settings-panel" id="settings-panel" hidden>
     <div class="controls"><div id="age-picker"></div><div id="theme-picker"></div><button id="sound-toggle"></button><div id="lang-picker"></div></div>
     <div>
@@ -292,7 +292,7 @@ body { min-height: 100vh; min-height: 100dvh; padding-block: 12px 16px; }
       <p class="prompt" id="prompt"></p>
       <div class="money-area" id="money" aria-hidden="true"></div>
       <div class="eq" id="eq" aria-live="polite">
-        <span class="lbl" id="ans-lbl"></span><span class="ans" id="ans" aria-label="Your answer" data-t-aria="yourAnswer"></span>
+        <span class="lbl" id="ans-lbl"></span><span class="ans" id="ans" role="textbox" aria-readonly="true" aria-label="Your answer" data-t-aria="yourAnswer"></span>
       </div>
       <p class="feedback" id="feedback"><span class="hint" data-t="tapHint">Tap the numbers to write your answer.</span></p>
     </div>

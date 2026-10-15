@@ -1,0 +1,10 @@
+{
+  "name": "loopy-a11y-check",
+  "private": true,
+  "description": "Screen reader and keyboard check for loopy. Only used by tools/a11y/check.mjs, never shipped.",
+  "type": "module",
+  "dependencies": {
+    "axe-core": "4.10.3",
+    "playwright-core": "1.56.1"
+  }
+}
