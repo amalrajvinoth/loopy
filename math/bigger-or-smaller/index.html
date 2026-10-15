@@ -1,0 +1,791 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'sha256-Yo0HEr7gQY2ke7DPdalrd/NLfaYkqXnfwhqlByqXL/A='; style-src 'self' 'sha256-z2P7kGW5Z05eCTjTZdYpc0vThTlOE9vmt97pVSvi2I4=' 'sha256-b3hnvXtAki+MiiuhFoXP7ow8lTz5lijMUvbmM/sg6Y8=' 'sha256-RT1053JU5UiKvjrCUFx1rlhdFLMmgtuFJ9T8jnMeawQ=' 'sha256-pxp/kBLGl+9iEuWmE39iE3rdwOKNvJ0P5qI66lh2pmE='; img-src 'self' data:; font-src 'self'; connect-src 'none'; object-src 'none'; base-uri 'none'; form-action 'none'; manifest-src 'self'; upgrade-insecure-requests">
+<meta name="referrer" content="strict-origin-when-cross-origin">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<style>:root{color-scheme:light;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}body{margin:0}[hidden]{display:none!important}</style>
+<link rel="icon" href="../../icon.svg" type="image/svg+xml">
+<link rel="manifest" href="../../manifest.webmanifest">
+<link rel="apple-touch-icon" href="../../apple-touch-icon.png">
+<meta name="theme-color" content="#0a0a0c">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="loopy">
+<title data-t="bsName">Bigger or Smaller</title>
+<link rel="preload" href="../../fonts/lexend-latin.woff2" as="font" type="font/woff2" crossorigin>
+<style>
+/* Layout: a problem card with a number line, answer buttons below. Shared look with the other games. */
+:root {
+  --bg: #f3f6fb;
+  --card: #ffffff;
+  --ink: #1d2a3f;
+  --muted: #5d6b82;
+  --line: #d5dde9;
+  --accent: #2457c5;
+  --accent-ink: #ffffff;
+  --mark: #e2622b;
+  --good: #1f8a4c;
+  --good-bg: #e3f5ea;
+  --bad: #c23a3a;
+  --bad-bg: #fbe6e6;
+  --chip: #e6ecf6;
+  --key: #ffffff;
+  --font: "Lexend", "Segoe UI", "Helvetica Neue", Arial, sans-serif;
+}
+
+* { box-sizing: border-box; }
+body {
+  background: var(--bg); color: var(--ink); font-family: var(--font); font-size: 16px;
+  padding-left: max(16px, env(safe-area-inset-left, 0px));
+  padding-right: max(16px, env(safe-area-inset-right, 0px));
+  padding-block: 20px 32px;
+}
+.wrap { max-width: 520px; margin: 0 auto; display: flex; flex-direction: column; gap: 16px; }
+
+.top { display: flex; flex-wrap: wrap; gap: 12px; align-items: center; justify-content: space-between; }
+h1 { margin: 0; font-size: 1.6rem; font-weight: 700; text-wrap: balance; }
+.score { display: flex; flex-wrap: wrap; gap: 8px; font-variant-numeric: tabular-nums; }
+.pill { background: var(--card); border: 1px solid var(--line); border-radius: 999px; padding: 6px 14px; font-weight: 600; font-size: 1rem; white-space: nowrap; }
+.pill span { color: var(--muted); font-weight: 400; margin-right: 4px; }
+
+.seg-label { font-size: 0.8rem; font-weight: 600; letter-spacing: 0.06em; text-transform: uppercase; color: var(--muted); margin: 0 0 4px 4px; }
+.seg { display: grid; grid-template-columns: repeat(4, 1fr); gap: 6px; background: var(--chip); padding: 5px; border-radius: 14px; }
+.seg.three { grid-template-columns: repeat(3, 1fr); }
+.seg button {
+  font: inherit; font-size: 0.95rem; font-weight: 600; color: var(--muted);
+  background: transparent; border: 0; border-radius: 10px; padding: 8px 6px; min-height: 44px; cursor: pointer;
+}
+.seg button[aria-pressed="true"] { background: var(--card); color: var(--ink); box-shadow: 0 1px 3px rgb(0 0 0 / 0.12); }
+
+.problem-card {
+  background: var(--card); border: 1px solid var(--line); border-radius: 24px;
+  padding: 14px; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 8px;
+}
+.problem-card.good { border-color: var(--good); box-shadow: 0 0 0 2px var(--good) inset; }
+.problem-card.bad { border-color: var(--bad); box-shadow: 0 0 0 2px var(--bad) inset; }
+.prompt { margin: 0; color: var(--muted); font-size: 1rem; text-align: center; padding: 0 48px; }
+
+/* The problem: "37 ( ) 73", "__ < __ < __" or "4,567 rounds to __". */
+.show {
+  display: flex; flex-wrap: wrap; align-items: center; justify-content: center; gap: 0.25em 0.4em;
+  font-weight: 700; font-variant-numeric: tabular-nums; line-height: 1.15; text-align: center;
+}
+.show.cmp { font-size: clamp(1.8rem, min(9vw, 9dvh), 4.2rem); }
+.show.ord { font-size: clamp(1.3rem, min(6vw, 6dvh), 3rem); }
+.show.rnd { font-size: clamp(1.8rem, min(9vw, 9dvh), 4.2rem); align-items: baseline; }
+.show .ring {
+  display: inline-grid; place-items: center; width: 1.3em; height: 1.3em; border-radius: 50%;
+  border: 0.07em solid var(--line); color: var(--accent);
+}
+.show .ring.empty::after { content: "?"; color: var(--muted); }
+.show .gap { display: inline-block; min-width: 2.6ch; border-bottom: 0.08em solid var(--accent); color: var(--accent); text-align: center; }
+.show .gap.empty::after { content: "?"; color: var(--muted); }
+.show .sign { color: var(--muted); }
+.show .to { font-size: 0.45em; font-weight: 600; color: var(--muted); }
+/* After an answer the circle or gap shows the right answer, so it is always green. */
+.problem-card.good .ring, .problem-card.good .gap, .problem-card.bad .ring, .problem-card.bad .gap { color: var(--good); border-color: var(--good); }
+
+/* Number line: hidden (but keeping its room) until the answer is in, so it never gives the answer away. */
+.nl { width: 100%; max-width: 520px; height: auto; display: block; }
+.nl.off { visibility: hidden; }
+
+.feedback { min-height: 3.1em; text-align: center; font-size: 1.1rem; line-height: 1.45; margin: 0; max-width: 40ch; }
+.feedback strong { display: block; font-size: 1.45rem; }
+.feedback.good strong { color: var(--good); }
+.feedback.bad strong { color: var(--bad); }
+
+.side { display: flex; flex-direction: column; gap: 10px; }
+.choices { display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; }
+.choices.three { grid-template-columns: repeat(3, 1fr); }
+.choices button {
+  font: inherit; font-size: clamp(1.4rem, min(6vw, 5dvh), 2.6rem); font-weight: 700; font-variant-numeric: tabular-nums; color: var(--ink);
+  background: var(--key); border: 3px solid var(--line); border-radius: 18px; min-height: clamp(56px, 9dvh, 96px); cursor: pointer;
+  display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 2px; padding: 4px 6px; position: relative;
+  transition: transform .08s ease, border-color .15s ease; touch-action: manipulation; -webkit-tap-highlight-color: transparent;
+}
+.choices button .sym { font-size: 1.5em; line-height: 1; }
+.choices button small { font-size: 0.85rem; font-weight: 600; color: var(--muted); }
+.choices button:hover:not(:disabled) { border-color: var(--accent); }
+.choices button:active:not(:disabled) { transform: scale(0.96); }
+.choices button:disabled { cursor: default; }
+.choices button.right { border-color: var(--good); background: var(--good-bg); color: var(--good); }
+.choices button.wrong { border-color: var(--bad); background: var(--bad-bg); color: var(--bad); }
+.choices button.faded { opacity: 0.45; }
+.choices button.right small, .choices button.wrong small { color: inherit; }
+/* Order: the place a number goes (1st, 2nd, 3rd), shown on the tile once it is known. */
+.choices .place {
+  position: absolute; top: -11px; left: 50%; transform: translateX(-50%); min-width: 1.6em; height: 1.6em; border-radius: 999px;
+  display: grid; place-items: center; font-size: 0.85rem; background: var(--card); border: 2px solid currentColor;
+}
+
+.next { font: inherit; font-size: 1.25rem; font-weight: 700; color: var(--accent-ink); background: var(--accent); border: 0; border-radius: 16px; min-height: clamp(52px, 7dvh, 72px); cursor: pointer; width: 100%; }
+.reset { font: inherit; font-size: 0.95rem; color: var(--muted); background: transparent; border: 2px solid var(--line); border-radius: 14px; padding: 0 16px; min-height: 44px; cursor: pointer; }
+button:focus-visible { outline: 3px solid var(--mark); outline-offset: 3px; }
+
+@media (max-width: 420px) {
+  h1 { font-size: 1.35rem; }
+  .seg button { font-size: 0.85rem; }
+}
+@media (prefers-reduced-motion: reduce) { * { transition: none !important; } }
+</style>
+<style>.home-link{display:inline-flex;align-items:center;min-height:40px;color:var(--muted);font-weight:600;text-decoration:none;font-size:0.95rem}.home-link:hover{color:var(--ink)}</style>
+<style>
+/* Phones and tablets: the game fills one screen; settings sit behind a button. */
+body { min-height: 100vh; min-height: 100dvh; padding-block: 12px 16px; }
+.wrap { gap: 12px; }
+.game-bar { display: flex; align-items: center; justify-content: space-between; gap: 8px; }
+.bar-right { display: flex; align-items: center; gap: 8px; }
+.top { gap: 8px 12px; }
+.play { display: flex; flex-direction: column; gap: 12px; -webkit-user-select: none; user-select: none; }
+@media (min-width: 600px) and (orientation: portrait) { .wrap { max-width: 640px; } }
+@media (orientation: landscape) and (min-width: 640px) {
+  .wrap { max-width: 1100px; }
+  .play { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; align-items: center; }
+}
+.feedback { min-height: 2.9em; font-size: 1.05rem; }
+.feedback strong { font-size: 1.3rem; }
+@media (min-width: 600px) and (orientation: portrait) {
+  .choices button { min-height: clamp(64px, 10dvh, 120px); }
+}
+@media (max-height: 760px) and (orientation: portrait) {
+  .problem-card.good .prompt, .problem-card.bad .prompt { display: none; }
+  .feedback { font-size: 0.95rem; line-height: 1.35; }
+  .feedback strong { font-size: 1.15rem; }
+}
+
+/* Portrait: the page is exactly one screen tall; the answers stay at the bottom
+   and the top part shrinks to fit. With settings open, the page scrolls normally. */
+@media (orientation: portrait) {
+  body { height: calc(100dvh - env(safe-area-inset-top, 0px) - env(safe-area-inset-bottom, 0px)); min-height: 0; display: flex; flex-direction: column; overflow: hidden; }
+  body:has(#settings-panel:not([hidden])) { height: auto; overflow: visible; }
+  .wrap { flex: 1 1 auto; min-height: 0; width: 100%; }
+  .play { flex: 1 1 auto; min-height: 0; }
+  .problem-card { flex: 1 1 auto; min-height: 0; overflow: hidden; }
+  .nl { flex: 0 1 auto; min-height: 56px; }
+  .feedback { flex: 0 1 auto; min-height: 0; max-height: 6.5em; overflow-y: auto; }
+}
+/* Landscape: the same one-screen fit, problem on the left, answers on the right. */
+@media (orientation: landscape) and (min-width: 640px) {
+  body { height: calc(100dvh - env(safe-area-inset-top, 0px) - env(safe-area-inset-bottom, 0px)); min-height: 0; display: flex; flex-direction: column; overflow: hidden; }
+  body:has(#settings-panel:not([hidden])) { height: auto; overflow: visible; }
+  .wrap { flex: 1 1 auto; min-height: 0; width: 100%; }
+  .play { flex: 1 1 auto; min-height: 0; grid-template-rows: minmax(0, 1fr); }
+  .problem-card, .side { height: 100%; min-height: 0; justify-content: center; }
+  .problem-card { overflow: hidden; }
+  .nl { flex: 0 1 auto; min-height: 0; max-height: 34dvh; }
+  .feedback { flex: 0 1 auto; min-height: 0; overflow-y: auto; }
+  .choices button { min-height: clamp(52px, 14dvh, 130px); }
+}
+/* Small phones: a little less room around the problem, so the whole reason fits. */
+@media (max-height: 700px) and (orientation: portrait) {
+  .problem-card { padding: 10px 12px; gap: 4px; }
+  .nl { min-height: 48px; }
+}
+/* After answering on smaller screens, shrink the problem so the number line and the reason have room. */
+@media (max-height: 900px), (max-width: 599px) {
+  .problem-card.good .show, .problem-card.bad .show { zoom: 0.7; }
+}
+@media (max-height: 500px) {
+  .problem-card.good .prompt, .problem-card.bad .prompt { display: none; }
+  .feedback { font-size: 0.9rem; line-height: 1.3; }
+  .feedback strong { font-size: 1.05rem; }
+  .prompt { font-size: 0.9rem; }
+}
+
+/* Worksheet cells (only printed): "37 ( ) 73", the three numbers with room to order them, or a number to round. */
+@media print {
+  .ws-bs { display: flex; flex-direction: column; align-items: flex-start; gap: 1mm; }
+  .ws-bs small { font-size: 10pt; color: #444; }
+  .sheet-line .ws-bs .ws-sl { font-size: 18pt; }
+  .sheet-line .ws-bs .ws-sl.ws-ord { font-size: 14pt; }
+  .sheet-line .ws-bs .ws-blank { width: 20mm; margin: 0 1mm; }
+  .ws-ring { display: inline-block; width: 9mm; height: 9mm; border: 0.4mm solid #000; border-radius: 50%; vertical-align: middle; margin: 0 3mm; }
+}
+</style>
+<link rel="stylesheet" href="../../loopy.css">
+<script src="../../loopy.js"></script>
+</head>
+<body>
+
+<div class="wrap">
+  <header class="game-bar">
+    <a class="home-link" href="../../">&larr; loopy</a>
+    <div class="bar-right">
+      <span id="star-chip"></span>
+      <button type="button" id="settings-toggle" aria-controls="settings-panel"></button>
+    </div>
+  </header>
+  <div class="top">
+    <h1 data-t="bsName">Bigger or Smaller</h1>
+    <div class="score" aria-live="polite">
+      <div class="pill"><span data-t="score">Score</span><b id="score">0 / 0</b></div>
+      <div class="pill"><span data-t="streak">Streak</span><b id="streak">0</b></div>
+      <div id="last5" data-game="bigger-smaller"></div>
+    </div>
+  </div>
+  <div class="settings-panel" id="settings-panel" hidden>
+    <div class="controls"><div id="age-picker"></div><div id="theme-picker"></div><button id="sound-toggle"></button><div id="lang-picker"></div></div>
+    <div>
+      <p class="seg-label" id="mode-label" data-t="bsProblems">Problems</p>
+      <div class="seg" role="group" aria-labelledby="mode-label" id="mode-seg">
+        <button type="button" data-mode="cmp" data-t="bsCmp">Compare</button>
+        <button type="button" data-mode="ord" data-t="bsOrd">Order</button>
+        <button type="button" data-mode="rnd" data-t="bsRnd">Round</button>
+        <button type="button" data-mode="mix" data-t="bsMix">Mix</button>
+      </div>
+    </div>
+    <div>
+      <p class="seg-label" id="lv-label" data-t="bsNumbers">Numbers</p>
+      <div class="seg three" role="group" aria-labelledby="lv-label" id="lv-seg">
+        <button type="button" data-lv="0"></button>
+        <button type="button" data-lv="1"></button>
+        <button type="button" data-lv="2"></button>
+        <button type="button" data-lv="3"></button>
+        <button type="button" data-lv="4"></button>
+        <button type="button" data-lv="5" data-t="bsDecNeg">Decimals and minus</button>
+      </div>
+    </div>
+    <div class="panel-foot">
+      <p data-t="bsKbd">Keyboard works too: 1 to 4 or &lt; = &gt; picks an answer, Enter goes on.</p>
+      <button type="button" class="reset" id="reset" data-t="resetScore">Reset score</button>
+    </div>
+  </div>
+
+  <main class="play">
+    <div class="problem-card" id="card">
+      <p class="prompt" id="prompt"></p>
+      <div class="show" id="show" aria-live="polite"></div>
+      <svg class="nl off" id="nl" viewBox="0 0 400 104" role="img" aria-label="Number line" data-t-aria="bsLine"></svg>
+      <p class="feedback" id="feedback"></p>
+    </div>
+    <div class="side">
+      <div class="choices" id="choices"></div>
+      <button type="button" class="next" id="next" data-t="bsNew">New problem</button>
+    </div>
+  </main>
+</div>
+
+<script>
+Loopy.addStrings({
+  en: {
+    bsName: "Bigger or Smaller", bsProblems: "Problems", bsCmp: "Compare", bsOrd: "Order", bsRnd: "Round", bsMix: "Mix",
+    bsNumbers: "Numbers", bsUpTo: "Up to {n}", bsDecNeg: "Decimals and minus",
+    bsKbd: "Keyboard works too: 1 to 4 or < = > picks an answer, Enter goes on.",
+    bsNew: "New problem", bsNext: "Next problem", bsLine: "Number line",
+    bsAskCmp: "Which sign goes in the circle?", bsAskOrd: "Tap the numbers from smallest to biggest.",
+    bsRound1: "Round to the nearest whole number.", bsRound10: "Round to the nearest ten.", bsRound100: "Round to the nearest hundred.",
+    bsRound1000: "Round to the nearest thousand.", bsRound10000: "Round to the nearest ten thousand.",
+    bsRoundsTo: "rounds to", bsRoundIs: "{n} rounds to {r}.",
+    bsLess: "smaller", bsEq: "equal", bsMore: "bigger",
+    bsLessAria: "{a} is smaller than {b}", bsEqAria: "{a} is equal to {b}", bsMoreAria: "{a} is bigger than {b}",
+    bsMoreDigits: "{big} has {n} digits and {small} has {m}. More digits means bigger.",
+    bsPlace: "Both have {n} digits. Compare the {place}: {d1} is more than {d2}, so {big} is bigger.",
+    bsCount: "{big} comes after {small} when you count, so it is bigger.",
+    bsSame: "Both numbers are the same, so they are equal.",
+    bsSameDec: "{a} and {b} are the same. A 0 at the end of a decimal does not change it.",
+    bsDec: "Give both the same number of places after the point: {a} and {b}. Now you can see {big} is bigger.",
+    bsNeg: "{big} is closer to 0. With minus numbers, closer to 0 means bigger.",
+    bsBelow0: "{small} is below 0, so it is smaller than {big}.",
+    bsMouth: "The open side of the sign faces the bigger number.",
+    bsOrder: "On the number line they go {list} from left to right.",
+    bsRoundUp: "{n} is between {lo} and {hi}. It is past halfway ({mid}), so it rounds up to {r}.",
+    bsRoundDown: "{n} is between {lo} and {hi}. It is before halfway ({mid}), so it rounds down to {r}.",
+    bsRoundHalf: "{n} is exactly halfway between {lo} and {hi}. Halfway rounds up, so it is {r}.",
+    bsReadCmp: "Is {a} smaller than, equal to, or bigger than {b}?", bsReadList: "{q} {list}.",
+    bsTryUpTo: "Try numbers up to {n}", bsTryDec: "Try decimals and minus numbers", bsTryMix: "Try all three mixed",
+    bsHowCmp: "Write <, > or = in each circle.", bsHowOrd: "Write the numbers in order, smallest first.",
+    bsHowRnd: "Round each number as it says.", bsHowMix: "Write <, > or = in the circles, put numbers in order (smallest first), and round.",
+    "bs-ones": "ones", "bs-tens": "tens", "bs-hundreds": "hundreds", "bs-thousands": "thousands",
+    "bs-tenthousands": "ten thousands", "bs-hundredthousands": "hundred thousands", "bs-millions": "millions"
+  },
+  de: {
+    bsName: "Größer oder kleiner", bsProblems: "Aufgaben", bsCmp: "Vergleichen", bsOrd: "Ordnen", bsRnd: "Runden", bsMix: "Gemischt",
+    bsNumbers: "Zahlen", bsUpTo: "Bis {n}", bsDecNeg: "Komma und Minus",
+    bsKbd: "Die Tastatur geht auch: 1 bis 4 oder < = > wählt eine Antwort, Enter geht weiter.",
+    bsNew: "Neue Aufgabe", bsNext: "Nächste Aufgabe", bsLine: "Zahlenstrahl",
+    bsAskCmp: "Welches Zeichen gehört in den Kreis?", bsAskOrd: "Tippe die Zahlen von der kleinsten zur größten an.",
+    bsRound1: "Runde auf eine ganze Zahl.", bsRound10: "Runde auf Zehner.", bsRound100: "Runde auf Hunderter.",
+    bsRound1000: "Runde auf Tausender.", bsRound10000: "Runde auf Zehntausender.",
+    bsRoundsTo: "gerundet", bsRoundIs: "{n} gerundet ist {r}.",
+    bsLess: "kleiner", bsEq: "gleich", bsMore: "größer",
+    bsLessAria: "{a} ist kleiner als {b}", bsEqAria: "{a} ist gleich {b}", bsMoreAria: "{a} ist größer als {b}",
+    bsMoreDigits: "{big} hat {n} Stellen und {small} hat {m}. Mehr Stellen heißt größer.",
+    bsPlace: "Beide haben {n} Stellen. Vergleiche die {place}: {d1} ist mehr als {d2}, also ist {big} größer.",
+    bsCount: "{big} kommt beim Zählen nach {small}, also ist es größer.",
+    bsSame: "Beide Zahlen sind gleich, also passt das Gleichzeichen.",
+    bsSameDec: "{a} und {b} sind gleich. Eine 0 am Ende einer Kommazahl ändert nichts.",
+    bsDec: "Schreib beide mit gleich vielen Stellen nach dem Komma: {a} und {b}. Jetzt siehst du: {big} ist größer.",
+    bsNeg: "{big} ist näher an der 0. Bei Minuszahlen heißt näher an 0 größer.",
+    bsBelow0: "{small} ist kleiner als 0, also ist es kleiner als {big}.",
+    bsMouth: "Die offene Seite des Zeichens zeigt zur größeren Zahl.",
+    bsOrder: "Auf dem Zahlenstrahl stehen sie von links nach rechts so: {list}.",
+    bsRoundUp: "{n} liegt zwischen {lo} und {hi}. Es ist nach der Mitte ({mid}), also wird auf {r} aufgerundet.",
+    bsRoundDown: "{n} liegt zwischen {lo} und {hi}. Es ist vor der Mitte ({mid}), also wird auf {r} abgerundet.",
+    bsRoundHalf: "{n} liegt genau in der Mitte zwischen {lo} und {hi}. Bei der Mitte wird aufgerundet, also {r}.",
+    bsReadCmp: "Ist {a} kleiner als, gleich oder größer als {b}?", bsReadList: "{q} {list}.",
+    bsTryUpTo: "Probiere Zahlen bis {n}", bsTryDec: "Probiere Kommazahlen und Minuszahlen", bsTryMix: "Probiere alle drei gemischt",
+    bsHowCmp: "Schreibe <, > oder = in jeden Kreis.", bsHowOrd: "Schreibe die Zahlen der Größe nach auf, die kleinste zuerst.",
+    bsHowRnd: "Runde jede Zahl so, wie es dasteht.", bsHowMix: "Schreibe <, > oder = in die Kreise, ordne die Zahlen (die kleinste zuerst) und runde.",
+    "bs-ones": "Einer", "bs-tens": "Zehner", "bs-hundreds": "Hunderter", "bs-thousands": "Tausender",
+    "bs-tenthousands": "Zehntausender", "bs-hundredthousands": "Hunderttausender", "bs-millions": "Millionen"
+  }
+});
+
+(function () {
+  const t = Loopy.t;
+  const NS = "http://www.w3.org/2000/svg";
+  const $ = (id) => document.getElementById(id);
+  const card = $("card"), showEl = $("show"), promptEl = $("prompt"), nl = $("nl"), feedbackEl = $("feedback"), choicesEl = $("choices");
+  const modeBtns = [...document.querySelectorAll("#mode-seg button")], lvBtns = [...document.querySelectorAll("#lv-seg button")];
+
+  const store = {
+    // ok: the values this setting may have; anything else falls back to the default.
+    get(k, d, ok) { try { const v = JSON.parse(localStorage.getItem(k)); return ok.includes(v) ? v : d; } catch (e) { return d; } },
+    set(k, v) { try { localStorage.setItem(k, JSON.stringify(v)); } catch (e) {} }
+  };
+
+  // Number levels. units: what "Round" rounds to. The last level adds decimals and minus numbers.
+  const LEVELS = [
+    { max: 20, units: [10] },
+    { max: 100, units: [10] },
+    { max: 1000, units: [10, 100] },
+    { max: 10000, units: [10, 100, 1000] },
+    { max: 100000, units: [100, 1000, 10000] },
+    { max: 1000000, units: [1000], extra: true }
+  ];
+  const MODES = ["cmp", "ord", "rnd", "mix"], LVS = [0, 1, 2, 3, 4, 5];
+  // Each age starts at its own level; a level or problem kind picked by hand is remembered for that age.
+  const levelForAge = (a) => a <= 6 ? 0 : a >= 11 ? 5 : a - 6;
+  const modeForAge = (a) => a <= 6 ? "cmp" : "mix";
+  let age = Loopy.getAge();
+  let lv = store.get("bs.level.a" + age, levelForAge(age), LVS);
+  let mode = store.get("bs.mode.a" + age, modeForAge(age), MODES);
+  let right = 0, tried = 0, streak = 0;
+  let cur = null, answered = false, picked = [], lastKey = "";
+
+  const rand = (a, b) => a + Math.floor(Math.random() * (b - a + 1));
+  const shuffle = (list) => { for (let i = list.length - 1; i > 0; i--) { const j = rand(0, i); [list[i], list[j]] = [list[j], list[i]]; } return list; };
+  const hundredths = (v) => Math.round(v * 100) / 100;
+  // A number is { v: value, d: places after the point to show }. Whole numbers use Loopy.num; decimals keep
+  // their places ("0.50" stays "0.50"), in the same language format. Minus numbers get a real minus sign.
+  const fmt = (x) => (x.d ? x.v.toLocaleString(Loopy.lang === "de" ? "de-DE" : "en-US", { minimumFractionDigits: x.d, maximumFractionDigits: x.d }) : Loopy.num(x.v)).replace(/^-/, "−");
+  const whole = (v) => ({ v, d: 0 });
+  const signOf = (a, b) => a.v < b.v ? "<" : a.v > b.v ? ">" : "=";
+
+  // A whole number that looks a lot like a: one digit changed, two digits swapped, or just another number.
+  function lookalike(a, max) {
+    const s = String(a), r = Math.random();
+    let b = NaN;
+    if (r < 0.4 && s.length > 1) {
+      const i = rand(0, s.length - 1);
+      let d;
+      do { d = rand(i === 0 ? 1 : 0, 9); } while (String(d) === s[i]);
+      b = +(s.slice(0, i) + d + s.slice(i + 1));
+    } else if (r < 0.7 && s.length > 1) {
+      const c = s.split(""), i = rand(0, c.length - 2), j = rand(i + 1, c.length - 1);
+      [c[i], c[j]] = [c[j], c[i]];
+      if (c[0] !== "0") b = +c.join("");
+    }
+    return b >= 0 && b <= max && b !== a ? b : rand(0, max);
+  }
+  // Mostly numbers with the most digits for the level, sometimes any number.
+  const pickWhole = (max) => Math.random() < 0.7 ? rand(Math.ceil(max / 10), max - 1) : rand(0, max);
+  function decimal(w) {
+    if (Math.random() < 0.5) return { v: hundredths(w + rand(1, 9) / 10), d: 1 };
+    let h;
+    do { h = rand(1, 99); } while (h % 10 === 0);
+    return { v: hundredths(w + h / 100), d: 2 };
+  }
+
+  // Compare: two numbers, pick <, = or >.
+  function makeCmp(L) {
+    let a, b, kind = "bs-cmp";
+    if (L.extra && Math.random() < 0.7) {
+      if (Math.random() < 0.55) {
+        kind = "bs-dec";
+        const w = rand(0, 9);
+        a = { v: hundredths(w + rand(1, 9) / 10), d: 1 };
+        // The second one has two places, so "0.5 or 0.45?" comes up: more digits is not always bigger.
+        let h;
+        do { h = rand(1, 99); } while (h % 10 === 0);
+        b = { v: Math.random() < 0.15 ? a.v : hundredths(w + h / 100), d: 2 };
+      } else {
+        kind = "bs-neg";
+        a = whole(rand(-20, -1));
+        b = whole(Math.random() < 0.12 ? a.v : rand(-20, 20));
+      }
+    } else {
+      const max = L.extra ? 999999 : L.max;
+      a = whole(pickWhole(max));
+      b = whole(Math.random() < 0.15 ? a.v : lookalike(a.v, max));
+    }
+    if (Math.random() < 0.5) [a, b] = [b, a];
+    return { type: "cmp", a, b, kind, key: "c" + fmt(a) + fmt(b) };
+  }
+
+  // Order: three different numbers to tap from smallest to biggest.
+  function makeOrd(L) {
+    let list = [], kind = "bs-ord", make;
+    if (L.extra && Math.random() < 0.6) {
+      if (Math.random() < 0.5) { const w = rand(0, 9); make = () => decimal(w); kind = "bs-dec"; }
+      else { make = () => whole(rand(-20, 20)); kind = "bs-neg"; }
+    } else {
+      const max = L.extra ? 999999 : L.max;
+      make = () => whole(list.length ? lookalike(list[rand(0, list.length - 1)].v, max) : pickWhole(max));
+    }
+    for (let tries = 0; list.length < 3 && tries < 200; tries++) {
+      const x = make();
+      if (!list.some(y => y.v === x.v)) list.push(x);
+    }
+    if (kind === "bs-neg" && list.every(x => x.v >= 0)) list[0] = whole(-list[0].v || -7);
+    const sorted = list.slice().sort((p, q) => p.v - q.v);
+    do { shuffle(list); } while (list.every((x, i) => x === sorted[i]));
+    return { type: "ord", list, sorted, kind, key: "o" + list.map(fmt).join() };
+  }
+
+  // Round: a number to round to the nearest 1, 10, 100, 1,000 or 10,000. Four answers to pick from.
+  function makeRnd(L) {
+    let u, n;
+    if (L.extra && Math.random() < 0.5) {
+      u = 1;
+      let k;
+      do { k = rand(1, 199); } while (k % 10 === 0);
+      n = { v: k / 10, d: 1 };
+    } else {
+      u = L.units[rand(0, L.units.length - 1)];
+      const top = (L.extra ? 1000000 : L.max) / u - 1;
+      if (Math.random() < 0.15) n = whole(rand(1, top) * u + u / 2);
+      else { let v; do { v = rand(u + 1, top * u + u - 1); } while (v % u === 0); n = whole(v); }
+    }
+    const lo = Math.floor(n.v / u) * u, hi = lo + u, r = Math.floor(n.v / u + 0.5) * u;
+    const other = r === lo ? hi : lo, opts = [r, other], wrong = [r + u, r - u, r + 2 * u, r - 2 * u, r + 3 * u];
+    if (u >= 100) wrong.unshift(Math.floor(n.v / (u / 10) + 0.5) * (u / 10));
+    if (u * 10 <= (L.extra ? 1000000 : L.max)) wrong.unshift(Math.floor(n.v / (u * 10) + 0.5) * u * 10);
+    for (const w of shuffle(wrong.slice(0, 2)).concat(wrong.slice(2))) if (opts.length < 4 && w > 0 && !opts.includes(w)) opts.push(w);
+    return { type: "rnd", n, u, lo, hi, mid: lo + u / 2, r, opts: shuffle(opts), kind: "bs-rnd", key: "r" + fmt(n) + u };
+  }
+
+  // What comes up in each mode. Mix leaves rounding out for the smallest numbers.
+  function makeProblem() {
+    const L = LEVELS[lv];
+    const types = mode !== "mix" ? [mode] : lv < 2 ? ["cmp", "cmp", "ord"] : ["cmp", "cmp", "ord", "rnd"];
+    const type = types[rand(0, types.length - 1)];
+    return type === "cmp" ? makeCmp(L) : type === "ord" ? makeOrd(L) : makeRnd(L);
+  }
+
+  // The short reason under the answer.
+  function explain(p) {
+    if (p.type === "ord") return t("bsOrder", { list: p.sorted.map(fmt).join(", ") });
+    if (p.type === "rnd") {
+      const v = { n: fmt(p.n), lo: Loopy.num(p.lo), hi: Loopy.num(p.hi), mid: Loopy.num(p.mid), r: Loopy.num(p.r) };
+      return t(p.n.v === p.mid ? "bsRoundHalf" : p.r === p.hi ? "bsRoundUp" : "bsRoundDown", v);
+    }
+    const { a, b } = p, s = signOf(a, b);
+    if (s === "=") return a.d !== b.d ? t("bsSameDec", { a: fmt(a), b: fmt(b) }) : t("bsSame");
+    const big = s === ">" ? a : b, small = s === ">" ? b : a, v = { big: fmt(big), small: fmt(small) };
+    if (a.d || b.d) {
+      const two = (x) => fmt({ v: x.v, d: 2 });
+      return t("bsDec", { a: two(a), b: two(b), big: two(big) });
+    }
+    if (small.v < 0) return t(big.v < 0 ? "bsNeg" : "bsBelow0", v);
+    const bs = String(big.v), ss = String(small.v);
+    if (bs.length !== ss.length) return t("bsMoreDigits", { ...v, n: bs.length, m: ss.length });
+    if (bs.length === 1) return t("bsCount", v);
+    const i = [...bs].findIndex((c, k) => c !== ss[k]);
+    const place = ["ones", "tens", "hundreds", "thousands", "tenthousands", "hundredthousands", "millions"][bs.length - 1 - i];
+    return t("bsPlace", { ...v, n: bs.length, place: t("bs-" + place), d1: bs[i], d2: ss[i] });
+  }
+  // The answer as one line: "37 < 73", "142 < 241 < 412" or "4,567 rounds to 4,600".
+  function answerText(p) {
+    if (p.type === "cmp") return fmt(p.a) + " " + signOf(p.a, p.b) + " " + fmt(p.b);
+    if (p.type === "ord") return p.sorted.map(fmt).join(" < ");
+    return t("bsRoundIs", { n: fmt(p.n), r: Loopy.num(p.r) }).replace(/\.$/, "");
+  }
+
+  // ---- Number line picture ----
+  function svgEl(tag, attrs, parent) {
+    const n = document.createElementNS(NS, tag);
+    for (const k in attrs) n.setAttribute(k, attrs[k]);
+    if (parent) parent.appendChild(n);
+    return n;
+  }
+  // Labels near an end of the line lean inwards, so they are never cut off.
+  function label(x, y, text, color, size, weight) {
+    const anchor = x > 345 ? "end" : x < 55 ? "start" : "middle";
+    if (anchor !== "middle") x += anchor === "end" ? 10 : -10;
+    const n = svgEl("text", { x, y, "text-anchor": anchor, "font-size": size, "font-weight": weight, fill: color, "font-family": "Lexend, sans-serif" }, nl);
+    n.textContent = text;
+    return n;
+  }
+  const Y = 72, X0 = 30, X1 = 370;
+  // skip: an end of the line that is labeled by the caller instead.
+  function drawLine(lo, hi, step, places, skip) {
+    nl.textContent = "";
+    const x = (v) => X0 + (v - lo) / (hi - lo) * (X1 - X0);
+    svgEl("line", { x1: X0 - 14, y1: Y, x2: X1 + 14, y2: Y, stroke: "var(--muted)", "stroke-width": 3, "stroke-linecap": "round" }, nl);
+    const count = Math.round((hi - lo) / step);
+    for (let i = 0; i <= count; i++) svgEl("line", { x1: x(lo + i * step), y1: Y - 7, x2: x(lo + i * step), y2: Y + 7, stroke: "var(--muted)", "stroke-width": 2 }, nl);
+    const tick = (v) => label(x(v), Y + 26, fmt({ v: hundredths(v), d: places }), "var(--muted)", 15, 600);
+    if (lo !== skip) tick(lo);
+    if (hi !== skip) tick(hi);
+    if (lo < 0 && hi > 0) tick(0);
+    return x;
+  }
+  // A step of 1, 2 or 5 times 10, 100, ... so the line has about 8 small ticks.
+  function niceStep(span) {
+    const raw = span / 8, mag = Math.pow(10, Math.floor(Math.log10(raw)));
+    return [1, 2, 5, 10].map(k => k * mag).find(s => s >= raw - 1e-9);
+  }
+  function drawPoints(items) {
+    const vals = items.map(x => x.v), min = Math.min(...vals), max = Math.max(...vals);
+    const minPlaces = Math.max(...items.map(x => x.d));
+    let step = niceStep(Math.max(max - min, minPlaces ? 0.1 : 1));
+    if (!minPlaces) step = Math.max(1, step);
+    let lo = Math.floor(min / step - 1e-9) * step, hi = Math.ceil(max / step + 1e-9) * step;
+    if (hi - lo < step * 2) { lo -= step; hi += step; }
+    const places = Math.max(0, -Math.floor(Math.log10(step) + 1e-9));
+    const x = drawLine(hundredths(lo), hundredths(hi), step, places);
+    const colors = ["var(--c1)", "var(--c2)", "var(--c4)"], placed = [];
+    items.forEach((it, i) => {
+      if (placed.some(p => p.v === it.v)) return;
+      const px = x(it.v), row = placed.filter(p => Math.abs(p.x - px) < 64).length;
+      placed.push({ v: it.v, x: px });
+      svgEl("circle", { cx: px, cy: Y, r: 8, fill: colors[i] }, nl);
+      if (row) svgEl("line", { x1: px, y1: Y - 10, x2: px, y2: Y - 16 - row * 18, stroke: colors[i], "stroke-width": 2 }, nl);
+      label(px, Y - 16 - row * 20, fmt(it), colors[i], 18, 700);
+    });
+  }
+  function drawRound(p) {
+    const x = drawLine(p.lo, p.hi, p.u / 10, 0, p.r);
+    const mx = x(p.mid), nx = x(p.n.v), rx = x(p.r);
+    svgEl("line", { x1: mx, y1: Y - 16, x2: mx, y2: Y + 12, stroke: "var(--ink)", "stroke-width": 2, "stroke-dasharray": "4 3" }, nl);
+    label(mx, Y + 26, Loopy.num(p.mid), "var(--muted)", 15, 600);
+    // An arrow along the line from the number to where it rounds.
+    const dir = rx > nx ? 1 : -1;
+    svgEl("line", { x1: nx, y1: Y, x2: rx - dir * 10, y2: Y, stroke: "var(--c1)", "stroke-width": 6, "stroke-linecap": "round" }, nl);
+    svgEl("polygon", { points: [rx, Y, rx - dir * 14, Y - 9, rx - dir * 14, Y + 9].join(" "), fill: "var(--c1)" }, nl);
+    svgEl("circle", { cx: nx, cy: Y, r: 8, fill: "var(--c2)" }, nl);
+    label(nx, Y - 20, fmt(p.n), "var(--c2)", 18, 700);
+    label(rx, Y + 27, Loopy.num(p.r), "var(--c1)", 17, 700);
+  }
+
+  // ---- One round ----
+  function render() {
+    $("score").textContent = right + " / " + tried;
+    $("streak").textContent = streak;
+    modeBtns.forEach(b => b.setAttribute("aria-pressed", String(b.dataset.mode === mode)));
+    lvBtns.forEach(b => {
+      b.setAttribute("aria-pressed", String(+b.dataset.lv === lv));
+      if (+b.dataset.lv < 5) b.textContent = t("bsUpTo", { n: Loopy.num(LEVELS[+b.dataset.lv].max) });
+    });
+  }
+  function span(cls, text) {
+    const s = document.createElement("span");
+    s.className = cls;
+    if (text !== undefined) s.textContent = text;
+    return s;
+  }
+  function button(i, main, small, aria) {
+    const b = document.createElement("button");
+    b.type = "button";
+    b.id = "choice-" + i;
+    b.appendChild(span(small ? "sym" : "", main));
+    if (small) { const s = document.createElement("small"); s.textContent = small; b.appendChild(s); }
+    if (aria) b.setAttribute("aria-label", aria);
+    choicesEl.appendChild(b);
+    return b;
+  }
+
+  function newRound() {
+    let p;
+    do { p = makeProblem(); } while (p.key === lastKey);
+    lastKey = p.key; cur = p; answered = false; picked = [];
+    card.classList.remove("good", "bad");
+    nl.classList.add("off");
+    nl.textContent = "";
+    feedbackEl.className = "feedback";
+    feedbackEl.textContent = "";
+    showEl.textContent = "";
+    showEl.className = "show " + p.type;
+    choicesEl.textContent = "";
+    choicesEl.className = "choices" + (p.type === "rnd" ? "" : " three");
+    if (p.type === "cmp") {
+      promptEl.textContent = t("bsAskCmp");
+      showEl.append(span("", fmt(p.a)), span("ring empty"), span("", fmt(p.b)));
+      const v = { a: fmt(p.a), b: fmt(p.b) };
+      [["<", "bsLess"], ["=", "bsEq"], [">", "bsMore"]].forEach(([s, k], i) => {
+        const b = button(i, s, t(k), t(k + "Aria", v));
+        b.dataset.answer = s;
+        b.addEventListener("click", () => chooseOne(b));
+      });
+    } else if (p.type === "ord") {
+      promptEl.textContent = t("bsAskOrd");
+      p.sorted.forEach((x, i) => { if (i) showEl.appendChild(span("sign", "<")); showEl.appendChild(span("gap empty")); });
+      p.list.forEach((x, i) => {
+        const b = button(i, fmt(x));
+        b.addEventListener("click", () => tapOrder(b, x));
+      });
+    } else {
+      promptEl.textContent = t("bsRound" + p.u);
+      showEl.append(span("", fmt(p.n)), span("to", t("bsRoundsTo")), span("gap empty"));
+      p.opts.forEach((o, i) => {
+        const b = button(i, Loopy.num(o));
+        b.dataset.answer = String(o);
+        b.addEventListener("click", () => chooseOne(b));
+      });
+    }
+    $("next").textContent = t("bsNew");
+    Loopy.speech.read();
+  }
+
+  // Compare and Round: one tap picks the answer.
+  function chooseOne(btn) {
+    if (answered) return;
+    const good = cur.type === "cmp" ? signOf(cur.a, cur.b) : String(cur.r);
+    const buttons = [...choicesEl.children];
+    buttons.forEach(b => {
+      b.disabled = true;
+      b.classList.add(b.dataset.answer === good ? "right" : b === btn ? "wrong" : "faded");
+    });
+    const ring = showEl.querySelector(".ring, .gap");
+    ring.classList.remove("empty");
+    ring.textContent = cur.type === "cmp" ? good : Loopy.num(cur.r);
+    const yours = cur.type === "cmp" ? fmt(cur.a) + " " + btn.dataset.answer + " " + fmt(cur.b) : btn.textContent;
+    finish(btn.dataset.answer === good, yours);
+  }
+
+  // Order: tap the numbers one by one. A wrong tap ends the round.
+  function tapOrder(btn, x) {
+    if (answered || btn.disabled) return;
+    const want = cur.sorted[picked.length];
+    const gaps = showEl.querySelectorAll(".gap");
+    if (x.v === want.v) {
+      gaps[picked.length].classList.remove("empty");
+      gaps[picked.length].textContent = fmt(x);
+      picked.push(x);
+      btn.disabled = true;
+      btn.classList.add("right");
+      btn.appendChild(span("place", String(picked.length)));
+      if (picked.length === 3) finish(true);
+      return;
+    }
+    btn.classList.add("wrong");
+    const yours = picked.concat([x]).map(fmt).join(" < ") + (picked.length < 2 ? " …" : "");
+    [...choicesEl.children].forEach((b, i) => {
+      b.disabled = true;
+      if (!b.querySelector(".place")) b.appendChild(span("place", String(cur.sorted.indexOf(cur.list[i]) + 1)));
+    });
+    gaps.forEach((g, i) => { g.classList.remove("empty"); g.textContent = fmt(cur.sorted[i]); });
+    finish(false, yours);
+  }
+
+  function finish(ok, yours) {
+    answered = true; tried++;
+    if (ok) { right++; streak++; } else { streak = 0; }
+    if (ok) Loopy.rewards.correct("bigger-smaller", streak, harder());
+    else Loopy.rewards.wrong("bigger-smaller", {
+      q: cur.type === "cmp" ? fmt(cur.a) + " ? " + fmt(cur.b) : cur.type === "ord" ? cur.list.map(fmt).join(", ") : fmt(cur.n) + " (" + Loopy.num(cur.u) + ")",
+      a: answerText(cur), y: yours, k: cur.kind
+    });
+    card.classList.add(ok ? "good" : "bad");
+    if (cur.type === "rnd") drawRound(cur);
+    else drawPoints(cur.type === "cmp" ? [cur.a, cur.b] : cur.sorted);
+    nl.classList.remove("off");
+    feedbackEl.className = "feedback " + (ok ? "good" : "bad");
+    feedbackEl.innerHTML = "<strong></strong>";
+    feedbackEl.firstChild.textContent = ok ? (streak >= 3 ? t("correctRow", { n: streak }) : t("correct")) : t("notQuite");
+    let why = explain(cur);
+    if (!ok && cur.type === "cmp" && lv <= 1 && signOf(cur.a, cur.b) !== "=") why += " " + t("bsMouth");
+    feedbackEl.appendChild(document.createTextNode(why));
+    $("next").textContent = t("bsNext");
+    render();
+    $("next").focus({ preventScroll: true });
+  }
+
+  // What "Make it harder" does after 10 in a row: bigger numbers, then decimals and minus, then all three mixed.
+  function harder() {
+    if (lv < 5) {
+      const label = lv === 4 ? t("bsTryDec") : t("bsTryUpTo", { n: Loopy.num(LEVELS[lv + 1].max) });
+      return { label, apply: () => { lv++; store.set("bs.level.a" + age, lv); render(); } };
+    }
+    if (mode !== "mix") return { label: t("bsTryMix"), apply: () => { mode = "mix"; store.set("bs.mode.a" + age, mode); render(); } };
+    return null;
+  }
+
+  modeBtns.forEach(b => b.addEventListener("click", () => { mode = b.dataset.mode; store.set("bs.mode.a" + age, mode); render(); newRound(); }));
+  lvBtns.forEach(b => b.addEventListener("click", () => { lv = +b.dataset.lv; store.set("bs.level.a" + age, lv); render(); newRound(); }));
+  window.addEventListener("loopy:age", (e) => {
+    age = e.detail;
+    lv = store.get("bs.level.a" + age, levelForAge(age), LVS);
+    mode = store.get("bs.mode.a" + age, modeForAge(age), MODES);
+    render(); newRound();
+  });
+  $("next").addEventListener("click", newRound);
+  $("reset").addEventListener("click", () => { right = 0; tried = 0; streak = 0; Loopy.recent.clear("bigger-smaller"); render(); newRound(); });
+  document.addEventListener("keydown", (e) => {
+    if (e.target.tagName === "INPUT" || document.querySelector(".loopy-cheer.big")) return;
+    if (e.key === "Enter" && answered && e.target.tagName !== "BUTTON") { newRound(); return; }
+    if (answered) return;
+    const sign = ["<", "=", ">"].indexOf(e.key);
+    const n = cur.type === "cmp" && sign !== -1 ? sign + 1 : parseInt(e.key, 10);
+    const b = n >= 1 && choicesEl.children[n - 1];
+    if (b && !b.disabled) b.click();
+  });
+
+  // Read aloud: "Is 37 smaller than, equal to, or bigger than 73?", "Tap the numbers from smallest to biggest. 412, 142 or 241."
+  // or "Round to the nearest hundred. 4,567." Voices read "-7" as minus 7, so speech gets a plain minus sign.
+  const said = (x) => fmt(x).replace("\u2212", "-");
+  Loopy.speech.question({ host: card, text: () => {
+    if (cur.type === "cmp") return t("bsReadCmp", { a: said(cur.a), b: said(cur.b) });
+    if (cur.type === "ord") return t("bsReadList", { q: t("bsAskOrd"), list: cur.list.slice(0, -1).map(said).join(", ") + " " + t("orWord") + " " + said(cur.list[2]) });
+    return t("bsReadList", { q: t("bsRound" + cur.u), list: said(cur.n) });
+  } });
+
+  // Print worksheet: 20 problems at the same level and kind, in black and white.
+  Loopy.worksheet({
+    title: () => t("bsName"),
+    level: () => [t("ageLabel", { n: age }), t("bsProblems") + ": " + t({ cmp: "bsCmp", ord: "bsOrd", rnd: "bsRnd", mix: "bsMix" }[mode]),
+      t("bsNumbers") + ": " + (lv < 5 ? t("bsUpTo", { n: Loopy.num(LEVELS[lv].max) }) : t("bsDecNeg"))].join(" · "),
+    how: () => t({ cmp: "bsHowCmp", ord: "bsHowOrd", rnd: "bsHowRnd", mix: "bsHowMix" }[mode]),
+    layout: "line",
+    make: (n) => {
+      const list = [], keys = new Set();
+      for (let tries = 0; list.length < n; tries++) {
+        const p = makeProblem();
+        if (keys.has(p.key) && tries < 500) continue;
+        keys.add(p.key); list.push(p);
+      }
+      return list;
+    },
+    cell: (p) => {
+      const box = span("ws-bs"), line = span("ws-sl");
+      if (p.type === "cmp") {
+        line.append(fmt(p.a), span("ws-ring"), fmt(p.b));
+      } else if (p.type === "ord") {
+        line.classList.add("ws-ord");
+        line.textContent = p.list.map(fmt).join(" \u00b7 ");
+        const blanks = span("ws-sl ws-ord");
+        [0, 1, 2].forEach(i => { if (i) blanks.append(" < "); blanks.appendChild(span("ws-blank")); });
+        box.append(line, blanks);
+        return box;
+      } else {
+        const how = document.createElement("small");
+        how.textContent = t("bsRound" + p.u);
+        box.appendChild(how);
+        line.append(fmt(p.n) + " → ", span("ws-blank"));
+      }
+      box.appendChild(line);
+      return box;
+    },
+    answer: answerText
+  });
+
+  render();
+  newRound();
+})();
+</script>
+</body>
+</html>

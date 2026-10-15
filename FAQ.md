@@ -36,7 +36,7 @@ Yes. On a phone or tablet, open Loopy in the browser and choose "Add to Home Scr
 
 ## Can Loopy read the questions out loud?
 
-Yes, in Plus and Minus, Times and Share, What Time Is It? and Make 10. Open Settings and turn on **Read aloud**. A speaker button shows next to the question. It uses the device's own voice, in English or German, and nothing is downloaded. It is on by itself for ages 5 to 7.
+Yes, in Plus and Minus, Times and Share, What Time Is It?, Make 10 and Bigger or Smaller. Open Settings and turn on **Read aloud**. A speaker button shows next to the question. It uses the device's own voice, in English or German, and nothing is downloaded. It is on by itself for ages 5 to 7.
 
 ## How do I turn the sound off?
 

@@ -215,6 +215,10 @@ Counting pictures sit under the problem on the card. Times and Share shows rows 
 
 Under the problem: a short bold word: "Correct!" in green or "Not quite." in red, then one plain sentence that explains why. It always has room saved, so the layout does not jump.
 
+### Number line
+
+Bigger or Smaller explains each answer with a number line drawn in SVG. It stays hidden (but keeps its room) until the answer is in, so it never gives the answer away. The line and ticks are `muted`. Each number is a dot in `c1`, `c2` or `c4` with its value above it in the same color. For rounding, a dashed `ink` tick marks halfway, the number is a `c2` dot, and a `c1` arrow runs along the line to where it rounds. Labels near an end lean inwards so they are never cut off.
+
 ### Top bar
 
 Each game has a top bar with the way home on the left, and the star counter and the ⚙ Settings button on the right.
