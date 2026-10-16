@@ -47,7 +47,10 @@ document.documentElement.classList.add("loopy-building");
       score: "Score", streak: "Streak", home: "← loopy", resetScore: "Reset score",
       backHome: "Back to all games", last5: "Last 5", last5Aria: "Last 5 answers: {n} right", last5None: "Last 5 answers: none yet",
       tapHint: "Tap the numbers to write your answer.", kbdHint: "Keyboard works too: numbers, Backspace, Enter.",
-      erase: "Erase", eraseAria: "Erase last digit", check: "Check", next: "Next", yourAnswer: "Your answer", both: "Both"
+      erase: "Erase", eraseAria: "Erase last digit", check: "Check", next: "Next", yourAnswer: "Your answer", both: "Both",
+      skip: "Skip", setGame: "This game", setShared: "Age, look and sound",
+      hintChoices: "Tap the right answer!", hintPad: "Tap the numbers, then Check!",
+      hintLetters: "Tap the letters to spell the word!", hintMap: "Tap the right place on the map!"
     },
     de: {
       theme: "Farbthema", black: "Schwarz", sunny: "Sonnig", ocean: "Ozean", candy: "Bonbon", forest: "Wald", contrast: "Hoher Kontrast",
@@ -64,7 +67,10 @@ document.documentElement.classList.add("loopy-building");
       score: "Punkte", streak: "Serie", home: "← loopy", resetScore: "Punkte zurücksetzen",
       backHome: "Zurück zu allen Spielen", last5: "Letzte 5", last5Aria: "Letzte 5 Antworten: {n} richtig", last5None: "Letzte 5 Antworten: noch keine",
       tapHint: "Tippe auf die Zahlen, um deine Antwort zu schreiben.", kbdHint: "Die Tastatur geht auch: Zahlen, Rücktaste, Enter.",
-      erase: "Löschen", eraseAria: "Letzte Ziffer löschen", check: "Prüfen", next: "Weiter", yourAnswer: "Deine Antwort", both: "Beides"
+      erase: "Löschen", eraseAria: "Letzte Ziffer löschen", check: "Prüfen", next: "Weiter", yourAnswer: "Deine Antwort", both: "Beides",
+      skip: "Überspringen", setGame: "Dieses Spiel", setShared: "Alter, Aussehen und Ton",
+      hintChoices: "Tippe auf die richtige Antwort!", hintPad: "Tippe die Zahlen, dann Prüfen!",
+      hintLetters: "Tippe die Buchstaben für das Wort!", hintMap: "Tippe die richtige Stelle auf der Karte an!"
     }
   });
 
@@ -809,6 +815,37 @@ document.documentElement.classList.add("loopy-building");
     document.querySelectorAll("[data-loopy-stars]").forEach(function (n) { n.textContent = data.stars; });
   }
 
+  // "+1" star: flies from where the child tapped (or the feedback line) to the star counter,
+  // so they see where their stars come from. With reduced motion the counter only bumps.
+  var lastTap = null;
+  document.addEventListener("pointerdown", function (e) { lastTap = { x: e.clientX, y: e.clientY, t: Date.now() }; }, true);
+  function bump(chip) { chip.classList.remove("bump"); void chip.offsetWidth; chip.classList.add("bump"); }
+  function fly() {
+    var chip = document.getElementById("star-chip");
+    if (!chip || !chip.getClientRects().length) return;
+    if (reduced) { bump(chip); return; }
+    var from = lastTap && Date.now() - lastTap.t < 1500 ? lastTap : null;
+    if (!from) {
+      var box = document.getElementById("feedback") || document.activeElement;
+      var r = box && box.getClientRects().length ? box.getBoundingClientRect() : null;
+      from = r ? { x: r.left + r.width / 2, y: r.top + r.height / 2 } : { x: innerWidth / 2, y: innerHeight / 2 };
+    }
+    var to = chip.getBoundingClientRect();
+    var el = document.createElement("div");
+    el.className = "loopy-plus";
+    el.setAttribute("aria-hidden", "true");
+    el.innerHTML = '+1 <svg viewBox="0 0 24 24"><path d="' + STAR_PATH + '"/></svg>';
+    el.style.left = from.x + "px";
+    el.style.top = from.y + "px";
+    document.body.appendChild(el);
+    void el.offsetWidth;
+    el.style.left = (to.left + to.width / 2) + "px";
+    el.style.top = (to.top + to.height / 2) + "px";
+    el.style.scale = "0.6";
+    el.style.opacity = "0";
+    setTimeout(function () { el.remove(); bump(chip); }, 750);
+  }
+
   var Loopy = window.Loopy = window.Loopy || {};
   Loopy.rewards = {
     BADGES: BADGES, STAR_PATH: STAR_PATH,
@@ -822,6 +859,7 @@ document.documentElement.classList.add("loopy-building");
       if (Loopy.log) Loopy.log.add(game, false, detail);
       Loopy.sound.play("wrong");
       announce(false);
+      if (Loopy.hint) Loopy.hint.done();
     },
     // Call after each right answer with the current streak.
     // harder: optional { label, apply } offered after 10 in a row, e.g. { label: "Try quarter hours", apply: fn }.
@@ -833,8 +871,9 @@ document.documentElement.classList.add("loopy-building");
       if (streak <= 1) cheeredBest[game] = false;
       var newBest = streak > (data.best[game] || 0);
       if (newBest) data.best[game] = streak;
-      save(); updateChips();
+      save(); updateChips(); fly();
       announce(true);
+      if (Loopy.hint) Loopy.hint.done();
       var after = badgeFor(data.stars);
       if (after && after !== before) {
         Loopy.sound.play("badge");
@@ -1101,7 +1140,28 @@ window.Loopy.fresh = function (recent, make, keep) {
 })();
 
 // Settings button: shows or hides the panel with age, theme, sound and game levels.
+// The panel is the same in every game: "This game" (the game's own levels, then Print worksheet)
+// comes first, then "Age, look and sound" (the shared row), then Reset score at the bottom.
 (function () {
+  function head(key) {
+    var h = document.createElement("p");
+    h.className = "set-head";
+    h.setAttribute("data-t", key);
+    h.textContent = Loopy.t(key);
+    return h;
+  }
+  function group(panel) {
+    var shared = panel.querySelector(".controls"), foot = panel.querySelector(".panel-foot");
+    if (!shared || shared.parentNode !== panel) return;
+    var box = document.createElement("div");
+    box.className = "set-shared";
+    // Only a game with its own settings gets the "This game" heading (Today's 10 has none).
+    var own = [].some.call(panel.children, function (c) { return c !== shared && c !== foot; });
+    box.appendChild(head("setShared"));
+    panel.insertBefore(box, foot);
+    box.appendChild(shared);
+    if (own) panel.insertBefore(head("setGame"), panel.firstChild);
+  }
   var GEAR = '<svg viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.7 1.7 0 0 0 .3 1.8l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.7 1.7 0 0 0-1.8-.3 1.7 1.7 0 0 0-1 1.5V21a2 2 0 1 1-4 0v-.1a1.7 1.7 0 0 0-1.1-1.5 1.7 1.7 0 0 0-1.8.3l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1a1.7 1.7 0 0 0 .3-1.8 1.7 1.7 0 0 0-1.5-1H3a2 2 0 1 1 0-4h.1a1.7 1.7 0 0 0 1.5-1.1 1.7 1.7 0 0 0-.3-1.8l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1a1.7 1.7 0 0 0 1.8.3H9a1.7 1.7 0 0 0 1-1.5V3a2 2 0 1 1 4 0v.1a1.7 1.7 0 0 0 1 1.5 1.7 1.7 0 0 0 1.8-.3l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1a1.7 1.7 0 0 0-.3 1.8V9a1.7 1.7 0 0 0 1.5 1H21a2 2 0 1 1 0 4h-.1a1.7 1.7 0 0 0-1.5 1z"/></svg>';
   function build() {
     var btn = document.getElementById("settings-toggle"), panel = document.getElementById("settings-panel");
@@ -1111,6 +1171,7 @@ window.Loopy.fresh = function (recent, make, keep) {
     // On small phones only the gear shows, so the button also needs its name for screen readers.
     btn.setAttribute("data-t-aria", "settings");
     btn.setAttribute("aria-label", Loopy.t("settings"));
+    group(panel);
     var sync = function () { btn.setAttribute("aria-expanded", String(!panel.hidden)); };
     btn.addEventListener("click", function () { panel.hidden = !panel.hidden; sync(); });
     sync();
@@ -1129,8 +1190,17 @@ window.Loopy.fresh = function (recent, make, keep) {
   else build();
 })();
 
+// Skip and Next: the button under the answers. Before an answer it is a small, quiet "Skip", so a
+// child does not tap it by mistake; after an answer it is the big "Next". The same two words in every game.
+// A game calls Loopy.nextButton(btn, answered) when a new problem shows (false) and after each answer (true).
+Loopy.nextButton = function (btn, answered) {
+  if (!btn) return;
+  btn.textContent = Loopy.t(answered ? "next" : "skip");
+  btn.classList.toggle("skip", !answered);
+};
+
 // Keyboard: after Next is pressed with the keyboard, focus moves to the first answer of the new
-// problem. Otherwise focus stays on the button (now "New problem"), and a second Enter skips the problem.
+// problem. Otherwise focus stays on the button (now "Skip"), and a second Enter skips the problem.
 // In the number and letter pads, Check turns into Next and is off until something is typed, so focus
 // moves to the first key instead of getting lost.
 (function () {
@@ -1168,6 +1238,64 @@ window.Loopy.fresh = function (recent, make, keep) {
   }
   if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", build);
   else build();
+})();
+
+// First-time hint: the first time a child opens a game, a bubble above the answers says what to tap.
+// It hides at the first tap or key press, and stops coming back once the child has answered there
+// (Loopy.rewards calls Loopy.hint.done). Kept per child in "loopy.seen" as a list of game folders.
+(function () {
+  var KEY = "loopy.seen", NAME = /^[a-z0-9-]{1,40}$/;
+  var AREAS = [["#letters", "hintLetters"], ["#pad", "hintPad"], ["#map", "hintMap"], ["#choices", "hintChoices"], ["#answers", "hintChoices"]];
+  var Loopy = window.Loopy;
+  var seen = [];
+  // Only short folder names are kept, whatever the stored text says.
+  try {
+    var raw = JSON.parse(Loopy.store.get(KEY));
+    if (Array.isArray(raw)) seen = raw.filter(function (g) { return typeof g === "string" && NAME.test(g); }).slice(-40);
+  } catch (e) {}
+  // The game is the page's folder, e.g. "plus-minus" for math/plus-minus/.
+  var game = location.pathname.replace(/index\.html$/, "").split("/").filter(Boolean).pop() || "";
+  var bubble = null, target = null;
+
+  function hide() {
+    if (bubble) bubble.remove();
+    bubble = null;
+    window.removeEventListener("resize", place);
+  }
+  function place() {
+    if (!bubble) return;
+    var r = target.getBoundingClientRect();
+    if (!r.width) { hide(); return; }
+    bubble.style.left = (r.left + r.width / 2) + "px";
+    // Above the answers; on the map it sits inside the map's bottom edge, so it does not hide the question.
+    bubble.style.top = (target.id === "map" ? r.bottom - 12 : Math.max(r.top - 14, 70)) + "px";
+  }
+  function show() {
+    if (!NAME.test(game) || seen.indexOf(game) !== -1) return;
+    var pick = AREAS.filter(function (a) { var n = document.querySelector(a[0]); return n && n.getClientRects().length; })[0];
+    if (!pick) return;
+    target = document.querySelector(pick[0]);
+    bubble = document.createElement("div");
+    bubble.className = "loopy-hint";
+    bubble.setAttribute("aria-hidden", "true"); // the game's own prompt says the same for screen readers
+    bubble.textContent = "👆 " + Loopy.t(pick[1]);
+    document.body.appendChild(bubble);
+    place();
+    window.addEventListener("resize", place);
+    ["pointerdown", "keydown"].forEach(function (k) { document.addEventListener(k, hide, { capture: true, once: true }); });
+  }
+  Loopy.hint = {
+    done: function () {
+      hide();
+      if (!NAME.test(game) || seen.indexOf(game) !== -1) return;
+      seen = seen.concat(game).slice(-40);
+      Loopy.store.set(KEY, JSON.stringify(seen));
+    }
+  };
+  // Wait until the page shows (loopy.js hides it while the shared parts build).
+  function start() { setTimeout(show, 350); }
+  if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", start);
+  else start();
 })();
 
 // Printable worksheet: a "Print worksheet" button in the game's Settings. It fills a sheet with
@@ -1273,7 +1401,7 @@ window.Loopy.fresh = function (recent, make, keep) {
       btn.addEventListener("click", function () { fill(); window.print(); });
       row.appendChild(btn);
       row.appendChild(el("p", "", Loopy.t("printNote")));
-      panel.insertBefore(row, panel.querySelector(".panel-foot"));
+      panel.insertBefore(row, panel.querySelector(".set-shared") || panel.querySelector(".panel-foot"));
     };
     if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", build);
     else build();

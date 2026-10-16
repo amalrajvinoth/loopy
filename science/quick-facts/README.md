@@ -7,7 +7,7 @@ A short science quiz with pictures. The child sees a picture and a question abou
 1. Look at the picture and read the question.
 2. Tap the answer you think is right. The right one turns green.
 3. One line says why, like "Mars looks red because its dust is rusty." After a wrong answer it says the right answer first.
-4. Tap **Next question** to go on. Every right answer earns a star.
+4. Tap **Next** to go on. Every right answer earns a star.
 
 ## Age levels
 

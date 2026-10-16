@@ -8,7 +8,7 @@ Practice reading a clock with hands.
 
 1. Look at the clock. The short hand shows the hour. The long hand shows the minutes.
 2. Tap the time that matches the clock.
-3. Read the short reason, then tap **Next time**.
+3. Read the short reason, then tap **Next**.
 
 You can also use a keyboard. Press **1** to **4** to pick an answer, and **Enter** to go on.
 

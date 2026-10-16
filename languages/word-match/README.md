@@ -8,7 +8,7 @@ A picture and word game. The child sees a picture and picks its word from three 
 2. Tap the word that goes with it. The right one turns green.
 3. A short line says the word and the same word in the other language, like "It is “dog”. In German: der Hund."
 4. Tap **Hear the word** to have the browser read it out loud. You can tap it before you pick, as a help.
-5. Tap **Next picture** to go on. Every right answer earns a star.
+5. Tap **Next** to go on. Every right answer earns a star.
 
 ## Age levels
 

@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'sha256-x5X1Twmj0lsLpbrAR5f516VNgT++3oNbet1o23PE3G8='; style-src 'self' 'sha256-NRvs9rpS6FGc/WSUwbb7btjzQy9mNmYydGT6Y6BS3zw='; img-src 'self' data:; font-src 'self'; connect-src 'none'; worker-src 'self'; object-src 'none'; base-uri 'none'; form-action 'none'; manifest-src 'self'; upgrade-insecure-requests">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'sha256-001FClFZN0PKGDOVQhZLlwEQRGMe05suxTmrP2B45CE='; style-src 'self' 'sha256-a7i4mGCfaZx1UZVeJjYUm0mQhe9zccRZCdhc+vU2Zro='; img-src 'self' data:; font-src 'self'; connect-src 'none'; worker-src 'self'; object-src 'none'; base-uri 'none'; form-action 'none'; manifest-src 'self'; upgrade-insecure-requests">
 <meta name="referrer" content="strict-origin-when-cross-origin">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <link rel="icon" href="icon.svg" type="image/svg+xml">
@@ -44,11 +44,13 @@ h1 { margin: 0; line-height: 0; color: var(--ink); }
 .wordmark g:nth-child(4) { animation-delay: .45s; }
 @keyframes hop { 0%, 70%, 100% { transform: translateY(0); } 80% { transform: translateY(-10%); } }
 .lead { margin: 0; font-family: var(--display); font-weight: 600; font-size: 1.35rem; color: var(--muted); text-wrap: balance; }
-.controls.center { justify-content: center; }
+.settings-panel { width: 100%; text-align: left; }
 .list { display: flex; flex-direction: column; gap: 28px; }
 .subject { display: flex; flex-direction: column; gap: 12px; }
 .subject h2.sub { margin: 0; font-family: var(--display); font-size: 1.6rem; font-weight: 700; }
-.grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 16px; }
+/* Game tiles: a big picture, the name and the ages, two per row on phones and three on tablets. */
+.grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; }
+@media (min-width: 600px) { .grid { grid-template-columns: repeat(3, 1fr); gap: 16px; } }
 .quiz {
   --tone: var(--c1);
   display: flex; flex-direction: column; gap: 8px; padding: 20px; min-height: 170px;
@@ -66,6 +68,13 @@ h1 { margin: 0; line-height: 0; color: var(--ink); }
 .tag { align-self: flex-start; background: var(--chip); color: var(--ink); font-size: 0.78rem; font-weight: 600; letter-spacing: 0.06em; text-transform: uppercase; padding: 4px 10px; border-radius: 999px; }
 .quiz h3 { margin: 0; font-family: var(--display); font-size: 1.6rem; font-weight: 700; color: var(--tone); }
 .quiz p { margin: 0; color: var(--muted); line-height: 1.45; }
+.quiz.game { align-items: center; text-align: center; min-height: 0; padding: 14px 10px 12px; gap: 6px; }
+.quiz.game .pic { font-size: 2.8rem; line-height: 1.1; }
+.quiz.game h3 { font-size: clamp(1.1rem, 4.8vw, 1.45rem); line-height: 1.15; }
+.quiz.game .tag { align-self: center; margin-top: auto; }
+.quiz.game p { display: none; font-size: 0.9rem; }
+/* Tablets and computers have room for the one-line description too. */
+@media (min-width: 700px) { .quiz.game p { display: block; } }
 .go { margin-top: auto; align-self: flex-start; background: var(--tone); color: var(--card); font-family: var(--display); font-weight: 700; font-size: 1.2rem; padding: 6px 16px; border-radius: 999px; }
 /* Today's 10: one big button above the shelf. */
 .wrap .today { --tone: var(--c5); min-height: 0; }
@@ -90,7 +99,10 @@ footer p { margin: 0; }
     <h1 aria-label="loopy"><svg class="wordmark" viewBox="-30 -1180 2773 1460" aria-hidden="true"><g><path fill="currentColor" transform="translate(0 0) scale(1 -1)" d="M239 -11Q143 -11 97.5 40.5Q52 92 52 196V624Q52 668 75.0 691.0Q98 714 140 714Q183 714 206.5 691.0Q230 668 230 624V202Q230 165 244.5 148.0Q259 131 282 131Q289 131 296.5 132.5Q304 134 313 135Q330 135 338.5 122.0Q347 109 347 69Q347 34 333.0 16.5Q319 -1 290 -6Q282 -7 267.0 -9.0Q252 -11 239 -11Z"/></g><g><ellipse cx="695" cy="-766" rx="110" ry="300" fill="#fff" stroke="currentColor" stroke-width="35" transform="rotate(-12 695 -512)"/><ellipse cx="695" cy="-766" rx="52" ry="220" fill="#3ddc84" transform="rotate(-12 695 -512)"/><ellipse cx="1204" cy="-766" rx="110" ry="300" fill="#fff" stroke="currentColor" stroke-width="35" transform="rotate(12 1204 -512)"/><ellipse cx="1204" cy="-766" rx="52" ry="220" fill="#3ddc84" transform="rotate(12 1204 -512)"/><clipPath id="hwe0"><path d="M460,-97 A240,240 0 1 1 837,-97 Q648,-193 460,-97Z"/></clipPath><path d="M460,-97 A240,240 0 1 1 837,-97 Q648,-193 460,-97Z" fill="#fff"/><g clip-path="url(#hwe0)"><circle cx="648" cy="-275" r="106" fill="#1d2a3f"/><circle cx="685" cy="-313" r="34" fill="#fff"/></g><path d="M460,-97 A240,240 0 1 1 837,-97 Q648,-193 460,-97Z" fill="none" stroke="currentColor" stroke-width="46" stroke-linejoin="round"/><clipPath id="hwe1"><path d="M1062,-97 A240,240 0 1 1 1439,-97 Q1250,-193 1062,-97Z"/></clipPath><path d="M1062,-97 A240,240 0 1 1 1439,-97 Q1250,-193 1062,-97Z" fill="#fff"/><g clip-path="url(#hwe1)"><circle cx="1250" cy="-275" r="106" fill="#1d2a3f"/><circle cx="1287" cy="-313" r="34" fill="#fff"/></g><path d="M1062,-97 A240,240 0 1 1 1439,-97 Q1250,-193 1062,-97Z" fill="none" stroke="currentColor" stroke-width="46" stroke-linejoin="round"/><path d="M811,-45 Q880,41 950,-11 Q1019,41 1088,-45" fill="none" stroke="currentColor" stroke-width="32" stroke-linecap="round" stroke-linejoin="round"/><rect x="876" y="-6" width="72" height="116" rx="21" fill="#fff" stroke="currentColor" stroke-width="21"/><rect x="952" y="-6" width="72" height="116" rx="21" fill="#fff" stroke="currentColor" stroke-width="21"/></g><g><path fill="currentColor" transform="translate(1552 0) scale(1 -1)" d="M140 -189Q98 -189 75.0 -166.0Q52 -143 52 -99V412Q52 455 74.5 478.0Q97 501 139 501Q182 501 204.5 478.0Q227 455 227 412V354L216 403Q230 448 274.5 475.5Q319 503 376 503Q440 503 488.5 472.0Q537 441 564.0 384.0Q591 327 591 246Q591 167 564.0 109.0Q537 51 488.5 20.0Q440 -11 376 -11Q321 -11 277.0 15.0Q233 41 218 83H230V-99Q230 -143 206.5 -166.0Q183 -189 140 -189ZM320 120Q347 120 367.5 133.5Q388 147 400.0 174.5Q412 202 412 246Q412 313 386.0 342.5Q360 372 320 372Q293 372 272.0 359.0Q251 346 239.0 318.5Q227 291 227 246Q227 180 253.0 150.0Q279 120 320 120Z"/></g><g><path fill="currentColor" transform="translate(2172 0) scale(1 -1)" d="M195 -189Q164 -189 145.0 -173.0Q126 -157 121.5 -131.0Q117 -105 130 -76L197 69V-3L26 388Q13 418 17.5 444.0Q22 470 44.0 485.5Q66 501 104 501Q136 501 155.5 486.5Q175 472 191 430L291 170H257L363 431Q379 472 399.5 486.5Q420 501 455 501Q485 501 503.0 485.5Q521 470 525.0 444.0Q529 418 516 388L289 -122Q271 -162 249.5 -175.5Q228 -189 195 -189Z"/></g></svg></h1>
     <p class="lead" data-t="tagline">Learn. Play. Repeat.</p>
     <div id="kid-picker"></div>
-    <div class="controls center"><div id="age-picker"></div><div id="theme-picker"></div><button id="sound-toggle"></button><div id="lang-picker"></div></div>
+    <button type="button" id="settings-toggle" aria-controls="settings-panel"></button>
+    <div class="settings-panel" id="settings-panel" hidden>
+      <div class="controls"><div id="age-picker"></div><div id="theme-picker"></div><button id="sound-toggle"></button><div id="lang-picker"></div></div>
+    </div>
   </header>
   <section aria-labelledby="today-title">
   <a class="quiz today" id="today" href="mix/daily-mix/">
@@ -100,6 +112,7 @@ footer p { margin: 0; }
     <div class="row"><span class="go" id="today-go">Start →</span><span class="day-streak" id="today-streak"></span></div>
   </a>
   </section>
+  <main id="list" class="list"></main>
   <section class="shelf" aria-labelledby="shelf-title">
     <div class="shelf-top">
       <h2 id="shelf-title" data-t="myStars">My stars</h2>
@@ -122,7 +135,6 @@ footer p { margin: 0; }
       </div>
     </details>
   </section>
-  <main id="list" class="list"></main>
   <footer><p data-t="moreSoon">More games are on the way!</p><p><a class="help-link" href="progress/" data-t="progressLink">For grown-ups: how it's going</a></p><p><a class="help-link" href="help/" data-t="helpLink">Help and feedback</a></p></footer>
 </div>
 <script>
@@ -135,7 +147,7 @@ Loopy.addStrings({
     copied: "Copied!", copyByHand: "Select the code and copy it.", badCode: "That code didn't work. Check it was copied in full.",
     toNext: "{n} more stars to the {name} badge. Every right answer earns a star.", toNextOne: "1 more star to the {name} badge. Every right answer earns a star.",
     allBadges: "You have every badge. You're a loopy Master!", earned: "Earned", nStars: "{n} stars",
-    play: "Play →", ages: "Ages {a}–{b}", more: "More to explore", noneForAge: "No games for age {n} yet. Try the ones below.",
+    ages: "Ages {a}–{b}", more: "More to explore", noneForAge: "No games for age {n} yet. Try the ones below.",
     math: "Math", languages: "Languages", science: "Science", geography: "Geography",
     pmTitle: "Plus and Minus", pmTag: "Adding and taking away", pmText: "Worksheet-style sums typed on a big number pad. The numbers grow with your age.",
     tsTitle: "Times and Share", tsTag: "Times and division", tsText: "Times tables with dots to count, and sharing into equal groups. Bigger numbers as you grow.",
@@ -162,7 +174,7 @@ Loopy.addStrings({
     copied: "Kopiert!", copyByHand: "Markiere den Code und kopiere ihn.", badCode: "Der Code hat nicht geklappt. Prüfe, ob er ganz kopiert wurde.",
     toNext: "Noch {n} Sterne bis zum Abzeichen {name}. Jede richtige Antwort gibt einen Stern.", toNextOne: "Noch 1 Stern bis zum Abzeichen {name}. Jede richtige Antwort gibt einen Stern.",
     allBadges: "Du hast alle Abzeichen. Du bist ein loopy-Meister!", earned: "Geschafft", nStars: "{n} Sterne",
-    play: "Spielen →", ages: "{a}–{b} Jahre", more: "Mehr entdecken", noneForAge: "Noch keine Spiele für {n} Jahre. Probier die unten.",
+    ages: "{a}–{b} Jahre", more: "Mehr entdecken", noneForAge: "Noch keine Spiele für {n} Jahre. Probier die unten.",
     math: "Mathe", languages: "Sprachen", science: "Naturwissenschaft", geography: "Erdkunde",
     pmTitle: "Plus und Minus", pmTag: "Plus und Minus rechnen", pmText: "Aufgaben wie auf dem Arbeitsblatt, getippt auf einem großen Zahlenfeld. Die Zahlen wachsen mit deinem Alter.",
     tsTitle: "Mal und Teilen", tsTag: "Malnehmen und Teilen", tsText: "Einmaleins mit Punkten zum Zählen und Teilen in gleiche Gruppen. Größere Zahlen, wenn du wächst.",
@@ -184,33 +196,34 @@ Loopy.addStrings({
 });
 // To add a game: put it in <subject>/<folder>/index.html and add one line below.
 // ages: the youngest and oldest age it suits. Games for the picked age show first.
-// The words for each game (title, tag, text) live in the strings above, under the game's "id" prefix.
+// pic: the picture on its tile. The words for each game (title, tag, text) live in the strings above,
+// under the game's "id" prefix. The tag and text show on tablets and computers.
 const GAMES = [
-  { subject: "math", path: "math/plus-minus/", id: "pm", ages: [5, 16] },
-  { subject: "math", path: "math/times-share/", id: "ts", ages: [6, 16] },
-  { subject: "math", path: "math/what-time-is-it/", id: "cl", ages: [5, 10] },
-  { subject: "math", path: "math/make-10/", id: "mk", ages: [5, 9] },
-  { subject: "math", path: "math/bigger-or-smaller/", id: "bs", ages: [6, 12] },
-  { subject: "math", path: "math/pizza-fractions/", id: "pz", ages: [7, 11] },
-  { subject: "math", path: "math/coins-change/", id: "cc", ages: [6, 10] },
-  { subject: "languages", path: "languages/sound-spell/", id: "ss", ages: [5, 8] },
-  { subject: "languages", path: "languages/word-match/", id: "wm", ages: [5, 10] },
-  { subject: "languages", path: "languages/spell-it/", id: "si", ages: [6, 10] },
-  { subject: "science", path: "science/quick-facts/", id: "qf", ages: [7, 12] },
-  { subject: "geography", path: "geography/where-is-it/", id: "wi", ages: [7, 14] },
+  { subject: "math", path: "math/plus-minus/", id: "pm", pic: "➕", ages: [5, 16] },
+  { subject: "math", path: "math/times-share/", id: "ts", pic: "✖️", ages: [6, 16] },
+  { subject: "math", path: "math/what-time-is-it/", id: "cl", pic: "🕒", ages: [5, 10] },
+  { subject: "math", path: "math/make-10/", id: "mk", pic: "🔟", ages: [5, 9] },
+  { subject: "math", path: "math/bigger-or-smaller/", id: "bs", pic: "⚖️", ages: [6, 12] },
+  { subject: "math", path: "math/pizza-fractions/", id: "pz", pic: "🍕", ages: [7, 11] },
+  { subject: "math", path: "math/coins-change/", id: "cc", pic: "💰", ages: [6, 10] },
+  { subject: "languages", path: "languages/sound-spell/", id: "ss", pic: "👂", ages: [5, 8] },
+  { subject: "languages", path: "languages/word-match/", id: "wm", pic: "🖼️", ages: [5, 10] },
+  { subject: "languages", path: "languages/spell-it/", id: "si", pic: "✏️", ages: [6, 10] },
+  { subject: "science", path: "science/quick-facts/", id: "qf", pic: "🔬", ages: [7, 12] },
+  { subject: "geography", path: "geography/where-is-it/", id: "wi", pic: "🗺️", ages: [7, 14] },
 ];
 const t = Loopy.t;
 const list = document.getElementById("list");
 
 function card(g) {
   const a = document.createElement("a");
-  a.className = "quiz";
+  a.className = "quiz game";
   a.href = g.path;
-  a.innerHTML = '<span class="tag"></span><h3></h3><p></p><span class="go"></span>';
-  a.children[0].textContent = t(g.id + "Tag") + " · " + t("ages", { a: g.ages[0], b: g.ages[1] });
+  a.innerHTML = '<span class="pic" aria-hidden="true"></span><h3></h3><p></p><span class="tag"></span>';
+  a.children[0].textContent = g.pic;
   a.children[1].textContent = t(g.id + "Title");
-  a.children[2].textContent = t(g.id + "Text");
-  a.children[3].textContent = t("play");
+  a.children[2].textContent = t(g.id + "Tag") + ". " + t(g.id + "Text");
+  a.children[3].textContent = t("ages", { a: g.ages[0], b: g.ages[1] });
   return a;
 }
 function section(title) {
