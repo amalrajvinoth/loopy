@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'sha256-5knj0PjMHZaYXIZOaT2HKBIsgDIEBjdINOw5/5/KUvE='; style-src 'self' 'sha256-z2P7kGW5Z05eCTjTZdYpc0vThTlOE9vmt97pVSvi2I4=' 'sha256-W+M0+NGBKbL1fCGEKkbWgDUCO62JWeFSLj5trGkqXRE=' 'sha256-RT1053JU5UiKvjrCUFx1rlhdFLMmgtuFJ9T8jnMeawQ=' 'sha256-fFSVzTPb+NUFT7306QiPLPT03y2KA45S+xTD2LMEDEc='; img-src 'self' data:; font-src 'self'; connect-src 'none'; worker-src 'self'; object-src 'none'; base-uri 'none'; form-action 'none'; manifest-src 'self'; upgrade-insecure-requests">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'sha256-XmEVd2LK3OKztYi73CULMpwzgskLdF3uk2mi/6Go7ZU='; style-src 'self' 'sha256-z2P7kGW5Z05eCTjTZdYpc0vThTlOE9vmt97pVSvi2I4=' 'sha256-W+M0+NGBKbL1fCGEKkbWgDUCO62JWeFSLj5trGkqXRE=' 'sha256-RT1053JU5UiKvjrCUFx1rlhdFLMmgtuFJ9T8jnMeawQ=' 'sha256-P1MDhcKmqezI9QybenGh0E+R8cO0qEAt89ytypSkdro='; img-src 'self' data:; font-src 'self'; connect-src 'none'; worker-src 'self'; object-src 'none'; base-uri 'none'; form-action 'none'; manifest-src 'self'; upgrade-insecure-requests">
 <meta name="referrer" content="strict-origin-when-cross-origin">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <style>:root{color-scheme:light;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}body{margin:0}[hidden]{display:none!important}</style>
@@ -199,9 +199,11 @@ body { min-height: 100vh; min-height: 100dvh; padding-block: 12px 16px; }
 .speak[hidden] { display: none; }
 .side { display: flex; flex-direction: column; gap: 10px; }
 .choices { display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; }
-.choices.three button:last-child { grid-column: 1 / -1; }
+/* Three answers: one column, so no answer looks bigger than the others. */
+.choices.three { grid-template-columns: 1fr; }
+.choices.three button { min-height: clamp(48px, 7dvh, 80px); }
 .choices button {
-  font: inherit; font-size: clamp(1.15rem, min(5.4vw, 3.6dvh), 1.9rem); font-weight: 700; color: var(--ink); line-height: 1.15;
+  font: inherit; font-size: clamp(1.2rem, min(5.8vw, 3.8dvh), 2rem); font-weight: 700; color: var(--ink); line-height: 1.15;
   background: var(--key); border: 2px solid var(--line); border-radius: 18px; min-height: clamp(56px, 9dvh, 96px); padding: 6px 8px; cursor: pointer;
   overflow-wrap: anywhere; hyphens: auto;
   transition: transform .08s ease, border-color .15s ease; touch-action: manipulation; -webkit-tap-highlight-color: transparent;
@@ -250,8 +252,8 @@ body { min-height: 100vh; min-height: 100dvh; padding-block: 12px 16px; }
   <section class="top" aria-labelledby="title">
     <h1 id="title" data-t="wmName">Word Match</h1>
     <div class="score" aria-live="polite">
-      <div class="pill"><span data-t="score">Score</span><b id="score">0 / 0</b></div>
-      <div class="pill"><span data-t="streak">Streak</span><b id="streak">0</b></div>
+      <div class="pill pill-score"><span data-t="score">Score</span><b id="score">0 / 0</b></div>
+      <div class="pill pill-streak"><span data-t="streak">Streak</span><b id="streak">0</b></div>
       <div id="last5" data-game="word-match"></div>
     </div>
   </section>
@@ -297,7 +299,7 @@ body { min-height: 100vh; min-height: 100dvh; padding-block: 12px 16px; }
     </div>
     <div class="side">
       <div class="choices" id="choices"></div>
-      <button type="button" class="next" id="next" data-t="wmNew">New picture</button>
+      <button type="button" class="next skip" id="next" data-t="skip">Skip</button>
     </div>
   </main>
 </div>
@@ -307,7 +309,7 @@ Loopy.addStrings({
   en: {
     wmName: "Word Match", wmWords: "Words in", wmTopic: "Topic", wmAll: "All", wmAnimals: "Animals", wmFood: "Food", wmHome: "Home", wmSchool: "School",
     wmChoices: "Choices", wmThree: "3 words", wmFour: "4 words", wmTricky: "4, tricky",
-    wmAutoRead: "Read the word out loud after each answer", wmHear: "Hear the word", wmNew: "New picture", wmNext: "Next picture",
+    wmAutoRead: "Read the word out loud after each answer", wmHear: "Hear the word",
     wmKbd: "Keyboard works too: 1 to 4 picks a word, Enter goes on.",
     wmAsk: "Which word goes with the picture?", wmPic: "Picture",
     wmIs: "It is “{w}”.", wmInEn: "In English:\u00a0{w}", wmInDe: "In German:\u00a0{w}",
@@ -317,7 +319,7 @@ Loopy.addStrings({
   de: {
     wmName: "Bild und Wort", wmWords: "Wörter auf", wmTopic: "Thema", wmAll: "Alle", wmAnimals: "Tiere", wmFood: "Essen", wmHome: "Zuhause", wmSchool: "Schule",
     wmChoices: "Auswahl", wmThree: "3 Wörter", wmFour: "4 Wörter", wmTricky: "4, knifflig",
-    wmAutoRead: "Nach jeder Antwort das Wort vorlesen", wmHear: "Wort anhören", wmNew: "Neues Bild", wmNext: "Nächstes Bild",
+    wmAutoRead: "Nach jeder Antwort das Wort vorlesen", wmHear: "Wort anhören",
     wmKbd: "Die Tastatur geht auch: 1 bis 4 wählt ein Wort, Enter geht weiter.",
     wmAsk: "Welches Wort passt zum Bild?", wmPic: "Bild",
     wmIs: "Das ist „{w}“.", wmInEn: "Auf Englisch:\u00a0{w}", wmInDe: "Auf Deutsch:\u00a0{w}",
@@ -446,7 +448,7 @@ function makeProblem(lang, topic, age, level, avoid) {
     levelBtns.forEach(b => b.setAttribute("aria-pressed", String(+b.dataset.level === level)));
     autoBox.checked = autoRead;
     speakBtn.hidden = !voiceOk();
-    nextBtn.textContent = t(answered ? "wmNext" : "wmNew");
+    Loopy.nextButton(nextBtn, answered);
   }
   function newRound() {
     current = makeProblem(wordsLang, topic, age, level, recent);

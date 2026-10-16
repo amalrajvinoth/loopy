@@ -14,7 +14,7 @@ There are three kinds of problems:
 2. **Compare.** Two fractions, like 3/4 and 5/8. Tap **<**, **=** or **>**.
 3. **Add.** Two fractions, like 1/2 + 1/4. Tap the answer.
 
-After each answer the game shows the picture and a short reason. Tap **Next problem** to go on.
+After each answer the game shows the picture and a short reason. Tap **Next** to go on.
 
 You can also use a keyboard. **1** to **4** picks an answer (or **<**, **=** and **>** when comparing). **Enter** goes on.
 

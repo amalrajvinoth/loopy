@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'sha256-T2MyMTmAUfjyFuwbiw6WE9ZYxNA49SVm3I40gzhx5tg='; style-src 'self' 'sha256-z2P7kGW5Z05eCTjTZdYpc0vThTlOE9vmt97pVSvi2I4=' 'sha256-xdz6NJtbgC2AXNgW1qW6AuselSrvLLByNzzsLTqBwEY=' 'sha256-RT1053JU5UiKvjrCUFx1rlhdFLMmgtuFJ9T8jnMeawQ=' 'sha256-3KG381CUtjqBA89CGSEeePMjJDH4mtBX1ixxVdZ02kE='; img-src 'self' data:; font-src 'self'; connect-src 'none'; worker-src 'self'; object-src 'none'; base-uri 'none'; form-action 'none'; manifest-src 'self'; upgrade-insecure-requests">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'sha256-1JmEyKQGDqD788lP0wUEBexAjcpWwm0mK/rKaoPy8rw='; style-src 'self' 'sha256-z2P7kGW5Z05eCTjTZdYpc0vThTlOE9vmt97pVSvi2I4=' 'sha256-4KeXVk7w7LjYemdYWRLdakk0uAlZg26cpfiBqMAOD24=' 'sha256-RT1053JU5UiKvjrCUFx1rlhdFLMmgtuFJ9T8jnMeawQ=' 'sha256-3KG381CUtjqBA89CGSEeePMjJDH4mtBX1ixxVdZ02kE='; img-src 'self' data:; font-src 'self'; connect-src 'none'; worker-src 'self'; object-src 'none'; base-uri 'none'; form-action 'none'; manifest-src 'self'; upgrade-insecure-requests">
 <meta name="referrer" content="strict-origin-when-cross-origin">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <style>:root{color-scheme:light;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}body{margin:0}[hidden]{display:none!important}</style>
@@ -104,7 +104,7 @@ h1 { margin: 0; font-size: 1.6rem; font-weight: 700; text-wrap: balance; }
 .choices { display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; }
 .choices.three { grid-template-columns: repeat(3, 1fr); }
 .choices button {
-  font: inherit; font-size: clamp(1.3rem, min(6vw, 4.2dvh), 2.4rem); font-weight: 700; font-variant-numeric: tabular-nums; color: var(--ink);
+  font: inherit; font-size: clamp(1.4rem, min(7vw, 4.6dvh), 2.6rem); font-weight: 700; font-variant-numeric: tabular-nums; color: var(--ink);
   background: var(--key); border: 3px solid var(--line); border-radius: 18px; min-height: clamp(56px, 9dvh, 96px); cursor: pointer;
   display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 2px; padding: 4px 6px;
   transition: transform .08s ease, border-color .15s ease; touch-action: manipulation; -webkit-tap-highlight-color: transparent;
@@ -221,8 +221,8 @@ body { min-height: 100vh; min-height: 100dvh; padding-block: 12px 16px; }
   <section class="top" aria-labelledby="title">
     <h1 id="title" data-t="pzName">Pizza Fractions</h1>
     <div class="score" aria-live="polite">
-      <div class="pill"><span data-t="score">Score</span><b id="score">0 / 0</b></div>
-      <div class="pill"><span data-t="streak">Streak</span><b id="streak">0</b></div>
+      <div class="pill pill-score"><span data-t="score">Score</span><b id="score">0 / 0</b></div>
+      <div class="pill pill-streak"><span data-t="streak">Streak</span><b id="streak">0</b></div>
       <div id="last5" data-game="pizza-fractions"></div>
     </div>
   </section>
@@ -269,7 +269,7 @@ body { min-height: 100vh; min-height: 100dvh; padding-block: 12px 16px; }
     </div>
     <div class="side">
       <div class="choices" id="choices"></div>
-      <button type="button" class="next" id="next" data-t="pzNew">New problem</button>
+      <button type="button" class="next skip" id="next" data-t="skip">Skip</button>
     </div>
   </main>
 </div>
@@ -281,7 +281,6 @@ Loopy.addStrings({
     pzPieces: "Pieces", pzUpTo: "Up to {n}", pzPicture: "Picture", pzPizza: "Pizza", pzBar: "Bar", pzBoth: "Both",
     pzPicsLabel: "Show the picture before answering", pzPicAria: "Picture",
     pzKbd: "Keyboard works too: 1 to 4 or < = > picks an answer, Enter goes on.",
-    pzNew: "New problem", pzNext: "Next problem",
     pzAskPizza: "What part of the pizza has toppings?", pzAskBar: "What part of the bar is colored in?",
     pzAskCmp: "Which sign goes in the circle?", pzAskAdd: "Add the two parts.",
     pzLess: "smaller", pzEq: "equal", pzMore: "bigger",
@@ -316,7 +315,6 @@ Loopy.addStrings({
     pzPieces: "Stücke", pzUpTo: "Bis {n}", pzPicture: "Bild", pzPizza: "Pizza", pzBar: "Streifen", pzBoth: "Beides",
     pzPicsLabel: "Das Bild vor der Antwort zeigen", pzPicAria: "Bild",
     pzKbd: "Die Tastatur geht auch: 1 bis 4 oder < = > wählt eine Antwort, Enter geht weiter.",
-    pzNew: "Neue Aufgabe", pzNext: "Nächste Aufgabe",
     pzAskPizza: "Welcher Teil der Pizza hat Belag?", pzAskBar: "Welcher Teil des Streifens ist bunt?",
     pzAskCmp: "Welches Zeichen gehört in den Kreis?", pzAskAdd: "Rechne die zwei Teile zusammen.",
     pzLess: "kleiner", pzEq: "gleich", pzMore: "größer",
@@ -666,7 +664,7 @@ Loopy.addStrings({
         b.addEventListener("click", () => choose(b, o));
       });
     }
-    $("next").textContent = t("pzNew");
+    Loopy.nextButton($("next"), false);
     Loopy.speech.read();
   }
 
@@ -703,7 +701,7 @@ Loopy.addStrings({
     feedbackEl.innerHTML = "<strong></strong>";
     feedbackEl.firstChild.textContent = ok ? (streak >= 3 ? t("correctRow", { n: streak }) : t("correct")) : t("notQuite");
     feedbackEl.appendChild(document.createTextNode(explain(cur, ok ? null : pickedFrac)));
-    $("next").textContent = t("pzNext");
+    Loopy.nextButton($("next"), true);
     render();
     $("next").focus({ preventScroll: true });
   }

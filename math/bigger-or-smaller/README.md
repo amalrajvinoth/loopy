@@ -12,7 +12,7 @@ There are three kinds of problems.
 - **Order:** three numbers. Tap them from the smallest to the biggest.
 - **Round:** one number, like 4,567. Round it to the nearest ten, hundred or thousand. Tap the right answer.
 
-After each answer a number line shows where the numbers are. Read the short reason, then tap **Next problem**.
+After each answer a number line shows where the numbers are. Read the short reason, then tap **Next**.
 
 You can also play with a keyboard. Press **1** to **4** to pick an answer, or **<**, **=** and **>** when comparing. Press **Enter** to go on.
 

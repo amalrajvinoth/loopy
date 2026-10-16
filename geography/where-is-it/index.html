@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'sha256-tAdX55/tYkXdvWD6LRksvE4XLIfOn75+IMN2iYk/ntc='; style-src 'self' 'sha256-z2P7kGW5Z05eCTjTZdYpc0vThTlOE9vmt97pVSvi2I4=' 'sha256-B1/34nWPbkOgQvjShds4VMrIOiMhFRoP1nBsay1oDds='; img-src 'self' data:; font-src 'self'; connect-src 'none'; worker-src 'self'; object-src 'none'; base-uri 'none'; form-action 'none'; manifest-src 'self'; upgrade-insecure-requests">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'sha256-RdksvG6WMEqqdppLV2csZ57QHEuX2ENZVo/9Dpnydco='; style-src 'self' 'sha256-z2P7kGW5Z05eCTjTZdYpc0vThTlOE9vmt97pVSvi2I4=' 'sha256-B1/34nWPbkOgQvjShds4VMrIOiMhFRoP1nBsay1oDds='; img-src 'self' data:; font-src 'self'; connect-src 'none'; worker-src 'self'; object-src 'none'; base-uri 'none'; form-action 'none'; manifest-src 'self'; upgrade-insecure-requests">
 <meta name="referrer" content="strict-origin-when-cross-origin">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <style>:root{color-scheme:light;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}body{margin:0}[hidden]{display:none!important}</style>
@@ -175,8 +175,8 @@ button:focus-visible { outline: 3px solid var(--mark); outline-offset: 3px; }
   <section class="top" aria-labelledby="title">
     <h1 id="title" data-t="wiName">Where Is It?</h1>
     <div class="score" aria-live="polite">
-      <div class="pill"><span data-t="score">Score</span><b id="score">0 / 0</b></div>
-      <div class="pill"><span data-t="streak">Streak</span><b id="streak">0</b></div>
+      <div class="pill pill-score"><span data-t="score">Score</span><b id="score">0 / 0</b></div>
+      <div class="pill pill-streak"><span data-t="streak">Streak</span><b id="streak">0</b></div>
       <div id="last5" data-game="where-is-it"></div>
     </div>
   </section>
@@ -213,7 +213,7 @@ button:focus-visible { outline: 3px solid var(--mark); outline-offset: 3px; }
         <span class="region" id="region" hidden></span>
       </div>
       <p class="feedback" id="feedback" aria-live="polite"><span class="hint"></span></p>
-      <button type="button" class="next" id="next" data-t="wiNew">New question</button>
+      <button type="button" class="next skip" id="next" data-t="skip">Skip</button>
     </div>
   </main>
 </div>
@@ -224,7 +224,6 @@ Loopy.addStrings({
     wiName: "Where Is It?", wiMap: "Map", wiCont: "Continents", wiEurope: "Europe", wiWorld: "World",
     wiFind: "Find", wiCountries: "Countries", wiCapitals: "Capitals",
     wiKbd: "Keyboard works too: Tab moves between places, Enter picks one and goes on.",
-    wiNew: "New question", wiNext: "Next question",
     wiWhere: "Where is {p}?", wiWherePl: "Where are {p}?", wiCapAsk: "{c} is the capital of which country?",
     wiTap: "Tap it on the map.", wiIn: "In {r}",
     wiThis: "This is {p}.", wiCapIs: "Its capital is {c}.", wiWas: "That was {y}.",
@@ -237,7 +236,6 @@ Loopy.addStrings({
     wiName: "Wo liegt das?", wiMap: "Karte", wiCont: "Kontinente", wiEurope: "Europa", wiWorld: "Welt",
     wiFind: "Finde", wiCountries: "Länder", wiCapitals: "Hauptstädte",
     wiKbd: "Die Tastatur geht auch: Tab springt von Ort zu Ort, Enter wählt und geht weiter.",
-    wiNew: "Neue Frage", wiNext: "Nächste Frage",
     wiWhere: "Wo liegt {p}?", wiWherePl: "Wo liegen {p}?", wiCapAsk: "{c} ist die Hauptstadt von welchem Land?",
     wiTap: "Tippe es auf der Karte an.", wiIn: "In {r}",
     wiThis: "Das ist {p}.", wiCapIs: "Hauptstadt: {c}.", wiWas: "Das war {y}.",
@@ -812,7 +810,7 @@ function makeProblem(map, find, age, avoid) {
     $("streak").textContent = streak;
     mapBtns.forEach(b => b.setAttribute("aria-pressed", String(b.dataset.map === map)));
     findBtns.forEach(b => { b.setAttribute("aria-pressed", String(map !== "cont" && b.dataset.find === find)); b.disabled = map === "cont"; });
-    nextBtn.textContent = t(answered ? "wiNext" : "wiNew");
+    Loopy.nextButton(nextBtn, answered);
   }
   // Which shapes can be tapped (and reached with Tab) for this question.
   function setTargets() {

@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'sha256-U+qBvcWQiJgb1BSFUlkk6t5RurJT4cNk3oJDMDV32P8='; style-src 'self' 'sha256-z2P7kGW5Z05eCTjTZdYpc0vThTlOE9vmt97pVSvi2I4=' 'sha256-X/6TgBlwR/r0pxAaWlbvoxARMjftgwBhtW4mnRo1lys=' 'sha256-RT1053JU5UiKvjrCUFx1rlhdFLMmgtuFJ9T8jnMeawQ=' 'sha256-35tG1j/tA0HVaojPp5ha06THcTUMUgDN4WQCSKQ5qo0='; img-src 'self' data:; font-src 'self'; connect-src 'none'; worker-src 'self'; object-src 'none'; base-uri 'none'; form-action 'none'; manifest-src 'self'; upgrade-insecure-requests">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'sha256-h9xAwn88113HKJ7Y1K4Ie4uNSIEhxRYLQYS1vjox6Yw='; style-src 'self' 'sha256-z2P7kGW5Z05eCTjTZdYpc0vThTlOE9vmt97pVSvi2I4=' 'sha256-X/6TgBlwR/r0pxAaWlbvoxARMjftgwBhtW4mnRo1lys=' 'sha256-RT1053JU5UiKvjrCUFx1rlhdFLMmgtuFJ9T8jnMeawQ=' 'sha256-nZ5SAifs7yg0KHXGahfWDo+SQzH7bM6dB53haqDY1io='; img-src 'self' data:; font-src 'self'; connect-src 'none'; worker-src 'self'; object-src 'none'; base-uri 'none'; form-action 'none'; manifest-src 'self'; upgrade-insecure-requests">
 <meta name="referrer" content="strict-origin-when-cross-origin">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <style>:root{color-scheme:light;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}body{margin:0}[hidden]{display:none!important}</style>
@@ -225,6 +225,12 @@ body { min-height: 100vh; min-height: 100dvh; padding-block: 12px 16px; }
 @media (max-height: 900px), (max-width: 599px) {
   .problem-card.good .pic, .problem-card.bad .pic { zoom: 0.7; }
 }
+/* Short phones: a smaller picture, and smaller still after the answer, so the question and the reason fit. */
+@media (max-height: 700px) and (orientation: portrait) {
+  .pic { font-size: clamp(3rem, 11dvh, 8rem); }
+  .problem-card.good .pic, .problem-card.bad .pic { zoom: 0.45; }
+  .problem-card.good .word, .problem-card.bad .word { zoom: 0.75; }
+}
 </style>
 <link rel="stylesheet" href="../../loopy.css">
 <script src="../../loopy.js"></script>
@@ -242,8 +248,8 @@ body { min-height: 100vh; min-height: 100dvh; padding-block: 12px 16px; }
   <section class="top" aria-labelledby="title">
     <h1 id="title" data-t="ssName">Sound Spell</h1>
     <div class="score" aria-live="polite">
-      <div class="pill"><span data-t="score">Score</span><b id="score">0 / 0</b></div>
-      <div class="pill"><span data-t="streak">Streak</span><b id="streak">0</b></div>
+      <div class="pill pill-score"><span data-t="score">Score</span><b id="score">0 / 0</b></div>
+      <div class="pill pill-streak"><span data-t="streak">Streak</span><b id="streak">0</b></div>
       <div id="last5" data-game="sound-spell"></div>
     </div>
   </section>
@@ -280,7 +286,7 @@ body { min-height: 100vh; min-height: 100dvh; padding-block: 12px 16px; }
     </div>
     <div class="side">
       <div class="choices" id="choices"></div>
-      <button type="button" class="next" id="next" data-t="ssNew">New word</button>
+      <button type="button" class="next skip" id="next" data-t="skip">Skip</button>
     </div>
   </main>
 </div>
@@ -289,7 +295,7 @@ body { min-height: 100vh; min-height: 100dvh; padding-block: 12px 16px; }
 Loopy.addStrings({
   en: {
     ssName: "Sound Spell", ssMode: "Sounds", ssStart: "Starting", ssEnd: "Ending", ssWords: "Words in",
-    ssAutoRead: "Read each word out loud", ssHear: "Hear the word", ssNew: "New word", ssNext: "Next word",
+    ssAutoRead: "Read each word out loud", ssHear: "Hear the word",
     ssKbd: "Keyboard works too: 1 to 4 picks an answer, Enter goes on.",
     ssHow: "Look at the picture. Write the missing sound, or circle it.",
     ssAskStart: "Which sound does it start with?", ssAskEnd: "Which sound does it end with?",
@@ -299,7 +305,7 @@ Loopy.addStrings({
   },
   de: {
     ssName: "Anlaut und Endlaut", ssMode: "Laute", ssStart: "Anlaut", ssEnd: "Endlaut", ssWords: "Wörter auf",
-    ssAutoRead: "Jedes Wort vorlesen", ssHear: "Wort anhören", ssNew: "Neues Wort", ssNext: "Nächstes Wort",
+    ssAutoRead: "Jedes Wort vorlesen", ssHear: "Wort anhören",
     ssKbd: "Die Tastatur geht auch: 1 bis 4 wählt eine Antwort, Enter geht weiter.",
     ssHow: "Schau dir das Bild an. Schreibe den fehlenden Laut oder kreise ihn ein.",
     ssAskStart: "Mit welchem Laut beginnt das Wort?", ssAskEnd: "Mit welchem Laut endet das Wort?",
@@ -443,7 +449,7 @@ function makeProblem(lang, modeSetting, age, choices, avoid) {
     modeBtns.forEach(b => b.setAttribute("aria-pressed", String(b.dataset.mode === modeSetting)));
     wordsBtns.forEach(b => b.setAttribute("aria-pressed", String(b.dataset.words === wordsLang)));
     autoBox.checked = autoRead;
-    nextBtn.textContent = t(answered ? "ssNext" : "ssNew");
+    Loopy.nextButton(nextBtn, answered);
   }
   function showWord(fill) {
     wordEl.textContent = "";

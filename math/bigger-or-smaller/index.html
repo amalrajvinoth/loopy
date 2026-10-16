@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'sha256-Lw0VEeTPyzfIdf3xqsi+ZkdMEkh6iZ2c/1tiok1JllU='; style-src 'self' 'sha256-z2P7kGW5Z05eCTjTZdYpc0vThTlOE9vmt97pVSvi2I4=' 'sha256-b3hnvXtAki+MiiuhFoXP7ow8lTz5lijMUvbmM/sg6Y8=' 'sha256-RT1053JU5UiKvjrCUFx1rlhdFLMmgtuFJ9T8jnMeawQ=' 'sha256-pxp/kBLGl+9iEuWmE39iE3rdwOKNvJ0P5qI66lh2pmE='; img-src 'self' data:; font-src 'self'; connect-src 'none'; worker-src 'self'; object-src 'none'; base-uri 'none'; form-action 'none'; manifest-src 'self'; upgrade-insecure-requests">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'sha256-TG1voUxhtIbLbFxKkOLp3Y0nVYD6j9lncAmL2nuIIi0='; style-src 'self' 'sha256-z2P7kGW5Z05eCTjTZdYpc0vThTlOE9vmt97pVSvi2I4=' 'sha256-6kMyVyf9c7UM1Oxq9qbT64OjK/qoKmBRHgHXNYLWcKg=' 'sha256-RT1053JU5UiKvjrCUFx1rlhdFLMmgtuFJ9T8jnMeawQ=' 'sha256-pxp/kBLGl+9iEuWmE39iE3rdwOKNvJ0P5qI66lh2pmE='; img-src 'self' data:; font-src 'self'; connect-src 'none'; worker-src 'self'; object-src 'none'; base-uri 'none'; form-action 'none'; manifest-src 'self'; upgrade-insecure-requests">
 <meta name="referrer" content="strict-origin-when-cross-origin">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <style>:root{color-scheme:light;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}body{margin:0}[hidden]{display:none!important}</style>
@@ -73,9 +73,9 @@ h1 { margin: 0; font-size: 1.6rem; font-weight: 700; text-wrap: balance; }
   display: flex; flex-wrap: wrap; align-items: center; justify-content: center; gap: 0.25em 0.4em;
   font-weight: 700; font-variant-numeric: tabular-nums; line-height: 1.15; text-align: center;
 }
-.show.cmp { font-size: clamp(1.8rem, min(9vw, 9dvh), 4.2rem); }
-.show.ord { font-size: clamp(1.3rem, min(6vw, 6dvh), 3rem); }
-.show.rnd { font-size: clamp(1.8rem, min(9vw, 9dvh), 4.2rem); align-items: baseline; }
+.show.cmp { font-size: clamp(2rem, min(11vw, 10dvh), 5rem); }
+.show.ord { font-size: clamp(1.4rem, min(7vw, 7dvh), 3.4rem); }
+.show.rnd { font-size: clamp(2rem, min(11vw, 10dvh), 5rem); align-items: baseline; }
 .show .ring {
   display: inline-grid; place-items: center; width: 1.3em; height: 1.3em; border-radius: 50%;
   border: 0.07em solid var(--line); color: var(--accent);
@@ -221,8 +221,8 @@ body { min-height: 100vh; min-height: 100dvh; padding-block: 12px 16px; }
   <section class="top" aria-labelledby="title">
     <h1 id="title" data-t="bsName">Bigger or Smaller</h1>
     <div class="score" aria-live="polite">
-      <div class="pill"><span data-t="score">Score</span><b id="score">0 / 0</b></div>
-      <div class="pill"><span data-t="streak">Streak</span><b id="streak">0</b></div>
+      <div class="pill pill-score"><span data-t="score">Score</span><b id="score">0 / 0</b></div>
+      <div class="pill pill-streak"><span data-t="streak">Streak</span><b id="streak">0</b></div>
       <div id="last5" data-game="bigger-smaller"></div>
     </div>
   </section>
@@ -263,7 +263,7 @@ body { min-height: 100vh; min-height: 100dvh; padding-block: 12px 16px; }
     </div>
     <div class="side">
       <div class="choices" id="choices"></div>
-      <button type="button" class="next" id="next" data-t="bsNew">New problem</button>
+      <button type="button" class="next skip" id="next" data-t="skip">Skip</button>
     </div>
   </main>
 </div>
@@ -274,7 +274,7 @@ Loopy.addStrings({
     bsName: "Bigger or Smaller", bsProblems: "Problems", bsCmp: "Compare", bsOrd: "Order", bsRnd: "Round", bsMix: "Mix",
     bsNumbers: "Numbers", bsUpTo: "Up to {n}", bsDecNeg: "Decimals and minus",
     bsKbd: "Keyboard works too: 1 to 4 or < = > picks an answer, Enter goes on.",
-    bsNew: "New problem", bsNext: "Next problem", bsLine: "Number line",
+    bsLine: "Number line",
     bsAskCmp: "Which sign goes in the circle?", bsAskOrd: "Tap the numbers from smallest to biggest.",
     bsRound1: "Round to the nearest whole number.", bsRound10: "Round to the nearest ten.", bsRound100: "Round to the nearest hundred.",
     bsRound1000: "Round to the nearest thousand.", bsRound10000: "Round to the nearest ten thousand.",
@@ -305,7 +305,7 @@ Loopy.addStrings({
     bsName: "Größer oder kleiner", bsProblems: "Aufgaben", bsCmp: "Vergleichen", bsOrd: "Ordnen", bsRnd: "Runden", bsMix: "Gemischt",
     bsNumbers: "Zahlen", bsUpTo: "Bis {n}", bsDecNeg: "Komma und Minus",
     bsKbd: "Die Tastatur geht auch: 1 bis 4 oder < = > wählt eine Antwort, Enter geht weiter.",
-    bsNew: "Neue Aufgabe", bsNext: "Nächste Aufgabe", bsLine: "Zahlenstrahl",
+    bsLine: "Zahlenstrahl",
     bsAskCmp: "Welches Zeichen gehört in den Kreis?", bsAskOrd: "Tippe die Zahlen von der kleinsten zur größten an.",
     bsRound1: "Runde auf eine ganze Zahl.", bsRound10: "Runde auf Zehner.", bsRound100: "Runde auf Hunderter.",
     bsRound1000: "Runde auf Tausender.", bsRound10000: "Runde auf Zehntausender.",
@@ -637,7 +637,7 @@ Loopy.addStrings({
         b.addEventListener("click", () => chooseOne(b));
       });
     }
-    $("next").textContent = t("bsNew");
+    Loopy.nextButton($("next"), false);
     Loopy.speech.read();
   }
 
@@ -700,7 +700,7 @@ Loopy.addStrings({
     let why = explain(cur);
     if (!ok && cur.type === "cmp" && lv <= 1 && signOf(cur.a, cur.b) !== "=") why += " " + t("bsMouth");
     feedbackEl.appendChild(document.createTextNode(why));
-    $("next").textContent = t("bsNext");
+    Loopy.nextButton($("next"), true);
     render();
     $("next").focus({ preventScroll: true });
   }
