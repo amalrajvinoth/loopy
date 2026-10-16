@@ -19,6 +19,8 @@ A flag game. A flag shows, and the child picks its country from 4 buttons. Older
 | 7 to 8 | 12 well-known flags of Europe: Germany and its neighbours, Italy, Spain, the United Kingdom, Sweden |
 | 9 to 10 | All 29 flags of Europe |
 | 11 to 12 | All 66 flags of the world |
+
+Up to age 10, Asia, Africa and the Americas show all their flags, because they have only a few well-known ones.
 | 13 and up | The world, with the capital question after each flag |
 
 In World mode a small tag under the question says the part of the world, like "In Africa". The wrong answers come from the same part of the world when they can, so the choice is a real one.
@@ -60,8 +62,8 @@ Tap **Settings**, then **Print worksheet**. The print window opens. Print it, or
 
 - 66 flags: 29 in Europe, 10 in the Americas, 11 in Asia, 14 in Africa, and Australia and New Zealand.
 - Each country has its English and German name, and its capital in both languages (Rome and Rom, Warsaw and Warschau).
-- South Africa has three capitals, so it has no capital question.
-- Flags that look almost the same as another one, like Chad and Romania, or Monaco and Indonesia, are left out, so every flag has one right answer.
+- South Africa has three capitals, and Singapore is a city that is its own country, so neither has a capital question.
+- Flags that look almost the same as another one, like Chad and Romania, or Monaco and Indonesia, are left out. The Netherlands and Luxembourg are both in, but never offered as each other's wrong answer.
 
 ## For grown-ups
 

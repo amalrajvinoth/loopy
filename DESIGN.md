@@ -293,7 +293,7 @@ The first time a child opens a game, a `c1` bubble with `on-accent` Fredoka text
 
 ### Worksheet (print)
 
-What **Print worksheet** prints. Only the sheet prints; the game is hidden. It is always black on white, whatever the theme, and uses no background colors, because browsers do not print them by default. Lines are borders.
+What **Print worksheet** prints. Only the sheet prints; the game is hidden. It is always black on white, whatever the theme (except the flags in Flags and Capitals, which print in color), and uses no background colors, because browsers do not print them by default. Lines are borders.
 
 - **Paper:** 12mm margins. Sized to fit both A4 and US Letter. Page 1 has the problems, page 2 the answers.
 - **Header:** the game's name in Fredoka 20pt, the loopy bunny logo on the right (8mm tall, the same drawing as the back button, black lines with its green ears), a 0.6mm rule, one grey line with the age and settings, then Name, Date and Score lines, then one bold line saying what to do.

@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'sha256-DHdcMqaKj576SGqajYmxjwphR78PfUJAvzEjFirNyqw='; style-src 'self' 'sha256-z2P7kGW5Z05eCTjTZdYpc0vThTlOE9vmt97pVSvi2I4=' 'sha256-0X+W/Xc6cVdheyH9D1zLVaD+jBRekL1aj7dPgq8HXXY=' 'sha256-RT1053JU5UiKvjrCUFx1rlhdFLMmgtuFJ9T8jnMeawQ=' 'sha256-BGuD7DpsB6N6BZ/QvWkVFweKKtMHSlI9NRgepugJ/t0='; img-src 'self' data:; font-src 'self'; connect-src 'self'; worker-src 'self'; object-src 'none'; base-uri 'none'; form-action 'none'; manifest-src 'self'; upgrade-insecure-requests">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'sha256-8aVafz6F+S9eNtkV8LraSnmhOjTDK0MxWalZ0h0+Vwc='; style-src 'self' 'sha256-z2P7kGW5Z05eCTjTZdYpc0vThTlOE9vmt97pVSvi2I4=' 'sha256-0X+W/Xc6cVdheyH9D1zLVaD+jBRekL1aj7dPgq8HXXY=' 'sha256-RT1053JU5UiKvjrCUFx1rlhdFLMmgtuFJ9T8jnMeawQ=' 'sha256-AbJixgGjrguOw5a9iDl7GMczBsuMXNeP8i3ZkjOlh9U='; img-src 'self' data:; font-src 'self'; connect-src 'self'; worker-src 'self'; object-src 'none'; base-uri 'none'; form-action 'none'; manifest-src 'self'; upgrade-insecure-requests">
 <meta name="referrer" content="strict-origin-when-cross-origin">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <style>:root{color-scheme:light;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}body{margin:0}[hidden]{display:none!important}</style>
@@ -239,11 +239,14 @@ body { min-height: 100vh; min-height: 100dvh; padding-block: 12px 16px; }
 
 /* Worksheet cells (only printed): a flag, the countries to circle, and a line for the capital. */
 @media print {
-  .ws-fc .flag { height: 15mm; width: auto; margin-bottom: 1mm; }
-  .ws-fc .ws-opts { font-size: 10pt; margin-top: 0.6mm; }
-  .ws-fc .ws-opts span::before { content: "○ "; }
-  .ws-fc .ws-cap { margin-top: 1.5mm; font-size: 10pt; }
-  .ws-fc .ws-gap { display: inline-block; min-width: 22mm; border-bottom: 0.4mm solid #000; margin-left: 1mm; }
+  /* .sheet-word comes first, so these win over the shared word layout in loopy.css. */
+  .sheet-word div.ws-fc { width: 100%; padding: 0 1.5mm; }
+  .sheet-word .ws-fc .flag { height: 10mm; width: auto; margin-bottom: 0.8mm; flex: none; }
+  .sheet-word .ws-fc .ws-opts { display: grid; grid-template-columns: 1fr; gap: 0.3mm; width: 100%; margin: 0; font-size: 8.5pt; line-height: 1.15; color: #333; }
+  .sheet-word .ws-fc .ws-opts span { padding-left: 2.6mm; text-indent: -2.6mm; }
+  .sheet-word .ws-fc .ws-opts span::before { content: "○\00a0"; }
+  .sheet-word .ws-fc .ws-cap { margin-top: 1.2mm; font-size: 8.5pt; white-space: nowrap; }
+  .sheet-word .ws-fc .ws-gap { display: inline-block; min-width: 18mm; border-bottom: 0.3mm solid #000; margin-left: 1mm; }
 }
 </style>
 <link rel="stylesheet" href="../../loopy.css">
@@ -321,7 +324,7 @@ Loopy.addStrings({
   },
   de: {
     fcName: "Flaggen und Hauptstädte", fcRegion: "Region", fcEu: "Europa", fcAm: "Amerika", fcAs: "Asien", fcAf: "Afrika", fcWorld: "Welt",
-    fcAsk: "Fragen", fcFlags: "Nur Flaggen", fcFlagsCaps: "Flaggen und Hauptstädte", fcFlagAria: "Eine Flagge",
+    fcAsk: "Abfragen", fcFlags: "Nur Flaggen", fcFlagsCaps: "Flaggen und Hauptstädte", fcFlagAria: "Eine Flagge",
     fcKbd: "Die Tastatur geht auch: 1 bis 4 wählt eine Antwort, Enter geht weiter.",
     fcWhich: "Welches Land hat diese Flagge?", fcCapQ: "Was ist die Hauptstadt {c}?",
     fcInEu: "In Europa", fcInAm: "In Amerika", fcInAs: "In Asien", fcInAf: "In Afrika", fcInOc: "In Ozeanien",
@@ -400,7 +403,7 @@ const FLAGS = [
   ["PAK", "as", 2, "Pakistan", "Pakistan", "Islamabad", "Islamabad", "r 0 0 30 20 #01411c;r 0 0 7.5 20 W;c 19 10.5 5.4 W;c 20.4 9.1 4.9 #01411c;s 21.6 7.8 1.6 W 40"],
   ["BGD", "as", 2, "Bangladesh", "Bangladesch", "Dhaka", "Dhaka", "r 0 0 30 20 #006a4e;c 13.5 10 6 #f42a41"],
   ["ARE", "as", 2, "United Arab Emirates", "Vereinigte Arabische Emirate", "Abu Dhabi", "Abu Dhabi", "h #00732f W K;r 0 0 7.5 20 #ff0000"],
-  ["SGP", "as", 2, "Singapore", "Singapur", "Singapore", "Singapur", "h #ef3340 W;c 6.2 5 3.5 W;c 7.5 5 3.4 #ef3340;s 9.3 3.3 0.55 W;s 10.92 4.47 0.55 W;s 10.3 6.38 0.55 W;s 8.3 6.38 0.55 W;s 7.68 4.47 0.55 W"],
+  ["SGP", "as", 2, "Singapore", "Singapur", "", "", "h #ef3340 W;c 6.2 5 3.5 W;c 7.5 5 3.4 #ef3340;s 9.3 3.3 0.55 W;s 10.92 4.47 0.55 W;s 10.3 6.38 0.55 W;s 8.3 6.38 0.55 W;s 7.68 4.47 0.55 W"],
   ["EGY", "af", 1, "Egypt", "Ägypten", "Cairo", "Kairo", "h #ce1126 W K;p 15,7.4 16.5,8.6 16.2,12.2 13.8,12.2 13.5,8.6 #c09300"],
   ["NGA", "af", 1, "Nigeria", "Nigeria", "Abuja", "Abuja", "v #008751 W #008751"],
   ["ZAF", "af", 1, "South Africa", "Südafrika", "", "", "r 0 0 30 10 #e03c31;r 0 10 30 10 #001489;l -2 -1.5 13 10 W 6.67;l -2 21.5 13 10 W 6.67;r 12 6.67 18 6.66 W;l -2 -1.5 13 10 #007749 4;l -2 21.5 13 10 #007749 4;r 12 8 18 4 #007749;p 0,2.6 9.6,10 0,17.4 #ffb81c;p 0,4.4 7.2,10 0,15.6 K"],
@@ -435,14 +438,18 @@ const randInt = (n) => Math.floor(Math.random() * n);
 const pick = (arr) => arr[randInt(arr.length)];
 const shuffle = (arr) => arr.slice().sort(() => Math.random() - 0.5);
 // Younger children get the well-known flags only: up to age 8 in Europe, up to age 10 in the rest of the world.
-const levelFor = (region, age) => age <= (region === "eu" ? 8 : 10) ? 1 : 2;
+// A region with fewer than 8 well-known flags (Asia, Africa, the Americas) shows all its flags, so they do not keep coming back.
+const levelFor = (region, age) => age > (region === "eu" ? 8 : 10) ? 2
+  : FLAGS.filter(f => (region === "world" || f.region === region) && f.level === 1).length < 8 ? 2 : 1;
 function poolFor(region, age) {
   const lv = levelFor(region, age);
   return FLAGS.filter(f => (region === "world" || f.region === region) && f.level <= lv);
 }
+// Flags that are easy to mix up are never offered as each other's wrong answer.
+const LOOKALIKE = { NLD: "LUX", LUX: "NLD" };
 // Three wrong answers: from the same part of the world first, so the choice is a real one.
 function others(f, region, age, need) {
-  const ok = (o) => o !== f && (!need || o.en.cap);
+  const ok = (o) => o !== f && o.code !== LOOKALIKE[f.code] && (!need || o.en.cap);
   const pool = poolFor(region, age).filter(ok);
   const near = shuffle(pool.filter(o => o.region === f.region));
   const far = shuffle(pool.filter(o => o.region !== f.region));
@@ -641,7 +648,8 @@ function drawFlag(svg, f) {
     level: () => [t("ageLabel", { n: age }), t("fcRegion") + ": " + t(REGION_KEYS[region]), t(mode === "cap" ? "fcFlagsCaps" : "fcFlags")].join(" · "),
     how: () => t(mode === "cap" ? "fcHowCap" : "fcHow"),
     layout: "word",
-    make: (n) => { const list = [], keys = []; while (list.length < n) { const p = makeProblem(region, age, keys); keys.push(p.key); if (keys.length > 12) keys.shift(); list.push(p); } return list; },
+    // No flag twice on one sheet, unless the region has fewer flags than the sheet.
+    make: (n) => { const list = [], keys = [], keep = poolFor(region, age).length - 1; while (list.length < n) { const p = makeProblem(region, age, keys); keys.push(p.key); if (keys.length > keep) keys.shift(); list.push(p); } return list; },
     cell: (p) => {
       const box = document.createElement("div");
       box.className = "ws-fc";
@@ -650,11 +658,9 @@ function drawFlag(svg, f) {
       svg.setAttribute("aria-hidden", "true");
       drawFlag(svg, p.f);
       box.appendChild(svg);
-      for (let i = 0; i < 4; i += 2) {
-        const row = part("ws-opts");
-        p.options.slice(i, i + 2).forEach(o => row.appendChild(part("", nameOfCode(o))));
-        box.appendChild(row);
-      }
+      const opts = part("ws-opts");
+      p.options.forEach(o => opts.appendChild(part("", nameOfCode(o))));
+      box.appendChild(opts);
       if (mode === "cap" && p.f.en.cap) { const cap = part("ws-cap", t("fcCapLine")); cap.appendChild(part("ws-gap")); box.appendChild(cap); }
       return box;
     },
