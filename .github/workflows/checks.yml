@@ -38,3 +38,7 @@ jobs:
         run: node tools/a11y/check.mjs
         env:
           A11Y_DEPS: ${{ runner.temp }}/a11y
+      - name: Every game plays, and no question comes back too soon
+        run: node tools/e2e/play.mjs
+        env:
+          A11Y_DEPS: ${{ runner.temp }}/a11y
