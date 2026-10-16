@@ -20,7 +20,7 @@ Tap − or + next to Age on the home page or in a game's Settings. The games get
 
 ## Can brothers and sisters share one device?
 
-Yes. A new device starts with two children, Dio and Dia. Tap ✎ to rename them. On the home page, under "Who is playing?", tap **+** to add a child. Give them a name (or a nickname), a picture and their age. Each child has their own stars, badges, streaks, age and game settings. Tap a child's name to switch. Tap ✎ to change the name or picture, or to remove a child. Removing a child deletes their stars on this device. The theme, sound and language are the same for everyone.
+Yes. A new device starts with one child and shows no names. To add a child, open **Settings** on the home page and tap **Add a child** under Kids. Give them a name (or a nickname), a picture and their age. Each child has their own stars, badges, streaks, age, game levels, settings and last game. With two or more children, "Who is playing?" shows on the home page: tap a child's name to switch. In Settings, tap a child to change the name or picture, or to remove them. Removing a child deletes their stars on this device. When only one child is left, the names hide again. Devices that already had Dio and Dia keep them. The theme, sound and language are the same for everyone.
 
 ## How do I change the language?
 
@@ -28,13 +28,15 @@ Tap EN for English or DE for German. You find it on the home page and in each ga
 
 ## Where are the stars saved? Can I lose them?
 
-Stars are saved in your browser. If you clear your browser data or use a private window, they go away. To keep a backup, copy your stars code from the home page. It also keeps the day streak and progress.
+Stars are saved in your browser, in two places: a big store (IndexedDB) and a small one (localStorage). If one is cleared, loopy brings it back from the other. Once a child has stars, loopy asks the browser to keep them, so it does not clear them when the device is low on space. If you clear your browser data yourself or use a private window, they go away. To keep a backup, copy your stars code or link from the home page.
 
 ## How do I move stars to another device?
 
-On the home page, open "Move my stars to another device". Copy the code, then paste it on the other device and tap Load. The code holds every child on the device. Each child's stars go to the child with the same name on the other device, or a new child is added.
+On the home page, open "Move my stars to another device". Copy the code, then paste it on the other device and tap Load. Or tap **Copy link** and open the link on the other device: loopy asks "Load Mia's stars here?" before it changes anything. With two or more children, pick **Everyone** or one child first. Each child's stars go to the child with the same name on the other device, or a new child is added. On a new device, the first child takes the place of the empty one.
 
-The code carries stars, badges, best scores, the day streak, the answers on the grown-ups' page, the Last 5 dots, the age and the settings. Loading a code only adds. It never takes stars or answers away, and loading the same code twice counts nothing twice. Codes from before still work: they move stars and best scores.
+The link holds the stars itself, after the `#`. That part of a link never reaches the website, so nothing is sent anywhere.
+
+The code carries stars, badges, best scores, the day streak, the answers on the grown-ups' page, the Last 5 dots, the age, the game levels and settings, and the last game played (so "Carry on" works on the other device). Loading a code only adds. It never takes stars or answers away, and loading the same code twice counts nothing twice. Codes from before still work: they move stars and best scores.
 
 ## Can I use Loopy like an app?
 
