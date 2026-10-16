@@ -24,6 +24,11 @@ jobs:
           "$RUNNER_TEMP/venv/bin/pip" install --require-hashes --no-binary :all: -r tools/requirements.txt
       - name: loopy.js and loopy.css match their sources in src/
         run: '"$RUNNER_TEMP/venv/bin/python" tools/build.py --check'
+      - name: The Claude Code plugins match the repo
+        run: |
+          python3 plugins/sync.py --check
+          python3 plugins/loopy/scripts/drift.py
+          python3 plugins/test_hooks.py
 
   accessibility:
     runs-on: ubuntu-latest

@@ -30,6 +30,8 @@ You need a free GitHub account. GitHub accounts are for ages 13 and up, so a gro
    If you edited a page or anything in `src/`, run `python3 tools/build.py` (see the README) and `python3 tools/check_external.py`.
 4. Open a pull request and say what you changed and why.
 
+If you use Claude Code, the repo's plugins load by themselves and run these checks for you. See [plugins/README.md](plugins/README.md).
+
 The owner reviews every pull request before it goes live. See the [README](README.md) for how to add a game.
 
 Please follow the [code of conduct](CODE_OF_CONDUCT.md).
