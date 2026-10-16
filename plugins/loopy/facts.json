@@ -23,6 +23,7 @@
   ],
   "built_files": [
     "loopy-backup.js",
+    "loopy-levels.js",
     "loopy-report.js",
     "loopy-sheet.js",
     "loopy.css",
@@ -44,5 +45,5 @@
     "844 × 390"
   ],
   "games_lists": 3,
-  "learned_at": "cc4cc10"
+  "learned_at": "1482902"
 }
