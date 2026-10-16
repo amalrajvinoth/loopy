@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'sha256-aIPeB5Y1gIBNrB5/kjqeK60unGHVo4iUbAzYTXQkp/Q='; style-src 'self' 'sha256-z2P7kGW5Z05eCTjTZdYpc0vThTlOE9vmt97pVSvi2I4=' 'sha256-oLQF3jnCxf/mhP8dw8TD8Q631n/SdgEZHa5Z9K9C5do=' 'sha256-RT1053JU5UiKvjrCUFx1rlhdFLMmgtuFJ9T8jnMeawQ=' 'sha256-Br4cB+hVljxoS3/c/2l3lBJi6726stQfugcW6KWKnPU='; img-src 'self' data:; font-src 'self'; connect-src 'self'; worker-src 'self'; object-src 'none'; base-uri 'none'; form-action 'none'; manifest-src 'self'; upgrade-insecure-requests">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'sha256-CFl7ZPAtAghHFJsX9615uvQpMGBweHtTLmIs36f5q4U='; style-src 'self' 'sha256-z2P7kGW5Z05eCTjTZdYpc0vThTlOE9vmt97pVSvi2I4=' 'sha256-oLQF3jnCxf/mhP8dw8TD8Q631n/SdgEZHa5Z9K9C5do=' 'sha256-RT1053JU5UiKvjrCUFx1rlhdFLMmgtuFJ9T8jnMeawQ=' 'sha256-Br4cB+hVljxoS3/c/2l3lBJi6726stQfugcW6KWKnPU='; img-src 'self' data:; font-src 'self'; connect-src 'self'; worker-src 'self'; object-src 'none'; base-uri 'none'; form-action 'none'; manifest-src 'self'; upgrade-insecure-requests">
 <meta name="referrer" content="strict-origin-when-cross-origin">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <style>:root{color-scheme:light;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}body{margin:0}[hidden]{display:none!important}</style>
@@ -563,6 +563,8 @@ function makeProblem(lang, topic, level, avoid) {
 
   let age = Loopy.getAge();
   let topic = store.get("qf.topic", "all", ["all", ...TOPICS]);
+  // Opened from the grown-ups' page to practise one topic: set it for this visit, without saving.
+  { const m = /^qf-([a-z]+)$/.exec(Loopy.log.hint || ""); if (m && TOPICS.includes(m[1])) { topic = m[1]; Loopy.log.hint = ""; } }
   let level;
   // The level is remembered per age, so each age starts at the right level.
   function loadForAge() { level = store.get("qf.level.a" + age, age <= 8 ? 1 : age <= 10 ? 2 : 3, [1, 2, 3]); }

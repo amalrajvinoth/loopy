@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'sha256-b3OgI2SswDFZ9nCKayVM6Kws5agQIH6VHvLiBVNGMiE='; style-src 'self' 'sha256-z2P7kGW5Z05eCTjTZdYpc0vThTlOE9vmt97pVSvi2I4=' 'sha256-X/6TgBlwR/r0pxAaWlbvoxARMjftgwBhtW4mnRo1lys=' 'sha256-RT1053JU5UiKvjrCUFx1rlhdFLMmgtuFJ9T8jnMeawQ=' 'sha256-nZ5SAifs7yg0KHXGahfWDo+SQzH7bM6dB53haqDY1io='; img-src 'self' data:; font-src 'self'; connect-src 'self'; worker-src 'self'; object-src 'none'; base-uri 'none'; form-action 'none'; manifest-src 'self'; upgrade-insecure-requests">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'sha256-XRCr+P1uaSYUcYXauCbSDReOpUn7Lqp14DtaW6irGws='; style-src 'self' 'sha256-z2P7kGW5Z05eCTjTZdYpc0vThTlOE9vmt97pVSvi2I4=' 'sha256-X/6TgBlwR/r0pxAaWlbvoxARMjftgwBhtW4mnRo1lys=' 'sha256-RT1053JU5UiKvjrCUFx1rlhdFLMmgtuFJ9T8jnMeawQ=' 'sha256-nZ5SAifs7yg0KHXGahfWDo+SQzH7bM6dB53haqDY1io='; img-src 'self' data:; font-src 'self'; connect-src 'self'; worker-src 'self'; object-src 'none'; base-uri 'none'; form-action 'none'; manifest-src 'self'; upgrade-insecure-requests">
 <meta name="referrer" content="strict-origin-when-cross-origin">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <style>:root{color-scheme:light;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}body{margin:0}[hidden]{display:none!important}</style>
@@ -418,6 +418,9 @@ function makeProblem(lang, modeSetting, age, choices, avoid) {
   function loadForAge() {
     modeSetting = store.get("ss.mode.a" + age, age <= 6 ? "start" : "mix", ["start", "end", "mix"]);
     choices = store.get("ss.choices.a" + age, age <= 6 ? 3 : 4, [3, 4]);
+    // Opened from the grown-ups' page to practise start or end sounds: set it for this visit, without saving.
+    const m = /^ss-(start|end)$/.exec(Loopy.log.hint || "");
+    if (m) { modeSetting = m[1]; Loopy.log.hint = ""; }
   }
   loadForAge();
   let right = 0, tried = 0, streak = 0;

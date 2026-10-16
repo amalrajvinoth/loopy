@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'sha256-iaK65qLVU0R9YbGmM3UnpbZyRDvO0CEl8sBq8jJjx+o='; style-src 'self' 'sha256-z2P7kGW5Z05eCTjTZdYpc0vThTlOE9vmt97pVSvi2I4=' 'sha256-4KeXVk7w7LjYemdYWRLdakk0uAlZg26cpfiBqMAOD24=' 'sha256-RT1053JU5UiKvjrCUFx1rlhdFLMmgtuFJ9T8jnMeawQ=' 'sha256-3KG381CUtjqBA89CGSEeePMjJDH4mtBX1ixxVdZ02kE='; img-src 'self' data:; font-src 'self'; connect-src 'self'; worker-src 'self'; object-src 'none'; base-uri 'none'; form-action 'none'; manifest-src 'self'; upgrade-insecure-requests">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'sha256-Kux7qHmJveJuemyV4TYaCVS1ai/cduIHJTfITgNafqg='; style-src 'self' 'sha256-z2P7kGW5Z05eCTjTZdYpc0vThTlOE9vmt97pVSvi2I4=' 'sha256-4KeXVk7w7LjYemdYWRLdakk0uAlZg26cpfiBqMAOD24=' 'sha256-RT1053JU5UiKvjrCUFx1rlhdFLMmgtuFJ9T8jnMeawQ=' 'sha256-3KG381CUtjqBA89CGSEeePMjJDH4mtBX1ixxVdZ02kE='; img-src 'self' data:; font-src 'self'; connect-src 'self'; worker-src 'self'; object-src 'none'; base-uri 'none'; form-action 'none'; manifest-src 'self'; upgrade-insecure-requests">
 <meta name="referrer" content="strict-origin-when-cross-origin">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <style>:root{color-scheme:light;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}body{margin:0}[hidden]{display:none!important}</style>
@@ -381,6 +381,9 @@ Loopy.addStrings({
     mode = store.get("pz.mode.a" + age, modeForAge(age), MODES);
     look = store.get("pz.look.a" + age, lookForAge(age), LOOKS);
     pics = store.get("pz.pics.a" + age, picsForAge(age), [true, false]);
+    // Opened from the grown-ups' page to practise one kind: set it for this visit, without saving.
+    const m = /^pz-(name|cmp|add)$/.exec(Loopy.log.hint || "");
+    if (m) { mode = m[1]; Loopy.log.hint = ""; }
   }
   loadForAge();
   let right = 0, tried = 0, streak = 0;

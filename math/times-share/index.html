@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'sha256-7REap+f26DQXhxbOnAQPwI5nWulCrOIc2RMxuE/aBZA='; style-src 'self' 'sha256-z2P7kGW5Z05eCTjTZdYpc0vThTlOE9vmt97pVSvi2I4=' 'sha256-ER4UVxOAHVG2PpFuwsi/fNYnlP9iTYLytTr9Qx7YKqY=' 'sha256-RT1053JU5UiKvjrCUFx1rlhdFLMmgtuFJ9T8jnMeawQ=' 'sha256-fDcdKt0NOAY6n9Nok4/ouw7wfZ36jlKcoxXKNjj6K0U='; img-src 'self' data:; font-src 'self'; connect-src 'self'; worker-src 'self'; object-src 'none'; base-uri 'none'; form-action 'none'; manifest-src 'self'; upgrade-insecure-requests">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'sha256-dJb9xQmpCAhGm0Hlh/7d6K+GTY6zvW/L8TESzt/DNBs='; style-src 'self' 'sha256-z2P7kGW5Z05eCTjTZdYpc0vThTlOE9vmt97pVSvi2I4=' 'sha256-ER4UVxOAHVG2PpFuwsi/fNYnlP9iTYLytTr9Qx7YKqY=' 'sha256-RT1053JU5UiKvjrCUFx1rlhdFLMmgtuFJ9T8jnMeawQ=' 'sha256-fDcdKt0NOAY6n9Nok4/ouw7wfZ36jlKcoxXKNjj6K0U='; img-src 'self' data:; font-src 'self'; connect-src 'self'; worker-src 'self'; object-src 'none'; base-uri 'none'; form-action 'none'; manifest-src 'self'; upgrade-insecure-requests">
 <meta name="referrer" content="strict-origin-when-cross-origin">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <style>:root{color-scheme:light;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}body{margin:0}[hidden]{display:none!important}</style>
@@ -412,6 +412,9 @@ function explain(p) {
     level = levelForAge(age);
     opMode = store.get("ts.op.a" + age, age <= 7 ? "mul" : "mix", ["mul", "div", "mix"]);
     dots = store.get("ts.dots.a" + age, level.dots, [true, false]);
+    // Opened from the grown-ups' page to practise times or sharing: set it for this visit, without saving.
+    const m = /^(mul|div)-/.exec(Loopy.log.hint || "");
+    if (m) { opMode = m[1]; Loopy.log.hint = ""; }
     $("level-note").textContent = t("ageLabel", { n: age }) + ": " + t(level.note);
     dotsBox.disabled = level.kind !== "facts";
   }

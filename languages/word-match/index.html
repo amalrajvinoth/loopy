@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'sha256-DaQYs9smFbysaIjZZ4BaEui9497PMdt7kTMpREEhkHc='; style-src 'self' 'sha256-z2P7kGW5Z05eCTjTZdYpc0vThTlOE9vmt97pVSvi2I4=' 'sha256-W+M0+NGBKbL1fCGEKkbWgDUCO62JWeFSLj5trGkqXRE=' 'sha256-RT1053JU5UiKvjrCUFx1rlhdFLMmgtuFJ9T8jnMeawQ=' 'sha256-P1MDhcKmqezI9QybenGh0E+R8cO0qEAt89ytypSkdro='; img-src 'self' data:; font-src 'self'; connect-src 'self'; worker-src 'self'; object-src 'none'; base-uri 'none'; form-action 'none'; manifest-src 'self'; upgrade-insecure-requests">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'sha256-OvfMbqXoRez7bmmTXOnUDgU9K5klzpeiPBMo4wlvYjk='; style-src 'self' 'sha256-z2P7kGW5Z05eCTjTZdYpc0vThTlOE9vmt97pVSvi2I4=' 'sha256-W+M0+NGBKbL1fCGEKkbWgDUCO62JWeFSLj5trGkqXRE=' 'sha256-RT1053JU5UiKvjrCUFx1rlhdFLMmgtuFJ9T8jnMeawQ=' 'sha256-P1MDhcKmqezI9QybenGh0E+R8cO0qEAt89ytypSkdro='; img-src 'self' data:; font-src 'self'; connect-src 'self'; worker-src 'self'; object-src 'none'; base-uri 'none'; form-action 'none'; manifest-src 'self'; upgrade-insecure-requests">
 <meta name="referrer" content="strict-origin-when-cross-origin">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <style>:root{color-scheme:light;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}body{margin:0}[hidden]{display:none!important}</style>
@@ -407,6 +407,8 @@ function makeProblem(lang, topic, age, level, avoid) {
   let age = Loopy.getAge();
   let wordsLang = store.get("wm.words", Loopy.lang === "de" ? "de" : "en", ["en", "de"]);
   let topic = store.get("wm.topic", "all", ["all", ...TOPICS]);
+  // Opened from the grown-ups' page to practise one topic: set it for this visit, without saving.
+  { const m = /^wm-([a-z]+)$/.exec(Loopy.log.hint || ""); if (m && TOPICS.includes(m[1])) { topic = m[1]; Loopy.log.hint = ""; } }
   let autoRead = store.get("wm.autoRead", true, [true, false]);
   let level;
   // The number of choices is remembered per age, so each age starts at the right level.

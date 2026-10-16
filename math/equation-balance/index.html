@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'sha256-jwC6vuvMh95iyEe+k2zO+RPJW/hB6i2r9K+lWewBrBc='; style-src 'self' 'sha256-z2P7kGW5Z05eCTjTZdYpc0vThTlOE9vmt97pVSvi2I4=' 'sha256-5JO1h7tSI5wCTIIhUzDJIFW8EwNxVWUfZASppZRdlqw=' 'sha256-RT1053JU5UiKvjrCUFx1rlhdFLMmgtuFJ9T8jnMeawQ=' 'sha256-OIwjrhLB/u0tYCQzUiKhRUdVDaU//hKl+YLFIFw2pHI='; img-src 'self' data:; font-src 'self'; connect-src 'self'; worker-src 'self'; object-src 'none'; base-uri 'none'; form-action 'none'; manifest-src 'self'; upgrade-insecure-requests">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'sha256-s55R0RfHFf3dSZPGOs2miHsDFVpGACtZpdUdQxVzPds='; style-src 'self' 'sha256-z2P7kGW5Z05eCTjTZdYpc0vThTlOE9vmt97pVSvi2I4=' 'sha256-5JO1h7tSI5wCTIIhUzDJIFW8EwNxVWUfZASppZRdlqw=' 'sha256-RT1053JU5UiKvjrCUFx1rlhdFLMmgtuFJ9T8jnMeawQ=' 'sha256-OIwjrhLB/u0tYCQzUiKhRUdVDaU//hKl+YLFIFw2pHI='; img-src 'self' data:; font-src 'self'; connect-src 'self'; worker-src 'self'; object-src 'none'; base-uri 'none'; form-action 'none'; manifest-src 'self'; upgrade-insecure-requests">
 <meta name="referrer" content="strict-origin-when-cross-origin">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <style>:root{color-scheme:light;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}body{margin:0}[hidden]{display:none!important}</style>
@@ -406,7 +406,12 @@ function explain(p) {
   let age = window.Loopy ? Loopy.getAge() : 12;
   let lv;
   // The level is remembered per age, so each age starts at the right one.
-  const loadForAge = () => { lv = store.get("eb.lv.a" + age, levelForAge(age), LEVELS); };
+  const loadForAge = () => {
+    lv = store.get("eb.lv.a" + age, levelForAge(age), LEVELS);
+    // Opened from the grown-ups' page to practise one level: set it for this visit, without saving.
+    const m = /^eb-([a-z]+)$/.exec(Loopy.log.hint || "");
+    if (m && LEVELS.includes(m[1])) { lv = m[1]; Loopy.log.hint = ""; }
+  };
   loadForAge();
 
   let right = 0, tried = 0, streak = 0;

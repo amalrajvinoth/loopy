@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'sha256-khW0DE15vDAmrY/jHN122AI+gdSATLLoXSSpKU4qbLE='; style-src 'self' 'sha256-z2P7kGW5Z05eCTjTZdYpc0vThTlOE9vmt97pVSvi2I4=' 'sha256-ER4UVxOAHVG2PpFuwsi/fNYnlP9iTYLytTr9Qx7YKqY=' 'sha256-RT1053JU5UiKvjrCUFx1rlhdFLMmgtuFJ9T8jnMeawQ=' 'sha256-GurFyntsoOwZmlM9rIsWmyQI2o7WD+6AstbwSwZ7nC8='; img-src 'self' data:; font-src 'self'; connect-src 'self'; worker-src 'self'; object-src 'none'; base-uri 'none'; form-action 'none'; manifest-src 'self'; upgrade-insecure-requests">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'sha256-SaMDaOSt7CrhDP0jqg9gQ6HS+75FDCRfsGnYJ98d7B4='; style-src 'self' 'sha256-z2P7kGW5Z05eCTjTZdYpc0vThTlOE9vmt97pVSvi2I4=' 'sha256-ER4UVxOAHVG2PpFuwsi/fNYnlP9iTYLytTr9Qx7YKqY=' 'sha256-RT1053JU5UiKvjrCUFx1rlhdFLMmgtuFJ9T8jnMeawQ=' 'sha256-GurFyntsoOwZmlM9rIsWmyQI2o7WD+6AstbwSwZ7nC8='; img-src 'self' data:; font-src 'self'; connect-src 'self'; worker-src 'self'; object-src 'none'; base-uri 'none'; form-action 'none'; manifest-src 'self'; upgrade-insecure-requests">
 <meta name="referrer" content="strict-origin-when-cross-origin">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <style>:root{color-scheme:light;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}body{margin:0}[hidden]{display:none!important}</style>
@@ -380,6 +380,9 @@ function explain(p) {
   function loadForAge() {
     lv = store.get("mk.lv.a" + age, levelForAge(age), LEVELS);
     pics = store.get("mk.pics.a" + age, picsForAge(age), [true, false]);
+    // Opened from the grown-ups' page to practise one level: set it for this visit, without saving.
+    const m = /^mk-(10|20|100)$/.exec(Loopy.log.hint || "");
+    if (m) { lv = m[1]; Loopy.log.hint = ""; }
   }
   loadForAge();
 

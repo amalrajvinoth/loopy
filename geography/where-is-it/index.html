@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'sha256-ZGl39NaKe6TTDCuhguh6/feIsPnJaa1jNMJRx61mE8A='; style-src 'self' 'sha256-z2P7kGW5Z05eCTjTZdYpc0vThTlOE9vmt97pVSvi2I4=' 'sha256-B1/34nWPbkOgQvjShds4VMrIOiMhFRoP1nBsay1oDds='; img-src 'self' data:; font-src 'self'; connect-src 'self'; worker-src 'self'; object-src 'none'; base-uri 'none'; form-action 'none'; manifest-src 'self'; upgrade-insecure-requests">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'sha256-M6QUP4awsL/O92Q1XWJNUW5vW7ICLJC5w1nJ0LiloCA='; style-src 'self' 'sha256-z2P7kGW5Z05eCTjTZdYpc0vThTlOE9vmt97pVSvi2I4=' 'sha256-B1/34nWPbkOgQvjShds4VMrIOiMhFRoP1nBsay1oDds='; img-src 'self' data:; font-src 'self'; connect-src 'self'; worker-src 'self'; object-src 'none'; base-uri 'none'; form-action 'none'; manifest-src 'self'; upgrade-insecure-requests">
 <meta name="referrer" content="strict-origin-when-cross-origin">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <style>:root{color-scheme:light;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}body{margin:0}[hidden]{display:none!important}</style>
@@ -711,6 +711,9 @@ function makeProblem(map, find, age, avoid) {
   function loadForAge() {
     map = store.get("wi.map.a" + age, age <= 8 ? "cont" : age <= 11 ? "eu" : "world", ["cont", "eu", "world"]);
     find = store.get("wi.find.a" + age, age === 11 || age >= 13 ? "cap" : "land", ["land", "cap"]);
+    // Opened from the grown-ups' page to practise one map: set it for this visit, without saving.
+    const m = /^wi-(cont|eu|euc|wd|wdc)$/.exec(Loopy.log.hint || "");
+    if (m) { map = m[1] === "cont" ? "cont" : m[1][0] === "e" ? "eu" : "world"; find = m[1].endsWith("c") && m[1] !== "cont" ? "cap" : "land"; Loopy.log.hint = ""; }
   }
   loadForAge();
   let right = 0, tried = 0, streak = 0;
