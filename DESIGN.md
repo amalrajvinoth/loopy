@@ -226,6 +226,8 @@ The question sits on a card with a 1px line border and radius 24px. After an ans
 
 Counting pictures sit under the problem on the card. Times and Share shows rows of dots in the five accents. Make 10 shows ten-frames: boxes of 2 rows of 5 on a chip background, radius about 30% of a box. Filled boxes are `c1`, empty boxes are the card color with a line border, and after an answer the missing part fills in `c4`. Make 20 shows two frames side by side; Make 100 shows ten frames, two across. The boxes size themselves to the room left on the card.
 
+Equation Balance shows a see-saw above the equation: a `muted` stand and an `ink` beam. On the beam, x is a `c1` block, a number is a `c2` weight, a minus number is a `c4` balloon on a string, and the missing number is a dashed `c1` box. Before an answer the beam rocks gently (off with reduced motion); after it, the beam goes level or tips to the heavier side.
+
 **Read aloud speaker:** when Read aloud is on, a round 44px chip button with a speaker icon sits 8px from the card's top right corner. While it speaks the icon turns `accent`. In What Time Is It? it sits after the one-line prompt instead, so it never covers the words. `Loopy.speech.question()` adds it. It is hidden when the device has no voice.
 
 ### Feedback line
