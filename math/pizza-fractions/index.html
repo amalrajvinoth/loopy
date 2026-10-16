@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'sha256-W6+tpRPfuXEBsj3uJVD9fr3CsYdzabTnNzuTUMBehlQ='; style-src 'self' 'sha256-z2P7kGW5Z05eCTjTZdYpc0vThTlOE9vmt97pVSvi2I4=' 'sha256-4KeXVk7w7LjYemdYWRLdakk0uAlZg26cpfiBqMAOD24=' 'sha256-RT1053JU5UiKvjrCUFx1rlhdFLMmgtuFJ9T8jnMeawQ=' 'sha256-3KG381CUtjqBA89CGSEeePMjJDH4mtBX1ixxVdZ02kE='; img-src 'self' data:; font-src 'self'; connect-src 'self'; worker-src 'self'; object-src 'none'; base-uri 'none'; form-action 'none'; manifest-src 'self'; upgrade-insecure-requests">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'sha256-iaK65qLVU0R9YbGmM3UnpbZyRDvO0CEl8sBq8jJjx+o='; style-src 'self' 'sha256-z2P7kGW5Z05eCTjTZdYpc0vThTlOE9vmt97pVSvi2I4=' 'sha256-4KeXVk7w7LjYemdYWRLdakk0uAlZg26cpfiBqMAOD24=' 'sha256-RT1053JU5UiKvjrCUFx1rlhdFLMmgtuFJ9T8jnMeawQ=' 'sha256-3KG381CUtjqBA89CGSEeePMjJDH4mtBX1ixxVdZ02kE='; img-src 'self' data:; font-src 'self'; connect-src 'self'; worker-src 'self'; object-src 'none'; base-uri 'none'; form-action 'none'; manifest-src 'self'; upgrade-insecure-requests">
 <meta name="referrer" content="strict-origin-when-cross-origin">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <style>:root{color-scheme:light;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}body{margin:0}[hidden]{display:none!important}</style>
@@ -619,9 +619,17 @@ Loopy.addStrings({
     const b = document.createElement("button");
     b.type = "button";
     b.id = "choice-" + i;
-    if (typeof main === "string") b.appendChild(span("sym", main)); else b.appendChild(main);
+    if (typeof main === "string") {
+      b.appendChild(span("sym", main));
+      if (aria) b.setAttribute("aria-label", aria);
+    } else {
+      // A fraction answer: screen readers hear the hidden "3/4", and the button's name still holds the words on it.
+      main.removeAttribute("aria-label");
+      main.setAttribute("aria-hidden", "true");
+      b.appendChild(main);
+      if (aria) b.appendChild(span("loopy-sr", aria));
+    }
     if (small) { const s = document.createElement("small"); s.textContent = small; b.appendChild(s); }
-    if (aria) b.setAttribute("aria-label", aria);
     choicesEl.appendChild(b);
     return b;
   }

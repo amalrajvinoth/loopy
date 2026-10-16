@@ -87,7 +87,6 @@ document.documentElement.classList.add("loopy-building");
       [["en", "EN", "English"], ["de", "DE", "Deutsch"]].forEach(function (o) {
         var b = document.createElement("button");
         b.type = "button"; b.id = "lang-" + o[0]; b.textContent = o[1]; b.title = o[2];
-        b.setAttribute("aria-label", o[2]);
         b.setAttribute("aria-pressed", String(o[0] === lang));
         b.addEventListener("click", function () { Loopy.setLang(o[0]); });
         box.appendChild(b);
@@ -591,7 +590,6 @@ document.documentElement.classList.add("loopy-building");
     b.type = "button";
     b.id = "font-toggle";
     b.className = "read-toggle";
-    b.setAttribute("aria-label", Loopy.t("easyRead"));
     b.innerHTML = ICON;
     var label = document.createElement("span");
     label.textContent = Loopy.t("easyRead");
