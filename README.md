@@ -192,6 +192,7 @@ Page sizes, sent over the network with `loopy.js`, `loopy.css` and the two fonts
 | Bigger or Smaller | 77 KB |
 | Pizza Fractions | 77 KB |
 | Coins and Change | 77 KB |
+| Equation Balance | 74 KB |
 | Sound Spell | 74 KB |
 | Word Match | 74 KB |
 | Spell It | 75 KB |
