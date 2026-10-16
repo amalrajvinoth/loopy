@@ -40,7 +40,7 @@ document.documentElement.classList.add("loopy-building");
       starsEarned: "Stars earned",
       b10: "First Steps", b25: "Rising Star", b50: "Super Learner", b100: "Brain Builder", b250: "Champion", b500: "Legend", b1000: "loopy Master",
       newBadge: "New badge: {name}!", badgeText: "You have earned {n} stars. Keep going!",
-      levelUp: "{n} in a row! Ready to level up?", makeHarder: "Make it harder", keepGoing: "Keep going", yay: "Yay!",
+      levelUp: "{n} in a row! Ready to level up?", levelUpRound: "A clean round! Ready to level up?", makeHarder: "Make it harder", keepGoing: "Keep going", yay: "Yay!",
       inARow: "{n} in a row!", bestYet: "That's your best streak yet!", amazing: "Amazing work!",
       newBest: "New best streak: {n}!", keepItGoing: "Keep it going!",
       correct: "Correct!", correctRow: "Correct! {n} in a row!", notQuite: "Not quite.",
@@ -60,7 +60,7 @@ document.documentElement.classList.add("loopy-building");
       starsEarned: "Gesammelte Sterne",
       b10: "Erste Schritte", b25: "Aufsteiger", b50: "Super-Lerner", b100: "Denk-Profi", b250: "Champion", b500: "Legende", b1000: "loopy-Meister",
       newBadge: "Neues Abzeichen: {name}!", badgeText: "Du hast {n} Sterne gesammelt. Weiter so!",
-      levelUp: "{n} richtig hintereinander! Bereit für mehr?", makeHarder: "Schwieriger machen", keepGoing: "Weiter so", yay: "Juhu!",
+      levelUp: "{n} richtig hintereinander! Bereit für mehr?", levelUpRound: "Alles richtig! Bereit für mehr?", makeHarder: "Schwieriger machen", keepGoing: "Weiter so", yay: "Juhu!",
       inARow: "{n} richtig hintereinander!", bestYet: "Das ist deine beste Serie!", amazing: "Super gemacht!",
       newBest: "Neue beste Serie: {n}!", keepItGoing: "Mach weiter so!",
       correct: "Richtig!", correctRow: "Richtig! {n} hintereinander!", notQuite: "Nicht ganz.",
@@ -951,7 +951,8 @@ document.documentElement.classList.add("loopy-building");
 
   // A big friendly message in the middle of the screen.
   // actions: buttons for a big card, e.g. [{ label: "Make it harder", fn: ... }]. A big card always has one.
-  function celebrate(title, text, big, actions) {
+  // calm: no confetti, for a card that is not a cheer (the "a bit easier" offer).
+  function celebrate(title, text, big, actions, calm) {
     var old = document.querySelector(".loopy-cheer");
     if (old) old.remove();
     var el = document.createElement("div");
@@ -982,7 +983,7 @@ document.documentElement.classList.add("loopy-building");
       row.firstChild.focus({ preventScroll: true });
     }
     else setTimeout(close, 2200);
-    confetti(big ? 160 : 70);
+    if (!calm) confetti(big ? 160 : 70);
   }
 
   // Screen readers: after each answer, read the game's feedback line (or "Right!" / "Not quite.").
@@ -1060,10 +1061,13 @@ document.documentElement.classList.add("loopy-building");
       Loopy.sound.play("wrong");
       announce(false);
       if (Loopy.hint) Loopy.hint.done();
+      if (Loopy.levels) Loopy.levels.stuck(game);
     },
     // Call after each right answer with the current streak.
-    // harder: optional { label, apply } offered after 10 in a row, e.g. { label: "Try quarter hours", apply: fn }.
+    // harder: optional { label, apply } offered after 10 in a row. Left out, the game's ladder
+    // (Loopy.levels) gives the next level; null means no offer, e.g. during a timed round.
     correct: function (game, streak, harder) {
+      if (harder === undefined && Loopy.levels) harder = Loopy.levels.harder();
       last = { ok: true, d: null };
       if (Loopy.recent) Loopy.recent.add(game, true);
       if (Loopy.log) Loopy.log.add(game, true);
@@ -1081,7 +1085,7 @@ document.documentElement.classList.add("loopy-building");
         celebrate(Loopy.t("newBadge", { name: after.name }), Loopy.t("badgeText", { n: data.stars }), true);
       } else if (streak % 10 === 0 && harder) {
         Loopy.sound.play("badge");
-        celebrate(Loopy.t("levelUp", { n: streak }), harder.label + ".", true,
+        celebrate(Loopy.t("levelUp", { n: streak }), harder.label, true,
           [{ label: Loopy.t("makeHarder"), fn: harder.apply }, { label: Loopy.t("keepGoing") }]);
       } else if (STREAKS.indexOf(streak) !== -1) {
         Loopy.sound.play("cheer");
@@ -1118,6 +1122,73 @@ document.documentElement.classList.add("loopy-building");
   }
   if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", build);
   else build();
+})();
+
+// Levels: each game declares its ladder once, with Loopy.levels.init({ game, names, get, set, base }):
+//   names   the levels in order, as string keys for Loopy.t, e.g. ["lvHalf", "lvQuarter", "lvFive", "lvOne"];
+//           a level whose name has a number in it is a function that returns the text
+//   get()   the level the child is on now, 0-based, read from the game's settings
+//   set(i)  go to level i: change the settings, save them for this age, redraw
+//   base()  the level the age picker starts at, 0-based (the grown-ups' page and badges use it)
+// The score row's <div id="level"></div> becomes a "Level 2 of 4" pill. After 10 right in a row the
+// game offers the next level (rewards.correct), after 3 wrong in the last 5 an easier one, once a visit
+// (rewards.wrong). A game calls Loopy.levels.render() after a level is picked by hand in Settings.
+(function () {
+  var Loopy = window.Loopy, L = null, asked = false;
+  Loopy.addStrings({
+    en: { levelOf: "Level {n} of {m}", levelShort: "Level {n}/{m}", levelAria: "Level {n} of {m}: {name}", nextLevel: "Next: {name}",
+      tricky: "Tricky ones today?", trickyText: "Want it a bit easier for now?", easier: "A bit easier" },
+    de: { levelOf: "Stufe {n} von {m}", levelShort: "Stufe {n}/{m}", levelAria: "Stufe {n} von {m}: {name}", nextLevel: "Als Nächstes: {name}",
+      tricky: "Heute knifflig?", trickyText: "Soll es erst mal etwas leichter sein?", easier: "Etwas leichter" }
+  });
+  var clamp = function (i) { return Math.max(0, Math.min(L.names.length - 1, i | 0)); };
+  // On narrow phones the pill says "Level 3/5", so Last 5, the level and the streak fit one line.
+  var narrow = window.matchMedia ? matchMedia("(max-width: 419px)") : { matches: false };
+  if (narrow.addEventListener) narrow.addEventListener("change", function () { render(); });
+  function at() { return clamp(L.get()); }
+  function name(i) { var n = L.names[i]; return typeof n === "function" ? n() : Loopy.t(n); }
+  function go(i) { L.set(clamp(i)); render(); }
+  function render() {
+    var box = document.getElementById("level");
+    if (!L || !box) return;
+    var i = at(), n = L.names.length;
+    box.className = "pill pill-level";
+    box.textContent = Loopy.t(narrow.matches ? "levelShort" : "levelOf", { n: i + 1, m: n });
+    box.setAttribute("aria-label", Loopy.t("levelAria", { n: i + 1, m: n, name: name(i) }));
+  }
+  function harder() {
+    if (!L) return null;
+    var i = at();
+    if (i >= L.names.length - 1) return null;
+    return { label: Loopy.t("nextLevel", { name: name(i + 1) }), apply: function () { go(i + 1); } };
+  }
+  function easier() {
+    var i = at();
+    Loopy.rewards.celebrate(Loopy.t("tricky"), Loopy.t("trickyText"), true,
+      [{ label: Loopy.t("easier"), fn: function () { go(i - 1); } }, { label: Loopy.t("keepGoing") }], true);
+  }
+  Loopy.levels = {
+    init: function (opts) { L = opts; render(); },
+    render: render,
+    harder: harder,
+    // { at, of, base, name } for the level the child is on, or null when the page has no ladder.
+    get: function () { return L ? { at: at(), of: L.names.length, base: L.base ? clamp(L.base()) : 0, name: name(at()) } : null; },
+    // rewards.wrong calls this: offers an easier level once a visit, after 3 wrong in the last 5.
+    stuck: function (game) {
+      if (!L || asked || at() < 1 || !Loopy.recent) return;
+      var r = Loopy.recent.get(game);
+      if (r.length < 5 || r.filter(function (v) { return v === 0; }).length < 3) return;
+      asked = true;
+      setTimeout(easier, 700);
+    },
+    // A timed game asks at the end of a round: "harder" after a clean round, "easier" after a poor one.
+    offer: function (kind) {
+      if (!L) return;
+      var h = harder();
+      if (kind === "harder" && h) Loopy.rewards.celebrate(Loopy.t("levelUpRound"), h.label, true, [{ label: Loopy.t("makeHarder"), fn: h.apply }, { label: Loopy.t("keepGoing") }]);
+      else if (kind === "easier" && at() > 0 && !asked) { asked = true; easier(); }
+    }
+  };
 })();
 
 // Loopy day streak: finishing Today's 10 on days in a row. Badges at 3, 7 and 30 days.

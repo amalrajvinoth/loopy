@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'sha256-khW0DE15vDAmrY/jHN122AI+gdSATLLoXSSpKU4qbLE='; style-src 'self' 'sha256-z2P7kGW5Z05eCTjTZdYpc0vThTlOE9vmt97pVSvi2I4=' 'sha256-ER4UVxOAHVG2PpFuwsi/fNYnlP9iTYLytTr9Qx7YKqY=' 'sha256-RT1053JU5UiKvjrCUFx1rlhdFLMmgtuFJ9T8jnMeawQ=' 'sha256-GurFyntsoOwZmlM9rIsWmyQI2o7WD+6AstbwSwZ7nC8='; img-src 'self' data:; font-src 'self'; connect-src 'self'; worker-src 'self'; object-src 'none'; base-uri 'none'; form-action 'none'; manifest-src 'self'; upgrade-insecure-requests">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'sha256-/7114W+XNmSFvvaLAzISmJ2dQsUBGS+nAdwIWv4g3II='; style-src 'self' 'sha256-z2P7kGW5Z05eCTjTZdYpc0vThTlOE9vmt97pVSvi2I4=' 'sha256-ER4UVxOAHVG2PpFuwsi/fNYnlP9iTYLytTr9Qx7YKqY=' 'sha256-RT1053JU5UiKvjrCUFx1rlhdFLMmgtuFJ9T8jnMeawQ=' 'sha256-GurFyntsoOwZmlM9rIsWmyQI2o7WD+6AstbwSwZ7nC8='; img-src 'self' data:; font-src 'self'; connect-src 'self'; worker-src 'self'; object-src 'none'; base-uri 'none'; form-action 'none'; manifest-src 'self'; upgrade-insecure-requests">
 <meta name="referrer" content="strict-origin-when-cross-origin">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <style>:root{color-scheme:light;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}body{margin:0}[hidden]{display:none!important}</style>
@@ -231,6 +231,7 @@ body { min-height: 100vh; min-height: 100dvh; padding-block: 12px 16px; }
     <h1 id="title">Make 10</h1>
     <div class="score" aria-live="polite">
       <div class="pill pill-score"><span data-t="score">Score</span><b id="score">0 / 0</b></div>
+      <div id="level"></div>
       <div class="pill pill-streak"><span data-t="streak">Streak</span><b id="streak">0</b></div>
       <div id="last5" data-game="make-10"></div>
     </div>
@@ -292,7 +293,7 @@ Loopy.addStrings({
     mkTensWhy: "{x} tens and {y} tens make 10 tens, and 10 tens are 100.",
     mkVia: "{a} needs {o} more to make {next}. Then {r} more makes 100. {o} + {r} = {b}.",
     mkEmpty: "The boxes that filled in show {b}.",
-    mkTry20: "Try Make 20", mkTryTens: "Try tens to 100", mkTry100: "Try Make 100", mkNoPics: "Try it without the picture",
+   
     mkHow: "Write the missing number."
   },
   de: {
@@ -306,7 +307,7 @@ Loopy.addStrings({
     mkTensWhy: "{x} Zehner und {y} Zehner sind 10 Zehner, und 10 Zehner sind 100.",
     mkVia: "{a} braucht {o} bis zur {next}. Dann noch {r} bis zur 100. {o} + {r} = {b}.",
     mkEmpty: "Die neu gefüllten Kästchen zeigen {b}.",
-    mkTry20: "Probiere Ergänzen bis 20", mkTryTens: "Probiere Zehner bis 100", mkTry100: "Probiere Ergänzen bis 100", mkNoPics: "Probiere es ohne Bild",
+   
     mkHow: "Schreibe die Zahl, die fehlt."
   }
 });
@@ -382,6 +383,9 @@ function explain(p) {
     pics = store.get("mk.pics.a" + age, picsForAge(age), [true, false]);
   }
   loadForAge();
+  if (window.Loopy && Loopy.levels) Loopy.levels.init({ names: ["mk10", "mk20", "mkTens", "mk100"],
+    get: () => LEVELS.indexOf(lv), base: () => LEVELS.indexOf(levelForAge(age)),
+    set: (i) => { lv = LEVELS[i]; store.set("mk.lv.a" + age, lv); recent = []; render(); } });
 
   let right = 0, tried = 0, streak = 0;
   let current = null, typed = "", answered = false, recent = [];
@@ -418,6 +422,7 @@ function explain(p) {
   }
 
   function render() {
+    if (window.Loopy && Loopy.levels) Loopy.levels.render();
     $("score").textContent = right + " / " + tried;
     $("streak").textContent = streak;
     lvBtns.forEach(b => b.setAttribute("aria-pressed", String(b.dataset.lv === lv)));
@@ -462,7 +467,7 @@ function explain(p) {
     answered = true; tried++;
     const ok = parseInt(typed, 10) === current.answer;
     if (ok) { right++; streak++; } else { streak = 0; }
-    if (window.Loopy && Loopy.rewards) ok ? Loopy.rewards.correct("make-10", streak, harder()) : Loopy.rewards.wrong("make-10", { q: fmt(current.a) + " + ? = " + fmt(current.n), a: fmt(current.answer), y: fmt(parseInt(typed, 10)), k: "mk-" + current.n });
+    if (window.Loopy && Loopy.rewards) ok ? Loopy.rewards.correct("make-10", streak) : Loopy.rewards.wrong("make-10", { q: fmt(current.a) + " + ? = " + fmt(current.n), a: fmt(current.answer), y: fmt(parseInt(typed, 10)), k: "mk-" + current.n });
     card.className = "problem-card " + (ok ? "good" : "bad");
     feedbackEl.className = "feedback " + (ok ? "good" : "bad");
     const head = ok
@@ -475,19 +480,6 @@ function explain(p) {
     feedbackEl.appendChild(document.createTextNode(why));
     render();
     drawFrames();
-  }
-  // What "Make it harder" does after 10 in a row: the next bigger total, then hide the picture.
-  function harder() {
-    const i = LEVELS.indexOf(lv);
-    if (i < LEVELS.length - 1) {
-      const next = LEVELS[i + 1];
-      return { label: t({ "20": "mkTry20", tens: "mkTryTens", "100": "mkTry100" }[next]),
-        apply: () => { lv = next; store.set("mk.lv.a" + age, lv); recent = []; render(); } };
-    }
-    if (pics) {
-      return { label: t("mkNoPics"), apply: () => { pics = false; store.set("mk.pics.a" + age, pics); render(); } };
-    }
-    return null;
   }
   function go() { answered ? newRound() : check(); }
 

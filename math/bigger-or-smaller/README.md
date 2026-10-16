@@ -51,7 +51,7 @@ Tap **Settings** to choose:
 - **Read aloud:** On or Off. When it is on, a speaker button sits in the corner of the problem. It says, for example, "Is 37 smaller than, equal to, or bigger than 73?". Tap it to hear the question in the device's own voice, in English or German. Each new question is also read by itself while the sound is on. It starts on for ages 5 to 7 and off from 8. If the device has no voice, the button and the setting do not show.
 
 Each age remembers its own choice.
-After 10 right in a row, the game asks if you want to make it harder: bigger numbers first, then decimals and minus numbers, then all three kinds mixed.
+The level shows next to the score, like "Level 2 of 6". After 10 right in a row the game offers the next level. After 3 wrong in the last 5 it offers an easier one, once a visit. A level picked by hand in Settings is kept for that age. The levels: up to 20, 100, 1,000, 10,000, 100,000, then decimals and minus numbers. The kind of problem (compare, order, round, mix) is a separate setting.
 
 ## Print a worksheet
 

@@ -47,7 +47,7 @@ Tap **Settings** to choose:
 - **Read aloud:** On or Off. When it is on, a speaker button sits in the corner of the problem. It says, for example, "How much money is this? 2 euros, 50 cents, 20 cents." or "It costs 4 euros 60 cents. You pay with 10 euros. How much change do you get?". It starts on for ages 5 to 7 and off from 8. If the device has no voice, the button and the setting do not show.
 
 The level is remembered for each age.
-After 10 right in a row, the game asks if you want to make it harder: the next level.
+The level shows next to the score, like "Level 2 of 4". After 10 right in a row the game offers the next level. After 3 wrong in the last 5 it offers an easier one, once a visit. A level picked by hand in Settings is kept for that age. The levels: small coins, count it all, easy change, change.
 
 ## Print a worksheet
 
