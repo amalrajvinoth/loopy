@@ -1,0 +1,631 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'sha256-jwC6vuvMh95iyEe+k2zO+RPJW/hB6i2r9K+lWewBrBc='; style-src 'self' 'sha256-z2P7kGW5Z05eCTjTZdYpc0vThTlOE9vmt97pVSvi2I4=' 'sha256-5JO1h7tSI5wCTIIhUzDJIFW8EwNxVWUfZASppZRdlqw=' 'sha256-RT1053JU5UiKvjrCUFx1rlhdFLMmgtuFJ9T8jnMeawQ=' 'sha256-OIwjrhLB/u0tYCQzUiKhRUdVDaU//hKl+YLFIFw2pHI='; img-src 'self' data:; font-src 'self'; connect-src 'self'; worker-src 'self'; object-src 'none'; base-uri 'none'; form-action 'none'; manifest-src 'self'; upgrade-insecure-requests">
+<meta name="referrer" content="strict-origin-when-cross-origin">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<style>:root{color-scheme:light;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}body{margin:0}[hidden]{display:none!important}</style>
+<link rel="icon" href="../../icon.svg" type="image/svg+xml">
+<link rel="manifest" href="../../manifest.webmanifest">
+<link rel="apple-touch-icon" href="../../apple-touch-icon.png">
+<meta name="theme-color" content="#0a0a0c">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="loopy">
+<title data-t="ebName">Equation Balance</title>
+<link rel="preload" href="../../fonts/lexend-latin.woff2" as="font" type="font/woff2" crossorigin>
+<style>
+/* Layout: one centered column; a see-saw and the equation on a card, big number pad below, settings behind the gear. */
+:root {
+  --bg: #f3f6fb;
+  --card: #ffffff;
+  --ink: #1d2a3f;
+  --muted: #5d6b82;
+  --line: #d5dde9;
+  --accent: #2457c5;
+  --accent-ink: #ffffff;
+  --mark: #e2622b;
+  --good: #1f8a4c;
+  --good-bg: #e3f5ea;
+  --bad: #c23a3a;
+  --bad-bg: #fbe6e6;
+  --chip: #e6ecf6;
+  --key: #ffffff;
+  --font: "Lexend", "Segoe UI", "Helvetica Neue", Arial, sans-serif;
+}
+
+* { box-sizing: border-box; }
+body {
+  background: var(--bg); color: var(--ink); font-family: var(--font); font-size: 16px;
+  padding-left: max(16px, env(safe-area-inset-left, 0px));
+  padding-right: max(16px, env(safe-area-inset-right, 0px));
+  padding-block: 20px 32px;
+}
+.wrap { max-width: 520px; margin: 0 auto; display: flex; flex-direction: column; gap: 16px; }
+
+.top { display: flex; flex-wrap: wrap; gap: 12px; align-items: center; justify-content: space-between; }
+h1 { margin: 0; font-size: 1.6rem; font-weight: 700; text-wrap: balance; }
+.score { display: flex; flex-wrap: wrap; gap: 8px; font-variant-numeric: tabular-nums; }
+.pill { background: var(--card); border: 1px solid var(--line); border-radius: 999px; padding: 6px 14px; font-weight: 600; font-size: 1rem; white-space: nowrap; }
+.pill span { color: var(--muted); font-weight: 400; margin-right: 4px; }
+
+.settings { display: flex; flex-direction: column; gap: 8px; }
+.seg-label { font-size: 0.8rem; font-weight: 600; letter-spacing: 0.06em; text-transform: uppercase; color: var(--muted); margin: 0 0 4px 4px; }
+.seg { display: grid; grid-template-columns: repeat(3, 1fr); gap: 6px; background: var(--chip); padding: 5px; border-radius: 14px; }
+.seg button {
+  font: inherit; font-size: 0.95rem; font-weight: 600; color: var(--muted);
+  background: transparent; border: 0; border-radius: 10px; padding: 8px 6px; min-height: 44px; cursor: pointer;
+}
+.seg button[aria-pressed="true"] { background: var(--card); color: var(--ink); box-shadow: 0 1px 3px rgb(0 0 0 / 0.12); }
+
+.problem-card {
+  background: var(--card); border: 1px solid var(--line); border-radius: 24px;
+  padding: 20px 18px 18px; display: flex; flex-direction: column; align-items: center; gap: 14px;
+}
+.problem-card.good { border-color: var(--good); box-shadow: 0 0 0 2px var(--good) inset; }
+.problem-card.bad { border-color: var(--bad); box-shadow: 0 0 0 2px var(--bad) inset; }
+
+
+.feedback { min-height: 3.1em; text-align: center; font-size: 1.1rem; line-height: 1.45; margin: 0; max-width: 34ch; }
+.feedback strong { display: block; font-size: 1.45rem; }
+.feedback.good strong { color: var(--good); }
+.feedback.bad strong { color: var(--bad); }
+.feedback .hint { color: var(--muted); }
+
+.pad { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; }
+.pad button {
+  font: inherit; font-size: 2rem; font-weight: 700; font-variant-numeric: tabular-nums; color: var(--ink);
+  background: var(--key); border: 2px solid var(--line); border-radius: 18px; min-height: 72px; cursor: pointer;
+  transition: transform .08s ease, border-color .15s ease;
+  touch-action: manipulation; -webkit-tap-highlight-color: transparent;
+}
+.pad button:hover:not(:disabled) { border-color: var(--accent); }
+.pad button:active:not(:disabled) { transform: scale(0.96); }
+.pad button:disabled { opacity: 0.4; cursor: default; }
+.pad .erase { font-size: 1.15rem; color: var(--muted); }
+.pad .go { background: var(--accent); border-color: var(--accent); color: var(--accent-ink); font-size: 1.35rem; }
+.pad .go:hover:not(:disabled) { border-color: var(--accent); filter: brightness(1.08); }
+
+.foot { display: flex; justify-content: space-between; align-items: center; gap: 12px; flex-wrap: wrap; }
+.foot p { margin: 0; color: var(--muted); font-size: 0.9rem; }
+.reset { font: inherit; font-size: 0.95rem; color: var(--muted); background: transparent; border: 2px solid var(--line); border-radius: 14px; padding: 0 16px; min-height: 44px; cursor: pointer; }
+button:focus-visible { outline: 3px solid var(--mark); outline-offset: 3px; }
+
+@media (max-width: 420px) {
+  h1 { font-size: 1.35rem; }
+  .pad button { min-height: 64px; font-size: 1.8rem; }
+  .seg button { font-size: 0.85rem; }
+}
+@media (prefers-reduced-motion: reduce) {
+  * { transition: none !important; }
+}
+</style>
+<style>.home-link{display:inline-flex;align-items:center;min-height:40px;color:var(--muted);font-weight:600;text-decoration:none;font-size:0.95rem}.home-link:hover{color:var(--ink)}</style>
+<style>
+/* Phones and tablets: the game fills one screen; settings sit behind a button. */
+body { min-height: 100vh; min-height: 100dvh; padding-block: 12px 16px; }
+.wrap { gap: 12px; }
+.game-bar { display: flex; align-items: center; justify-content: space-between; gap: 8px; }
+.bar-right { display: flex; align-items: center; gap: 8px; }
+.top { gap: 8px 12px; }
+.play { display: flex; flex-direction: column; gap: 12px; -webkit-user-select: none; user-select: none; }
+@media (min-width: 600px) and (orientation: portrait) { .wrap { max-width: 640px; } }
+@media (orientation: landscape) and (min-width: 640px) {
+  .wrap { max-width: 1100px; }
+  .play { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; align-items: center; }
+}
+
+.problem-card { padding: 14px 14px 12px; gap: 8px; }
+.feedback { min-height: 2.9em; font-size: 1.05rem; }
+.feedback strong { font-size: 1.3rem; }
+.pad { gap: 8px; }
+.pad button { min-height: clamp(50px, 8vh, 92px); min-height: clamp(50px, 8dvh, 92px); }
+@media (min-width: 600px) and (orientation: portrait) {
+  .pad button { min-height: clamp(60px, 10dvh, 120px); font-size: 2.4rem; }
+}
+@media (orientation: landscape) and (min-width: 640px) {
+  .problem-card { height: 100%; justify-content: center; }
+  .pad button { min-height: clamp(44px, calc((100dvh - 150px) / 4.4), 130px); }
+}
+/* Short phones: keep long explanations from pushing the number pad off screen. */
+@media (max-height: 760px) and (orientation: portrait) {
+  .feedback { font-size: 0.95rem; line-height: 1.35; }
+  .feedback strong { font-size: 1.15rem; }
+}
+
+/* Portrait: the page is exactly one screen tall; the pad or answers stay at the bottom
+   and the top part shrinks to fit. With settings open, the page scrolls normally. */
+@media (orientation: portrait) {
+  body { height: calc(100dvh - env(safe-area-inset-top, 0px) - env(safe-area-inset-bottom, 0px)); min-height: 0; display: flex; flex-direction: column; overflow: hidden; }
+  body:has(#settings-panel:not([hidden])) { height: auto; overflow: visible; }
+  .wrap { flex: 1 1 auto; min-height: 0; width: 100%; }
+  .play { flex: 1 1 auto; min-height: 0; }
+}
+@media (orientation: portrait) {
+  .problem-card { flex: 1 1 auto; min-height: 0; justify-content: center; overflow: hidden; }
+  .feedback { flex: 0 1 auto; min-height: 0; overflow-y: auto; }
+}
+@media (orientation: landscape) and (min-width: 640px) {
+  body { height: calc(100dvh - env(safe-area-inset-top, 0px) - env(safe-area-inset-bottom, 0px)); min-height: 0; display: flex; flex-direction: column; overflow: hidden; }
+  body:has(#settings-panel:not([hidden])) { height: auto; overflow: visible; }
+  .wrap { flex: 1 1 auto; min-height: 0; width: 100%; }
+  .play { flex: 1 1 auto; min-height: 0; grid-template-rows: minmax(0, 1fr); }
+  .problem-card { min-height: 0; overflow: hidden; }
+  .feedback { flex: 0 1 auto; min-height: 0; overflow-y: auto; }
+}
+@media (max-height: 500px) {
+  .feedback { font-size: 0.9rem; line-height: 1.3; }
+  .feedback strong { font-size: 1.05rem; }
+}
+
+
+/* Equation Balance: a see-saw on top, the equation under it, "x = ?" written on the pad. */
+.seesaw { display: block; width: 100%; flex: 1 1 0; min-height: 90px; max-height: 280px; overflow: visible; }
+.seesaw text { font-family: var(--font); font-weight: 700; font-variant-numeric: tabular-nums; }
+.beam { transform-box: view-box; transform-origin: 200px 150px; transition: transform .7s cubic-bezier(.3, 1.6, .5, 1); }
+.beam.wobble { animation: wobble 2.4s ease-in-out infinite alternate; }
+@keyframes wobble { from { transform: rotate(-2.5deg); } to { transform: rotate(2.5deg); } }
+.eq { display: flex; align-items: baseline; justify-content: center; flex-wrap: wrap; gap: 0 0.28em;
+  font-size: clamp(2rem, min(10vw, 6.5dvh), 4.2rem); font-weight: 600; font-variant-numeric: tabular-nums; line-height: 1.15; }
+.eq .op { color: var(--accent); }
+.eq .eqs { color: var(--muted); }
+.eq .xv { color: var(--c1); font-style: italic; }
+.eq .ans { min-width: 1.6ch; text-align: center; color: var(--accent); border-bottom: 0.07em solid var(--ink); position: relative; padding: 0 0.1em; }
+.eq .ans.empty::after { content: "?"; color: var(--muted); }
+.eq.solve { font-size: clamp(1.7rem, min(8.5vw, 5.5dvh), 3.4rem); }
+.problem-card.good .eq .ans { color: var(--good); border-color: var(--good); }
+.problem-card.bad .eq .ans { color: var(--bad); border-color: var(--bad); text-decoration: line-through; text-decoration-thickness: 0.06em; }
+@media (max-height: 900px), (max-width: 599px) {
+  .problem-card.good .eq, .problem-card.bad .eq { zoom: 0.8; }
+}
+/* Short screens: after an answer, the equation shrinks and the steps get smaller, so every step fits on the card. */
+@media (max-height: 760px) and (orientation: portrait), (max-height: 500px) {
+  .problem-card.good .eq, .problem-card.bad .eq { zoom: 0.6; }
+  .problem-card.good .feedback, .problem-card.bad .feedback { font-size: 0.85rem; line-height: 1.3; }
+  .problem-card.good .feedback strong, .problem-card.bad .feedback strong { font-size: 1rem; }
+  .problem-card.good .seesaw, .problem-card.bad .seesaw { min-height: 64px; }
+}
+@media (max-height: 700px) and (orientation: portrait) {
+  .problem-card.good, .problem-card.bad { gap: 4px; }
+  .problem-card.good .eq, .problem-card.bad .eq { zoom: 0.5; }
+  .problem-card.good .feedback, .problem-card.bad .feedback { font-size: 0.8rem; line-height: 1.25; }
+  .problem-card.good .seesaw, .problem-card.bad .seesaw { min-height: 48px; }
+}
+.ws-sl .eb-x { margin-left: 1.5em; }
+@media (prefers-reduced-motion: reduce) {
+  .beam { transition: none; }
+  .beam.wobble { animation: none; }
+}
+</style>
+<link rel="stylesheet" href="../../loopy.css">
+<script src="../../loopy.js"></script>
+</head>
+<body>
+
+<div class="wrap">
+  <header class="game-bar">
+    <a class="home-link" href="../../">&larr; loopy</a>
+    <div class="bar-right">
+      <span id="star-chip"></span>
+      <button type="button" id="settings-toggle" aria-controls="settings-panel"></button>
+    </div>
+  </header>
+  <section class="top" aria-labelledby="title">
+    <h1 id="title" data-t="ebName">Equation Balance</h1>
+    <div class="score" aria-live="polite">
+      <div class="pill pill-score"><span data-t="score">Score</span><b id="score">0 / 0</b></div>
+      <div class="pill pill-streak"><span data-t="streak">Streak</span><b id="streak">0</b></div>
+      <div id="last5" data-game="equation-balance"></div>
+    </div>
+  </section>
+  <div class="settings-panel" id="settings-panel" hidden>
+    <div class="controls"><div id="age-picker"></div><div id="theme-picker"></div><button id="sound-toggle"></button><div id="lang-picker"></div></div>
+    <div>
+      <p class="seg-label" id="lv-label" data-t="ebLevel">Level</p>
+      <div class="seg" role="group" aria-labelledby="lv-label" id="lv-seg">
+        <button type="button" id="lv-box" data-lv="box">□ + 4 = 9</button>
+        <button type="button" id="lv-add" data-lv="add">x + 4 = 9</button>
+        <button type="button" id="lv-mul" data-lv="mul">3x = 12</button>
+        <button type="button" id="lv-two" data-lv="two">3x + 4 = 19</button>
+        <button type="button" id="lv-both" data-lv="both" data-t="ebLevelBoth">x on both sides</button>
+      </div>
+    </div>
+    <div class="panel-foot">
+      <p data-t="kbdHint">Keyboard works too: numbers, Backspace, Enter.</p>
+      <button type="button" class="reset" id="reset" data-t="resetScore">Reset score</button>
+    </div>
+  </div>
+
+  <main class="play">
+    <div class="problem-card" id="card">
+      <svg class="seesaw" id="seesaw" viewBox="0 0 400 200" aria-hidden="true"></svg>
+      <div class="eq" id="eq"></div>
+      <div class="eq solve" id="solve"></div>
+      <p class="feedback" id="feedback"><span class="hint" data-t="ebHint">Find x so both sides weigh the same.</span></p>
+    </div>
+
+    <div class="pad" id="pad">
+      <button type="button" id="k1" data-d="1">1</button>
+      <button type="button" id="k2" data-d="2">2</button>
+      <button type="button" id="k3" data-d="3">3</button>
+      <button type="button" id="k4" data-d="4">4</button>
+      <button type="button" id="k5" data-d="5">5</button>
+      <button type="button" id="k6" data-d="6">6</button>
+      <button type="button" id="k7" data-d="7">7</button>
+      <button type="button" id="k8" data-d="8">8</button>
+      <button type="button" id="k9" data-d="9">9</button>
+      <button type="button" id="k-erase" class="erase" aria-label="Erase last digit" data-t-aria="eraseAria" data-t="erase">Erase</button>
+      <button type="button" id="k0" data-d="0">0</button>
+      <button type="button" id="k-go" class="go" data-t="check">Check</button>
+    </div>
+  </main>
+</div>
+
+<script>
+Loopy.addStrings({
+  en: {
+    ebName: "Equation Balance", ebLevel: "Level",
+    ebHint: "Find x so both sides weigh the same.", ebHintBox: "Which number goes in the box?",
+    ebSay: "{eq}. What is x?", ebSayBox: "{eq}. Which number goes in the box?",
+    ebPlusW: "plus", ebMinusW: "minus", ebEqW: "equals", ebBoxW: "box",
+    ebBoxAdd: "Count back: {c} − {a} = {x}. So the box is {x}.",
+    ebBoxSub: "Add it back: {c} + {a} = {x}. So the box is {x}.",
+    ebTake: "Take {a} from both sides: {lhs} = {c} − {a} = {m}.",
+    ebAdd: "Add {a} to both sides: {lhs} = {c} + {a} = {m}.",
+    ebShare: "Share both sides by {a}: x = {c} ÷ {a} = {x}.",
+    ebTakeX: "Take {t} from both sides: {lhs} = {c}.",
+    ebLevelBox: "□ + 4 = 9", ebLevelAdd: "x + 4 = 9", ebLevelMul: "3x = 12", ebLevelTwo: "3x + 4 = 19", ebLevelBoth: "x on both sides",
+    ebTry: "Try {lv}",
+    ebHow: "Find the number that makes both sides equal."
+  },
+  de: {
+    ebName: "Waage", ebLevel: "Stufe",
+    ebHint: "Finde x, damit beide Seiten gleich schwer sind.", ebHintBox: "Welche Zahl gehört ins Kästchen?",
+    ebSay: "{eq}. Was ist x?", ebSayBox: "{eq}. Welche Zahl gehört ins Kästchen?",
+    ebPlusW: "plus", ebMinusW: "minus", ebEqW: "ist gleich", ebBoxW: "Kästchen",
+    ebBoxAdd: "Rechne zurück: {c} − {a} = {x}. Ins Kästchen gehört {x}.",
+    ebBoxSub: "Rechne zurück: {c} + {a} = {x}. Ins Kästchen gehört {x}.",
+    ebTake: "Nimm auf beiden Seiten {a} weg: {lhs} = {c} − {a} = {m}.",
+    ebAdd: "Rechne auf beiden Seiten + {a}: {lhs} = {c} + {a} = {m}.",
+    ebShare: "Teile beide Seiten durch {a}: x = {c} ÷ {a} = {x}.",
+    ebTakeX: "Nimm auf beiden Seiten {t} weg: {lhs} = {c}.",
+    ebLevelBox: "□ + 4 = 9", ebLevelAdd: "x + 4 = 9", ebLevelMul: "3x = 12", ebLevelTwo: "3x + 4 = 19", ebLevelBoth: "x auf beiden Seiten",
+    ebTry: "Probiere {lv}",
+    ebHow: "Finde die Zahl, mit der beide Seiten gleich sind."
+  }
+});
+
+// GEN START
+const randInt = (lo, hi) => lo + Math.floor(Math.random() * (hi - lo + 1));
+const fmt = (n) => Loopy.num(n);
+const t = Loopy.t;
+
+// The levels, easiest first: a missing number, x + a, a·x, a·x + b, and x on both sides.
+const LEVELS = ["box", "add", "mul", "two", "both"];
+const levelName = (lv) => ({ box: "ebLevelBox", add: "ebLevelAdd", mul: "ebLevelMul", two: "ebLevelTwo", both: "ebLevelBoth" })[lv];
+function levelForAge(age) {
+  if (age <= 10) return "box";
+  if (age === 11) return "add";
+  if (age === 12) return "mul";
+  if (age <= 14) return "two";
+  return "both";
+}
+
+// A side of the see-saw is a list of terms: { k } is k lots of x, { n } a number (minus pulls up), { box: true } the empty box.
+// value(side, x) is what that side weighs when x is the given number.
+const value = (side, x) => side.reduce((s, p) => s + (p.box ? x : p.k ? p.k * x : p.n), 0);
+const xTerm = (k) => (k === 1 ? "" : fmt(k)) + "x";
+// The side as text, like "3x − 4". The box is "□".
+function sideText(side) {
+  return side.map((p, i) => {
+    const neg = p.n < 0, body = p.box ? "□" : p.k ? xTerm(p.k) : fmt(Math.abs(p.n));
+    return i === 0 ? (neg ? "−" + body : body) : (neg ? " − " : " + ") + body;
+  }).join("");
+}
+
+// One problem: the two sides, the answer x and a key for "no repeats".
+function makeProblem(lv, age) {
+  const small = age <= 8;
+  let L, R, x, key;
+  if (lv === "box") {
+    const form = randInt(0, 2), a = randInt(1, small ? 9 : 20);
+    x = randInt(1, small ? 10 : 20);
+    if (form === 0) { L = [{ box: true }, { n: a }]; R = [{ n: x + a }]; }
+    else if (form === 1) { L = [{ n: a }, { box: true }]; R = [{ n: a + x }]; }
+    else { x += a; L = [{ box: true }, { n: -a }]; R = [{ n: x - a }]; }
+    key = "box:" + form + ":" + a + ":" + x;
+  } else if (lv === "add") {
+    const form = randInt(0, 2), a = randInt(2, 30);
+    x = randInt(1, 30);
+    if (form === 0) { L = [{ k: 1 }, { n: a }]; R = [{ n: x + a }]; }
+    else if (form === 1) { L = [{ n: a }, { k: 1 }]; R = [{ n: a + x }]; }
+    else { x += a; L = [{ k: 1 }, { n: -a }]; R = [{ n: x - a }]; }
+    key = "add:" + form + ":" + a + ":" + x;
+  } else if (lv === "mul") {
+    const a = randInt(2, 10);
+    x = randInt(2, 12);
+    L = [{ k: a }]; R = [{ n: a * x }];
+    key = "mul:" + a + ":" + x;
+  } else if (lv === "two") {
+    const a = randInt(2, 9), b = randInt(1, 20), minus = Math.random() < 0.4;
+    x = randInt(1, 12);
+    if (minus && a * x - b < 1) x = Math.ceil((b + 1) / a) + randInt(0, 3);
+    L = [{ k: a }, { n: minus ? -b : b }]; R = [{ n: a * x + (minus ? -b : b) }];
+    key = "two:" + a + ":" + (minus ? -b : b) + ":" + x;
+  } else {
+    const c = randInt(1, 4), k = randInt(1, 4), b = randInt(1, 15);
+    x = randInt(1, 10);
+    L = [{ k: c + k }, { n: b }]; R = [{ k: c }, { n: k * x + b }];
+    if (Math.random() < 0.3) { const s = L; L = R; R = s; }
+    key = "both:" + c + ":" + k + ":" + b + ":" + x + ":" + (L[0].k === c ? "r" : "l");
+  }
+  return { lv, L, R, x, key, text: sideText(L) + " = " + sideText(R) };
+}
+
+// The steps to solve it, one short sentence each: undo the number, then share.
+function explain(p) {
+  const L = p.L, R = p.R, x = p.x;
+  if (p.lv === "box") {
+    const a = L.find(q => q.n !== undefined).n, c = R[0].n;
+    return a > 0 ? t("ebBoxAdd", { a: fmt(a), c: fmt(c), x: fmt(x) }) : t("ebBoxSub", { a: fmt(-a), c: fmt(c), x: fmt(x) });
+  }
+  const steps = [];
+  // x on both sides: take the smaller lot of x away first, so x is only on the bigger side.
+  let k, b, c;
+  if (p.lv === "both") {
+    const big = L[0].k > R[0].k ? L : R, other = big === L ? R : L;
+    k = big[0].k - other[0].k; b = big[1].n; c = other[1].n;
+    steps.push(t("ebTakeX", { t: xTerm(other[0].k), lhs: xTerm(k) + " + " + fmt(b), c: fmt(c) }));
+  } else {
+    const xs = L.find(q => q.k), num = L.find(q => q.n !== undefined);
+    k = xs.k; b = num ? num.n : 0; c = R[0].n;
+  }
+  if (b > 0) steps.push(t("ebTake", { a: fmt(b), lhs: xTerm(k), c: fmt(c), m: fmt(c - b) }));
+  else if (b < 0) steps.push(t("ebAdd", { a: fmt(-b), lhs: xTerm(k), c: fmt(c), m: fmt(c - b) }));
+  if (k > 1) steps.push(t("ebShare", { a: fmt(k), c: fmt(c - b), x: fmt(x) }));
+  return steps.join(" ");
+}
+// GEN END
+
+(function () {
+  const $ = (id) => document.getElementById(id);
+  const card = $("card"), eqEl = $("eq"), solveEl = $("solve"), feedbackEl = $("feedback"), goBtn = $("k-go"), svg = $("seesaw");
+  const lvBtns = [...document.querySelectorAll("#lv-seg button")];
+  const digitBtns = [...document.querySelectorAll("#pad [data-d]")];
+  const NS = "http://www.w3.org/2000/svg";
+
+  const store = {
+    // ok: the values this setting may have; anything else falls back to the default.
+    get(k, d, ok) { try { const v = JSON.parse(Loopy.store.get(k)); return ok.includes(v) ? v : d; } catch (e) { return d; } },
+    set(k, v) { Loopy.store.set(k, JSON.stringify(v)); }
+  };
+
+  let age = window.Loopy ? Loopy.getAge() : 12;
+  let lv;
+  // The level is remembered per age, so each age starts at the right one.
+  const loadForAge = () => { lv = store.get("eb.lv.a" + age, levelForAge(age), LEVELS); };
+  loadForAge();
+
+  let right = 0, tried = 0, streak = 0;
+  let current = null, typed = "", answered = false, recent = [];
+  let ansEl = null, beam = null;
+
+  // The see-saw: a beam on a stand. x is a blue block, a number a weight, a minus number a balloon that pulls up.
+  function el(tag, attrs, parent) {
+    const n = document.createElementNS(NS, tag);
+    for (const k in attrs) n.setAttribute(k, attrs[k]);
+    if (parent) parent.appendChild(n);
+    return n;
+  }
+  function label(parent, x, y, text, size, color) {
+    const n = el("text", { x, y, "text-anchor": "middle", "dominant-baseline": "central", "font-size": size, fill: color }, parent);
+    n.textContent = text;
+  }
+  // The things on one side, side by side and centred on cx. Many x blocks become one wide block ("5x").
+  function drawSide(side, cx) {
+    const items = [];
+    side.forEach(p => {
+      if (p.box) items.push({ w: 46, kind: "box" });
+      else if (p.k && p.k <= 3) for (let i = 0; i < p.k; i++) items.push({ w: 42, kind: "x", text: "x" });
+      else if (p.k) items.push({ w: 66, kind: "x", text: xTerm(p.k) });
+      else items.push({ w: 30 + 14 * String(Math.abs(p.n)).length, kind: p.n < 0 ? "up" : "n", text: fmt(Math.abs(p.n)) });
+    });
+    // Too wide for its half of the beam: the x blocks become one wide block.
+    if (items.filter(i => i.kind === "x").length > 1 && items.reduce((s, i) => s + i.w + 5, 0) > 165) {
+      const k = side.find(p => p.k).k, at = items.findIndex(i => i.kind === "x");
+      const rest = items.filter(i => i.kind !== "x");
+      rest.splice(at, 0, { w: 66, kind: "x", text: xTerm(k) });
+      items.length = 0; items.push(...rest);
+    }
+    const gap = 5, total = items.reduce((s, i) => s + i.w, 0) + gap * (items.length - 1);
+    let x0 = cx - total / 2;
+    const TOP = 144;
+    items.forEach(i => {
+      const mid = x0 + i.w / 2;
+      if (i.kind === "x") {
+        el("rect", { x: x0, y: TOP - 42, width: i.w, height: 42, rx: 7, fill: "var(--c1)" }, beam);
+        label(beam, mid, TOP - 21, i.text, 24, "var(--on-accent)");
+      } else if (i.kind === "box") {
+        el("rect", { x: x0 + 1.5, y: TOP - 44.5, width: i.w - 3, height: 43, rx: 7, fill: "var(--card)", stroke: "var(--c1)", "stroke-width": 3, "stroke-dasharray": "6 4" }, beam);
+        label(beam, mid, TOP - 22, "?", 24, "var(--c1)");
+      } else if (i.kind === "n") {
+        el("path", { d: `M${x0 + 6} ${TOP - 3} L${x0 + i.w - 6} ${TOP - 3} L${x0 + i.w - 11} ${TOP - 38} L${x0 + 11} ${TOP - 38} Z`, fill: "var(--c2)", "stroke-linejoin": "round", stroke: "var(--c2)", "stroke-width": 6 }, beam);
+        el("path", { d: `M${mid - 9} ${TOP - 42} a9 9 0 0 1 18 0`, fill: "none", stroke: "var(--c2)", "stroke-width": 5 }, beam);
+        label(beam, mid, TOP - 20, i.text, 22, "var(--on-accent)");
+      } else {
+        // A balloon tied to the beam: it lifts, so it takes weight away.
+        el("path", { d: `M${mid} ${TOP} q-7 -18 0 -36`, fill: "none", stroke: "var(--muted)", "stroke-width": 2 }, beam);
+        const r = Math.max(22, i.w / 2);
+        el("ellipse", { cx: mid, cy: TOP - 36 - r * 1.1, rx: r, ry: r * 1.1, fill: "var(--c4)" }, beam);
+        label(beam, mid, TOP - 36 - r * 1.1, "−" + i.text, 20, "var(--on-accent)");
+      }
+      x0 += i.w + gap;
+    });
+  }
+  function drawSeesaw() {
+    svg.innerHTML = "";
+    el("path", { d: "M200 152 L176 192 L224 192 Z", fill: "var(--muted)", "stroke-linejoin": "round", stroke: "var(--muted)", "stroke-width": 4 }, svg);
+    el("rect", { x: 140, y: 192, width: 120, height: 6, rx: 3, fill: "var(--line)" }, svg);
+    beam = el("g", { class: "beam" }, svg);
+    el("rect", { x: 22, y: 144, width: 356, height: 10, rx: 5, fill: "var(--ink)" }, beam);
+    el("circle", { cx: 200, cy: 150, r: 5, fill: "var(--card)" }, beam);
+    drawSide(current.L, 108);
+    drawSide(current.R, 292);
+  }
+  // Level when both sides weigh the same; otherwise the heavier side goes down (at most 14 degrees).
+  function tilt(y) {
+    beam.classList.remove("wobble");
+    const d = value(current.R, y) - value(current.L, y);
+    const deg = d === 0 ? 0 : Math.sign(d) * Math.min(14, 5 + Math.abs(d) / Math.max(1, Math.abs(value(current.R, current.x))) * 20);
+    beam.style.transform = "rotate(" + deg.toFixed(1) + "deg)";
+  }
+
+  const isBox = () => current.lv === "box";
+  function spoken() {
+    const words = current.text.replace(/□/g, t("ebBoxW")).replace(/(\d)x/g, "$1 x").replace(/ \+ /g, " " + t("ebPlusW") + " ")
+      .replace(/ − /g, " " + t("ebMinusW") + " ").replace(/ = /g, " " + t("ebEqW") + " ");
+    return t(isBox() ? "ebSayBox" : "ebSay", { eq: words });
+  }
+
+  // The equation line. In the box level the answer is written in the box; otherwise on a second line, "x = ?".
+  function drawEquation() {
+    eqEl.innerHTML = ""; solveEl.innerHTML = "";
+    const ans = document.createElement("span");
+    ans.className = "ans empty"; ans.setAttribute("role", "textbox"); ans.setAttribute("aria-readonly", "true");
+    ans.setAttribute("aria-label", t("yourAnswer"));
+    const part = (text, cls) => { const s = document.createElement("span"); if (cls) s.className = cls; s.textContent = text; return s; };
+    current.text.split(" ").forEach(w => {
+      if (w === "□") eqEl.appendChild(ans);
+      else if (w === "+" || w === "−") eqEl.appendChild(part(w, "op"));
+      else if (w === "=") eqEl.appendChild(part(w, "eqs"));
+      else if (/x$/.test(w)) { const s = part(w.slice(0, -1)); s.appendChild(part("x", "xv")); eqEl.appendChild(s); }
+      else eqEl.appendChild(part(w));
+    });
+    solveEl.hidden = isBox();
+    if (!isBox()) { solveEl.appendChild(part("x", "xv")); solveEl.appendChild(part("=", "eqs")); solveEl.appendChild(ans); }
+    eqEl.setAttribute("aria-label", spoken());
+    ansEl = ans;
+  }
+
+  function render() {
+    $("score").textContent = right + " / " + tried;
+    $("streak").textContent = streak;
+    lvBtns.forEach(b => b.setAttribute("aria-pressed", String(b.dataset.lv === lv)));
+    ansEl.textContent = typed === "" ? "" : fmt(parseInt(typed, 10));
+    ansEl.classList.toggle("empty", !answered && typed === "");
+    goBtn.textContent = t(answered ? "next" : "check");
+    goBtn.disabled = !answered && typed === "";
+    digitBtns.forEach(b => b.disabled = answered);
+    $("k-erase").disabled = answered || typed === "";
+  }
+
+  function newRound() {
+    current = Loopy.fresh(recent, () => makeProblem(lv, age));
+    typed = ""; answered = false;
+    card.className = "problem-card";
+    feedbackEl.className = "feedback";
+    feedbackEl.innerHTML = '<span class="hint"></span>';
+    feedbackEl.firstChild.textContent = t(isBox() ? "ebHintBox" : "ebHint");
+    drawSeesaw();
+    beam.classList.add("wobble");
+    drawEquation();
+    render();
+    Loopy.speech.read();
+  }
+
+  function press(d) {
+    if (answered || typed.length >= 3) return;
+    if (typed === "0") typed = "";
+    typed += d;
+    render();
+  }
+  function erase() {
+    if (answered) return;
+    typed = typed.slice(0, -1);
+    render();
+  }
+  function check() {
+    if (answered || typed === "") return;
+    answered = true; tried++;
+    const y = parseInt(typed, 10), ok = y === current.x;
+    if (ok) { right++; streak++; } else { streak = 0; }
+    if (window.Loopy && Loopy.rewards) ok ? Loopy.rewards.correct("equation-balance", streak, harder()) : Loopy.rewards.wrong("equation-balance", { q: current.text, a: fmt(current.x), y: fmt(y), k: "eb-" + current.lv });
+    tilt(y);
+    card.className = "problem-card " + (ok ? "good" : "bad");
+    feedbackEl.className = "feedback " + (ok ? "good" : "bad");
+    const head = ok
+      ? (streak >= 3 ? t("correctRow", { n: streak }) : t("correct"))
+      : t("notQuite") + " " + (isBox() ? "□" : "x") + " = " + fmt(current.x) + ".";
+    feedbackEl.innerHTML = "<strong></strong>";
+    feedbackEl.firstChild.textContent = head;
+    feedbackEl.appendChild(document.createTextNode(explain(current)));
+    render();
+  }
+  // What "Make it harder" does after 10 in a row: the next level.
+  function harder() {
+    const i = LEVELS.indexOf(lv);
+    if (i >= LEVELS.length - 1) return null;
+    const next = LEVELS[i + 1];
+    return { label: t("ebTry", { lv: t(levelName(next)) }), apply: () => { lv = next; store.set("eb.lv.a" + age, lv); recent = []; render(); } };
+  }
+  function go() { answered ? newRound() : check(); }
+
+  digitBtns.forEach(b => b.addEventListener("click", () => press(b.dataset.d)));
+  $("k-erase").addEventListener("click", erase);
+  goBtn.addEventListener("click", go);
+  lvBtns.forEach(b => b.addEventListener("click", () => {
+    lv = b.dataset.lv; store.set("eb.lv.a" + age, lv); recent = []; newRound();
+  }));
+  window.addEventListener("loopy:age", (e) => { age = e.detail; recent = []; loadForAge(); newRound(); });
+  $("reset").addEventListener("click", () => { right = 0; tried = 0; streak = 0; if (window.Loopy && Loopy.recent) Loopy.recent.clear("equation-balance"); newRound(); });
+  document.addEventListener("keydown", (e) => {
+    if (e.metaKey || e.ctrlKey || e.altKey || document.querySelector(".loopy-cheer.big")) return;
+    if (e.target.tagName === "INPUT") return;
+    if (/^[0-9]$/.test(e.key)) { press(e.key); e.preventDefault(); }
+    else if (e.key === "Backspace") { erase(); e.preventDefault(); }
+    else if (e.key === "Enter") {
+      if (document.activeElement && document.activeElement.tagName === "BUTTON" && document.activeElement !== goBtn) return;
+      go(); e.preventDefault();
+    }
+  });
+
+  // Read aloud: "3 x plus 5 equals 20. What is x?"
+  Loopy.speech.question({ host: card, text: spoken });
+
+  // Print worksheet: 20 equations at the same level, like "3x + 5 = 20   x = ____".
+  Loopy.worksheet({
+    title: () => t("ebName"),
+    level: () => [t("ageLabel", { n: age }), t(levelName(lv))].join(" · "),
+    how: () => t("ebHow"),
+    layout: "line",
+    make: (n) => { const list = [], keys = []; for (let i = 0; list.length < n; i++) { const p = makeProblem(lv, age); if (keys.includes(p.key) && i < 400) continue; keys.push(p.key); list.push(p); } return list; },
+    cell: (p) => {
+      const line = document.createElement("span");
+      line.className = "ws-sl";
+      const blank = document.createElement("span");
+      blank.className = "ws-blank";
+      if (p.lv === "box") {
+        const [a, b] = p.text.split("□");
+        line.appendChild(document.createTextNode(a));
+        line.appendChild(blank);
+        line.appendChild(document.createTextNode(b));
+      } else {
+        line.appendChild(document.createTextNode(p.text));
+        const xs = document.createElement("span");
+        xs.className = "eb-x";
+        xs.textContent = "x =";
+        line.appendChild(xs);
+        line.appendChild(blank);
+      }
+      return line;
+    },
+    answer: (p) => (p.lv === "box" ? p.text.replace("□", fmt(p.x)) : p.text + " → x = " + fmt(p.x))
+  });
+
+  newRound();
+})();
+</script>
+</body>
+</html>
