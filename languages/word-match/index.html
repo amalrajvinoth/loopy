@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'sha256-OvfMbqXoRez7bmmTXOnUDgU9K5klzpeiPBMo4wlvYjk='; style-src 'self' 'sha256-z2P7kGW5Z05eCTjTZdYpc0vThTlOE9vmt97pVSvi2I4=' 'sha256-W+M0+NGBKbL1fCGEKkbWgDUCO62JWeFSLj5trGkqXRE=' 'sha256-RT1053JU5UiKvjrCUFx1rlhdFLMmgtuFJ9T8jnMeawQ=' 'sha256-P1MDhcKmqezI9QybenGh0E+R8cO0qEAt89ytypSkdro='; img-src 'self' data:; font-src 'self'; connect-src 'self'; worker-src 'self'; object-src 'none'; base-uri 'none'; form-action 'none'; manifest-src 'self'; upgrade-insecure-requests">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'sha256-HMiYfl5OsmzLOhEeJHssgwJi9b4bIgyuIzyeEdflHOs='; style-src 'self' 'sha256-z2P7kGW5Z05eCTjTZdYpc0vThTlOE9vmt97pVSvi2I4=' 'sha256-W+M0+NGBKbL1fCGEKkbWgDUCO62JWeFSLj5trGkqXRE=' 'sha256-RT1053JU5UiKvjrCUFx1rlhdFLMmgtuFJ9T8jnMeawQ=' 'sha256-P1MDhcKmqezI9QybenGh0E+R8cO0qEAt89ytypSkdro='; img-src 'self' data:; font-src 'self'; connect-src 'self'; worker-src 'self'; object-src 'none'; base-uri 'none'; form-action 'none'; manifest-src 'self'; upgrade-insecure-requests">
 <meta name="referrer" content="strict-origin-when-cross-origin">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <style>:root{color-scheme:light;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}body{margin:0}[hidden]{display:none!important}</style>
@@ -254,6 +254,7 @@ body { min-height: 100vh; min-height: 100dvh; padding-block: 12px 16px; }
     <h1 id="title" data-t="wmName">Word Match</h1>
     <div class="score" aria-live="polite">
       <div class="pill pill-score"><span data-t="score">Score</span><b id="score">0 / 0</b></div>
+      <div id="level"></div>
       <div class="pill pill-streak"><span data-t="streak">Streak</span><b id="streak">0</b></div>
       <div id="last5" data-game="word-match"></div>
     </div>
@@ -314,8 +315,7 @@ Loopy.addStrings({
     wmKbd: "Keyboard works too: 1 to 4 picks a word, Enter goes on.",
     wmAsk: "Which word goes with the picture?", wmPic: "Picture",
     wmIs: "It is “{w}”.", wmInEn: "In English:\u00a0{w}", wmInDe: "In German:\u00a0{w}",
-    wmHow: "Look at each picture. Circle the word that goes with it.",
-    wmTryFour: "Try it with four words", wmTryTricky: "Try tricky words from the same topic"
+    wmHow: "Look at each picture. Circle the word that goes with it."
   },
   de: {
     wmName: "Bild und Wort", wmWords: "Wörter auf", wmTopic: "Thema", wmAll: "Alle", wmAnimals: "Tiere", wmFood: "Essen", wmHome: "Zuhause", wmSchool: "Schule",
@@ -324,8 +324,7 @@ Loopy.addStrings({
     wmKbd: "Die Tastatur geht auch: 1 bis 4 wählt ein Wort, Enter geht weiter.",
     wmAsk: "Welches Wort passt zum Bild?", wmPic: "Bild",
     wmIs: "Das ist „{w}“.", wmInEn: "Auf Englisch:\u00a0{w}", wmInDe: "Auf Deutsch:\u00a0{w}",
-    wmHow: "Schau dir jedes Bild an. Kreise das passende Wort ein.",
-    wmTryFour: "Probiere es mit vier Wörtern", wmTryTricky: "Probiere knifflige Wörter aus demselben Thema"
+    wmHow: "Schau dir jedes Bild an. Kreise das passende Wort ein."
   }
 });
 
@@ -412,8 +411,12 @@ function makeProblem(lang, topic, age, level, avoid) {
   let autoRead = store.get("wm.autoRead", true, [true, false]);
   let level;
   // The number of choices is remembered per age, so each age starts at the right level.
-  function loadForAge() { level = store.get("wm.level.a" + age, age <= 6 ? 3 : age <= 8 ? 4 : 5, [3, 4, 5]); }
+  const levelForAge = (a) => a <= 6 ? 3 : a <= 8 ? 4 : 5;
+  function loadForAge() { level = store.get("wm.level.a" + age, levelForAge(age), [3, 4, 5]); }
   loadForAge();
+  Loopy.levels.init({ names: ["wmThree", "wmFour", "wmTricky"],
+    get: () => level - 3, base: () => levelForAge(age) - 3,
+    set: (i) => { level = i + 3; store.set("wm.level.a" + age, level); render(); } });
   let right = 0, tried = 0, streak = 0;
   let current = null, answered = false, recent = [], interacted = false;
 
@@ -444,6 +447,7 @@ function makeProblem(lang, topic, age, level, avoid) {
   }
 
   function render() {
+    Loopy.levels.render();
     $("score").textContent = right + " / " + tried;
     $("streak").textContent = streak;
     wordsBtns.forEach(b => b.setAttribute("aria-pressed", String(b.dataset.words === wordsLang)));
@@ -485,7 +489,7 @@ function makeProblem(lang, topic, age, level, avoid) {
       else b.classList.add("faded");
     });
     if (ok) { right++; streak++; } else { streak = 0; }
-    if (ok) Loopy.rewards.correct("word-match", streak, harder());
+    if (ok) Loopy.rewards.correct("word-match", streak);
     else Loopy.rewards.wrong("word-match", { q: current.word.pic, a: current.answer, y: btn.textContent, k: "wm-" + current.word.topic });
     card.classList.remove("good", "bad");
     card.classList.add(ok ? "good" : "bad");
@@ -498,11 +502,6 @@ function makeProblem(lang, topic, age, level, avoid) {
     render();
     nextBtn.focus({ preventScroll: true });
     if (autoRead && interacted && Loopy.sound.isOn()) speak();
-  }
-  // What "Make it harder" does after 10 in a row: four words first, then tricky words from the same topic.
-  function harder() {
-    if (level < 5) return { label: t(level === 3 ? "wmTryFour" : "wmTryTricky"), apply: () => { level++; store.set("wm.level.a" + age, level); render(); } };
-    return null;
   }
 
   document.addEventListener("pointerdown", () => { interacted = true; }, { once: true });

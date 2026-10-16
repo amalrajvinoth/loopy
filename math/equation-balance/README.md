@@ -49,7 +49,7 @@ Tap **Settings** to choose:
 - **Read aloud:** On or Off. When it is on, a speaker button sits in the corner of the card. It says, for example, "3 x plus 4 equals 19. What is x?".
 
 The level is remembered for each age.
-After 10 right in a row, the game asks if you want to make it harder: the next level.
+The level shows next to the score, like "Level 2 of 5". After 10 right in a row the game offers the next level. After 3 wrong in the last 5 it offers an easier one, once a visit. A level picked by hand in Settings is kept for that age. The levels: □ + 4 = 9, x + 4 = 9, 3x = 12, 3x + 4 = 19, x on both sides.
 
 ## Print a worksheet
 

@@ -17,7 +17,7 @@ A short science quiz with pictures. The child sees a picture and a question abou
 | 9 to 10 | Explorer | Starter and Explorer facts, 4 answers |
 | 11 and up | Expert | All facts, 4 answers |
 
-After 10 right in a row the game offers to make it harder: first Explorer, then Expert questions.
+The level shows next to the score, like "Level 2 of 3". After 10 right in a row the game offers the next level. After 3 wrong in the last 5 it offers an easier one, once a visit. A level picked by hand in Settings is kept for that age. The levels: Starter, Explorer, Expert.
 
 ## Facts
 

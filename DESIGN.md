@@ -259,7 +259,7 @@ Flags and Capitals draws each flag in SVG from a few boxes, stripes, circles, st
 
 ### Top bar
 
-Each game has a top bar with the back button on the left, and the star counter, the flag (Report a problem), the child playing and the ⚙ Settings button on the right. The score row sits next to the title when it fits, else under it, on one line: the Last 5 pill, then the streak as "🔥 3". The score (right out of tried) is kept for screen readers only; grown-ups see the numbers on the How it's going page.
+Each game has a top bar with the back button on the left, and the star counter, the flag (Report a problem), the child playing and the ⚙ Settings button on the right. The score row sits next to the title when it fits, else under it, on one line: the Last 5 pill, the level pill ("Level 2 of 5", from `Loopy.levels`), then the streak as "🔥 3". Under 420px wide the Last 5 pill drops its word and the level pill says "Level 2/5", with tighter padding, so all three still fit. The score (right out of tried) is kept for screen readers only; grown-ups see the numbers on the How it's going page.
 
 ### Report a problem
 
@@ -312,7 +312,7 @@ What **Print worksheet** prints. Only the sheet prints; the game is hidden. It i
 - **Confetti:** drawn on a canvas in the five theme accents. Streaks of 5, 10, 15, 20, 30 and 50 right answers set it off.
 - **Badges:** at 10, 25, 50, 100, 250, 500 and 1,000 stars. Day badges at 3, 7 and 30 days of Today's 10. Not yet earned: a dashed circle. Earned: a filled circle in the badge's color.
 - **Star shelf ("My stars"):** a card on the home page with the line to the next badge and its progress bar. The badge grid and the day streak fold under one line, "See all badges and day streak" (a `details` with a dashed top line, like "Move my stars"), so the shelf stays short.
-- **"Ready to level up?"** card after 10 right answers in a row.
+- **Levels:** every game declares its ladder once with `Loopy.levels.init({ names, get, set, base })`. The level pill shows where the child is. After 10 right in a row the cheer card offers the next level by name ("Next: Quarter hours") with "Make it harder" and "Keep going". After 3 wrong in the last 5 a calm card (no confetti) asks "Tricky ones today? Want it a bit easier for now?" with "A bit easier" and "Keep going", once a visit. Times Tables Sprint asks at the end of a round, never while the clock runs.
 - **Chimes:** short tones made in the browser. No sound files. "Right" goes up, "wrong" goes gently down, cheers and badges play a little tune. The speaker button mutes them.
 
 ### Who is playing? (children)

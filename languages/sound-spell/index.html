@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'sha256-XRCr+P1uaSYUcYXauCbSDReOpUn7Lqp14DtaW6irGws='; style-src 'self' 'sha256-z2P7kGW5Z05eCTjTZdYpc0vThTlOE9vmt97pVSvi2I4=' 'sha256-X/6TgBlwR/r0pxAaWlbvoxARMjftgwBhtW4mnRo1lys=' 'sha256-RT1053JU5UiKvjrCUFx1rlhdFLMmgtuFJ9T8jnMeawQ=' 'sha256-nZ5SAifs7yg0KHXGahfWDo+SQzH7bM6dB53haqDY1io='; img-src 'self' data:; font-src 'self'; connect-src 'self'; worker-src 'self'; object-src 'none'; base-uri 'none'; form-action 'none'; manifest-src 'self'; upgrade-insecure-requests">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'sha256-QKXoEVvZuW6D8N4QhZ7/WTNPiH+q4bMPiOhplMQdX7k='; style-src 'self' 'sha256-z2P7kGW5Z05eCTjTZdYpc0vThTlOE9vmt97pVSvi2I4=' 'sha256-X/6TgBlwR/r0pxAaWlbvoxARMjftgwBhtW4mnRo1lys=' 'sha256-RT1053JU5UiKvjrCUFx1rlhdFLMmgtuFJ9T8jnMeawQ=' 'sha256-nZ5SAifs7yg0KHXGahfWDo+SQzH7bM6dB53haqDY1io='; img-src 'self' data:; font-src 'self'; connect-src 'self'; worker-src 'self'; object-src 'none'; base-uri 'none'; form-action 'none'; manifest-src 'self'; upgrade-insecure-requests">
 <meta name="referrer" content="strict-origin-when-cross-origin">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <style>:root{color-scheme:light;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}body{margin:0}[hidden]{display:none!important}</style>
@@ -250,6 +250,7 @@ body { min-height: 100vh; min-height: 100dvh; padding-block: 12px 16px; }
     <h1 id="title" data-t="ssName">Sound Spell</h1>
     <div class="score" aria-live="polite">
       <div class="pill pill-score"><span data-t="score">Score</span><b id="score">0 / 0</b></div>
+      <div id="level"></div>
       <div class="pill pill-streak"><span data-t="streak">Streak</span><b id="streak">0</b></div>
       <div id="last5" data-game="sound-spell"></div>
     </div>
@@ -295,23 +296,25 @@ body { min-height: 100vh; min-height: 100dvh; padding-block: 12px 16px; }
 <script>
 Loopy.addStrings({
   en: {
-    ssName: "Sound Spell", ssMode: "Sounds", ssStart: "Starting", ssEnd: "Ending", ssWords: "Words in",
+    ssName: "Sound Spell", ssMode: "Sounds", ssStart: "Starting", ssEnd: "Ending",
+    ssLv1: "Starting sounds, 3 choices", ssLv2: "Both sounds, 3 choices", ssLv3: "Both sounds, 4 choices", ssWords: "Words in",
     ssAutoRead: "Read each word out loud", ssHear: "Hear the word",
     ssKbd: "Keyboard works too: 1 to 4 picks an answer, Enter goes on.",
     ssHow: "Look at the picture. Write the missing sound, or circle it.",
     ssAskStart: "Which sound does it start with?", ssAskEnd: "Which sound does it end with?",
     ssStartsWith: "{word} starts with {u}.", ssEndsWith: "{word} ends with {u}.",
-    ssTryBoth: "Try starting and ending sounds together", ssTryFour: "Try it with four choices",
+   
     ssLangEn: "English", ssLangDe: "German"
   },
   de: {
-    ssName: "Anlaut und Endlaut", ssMode: "Laute", ssStart: "Anlaut", ssEnd: "Endlaut", ssWords: "Wörter auf",
+    ssName: "Anlaut und Endlaut", ssMode: "Laute", ssStart: "Anlaut", ssEnd: "Endlaut",
+    ssLv1: "Anlaute, 3 Antworten", ssLv2: "Beide Laute, 3 Antworten", ssLv3: "Beide Laute, 4 Antworten", ssWords: "Wörter auf",
     ssAutoRead: "Jedes Wort vorlesen", ssHear: "Wort anhören",
     ssKbd: "Die Tastatur geht auch: 1 bis 4 wählt eine Antwort, Enter geht weiter.",
     ssHow: "Schau dir das Bild an. Schreibe den fehlenden Laut oder kreise ihn ein.",
     ssAskStart: "Mit welchem Laut beginnt das Wort?", ssAskEnd: "Mit welchem Laut endet das Wort?",
     ssStartsWith: "{word} beginnt mit {u}.", ssEndsWith: "{word} endet mit {u}.",
-    ssTryBoth: "Probiere Anlaut und Endlaut gemischt", ssTryFour: "Probiere es mit vier Antworten",
+   
     ssLangEn: "Englisch", ssLangDe: "Deutsch"
   }
 });
@@ -423,6 +426,11 @@ function makeProblem(lang, modeSetting, age, choices, avoid) {
     if (m) { modeSetting = m[1]; Loopy.log.hint = ""; }
   }
   loadForAge();
+  // The ladder: starting sounds with 3 choices, both sounds with 3, both sounds with 4.
+  const LADDER = [["start", 3], ["mix", 3], ["mix", 4]];
+  if (window.Loopy && Loopy.levels) Loopy.levels.init({ names: ["ssLv1", "ssLv2", "ssLv3"],
+    get: () => choices === 4 ? 2 : modeSetting === "start" ? 0 : 1, base: () => age <= 6 ? 0 : 2,
+    set: (i) => { [modeSetting, choices] = LADDER[i]; store.set("ss.mode.a" + age, modeSetting); store.set("ss.choices.a" + age, choices); render(); } });
   let right = 0, tried = 0, streak = 0;
   let current = null, answered = false, recent = [], interacted = false;
 
@@ -448,6 +456,7 @@ function makeProblem(lang, modeSetting, age, choices, avoid) {
   speakBtn.hidden = !canSpeak;
 
   function render() {
+    if (window.Loopy && Loopy.levels) Loopy.levels.render();
     $("score").textContent = right + " / " + tried;
     $("streak").textContent = streak;
     modeBtns.forEach(b => b.setAttribute("aria-pressed", String(b.dataset.mode === modeSetting)));
@@ -496,7 +505,7 @@ function makeProblem(lang, modeSetting, age, choices, avoid) {
       else b.classList.add("faded");
     });
     if (ok) { right++; streak++; } else { streak = 0; }
-    if (window.Loopy && Loopy.rewards) ok ? Loopy.rewards.correct("sound-spell", streak, harder()) : Loopy.rewards.wrong("sound-spell", { q: current.word[0] + " " + (current.mode === "start" ? "_" + current.rest : current.rest + "_"), a: current.word[1], y: current.mode === "start" ? btn.textContent + current.rest : current.rest + btn.textContent, k: "ss-" + current.mode });
+    if (window.Loopy && Loopy.rewards) ok ? Loopy.rewards.correct("sound-spell", streak) : Loopy.rewards.wrong("sound-spell", { q: current.word[0] + " " + (current.mode === "start" ? "_" + current.rest : current.rest + "_"), a: current.word[1], y: current.mode === "start" ? btn.textContent + current.rest : current.rest + btn.textContent, k: "ss-" + current.mode });
     card.className = "problem-card " + (ok ? "good" : "bad");
     feedbackEl.className = "feedback " + (ok ? "good" : "bad");
     showWord(current.answer);
@@ -506,12 +515,6 @@ function makeProblem(lang, modeSetting, age, choices, avoid) {
     feedbackEl.appendChild(document.createTextNode(why));
     render();
     nextBtn.focus({ preventScroll: true });
-  }
-  // What "Make it harder" does after 10 in a row: both sound kinds first, then four choices.
-  function harder() {
-    if (modeSetting !== "mix") return { label: t("ssTryBoth"), apply: () => { modeSetting = "mix"; store.set("ss.mode.a" + age, modeSetting); render(); } };
-    if (choices < 4) return { label: t("ssTryFour"), apply: () => { choices = 4; store.set("ss.choices.a" + age, choices); render(); } };
-    return null;
   }
 
   document.addEventListener("pointerdown", () => { interacted = true; }, { once: true });

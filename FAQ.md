@@ -18,6 +18,10 @@ Kids from about age 5 to 16 (grades 1 to 10). Pick an age on the home page. Game
 
 Tap − or + next to Age on the home page or in a game's Settings. The games get easier or harder to match. The age goes up by itself on each birthday.
 
+## What does "Level 2 of 5" mean?
+
+Every game has levels, from easy to hard. The age picks the starting level, and the pill next to the score shows where your child is. After 10 right in a row the game offers the next level. After 3 wrong in the last 5 it offers an easier one. You can also pick a level by hand in the game's Settings. The level is kept for that age, for each child.
+
 ## Can brothers and sisters share one device?
 
 Yes. A new device starts with one child and shows no names. To add a child, open **Settings** on the home page and tap **Add a child** under Kids. Give them a name (or a nickname), a picture and their age. Each child has their own stars, badges, streaks, age, game levels, settings and last game. With two or more children, "Who is playing?" shows on the home page: tap a child's name to switch. In Settings, tap a child to change the name or picture, or to remove them. Removing a child deletes their stars on this device. When only one child is left, the names hide again. Devices that already had Dio and Dia keep them. The theme, sound and language are the same for everyone.

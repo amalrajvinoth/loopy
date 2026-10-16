@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'sha256-vpK4XJvwRyJHDS8qCHJTW/KNj9G7yTMJU5JK/0QajSE='; style-src 'self' 'sha256-z2P7kGW5Z05eCTjTZdYpc0vThTlOE9vmt97pVSvi2I4=' 'sha256-0X+W/Xc6cVdheyH9D1zLVaD+jBRekL1aj7dPgq8HXXY=' 'sha256-RT1053JU5UiKvjrCUFx1rlhdFLMmgtuFJ9T8jnMeawQ=' 'sha256-AbJixgGjrguOw5a9iDl7GMczBsuMXNeP8i3ZkjOlh9U='; img-src 'self' data:; font-src 'self'; connect-src 'self'; worker-src 'self'; object-src 'none'; base-uri 'none'; form-action 'none'; manifest-src 'self'; upgrade-insecure-requests">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'sha256-WyMb2FYFWi++Cj9VbOluPLxZT0BF0OPoOvQZ7PhDwdc='; style-src 'self' 'sha256-z2P7kGW5Z05eCTjTZdYpc0vThTlOE9vmt97pVSvi2I4=' 'sha256-0X+W/Xc6cVdheyH9D1zLVaD+jBRekL1aj7dPgq8HXXY=' 'sha256-RT1053JU5UiKvjrCUFx1rlhdFLMmgtuFJ9T8jnMeawQ=' 'sha256-AbJixgGjrguOw5a9iDl7GMczBsuMXNeP8i3ZkjOlh9U='; img-src 'self' data:; font-src 'self'; connect-src 'self'; worker-src 'self'; object-src 'none'; base-uri 'none'; form-action 'none'; manifest-src 'self'; upgrade-insecure-requests">
 <meta name="referrer" content="strict-origin-when-cross-origin">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <style>:root{color-scheme:light;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}body{margin:0}[hidden]{display:none!important}</style>
@@ -267,6 +267,7 @@ body { min-height: 100vh; min-height: 100dvh; padding-block: 12px 16px; }
     <h1 id="title" data-t="fcName">Flags and Capitals</h1>
     <div class="score" aria-live="polite">
       <div class="pill pill-score"><span data-t="score">Score</span><b id="score">0 / 0</b></div>
+      <div id="level"></div>
       <div class="pill pill-streak"><span data-t="streak">Streak</span><b id="streak">0</b></div>
       <div id="last5" data-game="flags-capitals"></div>
     </div>
@@ -314,24 +315,26 @@ body { min-height: 100vh; min-height: 100dvh; padding-block: 12px 16px; }
 Loopy.addStrings({
   en: {
     fcName: "Flags and Capitals", fcRegion: "Region", fcEu: "Europe", fcAm: "Americas", fcAs: "Asia", fcAf: "Africa", fcWorld: "World",
-    fcAsk: "Ask", fcFlags: "Flags only", fcFlagsCaps: "Flags and capitals", fcFlagAria: "A flag",
+    fcAsk: "Ask", fcFlags: "Flags only",
+    fcLv1: "Flags of Europe", fcLv2: "Europe with capitals", fcLv3: "Flags of the world", fcLv4: "World with capitals", fcFlagsCaps: "Flags and capitals", fcFlagAria: "A flag",
     fcKbd: "Keyboard works too: 1 to 4 picks an answer, Enter goes on.",
     fcWhich: "Which country has this flag?", fcCapQ: "What is the capital of {c}?",
     fcInEu: "In Europe", fcInAm: "In the Americas", fcInAs: "In Asia", fcInAf: "In Africa", fcInOc: "In Oceania",
     fcFlagOf: "This is the flag of {c}.", fcCapOf: "{cap} is the capital of {c}.",
     fcLogFlag: "Flag of {c}", fcLogCap: "Capital of {c}",
-    fcReadQ: "{q} Is it {list}?", fcTryCaps: "Try capitals too", fcTryWorld: "Try the whole world",
+    fcReadQ: "{q} Is it {list}?",
     fcHow: "Circle the country for each flag.", fcHowCap: "Circle the country for each flag, then write its capital.", fcCapLine: "Capital:"
   },
   de: {
     fcName: "Flaggen und Hauptstädte", fcRegion: "Region", fcEu: "Europa", fcAm: "Amerika", fcAs: "Asien", fcAf: "Afrika", fcWorld: "Welt",
-    fcAsk: "Abfragen", fcFlags: "Nur Flaggen", fcFlagsCaps: "Flaggen und Hauptstädte", fcFlagAria: "Eine Flagge",
+    fcAsk: "Abfragen", fcFlags: "Nur Flaggen",
+    fcLv1: "Flaggen Europas", fcLv2: "Europa mit Hauptstädten", fcLv3: "Flaggen der Welt", fcLv4: "Welt mit Hauptstädten", fcFlagsCaps: "Flaggen und Hauptstädte", fcFlagAria: "Eine Flagge",
     fcKbd: "Die Tastatur geht auch: 1 bis 4 wählt eine Antwort, Enter geht weiter.",
     fcWhich: "Welches Land hat diese Flagge?", fcCapQ: "Was ist die Hauptstadt {c}?",
     fcInEu: "In Europa", fcInAm: "In Amerika", fcInAs: "In Asien", fcInAf: "In Afrika", fcInOc: "In Ozeanien",
     fcFlagOf: "Das ist die Flagge {c}.", fcCapOf: "{cap} ist die Hauptstadt {c}.",
     fcLogFlag: "Flagge {c}", fcLogCap: "Hauptstadt {c}",
-    fcReadQ: "{q} Ist es {list}?", fcTryCaps: "Probiere auch Hauptstädte", fcTryWorld: "Probiere die ganze Welt",
+    fcReadQ: "{q} Ist es {list}?",
     fcHow: "Kreise bei jeder Flagge das Land ein.", fcHowCap: "Kreise bei jeder Flagge das Land ein und schreibe die Hauptstadt dazu.", fcCapLine: "Hauptstadt:"
   }
 });
@@ -543,11 +546,17 @@ function drawFlag(svg, f) {
     if (m) { mode = m[1]; Loopy.log.hint = ""; }
   }
   loadForAge();
+  // The ladder: flags of Europe, with capitals, flags of the world, with capitals.
+  const LADDER = [["eu", "flag"], ["eu", "cap"], ["world", "flag"], ["world", "cap"]];
+  Loopy.levels.init({ names: ["fcLv1", "fcLv2", "fcLv3", "fcLv4"],
+    get: () => (region === "world" ? 2 : 0) + (mode === "cap" ? 1 : 0), base: () => (age <= 10 ? 0 : 2) + (age >= 13 ? 1 : 0),
+    set: (i) => { [region, mode] = LADDER[i]; store.set("fc.region.a" + age, region); store.set("fc.mode.a" + age, mode); recent = []; newRound(); } });
   let right = 0, tried = 0, streak = 0;
   let current = null, step = "flag", answered = false, recent = [];
 
   const nameOfCode = (f) => f[lang].name;
   function render() {
+    Loopy.levels.render();
     $("score").textContent = right + " / " + tried;
     $("streak").textContent = streak;
     regionBtns.forEach(b => b.setAttribute("aria-pressed", String(b.dataset.region === region)));
@@ -595,7 +604,7 @@ function drawFlag(svg, f) {
     });
     if (ok) { right++; streak++; } else { streak = 0; }
     const of = nameOf(f, lang);
-    if (ok) Loopy.rewards.correct("flags-capitals", streak, harder());
+    if (ok) Loopy.rewards.correct("flags-capitals", streak);
     else Loopy.rewards.wrong("flags-capitals", step === "flag"
       ? { q: t("fcLogFlag", { c: of }), a: f[lang].name, y: btn.textContent, k: "fc-flag" }
       : { q: t("fcLogCap", { c: of }), a: f[lang].cap, y: btn.textContent, k: "fc-cap" });
@@ -618,12 +627,6 @@ function drawFlag(svg, f) {
       step = "cap"; document.body.setAttribute("data-q", current.key + ".cap"); showStep(); return;
     }
     newRound();
-  }
-  // What "Make it harder" does after 10 in a row: capitals too, then the whole world.
-  function harder() {
-    if (mode === "flag") return { label: t("fcTryCaps"), apply: () => { mode = "cap"; store.set("fc.mode.a" + age, mode); render(); } };
-    if (region !== "world") return { label: t("fcTryWorld"), apply: () => { region = "world"; store.set("fc.region.a" + age, region); recent = []; render(); } };
-    return null;
   }
 
   nextBtn.addEventListener("click", next);
