@@ -7,6 +7,7 @@ Thanks for wanting to help! Here is how.
 | You want to... | Go here |
 | --- | --- |
 | Report something broken | [Report a problem](https://github.com/amalrajvinoth/loopy/issues/new?template=problem.yml) |
+| A question or answer in a game is wrong | Tap the flag at the top of the game. It fills in [Report a game problem](https://github.com/amalrajvinoth/loopy/issues/new?template=game-report.yml) for you. |
 | Suggest a new game or feature | [Share an idea](https://github.com/amalrajvinoth/loopy/discussions/new?category=ideas) |
 | Ask how something works | [Ask a question](https://github.com/amalrajvinoth/loopy/discussions/new?category=q-a) |
 | Report a security problem | [Report it privately](https://github.com/amalrajvinoth/loopy/security/advisories/new) |

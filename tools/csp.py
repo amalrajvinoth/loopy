@@ -28,7 +28,7 @@ def policy(html):
     script = " ".join(["'self'"] + hashes(html, "script"))
     style = " ".join(["'self'"] + hashes(html, "style"))
     return (f"default-src 'self'; script-src {script}; style-src {style}; img-src 'self' data:; font-src 'self'; "
-            "connect-src 'none'; worker-src 'self'; object-src 'none'; base-uri 'none'; form-action 'none'; manifest-src 'self'; "
+            "connect-src 'self'; worker-src 'self'; object-src 'none'; base-uri 'none'; form-action 'none'; manifest-src 'self'; "
             "upgrade-insecure-requests")
 
 

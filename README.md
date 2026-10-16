@@ -53,6 +53,7 @@ Open it from the link at the bottom of the home page.
 - **Help.** After each answer, the game shows a short reason, so kids learn from mistakes.
 - **Last 5.** Each game shows the last 5 answers as green and red dots.
 - **Back.** The big button with the loopy bunny at the top of a game goes back to all games.
+- **Report a problem.** In a game, tap the small flag at the top (or **Report a problem** in **Settings**) when a question or answer is wrong, or something looks wrong. loopy makes a picture of the screen to save, and **Open GitHub** opens a form with the details filled in. Nothing is sent until a grown-up sends it on GitHub.
 - **Worksheets.** In every game except Today's 10, tap **Settings**, then **Print worksheet**. You get 20 problems at the child's level on one page, and the answers on a second page. It works on A4 and US Letter paper, and you can save it as a PDF from the print window.
 
 In a game, tap **Settings** to change age, language, colors, the reading font, sound or level.

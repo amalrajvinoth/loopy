@@ -248,7 +248,14 @@ Where Is It? draws its maps in SVG, from simple Natural Earth outlines stored in
 
 ### Top bar
 
-Each game has a top bar with the back button on the left, and the star counter and the ⚙ Settings button on the right. The score row under the title holds the score, the streak and the Last 5 pill.
+Each game has a top bar with the back button on the left, and the star counter, the flag (Report a problem) and the ⚙ Settings button on the right. The score row under the title holds the score, the streak and the Last 5 pill.
+
+### Report a problem
+
+- **Flag button:** a round 44px chip with a flag icon in `muted`, between the star counter and ⚙ Settings. Its name is "Report a problem" ("Problem melden"). If the top bar is too narrow, Settings first shows only its gear and the right-hand buttons sit 4px apart; if that is still too wide (small phones with many stars), the flag hides. `loopy.js` adds it to every page with a `.game-bar`.
+- **In Settings:** always a "Report a problem" pill, styled like Print worksheet (flag icon, `c1` outline), with a muted line saying what it is for. It closes Settings first, so the picture shows the game.
+- **Box:** the same dialog card as the children's box (3px `c1` border, radius 24px). A Fredoka title, "What is wrong?", then three big chip buttons stacked: The question is wrong, The answer seems wrong, Something looks wrong (the picked one gets a `c1` border). An optional one-line note. A 96px preview of the screen picture with a Save picture button, or a muted line saying to take a screenshot when the browser can't make one. A muted warning with a line on its left: GitHub is public and for ages 13 and up. Buttons: Close and Copy text (outline), Open GitHub (`c1`).
+- On short landscape screens (under 560px tall) the box is wider and splits in two columns: the choices and note on the left, the picture, warning and buttons on the right. The preview is 64px.
 
 ### Settings
 

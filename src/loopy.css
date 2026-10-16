@@ -218,6 +218,41 @@ button, a, label, summary { touch-action: manipulation; -webkit-tap-highlight-co
 .settings-toggle svg { width: 20px; height: 20px; }
 .settings-toggle[aria-expanded="true"] { background: var(--c1); color: var(--on-accent); }
 .settings-toggle:focus-visible { outline: 3px solid var(--mark); outline-offset: 2px; }
+/* Report a problem: a small flag button before Settings, and its box (built on the children's box). */
+.report-toggle {
+  width: 44px; height: 44px; flex: none; border-radius: 50%; border: 0; cursor: pointer; display: grid; place-items: center;
+  background: var(--chip); color: var(--muted);
+}
+.report-toggle svg { width: 20px; height: 20px; }
+.game-bar.rp-tight .settings-toggle span { display: none; }
+.game-bar.rp-tight .settings-toggle { padding: 0 11px; }
+.game-bar.rp-tight .bar-right { gap: 4px; }
+.game-bar.rp-hide .report-toggle { display: none; }
+.report-toggle:focus-visible, .report-dialog a:focus-visible { outline: 3px solid var(--mark); outline-offset: 2px; }
+.report-dialog { width: min(94vw, 440px); padding: 16px; }
+.report-dialog form { gap: 10px; }
+.report-kinds { display: flex; flex-direction: column; gap: 6px; }
+.report-kinds button {
+  min-height: 44px; padding: 8px 14px; border-radius: 14px; border: 3px solid transparent; background: var(--chip);
+  color: var(--ink); font: inherit; font-weight: 600; text-align: left; cursor: pointer;
+}
+.report-kinds button[aria-pressed="true"] { border-color: var(--c1); background: var(--card); }
+.report-pick { margin: 0; font-weight: 700; }
+.report-pick:empty { display: none; }
+.report-pic { display: flex; align-items: center; gap: 10px; }
+.report-pic p { margin: 0; color: var(--muted); font-size: 0.9rem; }
+.report-pic img { height: 96px; width: auto; max-width: 50%; border-radius: 10px; border: 2px solid var(--line); }
+.report-warn { margin: 0; color: var(--muted); font-size: 0.85rem; border-left: 4px solid var(--line); padding-left: 10px; }
+.report-dialog .kid-btn { display: inline-flex; align-items: center; justify-content: center; text-decoration: none; }
+.report-part { display: flex; flex-direction: column; gap: 10px; }
+/* Short landscape screens: the two parts side by side, so the box needs no scrolling. */
+@media (max-height: 560px) and (orientation: landscape) {
+  .report-dialog { width: min(96vw, 760px); max-height: 96vh; padding: 14px 16px; }
+  .report-dialog form { display: grid; grid-template-columns: 1fr 1fr; gap: 6px 16px; align-items: start; }
+  .report-dialog h2 { grid-column: 1 / -1; font-size: 1.3rem; }
+  .report-part { gap: 8px; }
+  .report-pic img { height: 64px; }
+}
 .settings-panel { display: flex; flex-direction: column; gap: 12px; background: var(--card); border: 2px solid var(--line); border-radius: 20px; padding: 14px; }
 .panel-foot { display: flex; flex-wrap: wrap; gap: 10px; align-items: center; justify-content: space-between; }
 .panel-foot p { margin: 0; color: var(--muted); font-size: 0.9rem; }
