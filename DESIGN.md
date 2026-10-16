@@ -85,6 +85,9 @@ components:
   cheer:          { background: "{colors.card}", border: "4px solid {colors.c5}", shadow: "0 8px 0 {colors.c5}", rounded: "{rounded.cheer}" }
   back-button:    { background: "{colors.chip}", border: "2px solid {colors.line}", rounded: "{rounded.pill}", minHeight: 48px, arrow: "36px circle in {colors.c1}", logo: 30px tall }
   last5-pill:     { dots: 5, dotSize: 22px, right: "{colors.good}", wrong: "{colors.bad}", empty: "2px dashed {colors.muted} at 45%", newest: "2px {colors.ink} ring" }
+  skip-button:    { background: transparent, text: "{colors.muted}", border: "2px solid {colors.line}", rounded: "{rounded.pill}", minWidth: 9rem }
+  hint-bubble:    { background: "{colors.c1}", text: "{colors.on-accent}", font: Fredoka 700 1.25rem, rounded: 20px }
+  plus-one:       { background: "{colors.card}", border: "3px solid {colors.c5}", rounded: "{rounded.pill}" }
   focus-ring:     { outline: "3px solid {colors.c2}", offset: 2-3px, everywhere: ":focus-visible in loopy.css", map: "3px c2 stroke" }
 ---
 
@@ -199,18 +202,20 @@ The "loopy" bunny logo sits at the top of the home page. Its letters hop one aft
 
 ### Game cards (home page)
 
-- Card background, 3px border and a solid `0 6px 0` shadow in the card's tone color.
-- Radius 24px, padding 20px, at least 170px tall.
-- A small uppercase tag at the top (the age range), a Fredoka title in the tone color, a short muted line, and a "go" pill at the bottom.
-- Pressed: the card moves down 4px and the shadow shrinks to 2px. It looks like a button being pushed.
+- Each game is a tile: card background, 3px border and a solid `0 6px 0` shadow in the tile's tone color, radius 24px.
+- On the tile, centered: a big picture (one emoji, 2.8rem), the Fredoka title in the tone color, and a small uppercase tag with the ages. The picture lets a child who cannot read yet find the game.
+- Two tiles per row on phones, three from 600px wide. From 700px wide the tile also shows one muted line about the game.
+- Pressed: the tile moves down 4px and the shadow shrinks to 2px. It looks like a button being pushed.
 - Tones cycle `c1`, `c2`, `c3`, `c4`, `c5`.
-- **Today's 10** is one wide card in yellow (`c5`) above the star shelf. It is not in the GAMES list.
+- Order on the home page: the logo, "Who is playing?", the ⚙ Settings button (age, colors, sound, language), **Today's 10**, the games by subject, then **My stars**, then the links for grown-ups.
+- **Today's 10** is one wide card in yellow (`c5`) with a "go" pill. It is not in the GAMES list.
 
 ### Buttons
 
 - **Pill buttons** (radius 999px): the "go" pill, the settings toggle, the language picker, the cheer buttons. At least 44px tall.
 - **Number pad keys:** key color, 2px line border, radius 18px. They shrink a little (`scale(0.96)`) when pressed. The "check" key is filled with `c1`. The erase key is muted.
-- **Answer buttons** (the clock and multiple-choice games): card color, 3px line border, radius 18px, big bold text. Right turns green, wrong turns red, the rest fade to 45%.
+- **Answer buttons** (the clock and multiple-choice games): card color, 3px line border, radius 18px, big bold text. Word answers are at least 1.1rem and grow to about 2rem; letters, times and fractions are bigger. Four answers sit in a 2 × 2 grid; three answers sit in one column, so none looks bigger than the others. Right turns green, wrong turns red, the rest fade to 45%.
+- **Skip and Next** (the button under the answers, `Loopy.nextButton()`): before an answer it is a small quiet pill, "Skip", in the middle (muted text, 2px line border, no fill). After an answer it is the full-width `c1` button "Next". Every game uses these two words.
 - **Round icon buttons:** the sound toggle (40px), the age picker plus and minus (38px), and the Read aloud speaker (44px).
 - **Quiet buttons:** transparent with a 2px line border. Used for Reset and "Not now".
 - **Disabled:** 35% to 40% opacity.
@@ -225,7 +230,7 @@ Counting pictures sit under the problem on the card. Times and Share shows rows 
 
 ### Feedback line
 
-Under the problem: a short bold word: "Correct!" in green or "Not quite." in red, then one plain sentence that explains why. It always has room saved, so the layout does not jump.
+Inside the problem card, under the problem: a short bold word: "Correct!" in green or "Not quite." in red, then one plain sentence that explains why. Every game puts it in the card (What Time Is It? too), and the card's border turns green or red with it. After an answer the problem and its picture shrink (`zoom`) so the whole sentence fits without scrolling.
 
 ### Number line
 
@@ -248,11 +253,11 @@ Where Is It? draws its maps in SVG, from simple Natural Earth outlines stored in
 
 ### Top bar
 
-Each game has a top bar with the back button on the left, and the star counter and the ⚙ Settings button on the right. The score row under the title holds the score, the streak and the Last 5 pill.
+Each game has a top bar with the back button on the left, and the star counter and the ⚙ Settings button on the right. The score row sits next to the title when it fits, else under it, on one line: the Last 5 pill, then the streak as "🔥 3". The score (right out of tried) is kept for screen readers only; grown-ups see the numbers on the How it's going page.
 
 ### Settings
 
-Age, language, color theme, sound and levels go behind the ⚙ button. The toggle is a chip pill. It turns `c1` when open. The panel is a card with a 2px border and radius 20px. On very small phones (under 380px, or under 420px in German, where "Einstellungen" is long) the toggle shows only the gear.
+Age, language, color theme, sound and levels go behind the ⚙ button, on the home page too. The panel is the same in every game: **This game** first (the game's own levels and switches, then Print worksheet), then **Age, look and sound** (the shared row, after a dashed line), then the keyboard line and Reset score at the bottom. The two headings are small uppercase `c1` labels; `loopy.js` adds them. Today's 10 and the home page have no game settings, so they show only the second part. The toggle is a chip pill. It turns `c1` when open. The panel is a card with a 2px border and radius 20px. On very small phones (under 380px, or under 420px in German, where "Einstellungen" is long) the toggle shows only the gear.
 
 - **Age picker:** a chip pill with round minus and plus buttons and the age in the middle.
 - **Language picker:** EN and DE in a chip pill. The chosen one gets the card color.
@@ -261,6 +266,10 @@ Age, language, color theme, sound and levels go behind the ⚙ button. The toggl
 - **Level picker:** a segmented row of buttons in a chip box. The chosen one is raised on the card color.
 - **Read aloud:** a chip pill next to the sound toggle, at least 44px tall: a speaker icon, "Read aloud", and a small On or Off tag on the card color. Off greys the icon and tag. `Loopy.speech.question()` adds it.
 - **Print worksheet button:** a pill with a printer icon, a 2px `c1` border and `c1` text on no fill, at least 44px tall. A muted line next to it says what prints. It sits above the panel foot. `Loopy.worksheet()` adds it.
+
+### First-time hint
+
+The first time a child opens a game, a `c1` bubble with `on-accent` Fredoka text sits just above the answers with a small arrow pointing down: "👆 Tap the right answer!", "Tap the numbers, then Check!", "Tap the letters to spell the word!" or, on the map, inside the map's bottom edge. It bobs gently (not with reduced motion), cannot be tapped, and hides at the first tap or key press. Once the child has answered in that game it never comes back. It is saved per child (`loopy.seen`).
 
 ### Focus and screen readers
 
@@ -285,6 +294,7 @@ What **Print worksheet** prints. Only the sheet prints; the game is hidden. It i
 ### Rewards
 
 - **Star counter:** a chip pill with a yellow star and the number.
+- **"+1" star:** after each right answer a small card-colored pill with a yellow border, "+1" and a star, flies from where the child tapped to the star counter (0.7s), then the counter bumps. With reduced motion only the counter bumps.
 - **Cheer pop-up:** a card with a 4px yellow border, a yellow `0 8px 0` shadow and radius 28px. It pops in with a little bounce. A big Fredoka title, a muted line, a spinning star.
 - **Confetti:** drawn on a canvas in the five theme accents. Streaks of 5, 10, 15, 20, 30 and 50 right answers set it off.
 - **Badges:** at 10, 25, 50, 100, 250, 500 and 1,000 stars. Day badges at 3, 7 and 30 days of Today's 10. Not yet earned: a dashed circle. Earned: a filled circle in the badge's color.
@@ -408,3 +418,4 @@ Example prompts:
 
 - Each game page still has its own copy of some base styles (pad, problem card, top bar). Only themes, rewards, settings, the back button and the Last 5 pill are shared today.
 - Some pages set light fallback colors in their own `:root`. The theme from `loopy.css` replaces them.
+- On the smallest phones (360 × 640) in German, a long reason in Plus and Minus or Times and Share can still be a line too long for the card. It scrolls inside the card and can take keyboard focus.
