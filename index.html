@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'sha256-001FClFZN0PKGDOVQhZLlwEQRGMe05suxTmrP2B45CE='; style-src 'self' 'sha256-a7i4mGCfaZx1UZVeJjYUm0mQhe9zccRZCdhc+vU2Zro='; img-src 'self' data:; font-src 'self'; connect-src 'self'; worker-src 'self'; object-src 'none'; base-uri 'none'; form-action 'none'; manifest-src 'self'; upgrade-insecure-requests">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'sha256-2+HKdgZwmCCg4aMak4+nPAKLDOTh8C4aANIIPIlfKXg='; style-src 'self' 'sha256-/9CC5KUf0+lQ0Vy615OdB+ZgK9WFMOOkxnVXIglwF+I='; img-src 'self' data:; font-src 'self'; connect-src 'self'; worker-src 'self'; object-src 'none'; base-uri 'none'; form-action 'none'; manifest-src 'self'; upgrade-insecure-requests">
 <meta name="referrer" content="strict-origin-when-cross-origin">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <link rel="icon" href="icon.svg" type="image/svg+xml">
@@ -78,6 +78,13 @@ h1 { margin: 0; line-height: 0; color: var(--ink); }
 .go { margin-top: auto; align-self: flex-start; background: var(--tone); color: var(--card); font-family: var(--display); font-weight: 700; font-size: 1.2rem; padding: 6px 16px; border-radius: 999px; }
 /* Today's 10: one big button above the shelf. */
 .wrap .today { --tone: var(--c5); min-height: 0; }
+/* Carry on: the child's last game, one row above Today's 10. */
+.wrap .carry { --tone: var(--c3); min-height: 0; flex-direction: row; align-items: center; gap: 14px; padding: 14px 18px; }
+.wrap .carry[hidden] { display: none; }
+.carry .pic { font-size: 2.4rem; line-height: 1; }
+.carry-text { display: flex; flex-direction: column; gap: 4px; flex: 1; min-width: 0; }
+.carry-name { font-family: var(--display); font-weight: 700; font-size: 1.4rem; line-height: 1.15; color: var(--tone); overflow-wrap: anywhere; }
+.carry .go { margin: 0; align-self: center; flex: none; }
 .today .row { display: flex; flex-wrap: wrap; gap: 8px 12px; align-items: center; justify-content: space-between; margin-top: auto; }
 .today .go { margin-top: 0; }
 .day-streak { font-weight: 700; }
@@ -101,9 +108,11 @@ footer p { margin: 0; }
     <div id="kid-picker"></div>
     <button type="button" id="settings-toggle" aria-controls="settings-panel"></button>
     <div class="settings-panel" id="settings-panel" hidden>
+      <div id="kid-settings"></div>
       <div class="controls"><div id="age-picker"></div><div id="theme-picker"></div><button id="sound-toggle"></button><div id="lang-picker"></div></div>
     </div>
   </header>
+  <a class="quiz carry" id="carry" href="./" hidden><span class="pic" id="carry-pic" aria-hidden="true"></span><span class="carry-text"><span class="tag" data-t="carryTag">Carry on</span><span class="carry-name" id="carry-name"></span></span><span class="go" data-t="carryGo">Go →</span></a>
   <section aria-labelledby="today-title">
   <a class="quiz today" id="today" href="mix/daily-mix/">
     <span class="tag" data-t="dmTag">Every day</span>
@@ -128,8 +137,10 @@ footer p { margin: 0; }
     <details class="transfer">
       <summary data-t="moveStars">Move my stars to another device</summary>
       <div class="transfer-body">
-        <p data-t="moveHow">This code holds your stars, badges, day streak and progress. Copy it here, then paste it on the other device.</p>
+        <p data-t="moveHow">This code holds your stars, badges, day streak, progress, game levels and where you left off. Copy the code or the link, then paste or open it on the other device.</p>
+        <div class="transfer-who" id="code-who" hidden></div>
         <div class="transfer-row"><input id="code-out" readonly data-t-aria="yourCode" aria-label="Your stars code"><button type="button" id="code-copy" data-t="copy">Copy</button></div>
+        <div class="transfer-row"><button type="button" id="link-copy" class="wide" data-t="copyLink">Copy link</button></div>
         <div class="transfer-row"><input id="code-in" placeholder="Paste a code here" data-t-placeholder="pasteHere" data-t-aria="pasteCode" aria-label="Paste a stars code"><button type="button" id="code-load" data-t="load">Load</button></div>
         <p id="code-msg" aria-live="polite"></p>
       </div>
@@ -141,8 +152,13 @@ footer p { margin: 0; }
 Loopy.addStrings({
   en: {
     tagline: "Learn. Play. Repeat.", myStars: "My stars", moveStars: "Move my stars to another device",
-    moveHow: "This code holds your stars, badges, day streak and progress. Copy it here, then paste it on the other device.", yourCode: "Your stars code", copy: "Copy",
-    moveKidStars: "Move everyone's stars to another device",
+    moveHow: "This code holds your stars, badges, day streak, progress, game levels and where you left off. Copy the code or the link, then paste or open it on the other device.", yourCode: "Your stars code", copy: "Copy",
+    moveKidStars: "Move stars to another device", copyLink: "Copy link", linkCopied: "Link copied! Open it on the other device.",
+    whose: "Whose stars?", everyone: "Everyone",
+    carryTag: "Carry on", carryGo: "Go →",
+    askOne: "Load {name}'s stars here?", askMany: "Load the stars of {names} here?", askNone: "Load these stars here?",
+    askText: "This adds their stars, progress, game levels and where they left off to this device. Nothing here is taken away.",
+    askLoad: "Load", askNo: "Not now",
     pasteHere: "Paste a code here", pasteCode: "Paste a stars code", load: "Load", moreSoon: "More games are on the way!", helpLink: "Help and feedback", progressLink: "For grown-ups: how it's going",
     copied: "Copied!", copyByHand: "Select the code and copy it.", badCode: "That code didn't work. Check it was copied in full.",
     toNext: "{n} more stars to the {name} badge. Every right answer earns a star.", toNextOne: "1 more star to the {name} badge. Every right answer earns a star.",
@@ -168,8 +184,13 @@ Loopy.addStrings({
   },
   de: {
     tagline: "Lernen. Spielen. Wiederholen.", myStars: "Meine Sterne", moveStars: "Sterne auf ein anderes Gerät bringen",
-    moveHow: "Dieser Code enthält deine Sterne, Abzeichen, Tage in Folge und deinen Fortschritt. Kopiere ihn hier und füge ihn auf dem anderen Gerät ein.", yourCode: "Dein Sterne-Code", copy: "Kopieren",
-    moveKidStars: "Sterne von allen Kindern auf ein anderes Gerät bringen",
+    moveHow: "Dieser Code enthält deine Sterne, Abzeichen, Tage in Folge, deinen Fortschritt, die Stufen in den Spielen und wo du aufgehört hast. Kopiere den Code oder den Link und füge ihn auf dem anderen Gerät ein oder öffne ihn dort.", yourCode: "Dein Sterne-Code", copy: "Kopieren",
+    moveKidStars: "Sterne auf ein anderes Gerät bringen", copyLink: "Link kopieren", linkCopied: "Link kopiert! Öffne ihn auf dem anderen Gerät.",
+    whose: "Wessen Sterne?", everyone: "Alle",
+    carryTag: "Weiterspielen", carryGo: "Los →",
+    askOne: "Die Sterne von {name} hier laden?", askMany: "Die Sterne von {names} hier laden?", askNone: "Diese Sterne hier laden?",
+    askText: "Das fügt Sterne, Fortschritt, Stufen in den Spielen und wo aufgehört wurde zu diesem Gerät hinzu. Hier geht nichts verloren.",
+    askLoad: "Laden", askNo: "Nicht jetzt",
     pasteHere: "Code hier einfügen", pasteCode: "Sterne-Code einfügen", load: "Laden", moreSoon: "Bald kommen mehr Spiele!", helpLink: "Hilfe und Feedback", progressLink: "Für Erwachsene: so läuft es",
     copied: "Kopiert!", copyByHand: "Markiere den Code und kopiere ihn.", badCode: "Der Code hat nicht geklappt. Prüfe, ob er ganz kopiert wurde.",
     toNext: "Noch {n} Sterne bis zum Abzeichen {name}. Jede richtige Antwort gibt einen Stern.", toNextOne: "Noch 1 Stern bis zum Abzeichen {name}. Jede richtige Antwort gibt einen Stern.",
@@ -255,6 +276,18 @@ function render() {
 render();
 window.addEventListener("loopy:age", render);
 
+// Carry on: the child's last game, above Today's 10.
+(function carryOn() {
+  const TODAY = { path: "mix/daily-mix/", id: "dm", pic: "📅" };
+  const path = Loopy.last.get(), g = GAMES.concat(TODAY).find(x => x.path === path);
+  if (!g) return;
+  const a = document.getElementById("carry");
+  a.href = g.path;
+  document.getElementById("carry-pic").textContent = g.pic;
+  document.getElementById("carry-name").textContent = t(g.id + "Title");
+  a.hidden = false;
+})();
+
 // Badge shelf: every right answer in any game earns a star.
 (function shelf() {
   const R = window.Loopy && Loopy.rewards;
@@ -268,23 +301,88 @@ window.addEventListener("loopy:age", render);
     : t("allBadges");
   document.getElementById("meter-fill").style.width = next ? Math.round((stars - from) / (next.stars - from) * 100) + "%" : "100%";
   const out = document.getElementById("code-out"), msg = document.getElementById("code-msg");
-  Loopy.backup.exportCode().then(code => { out.value = code; }, () => { out.value = ""; });
-  // With more than one child, the code holds all of them.
-  if (Loopy.kids.list().length > 1) {
+  const kids = Loopy.kids.list();
+  let who = 0, made = false;
+  // The code is only made when the box is opened, so the home page opens faster.
+  const make = () => {
+    made = true; out.value = ""; msg.textContent = "";
+    Loopy.backup.exportCode(who || undefined).then(code => { out.value = code; }, () => { out.value = ""; });
+  };
+  document.querySelector(".transfer").addEventListener("toggle", e => { if (e.target.open && !made) make(); });
+  // With more than one child, pick everyone or one child.
+  if (kids.length > 1) {
     const summary = document.querySelector(".transfer summary");
     summary.removeAttribute("data-t");
     summary.textContent = t("moveKidStars");
+    const box = document.getElementById("code-who");
+    box.hidden = false;
+    box.setAttribute("role", "group");
+    box.setAttribute("aria-label", t("whose"));
+    const head = document.createElement("span");
+    head.textContent = t("whose");
+    box.appendChild(head);
+    [{ id: 0, label: t("everyone"), pic: "" }].concat(kids.map(k => ({ id: k.id, label: Loopy.kids.label(k), pic: k.pic }))).forEach(o => {
+      const b = document.createElement("button");
+      b.type = "button";
+      b.textContent = (o.pic ? o.pic + " " : "") + o.label;
+      b.setAttribute("aria-pressed", String(o.id === who));
+      b.addEventListener("click", () => {
+        who = o.id;
+        box.querySelectorAll("button").forEach(x => x.setAttribute("aria-pressed", String(x === b)));
+        make();
+      });
+      box.appendChild(b);
+    });
   }
-  document.getElementById("code-copy").addEventListener("click", () => {
-    out.select();
-    navigator.clipboard.writeText(out.value).then(() => { msg.textContent = t("copied"); }, () => { msg.textContent = t("copyByHand"); });
-  });
+  const copy = (text, ok) => navigator.clipboard.writeText(text).then(() => { msg.textContent = t(ok); }, () => { msg.textContent = t("copyByHand"); });
+  document.getElementById("code-copy").addEventListener("click", () => { if (!out.value) return; out.select(); copy(out.value, "copied"); });
+  document.getElementById("link-copy").addEventListener("click", () => { if (out.value) copy(Loopy.backup.link(out.value), "linkCopied"); });
   document.getElementById("code-load").addEventListener("click", () => {
     Loopy.backup.importCode(document.getElementById("code-in").value).then(ok => {
       if (ok) location.reload();
       else msg.textContent = t("badCode");
     });
   });
+  // A link from another device (loopy/#load=LOOPY2-...): ask first, then load. A bad or too-long link does nothing.
+  function fromLink() {
+    let code = location.hash.startsWith("#load=") ? location.hash.slice(6) : "";
+    if (!code) return;
+    history.replaceState(null, "", location.pathname + location.search);
+    try { code = decodeURIComponent(code); } catch (e) { return; }
+    if (code.length > Loopy.backup.MAX_CODE || typeof HTMLDialogElement !== "function") return;
+    Loopy.backup.peek(code).then(names => {
+      if (!names) return;
+      const named = names.filter(Boolean);
+      const list = typeof Intl.ListFormat === "function" ? new Intl.ListFormat(Loopy.lang, { type: "conjunction" }).format(named) : named.join(", ");
+      const dlg = document.createElement("dialog"), form = document.createElement("form"), h = document.createElement("h2"), p = document.createElement("p");
+      const foot = document.createElement("div"), no = document.createElement("button"), ok = document.createElement("button");
+      dlg.className = "kid-dialog";
+      dlg.setAttribute("aria-labelledby", "ask-title");
+      h.id = "ask-title";
+      h.textContent = !named.length ? t("askNone") : named.length === 1 ? t("askOne", { name: named[0] }) : t("askMany", { names: list });
+      p.className = "kid-note";
+      p.textContent = t("askText");
+      foot.className = "kid-foot";
+      no.type = "button"; no.className = "kid-btn quiet"; no.textContent = t("askNo");
+      ok.type = "submit"; ok.className = "kid-btn"; ok.textContent = t("askLoad");
+      no.addEventListener("click", () => dlg.close());
+      form.addEventListener("submit", e => {
+        e.preventDefault();
+        ok.disabled = true;
+        Loopy.backup.importCode(code).then(done => { if (done) location.reload(); else dlg.close(); });
+      });
+      foot.append(no, ok);
+      form.append(h, p, foot);
+      dlg.appendChild(form);
+      dlg.addEventListener("close", () => dlg.remove());
+      document.body.appendChild(dlg);
+      dlg.showModal();
+    });
+  }
+  fromLink();
+  // A link opened while the home page is already showing.
+  window.addEventListener("hashchange", fromLink);
+
   const box = document.getElementById("badges");
   for (const b of R.BADGES) {
     const got = stars >= b.stars;

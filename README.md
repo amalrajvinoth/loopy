@@ -42,7 +42,8 @@ Open it from the link at the bottom of the home page.
 
 ## How it works
 
-- **Children.** More than one child can play on the same device. It starts with Dio and Dia. Tap **+** under "Who is playing?" on the home page to add a child with a name, a picture and an age. Each child has their own age, stars, badges, streaks, progress and game settings. Tap a name to switch. Theme, sound and language are shared.
+- **Children.** A new device starts with one child and shows no names. To add a child, open **Settings** on the home page and tap **Add a child** under Kids, with a name, a picture and an age. Each child has their own age, stars, badges, streaks, progress, game levels and settings. With two or more, "Who is playing?" shows on the home page: tap a name to switch. Devices that already had Dio and Dia keep them. Theme, sound and language are shared.
+- **Carry on.** The home page offers "Carry on" with the child's last game, at the level and settings they left it.
 - **Age.** Pick the child's age. Each game gets easier or harder to match it. The age goes up by itself on each birthday.
 - **Language.** English is the default. Tap **DE** for German, or **EN** to go back.
 - **Colors.** Black is the default. You can also pick Sunny, Ocean, Candy, Forest or High contrast. High contrast is black and white with bright colors and white edges on every button.
@@ -68,7 +69,8 @@ In a game, tap **Settings** to change age, language, colors, the reading font, s
 ## Your data stays on your device
 
 Stars, settings, children's names and the answers on the grown-ups' page are saved in your browser. Nothing is sent anywhere. There are no ads, no tracking and no outside services. Even the fonts are stored on the site.
-To move stars to another device, open the home page, tap **Move my stars to another device**, and copy the code across. The code also carries the day streak, progress, Last 5, the age and the settings. The code holds every child on the device. Loading a code only adds, it never takes anything away.
+Everything is saved twice in the browser: in IndexedDB (a bigger store) and in localStorage (quick to read when a page opens). If one is cleared, loopy brings it back from the other. Once a child has stars, loopy asks the browser to keep them (persistent storage). If IndexedDB is blocked, for example in a private window, loopy works from localStorage alone.
+To move stars to another device, open the home page, tap **Move my stars to another device**, and copy the code or the link across. With two or more children, pick everyone or one child. The code also carries the day streak, progress, Last 5, the age, the game levels and settings, and the last game. The link holds the code after the `#`, so it never reaches the web server; opening it asks first. Loading a code only adds, it never takes anything away. Old codes still load.
 
 ## Screen readers and keyboards
 
@@ -101,9 +103,9 @@ The site is plain HTML, CSS and JavaScript. One small build step makes the share
 | `fonts/` | The Fredoka, Lexend and Atkinson Hyperlegible Next fonts, stored here so no request goes to Google. The `-latin` files are made by the build from `src/fonts/`. Licence: `fonts/OFL.txt` |
 | `.github/` | Forms for problems, ideas and questions, the automatic checks, and Dependabot |
 | `sw.js` | The offline helper (a service worker). Made by the build from `src/sw.js` |
-| `tools/` | Small scripts: `build.py` makes the small files and the offline list, `csp.py` updates each page's security policy, `check_external.py` makes sure nothing loads from other websites, `review.py` checks that all games follow the same rules, `a11y/` checks every page with a keyboard and a screen reader checker ([how](tools/a11y/README.md)), `e2e/` plays every game and checks that no question repeats ([how](tools/e2e/README.md)) |
+| `tools/` | Small scripts: `build.py` makes the small files and the offline list, `csp.py` updates each page's security policy, `check_external.py` makes sure nothing loads from other websites, `review.py` checks that all games follow the same rules, that saved data is kept and that pages stay small, `a11y/` checks every page with a keyboard and a screen reader checker ([how](tools/a11y/README.md)), `e2e/` plays every game and checks that no question repeats ([how](tools/e2e/README.md)) |
 | `RELEASES.md` | What's new: one line per big change, for parents |
-| `.claude/skills/loopy-review/` | The review checklist for every change: design, architecture, docs, games alike, and release notes after a merge |
+| `.claude/skills/loopy-review/` | The review checklist for every change: design, architecture, saved data, speed and size, docs, games alike, and release notes after a merge |
 | `math/<game>/index.html` | One game per folder (also `languages/` and `mix/`) |
 | `math/<game>/README.md` | What that game does |
 
@@ -135,7 +137,7 @@ Read [DESIGN.md](DESIGN.md) first. It lists the colors, fonts, buttons and layou
    - To add a **Print worksheet** button, call `Loopy.worksheet({ title, level, how, layout, make, cell, answer })` once. `make(20)` uses the game's own problem maker. See the comment above `Loopy.worksheet` in `src/loopy.js`.
    - Give the button under the answers `id="next"` and call `Loopy.nextButton(button, answered)` when a problem shows (`false`, a small "Skip") and after each answer (`true`, a big "Next").
    - Put the answers in `#choices`, `#answers`, `#pad`, `#letters` or `#map`. The first time a child opens the game, a hint bubble points at them.
-   - Save the game's own settings with `Loopy.store.get(key)` and `Loopy.store.set(key, text)`, never `localStorage` directly. They keep each child's settings apart.
+   - Save the game's own settings with `Loopy.store.get(key)` and `Loopy.store.set(key, text)`, never `localStorage` directly. They keep each child's settings apart. Name keys `<prefix>.<setting>` or `<prefix>.<setting>.a<age>`, and add a new game's prefix to `GKEY` in the stars code block of `src/loopy.js`, so its settings move to another device too.
    - In the **Reset score** button, call `Loopy.recent.clear("game-id")`. Add the game id to the `GAMES` lists in `src/loopy.js`, and to the list in `progress/index.html`.
 5. Add words in both languages with `Loopy.addStrings({ en: {...}, de: {...} })`. Put `data-t="key"` on fixed text, and use `Loopy.t("key")` in code. Use `Loopy.num(n)` to show numbers.
 6. Add one line to the `GAMES` list in the home page `index.html`, with the ages the game fits and a picture (one emoji) for its tile.
@@ -146,7 +148,7 @@ Read [DESIGN.md](DESIGN.md) first. It lists the colors, fonts, buttons and layou
 
 The `main` branch is what goes live. Make changes on a new branch and open a pull request. See [CONTRIBUTING.md](CONTRIBUTING.md).
 
-Before a pull request is ready, review it with `.claude/skills/loopy-review/SKILL.md` and run `python3 tools/review.py`. If you changed a page, also run the screen reader and keyboard check and the play test:
+Before a pull request is ready, review it with `.claude/skills/loopy-review/SKILL.md` and run `python3 tools/review.py`. It compares your branch with main. It fails if a saved key is no longer read, so a child would lose stars, levels or settings. If you rename a key or change what it holds, move the old data to the new key on load. It also shows how much each changed file grew. If you changed a page, also run the screen reader and keyboard check and the play test:
 
 ```sh
 npm ci --prefix tools/a11y --ignore-scripts   # once

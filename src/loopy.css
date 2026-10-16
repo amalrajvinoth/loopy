@@ -149,6 +149,18 @@
 .kid-btn.quiet { background: transparent; color: var(--ink); border-color: var(--line); }
 .kid-btn.danger { background: transparent; color: var(--bad); border-color: var(--bad); margin-right: auto; }
 .kid-btn.danger.sure { background: var(--bad); color: var(--on-accent); }
+.kid-note { margin: 0; color: var(--muted); font-size: 0.9rem; line-height: 1.4; }
+/* Kids in Settings: one row per child (picture, name, ✎), then "Add a child". */
+.set-kids { display: flex; flex-direction: column; gap: 10px; }
+.kid-rows { display: flex; flex-wrap: wrap; gap: 8px; }
+.kid-row {
+  display: inline-flex; align-items: center; gap: 8px; min-height: 44px; padding: 0 14px 0 8px; border-radius: 999px; cursor: pointer;
+  border: 2px solid var(--line); background: var(--chip); color: var(--ink); font: inherit; font-weight: 700;
+}
+.kid-row-edit { color: var(--muted); font-size: 1rem; }
+.kid-row.add { background: transparent; border-style: dashed; }
+.kid-row.add .kid-pic { width: 1.4rem; text-align: center; font-weight: 700; }
+.kid-row:focus-visible { outline: 3px solid var(--mark); outline-offset: 2px; }
 
 /* Rewards */
 .star-chip { display: inline-flex; align-items: center; gap: 6px; background: var(--chip); border-radius: 999px; padding: 6px 14px 6px 10px; font-weight: 700; font-variant-numeric: tabular-nums; }
@@ -208,6 +220,12 @@
 .transfer input { flex: 1; min-width: 0; font: inherit; font-size: 0.9rem; padding: 10px 12px; border-radius: 12px; border: 2px solid var(--line); background: var(--bg); color: var(--ink); }
 .transfer button { font: inherit; font-weight: 700; padding: 0 16px; min-height: 44px; border-radius: 12px; border: 0; background: var(--c1); color: var(--on-accent); cursor: pointer; }
 .transfer p { margin: 0; color: var(--muted); font-size: 0.9rem; }
+.transfer button.wide { flex: 1; }
+.transfer-who { display: flex; flex-wrap: wrap; gap: 6px; align-items: center; }
+.transfer-who span { width: 100%; font-weight: 600; color: var(--muted); font-size: 0.9rem; }
+.transfer .transfer-who button { background: var(--chip); color: var(--ink); border: 2px solid transparent; border-radius: 999px; padding: 0 14px; }
+.transfer .transfer-who button[aria-pressed="true"] { background: var(--card); border-color: var(--c1); }
+.transfer button:focus-visible, .transfer input:focus-visible { outline: 3px solid var(--mark); outline-offset: 2px; }
 
 /* Touch screens: no double-tap zoom or grey flash on buttons. */
 button, a, label, summary { touch-action: manipulation; -webkit-tap-highlight-color: transparent; }
