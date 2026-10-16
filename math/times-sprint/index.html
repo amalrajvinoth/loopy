@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'sha256-RddVq30ZC+5gyQME/6/WylETsKGv+vJWNmsSrTxd1LQ='; style-src 'self' 'sha256-z2P7kGW5Z05eCTjTZdYpc0vThTlOE9vmt97pVSvi2I4=' 'sha256-fEwIdTaHfXdKeWOnT/E5ieo/ySWlwtayhs15/xGPFC4=' 'sha256-RT1053JU5UiKvjrCUFx1rlhdFLMmgtuFJ9T8jnMeawQ=' 'sha256-Y6Wb8g3S5cVZDSuZFDv8jsi8uxCjGvWjFSiWVN+ETTs='; img-src 'self' data:; font-src 'self'; connect-src 'self'; worker-src 'self'; object-src 'none'; base-uri 'none'; form-action 'none'; manifest-src 'self'; upgrade-insecure-requests">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'sha256-6yaxzCtSR3gLwzZuHckJNyLh+nxEuXY2ERn5VgsuV84='; style-src 'self' 'sha256-z2P7kGW5Z05eCTjTZdYpc0vThTlOE9vmt97pVSvi2I4=' 'sha256-fEwIdTaHfXdKeWOnT/E5ieo/ySWlwtayhs15/xGPFC4=' 'sha256-RT1053JU5UiKvjrCUFx1rlhdFLMmgtuFJ9T8jnMeawQ=' 'sha256-Y6Wb8g3S5cVZDSuZFDv8jsi8uxCjGvWjFSiWVN+ETTs='; img-src 'self' data:; font-src 'self'; connect-src 'self'; worker-src 'self'; object-src 'none'; base-uri 'none'; form-action 'none'; manifest-src 'self'; upgrade-insecure-requests">
 <meta name="referrer" content="strict-origin-when-cross-origin">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <style>:root{color-scheme:light;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}body{margin:0}[hidden]{display:none!important}</style>
@@ -302,7 +302,7 @@ Loopy.addStrings({
     ttNewBest: "New best! Your old best was {b}.", ttFirstBest: "That is your first best score. Can you beat it?",
     ttBeat: "Your best is {b}. Can you beat it?", ttSame: "You matched your best: {b}!",
     ttAgain: "Play again", ttSecsLeft: "{n} seconds left", ttCheer: "New best: {n}!",
-    note8: "Tables of 2, 5 and 10.", note9: "All tables up to 10 × 10.", note10: "All tables up to 12 × 12.",
+    note5: "Tables of 1, 2 and 10, up to 5 times.", note8: "Tables of 2, 5 and 10.", note9: "All tables up to 10 × 10.", note10: "All tables up to 12 × 12.",
     note12: "All tables up to 12 × 12, with sharing mixed in.", noteMine: "Your own tables: {list}.",
     timesWord: "times", dividedBy: "divided by",
     ttHow: "Work out each problem as fast as you can. Write the answer on the line."
@@ -318,7 +318,7 @@ Loopy.addStrings({
     ttNewBest: "Neuer Rekord! Dein alter Rekord war {b}.", ttFirstBest: "Das ist dein erster Rekord. Schaffst du mehr?",
     ttBeat: "Dein Rekord ist {b}. Schaffst du mehr?", ttSame: "Du hast deinen Rekord geschafft: {b}!",
     ttAgain: "Noch mal", ttSecsLeft: "Noch {n} Sekunden", ttCheer: "Neuer Rekord: {n}!",
-    note8: "Reihen 2, 5 und 10.", note9: "Alle Reihen bis 10 × 10.", note10: "Alle Reihen bis 12 × 12.",
+    note5: "Reihen 1, 2 und 10, bis 5 mal.", note8: "Reihen 2, 5 und 10.", note9: "Alle Reihen bis 10 × 10.", note10: "Alle Reihen bis 12 × 12.",
     note12: "Alle Reihen bis 12 × 12, gemischt mit Teilen.", noteMine: "Deine eigenen Reihen: {list}.",
     timesWord: "mal", dividedBy: "geteilt durch",
     ttHow: "Rechne jede Aufgabe so schnell du kannst. Schreibe das Ergebnis auf die Linie."
@@ -333,13 +333,14 @@ const ALL = [2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12];
 // What each age practices: 2, 5 and 10 first, then up to 10 × 10, then 12 × 12, then sharing too.
 // The levels, easiest first.
 const LADDER = [
+  { tables: [1, 2, 10], upTo: 5, op: "mul", note: "note5" },
   { tables: [2, 5, 10], upTo: 10, op: "mul", note: "note8" },
   { tables: ALL.slice(0, 9), upTo: 10, op: "mul", note: "note9" },
   { tables: ALL, upTo: 12, op: "mul", note: "note10" },
   { tables: ALL, upTo: 12, op: "mix", note: "note12" }
 ];
 // The level each age starts at, 0-based.
-const rungForAge = (age) => age <= 8 ? 0 : age === 9 ? 1 : age <= 11 ? 2 : 3;
+const rungForAge = (age) => age <= 7 ? 0 : age === 8 ? 1 : age === 9 ? 2 : age <= 11 ? 3 : 4;
 function levelForAge(age) { return LADDER[rungForAge(age)]; }
 
 // One problem from the tables: a × table, table × a, or (table × a) ÷ table.
@@ -380,13 +381,14 @@ function makeProblem(op, tables, upTo) {
   let level, rung, opMode, mine, calm;
   function loadForAge() {
     const r = read("tt.lv.a" + age);
-    rung = [0, 1, 2, 3].includes(r) ? r : rungForAge(age);
+    rung = [0, 1, 2, 3, 4].includes(r) ? r : rungForAge(age);
     level = LADDER[rung];
     const op = read("tt.op.a" + age);
     opMode = ["mul", "div", "mix"].includes(op) ? op : level.op;
     const tb = read("tt.tables.a" + age);
     mine = okTables(tb) ? tb.slice().sort((x, y) => x - y) : null;
-    calm = read("tt.calm") === true;
+    const c = read("tt.calm"); // under 8 the clock is off until someone turns it on
+    calm = c === true || (c !== false && age <= 7);
   }
   loadForAge();
   // The level pill. The level cards come at the end of a round (see over()), never while the clock runs.

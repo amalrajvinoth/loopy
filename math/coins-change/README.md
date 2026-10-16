@@ -31,7 +31,8 @@ Money is written the way your language writes it: "€3.75" in English, "3,75 �
 | 6 and under | Small coins: add 2 to 4 coins under 1, like 50c + 20c + 5c |
 | 7 | Count it all: 3 to 6 notes and coins up to 10, like €5 + €1 + 50c + 2c |
 | 8 | Easy change: pay with 5 or 10, the price in tens of cents, like €4.60 |
-| 9 and up | Change: pay with 5 or 10, any price, like €6.37 |
+| 9 | Change: pay with 5 or 10, any price, like €6.37 |
+| 10 and up | Pay with 20 or 50, any price from 1 up, like €13.45 paid with €50 |
 
 ## Last 5
 
@@ -47,7 +48,7 @@ Tap **Settings** to choose:
 - **Read aloud:** On or Off. When it is on, a speaker button sits in the corner of the problem. It says, for example, "How much money is this? 2 euros, 50 cents, 20 cents." or "It costs 4 euros 60 cents. You pay with 10 euros. How much change do you get?". It starts on for ages 5 to 7 and off from 8. If the device has no voice, the button and the setting do not show.
 
 The level is remembered for each age.
-The level shows next to the score, like "Level 2 of 4". After 10 right in a row the game offers the next level. After 3 wrong in the last 5 it offers an easier one, once a visit. A level picked by hand in Settings is kept for that age. The levels: small coins, count it all, easy change, change.
+The level shows next to the score, like "Level 2 of 5". After 10 right in a row the game offers the next level. After 3 wrong in the last 5 it offers an easier one, once a visit. A level picked by hand in Settings is kept for that age. The levels: small coins, count it all, easy change, change, pay with 20 or 50.
 
 ## Print a worksheet
 

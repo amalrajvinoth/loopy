@@ -32,7 +32,8 @@ The picture is on for kids aged 8 and under. You can turn it on or off in **Sett
 | 6 and under | Make 10, like 7 + ? = 10 |
 | 7 | Make 20, like 13 + ? = 20 |
 | 8 | Tens to 100, like 30 + ? = 100 |
-| 9 and up | Make 100, like 64 + ? = 100 |
+| 9 | Make 100, like 64 + ? = 100 |
+| 10 and up | Make 1,000, like 640 + ? = 1,000 |
 
 ## Last 5
 
@@ -48,7 +49,7 @@ Tap **Settings** to choose:
 - **Read aloud:** On or Off. When it is on, a speaker button sits in the corner of the problem. It says, for example, "7 plus what makes 10?". Tap it to hear the question in the device's own voice, in English or German. Each new question is also read by itself while the sound is on. It starts on for ages 5 to 7 and off from 8. If the device has no voice, the button and the setting do not show.
 
 Settings are remembered for each age.
-The level shows next to the score, like "Level 2 of 4". After 10 right in a row the game offers the next level. After 3 wrong in the last 5 it offers an easier one, once a visit. A level picked by hand in Settings is kept for that age. The levels: make 10, make 20, tens to 100, make 100. The picture is a separate setting.
+The level shows next to the score, like "Level 2 of 5". After 10 right in a row the game offers the next level. After 3 wrong in the last 5 it offers an easier one, once a visit. A level picked by hand in Settings is kept for that age. The levels: make 10, make 20, tens to 100, make 100, make 1,000. The picture is a separate setting.
 
 ## Print a worksheet
 

@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'sha256-Yrhi8QeIKnosj9ifddwmX01SZvW/vHwQTP76uxW6YPc='; style-src 'self' 'sha256-z2P7kGW5Z05eCTjTZdYpc0vThTlOE9vmt97pVSvi2I4=' 'sha256-5/L3e/BVPjm2GPi51M3FkQuzTeZ4bCdHn3SxvjZFuAk=' 'sha256-RT1053JU5UiKvjrCUFx1rlhdFLMmgtuFJ9T8jnMeawQ=' 'sha256-4dEdrKbKL7IOE6FtAmSKmFZuQ7pndyr//hTTqH+uDSo='; img-src 'self' data:; font-src 'self'; connect-src 'self'; worker-src 'self'; object-src 'none'; base-uri 'none'; form-action 'none'; manifest-src 'self'; upgrade-insecure-requests">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'sha256-/l7yW2inD3VCTRBNCB7De4k+LKlQLtcfGOQtpW2SAC4='; style-src 'self' 'sha256-z2P7kGW5Z05eCTjTZdYpc0vThTlOE9vmt97pVSvi2I4=' 'sha256-5/L3e/BVPjm2GPi51M3FkQuzTeZ4bCdHn3SxvjZFuAk=' 'sha256-RT1053JU5UiKvjrCUFx1rlhdFLMmgtuFJ9T8jnMeawQ=' 'sha256-nnHT/yp9/bcQWezNOoiKHtvXRiJS9w/rrwbtn2h3e9o='; img-src 'self' data:; font-src 'self'; connect-src 'self'; worker-src 'self'; object-src 'none'; base-uri 'none'; form-action 'none'; manifest-src 'self'; upgrade-insecure-requests">
 <meta name="referrer" content="strict-origin-when-cross-origin">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <style>:root{color-scheme:light;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}body{margin:0}[hidden]{display:none!important}</style>
@@ -226,7 +226,7 @@ body { min-height: 100vh; min-height: 100dvh; padding-block: 12px 16px; }
 .actions .go:hover:not(:disabled) { border-color: var(--accent); filter: brightness(1.08); }
 .helper { display: flex; align-items: center; gap: 8px; min-height: 40px; cursor: pointer; }
 .helper input { width: 22px; height: 22px; accent-color: var(--c2); }
-.seg.four { grid-template-columns: repeat(4, 1fr); }
+.seg.five { grid-template-columns: repeat(auto-fit, minmax(96px, 1fr)); }
 .seg button { padding-inline: 4px; }
 @media (min-width: 600px) and (orientation: portrait) {
   .letters button, .actions button { min-height: clamp(60px, 9dvh, 110px); }
@@ -286,11 +286,12 @@ body { min-height: 100vh; min-height: 100dvh; padding-block: 12px 16px; }
     </div>
     <div>
       <p class="seg-label" id="len-label" data-t="siLen">Word length</p>
-      <div class="seg four" role="group" aria-labelledby="len-label" id="len-seg">
+      <div class="seg five" role="group" aria-labelledby="len-label" id="len-seg">
         <button type="button" data-len="3" data-t="siL3">3 letters</button>
         <button type="button" data-len="4" data-t="siL4">4 letters</button>
         <button type="button" data-len="5" data-t="siL5">5 letters</button>
-        <button type="button" data-len="6" data-t="siL6">6 to 8</button>
+        <button type="button" data-len="6" data-t="siL6">6 letters</button>
+        <button type="button" data-len="7" data-t="siL7">7 to 8</button>
       </div>
     </div>
     <label class="helper"><input type="checkbox" id="auto-read"> <span data-t="siAutoRead">Read each new word out loud</span></label>
@@ -321,7 +322,7 @@ body { min-height: 100vh; min-height: 100dvh; padding-block: 12px 16px; }
 <script>
 Loopy.addStrings({
   en: {
-    siName: "Spell It", siWords: "Words in", siLen: "Word length", siL3: "3 letters", siL4: "4 letters", siL5: "5 letters", siL6: "6 to 8",
+    siName: "Spell It", siWords: "Words in", siLen: "Word length", siL3: "3 letters", siL4: "4 letters", siL5: "5 letters", siL6: "6 letters", siL7: "7 to 8",
     siAutoRead: "Read each new word out loud", siHear: "Hear the word", siEraseAria: "Erase the last letter",
     siKbd: "Keyboard works too: type the letters, Backspace erases, Enter checks.",
     siAsk: "Listen, then spell the word.", siAskPic: "Look at the picture, then spell the word.",
@@ -329,7 +330,7 @@ Loopy.addStrings({
     siHow: "Look at each picture. Write the word on the line. The letters under the line help."
   },
   de: {
-    siName: "Wörter schreiben", siWords: "Wörter auf", siLen: "Wortlänge", siL3: "3 Buchstaben", siL4: "4 Buchstaben", siL5: "5 Buchstaben", siL6: "6 bis 8",
+    siName: "Wörter schreiben", siWords: "Wörter auf", siLen: "Wortlänge", siL3: "3 Buchstaben", siL4: "4 Buchstaben", siL5: "5 Buchstaben", siL6: "6 Buchstaben", siL7: "7 bis 8",
     siAutoRead: "Jedes neue Wort vorlesen", siHear: "Wort anhören", siEraseAria: "Letzten Buchstaben löschen",
     siKbd: "Die Tastatur geht auch: Buchstaben tippen, Rücktaste löscht, Enter prüft.",
     siAsk: "Hör zu und schreibe das Wort.", siAskPic: "Schau dir das Bild an und schreibe das Wort.",
@@ -379,7 +380,7 @@ const randInt = (n) => Math.floor(Math.random() * n);
 const pick = (arr) => arr[randInt(arr.length)];
 const shuffle = (arr) => arr.slice().sort(() => Math.random() - 0.5);
 // 3, 4, 5, or 6 for words with 6 to 8 letters.
-const lenOf = (word) => Math.min(word.length, 6);
+const lenOf = (word) => Math.min(word.length, 7); // 7 means 7 or 8 letters
 
 // One word to spell. len: 3, 4, 5 or 6 (6 to 8 letters). The pad has the word's letters, each once
 // (a double letter is tapped twice), plus extras: 8 keys for short words, 10 for longer ones.
@@ -414,10 +415,10 @@ function makeProblem(lang, len, avoid) {
   let autoRead = store.get("si.autoRead", true, [true, false]);
   let len;
   // Word length is remembered per age: 3 letters up to age 6, 4 at 7, 5 at 8, then 6 to 8 letters.
-  const lenForAge = (a) => a <= 6 ? 3 : a === 7 ? 4 : a === 8 ? 5 : 6, LENS = [3, 4, 5, 6];
+  const lenForAge = (a) => a <= 6 ? 3 : a === 7 ? 4 : a === 8 ? 5 : a === 9 ? 6 : 7, LENS = [3, 4, 5, 6, 7];
   function loadForAge() { len = store.get("si.len.a" + age, lenForAge(age), LENS); }
   loadForAge();
-  Loopy.levels.init({ names: ["siL3", "siL4", "siL5", "siL6"],
+  Loopy.levels.init({ names: ["siL3", "siL4", "siL5", "siL6", "siL7"],
     get: () => LENS.indexOf(len), base: () => LENS.indexOf(lenForAge(age)),
     set: (i) => { len = LENS[i]; store.set("si.len.a" + age, len); recent = []; render(); } });
   let right = 0, tried = 0, streak = 0;
@@ -453,7 +454,7 @@ function makeProblem(lang, len, avoid) {
   const shown = (c, i) => i === 0 && wordsLang === "de" ? c.toUpperCase() : c;
   function drawSlots() {
     slotsEl.textContent = "";
-    slotsEl.classList.toggle("long", current.len === 6);
+    slotsEl.classList.toggle("long", current.len >= 6);
     current.letters.forEach((c, i) => {
       const s = document.createElement("span");
       s.className = "slot";
@@ -514,7 +515,7 @@ function makeProblem(lang, len, avoid) {
   // After a wrong answer, the right spelling appears under the child's try, one letter at a time.
   function reveal() {
     revealEl.textContent = "";
-    revealEl.classList.toggle("long", current.len === 6);
+    revealEl.classList.toggle("long", current.len >= 6);
     const boxes = current.letters.map((c, i) => {
       const s = document.createElement("span");
       s.className = "slot"; s.textContent = shown(c, i);
@@ -578,7 +579,7 @@ function makeProblem(lang, len, avoid) {
   const part = (cls, text) => { const n = document.createElement("span"); n.className = cls; if (text) n.textContent = text; return n; };
   Loopy.worksheet({
     title: () => t("siName"),
-    level: () => [t("ageLabel", { n: age }), t("siLen") + ": " + t({ 3: "siL3", 4: "siL4", 5: "siL5", 6: "siL6" }[len]),
+    level: () => [t("ageLabel", { n: age }), t("siLen") + ": " + t({ 3: "siL3", 4: "siL4", 5: "siL5", 6: "siL6", 7: "siL7" }[len]),
       t("siWords") + ": " + (wordsLang === "de" ? "Deutsch" : "English")].join(" · "),
     how: () => t("siHow"),
     layout: "word",

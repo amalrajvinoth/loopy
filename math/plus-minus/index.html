@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'sha256-WNgKct3PxOs6OvOR6AsfjYvEmzUQ2gjRpo+dyn6EpOM='; style-src 'self' 'sha256-z2P7kGW5Z05eCTjTZdYpc0vThTlOE9vmt97pVSvi2I4=' 'sha256-ER4UVxOAHVG2PpFuwsi/fNYnlP9iTYLytTr9Qx7YKqY=' 'sha256-RT1053JU5UiKvjrCUFx1rlhdFLMmgtuFJ9T8jnMeawQ=' 'sha256-mwWMixE1/vkBEnQwvOKdRVExrt+0Q+hPdWkRqhv1eIA='; img-src 'self' data:; font-src 'self'; connect-src 'self'; worker-src 'self'; object-src 'none'; base-uri 'none'; form-action 'none'; manifest-src 'self'; upgrade-insecure-requests">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'sha256-qKsw4P/snZtQUdB1pYm9el655nRJfEEpTEYULFYnRPY='; style-src 'self' 'sha256-z2P7kGW5Z05eCTjTZdYpc0vThTlOE9vmt97pVSvi2I4=' 'sha256-ER4UVxOAHVG2PpFuwsi/fNYnlP9iTYLytTr9Qx7YKqY=' 'sha256-RT1053JU5UiKvjrCUFx1rlhdFLMmgtuFJ9T8jnMeawQ=' 'sha256-mwWMixE1/vkBEnQwvOKdRVExrt+0Q+hPdWkRqhv1eIA='; img-src 'self' data:; font-src 'self'; connect-src 'self'; worker-src 'self'; object-src 'none'; base-uri 'none'; form-action 'none'; manifest-src 'self'; upgrade-insecure-requests">
 <meta name="referrer" content="strict-origin-when-cross-origin">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <style>:root{color-scheme:light;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}body{margin:0}[hidden]{display:none!important}</style>
@@ -273,7 +273,7 @@ body { min-height: 100vh; min-height: 100dvh; padding-block: 12px 16px; }
 <script>
 Loopy.addStrings({
   en: {
-    pmName: "Plus and Minus", pmTitle: "Plus and Minus to {max}", pmUpTo: "Up to {n}", pmLvCarry: "Up to 100 with carrying",
+    pmName: "Plus and Minus", pmTitle: "Plus and Minus to {max}", pmUpTo: "Up to {n}", pmLvCarry: "Up to {n} with carrying",
     problems: "Problems", adding: "Adding", takingAway: "Taking away",
     regrouping: "Regrouping", none: "None", some: "Some", always: "Always",
     place0: "Ones", place1: "Tens", place2: "Hundreds", place3: "Thousands", place4: "Ten thousands",
@@ -288,7 +288,7 @@ Loopy.addStrings({
     pmHow: "Work out each sum. Write the answer under the line."
   },
   de: {
-    pmName: "Plus und Minus", pmTitle: "Plus und Minus bis {max}", pmUpTo: "Bis {n}", pmLvCarry: "Bis 100 mit Übertrag",
+    pmName: "Plus und Minus", pmTitle: "Plus und Minus bis {max}", pmUpTo: "Bis {n}", pmLvCarry: "Bis {n} mit Übertrag",
     problems: "Aufgaben", adding: "Plus", takingAway: "Minus",
     regrouping: "Übertrag", none: "Nie", some: "Manchmal", always: "Immer",
     place0: "Einer", place1: "Zehner", place2: "Hunderter", place3: "Tausender", place4: "Zehntausender",
@@ -308,15 +308,16 @@ Loopy.addStrings({
 const randInt = (lo, hi) => lo + Math.floor(Math.random() * (hi - lo + 1));
 
 // How big the numbers get for each age (grade 1 is about age 6).
-const MAXES = [20, 100, 1000, 10000];
+const MAXES = [20, 100, 1000, 10000, 100000];
 function maxForAge(age) {
   if (age <= 6) return 20;
   if (age <= 8) return 100;
   if (age <= 10) return 1000;
-  return 10000;
+  return age === 11 ? 10000 : 100000;
 }
+// Ages 7 and 9 start a new size without carrying; the year after adds it.
 function defaultsForAge(age) {
-  return { op: age <= 6 ? "add" : "mix", rg: age <= 7 ? "no" : "mix" };
+  return { op: age <= 6 ? "add" : "mix", rg: age <= 7 || age === 9 ? "no" : "mix" };
 }
 
 const digitSum = (n) => String(n).split("").reduce((t, d) => t + +d, 0);
@@ -413,11 +414,12 @@ function explain(p) {
   }
   function showTitle() { $("title").textContent = t("pmTitle", { max: Loopy.num(max) }); }
   loadForAge();
-  // The ladder: to 20 adding only, to 100, to 100 with carrying, to 1,000, to 10,000.
-  const LADDER = [[20, "add", "no"], [100, "mix", "no"], [100, "mix", "mix"], [1000, "mix", "mix"], [10000, "mix", "mix"]];
-  const rung = (m, rg) => m === 20 ? 0 : m === 100 ? (rg === "no" ? 1 : 2) : m === 1000 ? 3 : 4;
+  // The ladder: to 20 adding only, to 100, with carrying, to 1,000, with carrying, to 10,000, to 100,000.
+  const LADDER = [[20, "add", "no"], [100, "mix", "no"], [100, "mix", "mix"], [1000, "mix", "no"], [1000, "mix", "mix"], [10000, "mix", "mix"], [100000, "mix", "mix"]];
+  const rung = (m, rg) => m === 20 ? 0 : m === 100 ? (rg === "no" ? 1 : 2) : m === 1000 ? (rg === "no" ? 3 : 4) : m === 10000 ? 5 : 6;
+  const upTo = (n, carry) => () => t(carry ? "pmLvCarry" : "pmUpTo", { n: Loopy.num(n) });
   if (window.Loopy && Loopy.levels) Loopy.levels.init({
-    names: [() => t("pmUpTo", { n: 20 }), () => t("pmUpTo", { n: 100 }), "pmLvCarry", () => t("pmUpTo", { n: Loopy.num(1000) }), () => t("pmUpTo", { n: Loopy.num(10000) })],
+    names: [upTo(20), upTo(100), upTo(100, true), upTo(1000), upTo(1000, true), upTo(10000), upTo(100000)],
     get: () => rung(max, rgMode), base: () => rung(maxForAge(age), defaultsForAge(age).rg),
     set: (i) => {
       [max, opMode, rgMode] = LADDER[i];

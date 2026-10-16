@@ -97,10 +97,10 @@ The site is plain HTML, CSS and JavaScript. One small build step makes the share
 | --- | --- |
 | `index.html` | The home page and the list of games |
 | `src/loopy.js` | Shared code: languages, colors, age, sound, read aloud, stars and badges, Last 5 dots, the back button, and the buttons for the stars code, the worksheet and Report a problem. Edit this one |
-| `src/loopy-report.js`, `src/loopy-backup.js`, `src/loopy-sheet.js`, `src/print.css` | The Report a problem box, the stars code, and the worksheet filling and print styles. `loopy.js` loads each one the first time it is needed (`Loopy.load`). Edit these |
+| `src/loopy-report.js`, `src/loopy-backup.js`, `src/loopy-sheet.js`, `src/loopy-levels.js`, `src/print.css` | The Report a problem box, the stars code, the worksheet filling and print styles, and the list of every game's levels for the grown-ups page. `loopy.js` loads each one the first time it is needed (`Loopy.load`). Edit these |
 | `src/loopy.css` | Shared styles and fonts. Edit this one |
 | `loopy.js`, `loopy.css` | Small copies made by the build. Pages load these. Do not edit them |
-| `loopy-report.js`, `loopy-backup.js`, `loopy-sheet.js`, `print.css` | Parts that load only when they are needed: the Report a problem box, the stars code, and the worksheet with its print styles. Made by the build from `src/`. Do not edit them |
+| `loopy-report.js`, `loopy-backup.js`, `loopy-sheet.js`, `loopy-levels.js`, `print.css` | Parts that load only when they are needed: the Report a problem box, the stars code, the worksheet with its print styles, and the levels list. Made by the build from `src/`. Do not edit them |
 | `DESIGN.md` | How loopy looks: colors, fonts, buttons, layout and rules. Read it before you change a page |
 | `logo.svg`, `logo-white.svg`, `icon.svg` | The logo (for light and dark backgrounds) and the app icon |
 | `help/index.html` | The Help page: FAQ and feedback links |
