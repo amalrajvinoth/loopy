@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'sha256-7REap+f26DQXhxbOnAQPwI5nWulCrOIc2RMxuE/aBZA='; style-src 'self' 'sha256-z2P7kGW5Z05eCTjTZdYpc0vThTlOE9vmt97pVSvi2I4=' 'sha256-ER4UVxOAHVG2PpFuwsi/fNYnlP9iTYLytTr9Qx7YKqY=' 'sha256-RT1053JU5UiKvjrCUFx1rlhdFLMmgtuFJ9T8jnMeawQ=' 'sha256-fDcdKt0NOAY6n9Nok4/ouw7wfZ36jlKcoxXKNjj6K0U='; img-src 'self' data:; font-src 'self'; connect-src 'self'; worker-src 'self'; object-src 'none'; base-uri 'none'; form-action 'none'; manifest-src 'self'; upgrade-insecure-requests">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'sha256-GUiaHD/TaTOQ+Wd7ska9db4GKSzwepdcF4kpp1Jb9OU='; style-src 'self' 'sha256-z2P7kGW5Z05eCTjTZdYpc0vThTlOE9vmt97pVSvi2I4=' 'sha256-ER4UVxOAHVG2PpFuwsi/fNYnlP9iTYLytTr9Qx7YKqY=' 'sha256-RT1053JU5UiKvjrCUFx1rlhdFLMmgtuFJ9T8jnMeawQ=' 'sha256-fDcdKt0NOAY6n9Nok4/ouw7wfZ36jlKcoxXKNjj6K0U='; img-src 'self' data:; font-src 'self'; connect-src 'self'; worker-src 'self'; object-src 'none'; base-uri 'none'; form-action 'none'; manifest-src 'self'; upgrade-insecure-requests">
 <meta name="referrer" content="strict-origin-when-cross-origin">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <style>:root{color-scheme:light;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}body{margin:0}[hidden]{display:none!important}</style>
@@ -231,6 +231,7 @@ body { min-height: 100vh; min-height: 100dvh; padding-block: 12px 16px; }
     <h1 id="title" data-t="tsName">Times and Share</h1>
     <div class="score" aria-live="polite">
       <div class="pill pill-score"><span data-t="score">Score</span><b id="score">0 / 0</b></div>
+      <div id="level"></div>
       <div class="pill pill-streak"><span data-t="streak">Streak</span><b id="streak">0</b></div>
       <div id="last5" data-game="times-share"></div>
     </div>
@@ -294,7 +295,7 @@ Loopy.addStrings({
     tsShare: "Share {a} into {b} equal groups. {b} × {q} = {a}, so each group gets {q}.",
     tsThink: "Think: {b} × {q} = {a}, so {a} ÷ {b} = {q}.",
     tsHowMany: "How many in each group?", tsCount: "Count the dots, or use what you know.",
-    tsTryMix: "Try times and sharing mixed together", tsNoDots: "Try it without the dots",
+   
     timesWord: "times", dividedBy: "divided by",
     tsHow: "Work out each problem. Write the answer on the line."
   },
@@ -311,7 +312,7 @@ Loopy.addStrings({
     tsShare: "Teile {a} in {b} gleiche Gruppen. {b} × {q} = {a}, also bekommt jede Gruppe {q}.",
     tsThink: "Denke: {b} × {q} = {a}, also {a} ÷ {b} = {q}.",
     tsHowMany: "Wie viele sind in jeder Gruppe?", tsCount: "Zähle die Punkte oder nutze, was du schon weißt.",
-    tsTryMix: "Probiere Mal und Teilen gemischt", tsNoDots: "Probiere es ohne Punkte",
+   
     timesWord: "mal", dividedBy: "geteilt durch",
     tsHow: "Rechne jede Aufgabe aus. Schreibe das Ergebnis auf die Linie."
   }
@@ -323,16 +324,19 @@ const pick = (arr) => arr[Math.floor(Math.random() * arr.length)];
 const fmt = (n) => Loopy.num(n);
 const t = Loopy.t;
 
-// What each age practices. "facts" are times tables; "big" uses larger numbers.
-function levelForAge(age) {
-  if (age <= 6) return { kind: "facts", tables: [1, 2, 5, 10], upTo: 5, dots: true, note: "note6" };
-  if (age === 7) return { kind: "facts", tables: [2, 5, 10], upTo: 10, dots: true, note: "note7" };
-  if (age === 8) return { kind: "facts", tables: [2, 3, 4, 5, 10], upTo: 10, dots: true, note: "note8" };
-  if (age === 9) return { kind: "facts", tables: [2, 3, 4, 5, 6, 7, 8, 9, 10], upTo: 10, dots: false, note: "note9" };
-  if (age === 10) return { kind: "facts", tables: [2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12], upTo: 12, dots: false, note: "note10" };
-  if (age <= 12) return { kind: "big", size: 2, dots: false, note: "noteBig2" };
-  return { kind: "big", size: 3, dots: false, note: "noteBig3" };
-}
+// The levels, easiest first. "facts" are times tables; "big" uses larger numbers.
+const LADDER = [
+  { kind: "facts", tables: [1, 2, 5, 10], upTo: 5, dots: true, note: "note6" },
+  { kind: "facts", tables: [2, 5, 10], upTo: 10, dots: true, note: "note7" },
+  { kind: "facts", tables: [2, 3, 4, 5, 10], upTo: 10, dots: true, note: "note8" },
+  { kind: "facts", tables: [2, 3, 4, 5, 6, 7, 8, 9, 10], upTo: 10, dots: false, note: "note9" },
+  { kind: "facts", tables: [2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12], upTo: 12, dots: false, note: "note10" },
+  { kind: "big", size: 2, dots: false, note: "noteBig2" },
+  { kind: "big", size: 3, dots: false, note: "noteBig3" }
+];
+// The level each age starts at, 0-based.
+const rungForAge = (age) => age <= 6 ? 0 : age <= 10 ? age - 6 : age <= 12 ? 5 : 6;
+function levelForAge(age) { return LADDER[rungForAge(age)]; }
 
 function makeProblem(opMode, level, avoid) {
   for (let tries = 0; tries < 300; tries++) {
@@ -406,16 +410,23 @@ function explain(p) {
   };
 
   let age = window.Loopy ? Loopy.getAge() : 8;
-  let level, opMode, dots;
+  let level, rung, opMode, dots;
   // Settings are remembered per age, so each age starts at the right level.
   function loadForAge() {
-    level = levelForAge(age);
+    rung = store.get("ts.lv.a" + age, rungForAge(age), [0, 1, 2, 3, 4, 5, 6]);
+    level = LADDER[rung];
     opMode = store.get("ts.op.a" + age, age <= 7 ? "mul" : "mix", ["mul", "div", "mix"]);
     dots = store.get("ts.dots.a" + age, level.dots, [true, false]);
+    showLevel();
+  }
+  function showLevel() {
     $("level-note").textContent = t("ageLabel", { n: age }) + ": " + t(level.note);
     dotsBox.disabled = level.kind !== "facts";
   }
   loadForAge();
+  if (window.Loopy && Loopy.levels) Loopy.levels.init({ names: LADDER.map(l => () => t(l.note).replace(/\.$/, "")),
+    get: () => rung, base: () => rungForAge(age),
+    set: (i) => { rung = i; level = LADDER[i]; store.set("ts.lv.a" + age, i); showLevel(); render(); } });
 
   let right = 0, tried = 0, streak = 0;
   let current = null, typed = "", answered = false, recent = [];
@@ -443,6 +454,7 @@ function explain(p) {
   }
 
   function render() {
+    if (window.Loopy && Loopy.levels) Loopy.levels.render();
     $("score").textContent = right + " / " + tried;
     $("streak").textContent = streak;
     opBtns.forEach(b => b.setAttribute("aria-pressed", String(b.dataset.op === opMode)));
@@ -487,7 +499,7 @@ function explain(p) {
     answered = true; tried++;
     const ok = parseInt(typed, 10) === current.answer;
     if (ok) { right++; streak++; } else { streak = 0; }
-    if (window.Loopy && Loopy.rewards) ok ? Loopy.rewards.correct("times-share", streak, harder()) : Loopy.rewards.wrong("times-share", { q: fmt(current.a) + (current.op === "mul" ? " × " : " ÷ ") + fmt(current.b), a: fmt(current.answer), y: fmt(parseInt(typed, 10)), k: Loopy.log.kind(current.op, current.a, current.b) });
+    if (window.Loopy && Loopy.rewards) ok ? Loopy.rewards.correct("times-share", streak) : Loopy.rewards.wrong("times-share", { q: fmt(current.a) + (current.op === "mul" ? " × " : " ÷ ") + fmt(current.b), a: fmt(current.answer), y: fmt(parseInt(typed, 10)), k: Loopy.log.kind(current.op, current.a, current.b) });
     card.className = "problem-card " + (ok ? "good" : "bad");
     feedbackEl.className = "feedback " + (ok ? "good" : "bad");
     const sign = current.op === "mul" ? " × " : " ÷ ";
@@ -499,16 +511,6 @@ function explain(p) {
     feedbackEl.appendChild(document.createTextNode(explain(current)));
     render();
     drawDots();
-  }
-  // What "Make it harder" does after 10 in a row: mix times and sharing, then hide the dots.
-  function harder() {
-    if (opMode !== "mix") {
-      return { label: t("tsTryMix"), apply: () => { opMode = "mix"; store.set("ts.op.a" + age, opMode); render(); } };
-    }
-    if (dots && level.kind === "facts") {
-      return { label: t("tsNoDots"), apply: () => { dots = false; store.set("ts.dots.a" + age, dots); render(); } };
-    }
-    return null;
   }
   function go() { answered ? newRound() : check(); }
 

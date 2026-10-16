@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'sha256-cpjCDpgnTjr+yo/IX39s+awDI1hSeD5BIBDgX6syupg='; style-src 'self' 'sha256-z2P7kGW5Z05eCTjTZdYpc0vThTlOE9vmt97pVSvi2I4=' 'sha256-5/L3e/BVPjm2GPi51M3FkQuzTeZ4bCdHn3SxvjZFuAk=' 'sha256-RT1053JU5UiKvjrCUFx1rlhdFLMmgtuFJ9T8jnMeawQ=' 'sha256-4dEdrKbKL7IOE6FtAmSKmFZuQ7pndyr//hTTqH+uDSo='; img-src 'self' data:; font-src 'self'; connect-src 'self'; worker-src 'self'; object-src 'none'; base-uri 'none'; form-action 'none'; manifest-src 'self'; upgrade-insecure-requests">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'sha256-Yrhi8QeIKnosj9ifddwmX01SZvW/vHwQTP76uxW6YPc='; style-src 'self' 'sha256-z2P7kGW5Z05eCTjTZdYpc0vThTlOE9vmt97pVSvi2I4=' 'sha256-5/L3e/BVPjm2GPi51M3FkQuzTeZ4bCdHn3SxvjZFuAk=' 'sha256-RT1053JU5UiKvjrCUFx1rlhdFLMmgtuFJ9T8jnMeawQ=' 'sha256-4dEdrKbKL7IOE6FtAmSKmFZuQ7pndyr//hTTqH+uDSo='; img-src 'self' data:; font-src 'self'; connect-src 'self'; worker-src 'self'; object-src 'none'; base-uri 'none'; form-action 'none'; manifest-src 'self'; upgrade-insecure-requests">
 <meta name="referrer" content="strict-origin-when-cross-origin">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <style>:root{color-scheme:light;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}body{margin:0}[hidden]{display:none!important}</style>
@@ -270,6 +270,7 @@ body { min-height: 100vh; min-height: 100dvh; padding-block: 12px 16px; }
     <h1 id="title" data-t="siName">Spell It</h1>
     <div class="score" aria-live="polite">
       <div class="pill pill-score"><span data-t="score">Score</span><b id="score">0 / 0</b></div>
+      <div id="level"></div>
       <div class="pill pill-streak"><span data-t="streak">Streak</span><b id="streak">0</b></div>
       <div id="last5" data-game="spell-it"></div>
     </div>
@@ -325,8 +326,7 @@ Loopy.addStrings({
     siKbd: "Keyboard works too: type the letters, Backspace erases, Enter checks.",
     siAsk: "Listen, then spell the word.", siAskPic: "Look at the picture, then spell the word.",
     siPic: "Picture", siBoxes: "{n} letters", siYes: "You spelled “{w}”.", siSpelled: "It is spelled {s}.",
-    siHow: "Look at each picture. Write the word on the line. The letters under the line help.",
-    siTry4: "Try words with 4 letters", siTry5: "Try words with 5 letters", siTry6: "Try longer words"
+    siHow: "Look at each picture. Write the word on the line. The letters under the line help."
   },
   de: {
     siName: "Wörter schreiben", siWords: "Wörter auf", siLen: "Wortlänge", siL3: "3 Buchstaben", siL4: "4 Buchstaben", siL5: "5 Buchstaben", siL6: "6 bis 8",
@@ -334,8 +334,7 @@ Loopy.addStrings({
     siKbd: "Die Tastatur geht auch: Buchstaben tippen, Rücktaste löscht, Enter prüft.",
     siAsk: "Hör zu und schreibe das Wort.", siAskPic: "Schau dir das Bild an und schreibe das Wort.",
     siPic: "Bild", siBoxes: "{n} Buchstaben", siYes: "Du hast „{w}“ geschrieben.", siSpelled: "Man schreibt es so: {s}.",
-    siHow: "Schau dir jedes Bild an. Schreibe das Wort auf die Linie. Die Buchstaben darunter helfen.",
-    siTry4: "Probiere Wörter mit 4 Buchstaben", siTry5: "Probiere Wörter mit 5 Buchstaben", siTry6: "Probiere längere Wörter"
+    siHow: "Schau dir jedes Bild an. Schreibe das Wort auf die Linie. Die Buchstaben darunter helfen."
   }
 });
 
@@ -415,8 +414,12 @@ function makeProblem(lang, len, avoid) {
   let autoRead = store.get("si.autoRead", true, [true, false]);
   let len;
   // Word length is remembered per age: 3 letters up to age 6, 4 at 7, 5 at 8, then 6 to 8 letters.
-  function loadForAge() { len = store.get("si.len.a" + age, age <= 6 ? 3 : age === 7 ? 4 : age === 8 ? 5 : 6, [3, 4, 5, 6]); }
+  const lenForAge = (a) => a <= 6 ? 3 : a === 7 ? 4 : a === 8 ? 5 : 6, LENS = [3, 4, 5, 6];
+  function loadForAge() { len = store.get("si.len.a" + age, lenForAge(age), LENS); }
   loadForAge();
+  Loopy.levels.init({ names: ["siL3", "siL4", "siL5", "siL6"],
+    get: () => LENS.indexOf(len), base: () => LENS.indexOf(lenForAge(age)),
+    set: (i) => { len = LENS[i]; store.set("si.len.a" + age, len); recent = []; render(); } });
   let right = 0, tried = 0, streak = 0;
   let current = null, typed = [], answered = false, recent = [], interacted = false, timers = [];
 
@@ -462,6 +465,7 @@ function makeProblem(lang, len, avoid) {
     slotsEl.setAttribute("aria-label", t("siBoxes", { n: current.letters.length }) + (typed.length ? ": " + typed.join(" ") : ""));
   }
   function render() {
+    Loopy.levels.render();
     $("score").textContent = right + " / " + tried;
     $("streak").textContent = streak;
     wordsBtns.forEach(b => b.setAttribute("aria-pressed", String(b.dataset.words === wordsLang)));
@@ -529,7 +533,7 @@ function makeProblem(lang, len, avoid) {
     const ok = typed.join("") === current.letters.join("");
     const yours = typed.map(shown).join("");
     if (ok) { right++; streak++; } else { streak = 0; }
-    if (ok) Loopy.rewards.correct("spell-it", streak, harder());
+    if (ok) Loopy.rewards.correct("spell-it", streak);
     else Loopy.rewards.wrong("spell-it", { q: current.pic, a: current.word, y: yours, k: "si-" + current.len });
     card.classList.remove("good", "bad");
     card.classList.add(ok ? "good" : "bad");
@@ -542,11 +546,6 @@ function makeProblem(lang, len, avoid) {
     render();
     goBtn.focus({ preventScroll: true });
     if ((!ok || autoRead) && interacted && Loopy.sound.isOn()) speak();
-  }
-  // What "Make it harder" does after 10 in a row: one letter longer each time, up to 6 to 8 letters.
-  function harder() {
-    if (len >= 6) return null;
-    return { label: t({ 3: "siTry4", 4: "siTry5", 5: "siTry6" }[len]), apply: () => { len++; store.set("si.len.a" + age, len); } };
   }
 
   document.addEventListener("pointerdown", () => { interacted = true; }, { once: true });

@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'sha256-jwC6vuvMh95iyEe+k2zO+RPJW/hB6i2r9K+lWewBrBc='; style-src 'self' 'sha256-z2P7kGW5Z05eCTjTZdYpc0vThTlOE9vmt97pVSvi2I4=' 'sha256-5JO1h7tSI5wCTIIhUzDJIFW8EwNxVWUfZASppZRdlqw=' 'sha256-RT1053JU5UiKvjrCUFx1rlhdFLMmgtuFJ9T8jnMeawQ=' 'sha256-OIwjrhLB/u0tYCQzUiKhRUdVDaU//hKl+YLFIFw2pHI='; img-src 'self' data:; font-src 'self'; connect-src 'self'; worker-src 'self'; object-src 'none'; base-uri 'none'; form-action 'none'; manifest-src 'self'; upgrade-insecure-requests">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'sha256-mz7L7phoiOkYBe2BaouZQp/a/MeeeB97UL/GvmxGSy0='; style-src 'self' 'sha256-z2P7kGW5Z05eCTjTZdYpc0vThTlOE9vmt97pVSvi2I4=' 'sha256-5JO1h7tSI5wCTIIhUzDJIFW8EwNxVWUfZASppZRdlqw=' 'sha256-RT1053JU5UiKvjrCUFx1rlhdFLMmgtuFJ9T8jnMeawQ=' 'sha256-OIwjrhLB/u0tYCQzUiKhRUdVDaU//hKl+YLFIFw2pHI='; img-src 'self' data:; font-src 'self'; connect-src 'self'; worker-src 'self'; object-src 'none'; base-uri 'none'; form-action 'none'; manifest-src 'self'; upgrade-insecure-requests">
 <meta name="referrer" content="strict-origin-when-cross-origin">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <style>:root{color-scheme:light;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}body{margin:0}[hidden]{display:none!important}</style>
@@ -217,6 +217,7 @@ body { min-height: 100vh; min-height: 100dvh; padding-block: 12px 16px; }
     <h1 id="title" data-t="ebName">Equation Balance</h1>
     <div class="score" aria-live="polite">
       <div class="pill pill-score"><span data-t="score">Score</span><b id="score">0 / 0</b></div>
+      <div id="level"></div>
       <div class="pill pill-streak"><span data-t="streak">Streak</span><b id="streak">0</b></div>
       <div id="last5" data-game="equation-balance"></div>
     </div>
@@ -278,7 +279,7 @@ Loopy.addStrings({
     ebShare: "Share both sides by {a}: x = {c} ÷ {a} = {x}.",
     ebTakeX: "Take {t} from both sides: {lhs} = {c}.",
     ebLevelBox: "□ + 4 = 9", ebLevelAdd: "x + 4 = 9", ebLevelMul: "3x = 12", ebLevelTwo: "3x + 4 = 19", ebLevelBoth: "x on both sides",
-    ebTry: "Try {lv}",
+   
     ebHow: "Find the number that makes both sides equal."
   },
   de: {
@@ -293,7 +294,7 @@ Loopy.addStrings({
     ebShare: "Teile beide Seiten durch {a}: x = {c} ÷ {a} = {x}.",
     ebTakeX: "Nimm auf beiden Seiten {t} weg: {lhs} = {c}.",
     ebLevelBox: "□ + 4 = 9", ebLevelAdd: "x + 4 = 9", ebLevelMul: "3x = 12", ebLevelTwo: "3x + 4 = 19", ebLevelBoth: "x auf beiden Seiten",
-    ebTry: "Probiere {lv}",
+   
     ebHow: "Finde die Zahl, mit der beide Seiten gleich sind."
   }
 });
@@ -408,6 +409,9 @@ function explain(p) {
   // The level is remembered per age, so each age starts at the right one.
   const loadForAge = () => { lv = store.get("eb.lv.a" + age, levelForAge(age), LEVELS); };
   loadForAge();
+  if (window.Loopy && Loopy.levels) Loopy.levels.init({ names: LEVELS.map(levelName),
+    get: () => LEVELS.indexOf(lv), base: () => LEVELS.indexOf(levelForAge(age)),
+    set: (i) => { lv = LEVELS[i]; store.set("eb.lv.a" + age, lv); recent = []; render(); } });
 
   let right = 0, tried = 0, streak = 0;
   let current = null, typed = "", answered = false, recent = [];
@@ -511,6 +515,7 @@ function explain(p) {
   }
 
   function render() {
+    if (window.Loopy && Loopy.levels) Loopy.levels.render();
     $("score").textContent = right + " / " + tried;
     $("streak").textContent = streak;
     lvBtns.forEach(b => b.setAttribute("aria-pressed", String(b.dataset.lv === lv)));
@@ -552,7 +557,7 @@ function explain(p) {
     answered = true; tried++;
     const y = parseInt(typed, 10), ok = y === current.x;
     if (ok) { right++; streak++; } else { streak = 0; }
-    if (window.Loopy && Loopy.rewards) ok ? Loopy.rewards.correct("equation-balance", streak, harder()) : Loopy.rewards.wrong("equation-balance", { q: current.text, a: fmt(current.x), y: fmt(y), k: "eb-" + current.lv });
+    if (window.Loopy && Loopy.rewards) ok ? Loopy.rewards.correct("equation-balance", streak) : Loopy.rewards.wrong("equation-balance", { q: current.text, a: fmt(current.x), y: fmt(y), k: "eb-" + current.lv });
     tilt(y);
     card.className = "problem-card " + (ok ? "good" : "bad");
     feedbackEl.className = "feedback " + (ok ? "good" : "bad");
@@ -563,13 +568,6 @@ function explain(p) {
     feedbackEl.firstChild.textContent = head;
     feedbackEl.appendChild(document.createTextNode(explain(current)));
     render();
-  }
-  // What "Make it harder" does after 10 in a row: the next level.
-  function harder() {
-    const i = LEVELS.indexOf(lv);
-    if (i >= LEVELS.length - 1) return null;
-    const next = LEVELS[i + 1];
-    return { label: t("ebTry", { lv: t(levelName(next)) }), apply: () => { lv = next; store.set("eb.lv.a" + age, lv); recent = []; render(); } };
   }
   function go() { answered ? newRound() : check(); }
 

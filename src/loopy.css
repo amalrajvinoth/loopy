@@ -380,6 +380,13 @@ a.home-link.loopy-back:focus-visible { outline: 3px solid var(--mark); outline-o
 .score .last5 { order: -1; }
 .score .pill-streak span { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); clip-path: inset(50%); white-space: nowrap; }
 .score .pill-streak b::before { content: "🔥 "; content: "🔥 " / ""; }
+/* The level pill (Loopy.levels). On narrow phones the "Last 5" word goes, so Last 5, Level and the streak fit one line. */
+.score .pill-level { order: 0; }
+@media (max-width: 419px) {
+  .score:has(.pill-level) { gap: 6px; }
+  .score:has(.pill-level) .pill { padding-left: 10px; padding-right: 10px; }
+  .score:has(.pill-level) .last5 > span { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); clip-path: inset(50%); white-space: nowrap; }
+}
 
 /* Skip and Next (Loopy.nextButton): before an answer the button is a small, quiet "Skip". */
 button.next.skip {

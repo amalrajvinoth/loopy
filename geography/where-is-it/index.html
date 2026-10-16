@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'sha256-ZGl39NaKe6TTDCuhguh6/feIsPnJaa1jNMJRx61mE8A='; style-src 'self' 'sha256-z2P7kGW5Z05eCTjTZdYpc0vThTlOE9vmt97pVSvi2I4=' 'sha256-B1/34nWPbkOgQvjShds4VMrIOiMhFRoP1nBsay1oDds='; img-src 'self' data:; font-src 'self'; connect-src 'self'; worker-src 'self'; object-src 'none'; base-uri 'none'; form-action 'none'; manifest-src 'self'; upgrade-insecure-requests">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'sha256-k4GxF6siS6wdeRGjmCEbRlTSWGjP57B/PofhLAbB0Ys='; style-src 'self' 'sha256-z2P7kGW5Z05eCTjTZdYpc0vThTlOE9vmt97pVSvi2I4=' 'sha256-B1/34nWPbkOgQvjShds4VMrIOiMhFRoP1nBsay1oDds='; img-src 'self' data:; font-src 'self'; connect-src 'self'; worker-src 'self'; object-src 'none'; base-uri 'none'; form-action 'none'; manifest-src 'self'; upgrade-insecure-requests">
 <meta name="referrer" content="strict-origin-when-cross-origin">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <style>:root{color-scheme:light;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}body{margin:0}[hidden]{display:none!important}</style>
@@ -177,6 +177,7 @@ button:focus-visible { outline: 3px solid var(--mark); outline-offset: 3px; }
     <h1 id="title" data-t="wiName">Where Is It?</h1>
     <div class="score" aria-live="polite">
       <div class="pill pill-score"><span data-t="score">Score</span><b id="score">0 / 0</b></div>
+      <div id="level"></div>
       <div class="pill pill-streak"><span data-t="streak">Streak</span><b id="streak">0</b></div>
       <div id="last5" data-game="where-is-it"></div>
     </div>
@@ -223,27 +224,25 @@ button:focus-visible { outline: 3px solid var(--mark); outline-offset: 3px; }
 Loopy.addStrings({
   en: {
     wiName: "Where Is It?", wiMap: "Map", wiCont: "Continents", wiEurope: "Europe", wiWorld: "World",
-    wiFind: "Find", wiCountries: "Countries", wiCapitals: "Capitals",
+    wiFind: "Find", wiCountries: "Countries",
+    wiLv1: "Continents and oceans", wiLv2: "Countries of Europe", wiLv3: "Capitals of Europe", wiLv4: "Countries of the world", wiLv5: "Capitals of the world", wiCapitals: "Capitals",
     wiKbd: "Keyboard works too: Tab moves between places, Enter picks one and goes on.",
     wiWhere: "Where is {p}?", wiWherePl: "Where are {p}?", wiCapAsk: "{c} is the capital of which country?",
     wiTap: "Tap it on the map.", wiIn: "In {r}",
     wiThis: "This is {p}.", wiCapIs: "Its capital is {c}.", wiWas: "That was {y}.",
     wiGreen: "Shown in green: {p}.", wiGreenCap: "Shown in green: {p}, with its capital {c}.",
-    wiHowMap: "Write the name of the grey place under each map.", wiHowCap: "Write the capital of each country.",
-    wiTryEu: "Try the countries of Europe", wiTryEuCap: "Try the capitals of Europe",
-    wiTryWorld: "Try countries around the world", wiTryWorldCap: "Try capitals around the world"
+    wiHowMap: "Write the name of the grey place under each map.", wiHowCap: "Write the capital of each country."
   },
   de: {
     wiName: "Wo liegt das?", wiMap: "Karte", wiCont: "Kontinente", wiEurope: "Europa", wiWorld: "Welt",
-    wiFind: "Finde", wiCountries: "Länder", wiCapitals: "Hauptstädte",
+    wiFind: "Finde", wiCountries: "Länder",
+    wiLv1: "Kontinente und Ozeane", wiLv2: "Länder Europas", wiLv3: "Hauptstädte Europas", wiLv4: "Länder der Welt", wiLv5: "Hauptstädte der Welt", wiCapitals: "Hauptstädte",
     wiKbd: "Die Tastatur geht auch: Tab springt von Ort zu Ort, Enter wählt und geht weiter.",
     wiWhere: "Wo liegt {p}?", wiWherePl: "Wo liegen {p}?", wiCapAsk: "{c} ist die Hauptstadt von welchem Land?",
     wiTap: "Tippe es auf der Karte an.", wiIn: "In {r}",
     wiThis: "Das ist {p}.", wiCapIs: "Hauptstadt: {c}.", wiWas: "Das war {y}.",
     wiGreen: "Grün markiert: {p}.", wiGreenCap: "Grün markiert: {p} mit der Hauptstadt {c}.",
-    wiHowMap: "Schreibe den Namen des grauen Gebiets unter jede Karte.", wiHowCap: "Schreibe die Hauptstadt jedes Landes auf.",
-    wiTryEu: "Probiere die Länder Europas", wiTryEuCap: "Probiere die Hauptstädte Europas",
-    wiTryWorld: "Probiere Länder auf der ganzen Welt", wiTryWorldCap: "Probiere Hauptstädte auf der ganzen Welt"
+    wiHowMap: "Schreibe den Namen des grauen Gebiets unter jede Karte.", wiHowCap: "Schreibe die Hauptstadt jedes Landes auf."
   }
 });
 
@@ -708,11 +707,19 @@ function makeProblem(map, find, age, avoid) {
   let age = Loopy.getAge();
   let map, find;
   // The map and mode are remembered per age, so each age starts at the right level.
+  const mapForAge = (a) => a <= 8 ? "cont" : a <= 11 ? "eu" : "world";
+  const findForAge = (a) => a === 11 || a >= 13 ? "cap" : "land";
   function loadForAge() {
-    map = store.get("wi.map.a" + age, age <= 8 ? "cont" : age <= 11 ? "eu" : "world", ["cont", "eu", "world"]);
-    find = store.get("wi.find.a" + age, age === 11 || age >= 13 ? "cap" : "land", ["land", "cap"]);
+    map = store.get("wi.map.a" + age, mapForAge(age), ["cont", "eu", "world"]);
+    find = store.get("wi.find.a" + age, findForAge(age), ["land", "cap"]);
   }
   loadForAge();
+  // The ladder: continents, countries of Europe, its capitals, countries of the world, its capitals.
+  const LADDER = [["cont", "land"], ["eu", "land"], ["eu", "cap"], ["world", "land"], ["world", "cap"]];
+  const rung = (m, f) => LADDER.findIndex(r => r[0] === m && (m === "cont" || r[1] === f));
+  Loopy.levels.init({ names: ["wiLv1", "wiLv2", "wiLv3", "wiLv4", "wiLv5"],
+    get: () => rung(map, find), base: () => rung(mapForAge(age), findForAge(age)),
+    set: (i) => { [map, find] = LADDER[i]; store.set("wi.map.a" + age, map); store.set("wi.find.a" + age, find); recent = []; newRound(); } });
   let right = 0, tried = 0, streak = 0;
   let current = null, answered = false, recent = [], marks = [], upp = 1;
 
@@ -807,6 +814,7 @@ function makeProblem(map, find, age, avoid) {
   const cap1 = (s) => s.charAt(0).toUpperCase() + s.slice(1);
 
   function render() {
+    Loopy.levels.render();
     $("score").textContent = right + " / " + tried;
     $("streak").textContent = streak;
     mapBtns.forEach(b => b.setAttribute("aria-pressed", String(b.dataset.map === map)));
@@ -894,7 +902,7 @@ function makeProblem(map, find, age, avoid) {
     if (!ok) shapes(hit).forEach(s => s.classList.add("wrong"));
     if (ok) { right++; streak++; } else { streak = 0; }
     const capital = current.type === "land" ? current.place[lang === "de" ? 4 : 3] : "";
-    if (ok) Loopy.rewards.correct("where-is-it", streak, harder());
+    if (ok) Loopy.rewards.correct("where-is-it", streak);
     else Loopy.rewards.wrong("where-is-it", { q: current.cap ? capital : nameOfHit(want, false), a: nameOfHit(want, false), y: nameOfHit(hit, false), k: kind() });
     // Name the right place on the map (and the one tapped, if it was wrong). Capitals get a dot.
     marks = [Object.assign({ text: nameOfHit(want, false), below: current.cap }, labelAt(want))];
@@ -914,14 +922,6 @@ function makeProblem(map, find, age, avoid) {
     [...svg.querySelectorAll("[tabindex]")].forEach(n => n.removeAttribute("tabindex"));
     render();
     nextBtn.focus({ preventScroll: true });
-  }
-  // What "Make it harder" does after 10 in a row: continents, Europe, its capitals, the world, its capitals.
-  const LADDER = [["cont", "land"], ["eu", "land"], ["eu", "cap"], ["world", "land"], ["world", "cap"]];
-  const LADDER_TRY = [null, "wiTryEu", "wiTryEuCap", "wiTryWorld", "wiTryWorldCap"];
-  function harder() {
-    const at = LADDER.findIndex(s => s[0] === map && (map === "cont" || s[1] === find));
-    if (at < 0 || at >= LADDER.length - 1) return null;
-    return { label: t(LADDER_TRY[at + 1]), apply: () => { [map, find] = LADDER[at + 1]; store.set("wi.map.a" + age, map); store.set("wi.find.a" + age, find); recent = []; newRound(); } };
   }
 
   svg.addEventListener("click", (e) => { if (!answered) choose(hitOf(e.target, e)); });
