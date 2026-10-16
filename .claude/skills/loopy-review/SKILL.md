@@ -1,6 +1,6 @@
 ---
 name: loopy-review
-description: Review every loopy change before its PR is ready, and write release notes when a major change merges. Checks the UI against DESIGN.md, architecture, docs and consistency between games, and suggests fixes for anything that differs.
+description: Review every loopy change before its PR is ready, and write release notes when a major change merges. Checks the UI against DESIGN.md, architecture, saved data (nothing a child has is lost), speed and size, docs and consistency between games, and suggests fixes for anything that differs.
 ---
 
 # loopy review
@@ -25,11 +25,13 @@ Note which kind of change it is: new game, change to one game, shared code (`src
 python3 tools/build.py --check      # loopy.js, loopy.css and sw.js match src/
 python3 tools/csp.py --check        # every page's security policy is up to date
 python3 tools/check_external.py     # nothing loads from another website
-python3 tools/review.py             # games follow the same rules (table of findings)
+python3 tools/review.py             # games follow the same rules, saved data is kept, sizes (table of findings)
 node tools/e2e/play.mjs             # plays every game; no errors, stars add up, no repeated questions
 ```
 
 The first three and the play test are the GitHub check: any failure must be fixed (the play test needs `npm ci --prefix tools/a11y --ignore-scripts` once, see tools/e2e/README.md). `tools/review.py` prints `must`, `should` and `suggest` findings. A `must` that this change added must be fixed. Findings that were already on main go in the report as "already there", not as part of this change.
+
+`tools/review.py` compares the change with the point where it left `origin/main` (use `--base <ref>` for another branch). It finds saved keys that nothing reads any more, names taken out of the OLD list, direct `localStorage` use in a page, new places that remove saved data, and files that got bigger. It prints a size table for every file that changed size. Run `git fetch origin main` first, so the comparison is with the real main.
 
 ## 3. UI against DESIGN.md
 
@@ -61,7 +63,39 @@ Look for these problems in the diff. Each one is a finding.
 - A change to one game that changes how another game plays or looks.
 - Code that is hard to follow for the next person: long functions with no comment saying what they do, names that hide what a value means.
 
-## 5. Docs
+## 5. Saved data
+
+Children keep their stars, streaks, levels and settings in their own browser. Nobody can get them back if a change loses them. So every change must keep what is saved today working, on every device that already has it.
+
+What is saved today:
+
+- **Per child** (through `Loopy.store`, kept as `loopy.kid.<id>.` + key): `loopy.rewards`, `loopy.daily`, `loopy.log`, `loopy.recent`, `loopy.ageOffset`, `loopy.readAloud`, `loopy.seen`, and each game's settings (`pm100.`, `ts.`, `clockquiz.`, `ss.`, `mk.`, `bs.`, `pz.`, `cc.`, `wm.`, `si.`, `wi.`, `qf.`).
+- **For the whole device**: `loopy.kids` (the children), `loopy.lang`, `loopy.theme`, `loopy.font`, `loopy.sound`.
+- **Moved on a first visit**: keys from before there were children (the OLD list in `src/loopy.js`) move to child 1.
+- **Stars code** (`Loopy.backup`): any code made before must still load.
+
+Check:
+
+- **No key is dropped or renamed without a move.** If a key or its format changes, read the old one, turn it into the new one, save it and then remove the old one. Do it once, on load, and keep the step in the code for good: some devices only come back months later.
+- **Formats only grow.** A new field gets a default when it is missing. An old value that does not fit the new rules is cleaned (like `clean()` does), not thrown away with everything else.
+- **Nothing is reset by surprise.** Only Reset score, removing a child, or the person's own choice may remove saved data. A new feature that changes levels or settings starts from what the child already chose.
+- **Per child or per device.** Anything that belongs to one child uses `Loopy.store`. Only display settings are for the whole device.
+- **Validate on read.** Every value read from storage, a stars code or a link is checked before use. Broken or old data falls back to a default, never to an error.
+- **Stars code both ways.** An old code still loads on the new version. A new code still loads, or fails kindly, on a device that has the old version. If a new key holds progress, add it to `Loopy.backup`.
+- **Test it.** Before the change, play on main and make some stars, a streak, a level and a setting for two children. Switch to the change and reload: everything must still be there. Also load a stars code made on main.
+
+If storage moves (for example to IndexedDB), keep reading localStorage until the move is done, move once, keep the old copy until the new one is saved, and still work when the new storage is blocked (private windows).
+
+## 6. Speed and size
+
+Always look for a chance to make loopy faster or smaller, even if the change is not about speed. List what you find as a suggestion, with the size or time it saves.
+
+- **Code.** `loopy.js` and `loopy.css` load on every page, so every byte counts many times. Code that only one page uses belongs in that page. Remove code nothing calls. Do no work on load that can wait until it is needed (the "Easier to read" font only loads when that setting is on). No timers or animation loops that run when nothing moves. Read and parse saved data once, not on every answer.
+- **Memory.** Keep what is saved small and capped: a list grows only to a fixed size or number of days (like `loopy.log`, 30 days). Save only what is needed to play on, not whole questions or pictures. Do not keep big lists in memory after they are used.
+- **Delivery.** Pages stay small: `tools/review.py` flags a page over 100 KB sent (with `loopy.js`, `loopy.css` and fonts), `loopy.js` or `loopy.css` growing by more than 1 KB, a page growing by more than 2 KB, and the offline copy growing by more than 50 KB. No new fonts; letters outside the font subset use the device font. Pictures are SVG or small PNGs. The offline helper (`sw.js`) must not cache what a page never uses. Preload only the font the first screen needs.
+- **Lighthouse.** For a change to a page or shared code, run Lighthouse (phone, slow 4G) on a home page and one changed page with a server that compresses like GitHub Pages. Performance should stay at 100. If the README size table is out of date, update it.
+
+## 7. Docs
 
 Check each one that the change affects, and update it in the same pull request:
 
@@ -75,11 +109,11 @@ Check each one that the change affects, and update it in the same pull request:
 
 Docs are plain, short-sentence English.
 
-## 6. Consistency between games
+## 8. Consistency between games
 
 Every game should work the same way where it can. Compare the changed game with the others and with `tools/review.py`: same shared parts, same Settings order, same Reset score behaviour, same README sections and names, same way of explaining an answer, Print worksheet in Settings, keyboard support. If one game does something differently and there is no good reason, that is a finding.
 
-## 7. Report
+## 9. Report
 
 Write the report as one table, most serious first. Do not change anything the person did not ask for: list it as a suggestion instead.
 
@@ -89,15 +123,15 @@ Write the report as one table, most serious first. Do not change anything the pe
 | Should fix | ... | ... | ... |
 | Suggestion | ... | ... | ... |
 
-- **Must fix:** breaks a check, a security rule, both languages, one screen, or another game.
-- **Should fix:** differs from DESIGN.md or the other games, or docs are out of date.
+- **Must fix:** breaks a check, a security rule, both languages, one screen, or another game, or loses or resets anything a child has saved.
+- **Should fix:** differs from DESIGN.md or the other games, docs are out of date, or a file grows past the size limits in step 6.
 - **Suggestion:** a deviation that might be on purpose, or a small improvement. Say why it might matter.
 
-Then a short "Checked" list: the checks you ran, the screen sizes, themes, languages and print preview. If there are no findings, say so in one line.
+Then a short "Checked" list: the checks you ran, the screen sizes, themes, languages, print preview, the saved data test, and the size table from `tools/review.py`. If there are no findings, say so in one line.
 
 Fix every "Must fix" in this change before the pull request is marked ready. Ask before acting on "Should fix" items that are outside the change.
 
-## 8. Release notes after a merge
+## 10. Release notes after a merge
 
 After a pull request merges into main, decide if it is a **major** change:
 
