@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'sha256-CYfPLFpS4KbSt/RbI3jCLxa2mHHJDGWXvJ/PFI1JqiM='; style-src 'self' 'sha256-z2P7kGW5Z05eCTjTZdYpc0vThTlOE9vmt97pVSvi2I4=' 'sha256-xiQ/+AzzVFvamMSKxKU68FfPajpV8TA12Ri8gQSSYQY='; img-src 'self' data:; font-src 'self'; connect-src 'self'; worker-src 'self'; object-src 'none'; base-uri 'none'; form-action 'none'; manifest-src 'self'; upgrade-insecure-requests">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'sha256-ajK3cd0x2G0r7v5MF/NFI/3ZjonT3oKXcMPSHc9uRIo='; style-src 'self' 'sha256-z2P7kGW5Z05eCTjTZdYpc0vThTlOE9vmt97pVSvi2I4=' 'sha256-ibtFOuTMIdUHzBb1O1DUg3O6mNXIeZNbOW0riCE9CtE='; img-src 'self' data:; font-src 'self'; connect-src 'self'; worker-src 'self'; object-src 'none'; base-uri 'none'; form-action 'none'; manifest-src 'self'; upgrade-insecure-requests">
 <meta name="referrer" content="strict-origin-when-cross-origin">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <style>:root{color-scheme:light;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}body{margin:0}[hidden]{display:none!important}</style>
@@ -56,8 +56,9 @@ h1 { margin: 0; font-size: 1.6rem; font-weight: 700; text-wrap: balance; }
 .problem-card.good { border-color: var(--good); box-shadow: 0 0 0 2px var(--good) inset; }
 .problem-card.bad { border-color: var(--bad); box-shadow: 0 0 0 2px var(--bad) inset; }
 .kind { align-self: center; background: var(--chip); color: var(--ink); font-size: 0.78rem; font-weight: 600; letter-spacing: 0.06em; text-transform: uppercase; padding: 4px 10px; border-radius: 999px; }
-.stage { display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 6px; flex: 1 1 auto; min-height: 0; width: 100%; }
-.sum { font-size: clamp(2.2rem, min(11vw, 9dvh), 4.4rem); font-weight: 700; font-variant-numeric: tabular-nums; white-space: nowrap; letter-spacing: 0.02em; }
+.stage { display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 6px; flex: 1 1 auto; min-height: 0; width: 100%; container-type: inline-size; }
+/* Big sums (age 11+, like 10,000 − 9,999) shrink to fit the card. --n is the number of characters, set by the script. */
+.sum { font-size: min(clamp(2.2rem, min(11vw, 9dvh), 4.4rem), calc(100cqi / (var(--n, 1) * 0.56))); font-weight: 700; font-variant-numeric: tabular-nums; white-space: nowrap; letter-spacing: 0.02em; }
 .sum .op { color: var(--accent); }
 .sum .q { color: var(--mark); }
 .problem-card.good .sum .q { color: var(--good); }
@@ -501,6 +502,7 @@ const keyOf = (p) => p.kind + (p.kind === "ss" ? p.word[1] + p.mode : p.kind ===
       s.children[2].textContent = num(p.b);
       s.children[1].before(" "); s.children[1].after(" ");
       s.setAttribute("aria-label", p.a + " " + t(word[p.op]) + " " + p.b);
+      s.style.setProperty("--n", s.textContent.length);
       stage.appendChild(s);
     } else if (p.kind === "cl") {
       stage.appendChild(clock(p.h, p.m));
