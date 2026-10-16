@@ -232,7 +232,7 @@ Equation Balance shows a see-saw above the equation: a `muted` stand and an `ink
 
 ### Feedback line
 
-Inside the problem card, under the problem: a short bold word: "Correct!" in green or "Not quite." in red, then one plain sentence that explains why. Every game puts it in the card (What Time Is It? too), and the card's border turns green or red with it. After an answer the problem and its picture shrink (`zoom`) so the whole sentence fits without scrolling.
+Inside the problem card, under the problem: a short bold word: "Correct!" in green or "Not quite." in red, then one plain sentence that explains why. Every game puts it in the card (What Time Is It? too), and the card's border turns green or red with it. After an answer the problem and its picture shrink (`zoom`) so the whole sentence fits without scrolling. Plus and Minus explains the first carry or trade in full and later ones in a short form, and if the reason is still too long it steps the text down (`fit1` to `fit3` on the card) until it fits, even at 360 × 640 in German.
 
 ### Number line
 
@@ -435,4 +435,3 @@ Example prompts:
 
 - Each game page still has its own copy of some base styles (pad, problem card, top bar). Only themes, rewards, settings, the back button and the Last 5 pill are shared today.
 - Some pages set light fallback colors in their own `:root`. The theme from `loopy.css` replaces them.
-- On the smallest phones (360 × 640) in German, a long reason in Plus and Minus or Times and Share can still be a line too long for the card. It scrolls inside the card and can take keyboard focus.

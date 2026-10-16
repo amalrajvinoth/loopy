@@ -179,17 +179,30 @@ The build also runs `tools/csp.py`, then writes `sw.js`, the offline helper. `sw
 
 The "Easier to read" font (Atkinson Hyperlegible Next, 13 KB) is only loaded by a page when that setting is on, so the sizes below do not change. The offline helper saves it with the other fonts, so it also works offline. The fonts keep only the letters loopy uses (English and German). To rebuild them, for example after adding a letter to the list in `tools/build.py`, install `fonttools` and `brotli` and run `python3 tools/build.py --fonts`.
 
-Page sizes, sent over the network with fonts:
+Page sizes, sent over the network with `loopy.js`, `loopy.css` and the two fonts (63 KB of that is shared, and the browser keeps it after the first page):
 
-| Page | Before | After | Lighthouse (phone, slow 4G) |
-| --- | --- | --- | --- |
-| Home | 87 KB | 51 KB | 93 → 100 |
-| Help | 85 KB | 50 KB | 98 → 100 |
-| What Time Is It? | 59 KB | 33 KB | 92 → 100 |
-| Plus and Minus | 59 KB | 33 KB | 92 → 100 |
-| Times and Share | 60 KB | 34 KB | 92 → 100 |
-| Sound Spell | 61 KB | 35 KB | 92 → 100 |
+| Page | Sent |
+| --- | --- |
+| Home | 74 KB |
+| Help | 70 KB |
+| How it's going | 71 KB |
+| Today's 10 | 76 KB |
+| What Time Is It? | 72 KB |
+| Plus and Minus | 72 KB |
+| Times and Share | 73 KB |
+| Make 10 | 72 KB |
+| Bigger or Smaller | 77 KB |
+| Pizza Fractions | 77 KB |
+| Coins and Change | 77 KB |
+| Equation Balance | 74 KB |
+| Times Tables Sprint | 73 KB |
+| Sound Spell | 74 KB |
+| Word Match | 74 KB |
+| Spell It | 75 KB |
+| Where Is It? | 99 KB |
+| Flags and Capitals | 78 KB |
+| Quick Facts | 84 KB |
 
-Measured with Lighthouse 12 on a local server that compresses files like GitHub Pages does. First content shows in 0.9 seconds on every page (was 1.4 to 1.5).
+Measured on 16 October 2026 the way `tools/review.py` counts it (text compressed like GitHub Pages does, fonts as they are). The review fails a page over 100 KB. When the faster loading work landed (PR #23), the first pages went from about 60 to 87 KB down to 33 to 51 KB, and Lighthouse scored 100 on a phone on slow 4G. Pages have grown since with more children, offline mode, reading aloud and the report button.
 
 Do not add outside scripts, fonts, trackers or analytics. The security rules on each page block them, and they would break the promise that nothing leaves the device.
