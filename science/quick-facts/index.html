@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'sha256-aIPeB5Y1gIBNrB5/kjqeK60unGHVo4iUbAzYTXQkp/Q='; style-src 'self' 'sha256-z2P7kGW5Z05eCTjTZdYpc0vThTlOE9vmt97pVSvi2I4=' 'sha256-oLQF3jnCxf/mhP8dw8TD8Q631n/SdgEZHa5Z9K9C5do=' 'sha256-RT1053JU5UiKvjrCUFx1rlhdFLMmgtuFJ9T8jnMeawQ=' 'sha256-Br4cB+hVljxoS3/c/2l3lBJi6726stQfugcW6KWKnPU='; img-src 'self' data:; font-src 'self'; connect-src 'self'; worker-src 'self'; object-src 'none'; base-uri 'none'; form-action 'none'; manifest-src 'self'; upgrade-insecure-requests">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'sha256-cTy4pxsho9Pan/hf2+a8U5FTklVWBI1nvOYa5SLKvNk='; style-src 'self' 'sha256-z2P7kGW5Z05eCTjTZdYpc0vThTlOE9vmt97pVSvi2I4=' 'sha256-oLQF3jnCxf/mhP8dw8TD8Q631n/SdgEZHa5Z9K9C5do=' 'sha256-RT1053JU5UiKvjrCUFx1rlhdFLMmgtuFJ9T8jnMeawQ=' 'sha256-Br4cB+hVljxoS3/c/2l3lBJi6726stQfugcW6KWKnPU='; img-src 'self' data:; font-src 'self'; connect-src 'self'; worker-src 'self'; object-src 'none'; base-uri 'none'; form-action 'none'; manifest-src 'self'; upgrade-insecure-requests">
 <meta name="referrer" content="strict-origin-when-cross-origin">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <style>:root{color-scheme:light;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}body{margin:0}[hidden]{display:none!important}</style>
@@ -263,6 +263,7 @@ body { min-height: 100vh; min-height: 100dvh; padding-block: 12px 16px; }
     <h1 id="title" data-t="qfName">Quick Facts</h1>
     <div class="score" aria-live="polite">
       <div class="pill pill-score"><span data-t="score">Score</span><b id="score">0 / 0</b></div>
+      <div id="level"></div>
       <div class="pill pill-streak"><span data-t="streak">Streak</span><b id="streak">0</b></div>
       <div id="last5" data-game="quick-facts"></div>
     </div>
@@ -312,16 +313,14 @@ Loopy.addStrings({
     qfL1: "Starter", qfL2: "Explorer", qfL3: "Expert",
     qfKbd: "Keyboard works too: 1 to 4 picks an answer, Enter goes on.",
     qfAnswerIs: "The answer is: {a}.", qfReadQ: "{q} Is it {list}?",
-    qfHow: "Read each question. Circle the right answer.",
-    qfTryL2: "Try Explorer questions", qfTryL3: "Try Expert questions"
+    qfHow: "Read each question. Circle the right answer."
   },
   de: {
     qfName: "Blitzwissen", qfTopic: "Thema", qfLevel: "Stufe", qfAll: "Alle", qfSpace: "Weltall", qfAnimals: "Tiere", qfBody: "Körper",
     qfL1: "Einsteiger", qfL2: "Entdecker", qfL3: "Profi",
     qfKbd: "Die Tastatur geht auch: 1 bis 4 wählt eine Antwort, Enter geht weiter.",
     qfAnswerIs: "Die Antwort ist: {a}.", qfReadQ: "{q} Ist es {list}?",
-    qfHow: "Lies jede Frage. Kreise die richtige Antwort ein.",
-    qfTryL2: "Probiere Entdecker-Fragen", qfTryL3: "Probiere Profi-Fragen"
+    qfHow: "Lies jede Frage. Kreise die richtige Antwort ein."
   }
 });
 
@@ -565,12 +564,17 @@ function makeProblem(lang, topic, level, avoid) {
   let topic = store.get("qf.topic", "all", ["all", ...TOPICS]);
   let level;
   // The level is remembered per age, so each age starts at the right level.
-  function loadForAge() { level = store.get("qf.level.a" + age, age <= 8 ? 1 : age <= 10 ? 2 : 3, [1, 2, 3]); }
+  const levelForAge = (a) => a <= 8 ? 1 : a <= 10 ? 2 : 3;
+  function loadForAge() { level = store.get("qf.level.a" + age, levelForAge(age), [1, 2, 3]); }
   loadForAge();
+  Loopy.levels.init({ names: ["qfL1", "qfL2", "qfL3"],
+    get: () => level - 1, base: () => levelForAge(age) - 1,
+    set: (i) => { level = i + 1; store.set("qf.level.a" + age, level); render(); } });
   let right = 0, tried = 0, streak = 0;
   let current = null, answered = false, recent = [];
 
   function render() {
+    Loopy.levels.render();
     $("score").textContent = right + " / " + tried;
     $("streak").textContent = streak;
     topicBtns.forEach(b => b.setAttribute("aria-pressed", String(b.dataset.topic === topic)));
@@ -610,7 +614,7 @@ function makeProblem(lang, topic, level, avoid) {
     if (ok) { right++; streak++; } else { streak = 0; }
     // The progress page keeps 40 letters of the question.
     const q = current.text.q.length > 40 ? current.text.q.slice(0, 39) + "…" : current.text.q;
-    if (ok) Loopy.rewards.correct("quick-facts", streak, harder());
+    if (ok) Loopy.rewards.correct("quick-facts", streak);
     else Loopy.rewards.wrong("quick-facts", { q, a: current.answer, y: btn.textContent, k: "qf-" + current.fact.topic });
     card.classList.remove("good", "bad");
     card.classList.add(ok ? "good" : "bad");
@@ -621,11 +625,6 @@ function makeProblem(lang, topic, level, avoid) {
     feedbackEl.appendChild(document.createTextNode((ok ? "" : t("qfAnswerIs", { a: current.answer }) + " ") + current.text.why));
     render();
     nextBtn.focus({ preventScroll: true });
-  }
-  // What "Make it harder" does after 10 in a row: Explorer, then Expert questions.
-  function harder() {
-    if (level < 3) return { label: t(level === 1 ? "qfTryL2" : "qfTryL3"), apply: () => { level++; store.set("qf.level.a" + age, level); render(); } };
-    return null;
   }
 
   nextBtn.addEventListener("click", newRound);

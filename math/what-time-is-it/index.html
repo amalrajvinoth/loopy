@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'sha256-exFzlXxRubzqUFQm3lgl2En64GmbTVn7zH6ypgqg8DA='; style-src 'self' 'sha256-z2P7kGW5Z05eCTjTZdYpc0vThTlOE9vmt97pVSvi2I4=' 'sha256-QVpmm1g8XiiPgD0F5guH0rbbAL8I1o0yAGUz+Xaa1rw=' 'sha256-RT1053JU5UiKvjrCUFx1rlhdFLMmgtuFJ9T8jnMeawQ=' 'sha256-5l6V+0rs32MZBxOmHM8a+NkXfKUwwyzAJ74f5R8vnvw='; img-src 'self' data:; font-src 'self'; connect-src 'self'; worker-src 'self'; object-src 'none'; base-uri 'none'; form-action 'none'; manifest-src 'self'; upgrade-insecure-requests">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'sha256-DWqHTHuh/7LSidTgk7lHSOaBQBPJS1yxkKzuPo5ES28='; style-src 'self' 'sha256-z2P7kGW5Z05eCTjTZdYpc0vThTlOE9vmt97pVSvi2I4=' 'sha256-QVpmm1g8XiiPgD0F5guH0rbbAL8I1o0yAGUz+Xaa1rw=' 'sha256-RT1053JU5UiKvjrCUFx1rlhdFLMmgtuFJ9T8jnMeawQ=' 'sha256-5l6V+0rs32MZBxOmHM8a+NkXfKUwwyzAJ74f5R8vnvw='; img-src 'self' data:; font-src 'self'; connect-src 'self'; worker-src 'self'; object-src 'none'; base-uri 'none'; form-action 'none'; manifest-src 'self'; upgrade-insecure-requests">
 <meta name="referrer" content="strict-origin-when-cross-origin">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <style>:root{color-scheme:light;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}body{margin:0}[hidden]{display:none!important}</style>
@@ -197,6 +197,7 @@ svg#clock { width: min(100%, 360px, 36vh); width: min(100%, 360px, 36dvh); }
     <h1 id="title" data-t="clName">What Time Is It?</h1>
     <div class="score" aria-live="polite">
       <div class="pill pill-score"><span data-t="score">Score</span><b id="score">0 / 0</b></div>
+      <div id="level"></div>
       <div class="pill pill-streak"><span data-t="streak">Streak</span><b id="streak">0</b></div>
       <div id="last5" data-game="clock"></div>
     </div>
@@ -248,7 +249,7 @@ Loopy.addStrings({
     clOclock: "The long hand points to 12, so it is {h} o'clock.", clMin: "The long hand points to {n}, which is {m} minutes.",
     clMark: "The long hand is 1 small mark past the {n}, so {b} + 1 = {m} minutes.",
     clMarks: "The long hand is {k} small marks past the {n}, so {b} + {k} = {m} minutes.",
-    clTry15: "Try quarter hours", clTry5: "Try every 5 minutes", clTry1: "Try every minute",
+   
     clHow: "Read each clock. Write the time on the line.", clReadQ: "Read the clock. Is it {list}?"
   },
   de: {
@@ -261,7 +262,7 @@ Loopy.addStrings({
     clOclock: "Der lange Zeiger zeigt auf die 12, also ist es {h} Uhr.", clMin: "Der lange Zeiger zeigt auf die {n}, das sind {m} Minuten.",
     clMark: "Der lange Zeiger steht 1 kleinen Strich nach der {n}, also {b} + 1 = {m} Minuten.",
     clMarks: "Der lange Zeiger steht {k} kleine Striche nach der {n}, also {b} + {k} = {m} Minuten.",
-    clTry15: "Probiere Viertelstunden", clTry5: "Probiere alle 5 Minuten", clTry1: "Probiere jede Minute",
+   
     clHow: "Lies jede Uhr ab. Schreibe die Uhrzeit auf die Linie.", clReadQ: "Lies die Uhr. Ist es {list}?"
   }
 });
@@ -286,6 +287,11 @@ Loopy.addStrings({
   let age = window.Loopy ? Loopy.getAge() : 8;
   let step = store.get("clockquiz.step.a" + age, stepForAge(age), [30, 15, 5, 1]);
   let showHelper = store.get("clockquiz.helper", false, [true, false]);
+  // The ladder: hours and halves, quarter hours, every 5 minutes, every minute.
+  const STEPS = [30, 15, 5, 1];
+  if (window.Loopy && Loopy.levels) Loopy.levels.init({ names: ["lvHalf", "lvQuarter", "lvFive", "lvOne"],
+    get: () => STEPS.indexOf(step), base: () => STEPS.indexOf(stepForAge(age)),
+    set: (i) => { step = STEPS[i]; store.set("clockquiz.step.a" + age, step); render(); } });
   let right = 0, tried = 0, streak = 0;
   let current = null, answered = false, recent = [], choices = [];
 
@@ -371,6 +377,7 @@ Loopy.addStrings({
   }
 
   function render() {
+    if (window.Loopy && Loopy.levels) Loopy.levels.render();
     document.getElementById("score").textContent = right + " / " + tried;
     document.getElementById("streak").textContent = streak;
     levelBtns.forEach(b => b.setAttribute("aria-pressed", String(+b.dataset.step === step)));
@@ -412,7 +419,7 @@ Loopy.addStrings({
       else b.classList.add("faded");
     });
     if (ok) { right++; streak++; } else { streak = 0; }
-    if (window.Loopy && Loopy.rewards) ok ? Loopy.rewards.correct("clock", streak, harder()) : Loopy.rewards.wrong("clock", { q: "🕒", a: fmt(current.h, current.m), y: btn.textContent, k: Loopy.log.timeKind(current.m) });
+    if (window.Loopy && Loopy.rewards) ok ? Loopy.rewards.correct("clock", streak) : Loopy.rewards.wrong("clock", { q: "🕒", a: fmt(current.h, current.m), y: btn.textContent, k: Loopy.log.timeKind(current.m) });
     feedbackEl.className = "feedback " + (ok ? "good" : "bad");
     feedbackEl.parentNode.classList.add(ok ? "good" : "bad");
     const head = ok ? (streak >= 3 ? L("correctRow", { n: streak }) : L("correct")) : L("clItIs", { time: fmt(current.h, current.m) });
@@ -424,13 +431,6 @@ Loopy.addStrings({
     document.getElementById("next").focus({ preventScroll: true });
   }
 
-  // What "Make it harder" does after 10 in a row: move to the next level.
-  function harder() {
-    const steps = [30, 15, 5, 1];
-    const i = steps.indexOf(step);
-    if (i < 0 || i === steps.length - 1) return null;
-    return { label: L("clTry" + steps[i + 1]), apply: () => { step = steps[i + 1]; store.set("clockquiz.step.a" + age, step); render(); } };
-  }
   levelBtns.forEach(b => b.addEventListener("click", () => {
     step = +b.dataset.step; store.set("clockquiz.step.a" + age, step); render(); newRound();
   }));

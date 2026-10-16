@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'sha256-2YVLNVh4tWMxeR3pB71LEA3Yux7J9U9mSl6Cua5XJd8='; style-src 'self' 'sha256-z2P7kGW5Z05eCTjTZdYpc0vThTlOE9vmt97pVSvi2I4=' 'sha256-ER4UVxOAHVG2PpFuwsi/fNYnlP9iTYLytTr9Qx7YKqY=' 'sha256-RT1053JU5UiKvjrCUFx1rlhdFLMmgtuFJ9T8jnMeawQ=' 'sha256-mwWMixE1/vkBEnQwvOKdRVExrt+0Q+hPdWkRqhv1eIA='; img-src 'self' data:; font-src 'self'; connect-src 'self'; worker-src 'self'; object-src 'none'; base-uri 'none'; form-action 'none'; manifest-src 'self'; upgrade-insecure-requests">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'sha256-WNgKct3PxOs6OvOR6AsfjYvEmzUQ2gjRpo+dyn6EpOM='; style-src 'self' 'sha256-z2P7kGW5Z05eCTjTZdYpc0vThTlOE9vmt97pVSvi2I4=' 'sha256-ER4UVxOAHVG2PpFuwsi/fNYnlP9iTYLytTr9Qx7YKqY=' 'sha256-RT1053JU5UiKvjrCUFx1rlhdFLMmgtuFJ9T8jnMeawQ=' 'sha256-mwWMixE1/vkBEnQwvOKdRVExrt+0Q+hPdWkRqhv1eIA='; img-src 'self' data:; font-src 'self'; connect-src 'self'; worker-src 'self'; object-src 'none'; base-uri 'none'; form-action 'none'; manifest-src 'self'; upgrade-insecure-requests">
 <meta name="referrer" content="strict-origin-when-cross-origin">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <style>:root{color-scheme:light;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}body{margin:0}[hidden]{display:none!important}</style>
@@ -212,6 +212,7 @@ body { min-height: 100vh; min-height: 100dvh; padding-block: 12px 16px; }
     <h1 id="title">Plus and Minus to 100</h1>
     <div class="score" aria-live="polite">
       <div class="pill pill-score"><span data-t="score">Score</span><b id="score">0 / 0</b></div>
+      <div id="level"></div>
       <div class="pill pill-streak"><span data-t="streak">Streak</span><b id="streak">0</b></div>
       <div id="last5" data-game="plus-minus"></div>
     </div>
@@ -272,7 +273,7 @@ body { min-height: 100vh; min-height: 100dvh; padding-block: 12px 16px; }
 <script>
 Loopy.addStrings({
   en: {
-    pmName: "Plus and Minus", pmTitle: "Plus and Minus to {max}",
+    pmName: "Plus and Minus", pmTitle: "Plus and Minus to {max}", pmUpTo: "Up to {n}", pmLvCarry: "Up to 100 with carrying",
     problems: "Problems", adding: "Adding", takingAway: "Taking away",
     regrouping: "Regrouping", none: "None", some: "Some", always: "Always",
     place0: "Ones", place1: "Tens", place2: "Hundreds", place3: "Thousands", place4: "Ten thousands",
@@ -282,12 +283,12 @@ Loopy.addStrings({
     pmCant: "you can't take {b} from {a}, so trade 1 {next} for 10 {place}",
     pmTrade: "trade 1 {next} for 10 {place}",
     pmTradeShort: "trade 1 {next}",
-    pmTrySome: "Try some regrouping problems", pmTryAll: "Try regrouping in every problem",
-    pmTryMix: "Try adding and taking away mixed together", plus: "plus", minus: "minus",
+   
+    plus: "plus", minus: "minus",
     pmHow: "Work out each sum. Write the answer under the line."
   },
   de: {
-    pmName: "Plus und Minus", pmTitle: "Plus und Minus bis {max}",
+    pmName: "Plus und Minus", pmTitle: "Plus und Minus bis {max}", pmUpTo: "Bis {n}", pmLvCarry: "Bis 100 mit Übertrag",
     problems: "Aufgaben", adding: "Plus", takingAway: "Minus",
     regrouping: "Übertrag", none: "Nie", some: "Manchmal", always: "Immer",
     place0: "Einer", place1: "Zehner", place2: "Hunderter", place3: "Tausender", place4: "Zehntausender",
@@ -297,8 +298,8 @@ Loopy.addStrings({
     pmCant: "{b} von {a} geht nicht, also tausche 1 {next} gegen 10 {place}",
     pmTrade: "tausche 1 {next} gegen 10 {place}",
     pmTradeShort: "tausche 1 {next}",
-    pmTrySome: "Probiere ein paar Aufgaben mit Übertrag", pmTryAll: "Probiere Übertrag in jeder Aufgabe",
-    pmTryMix: "Probiere Plus und Minus gemischt", plus: "plus", minus: "minus",
+   
+    plus: "plus", minus: "minus",
     pmHow: "Rechne jede Aufgabe aus. Schreibe das Ergebnis unter den Strich."
   }
 });
@@ -307,6 +308,7 @@ Loopy.addStrings({
 const randInt = (lo, hi) => lo + Math.floor(Math.random() * (hi - lo + 1));
 
 // How big the numbers get for each age (grade 1 is about age 6).
+const MAXES = [20, 100, 1000, 10000];
 function maxForAge(age) {
   if (age <= 6) return 20;
   if (age <= 8) return 100;
@@ -404,16 +406,29 @@ function explain(p) {
   // Settings are remembered per age, so each age starts at the right level.
   function loadForAge() {
     const d = defaultsForAge(age);
-    max = maxForAge(age);
+    max = store.get("pm100.max.a" + age, maxForAge(age), MAXES);
     opMode = store.get("pm100.op.a" + age, d.op, ["add", "sub", "mix"]);
     rgMode = store.get("pm100.rg.a" + age, d.rg, ["no", "mix", "yes"]);
-    $("title").textContent = t("pmTitle", { max: Loopy.num(max) });
+    showTitle();
   }
+  function showTitle() { $("title").textContent = t("pmTitle", { max: Loopy.num(max) }); }
   loadForAge();
+  // The ladder: to 20 adding only, to 100, to 100 with carrying, to 1,000, to 10,000.
+  const LADDER = [[20, "add", "no"], [100, "mix", "no"], [100, "mix", "mix"], [1000, "mix", "mix"], [10000, "mix", "mix"]];
+  const rung = (m, rg) => m === 20 ? 0 : m === 100 ? (rg === "no" ? 1 : 2) : m === 1000 ? 3 : 4;
+  if (window.Loopy && Loopy.levels) Loopy.levels.init({
+    names: [() => t("pmUpTo", { n: 20 }), () => t("pmUpTo", { n: 100 }), "pmLvCarry", () => t("pmUpTo", { n: Loopy.num(1000) }), () => t("pmUpTo", { n: Loopy.num(10000) })],
+    get: () => rung(max, rgMode), base: () => rung(maxForAge(age), defaultsForAge(age).rg),
+    set: (i) => {
+      [max, opMode, rgMode] = LADDER[i];
+      store.set("pm100.max.a" + age, max); store.set("pm100.op.a" + age, opMode); store.set("pm100.rg.a" + age, rgMode);
+      showTitle(); recent = []; render();
+    } });
   let right = 0, tried = 0, streak = 0;
   let current = null, typed = "", answered = false, recent = [];
 
   function render() {
+    if (window.Loopy && Loopy.levels) Loopy.levels.render();
     $("score").textContent = right + " / " + tried;
     $("streak").textContent = streak;
     opBtns.forEach(b => b.setAttribute("aria-pressed", String(b.dataset.op === opMode)));
@@ -457,7 +472,7 @@ function explain(p) {
     answered = true; tried++;
     const ok = parseInt(typed, 10) === current.answer;
     if (ok) { right++; streak++; } else { streak = 0; }
-    if (window.Loopy && Loopy.rewards) ok ? Loopy.rewards.correct("plus-minus", streak, harder()) : Loopy.rewards.wrong("plus-minus", { q: Loopy.num(current.a) + (current.op === "add" ? " + " : " − ") + Loopy.num(current.b), a: Loopy.num(current.answer), y: Loopy.num(parseInt(typed, 10)), k: Loopy.log.kind(current.op, current.a, current.b) });
+    if (window.Loopy && Loopy.rewards) ok ? Loopy.rewards.correct("plus-minus", streak) : Loopy.rewards.wrong("plus-minus", { q: Loopy.num(current.a) + (current.op === "add" ? " + " : " − ") + Loopy.num(current.b), a: Loopy.num(current.answer), y: Loopy.num(parseInt(typed, 10)), k: Loopy.log.kind(current.op, current.a, current.b) });
     card.className = "problem-card " + (ok ? "good" : "bad");
     feedbackEl.className = "feedback " + (ok ? "good" : "bad");
     const sign = current.op === "add" ? " + " : " − ";
@@ -482,19 +497,6 @@ function explain(p) {
     }
   }
   window.addEventListener("resize", fitReason);
-  // What "Make it harder" does after 10 in a row: more regrouping first, then mixed adding and taking away.
-  function harder() {
-    if (rgMode !== "yes") {
-      const next = rgMode === "no" ? "mix" : "yes";
-      return { label: t(next === "mix" ? "pmTrySome" : "pmTryAll"),
-        apply: () => { rgMode = next; store.set("pm100.rg.a" + age, rgMode); render(); } };
-    }
-    if (opMode !== "mix") {
-      return { label: t("pmTryMix"),
-        apply: () => { opMode = "mix"; store.set("pm100.op.a" + age, opMode); render(); } };
-    }
-    return null;
-  }
   function go() { answered ? newRound() : check(); }
 
   digitBtns.forEach(b => b.addEventListener("click", () => press(b.dataset.d)));

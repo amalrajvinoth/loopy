@@ -22,7 +22,7 @@ The pad has every letter the word needs, once, plus a few extra letters. For a d
 | 8 | 5 letters, like "horse" or "Katze", 10 keys |
 | 9 and up | 6 to 8 letters, like "rabbit" or "Elefant", 10 keys |
 
-After 10 right in a row the game offers to make it harder: words one letter longer, up to 6 to 8 letters.
+The level shows next to the score, like "Level 2 of 4". After 10 right in a row the game offers the next level. After 3 wrong in the last 5 it offers an easier one, once a visit. A level picked by hand in Settings is kept for that age. The levels: 3, 4, 5 and 6 to 8 letters.
 
 ## Words
 
