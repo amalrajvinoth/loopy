@@ -253,6 +253,10 @@ Spell It shows one box per letter under the picture: a bold letter on a `line` u
 
 Where Is It? draws its maps in SVG, from simple Natural Earth outlines stored in the page (Mercator projection). The map sits on a card with radius 24px and fills the room left on screen; it grows to the screen's shape instead of cutting the view. Colors are solid mixes of the theme, made in the script so shapes never show through each other: the sea is 16% `c1` on the card color, land is 20% `ink` on the sea, and countries that can be asked are 40% `ink`. Country borders are 1px `card` lines at every zoom. For continents there are no country borders and each continent takes an accent at 60%: Europe and South America `c1`, Asia `c4`, Africa, North America and Oceania `c2`, Antarctica `muted`. After an answer the right place is `good` and a wrong tap is `bad` (oceans at 35%), with the names in bold Lexend 15px, `ink` with a `card` outline, kept inside the map. A capital is a small `ink` dot with its name above. Tab moves between the places that can be asked, with a 3px `c2` outline.
 
+### Flags
+
+Flags and Capitals draws each flag in SVG from a few boxes, stripes, circles, stars and lines stored in the page, on a 30 × 20 grid (Switzerland is square). Like coins, flags keep their real colors in every theme, High contrast too, so they look like the real thing. Emoji flags are not used, because they do not show on Windows. Emblems and coats of arms are left out or drawn as simple shapes. A thin `muted` edge goes round every flag, so white parts show on a white card. The flag fills the room left on the card and gets smaller after an answer, so the question and the fact line fit. The answers are the same four buttons as Quick Facts. On the worksheet the flags print in color.
+
 ### Top bar
 
 Each game has a top bar with the back button on the left, and the star counter, the flag (Report a problem), the child playing and the ⚙ Settings button on the right. The score row sits next to the title when it fits, else under it, on one line: the Last 5 pill, then the streak as "🔥 3". The score (right out of tried) is kept for screen readers only; grown-ups see the numbers on the How it's going page.
@@ -291,7 +295,7 @@ The first time a child opens a game, a `c1` bubble with `on-accent` Fredoka text
 
 ### Worksheet (print)
 
-What **Print worksheet** prints. Only the sheet prints; the game is hidden. It is always black on white, whatever the theme, and uses no background colors, because browsers do not print them by default. Lines are borders.
+What **Print worksheet** prints. Only the sheet prints; the game is hidden. It is always black on white, whatever the theme (except the flags in Flags and Capitals, which print in color), and uses no background colors, because browsers do not print them by default. Lines are borders.
 
 - **Paper:** 12mm margins. Sized to fit both A4 and US Letter. Page 1 has the problems, page 2 the answers.
 - **Header:** the game's name in Fredoka 20pt, the loopy bunny logo on the right (8mm tall, the same drawing as the back button, black lines with its green ears), a 0.6mm rule, one grey line with the age and settings, then Name, Date and Score lines, then one bold line saying what to do.
