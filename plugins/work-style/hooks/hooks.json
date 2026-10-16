@@ -1,0 +1,14 @@
+{
+  "description": "Owner's work style: start with the rules, catch new rules, block Claude attribution.",
+  "hooks": {
+    "SessionStart": [
+      { "hooks": [ { "type": "command", "command": "python3 \"${CLAUDE_PLUGIN_ROOT}/hooks/rules.py\"", "timeout": 10 } ] }
+    ],
+    "UserPromptSubmit": [
+      { "hooks": [ { "type": "command", "command": "python3 \"${CLAUDE_PLUGIN_ROOT}/hooks/catch_rule.py\"", "timeout": 10 } ] }
+    ],
+    "PreToolUse": [
+      { "matcher": "Bash|mcp__github__.*", "hooks": [ { "type": "command", "command": "python3 \"${CLAUDE_PLUGIN_ROOT}/hooks/no_attribution.py\"", "timeout": 10 } ] }
+    ]
+  }
+}

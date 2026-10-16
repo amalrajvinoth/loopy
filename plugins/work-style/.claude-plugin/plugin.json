@@ -1,0 +1,7 @@
+{
+  "name": "work-style",
+  "version": "1.0.0",
+  "description": "How the owner likes to work in any repo: plans with numbered options, fix an issue, plan a PR fix, resolve conflicts, apply review suggestions, record new rules, no Claude attribution.",
+  "author": { "name": "amalrajvinoth" },
+  "repository": "https://github.com/amalrajvinoth/loopy"
+}

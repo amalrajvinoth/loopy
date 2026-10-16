@@ -1,0 +1,97 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(python3 tools/build.py:*)",
+      "Bash(python3 tools/csp.py:*)",
+      "Bash(python3 tools/check_external.py:*)",
+      "Bash(python3 tools/review.py:*)",
+      "Bash(python3 plugins/sync.py:*)",
+      "Bash(python3 plugins/test_hooks.py:*)",
+      "Bash(python3 plugins/loopy/scripts/drift.py:*)",
+      "Bash(python3 plugins/loopy/scripts/resolve_built.py:*)",
+      "Bash(node tools/e2e/play.mjs:*)",
+      "Bash(node tools/a11y/check.mjs:*)",
+      "Bash(node plugins/loopy/scripts/screens.mjs:*)",
+      "Bash(git fetch:*)",
+      "Bash(git merge origin/main:*)"
+    ]
+  },
+  "hooks": {
+    "SessionStart": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "python3 \"$CLAUDE_PROJECT_DIR/plugins/loopy/hooks/session_start.py\"",
+            "timeout": 180
+          }
+        ]
+      },
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "python3 \"$CLAUDE_PROJECT_DIR/plugins/work-style/hooks/rules.py\"",
+            "timeout": 10
+          }
+        ]
+      }
+    ],
+    "PreToolUse": [
+      {
+        "matcher": "Edit|Write|MultiEdit|NotebookEdit",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "python3 \"$CLAUDE_PROJECT_DIR/plugins/loopy/hooks/guard_files.py\"",
+            "timeout": 10
+          }
+        ]
+      },
+      {
+        "matcher": "Bash|mcp__github__.*",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "python3 \"$CLAUDE_PROJECT_DIR/plugins/work-style/hooks/no_attribution.py\"",
+            "timeout": 10
+          }
+        ]
+      }
+    ],
+    "PostToolUse": [
+      {
+        "matcher": "Bash",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "python3 \"$CLAUDE_PROJECT_DIR/plugins/loopy/hooks/after_merge.py\"",
+            "timeout": 120
+          }
+        ]
+      }
+    ],
+    "Stop": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "python3 \"$CLAUDE_PROJECT_DIR/plugins/loopy/hooks/heal.py\"",
+            "timeout": 120
+          }
+        ]
+      }
+    ],
+    "UserPromptSubmit": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "python3 \"$CLAUDE_PROJECT_DIR/plugins/work-style/hooks/catch_rule.py\"",
+            "timeout": 10
+          }
+        ]
+      }
+    ]
+  }
+}

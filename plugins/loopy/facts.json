@@ -1,0 +1,44 @@
+{
+  "ci_steps": [
+    "checks.yml: Checks",
+    "checks.yml: Every page's security policy matches its code",
+    "checks.yml: Nothing is loaded from other websites",
+    "checks.yml: Install the minifiers (exact versions, checked by hash)",
+    "checks.yml: loopy.js and loopy.css match their sources in src/",
+    "checks.yml: The Claude Code plugins match the repo",
+    "checks.yml: Install the checker (exact versions from the lock file, no browser download)",
+    "checks.yml: Every page works with a keyboard and a screen reader",
+    "checks.yml: Every game plays, and no question comes back too soon"
+  ],
+  "tools": [
+    "tools/a11y/check.mjs",
+    "tools/build.py",
+    "tools/check_external.py",
+    "tools/csp.py",
+    "tools/e2e/play.mjs",
+    "tools/review.py"
+  ],
+  "repo_skills": [
+    "loopy-review"
+  ],
+  "built_files": [
+    "loopy.css",
+    "loopy.js",
+    "sw.js"
+  ],
+  "pr_template": [
+    "What changed",
+    "Changes",
+    "Before and after",
+    "Checked"
+  ],
+  "screens": [
+    "1180 × 820",
+    "360 × 640",
+    "390 × 844",
+    "820 × 1180",
+    "844 × 390"
+  ],
+  "games_lists": 3,
+  "learned_at": "14e5d38"
+}

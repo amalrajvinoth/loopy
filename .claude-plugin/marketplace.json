@@ -1,0 +1,19 @@
+{
+  "name": "loopy-plugins",
+  "owner": { "name": "amalrajvinoth" },
+  "metadata": {
+    "description": "Claude Code plugins for working on loopy, built from how the owner works."
+  },
+  "plugins": [
+    {
+      "name": "work-style",
+      "source": "./plugins/work-style",
+      "description": "How the owner likes to work in any repo: plans with numbered options, fix an issue, plan a PR fix, resolve conflicts, apply review suggestions, record new rules, no Claude attribution."
+    },
+    {
+      "name": "loopy",
+      "source": "./plugins/loopy",
+      "description": "loopy only: build the next roadmap task, add a game, ship a PR with every check, heal failing checks, and keep the plugin in step with the repo."
+    }
+  ]
+}

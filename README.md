@@ -106,6 +106,7 @@ The site is plain HTML, CSS and JavaScript. One small build step makes the share
 | `tools/` | Small scripts: `build.py` makes the small files and the offline list, `csp.py` updates each page's security policy, `check_external.py` makes sure nothing loads from other websites, `review.py` checks that all games follow the same rules, that saved data is kept and that pages stay small, `a11y/` checks every page with a keyboard and a screen reader checker ([how](tools/a11y/README.md)), `e2e/` plays every game and checks that no question repeats ([how](tools/e2e/README.md)) |
 | `RELEASES.md` | What's new: one line per big change, for parents |
 | `.claude/skills/loopy-review/` | The review checklist for every change: design, architecture, saved data, speed and size, docs, games alike, and release notes after a merge |
+| `plugins/` | Claude Code plugins made from how the owner works: commands for the usual asks, hooks that keep the rules, self-healing checks, and a drift check that keeps them up to date ([how](plugins/README.md)). `python3 plugins/sync.py` copies them into `.claude/`, so every session in this repo has them |
 | `math/<game>/index.html` | One game per folder (also `languages/` and `mix/`) |
 | `math/<game>/README.md` | What that game does |
 
