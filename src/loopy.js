@@ -528,6 +528,20 @@ document.documentElement.classList.add("loopy-building");
   var Loopy = window.Loopy, KEY = "loopy.last", PATH = /^[a-z0-9-]{1,30}\/[a-z0-9-]{1,40}\/$/;
   var me = document.currentScript;
   Loopy.root = me && me.src ? new URL(".", me.src).href : new URL(".", location.href).href;
+  // Parts used now and then (Report a problem, the stars code, the worksheet) live in small files next to
+  // loopy.js and load the first time they are needed, so every page starts with less code.
+  // Loopy.load("report") is a promise that loopy-report.js is in (it loads the file once).
+  var parts = {};
+  Loopy.load = function (name) {
+    if (!parts[name]) parts[name] = new Promise(function (ok, no) {
+      var s = document.createElement("script");
+      s.src = Loopy.root + "loopy-" + name + ".js";
+      s.onload = function () { ok(); };
+      s.onerror = function () { delete parts[name]; s.remove(); no(new Error("loopy-" + name + ".js did not load")); };
+      document.head.appendChild(s);
+    });
+    return parts[name];
+  };
   Loopy.last = {
     // The folder of the child's last game, or "" when there is none (or the saved text is not a folder).
     get: function () { var v = Loopy.store.get(KEY); return typeof v === "string" && PATH.test(v) ? v : ""; },
@@ -1385,248 +1399,19 @@ window.Loopy.fresh = function (recent, make, keep) {
 // is copied into an SVG and drawn on a canvas), so it can be saved and added to the issue by hand.
 // Some browsers cannot make it; then the box says to take a screenshot with the device instead.
 (function () {
-  var REPO = "https://github.com/amalrajvinoth/loopy/issues/new";
-  var NOTE = 200, SHOWN = 400;
   var FLAG = '<svg viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 21V4"/><path d="M5 4h11l-2 4 2 4H5"/></svg>';
-  // The issue is read in English, so the kinds have a fixed English name next to the shown one.
-  var KINDS = [["question", "The question is wrong"], ["answer", "The answer seems wrong"], ["looks", "Something looks wrong"]];
   Loopy.addStrings({
-    en: {
-      report: "Report a problem", reportPick: "What is wrong?", rpQuestion: "The question is wrong",
-      rpAnswer: "The answer seems wrong", rpLooks: "Something looks wrong", rpNote: "Anything else? (optional)",
-      rpNoteHint: "For example: 7 + 5 should be 12", rpPicture: "Picture of the screen", rpMaking: "Making a picture…",
-      rpSave: "Save picture", rpNoPic: "No picture on this device. Take a screenshot with your device's buttons instead.",
-      rpWarn: "This opens GitHub in a new tab. GitHub is public and for ages 13 and up, so a grown-up should send it. Do not write a child's name or other personal details.",
-      rpWhat: "A wrong question or answer, or something that looks wrong.", rpOpen: "Open GitHub", rpCopy: "Copy text", rpCopied: "Copied", rpCancel: "Close", rpPickFirst: "Pick one first."
-    },
-    de: {
-      report: "Problem melden", reportPick: "Was ist falsch?", rpQuestion: "Die Aufgabe ist falsch",
-      rpAnswer: "Die Lösung scheint falsch", rpLooks: "Etwas sieht falsch aus", rpNote: "Noch etwas? (freiwillig)",
-      rpNoteHint: "Zum Beispiel: 7 + 5 ist 12", rpPicture: "Bild vom Bildschirm", rpMaking: "Bild wird gemacht…",
-      rpSave: "Bild speichern", rpNoPic: "Auf diesem Gerät gibt es kein Bild. Mach stattdessen ein Bildschirmfoto mit den Tasten deines Geräts.",
-      rpWarn: "Das öffnet GitHub in einem neuen Tab. GitHub ist öffentlich und ab 13 Jahren, darum sollte ein Erwachsener es senden. Schreib keinen Namen eines Kindes und nichts Persönliches.",
-      rpWhat: "Eine falsche Aufgabe oder Lösung, oder etwas sieht falsch aus.", rpOpen: "GitHub öffnen", rpCopy: "Text kopieren", rpCopied: "Kopiert", rpCancel: "Schließen", rpPickFirst: "Wähl zuerst etwas aus."
-    }
+    en: { report: "Report a problem", rpWhat: "A wrong question or answer, or something that looks wrong." },
+    de: { report: "Problem melden", rpWhat: "Eine falsche Aufgabe oder Lösung, oder etwas sieht falsch aus." }
   });
-  var LABELS = { question: "rpQuestion", answer: "rpAnswer", looks: "rpLooks" };
-
   function el(tag, cls, text) {
     var n = document.createElement(tag);
     if (cls) n.className = cls;
     if (text !== undefined) n.textContent = text;
     return n;
   }
-  var flat = function (s, max) { s = String(s || "").replace(/\s+/g, " ").trim(); return s.length > max ? s.slice(0, max - 1) + "…" : s; };
-  function here() { return document.querySelector('script[src$="loopy.js"]'); }
-
-  // loopy's version: the VERSION in sw.js, which changes whenever any file of the site changes.
-  var version = null;
-  function getVersion() {
-    if (version || !window.fetch || !here()) return Promise.resolve(version);
-    return fetch(new URL("sw.js", here().src)).then(function (r) { return r.text(); }).then(function (t) {
-      var m = /VERSION="([0-9a-f]{6,32})"/.exec(t);
-      version = m ? m[1] : null;
-      return version;
-    }).catch(function () { return null; });
-  }
-
-  // What the issue says: the choice, the game, what is on screen, the last answer and the settings.
-  // Fixed words are in English for whoever reads the issue. The child's name is never in it.
-  function details(state, kind, note) {
-    var last = Loopy.rewards && Loopy.rewards.last ? Loopy.rewards.last() : null, d = last && last.d;
-    var lines = [
-      "**Problem:** " + kind[1],
-      "**Game:** " + state.game + " (`" + location.pathname + "`)",
-      "**On screen:** " + (state.screen || "-")
-    ];
-    if (last) lines.push("**Last answer:** " + (last.ok ? "right" : d ? "wrong. Question: " + flat(d.q, 60) + ". Game says: " + flat(d.a, 60) + ". Answered: " + flat(d.y, 60) : "wrong"));
-    lines.push("**Age:** " + (Loopy.getAge ? Loopy.getAge() : "-") + " · **Language:** " + Loopy.lang +
-      " · **Theme:** " + (document.documentElement.getAttribute("data-theme") || "-") +
-      " · **Easier to read:** " + (document.documentElement.getAttribute("data-font") === "easy" ? "on" : "off"));
-    lines.push("**Screen:** " + state.w + " × " + state.h + (state.w > state.h ? " landscape" : " portrait") + " · **Browser:** " + flat(navigator.userAgent, 200));
-    lines.push("**loopy version:** " + (version || "-"));
-    if (note) lines.push("", "**Note:** " + note);
-    return lines.join("\n");
-  }
-  function issueUrl(state, kind, note) {
-    var q = { template: "game-report.yml", title: "Game problem: " + state.game + ": " + kind[1], details: details(state, kind, note) };
-    return REPO + "?" + Object.keys(q).map(function (k) { return k + "=" + encodeURIComponent(q[k]); }).join("&");
-  }
-
-  // The picture. The page is copied as it is when the flag is tapped, with the site's styles and
-  // fonts inside, into an SVG <foreignObject>, then drawn on a canvas and saved as a PNG.
-  // Every file it reads comes from loopy itself. Resolves to a PNG data: URL, or null if the browser can't.
-  function copyPage() {
-    var root = document.documentElement, body = document.body.cloneNode(true);
-    body.querySelectorAll("script, noscript, dialog, .loopy-confetti").forEach(function (n) { n.remove(); });
-    // Typed text lives in the input, not in the copy.
-    var from = document.body.querySelectorAll("input"), to = body.querySelectorAll("input");
-    for (var i = 0; i < from.length && i < to.length; i++) to[i].setAttribute("value", from[i].value);
-    return { body: body, w: innerWidth, h: innerHeight, x: scrollX, y: scrollY,
-      attrs: ["data-theme", "data-font", "lang"].map(function (a) { return [a, root.getAttribute(a)]; }), cls: root.className };
-  }
-  function fontData(url) {
-    return fetch(url).then(function (r) { if (!r.ok) throw r; return r.blob(); }).then(function (b) {
-      return new Promise(function (ok, no) { var f = new FileReader(); f.onload = function () { ok(f.result); }; f.onerror = no; f.readAsDataURL(b); });
-    });
-  }
-  function styles() {
-    var easy = document.documentElement.getAttribute("data-font") === "easy", css = [], fonts = [];
-    Array.prototype.forEach.call(document.styleSheets, function (sheet) {
-      var rules; try { rules = sheet.cssRules; } catch (e) { return; }
-      Array.prototype.forEach.call(rules, function (r) {
-        var t = r.cssText;
-        if (r.type !== 5) return css.push(t); // 5: @font-face
-        // Only the fonts this page shows: the -latin files, and Atkinson only when "Easier to read" is on.
-        var m = /url\("?([^")]+-latin\.woff2)"?\)/.exec(t);
-        if (!m || (!easy && /Atkinson/.test(t))) return;
-        var url = new URL(m[1], sheet.href || location.href).href;
-        fonts.push(fontData(url).then(function (data) { return t.replace(m[0], 'url("' + data + '")'); }, function () { return ""; }));
-      });
-    });
-    // Inside the picture the page is a <div>, so :root, html and body rules point at stand-ins.
-    var text = css.join("\n").replace(/:root/g, ".lp-root").replace(/(^|[\s,>+~(}])html(?=[\s,.:\[{>+~)])/g, "$1.lp-root")
-      .replace(/(^|[\s,>+~(}])body(?=[\s,.:\[{>+~)])/g, "$1.lp-body");
-    return Promise.all(fonts).then(function (f) { return f.join("\n") + "\n" + text; });
-  }
-  function picture(copy) {
-    if (!window.XMLSerializer || !window.fetch) return Promise.resolve(null);
-    return styles().then(function (css) {
-      var wrap = el("div", "lp-root " + copy.cls);
-      copy.attrs.forEach(function (a) { if (a[1] !== null) wrap.setAttribute(a[0], a[1]); });
-      var body = el("div", "lp-body " + (document.body.className || ""));
-      while (copy.body.firstChild) body.appendChild(copy.body.firstChild);
-      // The picture shows the part of the page that was on screen.
-      var shift = ".lp-root{width:" + copy.w + "px;height:" + copy.h + "px;overflow:hidden}" +
-        (copy.x || copy.y ? ".lp-root>.lp-body{transform:translate(" + -copy.x + "px," + -copy.y + "px)}" : "");
-      wrap.appendChild(el("style", "", css + "\n" + shift));
-      wrap.appendChild(body);
-      var html = new XMLSerializer().serializeToString(wrap);
-      var svg = '<svg xmlns="http://www.w3.org/2000/svg" width="' + copy.w + '" height="' + copy.h + '"><foreignObject width="100%" height="100%">' + html + "</foreignObject></svg>";
-      return new Promise(function (ok) {
-        var img = new Image(), scale = Math.min(2, window.devicePixelRatio || 1);
-        img.onload = function () {
-          try {
-            var c = document.createElement("canvas");
-            c.width = Math.round(copy.w * scale); c.height = Math.round(copy.h * scale);
-            var g = c.getContext("2d");
-            g.scale(scale, scale);
-            g.drawImage(img, 0, 0);
-            ok(c.toDataURL("image/png"));
-          } catch (e) { ok(null); } // Some browsers do not allow reading back a drawn SVG.
-        };
-        img.onerror = function () { ok(null); };
-        img.src = "data:image/svg+xml;charset=utf-8," + encodeURIComponent(svg);
-      });
-    }).catch(function () { return null; });
-  }
-
-  function open(btn) {
-    var card = document.getElementById("card") || document.querySelector("main");
-    var h1 = document.querySelector("h1");
-    var state = { game: flat(h1 ? h1.textContent : document.title, 60), screen: flat(card ? card.innerText : "", SHOWN), w: innerWidth, h: innerHeight };
-    var shot = picture(copyPage()), kind = null;
-    getVersion();
-
-    var dlg = el("dialog", "kid-dialog report-dialog");
-    dlg.setAttribute("aria-labelledby", "report-title");
-    var form = el("form");
-    form.method = "dialog";
-    var head = el("h2", "", Loopy.t("report"));
-    head.id = "report-title";
-    form.appendChild(head);
-
-    // Two parts, side by side on short landscape screens: the choices and note, then the picture and buttons.
-    var partA = el("div", "report-part"), partB = el("div", "report-part");
-    form.appendChild(partA); form.appendChild(partB);
-    partA.appendChild(el("span", "kid-label", Loopy.t("reportPick")));
-    var kinds = el("div", "report-kinds");
-    kinds.setAttribute("role", "group");
-    kinds.setAttribute("aria-label", Loopy.t("reportPick"));
-    var pickFirst = el("p", "report-pick", "");
-    pickFirst.setAttribute("aria-live", "polite");
-    KINDS.forEach(function (k) {
-      var b = el("button", "", Loopy.t(LABELS[k[0]]));
-      b.type = "button";
-      b.setAttribute("aria-pressed", "false");
-      b.addEventListener("click", function () {
-        kind = k;
-        pickFirst.textContent = "";
-        kinds.querySelectorAll("button").forEach(function (x) { x.setAttribute("aria-pressed", String(x === b)); });
-        sync();
-      });
-      kinds.appendChild(b);
-    });
-    partA.appendChild(kinds);
-    partA.appendChild(pickFirst);
-
-    var label = el("label", "kid-field");
-    label.appendChild(el("span", "", Loopy.t("rpNote")));
-    var input = el("input");
-    input.type = "text"; input.maxLength = NOTE; input.autocomplete = "off";
-    input.placeholder = Loopy.t("rpNoteHint");
-    input.addEventListener("input", sync);
-    label.appendChild(input);
-    partA.appendChild(label);
-
-    // The picture, as a small preview with a "Save picture" link.
-    var pic = el("div", "report-pic");
-    pic.setAttribute("aria-label", Loopy.t("rpPicture"));
-    pic.setAttribute("role", "group");
-    var status = el("p", "", Loopy.t("rpMaking"));
-    status.setAttribute("aria-live", "polite");
-    pic.appendChild(status);
-    partB.appendChild(pic);
-    shot.then(function (url) {
-      if (!dlg.isConnected) return;
-      if (!url) { status.textContent = Loopy.t("rpNoPic"); return; }
-      var img = el("img");
-      img.src = url; img.alt = Loopy.t("rpPicture");
-      var save = el("a", "kid-btn quiet", Loopy.t("rpSave"));
-      save.href = url;
-      save.download = "loopy-" + location.pathname.split("/").filter(Boolean).pop() + ".png";
-      pic.replaceChild(img, status);
-      pic.appendChild(save);
-    });
-
-    partB.appendChild(el("p", "report-warn", Loopy.t("rpWarn")));
-
-    var foot = el("div", "kid-foot");
-    var close = el("button", "kid-btn quiet", Loopy.t("rpCancel"));
-    close.type = "button";
-    close.addEventListener("click", function () { dlg.close(); });
-    var copyBtn = el("button", "kid-btn quiet", Loopy.t("rpCopy"));
-    copyBtn.type = "button";
-    copyBtn.addEventListener("click", function () {
-      if (!kind) return need();
-      var text = details(state, kind, flat(input.value, NOTE));
-      var done = function () { copyBtn.textContent = Loopy.t("rpCopied"); setTimeout(function () { copyBtn.textContent = Loopy.t("rpCopy"); }, 2000); };
-      if (navigator.clipboard && navigator.clipboard.writeText) navigator.clipboard.writeText(text).then(done, function () {});
-    });
-    var go = el("a", "kid-btn", Loopy.t("rpOpen"));
-    go.target = "_blank"; go.rel = "noopener noreferrer";
-    go.addEventListener("click", function (e) { if (!kind) { e.preventDefault(); need(); } });
-    foot.appendChild(close);
-    if (navigator.clipboard) foot.appendChild(copyBtn);
-    foot.appendChild(go);
-    partB.appendChild(foot);
-
-    function need() { pickFirst.textContent = Loopy.t("rpPickFirst"); var f = kinds.querySelector("button"); if (f) f.focus(); }
-    function sync() { go.href = kind ? issueUrl(state, kind, flat(input.value, NOTE)) : "#"; }
-    sync();
-    // The version arrives after the box opens; refresh the link when it does.
-    getVersion().then(sync);
-
-    dlg.appendChild(form);
-    dlg.addEventListener("close", function () {
-      dlg.remove();
-      btn.focus({ preventScroll: true });
-    });
-    document.body.appendChild(dlg);
-    dlg.showModal();
-    var first = kinds.querySelector("button");
-    if (first) first.focus();
-  }
+  // The box, the picture and the GitHub link are in loopy-report.js, loaded the first time the flag is tapped.
+  function open(btn) { Loopy.load("report").then(function () { Loopy.report.open(btn); }, function () {}); }
 
   // The flag sits before ⚙ Settings when the top bar has room. If not, the Settings button shows
   // only its gear; if that is still too wide, the flag hides, then the back button shows only its arrow,
@@ -1785,7 +1570,8 @@ Loopy.nextButton = function (btn, answered) {
 // Printable worksheet: a "Print worksheet" button in the game's Settings. It fills a sheet with
 // 20 problems made with the game's current age and settings, then opens the browser's print
 // dialog (which can also save a PDF). Page 1 has the problems with room to write, page 2 the answers.
-// The sheet is hidden on screen; when printing, only the sheet shows (see loopy.css).
+// The sheet is hidden on screen; when printing, only the sheet shows (print.css, linked for print only).
+// Filling the sheet is in loopy-sheet.js, loaded when the button is tapped or a moment after the game opened.
 // A game calls Loopy.worksheet({ ... }) once:
 //   title()   the heading, usually the game's name
 //   level()   one line about the level, e.g. "Age 8 · Problems: Both"
@@ -1795,15 +1581,12 @@ Loopy.nextButton = function (btn, answered) {
 //   cell(p)   a node that shows problem p with room to write
 //   answer(p) the answer for the key, as text, e.g. "47 + 25 = 72"
 (function () {
-  var N = 20, LAYOUTS = ["vert", "line", "clock", "word"];
   var PRINTER = '<svg viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9V3h12v6"/><rect x="3" y="9" width="18" height="8" rx="2"/><path d="M6 14h12v7H6z"/></svg>';
   Loopy.addStrings({
-    en: { printSheet: "Print worksheet", printNote: "20 problems at this level. Answers on page 2.",
-      sheetName: "Name", sheetDate: "Date", sheetAnswers: "Answers" },
-    de: { printSheet: "Arbeitsblatt drucken", printNote: "20 Aufgaben auf dieser Stufe. Lösungen auf Seite 2.",
-      sheetName: "Name", sheetDate: "Datum", sheetAnswers: "Lösungen" }
+    en: { printSheet: "Print worksheet", printNote: "20 problems at this level. Answers on page 2." },
+    de: { printSheet: "Arbeitsblatt drucken", printNote: "20 Aufgaben auf dieser Stufe. Lösungen auf Seite 2." }
   });
-  var opts = null, sheet = null, filled = false;
+  var state = { opts: null, sheet: null, filled: false }, linked = false;
 
   function el(tag, cls, text) {
     var n = document.createElement(tag);
@@ -1811,69 +1594,29 @@ Loopy.nextButton = function (btn, answered) {
     if (text !== undefined) n.textContent = text;
     return n;
   }
-  function field(label, cls) {
-    var f = el("span", "sheet-field " + cls);
-    f.appendChild(el("b", "", label));
-    f.appendChild(el("i"));
-    return f;
+  // The print styles are their own small file, fetched for print only, so they never hold up the page.
+  function link() {
+    if (linked) return;
+    linked = true;
+    var l = document.createElement("link");
+    l.rel = "stylesheet"; l.media = "print"; l.href = Loopy.root + "print.css";
+    document.head.appendChild(l);
   }
-  function head(key) {
-    var h = el("header", "sheet-head");
-    var top = el("div", "sheet-top");
-    top.appendChild(el("h1", "sheet-title", key ? Loopy.t("sheetAnswers") + ": " + opts.title() : opts.title()));
-    var brand = el("span", "sheet-brand");
-    brand.innerHTML = Loopy.logo("sheet-logo", key ? "lwk" : "lws");
-    top.appendChild(brand);
-    h.appendChild(top);
-    h.appendChild(el("p", "sheet-level", opts.level()));
-    if (!key) {
-      var fields = el("div", "sheet-fields");
-      fields.appendChild(field(Loopy.t("sheetName"), "wide"));
-      fields.appendChild(field(Loopy.t("sheetDate"), ""));
-      var score = field(Loopy.t("score"), "score");
-      score.appendChild(el("b", "", "/ " + N));
-      fields.appendChild(score);
-      h.appendChild(fields);
-      h.appendChild(el("p", "sheet-how", opts.how()));
-    }
-    return h;
-  }
-  function fill() {
-    var items = opts.make(N).slice(0, N);
-    var layout = LAYOUTS.indexOf(opts.layout) === -1 ? "line" : opts.layout;
-    var work = el("div", "sheet-page");
-    work.appendChild(head(false));
-    var grid = el("ol", "sheet-grid sheet-" + layout);
-    items.forEach(function (p, i) {
-      var li = el("li");
-      li.appendChild(el("span", "sheet-n", String(i + 1)));
-      li.appendChild(opts.cell(p));
-      grid.appendChild(li);
-    });
-    work.appendChild(grid);
-    var key = el("div", "sheet-page sheet-answers");
-    key.appendChild(head(true));
-    var list = el("ol", "sheet-key");
-    items.forEach(function (p, i) {
-      var li = el("li");
-      li.appendChild(el("span", "sheet-n", String(i + 1)));
-      li.appendChild(el("span", "", opts.answer(p)));
-      list.appendChild(li);
-    });
-    key.appendChild(list);
-    sheet.textContent = "";
-    sheet.appendChild(work);
-    sheet.appendChild(key);
-    filled = true;
+  function print() {
+    Loopy.load("sheet").then(function () { Loopy.sheet.fill(); window.print(); }, function () {});
   }
 
   Loopy.worksheet = function (o) {
-    opts = o;
+    state.opts = o;
     var build = function () {
+      link();
       document.documentElement.classList.add("loopy-print");
-      sheet = el("section", "loopy-sheet");
-      sheet.setAttribute("aria-hidden", "true");
-      document.body.appendChild(sheet);
+      state.sheet = el("section", "loopy-sheet");
+      state.sheet.setAttribute("aria-hidden", "true");
+      document.body.appendChild(state.sheet);
+      // A moment after the game is up, the filling part loads in the background (from the saved copy once
+      // the site has been visited), so printing from the browser's own menu also gives a worksheet.
+      setTimeout(function () { Loopy.load("sheet").catch(function () {}); }, 3000);
       var panel = document.getElementById("settings-panel");
       if (!panel) return;
       var row = el("div", "print-row");
@@ -1882,7 +1625,7 @@ Loopy.nextButton = function (btn, answered) {
       btn.id = "print-sheet";
       btn.innerHTML = PRINTER;
       btn.appendChild(el("span", "", Loopy.t("printSheet")));
-      btn.addEventListener("click", function () { fill(); window.print(); });
+      btn.addEventListener("click", print);
       row.appendChild(btn);
       row.appendChild(el("p", "", Loopy.t("printNote")));
       // Above "Report a problem", the shared settings and the panel foot.
@@ -1891,233 +1634,28 @@ Loopy.nextButton = function (btn, answered) {
     if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", build);
     else build();
   };
-  // Printing from the browser's own menu also prints a fresh worksheet.
-  window.addEventListener("beforeprint", function () { if (opts && sheet && !filled) fill(); });
-  window.addEventListener("afterprint", function () { filled = false; });
+  Loopy.worksheet.state = state;
+  // Printing from the browser's own menu also prints a fresh worksheet (once loopy-sheet.js is in).
+  window.addEventListener("beforeprint", function () { if (state.opts && state.sheet && !state.filled && Loopy.sheet) Loopy.sheet.fill(); });
+  window.addEventListener("afterprint", function () { state.filled = false; });
 })();
 
-// Stars code: moves stars, badges, day streak, progress, Last 5, age, game levels and settings, and the
-// last game played ("where you left off") to another device, for one child or for all.
-// No account and nothing sent anywhere: the code is copied by hand and pasted on the other device,
-// or sent as a link with the code after the # (loopy/#load=LOOPY2-...), which never reaches the web server.
-// "LOOPY2-Z..." is the data packed small (deflate) and written as letters; "LOOPY2-J..." is the same
-// data unpacked, for browsers that can't pack. Old "LOOPY-..." codes (stars and best scores only) still load.
-// Inside: { v: 2, p: [child, ...], theme, font, sound, lang }, child = { n, pic, rewards, daily, log, recent, age, read, g }.
-// g holds the child's game levels and settings, the last game and the games already seen (each a short text
-// under its own key, e.g. { "pm100.op.a8": "\"mix\"", "loopy.last": "math/plus-minus/" }); codes made before it came in have none.
-// p holds every child on the device, or just one (see Loopy.kids). Loading a code gives each child's things to
-// the child here with the same name, or adds that child. A child with no name, and an old code, go to the child
-// playing. On a device with only one child, who has no name and no stars yet, the first child in the code takes their place.
-// Loading a code adds to what is here and never takes anything away: the bigger number wins,
-// and a setting is only taken when this device has not chosen one yet.
+// Stars code: moves stars, badges, day streak, progress, game levels and settings to another device.
+// The real Loopy.backup is in loopy-backup.js, loaded the first time a code is made or read (home page).
+// Until then these stand-ins load it and then do the same call. link and MAX_CODE need no loading.
 (function () {
-  var Loopy = window.Loopy = window.Loopy || {};
-  var MAX_CODE = 40000, MAX_JSON = 200000, MAX_P = 10, MAX_G = 300, MAX_GV = 2000;
-  // The keys a child's g may hold: game settings ("ss.mode.a7"), the last game, and the games already seen.
-  // Each game checks its own values again when it reads them (only known choices are used).
-  var GKEY = /^(?:(?:bs|cc|clockquiz|eb|fc|mk|pm100|pz|qf|si|ss|ts|tt|wi|wm)\.[A-Za-z]{1,16}(?:\.a\d{1,2})?|loopy\.(?:last|seen))$/;
-  var KEYS = { rewards: "loopy.rewards", daily: "loopy.daily", log: "loopy.log", recent: "loopy.recent",
-    age: "loopy.ageOffset", read: "loopy.readAloud", theme: "loopy.theme", font: "loopy.font", sound: "loopy.sound", lang: "loopy.lang" };
-  var CHOICES = { read: ["on", "off"], theme: ["black", "sunny", "ocean", "candy", "forest", "contrast"], font: ["easy", "normal"], sound: ["on", "off"], lang: ["en", "de"] };
-  // Theme, reading font, sound and language are for the whole device; the rest belongs to child id.
-  var DEVICE = { theme: true, font: true, sound: true, lang: true };
-  var keyOf = function (k, id) { return DEVICE[k] ? KEYS[k] : Loopy.kids.key(id, KEYS[k]); };
-  var get = function (k, id) { try { return localStorage.getItem(keyOf(k, id)); } catch (e) { return null; } };
-  var read = function (k, id) { try { return JSON.parse(get(k, id)); } catch (e) { return null; } };
-  var put = function (k, v, id) { try { localStorage.setItem(keyOf(k, id), typeof v === "string" ? v : JSON.stringify(v)); } catch (e) {} };
-  var cleanAge = function (n) { return typeof n === "number" && isFinite(n) && Math.abs(n) <= 11 ? Math.round(n) : null; };
-  var choice = function (k, v) { return CHOICES[k].indexOf(v) !== -1 ? v : null; };
-  var can = typeof CompressionStream === "function" && typeof DecompressionStream === "function";
-
-  function b64(bytes) {
-    var s = "";
-    for (var i = 0; i < bytes.length; i += 8192) s += String.fromCharCode.apply(null, bytes.subarray(i, i + 8192));
-    return btoa(s).replace(/=+$/, "");
-  }
-  function unb64(s) {
-    var bin = atob(s), out = new Uint8Array(bin.length);
-    for (var i = 0; i < bin.length; i++) out[i] = bin.charCodeAt(i);
-    return out;
-  }
-  // Runs bytes through a (de)compression stream. Stops with an error past MAX_JSON bytes, so a tiny code can't fill the memory.
-  function pipe(bytes, stream) {
-    var reader = new Blob([bytes]).stream().pipeThrough(stream).getReader(), parts = [], size = 0;
-    return (function next() {
-      return reader.read().then(function (r) {
-        if (r.done) {
-          var out = new Uint8Array(size), at = 0;
-          parts.forEach(function (p) { out.set(p, at); at += p.length; });
-          return out;
-        }
-        size += r.value.length;
-        if (size > MAX_JSON) { reader.cancel(); throw new Error("too big"); }
-        parts.push(r.value);
-        return next();
+  var MAX_CODE = 40000;
+  function later(name, orElse) {
+    return function () {
+      var args = arguments;
+      return Loopy.load("backup").then(function () { return Loopy.backup[name].apply(null, args); }, function () {
+        if (orElse === undefined) throw new Error("loopy-backup.js did not load");
+        return orElse;
       });
-    })();
+    };
   }
-
-  // A child's game settings, last game and seen games, from this device or from a code: only known keys and short text.
-  function cleanG(raw) {
-    var out = {}, n = 0;
-    if (!raw || typeof raw !== "object" || Array.isArray(raw)) return out;
-    Object.keys(raw).forEach(function (k) {
-      if (n >= MAX_G || !GKEY.test(k) || typeof raw[k] !== "string" || raw[k].length > MAX_GV) return;
-      if (k === "loopy.last" && !Loopy.last.clean(raw[k])) return;
-      out[k] = raw[k]; n++;
-    });
-    return out;
-  }
-  function gOf(id) {
-    var raw = {}, pre = Loopy.kids.key(id, "");
-    try {
-      for (var i = 0; i < localStorage.length; i++) {
-        var k = localStorage.key(i);
-        if (k && k.indexOf(pre) === 0) raw[k.slice(pre.length)] = localStorage.getItem(k);
-      }
-    } catch (e) {}
-    return cleanG(raw);
-  }
-
-  // only: a child's id for a code with just that child; leave it out for every child.
-  function snapshot(only) {
-    var p = Loopy.kids.list().filter(function (kid) { return !only || kid.id === only; }).map(function (kid) {
-      var id = kid.id;
-      return {
-        n: kid.name, pic: kid.pic,
-        rewards: Loopy.rewards.clean(read("rewards", id)),
-        daily: Loopy.daily.clean(read("daily", id)),
-        log: Loopy.log.clean(read("log", id)),
-        recent: Loopy.recent.clean(read("recent", id)),
-        age: get("age", id) === null ? null : cleanAge(parseInt(get("age", id), 10) || 0),
-        read: choice("read", get("read", id)),
-        g: gOf(id)
-      };
-    });
-    return { v: 2, p: p, theme: choice("theme", get("theme")), font: choice("font", get("font")), sound: choice("sound", get("sound")), lang: choice("lang", get("lang")) };
-  }
-
-  // Adds a checked child from a code to what this device has. Everything is cleaned again before it is saved.
-  function merge(got, id) {
-    var R = Loopy.rewards.clean(read("rewards", id)), r = Loopy.rewards.clean(got.rewards);
-    R.stars = Math.max(R.stars, r.stars);
-    Object.keys(r.best).forEach(function (g) { R.best[g] = Math.max(R.best[g] || 0, r.best[g]); });
-    put("rewards", Loopy.rewards.clean(R), id);
-
-    var D = Loopy.daily.clean(read("daily", id)), d = Loopy.daily.clean(got.daily);
-    if (d.last > D.last) { D.last = d.last; D.streak = d.streak; }
-    D.best = Math.max(D.best, d.best);
-    put("daily", Loopy.daily.clean(D), id);
-
-    // Progress: for each day and game the bigger count wins, so loading the same code twice counts nothing twice.
-    var L = Loopy.log.clean(read("log", id)), l = Loopy.log.clean(got.log);
-    Object.keys(l.days).forEach(function (day) {
-      var row = L.days[day] = L.days[day] || {};
-      Object.keys(l.days[day]).forEach(function (g) {
-        var a = row[g] || [0, 0], b = l.days[day][g];
-        row[g] = [Math.max(a[0], b[0]), Math.max(a[1], b[1])];
-      });
-    });
-    var seen = {};
-    L.wrong = L.wrong.concat(l.wrong).filter(function (w) {
-      var k = JSON.stringify(w);
-      return seen[k] ? false : (seen[k] = true);
-    }).sort(function (a, b) { return a.d < b.d ? -1 : a.d > b.d ? 1 : 0; }).slice(-Loopy.log.MAX_WRONG);
-    put("log", Loopy.log.clean(L), id);
-
-    var N = Loopy.recent.clean(read("recent", id)), n = Loopy.recent.clean(got.recent);
-    Object.keys(n).forEach(function (g) { if (!N[g] || !N[g].length) N[g] = n[g]; });
-    put("recent", N, id);
-
-    if (get("age", id) === null && cleanAge(got.age) !== null) put("age", String(cleanAge(got.age)), id);
-    if (get("read", id) === null && choice("read", got.read)) put("read", got.read, id);
-
-    // Game levels and settings, the last game and seen games: only taken when this device has none for that key.
-    var G = cleanG(got.g);
-    Object.keys(G).forEach(function (k) {
-      var full = Loopy.kids.key(id, k);
-      try { if (localStorage.getItem(full) === null) localStorage.setItem(full, G[k]); } catch (e) {}
-    });
-  }
-  // A child with no name and no stars, alone on the device: a new device, ready to take a child from a code.
-  function blank() {
-    var here = Loopy.kids.list();
-    return here.length === 1 && !here[0].name && !Loopy.rewards.clean(read("rewards", here[0].id)).stars ? here[0] : null;
-  }
-
-  function kidsOf(d) {
-    if (!d || typeof d !== "object" || d.v !== 2 || !Array.isArray(d.p) || !d.p.length || d.p.length > MAX_P) return null;
-    var kids = d.p.filter(function (c) { return c && typeof c === "object"; });
-    return kids.length ? kids : null;
-  }
-  function load(d) {
-    var kids = kidsOf(d);
-    if (!kids) return false;
-    var here = Loopy.kids.list(), now = Loopy.kids.current().id, empty = blank(), last = null;
-    kids.forEach(function (c) {
-      var name = Loopy.kids.cleanName(c.n), same = function (k) { return name && k.name.toLowerCase() === name.toLowerCase(); };
-      var id = !name ? now : (here.filter(same)[0] || {}).id || null;
-      if (!id && empty) { id = empty.id; Loopy.kids.edit(id, name, c.pic); empty = null; }
-      if (!id) id = Loopy.kids.create(name, c.pic);
-      if (id) { merge(c, id); last = id; }
-    });
-    // A code with one child: that child plays next.
-    if (kids.length === 1 && last) Loopy.kids.pick(last);
-    ["theme", "font", "sound", "lang"].forEach(function (k) { if (get(k) === null && choice(k, d[k])) put(k, d[k]); });
-    return true;
-  }
-  // Codes from before: { s: stars, b: { game: best } }.
-  function loadOld(d) {
-    if (!d || typeof d !== "object" || typeof d.s !== "number") return false;
-    merge({ rewards: { stars: d.s, best: d.b } }, Loopy.kids.current().id);
-    return true;
-  }
-
-  // A promise of what a code holds, unchecked: { v2: data } or { old: data }. Rejects for a code that is not a loopy code.
-  function decode(code) {
-    return Promise.resolve().then(function () {
-      code = String(code).replace(/\s+/g, "");
-      if (code.length > MAX_CODE) throw new Error("too long");
-      var m = /^LOOPY2-([ZJ])([A-Za-z0-9+/]+=*)$/i.exec(code);
-      if (m) {
-        var bytes = unb64(m[2]);
-        var json = m[1].toUpperCase() === "J" ? Promise.resolve(bytes) : can ? pipe(bytes, new DecompressionStream("deflate-raw")) : Promise.reject(new Error("can't unpack"));
-        return json.then(function (b) {
-          if (b.length > MAX_JSON) throw new Error("too big");
-          return { v2: JSON.parse(new TextDecoder("utf-8", { fatal: true }).decode(b)) };
-        });
-      }
-      m = /^LOOPY-([A-Za-z0-9+/]+=*)$/i.exec(code);
-      if (!m || m[1].length > 2000) throw new Error("not a code");
-      return { old: JSON.parse(atob(m[1])) };
-    });
-  }
-
   Loopy.backup = {
-    // A promise of the code for everything saved in this browser; with a child's id, for just that child.
-    exportCode: function (only) {
-      var bytes = new TextEncoder().encode(JSON.stringify(snapshot(only)));
-      if (!can) return Promise.resolve("LOOPY2-J" + b64(bytes));
-      return pipe(bytes, new CompressionStream("deflate-raw")).then(function (z) { return "LOOPY2-Z" + b64(z); });
-    },
-    // A promise of true when the code was good and its data is saved. Reload the page to show it.
-    importCode: function (code) {
-      return decode(code).then(function (got) {
-        var ok = got.v2 ? load(got.v2) : loadOld(got.old);
-        if (ok && Loopy.keep) Loopy.keep.soon();
-        return ok;
-      }).catch(function () { return false; });
-    },
-    // A promise of the names in a code, without saving anything (for "Load Mia's stars here?"):
-    // a list of names ("" for a child with no name), or null when the code is no good.
-    peek: function (code) {
-      return decode(code).then(function (got) {
-        if (got.old) return got.old && typeof got.old === "object" && typeof got.old.s === "number" ? [""] : null;
-        var kids = kidsOf(got.v2);
-        return kids ? kids.map(function (c) { return Loopy.kids.cleanName(c.n); }) : null;
-      }).catch(function () { return null; });
-    },
-    // The link that opens the home page and offers to load code.
+    exportCode: later("exportCode"), importCode: later("importCode", false), peek: later("peek", null),
     link: function (code) { return Loopy.root + "#load=" + code; },
     MAX_CODE: MAX_CODE
   };

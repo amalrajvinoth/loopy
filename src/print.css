@@ -1,0 +1,61 @@
+/* loopy worksheet print styles. loopy.js links this file with media="print" on game pages that have a
+   worksheet, so it never holds up the page on screen. Edit this file, then run: python3 tools/build.py */
+@media print {
+  @page { margin: 12mm; }
+  /* Only on game pages with a worksheet (loopy.js adds .loopy-print); other pages print as they are. */
+  html.loopy-print, .loopy-print body {
+    background: #fff !important; color: #000 !important; height: auto !important; min-height: 0 !important;
+    overflow: visible !important; display: block !important; margin: 0 !important; padding: 0 !important;
+  }
+  html.loopy-print { padding: 0 !important; }
+  .loopy-print body > :not(.loopy-sheet) { display: none !important; }
+  .loopy-sheet { display: block; color: #000; font-family: "Lexend", "Segoe UI", Arial, sans-serif; font-variant-numeric: tabular-nums; }
+  .sheet-answers { break-before: page; }
+  .sheet-head { margin-bottom: 4mm; }
+  .sheet-top { display: flex; align-items: center; justify-content: space-between; gap: 6mm; border-bottom: 0.6mm solid #000; padding-bottom: 1.5mm; }
+  .sheet-title { margin: 0; font-family: "Fredoka", "Lexend", sans-serif; font-size: 20pt; font-weight: 700; line-height: 1.15; }
+  .sheet-brand { flex: 0 0 auto; color: #000; }
+  .sheet-logo { display: block; height: 8mm; width: auto; overflow: visible; }
+  .sheet-level { margin: 1.5mm 0 0; font-size: 10pt; color: #444; }
+  .sheet-fields { display: flex; gap: 6mm; margin-top: 4mm; font-size: 11pt; }
+  .sheet-field { display: flex; align-items: flex-end; gap: 2mm; flex: 1 1 0; }
+  .sheet-field.wide { flex: 2 1 0; }
+  .sheet-field.score { flex: 0 0 34mm; }
+  .sheet-field b { font-weight: 600; }
+  .sheet-field i { flex: 1 1 auto; border-bottom: 0.3mm solid #000; height: 5mm; }
+  .sheet-how { margin: 3mm 0 0; font-size: 11pt; font-weight: 600; }
+
+  .sheet-grid { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(4, 1fr); grid-template-rows: repeat(5, 41mm); gap: 3mm; }
+  .sheet-grid li { position: relative; border: 0.3mm solid #bbb; border-radius: 3mm; display: flex; flex-direction: column; align-items: center; justify-content: center; break-inside: avoid; overflow: hidden; }
+  .sheet-grid li > div { display: flex; flex-direction: column; align-items: center; }
+  /* Backgrounds are not printed by default, so lines are drawn with borders. */
+  .sheet-n { position: absolute; left: 2mm; top: 1.2mm; font-size: 9pt; font-weight: 600; color: #666; }
+
+  /* Plus and Minus: written in columns, like in the game. */
+  .sheet-vert .ws-sv { display: grid; grid-template-columns: auto auto; column-gap: 2mm; font-size: 24pt; font-weight: 600; line-height: 1.15; letter-spacing: 0.04em; }
+  .sheet-vert .ws-sv span { grid-column: 2; text-align: right; }
+  .sheet-vert .ws-sv .ws-op { grid-column: 1; grid-row: 2; }
+  .sheet-vert .ws-sv .ws-rule { grid-column: 1 / -1; border-top: 0.7mm solid #000; margin: 0.8mm 0; }
+  .sheet-vert .ws-sv .ws-room { height: 10mm; }
+
+  /* Times and Share: one problem per line, two columns. */
+  .sheet-grid.sheet-line { grid-template-columns: repeat(2, 1fr); grid-template-rows: repeat(10, 19.6mm); gap: 1.6mm 4mm; }
+  .sheet-line li { flex-direction: row; justify-content: flex-start; padding-left: 10mm; }
+  .sheet-line .sheet-n { top: 50%; transform: translateY(-50%); left: 3mm; }
+  .sheet-line .ws-sl { font-size: 20pt; font-weight: 600; white-space: nowrap; }
+  .sheet-line .ws-blank { display: inline-block; width: 28mm; border-bottom: 0.4mm solid #000; margin-left: 2mm; }
+
+  /* What Time Is It?: a clock face with a line for the time. */
+  .sheet-clock .ws-clock { width: 32mm; height: 32mm; }
+  .sheet-clock .ws-time { margin-top: 1.5mm; font-size: 14pt; font-weight: 600; letter-spacing: 0.08em; }
+
+  /* Sound Spell: picture, the word with a gap, and sounds to circle. */
+  .sheet-word .ws-pic { font-size: 28pt; line-height: 1.1; }
+  .sheet-word .ws-word { margin-top: 1mm; font-size: 18pt; font-weight: 600; letter-spacing: 0.04em; }
+  .sheet-word .ws-gap { display: inline-block; min-width: 9mm; border-bottom: 0.4mm solid #000; margin: 0 0.5mm; }
+  .sheet-word .ws-opts { display: flex; gap: 3mm; margin-top: 1.5mm; font-size: 12pt; color: #333; }
+
+  .sheet-key { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(2, 1fr); grid-auto-flow: column; grid-template-rows: repeat(10, auto); gap: 3mm 8mm; font-size: 16pt; }
+  .sheet-key li { display: flex; gap: 3mm; align-items: baseline; border-bottom: 0.2mm solid #ddd; padding-bottom: 2mm; }
+  .sheet-key .sheet-n { position: static; min-width: 8mm; font-size: 11pt; }
+}

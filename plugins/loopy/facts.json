@@ -22,8 +22,12 @@
     "loopy-review"
   ],
   "built_files": [
+    "loopy-backup.js",
+    "loopy-report.js",
+    "loopy-sheet.js",
     "loopy.css",
     "loopy.js",
+    "print.css",
     "sw.js"
   ],
   "pr_template": [
@@ -40,5 +44,5 @@
     "844 × 390"
   ],
   "games_lists": 3,
-  "learned_at": "14e5d38"
+  "learned_at": "cc4cc10"
 }

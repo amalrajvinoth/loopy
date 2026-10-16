@@ -116,7 +116,7 @@ def base_text(base, path):
 def code_files(read):
     """{path: text} for src/loopy.js and every page, read with read(path) (now or on the base)."""
     out = {}
-    for path in ["src/loopy.js"] + [rel(p) for p in sorted(ROOT.glob("**/index.html"))
+    for path in ["src/loopy.js", "src/loopy-report.js", "src/loopy-backup.js", "src/loopy-sheet.js"] + [rel(p) for p in sorted(ROOT.glob("**/index.html"))
                                      if not build.SKIP_DIRS & set(p.relative_to(ROOT).parts)]:
         text = read(path)
         if text is not None:
@@ -138,7 +138,7 @@ def saved_keys(files):
     for path, text in files.items():
         keys.update(STORE_CALL.findall(text))
         keys.update(KEY_NAME.findall(text))
-        if path == "src/loopy.js":
+        if path.startswith("src/loopy"):
             keys.update(k for k in LOOPY_KEY.findall(text) if not k.endswith(NOT_KEY))
     return keys
 
@@ -167,7 +167,7 @@ def check_storage(base, now, before):
         add("must", "src/loopy.js", f"`{name}` was taken out of OLD, so devices that still have old `{name}` keys "
             "lose them on their first visit")
     for path, text in now.items():
-        if path != "src/loopy.js" and "localStorage" in text:
+        if not path.startswith("src/loopy") and "localStorage" in text:
             add("must", path, "uses `localStorage` directly; use `Loopy.store` so each child keeps their own data")
         was = before.get(path, "")
         for name, pattern, why, where in [
@@ -178,9 +178,11 @@ def check_storage(base, now, before):
             ("uses IndexedDB", r"\bindexedDB\b", "Check what is in localStorage now is moved over once, and the page still works "
              "when IndexedDB is blocked (private windows)", None)]:
             n = len(re.findall(pattern, text)) - len(re.findall(pattern, was))
-            if n > 0 and where in (None, path):
+            if n > 0 and (where is None or path.startswith("src/loopy")):
                 add("should", path, f"{name} in {n} more place{'s' if n > 1 else ''}. {why}")
-    js_now, js_before = now.get("src/loopy.js", ""), before.get("src/loopy.js", "")
+    # The stars code lives in src/loopy-backup.js (before 17 Oct 2026 it was in src/loopy.js).
+    js_now = now.get("src/loopy.js", "") + now.get("src/loopy-backup.js", "")
+    js_before = before.get("src/loopy.js", "") + before.get("src/loopy-backup.js", "")
     for name in ["Loopy.backup", "MAX_CODE", "clean("]:
         if js_now.count(name) != js_before.count(name):
             add("suggest", "src/loopy.js", f"`{name}` changed: check an old stars code still loads, and a new "

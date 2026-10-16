@@ -1,0 +1,74 @@
+/* loopy: the printable worksheet, filled in. Loaded by loopy.js (Loopy.load("sheet")) when Print worksheet is
+   tapped, or in the background a moment after a game has opened, so printing from the browser's menu works too.
+   The Print worksheet button and the empty sheet are made by loopy.js (Loopy.worksheet). */
+(function () {
+  var N = 20, LAYOUTS = ["vert", "line", "clock", "word"];
+  Loopy.addStrings({
+    en: { sheetName: "Name", sheetDate: "Date", sheetAnswers: "Answers" },
+    de: { sheetName: "Name", sheetDate: "Datum", sheetAnswers: "Lösungen" }
+  });
+  var state = Loopy.worksheet.state;
+  function el(tag, cls, text) {
+    var n = document.createElement(tag);
+    if (cls) n.className = cls;
+    if (text !== undefined) n.textContent = text;
+    return n;
+  }
+  function field(label, cls) {
+    var f = el("span", "sheet-field " + cls);
+    f.appendChild(el("b", "", label));
+    f.appendChild(el("i"));
+    return f;
+  }
+  function head(key) {
+    var h = el("header", "sheet-head");
+    var top = el("div", "sheet-top");
+    top.appendChild(el("h1", "sheet-title", key ? Loopy.t("sheetAnswers") + ": " + state.opts.title() : state.opts.title()));
+    var brand = el("span", "sheet-brand");
+    brand.innerHTML = Loopy.logo("sheet-logo", key ? "lwk" : "lws");
+    top.appendChild(brand);
+    h.appendChild(top);
+    h.appendChild(el("p", "sheet-level", state.opts.level()));
+    if (!key) {
+      var fields = el("div", "sheet-fields");
+      fields.appendChild(field(Loopy.t("sheetName"), "wide"));
+      fields.appendChild(field(Loopy.t("sheetDate"), ""));
+      var score = field(Loopy.t("score"), "score");
+      score.appendChild(el("b", "", "/ " + N));
+      fields.appendChild(score);
+      h.appendChild(fields);
+      h.appendChild(el("p", "sheet-how", state.opts.how()));
+    }
+    return h;
+  }
+  function fill() {
+    var items = state.opts.make(N).slice(0, N);
+    var layout = LAYOUTS.indexOf(state.opts.layout) === -1 ? "line" : state.opts.layout;
+    var work = el("div", "sheet-page");
+    work.appendChild(head(false));
+    var grid = el("ol", "sheet-grid sheet-" + layout);
+    items.forEach(function (p, i) {
+      var li = el("li");
+      li.appendChild(el("span", "sheet-n", String(i + 1)));
+      li.appendChild(state.opts.cell(p));
+      grid.appendChild(li);
+    });
+    work.appendChild(grid);
+    var key = el("div", "sheet-page sheet-answers");
+    key.appendChild(head(true));
+    var list = el("ol", "sheet-key");
+    items.forEach(function (p, i) {
+      var li = el("li");
+      li.appendChild(el("span", "sheet-n", String(i + 1)));
+      li.appendChild(el("span", "", state.opts.answer(p)));
+      list.appendChild(li);
+    });
+    key.appendChild(list);
+    state.sheet.textContent = "";
+    state.sheet.appendChild(work);
+    state.sheet.appendChild(key);
+    state.filled = true;
+  }
+
+  Loopy.sheet = { fill: fill };
+})();

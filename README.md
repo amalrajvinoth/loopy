@@ -85,7 +85,7 @@ On a phone or tablet, open the site and choose **Add to Home Screen**. Loopy the
 
 ## Works offline
 
-After one visit with internet, loopy opens with no internet too: on a plane, in the car, anywhere. Every game, Today's 10, Help and the grown-ups' page work. The browser keeps a copy of the site on the device. When you are online, loopy checks for a new version each time it opens, and the next page you open shows it.
+After one visit with internet, loopy opens with no internet too: on a plane, in the car, anywhere. Every game, Today's 10, Help and the grown-ups' page work. The browser keeps a copy of the site on the device. When you are online, loopy checks for a new version each time it opens, downloads only the files that changed, and the next page you open shows it.
 
 ## For developers
 
@@ -96,16 +96,18 @@ The site is plain HTML, CSS and JavaScript. One small build step makes the share
 | File | What it is |
 | --- | --- |
 | `index.html` | The home page and the list of games |
-| `src/loopy.js` | Shared code: languages, colors, age, sound, read aloud, stars and badges, Last 5 dots, the stars code, the back button, printable worksheets. Edit this one |
+| `src/loopy.js` | Shared code: languages, colors, age, sound, read aloud, stars and badges, Last 5 dots, the back button, and the buttons for the stars code, the worksheet and Report a problem. Edit this one |
+| `src/loopy-report.js`, `src/loopy-backup.js`, `src/loopy-sheet.js`, `src/print.css` | The Report a problem box, the stars code, and the worksheet filling and print styles. `loopy.js` loads each one the first time it is needed (`Loopy.load`). Edit these |
 | `src/loopy.css` | Shared styles and fonts. Edit this one |
 | `loopy.js`, `loopy.css` | Small copies made by the build. Pages load these. Do not edit them |
+| `loopy-report.js`, `loopy-backup.js`, `loopy-sheet.js`, `print.css` | Parts that load only when they are needed: the Report a problem box, the stars code, and the worksheet with its print styles. Made by the build from `src/`. Do not edit them |
 | `DESIGN.md` | How loopy looks: colors, fonts, buttons, layout and rules. Read it before you change a page |
 | `logo.svg`, `logo-white.svg`, `icon.svg` | The logo (for light and dark backgrounds) and the app icon |
 | `help/index.html` | The Help page: FAQ and feedback links |
 | `progress/index.html` | How it's going: the grown-ups' page. Games log answers with `Loopy.rewards.wrong(game, { q, a, y, k })` |
 | `fonts/` | The Fredoka, Lexend and Atkinson Hyperlegible Next fonts, stored here so no request goes to Google. The `-latin` files are made by the build from `src/fonts/`. Licence: `fonts/OFL.txt` |
 | `.github/` | Forms for problems, ideas and questions, the automatic checks, and Dependabot |
-| `sw.js` | The offline helper (a service worker). Made by the build from `src/sw.js` |
+| `sw.js` | The offline helper (a service worker). Made by the build from `src/sw.js`, with a short hash per saved file, so a new version only downloads the files that changed |
 | `tools/` | Small scripts: `build.py` makes the small files and the offline list, `csp.py` updates each page's security policy, `check_external.py` makes sure nothing loads from other websites, `review.py` checks that all games follow the same rules, that saved data is kept and that pages stay small, `a11y/` checks every page with a keyboard and a screen reader checker ([how](tools/a11y/README.md)), `e2e/` plays every game and checks that no question repeats ([how](tools/e2e/README.md)) |
 | `RELEASES.md` | What's new: one line per big change, for parents |
 | `.claude/skills/loopy-review/` | The review checklist for every change: design, architecture, saved data, speed and size, docs, games alike, and release notes after a merge |
