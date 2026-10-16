@@ -4,7 +4,7 @@ Every session in the loopy repo starts with these. Add one with the add-rule ski
 
 ## Site
 - loopy is free learning games for kids in grades 1 to 10. No ads, no sign-up, no tracking. Name is lowercase "loopy" on screen.
-- Every page loads one shared `loopy.js` and `loopy.css`. Edit `src/`, never the built root copies, then run `python3 tools/build.py`. (A hook blocks edits to the built files.)
+- Every page loads one shared `loopy.js` and `loopy.css`. Three small parts load only when needed: `loopy-report.js` (the Report a problem box), `loopy-backup.js` (the stars code) and `loopy-sheet.js` with `print.css` (the worksheet), through `Loopy.load()`. Edit `src/`, never the built root copies, then run `python3 tools/build.py`. (A hook blocks edits to the built files.)
 - A game is a folder `<subject>/<game>/index.html` plus one line in the home page GAMES list. A new game id goes in the 3 GAMES lists in `src/loopy.js` and the progress page list. Do not change other games or the layout unless asked.
 - English (default) and German for every word: `Loopy.addStrings({en,de})`, `data-t`, `Loopy.t()`, `Loopy.num()`.
 - Difficulty follows the age picker. Right and wrong go through `Loopy.rewards.correct()` / `.wrong()`. Questions come from `Loopy.fresh()` (no repeat within 10).
