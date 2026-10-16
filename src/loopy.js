@@ -883,7 +883,7 @@ document.documentElement.classList.add("loopy-building");
   var data = { stars: 0, best: {} };
   var cheeredBest = {}; // one "new best" cheer per run
   var last = null; // the last answer on this page, for "Report a problem"
-  var MAX_STARS = 1000000, GAMES = ["plus-minus", "times-share", "clock", "sound-spell", "daily-mix", "make-10", "bigger-smaller", "pizza-fractions", "coins-change", "word-match", "spell-it", "quick-facts", "where-is-it"];
+  var MAX_STARS = 1000000, GAMES = ["plus-minus", "times-share", "clock", "sound-spell", "daily-mix", "make-10", "bigger-smaller", "pizza-fractions", "coins-change", "word-match", "spell-it", "quick-facts", "where-is-it", "times-sprint"];
   var num = function (n) { return typeof n === "number" && isFinite(n) && n >= 0 ? Math.min(Math.floor(n), MAX_STARS) : 0; };
   // Only known games and sane numbers are kept, whatever the stored text says.
   function clean(raw) {
@@ -1168,7 +1168,7 @@ document.documentElement.classList.add("loopy-building");
 // { days: { "2026-10-15": { "plus-minus": [right, wrong] } }, wrong: [{ d: day, g: game, q, a: right answer, y: their answer, k: kind }] }.
 (function () {
   var KEY = "loopy.log", DAYS = 30, MAX_WRONG = 300, MAX_N = 100000, LEN = 40;
-  var GAMES = ["plus-minus", "times-share", "clock", "sound-spell", "daily-mix", "make-10", "bigger-smaller", "pizza-fractions", "coins-change", "word-match", "spell-it", "quick-facts", "where-is-it"];
+  var GAMES = ["plus-minus", "times-share", "clock", "sound-spell", "daily-mix", "make-10", "bigger-smaller", "pizza-fractions", "coins-change", "word-match", "spell-it", "quick-facts", "where-is-it", "times-sprint"];
   // What kind of problem it was, so the page can say what to practise. See Loopy.log.kind.
   var KIND = /^(?:(?:add|sub)(?:-rg)?|(?:mul|div)-(?:big|\d{1,2})|cl-(?:0|30|15|5|1)|ss-(?:start|end)|mk-(?:10|20|100)|bs-(?:cmp|ord|rnd|dec|neg)|pz-(?:name|cmp|add)|cc-(?:small|count|ch10|ch)|wm-(?:animals|food|home|school)|si-[3-6]|qf-(?:space|animals|body)|wi-(?:cont|eu|euc|wd|wdc))$/;
   var DAY = /^\d{4}-\d{2}-\d{2}$/;
@@ -1237,7 +1237,7 @@ document.documentElement.classList.add("loopy-building");
 // green for right and red for wrong, newest on the right. rewards.correct / wrong fill it in.
 // Kept in this browser's localStorage as { "plus-minus": [1, 1, 0, 1, 1], ... }.
 (function () {
-  var KEY = "loopy.recent", N = 5, GAMES = ["plus-minus", "times-share", "clock", "sound-spell", "daily-mix", "make-10", "bigger-smaller", "pizza-fractions", "coins-change", "word-match", "spell-it", "quick-facts", "where-is-it"];
+  var KEY = "loopy.recent", N = 5, GAMES = ["plus-minus", "times-share", "clock", "sound-spell", "daily-mix", "make-10", "bigger-smaller", "pizza-fractions", "coins-change", "word-match", "spell-it", "quick-facts", "where-is-it", "times-sprint"];
   var TICK = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 12.5l4 4 8-9"/></svg>';
   var CROSS = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M7 7l10 10M17 7L7 17"/></svg>';
   var Loopy = window.Loopy = window.Loopy || {};
@@ -1915,7 +1915,7 @@ Loopy.nextButton = function (btn, answered) {
   var MAX_CODE = 40000, MAX_JSON = 200000, MAX_P = 10, MAX_G = 300, MAX_GV = 2000;
   // The keys a child's g may hold: game settings ("ss.mode.a7"), the last game, and the games already seen.
   // Each game checks its own values again when it reads them (only known choices are used).
-  var GKEY = /^(?:(?:bs|cc|clockquiz|mk|pm100|pz|qf|si|ss|ts|wi|wm)\.[A-Za-z]{1,16}(?:\.a\d{1,2})?|loopy\.(?:last|seen))$/;
+  var GKEY = /^(?:(?:bs|cc|clockquiz|mk|pm100|pz|qf|si|ss|ts|tt|wi|wm)\.[A-Za-z]{1,16}(?:\.a\d{1,2})?|loopy\.(?:last|seen))$/;
   var KEYS = { rewards: "loopy.rewards", daily: "loopy.daily", log: "loopy.log", recent: "loopy.recent",
     age: "loopy.ageOffset", read: "loopy.readAloud", theme: "loopy.theme", font: "loopy.font", sound: "loopy.sound", lang: "loopy.lang" };
   var CHOICES = { read: ["on", "off"], theme: ["black", "sunny", "ocean", "candy", "forest", "contrast"], font: ["easy", "normal"], sound: ["on", "off"], lang: ["en", "de"] };

@@ -1,0 +1,586 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'sha256-dUQXQ3sPgBsMTOHlb7dSJv9c4b7jcoDHEhzpErCvfm0='; style-src 'self' 'sha256-z2P7kGW5Z05eCTjTZdYpc0vThTlOE9vmt97pVSvi2I4=' 'sha256-fEwIdTaHfXdKeWOnT/E5ieo/ySWlwtayhs15/xGPFC4=' 'sha256-RT1053JU5UiKvjrCUFx1rlhdFLMmgtuFJ9T8jnMeawQ=' 'sha256-Y6Wb8g3S5cVZDSuZFDv8jsi8uxCjGvWjFSiWVN+ETTs='; img-src 'self' data:; font-src 'self'; connect-src 'self'; worker-src 'self'; object-src 'none'; base-uri 'none'; form-action 'none'; manifest-src 'self'; upgrade-insecure-requests">
+<meta name="referrer" content="strict-origin-when-cross-origin">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<style>:root{color-scheme:light;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}body{margin:0}[hidden]{display:none!important}</style>
+<link rel="icon" href="../../icon.svg" type="image/svg+xml">
+<link rel="manifest" href="../../manifest.webmanifest">
+<link rel="apple-touch-icon" href="../../apple-touch-icon.png">
+<meta name="theme-color" content="#0a0a0c">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="loopy">
+<title data-t="ttName">Times Tables Sprint</title>
+<link rel="preload" href="../../fonts/lexend-latin.woff2" as="font" type="font/woff2" crossorigin>
+<style>
+/* Layout like Times and Share: the problem on a card with a timer bar, big number pad below. */
+:root {
+  --bg: #f3f6fb;
+  --card: #ffffff;
+  --ink: #1d2a3f;
+  --muted: #5d6b82;
+  --line: #d5dde9;
+  --accent: #2457c5;
+  --accent-ink: #ffffff;
+  --mark: #e2622b;
+  --good: #1f8a4c;
+  --good-bg: #e3f5ea;
+  --bad: #c23a3a;
+  --bad-bg: #fbe6e6;
+  --chip: #e6ecf6;
+  --key: #ffffff;
+  --font: "Lexend", "Segoe UI", "Helvetica Neue", Arial, sans-serif;
+}
+
+* { box-sizing: border-box; }
+body {
+  background: var(--bg); color: var(--ink); font-family: var(--font); font-size: 16px;
+  padding-left: max(16px, env(safe-area-inset-left, 0px));
+  padding-right: max(16px, env(safe-area-inset-right, 0px));
+  padding-block: 20px 32px;
+}
+.wrap { max-width: 520px; margin: 0 auto; display: flex; flex-direction: column; gap: 16px; }
+
+.top { display: flex; flex-wrap: wrap; gap: 12px; align-items: center; justify-content: space-between; }
+h1 { margin: 0; font-size: 1.6rem; font-weight: 700; text-wrap: balance; }
+.score { display: flex; flex-wrap: wrap; gap: 8px; font-variant-numeric: tabular-nums; }
+.pill { background: var(--card); border: 1px solid var(--line); border-radius: 999px; padding: 6px 14px; font-weight: 600; font-size: 1rem; white-space: nowrap; }
+.pill span { color: var(--muted); font-weight: 400; margin-right: 4px; }
+
+.settings { display: flex; flex-direction: column; gap: 8px; }
+.seg-label { font-size: 0.8rem; font-weight: 600; letter-spacing: 0.06em; text-transform: uppercase; color: var(--muted); margin: 0 0 4px 4px; }
+.seg { display: grid; grid-template-columns: repeat(3, 1fr); gap: 6px; background: var(--chip); padding: 5px; border-radius: 14px; }
+.seg button {
+  font: inherit; font-size: 0.95rem; font-weight: 600; color: var(--muted);
+  background: transparent; border: 0; border-radius: 10px; padding: 8px 6px; min-height: 44px; cursor: pointer;
+}
+.seg button[aria-pressed="true"] { background: var(--card); color: var(--ink); box-shadow: 0 1px 3px rgb(0 0 0 / 0.12); }
+
+.problem-card {
+  background: var(--card); border: 1px solid var(--line); border-radius: 24px;
+  padding: 20px 18px 18px; display: flex; flex-direction: column; align-items: center; gap: 14px;
+}
+.problem-card.good { border-color: var(--good); box-shadow: 0 0 0 2px var(--good) inset; }
+.problem-card.bad { border-color: var(--bad); box-shadow: 0 0 0 2px var(--bad) inset; }
+
+/* Vertical problem, written like the worksheets: operator on the left, digits right-aligned. */
+.vert {
+  display: grid; grid-template-columns: auto auto; column-gap: 0.35em;
+  font-size: clamp(3.4rem, 15vw, 4.6rem); font-weight: 600; line-height: 1.12;
+  font-variant-numeric: tabular-nums; letter-spacing: 0.04em;
+}
+.vert .num { grid-column: 2; text-align: right; min-width: 3ch; }
+.vert .op { grid-column: 1; grid-row: 2; color: var(--accent); }
+.vert .rule { grid-column: 1 / -1; height: 0.07em; background: var(--ink); border-radius: 2px; margin: 0.1em 0 0.12em; }
+.vert .ans {
+  grid-column: 2; text-align: right; min-width: 3ch; min-height: 1.12em;
+  color: var(--accent); position: relative;
+}
+.vert .ans.empty::after {
+  content: ""; position: absolute; right: 0; bottom: 0.12em; width: 0.55em; height: 0.07em;
+  background: var(--mark); border-radius: 2px; animation: blink 1s steps(2, start) infinite;
+}
+.problem-card.good .ans { color: var(--good); }
+.problem-card.bad .ans { color: var(--bad); text-decoration: line-through; text-decoration-thickness: 0.06em; }
+@keyframes blink { to { visibility: hidden; } }
+
+.feedback { min-height: 3.1em; text-align: center; font-size: 1.1rem; line-height: 1.45; margin: 0; max-width: 34ch; }
+.feedback strong { display: block; font-size: 1.45rem; }
+.feedback.good strong { color: var(--good); }
+.feedback.bad strong { color: var(--bad); }
+.feedback .hint { color: var(--muted); }
+
+.pad { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; }
+.pad button {
+  font: inherit; font-size: 2rem; font-weight: 700; font-variant-numeric: tabular-nums; color: var(--ink);
+  background: var(--key); border: 2px solid var(--line); border-radius: 18px; min-height: 72px; cursor: pointer;
+  transition: transform .08s ease, border-color .15s ease;
+  touch-action: manipulation; -webkit-tap-highlight-color: transparent;
+}
+.pad button:hover:not(:disabled) { border-color: var(--accent); }
+.pad button:active:not(:disabled) { transform: scale(0.96); }
+.pad button:disabled { opacity: 0.4; cursor: default; }
+.pad .erase { font-size: 1.15rem; color: var(--muted); }
+.pad .go { background: var(--accent); border-color: var(--accent); color: var(--accent-ink); font-size: 1.35rem; }
+.pad .go:hover:not(:disabled) { border-color: var(--accent); filter: brightness(1.08); }
+
+.foot { display: flex; justify-content: space-between; align-items: center; gap: 12px; flex-wrap: wrap; }
+.foot p { margin: 0; color: var(--muted); font-size: 0.9rem; }
+.reset { font: inherit; font-size: 0.95rem; color: var(--muted); background: transparent; border: 2px solid var(--line); border-radius: 14px; padding: 0 16px; min-height: 44px; cursor: pointer; }
+button:focus-visible { outline: 3px solid var(--mark); outline-offset: 3px; }
+
+@media (max-width: 420px) {
+  h1 { font-size: 1.35rem; }
+  .pad button { min-height: 64px; font-size: 1.8rem; }
+  .seg button { font-size: 0.85rem; }
+}
+@media (prefers-reduced-motion: reduce) {
+  * { transition: none !important; }
+  .vert .ans.empty::after { animation: none; }
+}
+</style>
+<style>.home-link{display:inline-flex;align-items:center;min-height:40px;color:var(--muted);font-weight:600;text-decoration:none;font-size:0.95rem}.home-link:hover{color:var(--ink)}</style>
+<style>
+/* Phones and tablets: the game fills one screen; settings sit behind a button. */
+body { min-height: 100vh; min-height: 100dvh; padding-block: 12px 16px; }
+.wrap { gap: 12px; }
+.game-bar { display: flex; align-items: center; justify-content: space-between; gap: 8px; }
+.bar-right { display: flex; align-items: center; gap: 8px; }
+.top { gap: 8px 12px; }
+.play { display: flex; flex-direction: column; gap: 12px; -webkit-user-select: none; user-select: none; }
+@media (min-width: 600px) and (orientation: portrait) { .wrap { max-width: 640px; } }
+@media (orientation: landscape) and (min-width: 640px) {
+  .wrap { max-width: 1100px; }
+  .play { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; align-items: center; }
+}
+
+.problem-card { padding: 14px 14px 12px; gap: 8px; }
+.vert { font-size: clamp(2.4rem, min(15vw, 8.5vh), 5rem); font-size: clamp(2.4rem, min(15vw, 8.5dvh), 5rem); }
+.feedback { min-height: 2.9em; font-size: 1.05rem; }
+.feedback strong { font-size: 1.3rem; }
+.pad { gap: 8px; }
+.pad button { min-height: clamp(50px, 8vh, 92px); min-height: clamp(50px, 8dvh, 92px); }
+@media (min-width: 600px) and (orientation: portrait) {
+  .vert { font-size: clamp(3rem, 10dvh, 7rem); }
+  .pad button { min-height: clamp(60px, 10dvh, 120px); font-size: 2.4rem; }
+}
+@media (orientation: landscape) and (min-width: 640px) {
+  .problem-card { height: 100%; justify-content: center; }
+  .vert { font-size: clamp(2.2rem, min(7vw, 13dvh), 7rem); }
+  .pad button { min-height: clamp(44px, calc((100dvh - 150px) / 4.4), 130px); }
+}
+/* Short phones: keep long explanations from pushing the number pad off screen. */
+@media (max-height: 760px) and (orientation: portrait) {
+  .feedback { font-size: 0.95rem; line-height: 1.35; }
+  .feedback strong { font-size: 1.15rem; }
+}
+
+/* Portrait: the page is exactly one screen tall; the pad or answers stay at the bottom
+   and the top part shrinks to fit. With settings open, the page scrolls normally. */
+@media (orientation: portrait) {
+  body { height: calc(100dvh - env(safe-area-inset-top, 0px) - env(safe-area-inset-bottom, 0px)); min-height: 0; display: flex; flex-direction: column; overflow: hidden; }
+  body:has(#settings-panel:not([hidden])) { height: auto; overflow: visible; }
+  .wrap { flex: 1 1 auto; min-height: 0; width: 100%; }
+  .play { flex: 1 1 auto; min-height: 0; }
+}
+@media (orientation: portrait) {
+  .problem-card { flex: 1 1 auto; min-height: 0; justify-content: center; overflow: hidden; }
+  .feedback { flex: 0 1 auto; min-height: 0; overflow-y: auto; }
+}
+@media (orientation: landscape) and (min-width: 640px) {
+  body { height: calc(100dvh - env(safe-area-inset-top, 0px) - env(safe-area-inset-bottom, 0px)); min-height: 0; display: flex; flex-direction: column; overflow: hidden; }
+  body:has(#settings-panel:not([hidden])) { height: auto; overflow: visible; }
+  .wrap { flex: 1 1 auto; min-height: 0; width: 100%; }
+  .play { flex: 1 1 auto; min-height: 0; grid-template-rows: minmax(0, 1fr); }
+  .problem-card { min-height: 0; overflow: hidden; }
+  .feedback { flex: 0 1 auto; min-height: 0; overflow-y: auto; }
+}
+/* After answering, shrink the sum so the reason has room. */
+.problem-card.good .vert, .problem-card.bad .vert { zoom: 0.7; }
+@media (max-height: 700px) { .problem-card.good .vert, .problem-card.bad .vert { zoom: 0.55; } }
+@media (max-height: 500px) {
+  .feedback { font-size: 0.9rem; line-height: 1.3; }
+  .feedback strong { font-size: 1.05rem; }
+}
+
+/* Times Tables Sprint: one line problem like Times and Share, a timer bar, and this round's score. */
+.eq { display: flex; align-items: baseline; justify-content: center; flex-wrap: wrap; gap: 0 0.28em;
+  font-size: clamp(2.4rem, min(13vw, 9dvh), 5.4rem); font-weight: 600; font-variant-numeric: tabular-nums; line-height: 1.15; }
+.eq .op { color: var(--accent); }
+.eq .eqs { color: var(--muted); }
+.eq .ans { min-width: 1.6ch; text-align: center; color: var(--accent); border-bottom: 0.07em solid var(--ink); position: relative; padding: 0 0.1em; }
+.eq .ans.empty::after { content: "?"; color: var(--muted); }
+.timer { display: flex; align-items: center; gap: 10px; width: 100%; max-width: 420px; }
+.timer .bar { flex: 1; height: 14px; border-radius: 999px; background: var(--chip); overflow: hidden; }
+.timer .bar i { display: block; height: 100%; width: 100%; background: var(--good); border-radius: inherit; transform-origin: left; transform: scaleX(var(--left, 1)); }
+.timer.low .bar i { background: var(--mark); }
+.timer.calm .bar { display: none; }
+.timer b { min-width: 2.4ch; text-align: right; font-size: 1.3rem; font-variant-numeric: tabular-nums; }
+.timer.calm b { min-width: 0; font-size: 1rem; color: var(--muted); font-weight: 600; }
+.round { margin: 0; color: var(--muted); font-size: 0.95rem; font-weight: 600; font-variant-numeric: tabular-nums; }
+.round b { color: var(--ink); }
+.problem-card.flash-good { border-color: var(--good); box-shadow: 0 0 0 2px var(--good) inset; }
+.problem-card.flash-bad { border-color: var(--bad); box-shadow: 0 0 0 2px var(--bad) inset; }
+.problem-card.over .eq { opacity: 0.35; }
+.feedback.good strong { color: var(--good); }
+.feedback.bad strong { color: var(--bad); }
+.tables { display: grid; grid-template-columns: repeat(7, 1fr); gap: 6px; background: var(--chip); padding: 5px; border-radius: 14px; }
+.tables button { font: inherit; font-size: 1rem; font-weight: 700; color: var(--muted); background: transparent; border: 0; border-radius: 10px; min-height: 44px; cursor: pointer; }
+.tables button[aria-pressed="true"] { background: var(--card); color: var(--ink); box-shadow: 0 1px 3px rgb(0 0 0 / 0.12); }
+.tables .age { grid-column: span 3; font-size: 0.85rem; }
+.level-note { margin: 0; color: var(--muted); font-size: 0.9rem; }
+.helper { display: flex; align-items: center; gap: 8px; min-height: 40px; cursor: pointer; }
+.helper input { width: 22px; height: 22px; accent-color: var(--c2); }
+@media (prefers-reduced-motion: no-preference) { .timer .bar i { transition: transform 0.25s linear; } }
+</style>
+<link rel="stylesheet" href="../../loopy.css">
+<script src="../../loopy.js"></script>
+</head>
+<body>
+
+<div class="wrap">
+  <header class="game-bar">
+    <a class="home-link" href="../../">&larr; loopy</a>
+    <div class="bar-right">
+      <span id="star-chip"></span>
+      <button type="button" id="settings-toggle" aria-controls="settings-panel"></button>
+    </div>
+  </header>
+  <section class="top" aria-labelledby="title">
+    <h1 id="title" data-t="ttName">Times Tables Sprint</h1>
+    <div class="score" aria-live="polite">
+      <div class="pill pill-score"><span data-t="score">Score</span><b id="score">0 / 0</b></div>
+      <div class="pill pill-streak"><span data-t="streak">Streak</span><b id="streak">0</b></div>
+      <div id="last5" data-game="times-sprint"></div>
+    </div>
+  </section>
+  <div class="settings-panel" id="settings-panel" hidden>
+    <div class="controls"><div id="age-picker"></div><div id="theme-picker"></div><button id="sound-toggle"></button><div id="lang-picker"></div></div>
+    <div>
+      <p class="seg-label" id="op-label" data-t="problems">Problems</p>
+      <div class="seg" role="group" aria-labelledby="op-label" id="op-seg">
+        <button type="button" data-op="mul" data-t="times">Times &times;</button>
+        <button type="button" data-op="div" data-t="share">Share &divide;</button>
+        <button type="button" data-op="mix" data-t="both">Both</button>
+      </div>
+    </div>
+    <div>
+      <p class="seg-label" id="tables-label" data-t="ttTables">Tables</p>
+      <div class="tables" role="group" aria-labelledby="tables-label" id="tables"></div>
+    </div>
+    <label class="helper"><input type="checkbox" id="calm-on"> <span data-t="ttCalmLabel">Calm mode: no timer</span></label>
+    <p class="level-note" id="level-note"></p>
+    <div class="panel-foot">
+      <p data-t="kbdHint">Keyboard works too: numbers, Backspace, Enter.</p>
+      <button type="button" class="reset" id="reset" data-t="resetScore">Reset score</button>
+    </div>
+  </div>
+
+  <main class="play">
+    <div class="problem-card" id="card">
+      <div class="timer" id="timer" role="timer" aria-live="off"><div class="bar"><i id="bar"></i></div><b id="secs">60</b></div>
+      <p class="round" id="round"></p>
+      <div class="eq" id="eq">
+        <span id="eq-a">7</span><span class="op" id="op-sign">&times;</span><span id="eq-b">8</span><span class="eqs">=</span><span class="ans empty" id="ans" role="textbox" aria-readonly="true" aria-label="Your answer" data-t-aria="yourAnswer"></span>
+      </div>
+      <p class="feedback" id="feedback"><span class="hint" data-t="ttStartHint">The clock starts when you tap your first number.</span></p>
+    </div>
+
+    <div class="pad" id="pad">
+      <button type="button" id="k1" data-d="1">1</button>
+      <button type="button" id="k2" data-d="2">2</button>
+      <button type="button" id="k3" data-d="3">3</button>
+      <button type="button" id="k4" data-d="4">4</button>
+      <button type="button" id="k5" data-d="5">5</button>
+      <button type="button" id="k6" data-d="6">6</button>
+      <button type="button" id="k7" data-d="7">7</button>
+      <button type="button" id="k8" data-d="8">8</button>
+      <button type="button" id="k9" data-d="9">9</button>
+      <button type="button" id="k-erase" class="erase" aria-label="Erase last digit" data-t-aria="eraseAria" data-t="erase">Erase</button>
+      <button type="button" id="k0" data-d="0">0</button>
+      <button type="button" id="k-go" class="go" data-t="check">Check</button>
+    </div>
+  </main>
+</div>
+
+<script>
+Loopy.addStrings({
+  en: {
+    ttName: "Times Tables Sprint", problems: "Problems", times: "Times ×", share: "Share ÷",
+    ttTables: "Tables", ttByAge: "By age",
+    ttCalmLabel: "Calm mode: no timer", ttCalm: "Calm mode",
+    ttStartHint: "The clock starts when you tap your first number.",
+    ttRound: "This round: {n}", ttBest: "Best: {n}",
+    ttRight: "Right!", ttWas: "Not quite: {eq}.",
+    ttUp: "Time's up! {n} right.", ttUpOf: "You answered {m}.",
+    ttNewBest: "New best! Your old best was {b}.", ttFirstBest: "That is your first best score. Can you beat it?",
+    ttBeat: "Your best is {b}. Can you beat it?", ttSame: "You matched your best: {b}!",
+    ttAgain: "Play again", ttSecsLeft: "{n} seconds left", ttCheer: "New best: {n}!",
+    note8: "Tables of 2, 5 and 10.", note9: "All tables up to 10 × 10.", note10: "All tables up to 12 × 12.",
+    note12: "All tables up to 12 × 12, with sharing mixed in.", noteMine: "Your own tables: {list}.",
+    timesWord: "times", dividedBy: "divided by",
+    ttHow: "Work out each problem as fast as you can. Write the answer on the line."
+  },
+  de: {
+    ttName: "Einmaleins-Sprint", problems: "Aufgaben", times: "Mal ×", share: "Teilen ÷",
+    ttTables: "Reihen", ttByAge: "Nach Alter",
+    ttCalmLabel: "Ruhig: ohne Uhr", ttCalm: "Ruhig",
+    ttStartHint: "Die Uhr startet, wenn du die erste Zahl tippst.",
+    ttRound: "Diese Runde: {n}", ttBest: "Rekord: {n}",
+    ttRight: "Richtig!", ttWas: "Nicht ganz: {eq}.",
+    ttUp: "Zeit um! {n} richtig.", ttUpOf: "Du hast {m} beantwortet.",
+    ttNewBest: "Neuer Rekord! Dein alter Rekord war {b}.", ttFirstBest: "Das ist dein erster Rekord. Schaffst du mehr?",
+    ttBeat: "Dein Rekord ist {b}. Schaffst du mehr?", ttSame: "Du hast deinen Rekord geschafft: {b}!",
+    ttAgain: "Noch mal", ttSecsLeft: "Noch {n} Sekunden", ttCheer: "Neuer Rekord: {n}!",
+    note8: "Reihen 2, 5 und 10.", note9: "Alle Reihen bis 10 × 10.", note10: "Alle Reihen bis 12 × 12.",
+    note12: "Alle Reihen bis 12 × 12, gemischt mit Teilen.", noteMine: "Deine eigenen Reihen: {list}.",
+    timesWord: "mal", dividedBy: "geteilt durch",
+    ttHow: "Rechne jede Aufgabe so schnell du kannst. Schreibe das Ergebnis auf die Linie."
+  }
+});
+
+// GEN START
+const randInt = (lo, hi) => lo + Math.floor(Math.random() * (hi - lo + 1));
+const pick = (arr) => arr[Math.floor(Math.random() * arr.length)];
+const ALL = [2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12];
+
+// What each age practices: 2, 5 and 10 first, then up to 10 × 10, then 12 × 12, then sharing too.
+function levelForAge(age) {
+  if (age <= 8) return { tables: [2, 5, 10], upTo: 10, op: "mul", note: "note8" };
+  if (age === 9) return { tables: ALL.slice(0, 9), upTo: 10, op: "mul", note: "note9" };
+  if (age <= 11) return { tables: ALL, upTo: 12, op: "mul", note: "note10" };
+  return { tables: ALL, upTo: 12, op: "mix", note: "note12" };
+}
+
+// One problem from the tables: a × table, table × a, or (table × a) ÷ table.
+function makeProblem(op, tables, upTo) {
+  const kind = op === "mix" ? (Math.random() < 0.5 ? "mul" : "div") : op;
+  const tb = pick(tables), n = randInt(1, upTo);
+  let a, b;
+  if (kind === "mul") { if (Math.random() < 0.5) { a = tb; b = n; } else { a = n; b = tb; } }
+  else { b = tb; a = tb * n; }
+  return { op: kind, a, b, key: kind + a + "," + b, answer: kind === "mul" ? a * b : a / b };
+}
+// GEN END
+
+(function () {
+  const $ = (id) => document.getElementById(id);
+  const t = Loopy.t, fmt = Loopy.num;
+  const card = $("card"), ansEl = $("ans"), feedbackEl = $("feedback"), goBtn = $("k-go"), timerEl = $("timer"), barEl = $("bar"), calmBox = $("calm-on");
+  const opBtns = [...document.querySelectorAll("#op-seg button")];
+  const digitBtns = [...document.querySelectorAll("#pad [data-d]")];
+  const ROUND_MS = 60000, GAME = "times-sprint";
+
+  // Saved settings go through Loopy.store (one set per child). Anything unexpected falls back to the default.
+  const read = (k) => { try { return JSON.parse(Loopy.store.get(k)); } catch (e) { return null; } };
+  const write = (k, v) => Loopy.store.set(k, JSON.stringify(v));
+  const okTables = (v) => Array.isArray(v) && v.length > 0 && v.length <= ALL.length && v.every(n => ALL.includes(n)) && new Set(v).size === v.length;
+  // Best scores: { "mul:2-5-10": 18, ... }, one per choice of problems and tables.
+  function bests() {
+    const v = read("tt.best"), out = {};
+    if (v && typeof v === "object" && !Array.isArray(v)) {
+      Object.keys(v).slice(0, 40).forEach(k => {
+        if (/^(mul|div|mix):\d{1,2}(-\d{1,2}){0,10}$/.test(k) && Number.isInteger(v[k]) && v[k] >= 0 && v[k] < 1000) out[k] = v[k];
+      });
+    }
+    return out;
+  }
+
+  let age = Loopy.getAge();
+  let level, opMode, mine, calm;
+  function loadForAge() {
+    level = levelForAge(age);
+    const op = read("tt.op.a" + age);
+    opMode = ["mul", "div", "mix"].includes(op) ? op : level.op;
+    const tb = read("tt.tables.a" + age);
+    mine = okTables(tb) ? tb.slice().sort((x, y) => x - y) : null;
+    calm = read("tt.calm") === true;
+  }
+  loadForAge();
+  const tables = () => mine || level.tables;
+  const upTo = () => mine ? Math.max(10, level.upTo) : level.upTo;
+  const sig = () => opMode + ":" + tables().join("-");
+
+  let right = 0, tried = 0, streak = 0;
+  let current = null, typed = "", recent = [];
+  // A round: "ready" until the first number, "on" while the clock runs, "over" when time is up.
+  let state = "ready", roundRight = 0, roundTried = 0, left = ROUND_MS, last = 0, timer = 0, flash = 0;
+
+  function drawTimer() {
+    timerEl.classList.toggle("calm", calm);
+    timerEl.classList.toggle("low", !calm && left <= 10000);
+    if (calm) { $("secs").textContent = t("ttCalm"); return; }
+    $("secs").textContent = Math.ceil(left / 1000);
+    barEl.style.setProperty("--left", String(left / ROUND_MS));
+    timerEl.setAttribute("aria-label", t("ttSecsLeft", { n: Math.ceil(left / 1000) }));
+  }
+  function drawRound() {
+    const best = bests()[sig()];
+    $("round").textContent = t("ttRound", { n: roundRight }) + (best ? " · " + t("ttBest", { n: best }) : "");
+  }
+  function render() {
+    $("score").textContent = right + " / " + tried;
+    $("streak").textContent = streak;
+    opBtns.forEach(b => b.setAttribute("aria-pressed", String(b.dataset.op === opMode)));
+    [...$("tables").children].forEach(b => b.setAttribute("aria-pressed", String(b.dataset.n ? !!mine && mine.includes(+b.dataset.n) : !mine)));
+    calmBox.checked = calm;
+    $("level-note").textContent = t("ageLabel", { n: age }) + ": " + (mine ? t("noteMine", { list: mine.join(", ") }) : t(level.note));
+    const over = state === "over";
+    card.classList.toggle("over", over);
+    ansEl.textContent = typed === "" ? "" : fmt(parseInt(typed, 10));
+    ansEl.classList.toggle("empty", !over && typed === "");
+    goBtn.textContent = t(over ? "ttAgain" : "check");
+    goBtn.disabled = !over && typed === "";
+    digitBtns.forEach(b => b.disabled = over);
+    $("k-erase").disabled = over || typed === "";
+    drawTimer();
+    drawRound();
+  }
+
+  // The tables picker: "By age", then 2 to 12.
+  (function () {
+    const box = $("tables");
+    const age1 = document.createElement("button");
+    age1.type = "button"; age1.className = "age"; age1.textContent = t("ttByAge");
+    age1.addEventListener("click", () => { mine = null; Loopy.store.remove("tt.tables.a" + age); restart(); });
+    box.appendChild(age1);
+    ALL.forEach(n => {
+      const b = document.createElement("button");
+      b.type = "button"; b.dataset.n = n; b.textContent = n;
+      b.addEventListener("click", () => {
+        let list = (mine || []).slice();
+        list = list.includes(n) ? list.filter(x => x !== n) : list.concat(n);
+        mine = list.length ? list.sort((x, y) => x - y) : null;
+        if (mine) write("tt.tables.a" + age, mine); else Loopy.store.remove("tt.tables.a" + age);
+        restart();
+      });
+      box.appendChild(b);
+    });
+  })();
+
+  function question() {
+    current = Loopy.fresh(recent, () => makeProblem(opMode, tables(), upTo()), 12);
+    typed = "";
+    $("eq-a").textContent = fmt(current.a);
+    $("eq-b").textContent = fmt(current.b);
+    $("op-sign").textContent = current.op === "mul" ? "×" : "÷";
+    $("eq").setAttribute("aria-label", current.a + " " + t(current.op === "mul" ? "timesWord" : "dividedBy") + " " + current.b);
+    render();
+    Loopy.speech.read();
+  }
+  function hint(key) {
+    feedbackEl.className = "feedback";
+    feedbackEl.innerHTML = '<span class="hint"></span>';
+    feedbackEl.firstChild.textContent = t(key);
+  }
+  function say(cls, head, text) {
+    feedbackEl.className = "feedback" + (cls ? " " + cls : "");
+    feedbackEl.innerHTML = "<strong></strong>";
+    feedbackEl.firstChild.textContent = head;
+    if (text) feedbackEl.appendChild(document.createTextNode(text));
+  }
+
+  // A new round: full clock, round score back to 0, a fresh question.
+  function restart() {
+    clearInterval(timer); timer = 0;
+    state = "ready"; roundRight = 0; roundTried = 0; left = ROUND_MS;
+    card.classList.remove("flash-good", "flash-bad");
+    question();
+    hint(calm ? "tapHint" : "ttStartHint");
+  }
+  function startClock() {
+    state = "on";
+    if (calm) return;
+    last = performance.now();
+    timer = setInterval(tick, 200);
+  }
+  // The clock stops while a big badge card is open or the page is hidden, so no time is lost.
+  function tick() {
+    const now = performance.now(), gone = now - last;
+    last = now;
+    if (document.hidden || document.querySelector(".loopy-cheer.big")) return;
+    left = Math.max(0, left - gone);
+    drawTimer();
+    if (left <= 0) end();
+  }
+  function end() {
+    clearInterval(timer); timer = 0;
+    state = "over"; typed = "";
+    const all = bests(), key = sig(), old = all[key] || 0;
+    let note;
+    if (roundRight > old) {
+      all[key] = roundRight;
+      write("tt.best", all);
+      note = old ? t("ttNewBest", { b: old }) : t("ttFirstBest");
+      if (old) Loopy.rewards.celebrate(t("ttCheer", { n: roundRight }), t("keepItGoing"), false);
+    } else {
+      note = roundRight === old && old ? t("ttSame", { b: old }) : t("ttBeat", { b: old });
+    }
+    say(roundRight ? "good" : "", t("ttUp", { n: roundRight }), " " + t("ttUpOf", { m: roundTried }) + " " + note);
+    render();
+    goBtn.focus({ preventScroll: true });
+  }
+
+  function press(d) {
+    if (state === "over" || typed.length >= 3) return;
+    if (state === "ready") startClock();
+    if (typed === "0") typed = "";
+    typed += d;
+    render();
+  }
+  function erase() {
+    if (state === "over") return;
+    typed = typed.slice(0, -1);
+    render();
+  }
+  // Check the answer, show a short word about it, and go straight on to the next problem.
+  function check() {
+    if (state === "over" || typed === "") return;
+    if (state === "ready") startClock();
+    tried++; roundTried++;
+    const ok = parseInt(typed, 10) === current.answer;
+    const eq = fmt(current.a) + (current.op === "mul" ? " × " : " ÷ ") + fmt(current.b) + " = " + fmt(current.answer);
+    if (ok) { right++; roundRight++; streak++; } else { streak = 0; }
+    if (ok) say("good", t("ttRight"), " " + eq + ".");
+    else say("bad", t("ttWas", { eq }));
+    if (ok) Loopy.rewards.correct(GAME, streak, null);
+    else Loopy.rewards.wrong(GAME, { q: fmt(current.a) + (current.op === "mul" ? " × " : " ÷ ") + fmt(current.b), a: fmt(current.answer), y: fmt(parseInt(typed, 10)), k: Loopy.log.kind(current.op, current.a, current.b) });
+    card.classList.remove("flash-good", "flash-bad");
+    card.classList.add(ok ? "flash-good" : "flash-bad");
+    clearTimeout(flash);
+    flash = setTimeout(() => card.classList.remove("flash-good", "flash-bad"), 450);
+    question();
+  }
+  function go() { state === "over" ? restart() : check(); }
+
+  digitBtns.forEach(b => b.addEventListener("click", () => press(b.dataset.d)));
+  $("k-erase").addEventListener("click", erase);
+  goBtn.addEventListener("click", go);
+  opBtns.forEach(b => b.addEventListener("click", () => { opMode = b.dataset.op; write("tt.op.a" + age, opMode); restart(); }));
+  calmBox.addEventListener("change", () => { calm = calmBox.checked; write("tt.calm", calm); restart(); });
+  window.addEventListener("loopy:age", (e) => { age = e.detail; recent = []; loadForAge(); restart(); });
+  $("reset").addEventListener("click", () => { right = 0; tried = 0; streak = 0; if (Loopy.recent) Loopy.recent.clear(GAME); restart(); });
+  document.addEventListener("keydown", (e) => {
+    if (e.metaKey || e.ctrlKey || e.altKey || document.querySelector(".loopy-cheer.big")) return;
+    if (e.target.tagName === "INPUT") return;
+    if (/^[0-9]$/.test(e.key)) { press(e.key); e.preventDefault(); }
+    else if (e.key === "Backspace") { erase(); e.preventDefault(); }
+    else if (e.key === "Enter") {
+      if (document.activeElement && document.activeElement.tagName === "BUTTON" && document.activeElement !== goBtn) return;
+      go(); e.preventDefault();
+    }
+  });
+
+  // Read aloud: "What is 7 times 8?"
+  Loopy.speech.question({ host: card, text: () => t("whatIs", { q: current.a + " " + t(current.op === "mul" ? "timesWord" : "dividedBy") + " " + current.b }) });
+
+  // Print worksheet: problems with the same tables and problems as the game.
+  const line = (p) => fmt(p.a) + (p.op === "mul" ? " × " : " ÷ ") + fmt(p.b) + " =";
+  Loopy.worksheet({
+    title: () => t("ttName"),
+    level: () => [t("ageLabel", { n: age }), t("problems") + ": " + t({ mul: "times", div: "share", mix: "both" }[opMode]),
+      mine ? t("noteMine", { list: mine.join(", ") }) : t(level.note)].join(" · "),
+    how: () => t("ttHow"),
+    layout: "line",
+    make: (n) => { const list = [], keys = []; for (let i = 0; list.length < n && i < 2000; i++) { const p = makeProblem(opMode, tables(), upTo()); if (keys.includes(p.key) && i < 1500) continue; keys.push(p.key); list.push(p); } return list; },
+    cell: (p) => {
+      const el = document.createElement("span");
+      el.className = "ws-sl";
+      el.textContent = line(p);
+      const blank = document.createElement("span");
+      blank.className = "ws-blank";
+      el.appendChild(blank);
+      return el;
+    },
+    answer: (p) => line(p) + " " + fmt(p.answer)
+  });
+
+  restart();
+})();
+</script>
+</body>
+</html>
