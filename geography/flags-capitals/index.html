@@ -1,0 +1,674 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'sha256-8aVafz6F+S9eNtkV8LraSnmhOjTDK0MxWalZ0h0+Vwc='; style-src 'self' 'sha256-z2P7kGW5Z05eCTjTZdYpc0vThTlOE9vmt97pVSvi2I4=' 'sha256-0X+W/Xc6cVdheyH9D1zLVaD+jBRekL1aj7dPgq8HXXY=' 'sha256-RT1053JU5UiKvjrCUFx1rlhdFLMmgtuFJ9T8jnMeawQ=' 'sha256-AbJixgGjrguOw5a9iDl7GMczBsuMXNeP8i3ZkjOlh9U='; img-src 'self' data:; font-src 'self'; connect-src 'self'; worker-src 'self'; object-src 'none'; base-uri 'none'; form-action 'none'; manifest-src 'self'; upgrade-insecure-requests">
+<meta name="referrer" content="strict-origin-when-cross-origin">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<style>:root{color-scheme:light;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}body{margin:0}[hidden]{display:none!important}</style>
+<link rel="icon" href="../../icon.svg" type="image/svg+xml">
+<link rel="manifest" href="../../manifest.webmanifest">
+<link rel="apple-touch-icon" href="../../apple-touch-icon.png">
+<meta name="theme-color" content="#0a0a0c">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="loopy">
+<title data-t="fcName">Flags and Capitals</title>
+<link rel="preload" href="../../fonts/lexend-latin.woff2" as="font" type="font/woff2" crossorigin>
+<style>
+/* Layout: a flag and a question, answer buttons below. Shared look with the other games. */
+:root {
+  --bg: #f3f6fb;
+  --card: #ffffff;
+  --ink: #1d2a3f;
+  --muted: #5d6b82;
+  --line: #d5dde9;
+  --accent: #2457c5;
+  --accent-ink: #ffffff;
+  --mark: #e2622b;
+  --good: #1f8a4c;
+  --good-bg: #e3f5ea;
+  --bad: #c23a3a;
+  --bad-bg: #fbe6e6;
+  --chip: #e6ecf6;
+  --key: #ffffff;
+  --font: "Lexend", "Segoe UI", "Helvetica Neue", Arial, sans-serif;
+}
+
+* { box-sizing: border-box; }
+body {
+  background: var(--bg); color: var(--ink); font-family: var(--font); font-size: 16px;
+  padding-left: max(16px, env(safe-area-inset-left, 0px));
+  padding-right: max(16px, env(safe-area-inset-right, 0px));
+  padding-block: 20px 32px;
+}
+.wrap { max-width: 520px; margin: 0 auto; display: flex; flex-direction: column; gap: 16px; }
+
+.top { display: flex; flex-wrap: wrap; gap: 12px; align-items: center; justify-content: space-between; }
+h1 { margin: 0; font-size: 1.6rem; font-weight: 700; text-wrap: balance; }
+.score { display: flex; flex-wrap: wrap; gap: 8px; font-variant-numeric: tabular-nums; }
+.pill { background: var(--card); border: 1px solid var(--line); border-radius: 999px; padding: 6px 14px; font-weight: 600; font-size: 1rem; white-space: nowrap; }
+.pill span { color: var(--muted); font-weight: 400; margin-right: 4px; }
+
+.settings { display: flex; flex-direction: column; gap: 8px; }
+.seg-label { font-size: 0.8rem; font-weight: 600; letter-spacing: 0.06em; text-transform: uppercase; color: var(--muted); margin: 0 0 4px 4px; }
+.seg { display: grid; grid-template-columns: repeat(3, 1fr); gap: 6px; background: var(--chip); padding: 5px; border-radius: 14px; }
+.seg.two { grid-template-columns: repeat(2, 1fr); }
+.seg button {
+  font: inherit; font-size: 0.95rem; font-weight: 600; color: var(--muted);
+  background: transparent; border: 0; border-radius: 10px; padding: 8px 6px; min-height: 44px; cursor: pointer;
+}
+.seg button[aria-pressed="true"] { background: var(--card); color: var(--ink); box-shadow: 0 1px 3px rgb(0 0 0 / 0.12); }
+
+.problem-card {
+  background: var(--card); border: 1px solid var(--line); border-radius: 24px;
+  padding: 20px 18px 18px; display: flex; flex-direction: column; align-items: center; gap: 14px;
+}
+.problem-card.good { border-color: var(--good); box-shadow: 0 0 0 2px var(--good) inset; }
+.problem-card.bad { border-color: var(--bad); box-shadow: 0 0 0 2px var(--bad) inset; }
+
+/* Vertical problem, written like the worksheets: operator on the left, digits right-aligned. */
+.vert {
+  display: grid; grid-template-columns: auto auto; column-gap: 0.35em;
+  font-size: clamp(3.4rem, 15vw, 4.6rem); font-weight: 600; line-height: 1.12;
+  font-variant-numeric: tabular-nums; letter-spacing: 0.04em;
+}
+.vert .num { grid-column: 2; text-align: right; min-width: 3ch; }
+.vert .op { grid-column: 1; grid-row: 2; color: var(--accent); }
+.vert .rule { grid-column: 1 / -1; height: 0.07em; background: var(--ink); border-radius: 2px; margin: 0.1em 0 0.12em; }
+.vert .ans {
+  grid-column: 2; text-align: right; min-width: 3ch; min-height: 1.12em;
+  color: var(--accent); position: relative;
+}
+.vert .ans.empty::after {
+  content: ""; position: absolute; right: 0; bottom: 0.12em; width: 0.55em; height: 0.07em;
+  background: var(--mark); border-radius: 2px; animation: blink 1s steps(2, start) infinite;
+}
+.problem-card.good .ans { color: var(--good); }
+.problem-card.bad .ans { color: var(--bad); text-decoration: line-through; text-decoration-thickness: 0.06em; }
+@keyframes blink { to { visibility: hidden; } }
+
+.feedback { min-height: 3.1em; text-align: center; font-size: 1.1rem; line-height: 1.45; margin: 0; max-width: 34ch; }
+.feedback strong { display: block; font-size: 1.45rem; }
+.feedback.good strong { color: var(--good); }
+.feedback.bad strong { color: var(--bad); }
+.feedback .hint { color: var(--muted); }
+
+.pad { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; }
+.pad button {
+  font: inherit; font-size: 2rem; font-weight: 700; font-variant-numeric: tabular-nums; color: var(--ink);
+  background: var(--key); border: 2px solid var(--line); border-radius: 18px; min-height: 72px; cursor: pointer;
+  transition: transform .08s ease, border-color .15s ease;
+  touch-action: manipulation; -webkit-tap-highlight-color: transparent;
+}
+.pad button:hover:not(:disabled) { border-color: var(--accent); }
+.pad button:active:not(:disabled) { transform: scale(0.96); }
+.pad button:disabled { opacity: 0.4; cursor: default; }
+.pad .erase { font-size: 1.15rem; color: var(--muted); }
+.pad .go { background: var(--accent); border-color: var(--accent); color: var(--accent-ink); font-size: 1.35rem; }
+.pad .go:hover:not(:disabled) { border-color: var(--accent); filter: brightness(1.08); }
+
+.foot { display: flex; justify-content: space-between; align-items: center; gap: 12px; flex-wrap: wrap; }
+.foot p { margin: 0; color: var(--muted); font-size: 0.9rem; }
+.reset { font: inherit; font-size: 0.95rem; color: var(--muted); background: transparent; border: 2px solid var(--line); border-radius: 14px; padding: 0 16px; min-height: 44px; cursor: pointer; }
+button:focus-visible { outline: 3px solid var(--mark); outline-offset: 3px; }
+
+@media (max-width: 420px) {
+  h1 { font-size: 1.35rem; }
+  .pad button { min-height: 64px; font-size: 1.8rem; }
+  .seg button { font-size: 0.85rem; }
+}
+@media (prefers-reduced-motion: reduce) {
+  * { transition: none !important; }
+  .vert .ans.empty::after { animation: none; }
+}
+</style>
+<style>.home-link{display:inline-flex;align-items:center;min-height:40px;color:var(--muted);font-weight:600;text-decoration:none;font-size:0.95rem}.home-link:hover{color:var(--ink)}</style>
+<style>
+/* Phones and tablets: the game fills one screen; settings sit behind a button. */
+body { min-height: 100vh; min-height: 100dvh; padding-block: 12px 16px; }
+.wrap { gap: 12px; }
+.game-bar { display: flex; align-items: center; justify-content: space-between; gap: 8px; }
+.bar-right { display: flex; align-items: center; gap: 8px; }
+.top { gap: 8px 12px; }
+.play { display: flex; flex-direction: column; gap: 12px; -webkit-user-select: none; user-select: none; }
+@media (min-width: 600px) and (orientation: portrait) { .wrap { max-width: 640px; } }
+@media (orientation: landscape) and (min-width: 640px) {
+  .wrap { max-width: 1100px; }
+  .play { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; align-items: center; }
+}
+
+.problem-card { padding: 14px 14px 12px; gap: 8px; }
+.vert { font-size: clamp(2.4rem, min(15vw, 8.5vh), 5rem); font-size: clamp(2.4rem, min(15vw, 8.5dvh), 5rem); }
+.feedback { min-height: 2.9em; font-size: 1.05rem; }
+.feedback strong { font-size: 1.3rem; }
+.pad { gap: 8px; }
+.pad button { min-height: clamp(50px, 8vh, 92px); min-height: clamp(50px, 8dvh, 92px); }
+@media (min-width: 600px) and (orientation: portrait) {
+  .vert { font-size: clamp(3rem, 10dvh, 7rem); }
+  .pad button { min-height: clamp(60px, 10dvh, 120px); font-size: 2.4rem; }
+}
+@media (orientation: landscape) and (min-width: 640px) {
+  .problem-card { height: 100%; justify-content: center; }
+  .vert { font-size: clamp(2.2rem, min(7vw, 13dvh), 7rem); }
+  .pad button { min-height: clamp(44px, calc((100dvh - 150px) / 4.4), 130px); }
+}
+/* Short phones: keep long explanations from pushing the number pad off screen. */
+@media (max-height: 760px) and (orientation: portrait) {
+  .feedback { font-size: 0.95rem; line-height: 1.35; }
+  .feedback strong { font-size: 1.15rem; }
+}
+
+/* Portrait: the page is exactly one screen tall; the pad or answers stay at the bottom
+   and the top part shrinks to fit. With settings open, the page scrolls normally. */
+@media (orientation: portrait) {
+  body { height: calc(100dvh - env(safe-area-inset-top, 0px) - env(safe-area-inset-bottom, 0px)); min-height: 0; display: flex; flex-direction: column; overflow: hidden; }
+  body:has(#settings-panel:not([hidden])) { height: auto; overflow: visible; }
+  .wrap { flex: 1 1 auto; min-height: 0; width: 100%; }
+  .play { flex: 1 1 auto; min-height: 0; }
+}
+@media (orientation: portrait) {
+  .problem-card { flex: 1 1 auto; min-height: 0; justify-content: center; overflow: hidden; }
+  .feedback { flex: 0 1 auto; min-height: 0; overflow-y: auto; }
+}
+@media (orientation: landscape) and (min-width: 640px) {
+  body { height: calc(100dvh - env(safe-area-inset-top, 0px) - env(safe-area-inset-bottom, 0px)); min-height: 0; display: flex; flex-direction: column; overflow: hidden; }
+  body:has(#settings-panel:not([hidden])) { height: auto; overflow: visible; }
+  .wrap { flex: 1 1 auto; min-height: 0; width: 100%; }
+  .play { flex: 1 1 auto; min-height: 0; grid-template-rows: minmax(0, 1fr); }
+  .problem-card { min-height: 0; overflow: hidden; }
+  .feedback { flex: 0 1 auto; min-height: 0; overflow-y: auto; }
+}
+/* After answering on smaller screens, shrink the sum so the reason has room. */
+@media (max-height: 900px), (max-width: 599px) {
+  .problem-card.good .vert, .problem-card.bad .vert { zoom: 0.7; }
+}
+@media (max-height: 500px) {
+  .feedback { font-size: 0.9rem; line-height: 1.3; }
+  .feedback strong { font-size: 1.05rem; }
+}
+
+
+/* Flags and Capitals: a flag, a question, and answer buttons to pick from. */
+.flag { display: block; height: clamp(84px, 24dvh, 300px); width: auto; max-width: 100%; aspect-ratio: 3 / 2; flex: 0 1 auto; min-height: 0; }
+.flag.square { aspect-ratio: 1; }
+/* A thin edge, so white parts of a flag show on a white card. */
+.flag .edge { fill: none; stroke: var(--muted); stroke-width: 0.25; }
+.question { margin: 0; font-size: clamp(1.15rem, min(5.2vw, 3.4dvh), 1.9rem); font-weight: 700; line-height: 1.25;
+  text-align: center; max-width: 30ch; text-wrap: balance; }
+.region { margin: -4px 0 0; color: var(--muted); font-size: 0.95rem; font-weight: 600; }
+.side { display: flex; flex-direction: column; gap: 10px; }
+.choices { display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; }
+.choices button {
+  font: inherit; font-size: clamp(1.05rem, min(4.8vw, 3.2dvh), 1.7rem); font-weight: 700; color: var(--ink); line-height: 1.2;
+  background: var(--key); border: 2px solid var(--line); border-radius: 18px; min-height: clamp(56px, 9dvh, 96px); padding: 6px 10px; cursor: pointer;
+  overflow-wrap: anywhere; hyphens: auto;
+  transition: transform .08s ease, border-color .15s ease; touch-action: manipulation; -webkit-tap-highlight-color: transparent;
+}
+.choices button:hover:not(:disabled) { border-color: var(--accent); }
+.choices button:active:not(:disabled) { transform: scale(0.96); }
+.choices button:disabled { cursor: default; }
+.choices button.right { border-color: var(--good); background: var(--good-bg); color: var(--good); }
+.choices button.wrong { border-color: var(--bad); background: var(--bad-bg); color: var(--bad); }
+.choices button.faded { opacity: 0.45; }
+.next { font: inherit; font-size: 1.25rem; font-weight: 700; color: var(--accent-ink); background: var(--accent); border: 0; border-radius: 16px; min-height: clamp(52px, 7dvh, 72px); cursor: pointer; width: 100%; }
+.seg.five { grid-template-columns: repeat(5, 1fr); }
+.seg.two { grid-template-columns: repeat(2, 1fr); }
+.seg button { padding-inline: 4px; }
+@media (min-width: 600px) and (orientation: portrait) {
+  .choices button { min-height: clamp(64px, 10dvh, 120px); }
+}
+@media (orientation: landscape) and (min-width: 640px) {
+  .problem-card { height: 100%; justify-content: center; }
+  .side { height: 100%; justify-content: center; }
+  .choices button { min-height: clamp(52px, 14dvh, 130px); }
+  .flag { height: clamp(70px, 34dvh, 340px); }
+}
+/* After the answer the flag gets smaller, so the question and the fact have room. */
+@media (max-height: 900px), (max-width: 599px) {
+  .problem-card.good .flag, .problem-card.bad .flag { height: clamp(56px, 15dvh, 200px); }
+}
+@media (max-height: 700px) {
+  .question { font-size: clamp(1.05rem, min(4.8vw, 3.2dvh), 1.5rem); }
+}
+@media (max-height: 500px) {
+  .question { font-size: 1rem; }
+  .region { font-size: 0.85rem; }
+}
+
+/* Worksheet cells (only printed): a flag, the countries to circle, and a line for the capital. */
+@media print {
+  /* .sheet-word comes first, so these win over the shared word layout in loopy.css. */
+  .sheet-word div.ws-fc { width: 100%; padding: 0 1.5mm; }
+  .sheet-word .ws-fc .flag { height: 10mm; width: auto; margin-bottom: 0.8mm; flex: none; }
+  .sheet-word .ws-fc .ws-opts { display: grid; grid-template-columns: 1fr; gap: 0.3mm; width: 100%; margin: 0; font-size: 8.5pt; line-height: 1.15; color: #333; }
+  .sheet-word .ws-fc .ws-opts span { padding-left: 2.6mm; text-indent: -2.6mm; }
+  .sheet-word .ws-fc .ws-opts span::before { content: "○\00a0"; }
+  .sheet-word .ws-fc .ws-cap { margin-top: 1.2mm; font-size: 8.5pt; white-space: nowrap; }
+  .sheet-word .ws-fc .ws-gap { display: inline-block; min-width: 18mm; border-bottom: 0.3mm solid #000; margin-left: 1mm; }
+}
+</style>
+<link rel="stylesheet" href="../../loopy.css">
+<script src="../../loopy.js"></script>
+</head>
+<body>
+
+<div class="wrap">
+  <header class="game-bar">
+    <a class="home-link" href="../../">&larr; loopy</a>
+    <div class="bar-right">
+      <span id="star-chip"></span>
+      <button type="button" id="settings-toggle" aria-controls="settings-panel"></button>
+    </div>
+  </header>
+  <section class="top" aria-labelledby="title">
+    <h1 id="title" data-t="fcName">Flags and Capitals</h1>
+    <div class="score" aria-live="polite">
+      <div class="pill pill-score"><span data-t="score">Score</span><b id="score">0 / 0</b></div>
+      <div class="pill pill-streak"><span data-t="streak">Streak</span><b id="streak">0</b></div>
+      <div id="last5" data-game="flags-capitals"></div>
+    </div>
+  </section>
+  <div class="settings-panel" id="settings-panel" hidden>
+    <div class="controls"><div id="age-picker"></div><div id="theme-picker"></div><button id="sound-toggle"></button><div id="lang-picker"></div></div>
+    <div>
+      <p class="seg-label" id="region-label" data-t="fcRegion">Region</p>
+      <div class="seg five" role="group" aria-labelledby="region-label" id="region-seg">
+        <button type="button" data-region="eu" data-t="fcEu">Europe</button>
+        <button type="button" data-region="am" data-t="fcAm">Americas</button>
+        <button type="button" data-region="as" data-t="fcAs">Asia</button>
+        <button type="button" data-region="af" data-t="fcAf">Africa</button>
+        <button type="button" data-region="world" data-t="fcWorld">World</button>
+      </div>
+    </div>
+    <div>
+      <p class="seg-label" id="mode-label" data-t="fcAsk">Ask</p>
+      <div class="seg two" role="group" aria-labelledby="mode-label" id="mode-seg">
+        <button type="button" data-mode="flag" data-t="fcFlags">Flags only</button>
+        <button type="button" data-mode="cap" data-t="fcFlagsCaps">Flags and capitals</button>
+      </div>
+    </div>
+    <div class="panel-foot">
+      <p data-t="fcKbd">Keyboard works too: 1 to 4 picks an answer, Enter goes on.</p>
+      <button type="button" class="reset" id="reset" data-t="resetScore">Reset score</button>
+    </div>
+  </div>
+
+  <main class="play">
+    <div class="problem-card" id="card">
+      <svg class="flag" id="flag" viewBox="0 0 30 20" role="img" aria-label="A flag" data-t-aria="fcFlagAria"></svg>
+      <p class="question" id="question"></p>
+      <p class="region" id="region" hidden></p>
+      <p class="feedback" id="feedback"></p>
+    </div>
+    <div class="side">
+      <div class="choices" id="choices"></div>
+      <button type="button" class="next skip" id="next" data-t="skip">Skip</button>
+    </div>
+  </main>
+</div>
+
+<script>
+Loopy.addStrings({
+  en: {
+    fcName: "Flags and Capitals", fcRegion: "Region", fcEu: "Europe", fcAm: "Americas", fcAs: "Asia", fcAf: "Africa", fcWorld: "World",
+    fcAsk: "Ask", fcFlags: "Flags only", fcFlagsCaps: "Flags and capitals", fcFlagAria: "A flag",
+    fcKbd: "Keyboard works too: 1 to 4 picks an answer, Enter goes on.",
+    fcWhich: "Which country has this flag?", fcCapQ: "What is the capital of {c}?",
+    fcInEu: "In Europe", fcInAm: "In the Americas", fcInAs: "In Asia", fcInAf: "In Africa", fcInOc: "In Oceania",
+    fcFlagOf: "This is the flag of {c}.", fcCapOf: "{cap} is the capital of {c}.",
+    fcLogFlag: "Flag of {c}", fcLogCap: "Capital of {c}",
+    fcReadQ: "{q} Is it {list}?", fcTryCaps: "Try capitals too", fcTryWorld: "Try the whole world",
+    fcHow: "Circle the country for each flag.", fcHowCap: "Circle the country for each flag, then write its capital.", fcCapLine: "Capital:"
+  },
+  de: {
+    fcName: "Flaggen und Hauptstädte", fcRegion: "Region", fcEu: "Europa", fcAm: "Amerika", fcAs: "Asien", fcAf: "Afrika", fcWorld: "Welt",
+    fcAsk: "Abfragen", fcFlags: "Nur Flaggen", fcFlagsCaps: "Flaggen und Hauptstädte", fcFlagAria: "Eine Flagge",
+    fcKbd: "Die Tastatur geht auch: 1 bis 4 wählt eine Antwort, Enter geht weiter.",
+    fcWhich: "Welches Land hat diese Flagge?", fcCapQ: "Was ist die Hauptstadt {c}?",
+    fcInEu: "In Europa", fcInAm: "In Amerika", fcInAs: "In Asien", fcInAf: "In Afrika", fcInOc: "In Ozeanien",
+    fcFlagOf: "Das ist die Flagge {c}.", fcCapOf: "{cap} ist die Hauptstadt {c}.",
+    fcLogFlag: "Flagge {c}", fcLogCap: "Hauptstadt {c}",
+    fcReadQ: "{q} Ist es {list}?", fcTryCaps: "Probiere auch Hauptstädte", fcTryWorld: "Probiere die ganze Welt",
+    fcHow: "Kreise bei jeder Flagge das Land ein.", fcHowCap: "Kreise bei jeder Flagge das Land ein und schreibe die Hauptstadt dazu.", fcCapLine: "Hauptstadt:"
+  }
+});
+
+// GEN START
+// Each flag: [code, region, level, English name, German name, English capital, German capital, drawing].
+// Level 1 is the well-known flags for younger children, level 2 the rest.
+// Region "oc" (Australia and New Zealand) only comes up in World.
+// The drawing is on a 30 × 20 grid (20 × 20 after "w 20"). Steps are split by ";":
+//   h / v colors...      equal stripes, across or down
+//   r x y w h color      box          c x y r color      circle        e x y rx ry color   oval
+//   o x y r color width  ring         l x1 y1 x2 y2 color width        line
+//   p x,y x,y ... color  shape        s x y r color [turn] [points] [inner]   star (point up)
+//   S x y r color width  star drawn as lines (Morocco, Ethiopia)
+//   g x y dx dy nx ny r color   a grid of dots (the US stars)
+//   u x y w h            the Union Jack in that box
+// Colors: a letter from PAL or a #hex color. Flags keep their real colors in every theme.
+const PAL = { W: "#ffffff", K: "#000000", R: "#c8102e", B: "#012169" };
+const UNION = "r 0 0 30 20 B;l 0 0 30 20 W 4;l 30 0 0 20 W 4;l 0 0 30 20 R 1.3;l 30 0 0 20 R 1.3;r 12 0 6 20 W;r 0 7 30 6 W;r 13.2 0 3.6 20 R;r 0 8.2 30 3.6 R";
+const LEAF = "15,4.4 16.1,6.5 17.3,6 16.8,8.6 18.6,7.1 19,8 20.4,7.6 19.8,9.4 20.6,9.9 17.9,12.2 18.2,13.1 15.35,12.7 15.45,15.4 14.55,15.4 14.65,12.7 11.8,13.1 12.1,12.2 9.4,9.9 10.2,9.4 9.6,7.6 11,8 11.4,7.1 13.2,8.6 12.7,6 13.9,6.5";
+const NORDIC = (bg, cross, inner) => "r 0 0 30 20 " + bg + ";r 8.2 0 5.45 20 " + cross + ";r 0 7.5 30 5 " + cross + (inner ? ";r 9.55 0 2.73 20 " + inner + ";r 0 8.75 30 2.5 " + inner : "");
+const MK_RAY = "p 15,10 13.4,0 16.6,0 #ffe600;p 15,10 13.4,20 16.6,20 #ffe600;p 15,10 0,8.4 0,11.6 #ffe600;p 15,10 30,8.4 30,11.6 #ffe600;p 15,10 0,1.8 0,0 2.7,0 #ffe600;p 15,10 30,1.8 30,0 27.3,0 #ffe600;p 15,10 0,18.2 0,20 2.7,20 #ffe600;p 15,10 30,18.2 30,20 27.3,20 #ffe600";
+const FLAGS = [
+  ["DEU", "eu", 1, "Germany", "Deutschland", "Berlin", "Berlin", "h K #dd0000 #ffce00"],
+  ["FRA", "eu", 1, "France", "Frankreich", "Paris", "Paris", "v #002395 W #ed2939"],
+  ["ITA", "eu", 1, "Italy", "Italien", "Rome", "Rom", "v #009246 W #ce2b37"],
+  ["ESP", "eu", 1, "Spain", "Spanien", "Madrid", "Madrid", "h #aa151b #f1bf00 #f1bf00 #aa151b"],
+  ["GBR", "eu", 1, "United Kingdom", "Vereinigtes Königreich", "London", "London", "u 0 0 30 20"],
+  ["NLD", "eu", 1, "Netherlands", "Niederlande", "Amsterdam", "Amsterdam", "h #ae1c28 W #21468b"],
+  ["BEL", "eu", 1, "Belgium", "Belgien", "Brussels", "Brüssel", "v K #fdda24 #ef3340"],
+  ["CHE", "eu", 1, "Switzerland", "Schweiz", "Bern", "Bern", "w 20;r 0 0 20 20 #da291c;r 8.1 3.75 3.8 12.5 W;r 3.75 8.1 12.5 3.8 W"],
+  ["AUT", "eu", 1, "Austria", "Österreich", "Vienna", "Wien", "h #ed2939 W #ed2939"],
+  ["POL", "eu", 1, "Poland", "Polen", "Warsaw", "Warschau", "h W #dc143c"],
+  ["DNK", "eu", 1, "Denmark", "Dänemark", "Copenhagen", "Kopenhagen", "r 0 0 30 20 R;r 9.7 0 3.2 20 W;r 0 8.57 30 2.86 W"],
+  ["SWE", "eu", 1, "Sweden", "Schweden", "Stockholm", "Stockholm", "r 0 0 30 20 #006aa7;r 9.4 0 3.75 20 #fecc00;r 0 8 30 4 #fecc00"],
+  ["NOR", "eu", 2, "Norway", "Norwegen", "Oslo", "Oslo", NORDIC("#ba0c2f", "W", "#00205b")],
+  ["ISL", "eu", 2, "Iceland", "Island", "Reykjavík", "Reykjavík", NORDIC("#02529c", "W", "#dc1e35")],
+  ["FIN", "eu", 2, "Finland", "Finnland", "Helsinki", "Helsinki", "r 0 0 30 20 W;r 8.33 0 5 20 #002f6c;r 0 7.27 30 5.45 #002f6c"],
+  ["IRL", "eu", 2, "Ireland", "Irland", "Dublin", "Dublin", "v #169b62 W #ff883e"],
+  ["PRT", "eu", 2, "Portugal", "Portugal", "Lisbon", "Lissabon", "r 0 0 30 20 #da291c;r 0 0 12 20 #046a38;c 12 10 4.4 #ffe900;c 12 10 3.5 #da291c;r 10.5 7.6 3 3.9 W;c 12 9.1 0.55 #002f6c;c 12 10.5 0.55 #002f6c"],
+  ["GRC", "eu", 2, "Greece", "Griechenland", "Athens", "Athen", "h #0d5eaf W #0d5eaf W #0d5eaf W #0d5eaf W #0d5eaf;r 0 0 11.11 11.11 #0d5eaf;r 4.44 0 2.22 11.11 W;r 0 4.44 11.11 2.22 W"],
+  ["TUR", "eu", 2, "Turkey", "Türkei", "Ankara", "Ankara", "r 0 0 30 20 #e30a17;c 10.6 10 5 W;c 11.85 10 4 #e30a17;s 16.4 10 2.5 W -90"],
+  ["UKR", "eu", 2, "Ukraine", "Ukraine", "Kyiv", "Kiew", "h #0057b7 #ffd700"],
+  ["CZE", "eu", 2, "Czechia", "Tschechien", "Prague", "Prag", "h W #d7141a;p 0,0 15,10 0,20 #11457e"],
+  ["HUN", "eu", 2, "Hungary", "Ungarn", "Budapest", "Budapest", "h #ce2939 W #477050"],
+  ["ROU", "eu", 2, "Romania", "Rumänien", "Bucharest", "Bukarest", "v #002b7f #fcd116 #ce1126"],
+  ["BGR", "eu", 2, "Bulgaria", "Bulgarien", "Sofia", "Sofia", "h W #00966e #d62612"],
+  ["EST", "eu", 2, "Estonia", "Estland", "Tallinn", "Tallinn", "h #0072ce K W"],
+  ["LVA", "eu", 2, "Latvia", "Lettland", "Riga", "Riga", "r 0 0 30 20 #9e3039;r 0 8 30 4 W"],
+  ["LTU", "eu", 2, "Lithuania", "Litauen", "Vilnius", "Vilnius", "h #fdb913 #006a44 #c1272d"],
+  ["LUX", "eu", 2, "Luxembourg", "Luxemburg", "Luxembourg", "Luxemburg", "h #ed2939 W #00a1de"],
+  ["MKD", "eu", 2, "North Macedonia", "Nordmazedonien", "Skopje", "Skopje", "r 0 0 30 20 #d20000;" + MK_RAY + ";c 15 10 3.7 #d20000;c 15 10 3 #ffe600"],
+  ["USA", "am", 1, "United States", "Vereinigte Staaten", "Washington, D.C.", "Washington, D.C.", "h #b22234 W #b22234 W #b22234 W #b22234 W #b22234 W #b22234 W #b22234;r 0 0 12 10.77 #3c3b6e;g 1 0.95 2 2.2 6 5 0.42 W;g 2 2.05 2 2.2 5 4 0.42 W"],
+  ["CAN", "am", 1, "Canada", "Kanada", "Ottawa", "Ottawa", "r 0 0 30 20 W;r 0 0 7.5 20 #d80621;r 22.5 0 7.5 20 #d80621;p " + LEAF + " #d80621"],
+  ["MEX", "am", 1, "Mexico", "Mexiko", "Mexico City", "Mexiko-Stadt", "v #006847 W #ce1126;e 15 11.4 2.9 1.4 #2e7d32;c 15 9.7 2.2 #9c5b2b"],
+  ["BRA", "am", 1, "Brazil", "Brasilien", "Brasília", "Brasília", "r 0 0 30 20 #009c3b;p 15,1.7 28.3,10 15,18.3 1.7,10 #ffdf00;c 15 10 5 #002776;l 10.2 8.6 19.9 10.9 W 0.8"],
+  ["ARG", "am", 1, "Argentina", "Argentinien", "Buenos Aires", "Buenos Aires", "h #74acdf W #74acdf;s 15 10 2.8 #f6b40e 0 16 0.62;c 15 10 1.6 #f6b40e"],
+  ["CHL", "am", 2, "Chile", "Chile", "Santiago", "Santiago", "r 0 0 30 20 W;r 0 10 30 10 #d52b1e;r 0 0 10 10 #0039a6;s 5 5 2.1 W"],
+  ["COL", "am", 2, "Colombia", "Kolumbien", "Bogotá", "Bogotá", "r 0 0 30 10 #fcd116;r 0 10 30 5 #003893;r 0 15 30 5 #ce1126"],
+  ["PER", "am", 2, "Peru", "Peru", "Lima", "Lima", "v #d91023 W #d91023"],
+  ["JAM", "am", 2, "Jamaica", "Jamaika", "Kingston", "Kingston", "r 0 0 30 20 #009b3a;p 0,0 15,10 0,20 K;p 30,0 15,10 30,20 K;l -2 -1.33 32 21.33 #fed100 2.6;l 32 -1.33 -2 21.33 #fed100 2.6"],
+  ["CUB", "am", 2, "Cuba", "Kuba", "Havana", "Havanna", "h #002a8f W #002a8f W #002a8f;p 0,0 13,10 0,20 #cf142b;s 4.4 10 2.3 W"],
+  ["JPN", "as", 1, "Japan", "Japan", "Tokyo", "Tokio", "r 0 0 30 20 W;c 15 10 6 #bc002d"],
+  ["CHN", "as", 1, "China", "China", "Beijing", "Peking", "r 0 0 30 20 #ee1c25;s 5 5 3 #ffde00;s 10 2 1 #ffde00 239;s 12 4 1 #ffde00 262;s 12 7 1 #ffde00 286;s 10 9 1 #ffde00 309"],
+  ["IND", "as", 1, "India", "Indien", "New Delhi", "Neu-Delhi", "h #ff9933 W #138808;o 15 10 2.6 #000080 0.45;c 15 10 0.6 #000080"],
+  ["THA", "as", 2, "Thailand", "Thailand", "Bangkok", "Bangkok", "h #a51931 W #2d2a4a #2d2a4a W #a51931"],
+  ["VNM", "as", 2, "Vietnam", "Vietnam", "Hanoi", "Hanoi", "r 0 0 30 20 #da251d;s 15 10 6 #ffff00"],
+  ["IDN", "as", 2, "Indonesia", "Indonesien", "Jakarta", "Jakarta", "h #ce1126 W"],
+  ["PHL", "as", 2, "Philippines", "Philippinen", "Manila", "Manila", "r 0 0 30 10 #0038a8;r 0 10 30 10 #ce1126;p 0,0 17.32,10 0,20 W;s 5.8 10 2.6 #fcd116 0 8 0.45;c 5.8 10 1.3 #fcd116;s 1.8 2.8 0.8 #fcd116 90;s 1.8 17.2 0.8 #fcd116 90;s 14.3 10 0.8 #fcd116 90"],
+  ["PAK", "as", 2, "Pakistan", "Pakistan", "Islamabad", "Islamabad", "r 0 0 30 20 #01411c;r 0 0 7.5 20 W;c 19 10.5 5.4 W;c 20.4 9.1 4.9 #01411c;s 21.6 7.8 1.6 W 40"],
+  ["BGD", "as", 2, "Bangladesh", "Bangladesch", "Dhaka", "Dhaka", "r 0 0 30 20 #006a4e;c 13.5 10 6 #f42a41"],
+  ["ARE", "as", 2, "United Arab Emirates", "Vereinigte Arabische Emirate", "Abu Dhabi", "Abu Dhabi", "h #00732f W K;r 0 0 7.5 20 #ff0000"],
+  ["SGP", "as", 2, "Singapore", "Singapur", "", "", "h #ef3340 W;c 6.2 5 3.5 W;c 7.5 5 3.4 #ef3340;s 9.3 3.3 0.55 W;s 10.92 4.47 0.55 W;s 10.3 6.38 0.55 W;s 8.3 6.38 0.55 W;s 7.68 4.47 0.55 W"],
+  ["EGY", "af", 1, "Egypt", "Ägypten", "Cairo", "Kairo", "h #ce1126 W K;p 15,7.4 16.5,8.6 16.2,12.2 13.8,12.2 13.5,8.6 #c09300"],
+  ["NGA", "af", 1, "Nigeria", "Nigeria", "Abuja", "Abuja", "v #008751 W #008751"],
+  ["ZAF", "af", 1, "South Africa", "Südafrika", "", "", "r 0 0 30 10 #e03c31;r 0 10 30 10 #001489;l -2 -1.5 13 10 W 6.67;l -2 21.5 13 10 W 6.67;r 12 6.67 18 6.66 W;l -2 -1.5 13 10 #007749 4;l -2 21.5 13 10 #007749 4;r 12 8 18 4 #007749;p 0,2.6 9.6,10 0,17.4 #ffb81c;p 0,4.4 7.2,10 0,15.6 K"],
+  ["GHA", "af", 1, "Ghana", "Ghana", "Accra", "Accra", "h #ce1126 #fcd116 #006b3f;s 15 10 3.2 K"],
+  ["MAR", "af", 1, "Morocco", "Marokko", "Rabat", "Rabat", "r 0 0 30 20 #c1272d;S 15 10.4 4.2 #006233 0.7"],
+  ["KEN", "af", 2, "Kenya", "Kenia", "Nairobi", "Nairobi", "r 0 0 30 20 W;r 0 0 30 6 K;r 0 7 30 6 #bb0000;r 0 14 30 6 #006600;l 10.5 3 19.5 17 W 0.6;l 19.5 3 10.5 17 W 0.6;e 15 10 3.2 6.6 K;e 15 10 2 6.4 #bb0000;e 15 10 0.5 1.6 W"],
+  ["ETH", "af", 2, "Ethiopia", "Äthiopien", "Addis Ababa", "Addis Abeba", "h #078930 #fcdd09 #da121a;c 15 10 4.6 #0f47af;S 15 10.3 3.2 #fcdd09 0.6"],
+  ["TZA", "af", 2, "Tanzania", "Tansania", "Dodoma", "Dodoma", "r 0 0 30 20 #1eb53a;p 30,0 30,20 0,20 #00a3dd;l -3 22 33 -2 #fcd116 7;l -3 22 33 -2 K 4.8"],
+  ["SEN", "af", 2, "Senegal", "Senegal", "Dakar", "Dakar", "v #00853f #fdef42 #e31b23;s 15 10 2.8 #00853f"],
+  ["MLI", "af", 2, "Mali", "Mali", "Bamako", "Bamako", "v #14b53a #fcd116 #ce1126"],
+  ["CMR", "af", 2, "Cameroon", "Kamerun", "Yaoundé", "Jaunde", "v #007a5e #ce1126 #fcd116;s 15 10 2.6 #fcd116"],
+  ["SOM", "af", 2, "Somalia", "Somalia", "Mogadishu", "Mogadischu", "r 0 0 30 20 #4189dd;s 15 10 5 W"],
+  ["TUN", "af", 2, "Tunisia", "Tunesien", "Tunis", "Tunis", "r 0 0 30 20 #e70013;c 15 10 5 W;c 14.2 10 3.7 #e70013;c 15.2 10 3.05 W;s 16.3 10 2.2 #e70013 -90"],
+  ["BWA", "af", 2, "Botswana", "Botswana", "Gaborone", "Gaborone", "r 0 0 30 20 #75aadb;r 0 7.9 30 4.2 W;r 0 8.75 30 2.5 K"],
+  ["AUS", "oc", 1, "Australia", "Australien", "Canberra", "Canberra", "r 0 0 30 20 B;u 0 0 15 10;s 7.5 15 2.4 W 0 7 0.47;s 22.5 16.7 1.2 W 0 7 0.47;s 18.4 8.6 1.2 W 0 7 0.47;s 22.5 3.4 1.2 W 0 7 0.47;s 26.1 7.5 1.2 W 0 7 0.47;s 24.3 10.3 0.6 W"],
+  ["NZL", "oc", 2, "New Zealand", "Neuseeland", "Wellington", "Wellington", "r 0 0 30 20 B;u 0 0 15 10;s 22.5 16.5 1.4 W;s 22.5 16.5 1 R;s 22.5 4.5 1.25 W;s 22.5 4.5 0.88 R;s 19.4 9 1.2 W;s 19.4 9 0.84 R;s 25.6 8 1.1 W;s 25.6 8 0.74 R"]
+].map(f => ({ code: f[0], region: f[1], level: f[2], en: { name: f[3], cap: f[5] }, de: { name: f[4], cap: f[6] }, draw: f[7] }));
+const REGIONS = ["eu", "am", "as", "af", "world"];
+const byCode = {};
+FLAGS.forEach(f => { byCode[f.code] = f; });
+// English names that need "the" in a sentence, and German names in a sentence ("die Flagge der Schweiz").
+const EN_THE = ["GBR", "NLD", "USA", "PHL", "ARE"];
+const DE_OF = { CHE: "der Schweiz", NLD: "der Niederlande", GBR: "des Vereinigten Königreichs", USA: "der Vereinigten Staaten",
+  TUR: "der Türkei", UKR: "der Ukraine", PHL: "der Philippinen", ARE: "der Vereinigten Arabischen Emirate" };
+// "of France" / "von Frankreich", for "the capital of ..." and "the flag of ...".
+function nameOf(f, lang) {
+  if (lang === "de") return DE_OF[f.code] || "von " + f.de.name;
+  return (EN_THE.includes(f.code) ? "the " : "") + f.en.name;
+}
+
+const randInt = (n) => Math.floor(Math.random() * n);
+const pick = (arr) => arr[randInt(arr.length)];
+const shuffle = (arr) => arr.slice().sort(() => Math.random() - 0.5);
+// Younger children get the well-known flags only: up to age 8 in Europe, up to age 10 in the rest of the world.
+// A region with fewer than 8 well-known flags (Asia, Africa, the Americas) shows all its flags, so they do not keep coming back.
+const levelFor = (region, age) => age > (region === "eu" ? 8 : 10) ? 2
+  : FLAGS.filter(f => (region === "world" || f.region === region) && f.level === 1).length < 8 ? 2 : 1;
+function poolFor(region, age) {
+  const lv = levelFor(region, age);
+  return FLAGS.filter(f => (region === "world" || f.region === region) && f.level <= lv);
+}
+// Flags that are easy to mix up are never offered as each other's wrong answer.
+const LOOKALIKE = { NLD: "LUX", LUX: "NLD" };
+// Three wrong answers: from the same part of the world first, so the choice is a real one.
+function others(f, region, age, need) {
+  const ok = (o) => o !== f && o.code !== LOOKALIKE[f.code] && (!need || o.en.cap);
+  const pool = poolFor(region, age).filter(ok);
+  const near = shuffle(pool.filter(o => o.region === f.region));
+  const far = shuffle(pool.filter(o => o.region !== f.region));
+  const wider = shuffle(FLAGS.filter(o => ok(o) && o.region === f.region && !pool.includes(o)));
+  return near.concat(region === "world" ? far.concat(wider) : wider.concat(far)).slice(0, 3);
+}
+// One question: a flag, its four countries, and (when there is a capital) four capitals for the second step.
+function makeProblem(region, age, avoid) {
+  const list = poolFor(region, age);
+  let f = pick(list);
+  for (let tries = 0; tries < 40 && avoid && avoid.includes(f.code); tries++) f = pick(list);
+  return { f, key: f.code, options: shuffle([f, ...others(f, region, age)]), caps: f.en.cap ? shuffle([f, ...others(f, region, age, true)]) : null };
+}
+
+// Draws a flag from its steps into an <svg>. Only shapes and colors: no text, no pictures from outside.
+const NS = "http://www.w3.org/2000/svg";
+const color = (c) => PAL[c] || c;
+function shape(parent, tag, attrs) {
+  const n = document.createElementNS(NS, tag);
+  for (const k in attrs) n.setAttribute(k, attrs[k]);
+  parent.appendChild(n);
+  return n;
+}
+function starPoints(x, y, r, turn, points, inner) {
+  const pts = [];
+  for (let i = 0; i < points * 2; i++) {
+    const a = (turn - 90) * Math.PI / 180 + i * Math.PI / points, d = i % 2 ? r * inner : r;
+    pts.push((x + d * Math.cos(a)).toFixed(2) + "," + (y + d * Math.sin(a)).toFixed(2));
+  }
+  return pts.join(" ");
+}
+function drawSteps(svg, steps, w) {
+  steps.split(";").forEach(step => {
+    const a = step.trim().split(/\s+/), op = a[0], n = a.slice(1, -1).map(Number), last = a[a.length - 1];
+    if (op === "h" || op === "v") {
+      const cols = a.slice(1), size = (op === "h" ? 20 : w) / cols.length;
+      cols.forEach((c, i) => shape(svg, "rect", op === "h"
+        ? { x: 0, y: i * size, width: w, height: size + 0.02, fill: color(c) }
+        : { x: i * size, y: 0, width: size + 0.02, height: 20, fill: color(c) }));
+    } else if (op === "r") shape(svg, "rect", { x: n[0], y: n[1], width: n[2], height: n[3], fill: color(last) });
+    else if (op === "c") shape(svg, "circle", { cx: n[0], cy: n[1], r: n[2], fill: color(last) });
+    else if (op === "e") shape(svg, "ellipse", { cx: n[0], cy: n[1], rx: n[2], ry: n[3], fill: color(last) });
+    else if (op === "o") shape(svg, "circle", { cx: a[1], cy: a[2], r: a[3], fill: "none", stroke: color(a[4]), "stroke-width": a[5] });
+    else if (op === "l") shape(svg, "line", { x1: a[1], y1: a[2], x2: a[3], y2: a[4], stroke: color(a[5]), "stroke-width": a[6] });
+    else if (op === "p") shape(svg, "polygon", { points: a.slice(1, -1).join(" "), fill: color(last) });
+    else if (op === "s") shape(svg, "polygon", { points: starPoints(+a[1], +a[2], +a[3], +(a[5] || 0), +(a[6] || 5), +(a[7] || 0.382)), fill: color(a[4]) });
+    else if (op === "S") {
+      const p = starPoints(+a[1], +a[2], +a[3], 0, 5, 1).split(" ").filter((_, i) => i % 2 === 0);
+      shape(svg, "polygon", { points: [p[0], p[2], p[4], p[1], p[3]].join(" "), fill: "none", stroke: color(a[4]), "stroke-width": a[5], "stroke-linejoin": "miter" });
+    } else if (op === "g") {
+      for (let i = 0; i < n[4]; i++) for (let j = 0; j < n[5]; j++) shape(svg, "circle", { cx: n[0] + i * n[2], cy: n[1] + j * n[3], r: n[6], fill: color(last) });
+    } else if (op === "u") {
+      const box = shape(svg, "svg", { x: a[1], y: a[2], width: a[3], height: a[4], viewBox: "0 0 30 20", preserveAspectRatio: "none" });
+      drawSteps(box, UNION, 30);
+    }
+  });
+}
+function drawFlag(svg, f) {
+  svg.textContent = "";
+  const steps = f.draw.split(";"), w = /^w \d+$/.test(steps[0]) ? +steps.shift().slice(2) : 30;
+  svg.setAttribute("viewBox", "0 0 " + w + " 20");
+  svg.classList.toggle("square", w === 20);
+  drawSteps(svg, steps.join(";"), w);
+  shape(svg, "rect", { class: "edge", x: 0.12, y: 0.12, width: w - 0.24, height: 19.76 });
+}
+// GEN END
+
+(function () {
+  const $ = (id) => document.getElementById(id);
+  const card = $("card"), flagEl = $("flag"), qEl = $("question"), regionEl = $("region"), choicesEl = $("choices"), feedbackEl = $("feedback"), nextBtn = $("next");
+  const regionBtns = [...document.querySelectorAll("#region-seg button")];
+  const modeBtns = [...document.querySelectorAll("#mode-seg button")];
+  const t = Loopy.t, lang = Loopy.lang === "de" ? "de" : "en";
+  const REGION_KEYS = { eu: "fcEu", am: "fcAm", as: "fcAs", af: "fcAf", world: "fcWorld" };
+  const store = {
+    // ok: the values this setting may have; anything else falls back to the default.
+    get(k, d, ok) { try { const v = JSON.parse(Loopy.store.get(k)); return ok.includes(v) ? v : d; } catch (e) { return d; } },
+    set(k, v) { Loopy.store.set(k, JSON.stringify(v)); }
+  };
+
+  let age = Loopy.getAge();
+  let region, mode;
+  // Settings are remembered per age, so each age starts at the right level:
+  // Europe up to age 10, then the world; capitals too from age 13.
+  function loadForAge() {
+    region = store.get("fc.region.a" + age, age <= 10 ? "eu" : "world", REGIONS);
+    mode = store.get("fc.mode.a" + age, age >= 13 ? "cap" : "flag", ["flag", "cap"]);
+  }
+  loadForAge();
+  let right = 0, tried = 0, streak = 0;
+  let current = null, step = "flag", answered = false, recent = [];
+
+  const nameOfCode = (f) => f[lang].name;
+  function render() {
+    $("score").textContent = right + " / " + tried;
+    $("streak").textContent = streak;
+    regionBtns.forEach(b => b.setAttribute("aria-pressed", String(b.dataset.region === region)));
+    modeBtns.forEach(b => b.setAttribute("aria-pressed", String(b.dataset.mode === mode)));
+    Loopy.nextButton(nextBtn, answered);
+  }
+  const question = () => step === "flag" ? t("fcWhich") : t("fcCapQ", { c: nameOf(current.f, lang) });
+  const labels = () => step === "flag" ? current.options.map(nameOfCode) : current.caps.map(f => f[lang].cap);
+  // Shows the flag step or the capital step of the current question.
+  function showStep() {
+    answered = false;
+    qEl.textContent = question();
+    regionEl.hidden = region !== "world";
+    regionEl.textContent = t("fcIn" + current.f.region.charAt(0).toUpperCase() + current.f.region.slice(1));
+    choicesEl.textContent = "";
+    const want = step === "flag" ? current.f[lang].name : current.f[lang].cap;
+    labels().forEach((a, i) => {
+      const b = document.createElement("button");
+      b.type = "button"; b.id = "choice-" + i; b.textContent = a;
+      b.dataset.correct = String(a === want);
+      b.addEventListener("click", () => choose(b));
+      choicesEl.appendChild(b);
+    });
+    card.classList.remove("good", "bad");
+    feedbackEl.className = "feedback";
+    feedbackEl.textContent = "";
+    render();
+    Loopy.speech.read();
+  }
+  function newRound() {
+    current = Loopy.fresh(recent, () => makeProblem(region, age), 12);
+    step = "flag";
+    drawFlag(flagEl, current.f);
+    showStep();
+  }
+  function choose(btn) {
+    if (answered) return;
+    answered = true; tried++;
+    const ok = btn.dataset.correct === "true", f = current.f;
+    [...choicesEl.children].forEach(b => {
+      b.disabled = true;
+      if (b.dataset.correct === "true") b.classList.add("right");
+      else if (b === btn) b.classList.add("wrong");
+      else b.classList.add("faded");
+    });
+    if (ok) { right++; streak++; } else { streak = 0; }
+    const of = nameOf(f, lang);
+    if (ok) Loopy.rewards.correct("flags-capitals", streak, harder());
+    else Loopy.rewards.wrong("flags-capitals", step === "flag"
+      ? { q: t("fcLogFlag", { c: of }), a: f[lang].name, y: btn.textContent, k: "fc-flag" }
+      : { q: t("fcLogCap", { c: of }), a: f[lang].cap, y: btn.textContent, k: "fc-cap" });
+    card.classList.remove("good", "bad");
+    card.classList.add(ok ? "good" : "bad");
+    feedbackEl.className = "feedback " + (ok ? "good" : "bad");
+    feedbackEl.innerHTML = "<strong></strong>";
+    feedbackEl.firstChild.textContent = ok ? (streak >= 3 ? t("correctRow", { n: streak }) : t("correct")) : t("notQuite");
+    // One fact line: whose flag it is, or the capital. With capitals still to come, the capital waits for its own step.
+    const capNext = step === "flag" && mode === "cap" && current.caps;
+    const fact = step === "flag" && (capNext || !f.en.cap) ? t("fcFlagOf", { c: of }) : t("fcCapOf", { cap: f[lang].cap, c: of });
+    feedbackEl.appendChild(document.createTextNode(fact));
+    render();
+    nextBtn.focus({ preventScroll: true });
+  }
+  // Next: the capital of the same flag when that comes next, otherwise a new flag.
+  function next() {
+    if (answered && step === "flag" && mode === "cap" && current.caps) {
+      // The capital step is a question of its own, so it gets its own key on the page.
+      step = "cap"; document.body.setAttribute("data-q", current.key + ".cap"); showStep(); return;
+    }
+    newRound();
+  }
+  // What "Make it harder" does after 10 in a row: capitals too, then the whole world.
+  function harder() {
+    if (mode === "flag") return { label: t("fcTryCaps"), apply: () => { mode = "cap"; store.set("fc.mode.a" + age, mode); render(); } };
+    if (region !== "world") return { label: t("fcTryWorld"), apply: () => { region = "world"; store.set("fc.region.a" + age, region); recent = []; render(); } };
+    return null;
+  }
+
+  nextBtn.addEventListener("click", next);
+  regionBtns.forEach(b => b.addEventListener("click", () => { region = b.dataset.region; store.set("fc.region.a" + age, region); recent = []; newRound(); }));
+  modeBtns.forEach(b => b.addEventListener("click", () => { mode = b.dataset.mode; store.set("fc.mode.a" + age, mode); newRound(); }));
+  window.addEventListener("loopy:age", (e) => { age = e.detail; recent = []; loadForAge(); newRound(); });
+  $("reset").addEventListener("click", () => { right = 0; tried = 0; streak = 0; Loopy.recent.clear("flags-capitals"); newRound(); });
+  document.addEventListener("keydown", (e) => {
+    if (e.target.tagName === "INPUT" || document.querySelector(".loopy-cheer.big")) return;
+    if (e.key === "Enter" && answered && e.target.tagName !== "BUTTON") { next(); return; }
+    const n = parseInt(e.key, 10);
+    if (n >= 1 && n <= 4 && !answered) { const b = choicesEl.children[n - 1]; if (b) choose(b); }
+  });
+
+  // Read aloud: "Which country has this flag? Is it France, Italy, Spain or Germany?"
+  Loopy.speech.question({ host: card, text: () => {
+    const o = labels();
+    return t("fcReadQ", { q: question(), list: o.slice(0, -1).join(", ") + " " + t("orWord") + " " + o[o.length - 1] });
+  } });
+
+  // Print worksheet: 20 flags at the game's level and region, each with its countries to circle,
+  // and a line for the capital in "Flags and capitals". Flags print in color.
+  const part = (cls, text) => { const n = document.createElement("span"); if (cls) n.className = cls; if (text) n.textContent = text; return n; };
+  Loopy.worksheet({
+    title: () => t("fcName"),
+    level: () => [t("ageLabel", { n: age }), t("fcRegion") + ": " + t(REGION_KEYS[region]), t(mode === "cap" ? "fcFlagsCaps" : "fcFlags")].join(" · "),
+    how: () => t(mode === "cap" ? "fcHowCap" : "fcHow"),
+    layout: "word",
+    // No flag twice on one sheet, unless the region has fewer flags than the sheet.
+    make: (n) => { const list = [], keys = [], keep = poolFor(region, age).length - 1; while (list.length < n) { const p = makeProblem(region, age, keys); keys.push(p.key); if (keys.length > keep) keys.shift(); list.push(p); } return list; },
+    cell: (p) => {
+      const box = document.createElement("div");
+      box.className = "ws-fc";
+      const svg = document.createElementNS(NS, "svg");
+      svg.setAttribute("class", "flag");
+      svg.setAttribute("aria-hidden", "true");
+      drawFlag(svg, p.f);
+      box.appendChild(svg);
+      const opts = part("ws-opts");
+      p.options.forEach(o => opts.appendChild(part("", nameOfCode(o))));
+      box.appendChild(opts);
+      if (mode === "cap" && p.f.en.cap) { const cap = part("ws-cap", t("fcCapLine")); cap.appendChild(part("ws-gap")); box.appendChild(cap); }
+      return box;
+    },
+    answer: (p) => nameOfCode(p.f) + (mode === "cap" && p.f.en.cap ? ": " + p.f[lang].cap : "")
+  });
+
+  newRound();
+})();
+</script>
+</body>
+</html>

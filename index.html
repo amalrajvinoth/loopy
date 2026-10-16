@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'sha256-rpxAZwQ4NRuMxkLUfFJ3kzipk2XXjTygtCYEcBoHg04='; style-src 'self' 'sha256-/9CC5KUf0+lQ0Vy615OdB+ZgK9WFMOOkxnVXIglwF+I='; img-src 'self' data:; font-src 'self'; connect-src 'self'; worker-src 'self'; object-src 'none'; base-uri 'none'; form-action 'none'; manifest-src 'self'; upgrade-insecure-requests">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'sha256-9HlV9ahFkUULyf2bFTXJLJGDTzxKfQjx5UMUvemX370='; style-src 'self' 'sha256-/9CC5KUf0+lQ0Vy615OdB+ZgK9WFMOOkxnVXIglwF+I='; img-src 'self' data:; font-src 'self'; connect-src 'self'; worker-src 'self'; object-src 'none'; base-uri 'none'; form-action 'none'; manifest-src 'self'; upgrade-insecure-requests">
 <meta name="referrer" content="strict-origin-when-cross-origin">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <link rel="icon" href="icon.svg" type="image/svg+xml">
@@ -181,7 +181,8 @@ Loopy.addStrings({
     siTitle: "Spell It", siTag: "Spelling", siText: "Hear a word and spell it with a letter pad. Starts with 3-letter words and grows to long ones. English or German.",
     qfTitle: "Quick Facts", qfTag: "Science quiz", qfText: "Short picture quizzes about space, animals and your body, with one line of why after each answer.",
     ebTitle: "Equation Balance", ebTag: "First steps in algebra", ebText: "Find x so the see-saw is level. Starts with a missing number and grows to x on both sides.",
-    wiTitle: "Where Is It?", wiTag: "Maps", wiText: "Tap continents, oceans, countries and capitals on a map. Europe first, then the whole world."
+    wiTitle: "Where Is It?", wiTag: "Maps", wiText: "Tap continents, oceans, countries and capitals on a map. Europe first, then the whole world.",
+    fcTitle: "Flags and Capitals", fcTag: "Flags", fcText: "See a flag and pick its country, then its capital. Europe first, then the whole world."
   },
   de: {
     tagline: "Lernen. Spielen. Wiederholen.", myStars: "Meine Sterne", moveStars: "Sterne auf ein anderes Gerät bringen",
@@ -214,7 +215,8 @@ Loopy.addStrings({
     siTitle: "Wörter schreiben", siTag: "Rechtschreibung", siText: "Hör ein Wort und schreibe es mit den Buchstaben. Erst Wörter mit 3 Buchstaben, dann längere. Deutsch oder Englisch.",
     qfTitle: "Blitzwissen", qfTag: "Wissens-Quiz", qfText: "Kurze Bilder-Quizze über das Weltall, Tiere und deinen Körper, mit einem Satz zum Warum nach jeder Antwort.",
     ebTitle: "Waage", ebTag: "Erste Schritte in Algebra", ebText: "Finde x, damit die Waage gerade steht. Erst eine fehlende Zahl, später x auf beiden Seiten.",
-    wiTitle: "Wo liegt das?", wiTag: "Landkarten", wiText: "Tippe Kontinente, Ozeane, Länder und Hauptstädte auf der Karte an. Erst Europa, dann die ganze Welt."
+    wiTitle: "Wo liegt das?", wiTag: "Landkarten", wiText: "Tippe Kontinente, Ozeane, Länder und Hauptstädte auf der Karte an. Erst Europa, dann die ganze Welt.",
+    fcTitle: "Flaggen und Hauptstädte", fcTag: "Flaggen", fcText: "Sieh eine Flagge und wähle das Land, dann die Hauptstadt. Erst Europa, dann die ganze Welt."
   }
 });
 // To add a game: put it in <subject>/<folder>/index.html and add one line below.
@@ -235,6 +237,7 @@ const GAMES = [
   { subject: "languages", path: "languages/spell-it/", id: "si", pic: "✏️", ages: [6, 10] },
   { subject: "science", path: "science/quick-facts/", id: "qf", pic: "🔬", ages: [7, 12] },
   { subject: "geography", path: "geography/where-is-it/", id: "wi", pic: "🗺️", ages: [7, 14] },
+  { subject: "geography", path: "geography/flags-capitals/", id: "fc", pic: "🚩", ages: [7, 16] },
 ];
 const t = Loopy.t;
 const list = document.getElementById("list");
