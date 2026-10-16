@@ -548,7 +548,8 @@ document.documentElement.classList.add("loopy-building");
     clean: function (v) { return typeof v === "string" && PATH.test(v) ? v : ""; }
   };
   function mark() {
-    if (!document.getElementById("last5")) return;
+    // A game opened in a hidden frame (the grown-ups' practice sheet) is not where the child left off.
+    if (!document.getElementById("last5") || window.top !== window) return;
     var here = new URL(".", location.href).href;
     if (here.indexOf(Loopy.root) !== 0) return;
     var rel = decodeURIComponent(here.slice(Loopy.root.length));
@@ -1591,6 +1592,7 @@ Loopy.nextButton = function (btn, answered) {
 //   make(n)   n problems, from the game's own problem maker
 //   cell(p)   a node that shows problem p with room to write
 //   answer(p) the answer for the key, as text, e.g. "47 + 25 = 72"
+//   quiet     true: no Print worksheet button in Settings (the grown-ups' page prints its own sheet)
 (function () {
   var PRINTER = '<svg viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9V3h12v6"/><rect x="3" y="9" width="18" height="8" rx="2"/><path d="M6 14h12v7H6z"/></svg>';
   Loopy.addStrings({
@@ -1629,7 +1631,7 @@ Loopy.nextButton = function (btn, answered) {
       // the site has been visited), so printing from the browser's own menu also gives a worksheet.
       setTimeout(function () { Loopy.load("sheet").catch(function () {}); }, 3000);
       var panel = document.getElementById("settings-panel");
-      if (!panel) return;
+      if (!panel || o.quiet) return;
       var row = el("div", "print-row");
       var btn = el("button", "print-btn");
       btn.type = "button";

@@ -2,7 +2,7 @@
    tapped, or in the background a moment after a game has opened, so printing from the browser's menu works too.
    The Print worksheet button and the empty sheet are made by loopy.js (Loopy.worksheet). */
 (function () {
-  var N = 20, LAYOUTS = ["vert", "line", "clock", "word"];
+  var N = 20, LAYOUTS = ["vert", "line", "clock", "word", "mixed"]; // mixed: the grown-ups' practice sheet
   Loopy.addStrings({
     en: { sheetName: "Name", sheetDate: "Date", sheetAnswers: "Answers" },
     de: { sheetName: "Name", sheetDate: "Datum", sheetAnswers: "Lösungen" }

@@ -11,6 +11,9 @@ Open it from the link **For grown-ups: how it's going** at the bottom of the hom
 - **Game by game.** For each game played this week or last week: how many answers were right (✓) and wrong (✗), with a bar, "▲ Better than last week" or "▼ Harder than last week" when both weeks have 5 answers or more and the percent moved by 5 or more, and one tip. Today's 10 has its own card. Games not played in two weeks fold into one line.
 - **Answers to practise.** Every wrong answer from the last 30 days, grouped by kind, the kind missed most this week first. Each group says "9 this week · 10 in 30 days" and opens on tap, newest first, with the right answer, the answer given, the game and the day. The first group starts open. 5 show at a time; tap **Show 5 more** for the rest.
 
+- **Share this week.** A button in the week card opens a one-screen card: the child's picture and name, the week's dates, four numbers (answers, percent right, days played, stars and streak), two lines "Going well" and three lines "To practise". **Share picture** draws the card as a picture in the browser and opens the phone's share sheet. On a browser that cannot share pictures the button says **Save picture** and saves the PNG. **Print** prints the card, black on white. Nothing leaves the device unless you share it.
+- **Print a practice sheet.** Under Practise next. It prints one worksheet with 20 problems from the three weak spots, 7 + 7 + 6 (or 10 + 10, or 20), with answers on page 2, in the same style as a game's worksheet. The problems come from the games themselves: each game is opened in a hidden frame with its practise hint, and its own worksheet maker gives the problems. A times table comes from Times Tables Sprint, the game that can pick one table.
+
 ## Kinds of question it knows
 
 | Game | Kinds |
@@ -34,6 +37,11 @@ Open it from the link **For grown-ups: how it's going** at the bottom of the hom
 ## How the Practise button works
 
 The button opens the game as `…/math/times-sprint/#practise=mul-7`. `loopy.js` reads the hint once (`Loopy.log.hint`) and takes it off the address, so a reload starts the game as normal. Each game checks the hint when it loads its settings and sets the matching switch in memory only. `#practise=harder` opens the game with the Settings panel open.
+
+## How the weekly picture and the practice sheet work
+
+- The picture uses `Loopy.report.snap(node, w, h)` in `loopy-report.js`, the same code that draws the Report a problem picture: the card is copied with the page's styles and fonts into an SVG, drawn on a canvas and turned into a PNG. `loopy-report.js` loads when Share this week is tapped.
+- The sheet uses `Loopy.worksheet({ quiet: true, layout: "mixed", ... })`: `quiet` means no Print worksheet button in Settings, and the `mixed` layout keeps the 4 × 5 grid with each kind of problem styled as on its own sheet (`print.css`). `make()` returns the problems collected from the games.
 
 ## Your data
 

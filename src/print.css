@@ -55,6 +55,14 @@
   .sheet-word .ws-gap { display: inline-block; min-width: 9mm; border-bottom: 0.4mm solid #000; margin: 0 0.5mm; }
   .sheet-word .ws-opts { display: flex; gap: 3mm; margin-top: 1.5mm; font-size: 12pt; color: #333; }
 
+  /* The grown-ups' practice sheet mixes kinds in the 4 × 5 grid. Line problems and words look as on their own sheets. */
+  .sheet-mixed .ws-sl { font-size: 15pt; font-weight: 600; white-space: nowrap; }
+  .sheet-mixed .ws-blank { display: inline-block; width: 12mm; border-bottom: 0.4mm solid #000; margin-left: 1.5mm; }
+  .sheet-mixed .ws-pic { font-size: 28pt; line-height: 1.1; }
+  .sheet-mixed .ws-word { margin-top: 1mm; font-size: 18pt; font-weight: 600; letter-spacing: 0.04em; }
+  .sheet-mixed .ws-gap { display: inline-block; min-width: 9mm; border-bottom: 0.4mm solid #000; margin: 0 0.5mm; }
+  .sheet-mixed .ws-opts { display: flex; gap: 3mm; margin-top: 1.5mm; font-size: 12pt; color: #333; }
+
   .sheet-key { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(2, 1fr); grid-auto-flow: column; grid-template-rows: repeat(10, auto); gap: 3mm 8mm; font-size: 16pt; }
   .sheet-key li { display: flex; gap: 3mm; align-items: baseline; border-bottom: 0.2mm solid #ddd; padding-bottom: 2mm; }
   .sheet-key .sheet-n { position: static; min-width: 8mm; font-size: 11pt; }
