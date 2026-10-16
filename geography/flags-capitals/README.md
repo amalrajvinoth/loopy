@@ -19,9 +19,9 @@ A flag game. A flag shows, and the child picks its country from 4 buttons. Older
 | 7 to 8 | 12 well-known flags of Europe: Germany and its neighbours, Italy, Spain, the United Kingdom, Sweden |
 | 9 to 10 | All 29 flags of Europe |
 | 11 to 12 | All 66 flags of the world |
+| 13 and up | The world, with the capital question after each flag |
 
 Up to age 10, Asia, Africa and the Americas show all their flags, because they have only a few well-known ones.
-| 13 and up | The world, with the capital question after each flag |
 
 In World mode a small tag under the question says the part of the world, like "In Africa". The wrong answers come from the same part of the world when they can, so the choice is a real one.
 
