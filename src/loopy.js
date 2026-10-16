@@ -1066,7 +1066,25 @@ document.documentElement.classList.add("loopy-building");
   else build();
 })();
 
-// Back button: <a class="home-link" href="../../">&larr; loopy</a> becomes a big button
+// A new question that was not asked lately: Loopy.fresh(recent, make, keep).
+// make() returns a question with a .key; recent is the game's own list of keys, newest last (kept here,
+// at most keep long, 10 if not given). When there are too few questions to skip them all, the oldest
+// may come back first, so the questions go round and the last one never comes straight back.
+// The key also goes on <body data-q>, so the browser test (tools/e2e) can check for repeats.
+window.Loopy.fresh = function (recent, make, keep) {
+  var q, n, i, avoid;
+  for (n = recent.length; n >= 0; n--) {
+    avoid = recent.slice(recent.length - n);
+    for (i = 0; i < 200; i++) { q = make(); if (avoid.indexOf(q.key) === -1) break; }
+    if (avoid.indexOf(q.key) === -1) break;
+  }
+  recent.push(q.key);
+  while (recent.length > (keep || 10)) recent.shift();
+  document.body.setAttribute("data-q", q.key);
+  return q;
+};
+
+// Back button:<a class="home-link" href="../../">&larr; loopy</a> becomes a big button
 // with a back arrow and the loopy bunny logo.
 (function () {
   var ARROW = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M15 5l-7 7 7 7"/></svg>';

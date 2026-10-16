@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'sha256-2S5kAuGzuBsYqYIn01Er7b8fmjW5E1hyGoBOxwwMbUU='; style-src 'self' 'sha256-z2P7kGW5Z05eCTjTZdYpc0vThTlOE9vmt97pVSvi2I4=' 'sha256-xiQ/+AzzVFvamMSKxKU68FfPajpV8TA12Ri8gQSSYQY='; img-src 'self' data:; font-src 'self'; connect-src 'self'; worker-src 'self'; object-src 'none'; base-uri 'none'; form-action 'none'; manifest-src 'self'; upgrade-insecure-requests">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'sha256-CYfPLFpS4KbSt/RbI3jCLxa2mHHJDGWXvJ/PFI1JqiM='; style-src 'self' 'sha256-z2P7kGW5Z05eCTjTZdYpc0vThTlOE9vmt97pVSvi2I4=' 'sha256-xiQ/+AzzVFvamMSKxKU68FfPajpV8TA12Ri8gQSSYQY='; img-src 'self' data:; font-src 'self'; connect-src 'self'; worker-src 'self'; object-src 'none'; base-uri 'none'; form-action 'none'; manifest-src 'self'; upgrade-insecure-requests">
 <meta name="referrer" content="strict-origin-when-cross-origin">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <style>:root{color-scheme:light;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}body{margin:0}[hidden]{display:none!important}</style>
@@ -391,8 +391,16 @@ function makeSet(age, lang) {
   // Mix the order, but never the same game three times in a row.
   let list;
   do { list = shuffle(kinds); } while (fits.length > 1 && list.some((k, i) => i > 1 && k === list[i - 1] && k === list[i - 2]));
-  return list.map(k => make[k](age, lang));
+  // Never the same problem twice in one set.
+  const keys = new Set();
+  return list.map(k => {
+    let p;
+    for (let tries = 0; tries < 200 && (!p || keys.has(p.key)); tries++) { p = make[k](age, lang); p.key = keyOf(p); }
+    keys.add(p.key);
+    return p;
+  });
 }
+const keyOf = (p) => p.kind + (p.kind === "ss" ? p.word[1] + p.mode : p.kind === "cl" ? p.answer : p.op + p.a + "," + p.b);
 // GEN END
 
 (function () {
@@ -479,6 +487,7 @@ function makeSet(age, lang) {
   function show() {
     const p = set[index];
     answered = false;
+    document.body.setAttribute("data-q", p.key); // for the browser test in tools/e2e
     card.className = "problem-card";
     kindEl.textContent = t(p.kind + "Name");
     stage.textContent = "";

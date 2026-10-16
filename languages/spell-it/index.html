@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'sha256-V13q5XN/6v69LySeZ8clQ6w5bb/c6KBF9fyuKVo5fxg='; style-src 'self' 'sha256-z2P7kGW5Z05eCTjTZdYpc0vThTlOE9vmt97pVSvi2I4=' 'sha256-5/L3e/BVPjm2GPi51M3FkQuzTeZ4bCdHn3SxvjZFuAk=' 'sha256-RT1053JU5UiKvjrCUFx1rlhdFLMmgtuFJ9T8jnMeawQ=' 'sha256-4dEdrKbKL7IOE6FtAmSKmFZuQ7pndyr//hTTqH+uDSo='; img-src 'self' data:; font-src 'self'; connect-src 'self'; worker-src 'self'; object-src 'none'; base-uri 'none'; form-action 'none'; manifest-src 'self'; upgrade-insecure-requests">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'sha256-cpjCDpgnTjr+yo/IX39s+awDI1hSeD5BIBDgX6syupg='; style-src 'self' 'sha256-z2P7kGW5Z05eCTjTZdYpc0vThTlOE9vmt97pVSvi2I4=' 'sha256-5/L3e/BVPjm2GPi51M3FkQuzTeZ4bCdHn3SxvjZFuAk=' 'sha256-RT1053JU5UiKvjrCUFx1rlhdFLMmgtuFJ9T8jnMeawQ=' 'sha256-4dEdrKbKL7IOE6FtAmSKmFZuQ7pndyr//hTTqH+uDSo='; img-src 'self' data:; font-src 'self'; connect-src 'self'; worker-src 'self'; object-src 'none'; base-uri 'none'; form-action 'none'; manifest-src 'self'; upgrade-insecure-requests">
 <meta name="referrer" content="strict-origin-when-cross-origin">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <style>:root{color-scheme:light;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}body{margin:0}[hidden]{display:none!important}</style>
@@ -476,9 +476,7 @@ function makeProblem(lang, len, avoid) {
   function stopReveal() { timers.forEach(clearTimeout); timers = []; }
   function newRound() {
     stopReveal();
-    current = makeProblem(wordsLang, len, recent);
-    recent.push(current.key);
-    if (recent.length > 15) recent.shift();
+    current = Loopy.fresh(recent, () => makeProblem(wordsLang, len), 15);
     typed = []; answered = false;
     picEl.textContent = current.pic;
     picEl.setAttribute("aria-label", t("siPic"));
