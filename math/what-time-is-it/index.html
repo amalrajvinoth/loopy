@@ -184,14 +184,14 @@ svg#clock { width: min(100%, 360px, 36vh); width: min(100%, 360px, 36dvh); }
       <button type="button" id="settings-toggle" aria-controls="settings-panel"></button>
     </div>
   </header>
-  <div class="top">
-    <h1 data-t="clName">What Time Is It?</h1>
+  <section class="top" aria-labelledby="title">
+    <h1 id="title" data-t="clName">What Time Is It?</h1>
     <div class="score" aria-live="polite">
       <div class="pill"><span data-t="score">Score</span><b id="score">0 / 0</b></div>
       <div class="pill"><span data-t="streak">Streak</span><b id="streak">0</b></div>
       <div id="last5" data-game="clock"></div>
     </div>
-  </div>
+  </section>
   <div class="settings-panel" id="settings-panel" hidden>
     <div class="controls"><div id="age-picker"></div><div id="theme-picker"></div><button id="sound-toggle"></button><div id="lang-picker"></div></div>
     <div>

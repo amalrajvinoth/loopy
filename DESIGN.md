@@ -85,7 +85,7 @@ components:
   cheer:          { background: "{colors.card}", border: "4px solid {colors.c5}", shadow: "0 8px 0 {colors.c5}", rounded: "{rounded.cheer}" }
   back-button:    { background: "{colors.chip}", border: "2px solid {colors.line}", rounded: "{rounded.pill}", minHeight: 48px, arrow: "36px circle in {colors.c1}", logo: 30px tall }
   last5-pill:     { dots: 5, dotSize: 22px, right: "{colors.good}", wrong: "{colors.bad}", empty: "2px dashed {colors.muted} at 45%", newest: "2px {colors.ink} ring" }
-  focus-ring:     { outline: "3px solid {colors.c2}", offset: 2-3px }
+  focus-ring:     { outline: "3px solid {colors.c2}", offset: 2-3px, everywhere: ":focus-visible in loopy.css", map: "3px c2 stroke" }
 ---
 
 # loopy design
@@ -262,6 +262,15 @@ Age, language, color theme, sound and levels go behind the ⚙ button. The toggl
 - **Read aloud:** a chip pill next to the sound toggle, at least 44px tall: a speaker icon, "Read aloud", and a small On or Off tag on the card color. Off greys the icon and tag. `Loopy.speech.question()` adds it.
 - **Print worksheet button:** a pill with a printer icon, a 2px `c1` border and `c1` text on no fill, at least 44px tall. A muted line next to it says what prints. It sits above the panel foot. `Loopy.worksheet()` adds it.
 
+### Focus and screen readers
+
+- **Focus ring:** every control shows a 3px `c2` outline, 2px to 3px away from it, when it is reached with the keyboard (`:focus-visible`). `loopy.css` sets it for everything, so a new button gets it too. A page may use `ink` instead where `c2` is the button's own color. Map areas get a 3px `c2` stroke instead of an outline. The ring needs 3:1 contrast with the page in every theme, High contrast included.
+- **Never** remove the ring without putting another one in its place.
+- **Names:** every button has words or an `aria-label` (translated with `data-t-aria`). Icons are `aria-hidden`.
+- **Announcements:** after each answer a hidden live region reads the feedback line ("Correct!" and why). The score row is a polite live region too. Do not add `aria-live` to the feedback line as well, or it is read twice.
+- **Keyboard:** Tab reaches everything in order. Enter or Space answers. After Next, focus moves to the first answer. Escape closes Settings.
+- **Landmarks:** the title and score row is a section named by the title, Settings is a named region, the play area is `<main>`.
+
 ### Worksheet (print)
 
 What **Print worksheet** prints. Only the sheet prints; the game is hidden. It is always black on white, whatever the theme, and uses no background colors, because browsers do not print them by default. Lines are borders.
@@ -349,7 +358,7 @@ loopy is mostly flat. Depth comes from solid offset shadows, not blur.
 - Load only `loopy.js` and `loopy.css` as shared files. Edit `src/`, then run `python3 tools/build.py`.
 - Ship every word in English and German. Use `Loopy.addStrings`, `data-t` and `Loopy.t()`.
 - Make tap targets at least 44px. Make main game buttons much bigger.
-- Show a 3px focus ring in `c2` (or `ink`) with `:focus-visible`.
+- Show a 3px focus ring in `c2` (or `ink`) with `:focus-visible`. Run `node tools/a11y/check.mjs` to check it in every theme.
 - Respect `prefers-reduced-motion`. Turn off hops, bounces and confetti.
 - Explain every answer in one plain sentence.
 - Give green and red a second signal too, like a word or a line-through.

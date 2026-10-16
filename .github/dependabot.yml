@@ -1,5 +1,5 @@
 # Dependabot keeps the GitHub Actions used by the checks, and the two minifiers in
-# tools/requirements.txt, up to date.
+# tools/requirements.txt, and the accessibility checker in tools/a11y/, up to date.
 version: 2
 updates:
   - package-ecosystem: "github-actions"
@@ -9,6 +9,11 @@ updates:
     labels: ["dependencies"]
   - package-ecosystem: "pip"
     directory: "/tools"
+    schedule:
+      interval: "weekly"
+    labels: ["dependencies"]
+  - package-ecosystem: "npm"
+    directory: "/tools/a11y"
     schedule:
       interval: "weekly"
     labels: ["dependencies"]

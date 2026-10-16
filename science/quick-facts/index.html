@@ -256,14 +256,14 @@ body { min-height: 100vh; min-height: 100dvh; padding-block: 12px 16px; }
       <button type="button" id="settings-toggle" aria-controls="settings-panel"></button>
     </div>
   </header>
-  <div class="top">
+  <section class="top" aria-labelledby="title">
     <h1 id="title" data-t="qfName">Quick Facts</h1>
     <div class="score" aria-live="polite">
       <div class="pill"><span data-t="score">Score</span><b id="score">0 / 0</b></div>
       <div class="pill"><span data-t="streak">Streak</span><b id="streak">0</b></div>
       <div id="last5" data-game="quick-facts"></div>
     </div>
-  </div>
+  </section>
   <div class="settings-panel" id="settings-panel" hidden>
     <div class="controls"><div id="age-picker"></div><div id="theme-picker"></div><button id="sound-toggle"></button><div id="lang-picker"></div></div>
     <div>

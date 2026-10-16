@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'sha256-Xk3K5qxfXJMT0aEFQ1irPYTuOfaPafZCtOScB+bMakc='; style-src 'self' 'sha256-d4fVPw84GlzNV21wDlgsidxGbcKC8O2vmH9hmSAFCJI='; img-src 'self' data:; font-src 'self'; connect-src 'none'; worker-src 'self'; object-src 'none'; base-uri 'none'; form-action 'none'; manifest-src 'self'; upgrade-insecure-requests">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'sha256-Xk3K5qxfXJMT0aEFQ1irPYTuOfaPafZCtOScB+bMakc='; style-src 'self' 'sha256-UGLdF5wTOfWhhsx5ktCzginRi/7YAPqpjTKBC7Fafi8='; img-src 'self' data:; font-src 'self'; connect-src 'none'; worker-src 'self'; object-src 'none'; base-uri 'none'; form-action 'none'; manifest-src 'self'; upgrade-insecure-requests">
 <meta name="referrer" content="strict-origin-when-cross-origin">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <link rel="icon" href="../icon.svg" type="image/svg+xml">
@@ -45,7 +45,7 @@ section { background: var(--card); border: 2px solid var(--line); border-radius:
   border: 2px solid var(--tone); border-radius: 14px; color: var(--ink); text-decoration: none;
 }
 .links a:nth-child(2) { --tone: var(--c3); } .links a:nth-child(3) { --tone: var(--c4); } .links a:nth-child(4) { --tone: var(--c2); }
-.links a b { color: var(--tone); font-family: var(--display); font-size: 1.15rem; }
+.links a b { color: var(--tone); font-family: var(--display); font-size: 1.2rem; }
 .links a span { color: var(--muted); font-size: 0.9rem; }
 .links a:focus-visible, summary:focus-visible { outline: 3px solid var(--ink); outline-offset: 3px; }
 .note { margin-top: 14px; padding: 10px 14px; border-radius: 12px; background: var(--chip); font-size: 0.95rem; }
@@ -58,7 +58,7 @@ details p { padding: 0 0 14px; color: var(--muted); }
 <script src="../loopy.js"></script>
 </head>
 <body>
-<div class="wrap">
+<main class="wrap">
   <header class="bar">
     <a class="home-link" href="../">&larr; loopy</a>
     <div class="controls"><div id="theme-picker"></div><div id="lang-picker"></div></div>
@@ -83,7 +83,7 @@ details p { padding: 0 0 14px; color: var(--muted); }
     <p class="note" data-t="fbSecurity">Found a security problem? Please do not post it in public. Report it privately on GitHub's security page for loopy.</p>
     <div class="links"><a href="https://github.com/amalrajvinoth/loopy/security/advisories/new" target="_blank" rel="noopener noreferrer"><b data-t="fbSecLink">Report a security problem</b><span data-t="fbSecText">Only the owner can see it</span></a></div>
   </section>
-</div>
+</main>
 <script>
 Loopy.addStrings({
   en: {
