@@ -7,7 +7,7 @@ A listening and spelling game. The child sees a picture and the word with one so
 1. Look at the picture. The word is written under it with a gap, like `_all` or `bal_`.
 2. Tap **Hear the word** to have the browser read it out loud.
 3. Tap the sound that fills the gap. The right one turns green and a short line explains why, like "Ball starts with B."
-4. Tap **Next word** to go on. Every right answer earns a star.
+4. Tap **Next** to go on. Every right answer earns a star.
 
 ## Age levels
 

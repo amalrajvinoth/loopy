@@ -8,7 +8,7 @@ A map game. The game names a place and the child taps it on the map: a continent
 2. Tap the place on the map. The right place turns green.
 3. If the tap was wrong, that place turns red, and the map shows both names.
 4. A short line under the map says what the place is, and its capital.
-5. Tap **Next question** to go on. Every right answer earns a star.
+5. Tap **Next** to go on. Every right answer earns a star.
 
 Small countries, like Luxembourg, are hard to hit with a finger. A tap just next to a small country counts as a tap on it.
 

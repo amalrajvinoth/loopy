@@ -126,17 +126,19 @@ Read [DESIGN.md](DESIGN.md) first. It lists the colors, fonts, buttons and layou
    <link rel="stylesheet" href="../../loopy.css">
    <script src="../../loopy.js"></script>
    ```
-3. Add the shared controls: the `.home-link` back button, `#star-chip`, `<div id="last5" data-game="game-id">` in the score row, `#settings-toggle`, and inside `#settings-panel` add `#age-picker`, `#theme-picker`, `#sound-toggle` and `#lang-picker`.
+3. Add the shared controls: the `.home-link` back button, `#star-chip`, the score row (`.pill-score`, `.pill-streak` and `<div id="last5" data-game="game-id">`), `#settings-toggle`, and inside `#settings-panel` add `#age-picker`, `#theme-picker`, `#sound-toggle` and `#lang-picker`.
 4. In your script:
    - `Loopy.getAge()` gives the age. The `loopy:age` event fires when it changes.
    - Make each new question with `Loopy.fresh(recent, make)`. `make()` returns a question with a `key`, and `recent` is the game's own list. No question comes back within 10, and the play test (`tools/e2e/`) checks it.
    - Call `Loopy.rewards.correct("game-id", streak)` after a right answer, and `Loopy.rewards.wrong("game-id", detail)` after a wrong one. These also fill in the Last 5 dots and the grown-ups' page.
    - `detail` tells the grown-ups' page what was missed: `{ q: "52 − 17", a: "35", y: "45", k: "sub-rg" }` is the problem, the right answer, the answer given, and the kind of problem. `Loopy.log.kind(op, a, b)` gives the kind for a sum. A new kind needs a `tip-` line in `progress/index.html` and in the check in `src/loopy.js`.
    - To add a **Print worksheet** button, call `Loopy.worksheet({ title, level, how, layout, make, cell, answer })` once. `make(20)` uses the game's own problem maker. See the comment above `Loopy.worksheet` in `src/loopy.js`.
+   - Give the button under the answers `id="next"` and call `Loopy.nextButton(button, answered)` when a problem shows (`false`, a small "Skip") and after each answer (`true`, a big "Next").
+   - Put the answers in `#choices`, `#answers`, `#pad`, `#letters` or `#map`. The first time a child opens the game, a hint bubble points at them.
    - Save the game's own settings with `Loopy.store.get(key)` and `Loopy.store.set(key, text)`, never `localStorage` directly. They keep each child's settings apart.
    - In the **Reset score** button, call `Loopy.recent.clear("game-id")`. Add the game id to the `GAMES` lists in `src/loopy.js`, and to the list in `progress/index.html`.
 5. Add words in both languages with `Loopy.addStrings({ en: {...}, de: {...} })`. Put `data-t="key"` on fixed text, and use `Loopy.t("key")` in code. Use `Loopy.num(n)` to show numbers.
-6. Add one line to the `GAMES` list in the home page `index.html`, with the ages the game fits.
+6. Add one line to the `GAMES` list in the home page `index.html`, with the ages the game fits and a picture (one emoji) for its tile.
 7. Add a `README.md` in the game folder, and a row to the table above.
 8. Run `python3 tools/build.py`. It updates the page's security policy and adds the page to the offline list. Do this again after any edit to a page.
 

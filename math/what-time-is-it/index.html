@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'sha256-5g6YQYu46Ig03eDbM6yiCRaiNHX4mpE+63gRdgdO9xw='; style-src 'self' 'sha256-z2P7kGW5Z05eCTjTZdYpc0vThTlOE9vmt97pVSvi2I4=' 'sha256-doiVG4zcutbmTCcoolMEnNomGtX/ONwPUTnFFbAvY7E=' 'sha256-RT1053JU5UiKvjrCUFx1rlhdFLMmgtuFJ9T8jnMeawQ=' 'sha256-3iI72MbeVrAPw//q3UKvS1P5Fq+2Q3TjC/StXrlaA8o='; img-src 'self' data:; font-src 'self'; connect-src 'self'; worker-src 'self'; object-src 'none'; base-uri 'none'; form-action 'none'; manifest-src 'self'; upgrade-insecure-requests">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'sha256-exFzlXxRubzqUFQm3lgl2En64GmbTVn7zH6ypgqg8DA='; style-src 'self' 'sha256-z2P7kGW5Z05eCTjTZdYpc0vThTlOE9vmt97pVSvi2I4=' 'sha256-QVpmm1g8XiiPgD0F5guH0rbbAL8I1o0yAGUz+Xaa1rw=' 'sha256-RT1053JU5UiKvjrCUFx1rlhdFLMmgtuFJ9T8jnMeawQ=' 'sha256-PZ7JvIBRFIDnGl5yIMUnm9/PC254gCkBsareSmOBRvs='; img-src 'self' data:; font-src 'self'; connect-src 'self'; worker-src 'self'; object-src 'none'; base-uri 'none'; form-action 'none'; manifest-src 'self'; upgrade-insecure-requests">
 <meta name="referrer" content="strict-origin-when-cross-origin">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <style>:root{color-scheme:light;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}body{margin:0}[hidden]{display:none!important}</style>
@@ -89,7 +89,9 @@ svg#clock { width: 100%; max-width: 360px; height: auto; aspect-ratio: 1; displa
   flex: 1; font: inherit; font-size: 1.3rem; font-weight: 700; color: #fff; background: var(--hour);
   border: 0; border-radius: 16px; min-height: 64px; cursor: pointer;
 }
-.reset { font: inherit; font-size: 1rem; color: var(--muted); background: transparent; border: 2px solid var(--line); border-radius: 16px; padding: 0 18px; min-height: 64px; cursor: pointer; }
+.reset { font: inherit; font-size: 0.95rem; color: var(--muted); background: transparent; border: 2px solid var(--line); border-radius: 14px; padding: 0 16px; min-height: 44px; cursor: pointer; }
+/* The same label style as the other games' Settings. */
+.seg-label { font-size: 0.8rem; font-weight: 600; letter-spacing: 0.06em; text-transform: uppercase; color: var(--muted); margin: 0 0 4px 4px; }
 button:focus-visible, .helper input:focus-visible { outline: 3px solid var(--minute); outline-offset: 3px; }
 
 @media (max-width: 420px) {
@@ -116,6 +118,10 @@ body { min-height: 100vh; min-height: 100dvh; padding-block: 12px 16px; }
 }
 
 .clock-card { padding: 12px; gap: 6px; }
+/* After an answer the card shows right or wrong, like in the other games, and the reason sits inside it. */
+.clock-card.good { border-color: var(--good); box-shadow: 0 0 0 2px var(--good) inset; }
+.clock-card.bad { border-color: var(--bad); box-shadow: 0 0 0 2px var(--bad) inset; }
+.clock-card .feedback:empty { display: none; }
 .prompt { font-size: 1.15rem; }
 svg#clock { width: min(100%, 360px, 36vh); width: min(100%, 360px, 36dvh); }
 .legend { font-size: 0.85rem; gap: 4px 14px; }
@@ -187,8 +193,8 @@ svg#clock { width: min(100%, 360px, 36vh); width: min(100%, 360px, 36dvh); }
   <section class="top" aria-labelledby="title">
     <h1 id="title" data-t="clName">What Time Is It?</h1>
     <div class="score" aria-live="polite">
-      <div class="pill"><span data-t="score">Score</span><b id="score">0 / 0</b></div>
-      <div class="pill"><span data-t="streak">Streak</span><b id="streak">0</b></div>
+      <div class="pill pill-score"><span data-t="score">Score</span><b id="score">0 / 0</b></div>
+      <div class="pill pill-streak"><span data-t="streak">Streak</span><b id="streak">0</b></div>
       <div id="last5" data-game="clock"></div>
     </div>
   </section>
@@ -218,11 +224,11 @@ svg#clock { width: min(100%, 360px, 36vh); width: min(100%, 360px, 36dvh); }
         <span><i class="sw-hour"></i><span data-t="clShort">Short hand = hour</span></span>
         <span><i class="sw-minute"></i><span data-t="clLong">Long hand = minutes</span></span>
       </div>
+      <p class="feedback" id="feedback" aria-live="polite"></p>
     </div>
     <div class="side">
       <div class="answers" id="answers"></div>
-      <p class="feedback" id="feedback" aria-live="polite"></p>
-      <button type="button" class="next" id="next" data-t="newTime">New time</button>
+      <button type="button" class="next skip" id="next" data-t="skip">Skip</button>
     </div>
   </main>
 </div>
@@ -233,7 +239,7 @@ Loopy.addStrings({
     clName: "What Time Is It?", level: "Level", lvHalf: "Hours & halves", lvQuarter: "Quarter hours", lvFive: "Every 5 min", lvOne: "Every minute",
     helperLabel: "Show minute numbers on the clock", clKbd: "Keyboard works too: 1 to 4 picks an answer, Enter goes on.",
     clPrompt: "Read the clock. Pick the time.", clShort: "Short hand = hour", clLong: "Long hand = minutes",
-    newTime: "New time", nextTime: "Next time", clItIs: "Not quite. It is {time}.",
+    clItIs: "Not quite. It is {time}.",
     clockAria: "Analog clock", clockAsk: "Analog clock showing a time to read",
     clHourOn: "The short hand points to {h}.", clHourPast: "The short hand is just past {h}.",
     clOclock: "The long hand points to 12, so it is {h} o'clock.", clMin: "The long hand points to {n}, which is {m} minutes.",
@@ -246,7 +252,7 @@ Loopy.addStrings({
     clName: "Wie spät ist es?", level: "Stufe", lvHalf: "Volle & halbe Stunden", lvQuarter: "Viertelstunden", lvFive: "Alle 5 Min.", lvOne: "Jede Minute",
     helperLabel: "Minutenzahlen auf der Uhr zeigen", clKbd: "Die Tastatur geht auch: 1 bis 4 wählt eine Antwort, Enter geht weiter.",
     clPrompt: "Lies die Uhr. Wähle die Uhrzeit.", clShort: "Kurzer Zeiger = Stunde", clLong: "Langer Zeiger = Minuten",
-    newTime: "Neue Uhrzeit", nextTime: "Nächste Uhrzeit", clItIs: "Nicht ganz. Es ist {time}.",
+    clItIs: "Nicht ganz. Es ist {time}.",
     clockAria: "Analoguhr", clockAsk: "Analoguhr mit einer Uhrzeit zum Ablesen",
     clHourOn: "Der kurze Zeiger zeigt auf die {h}.", clHourPast: "Der kurze Zeiger ist kurz nach der {h}.",
     clOclock: "Der lange Zeiger zeigt auf die 12, also ist es {h} Uhr.", clMin: "Der lange Zeiger zeigt auf die {n}, das sind {m} Minuten.",
@@ -386,7 +392,8 @@ Loopy.addStrings({
     });
     feedbackEl.className = "feedback";
     feedbackEl.textContent = "";
-    document.getElementById("next").textContent = L("newTime");
+    feedbackEl.parentNode.classList.remove("good", "bad");
+    Loopy.nextButton(document.getElementById("next"), false);
     Loopy.speech.read();
   }
 
@@ -404,11 +411,12 @@ Loopy.addStrings({
     if (ok) { right++; streak++; } else { streak = 0; }
     if (window.Loopy && Loopy.rewards) ok ? Loopy.rewards.correct("clock", streak, harder()) : Loopy.rewards.wrong("clock", { q: "🕒", a: fmt(current.h, current.m), y: btn.textContent, k: Loopy.log.timeKind(current.m) });
     feedbackEl.className = "feedback " + (ok ? "good" : "bad");
+    feedbackEl.parentNode.classList.add(ok ? "good" : "bad");
     const head = ok ? (streak >= 3 ? L("correctRow", { n: streak }) : L("correct")) : L("clItIs", { time: fmt(current.h, current.m) });
     feedbackEl.innerHTML = "<strong></strong>";
     feedbackEl.firstChild.textContent = head;
     feedbackEl.appendChild(document.createTextNode(explain(current)));
-    document.getElementById("next").textContent = L("nextTime");
+    Loopy.nextButton(document.getElementById("next"), true);
     render();
     document.getElementById("next").focus({ preventScroll: true });
   }
