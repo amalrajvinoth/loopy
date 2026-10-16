@@ -33,7 +33,7 @@ Open it from the link **For grown-ups: how it's going** at the bottom of the hom
 
 ## Settings
 
-The color theme and language (EN or DE) are at the top of the page.
+The color theme, the reading font and the language (EN or DE) are behind the ⚙ Settings button at the top of the page, like in the games.
 
 ## Example
 

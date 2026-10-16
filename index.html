@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'sha256-ci8D5tq5AaHrxc5Dsh/posZ6CHbq2pjqSFv2e/9cZGY='; style-src 'self' 'sha256-/9CC5KUf0+lQ0Vy615OdB+ZgK9WFMOOkxnVXIglwF+I='; img-src 'self' data:; font-src 'self'; connect-src 'self'; worker-src 'self'; object-src 'none'; base-uri 'none'; form-action 'none'; manifest-src 'self'; upgrade-insecure-requests">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'sha256-UcRxxqZaSwswqHQgNVbAdT4GFzL1ozYSCFlfINQbeo4='; style-src 'self' 'sha256-x9+YBpZrpVx67Zb2Dd99+PcEpKgjqf83kqw3zIE/MUo='; img-src 'self' data:; font-src 'self'; connect-src 'self'; worker-src 'self'; object-src 'none'; base-uri 'none'; form-action 'none'; manifest-src 'self'; upgrade-insecure-requests">
 <meta name="referrer" content="strict-origin-when-cross-origin">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <link rel="icon" href="icon.svg" type="image/svg+xml">
@@ -45,12 +45,12 @@ h1 { margin: 0; line-height: 0; color: var(--ink); }
 @keyframes hop { 0%, 70%, 100% { transform: translateY(0); } 80% { transform: translateY(-10%); } }
 .lead { margin: 0; font-family: var(--display); font-weight: 600; font-size: 1.35rem; color: var(--muted); text-wrap: balance; }
 .settings-panel { width: 100%; text-align: left; }
-.list { display: flex; flex-direction: column; gap: 28px; }
+.list { display: flex; flex-direction: column; gap: 22px; }
 .subject { display: flex; flex-direction: column; gap: 12px; }
 .subject h2.sub { margin: 0; font-family: var(--display); font-size: 1.6rem; font-weight: 700; }
-/* Game tiles: a big picture, the name and the ages, two per row on phones and three on tablets. */
-.grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; }
-@media (min-width: 600px) { .grid { grid-template-columns: repeat(3, 1fr); gap: 16px; } }
+/* Game tiles: a big picture, the name and the ages, three per row. On phones they are compact, so 16 games fit in fewer screens; from 600px wide they get roomier. */
+.grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; }
+@media (min-width: 600px) { .grid { gap: 16px; } }
 .quiz {
   --tone: var(--c1);
   display: flex; flex-direction: column; gap: 8px; padding: 20px; min-height: 170px;
@@ -68,11 +68,18 @@ h1 { margin: 0; line-height: 0; color: var(--ink); }
 .tag { align-self: flex-start; background: var(--chip); color: var(--ink); font-size: 0.78rem; font-weight: 600; letter-spacing: 0.06em; text-transform: uppercase; padding: 4px 10px; border-radius: 999px; }
 .quiz h3 { margin: 0; font-family: var(--display); font-size: 1.6rem; font-weight: 700; color: var(--tone); }
 .quiz p { margin: 0; color: var(--muted); line-height: 1.45; }
-.quiz.game { align-items: center; text-align: center; min-height: 0; padding: 14px 10px 12px; gap: 6px; }
-.quiz.game .pic { font-size: 2.8rem; line-height: 1.1; }
-.quiz.game h3 { font-size: clamp(1.1rem, 4.8vw, 1.45rem); line-height: 1.15; }
-.quiz.game .tag { align-self: center; margin-top: auto; }
+.quiz.game { align-items: center; text-align: center; min-height: 0; padding: 10px 6px 8px; gap: 4px; }
+.quiz.game .pic { font-size: 2rem; line-height: 1.1; }
+/* Small names are in ink: the tone color is only readable enough at the bigger size (the tile border and shadow keep the tone). */
+.quiz.game h3 { font-size: clamp(0.85rem, 3.7vw, 1.45rem); line-height: 1.15; overflow-wrap: anywhere; color: var(--ink); }
+.quiz.game .tag { align-self: center; margin-top: auto; font-size: 0.62rem; padding: 2px 7px; }
 .quiz.game p { display: none; font-size: 0.9rem; }
+@media (min-width: 600px) {
+  .quiz.game { padding: 14px 10px 12px; gap: 6px; }
+  .quiz.game .pic { font-size: 2.8rem; }
+  .quiz.game h3 { color: var(--tone); }
+  .quiz.game .tag { font-size: 0.78rem; padding: 4px 10px; }
+}
 /* Tablets and computers have room for the one-line description too. */
 @media (min-width: 700px) { .quiz.game p { display: block; } }
 .go { margin-top: auto; align-self: flex-start; background: var(--tone); color: var(--card); font-family: var(--display); font-weight: 700; font-size: 1.2rem; padding: 6px 16px; border-radius: 999px; }
@@ -88,6 +95,10 @@ h1 { margin: 0; line-height: 0; color: var(--ink); }
 .today .row { display: flex; flex-wrap: wrap; gap: 8px 12px; align-items: center; justify-content: space-between; margin-top: auto; }
 .today .go { margin-top: 0; }
 .day-streak { font-weight: 700; }
+/* The badge grid and the day streak fold away under one line, so the shelf stays short. */
+.fold { border-top: 2px dashed var(--line); padding-top: 12px; }
+.fold summary { cursor: pointer; font-weight: 600; color: var(--muted); min-height: 32px; }
+.fold .badges, .fold .days { margin-top: 12px; }
 .days { display: flex; flex-direction: column; gap: 10px; border-top: 2px solid var(--line); padding-top: 14px; }
 .days p { margin: 0; color: var(--muted); }
 .days b { color: var(--ink); }
@@ -129,11 +140,14 @@ footer p { margin: 0; }
     </div>
     <p class="shelf-next" id="shelf-next"></p>
     <div class="meter" aria-hidden="true"><i id="meter-fill"></i></div>
-    <div class="badges" id="badges"></div>
-    <div class="days">
-      <p id="day-line"></p>
-      <div class="badges" id="day-badges"></div>
-    </div>
+    <details class="fold">
+      <summary data-t="seeBadges">See all badges and day streak</summary>
+      <div class="badges" id="badges"></div>
+      <div class="days">
+        <p id="day-line"></p>
+        <div class="badges" id="day-badges"></div>
+      </div>
+    </details>
     <details class="transfer">
       <summary data-t="moveStars">Move my stars to another device</summary>
       <div class="transfer-body">
@@ -151,7 +165,7 @@ footer p { margin: 0; }
 <script>
 Loopy.addStrings({
   en: {
-    tagline: "Learn. Play. Repeat.", myStars: "My stars", moveStars: "Move my stars to another device",
+    tagline: "Learn. Play. Repeat.", myStars: "My stars", seeBadges: "See all badges and day streak", moveStars: "Move my stars to another device",
     moveHow: "This code holds your stars, badges, day streak, progress, game levels and where you left off. Copy the code or the link, then paste or open it on the other device.", yourCode: "Your stars code", copy: "Copy",
     moveKidStars: "Move stars to another device", copyLink: "Copy link", linkCopied: "Link copied! Open it on the other device.",
     whose: "Whose stars?", everyone: "Everyone",
@@ -186,7 +200,7 @@ Loopy.addStrings({
     fcTitle: "Flags and Capitals", fcTag: "Flags", fcText: "See a flag and pick its country, then its capital. Europe first, then the whole world."
   },
   de: {
-    tagline: "Lernen. Spielen. Wiederholen.", myStars: "Meine Sterne", moveStars: "Sterne auf ein anderes Gerät bringen",
+    tagline: "Lernen. Spielen. Wiederholen.", myStars: "Meine Sterne", seeBadges: "Alle Abzeichen und die Tage-Serie zeigen", moveStars: "Sterne auf ein anderes Gerät bringen",
     moveHow: "Dieser Code enthält deine Sterne, Abzeichen, Tage in Folge, deinen Fortschritt, die Stufen in den Spielen und wo du aufgehört hast. Kopiere den Code oder den Link und füge ihn auf dem anderen Gerät ein oder öffne ihn dort.", yourCode: "Dein Sterne-Code", copy: "Kopieren",
     moveKidStars: "Sterne auf ein anderes Gerät bringen", copyLink: "Link kopieren", linkCopied: "Link kopiert! Öffne ihn auf dem anderen Gerät.",
     whose: "Wessen Sterne?", everyone: "Alle",
