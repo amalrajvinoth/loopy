@@ -402,7 +402,32 @@ document.documentElement.classList.add("loopy-building");
     box.appendChild(rows);
     box.appendChild(el("p", "kid-note", Loopy.t(data.list.length < 2 ? "kidsOne" : "kidsMany")));
   }
-  function start() { build(); settings(); }
+  // The child playing, next to ⚙ Settings on every page: their picture and name. A child with no
+  // name (one child on a new device) shows only the picture. Tapping it changes the name or picture.
+  // On the home page with two or more children the "Who is playing?" row shows this already.
+  function chip() {
+    var gear = document.getElementById("settings-toggle");
+    if (!gear || (!gear.closest(".bar-right") && data.list.length > 1)) return;
+    var k = find(data.on), can = typeof HTMLDialogElement === "function";
+    var b = el(can ? "button" : "span", "kid-chip");
+    b.appendChild(el("span", "kid-pic", k.pic)).setAttribute("aria-hidden", "true");
+    if (k.name) b.appendChild(el("span", "kid-chip-name", k.name));
+    else b.classList.add("pic-only");
+    if (can) {
+      b.type = "button";
+      b.setAttribute("aria-label", k.name ? Loopy.t("kidChange", { name: k.name }) : Loopy.t("kidEditAria"));
+      b.setAttribute("aria-haspopup", "dialog");
+      b.addEventListener("click", function () { open(find(data.on)); });
+    } else if (!k.name) b.hidden = true;
+    if (!gear.closest(".bar-right")) {
+      // Home: the chip and ⚙ Settings side by side under the tagline.
+      var row = el("div", "kid-set-row");
+      gear.parentNode.insertBefore(row, gear);
+      row.appendChild(b);
+      row.appendChild(gear);
+    } else gear.parentNode.insertBefore(b, gear);
+  }
+  function start() { build(); settings(); chip(); }
   if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", start);
   else start();
 })();
@@ -1064,13 +1089,14 @@ document.documentElement.classList.add("loopy-building");
       chip.className = "star-chip";
       chip.setAttribute("aria-label", Loopy.t("starsEarned"));
       chip.innerHTML = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="' + STAR_PATH + '"/></svg><b data-loopy-stars></b>';
-      // With more than one child, the chip shows whose stars they are.
+      // With more than one child, the chip shows whose stars they are. In the top bar the child's
+      // picture is already on the name chip next to Settings, so only the name for screen readers.
       if (Loopy.kids.list().length > 1) {
         var k = Loopy.kids.current(), pic = document.createElement("span");
         pic.className = "kid-pic";
         pic.setAttribute("aria-hidden", "true");
         pic.textContent = k.pic;
-        chip.insertBefore(pic, chip.firstChild);
+        if (!chip.closest(".game-bar")) chip.insertBefore(pic, chip.firstChild);
         chip.setAttribute("aria-label", Loopy.t("kidStars", { name: Loopy.kids.label(k) }));
       }
     }
@@ -1603,11 +1629,13 @@ window.Loopy.fresh = function (recent, make, keep) {
   }
 
   // The flag sits before ⚙ Settings when the top bar has room. If not, the Settings button shows
-  // only its gear; if that is still too wide, the flag hides. "Report a problem" in Settings is always there.
+  // only its gear; if that is still too wide, the flag hides, then the back button shows only its arrow,
+  // then a long name of the child playing is cut short with "…", and last the name hides (the picture stays).
+  // "Report a problem" in Settings is always there.
   function fit(head) {
-    head.classList.remove("rp-tight", "rp-hide");
-    if (head.scrollWidth > head.clientWidth) head.classList.add("rp-tight");
-    if (head.scrollWidth > head.clientWidth) head.classList.add("rp-hide");
+    var steps = ["rp-tight", "rp-hide", "rp-nologo", "rp-short", "rp-noname"];
+    steps.forEach(function (c) { head.classList.remove(c); });
+    steps.forEach(function (c) { if (head.scrollWidth > head.clientWidth) head.classList.add(c); });
   }
   function build() {
     var head = document.querySelector(".game-bar"), bar = head && head.querySelector(".bar-right");
