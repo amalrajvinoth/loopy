@@ -203,8 +203,8 @@ The "loopy" bunny logo sits at the top of the home page. Its letters hop one aft
 ### Game cards (home page)
 
 - Each game is a tile: card background, 3px border and a solid `0 6px 0` shadow in the tile's tone color, radius 24px.
-- On the tile, centered: a big picture (one emoji, 2.8rem), the Fredoka title in the tone color, and a small uppercase tag with the ages. The picture lets a child who cannot read yet find the game.
-- Two tiles per row on phones, three from 600px wide. From 700px wide the tile also shows one muted line about the game.
+- On the tile, centered: a big picture (one emoji), the Fredoka title in the tone color, and a small uppercase tag with the ages. The picture lets a child who cannot read yet find the game.
+- Three tiles per row at every size. On phones (under 600px) the tile is compact: picture 2rem, title `clamp(0.85rem, 3.7vw, 1.45rem)` in ink (the tone color is not readable enough at that size; the border and shadow keep the tone), tag 0.62rem, padding 10px 6px 8px, so 16 games fit in about 2.4 phone screens. From 600px wide it is roomier: picture 2.8rem, tag 0.78rem, padding 14px 10px 12px. From 700px wide the tile also shows one muted line about the game.
 - Pressed: the tile moves down 4px and the shadow shrinks to 2px. It looks like a button being pushed.
 - Tones cycle `c1`, `c2`, `c3`, `c4`, `c5`.
 - Order on the home page: the logo, "Who is playing?" (or, with one child, the child chip next to Settings), the ⚙ Settings button (age, colors, sound, language), **Today's 10**, the games by subject, then **My stars**, then the links for grown-ups.
@@ -232,7 +232,7 @@ Equation Balance shows a see-saw above the equation: a `muted` stand and an `ink
 
 ### Feedback line
 
-Inside the problem card, under the problem: a short bold word: "Correct!" in green or "Not quite." in red, then one plain sentence that explains why. Every game puts it in the card (What Time Is It? too), and the card's border turns green or red with it. After an answer the problem and its picture shrink (`zoom`) so the whole sentence fits without scrolling. Plus and Minus explains the first carry or trade in full and later ones in a short form, and if the reason is still too long it steps the text down (`fit1` to `fit3` on the card) until it fits, even at 360 × 640 in German.
+Inside the problem card, under the problem: a short bold word: "Correct!" in green or "Not quite." in red, then one plain sentence that explains why. Every game puts it in the card (What Time Is It? too), and the card's border turns green or red with it. In What Time Is It? the hand legend ("Short hand = hour") hides while the reason shows, so the reason has room at 360 × 640 in German. After an answer the problem and its picture shrink (`zoom`) so the whole sentence fits without scrolling. Plus and Minus explains the first carry or trade in full and later ones in a short form, and if the reason is still too long it steps the text down (`fit1` to `fit3` on the card) until it fits, even at 360 × 640 in German.
 
 ### Number line
 
@@ -270,7 +270,7 @@ Each game has a top bar with the back button on the left, and the star counter, 
 
 ### Settings
 
-Age, language, color theme, sound and levels go behind the ⚙ button, on the home page too. The panel is the same in every game: **This game** first (the game's own levels and switches, then Print worksheet), then **Age, look and sound** (the shared row, after a dashed line), then the keyboard line and Reset score at the bottom. The two headings are small uppercase `c1` labels; `loopy.js` adds them. Today's 10 and the home page have no game settings, so they show only the second part. The toggle is a chip pill. It turns `c1` when open. The panel is a card with a 2px border and radius 20px. On very small phones (under 380px, or under 420px in German, where "Einstellungen" is long) the toggle shows only the gear.
+Age, language, color theme, sound and levels go behind the ⚙ button, on the home page and the grown-ups page too. The panel is the same in every game: **This game** first (the game's own levels and switches, then Print worksheet), then **Age, look and sound** (the shared row, after a dashed line), then the keyboard line and Reset score at the bottom. The two headings are small uppercase `c1` labels; `loopy.js` adds them. Today's 10 and the home page have no game settings, so they show only the second part. The toggle is a chip pill. It turns `c1` when open. The panel is a card with a 2px border and radius 20px. On very small phones (under 380px, or under 420px in German, where "Einstellungen" is long) the toggle shows only the gear.
 
 - **Age picker:** a chip pill with round minus and plus buttons and the age in the middle.
 - **Language picker:** EN and DE in a chip pill. The chosen one gets the card color.
@@ -311,7 +311,7 @@ What **Print worksheet** prints. Only the sheet prints; the game is hidden. It i
 - **Cheer pop-up:** a card with a 4px yellow border, a yellow `0 8px 0` shadow and radius 28px. It pops in with a little bounce. A big Fredoka title, a muted line, a spinning star.
 - **Confetti:** drawn on a canvas in the five theme accents. Streaks of 5, 10, 15, 20, 30 and 50 right answers set it off.
 - **Badges:** at 10, 25, 50, 100, 250, 500 and 1,000 stars. Day badges at 3, 7 and 30 days of Today's 10. Not yet earned: a dashed circle. Earned: a filled circle in the badge's color.
-- **Star shelf ("My stars"):** a card on the home page with a progress bar to the next badge and a grid of badges.
+- **Star shelf ("My stars"):** a card on the home page with the line to the next badge and its progress bar. The badge grid and the day streak fold under one line, "See all badges and day streak" (a `details` with a dashed top line, like "Move my stars"), so the shelf stays short.
 - **"Ready to level up?"** card after 10 right answers in a row.
 - **Chimes:** short tones made in the browser. No sound files. "Right" goes up, "wrong" goes gently down, cheers and badges play a little tune. The speaker button mutes them.
 

@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'sha256-No1nfEIQTTX8izcaBia9fxcAsa57AW1CXusONftNiP4='; style-src 'self' 'sha256-32e3zv5TY5yTtQyzSRi/gQinJZol07tw1wV96llyjr4='; img-src 'self' data:; font-src 'self'; connect-src 'self'; worker-src 'self'; object-src 'none'; base-uri 'none'; form-action 'none'; manifest-src 'self'; upgrade-insecure-requests">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'sha256-CapPS9SyB1NoQtJX5X66D6F6cNtwRVdon/1794CM4rw='; style-src 'self' 'sha256-zQ9fwcZ33UQ/eVLPK8WnHV092ZYBNJKrKC8XXQL8ofE='; img-src 'self' data:; font-src 'self'; connect-src 'self'; worker-src 'self'; object-src 'none'; base-uri 'none'; form-action 'none'; manifest-src 'self'; upgrade-insecure-requests">
 <meta name="referrer" content="strict-origin-when-cross-origin">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <link rel="icon" href="../icon.svg" type="image/svg+xml">
@@ -71,6 +71,11 @@ section { background: var(--card); border: 2px solid var(--line); border-radius:
   align-self: flex-start; min-height: 48px; padding: 8px 20px; border-radius: 999px; border: 2px solid var(--line);
   background: var(--chip); color: var(--ink); font: inherit; font-weight: 600; cursor: pointer;
 }
+/* Games not played this week or last week fold into one line, so the played ones come first. */
+.quiet { grid-column: 1 / -1; border: 2px dashed var(--line); border-radius: 16px; padding: 10px 14px; }
+.quiet summary { cursor: pointer; font-weight: 600; min-height: 32px; }
+.quiet p { display: flex; flex-wrap: wrap; gap: 0 18px; margin-top: 4px; }
+.quiet .play { min-height: 40px; }
 .btn.danger { border-color: var(--bad); color: var(--bad); background: var(--card); }
 .btn.sure { background: var(--bad); border-color: var(--bad); color: var(--card); }
 .btn:focus-visible, .play:focus-visible { outline: 3px solid var(--mark, var(--c2)); outline-offset: 3px; }
@@ -82,8 +87,11 @@ section { background: var(--card); border: 2px solid var(--line); border-radius:
 <main class="wrap">
   <header class="bar">
     <a class="home-link" href="../">&larr; loopy</a>
-    <div class="controls"><div id="theme-picker"></div><div id="lang-picker"></div></div>
+    <button type="button" id="settings-toggle" aria-controls="settings-panel"></button>
   </header>
+  <div class="settings-panel" id="settings-panel" hidden>
+    <div class="controls"><div id="theme-picker"></div><div id="lang-picker"></div></div>
+  </div>
   <div>
     <h1 data-t="prHeading">How it's going</h1>
     <p class="muted" data-t="prLead">For grown-ups. Answers from this device in the last 30 days.</p>
@@ -115,7 +123,7 @@ Loopy.addStrings({
   en: {
     prTitle: "How it's going · loopy", prHeading: "How it's going", prHeadingKid: "How it's going for {name}", prLead: "For grown-ups. Answers from this device in the last 30 days.",
     prWeeks: "This week and last week", prThis: "This week", prLast: "Last week", prRight: "✓ {n}", prWrong: "✗ {n}",
-    prRightAria: "{r} right, {w} wrong", prNone: "Not played",
+    prRightAria: "{r} right, {w} wrong", prNone: "Not played", prQuiet: "Not played in the last two weeks ({n})",
     prMisses: "Answers to practise", prMissesText: "Each wrong answer, with the right answer next to it. Newest first.",
     prRightAns: "Right answer", prTheirs: "Answer given", prNoMisses: "No wrong answers in the last 30 days.",
     prMore: "Show {n} more", prToday: "Today", prYesterday: "Yesterday",
@@ -162,7 +170,7 @@ Loopy.addStrings({
   de: {
     prTitle: "So läuft es · loopy", prHeading: "So läuft es", prHeadingKid: "So läuft es bei {name}", prLead: "Für Erwachsene. Antworten auf diesem Gerät aus den letzten 30 Tagen.",
     prWeeks: "Diese Woche und letzte Woche", prThis: "Diese Woche", prLast: "Letzte Woche", prRight: "✓ {n}", prWrong: "✗ {n}",
-    prRightAria: "{r} richtig, {w} falsch", prNone: "Nicht gespielt",
+    prRightAria: "{r} richtig, {w} falsch", prNone: "Nicht gespielt", prQuiet: "In den letzten zwei Wochen nicht gespielt ({n})",
     prMisses: "Das üben wir noch", prMissesText: "Jede falsche Antwort, mit der richtigen daneben. Die neuesten zuerst.",
     prRightAns: "Richtig", prTheirs: "Gegeben", prNoMisses: "Keine falschen Antworten in den letzten 30 Tagen.",
     prMore: "{n} weitere zeigen", prToday: "Heute", prYesterday: "Gestern",
@@ -291,8 +299,10 @@ Loopy.addStrings({
   function games() {
     const box = $("games");
     box.textContent = "";
+    const quiet = [];
     GAMES.forEach(g => {
       const now = totals(thisWeek, g.id), before = totals(lastWeek, g.id);
+      if (!now.r && !now.w && !before.r && !before.w) { quiet.push(g); return; }
       const card = document.createElement("article"), h = document.createElement("h3"), dl = document.createElement("dl");
       const p = document.createElement("p"), a = document.createElement("a");
       card.className = "game";
@@ -305,6 +315,19 @@ Loopy.addStrings({
       card.append(h, dl, p, a);
       box.appendChild(card);
     });
+    // Games with no answers in both weeks share one folded line, with a link to each.
+    if (quiet.length) {
+      const d = document.createElement("details"), s = document.createElement("summary"), p = document.createElement("p");
+      d.className = "quiet";
+      s.textContent = t("prQuiet", { n: num(quiet.length) });
+      quiet.forEach(g => {
+        const a = document.createElement("a");
+        a.className = "play"; a.href = g.path; a.textContent = t(g.name);
+        p.appendChild(a);
+      });
+      d.append(s, p);
+      box.appendChild(d);
+    }
   }
 
   function dayLabel(d) {
