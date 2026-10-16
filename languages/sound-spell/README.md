@@ -16,7 +16,7 @@ A listening and spelling game. The child sees a picture and the word with one so
 | 5 to 6 | Starting sounds only, 3 choices, single letters |
 | 7 to 8 | Starting and ending sounds mixed, 4 choices, two-letter sounds too (sh, ch, th; Sch, St, Ei, Au, Eu) |
 
-After 10 right in a row the game offers to make it harder: first both sound kinds, then four choices.
+The level shows next to the score, like "Level 2 of 3". After 10 right in a row the game offers the next level. After 3 wrong in the last 5 it offers an easier one, once a visit. A level picked by hand in Settings is kept for that age. The levels: starting sounds with 3 choices, both sounds with 3 choices, both sounds with 4 choices.
 
 ## Last 5
 

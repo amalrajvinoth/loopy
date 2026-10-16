@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'sha256-Kux7qHmJveJuemyV4TYaCVS1ai/cduIHJTfITgNafqg='; style-src 'self' 'sha256-z2P7kGW5Z05eCTjTZdYpc0vThTlOE9vmt97pVSvi2I4=' 'sha256-4KeXVk7w7LjYemdYWRLdakk0uAlZg26cpfiBqMAOD24=' 'sha256-RT1053JU5UiKvjrCUFx1rlhdFLMmgtuFJ9T8jnMeawQ=' 'sha256-3KG381CUtjqBA89CGSEeePMjJDH4mtBX1ixxVdZ02kE='; img-src 'self' data:; font-src 'self'; connect-src 'self'; worker-src 'self'; object-src 'none'; base-uri 'none'; form-action 'none'; manifest-src 'self'; upgrade-insecure-requests">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'sha256-lmam8PIgBJMdoIuVECOtRniTAfhxwz7Kc1mrhmns03k='; style-src 'self' 'sha256-z2P7kGW5Z05eCTjTZdYpc0vThTlOE9vmt97pVSvi2I4=' 'sha256-4KeXVk7w7LjYemdYWRLdakk0uAlZg26cpfiBqMAOD24=' 'sha256-RT1053JU5UiKvjrCUFx1rlhdFLMmgtuFJ9T8jnMeawQ=' 'sha256-3KG381CUtjqBA89CGSEeePMjJDH4mtBX1ixxVdZ02kE='; img-src 'self' data:; font-src 'self'; connect-src 'self'; worker-src 'self'; object-src 'none'; base-uri 'none'; form-action 'none'; manifest-src 'self'; upgrade-insecure-requests">
 <meta name="referrer" content="strict-origin-when-cross-origin">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <style>:root{color-scheme:light;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}body{margin:0}[hidden]{display:none!important}</style>
@@ -223,6 +223,7 @@ body { min-height: 100vh; min-height: 100dvh; padding-block: 12px 16px; }
     <h1 id="title" data-t="pzName">Pizza Fractions</h1>
     <div class="score" aria-live="polite">
       <div class="pill pill-score"><span data-t="score">Score</span><b id="score">0 / 0</b></div>
+      <div id="level"></div>
       <div class="pill pill-streak"><span data-t="streak">Streak</span><b id="streak">0</b></div>
       <div id="last5" data-game="pizza-fractions"></div>
     </div>
@@ -279,7 +280,8 @@ body { min-height: 100vh; min-height: 100dvh; padding-block: 12px 16px; }
 Loopy.addStrings({
   en: {
     pzName: "Pizza Fractions", pzProblems: "Problems", pzNameIt: "Name it", pzCmp: "Compare", pzAdd: "Add", pzMix: "Mix",
-    pzPieces: "Pieces", pzUpTo: "Up to {n}", pzPicture: "Picture", pzPizza: "Pizza", pzBar: "Bar", pzBoth: "Both",
+    pzPieces: "Pieces", pzUpTo: "Up to {n}",
+    pzLv1: "Name it, 4 pieces", pzLv2: "Name it, 8 pieces", pzLv3: "Compare, 8 pieces", pzLv4: "Add, 8 pieces", pzLv5: "All mixed, 12 pieces", pzPicture: "Picture", pzPizza: "Pizza", pzBar: "Bar", pzBoth: "Both",
     pzPicsLabel: "Show the picture before answering", pzPicAria: "Picture",
     pzKbd: "Keyboard works too: 1 to 4 or < = > picks an answer, Enter goes on.",
     pzAskPizza: "What part of the pizza has toppings?", pzAskBar: "What part of the bar is colored in?",
@@ -303,7 +305,7 @@ Loopy.addStrings({
     pzWhole: "{f} is one whole.",
     pzBottoms: "Don't add the bottom numbers. They tell the size of the pieces, and that stays the same.",
     pzReadCmp: "Is {a} smaller than, equal to, or bigger than {b}?", pzReadAdd: "What is {a} plus {b}?", pzReadName: "{q} {list}.",
-    pzTryUpTo: "Try up to {n} pieces", pzTryMix: "Try all three mixed", pzNoPics: "Try it without the picture first",
+   
     pzHowName: "Write the fraction that is shaded.", pzHowCmp: "Write <, > or = in each circle.", pzHowAdd: "Add the fractions.",
     pzHowMix: "Write the fraction that is shaded, write <, > or = in the circles, and add.",
     pzW2: "half", pzW2s: "halves", pzW3: "third", pzW3s: "thirds", pzW4: "quarter", pzW4s: "quarters",
@@ -313,7 +315,8 @@ Loopy.addStrings({
   },
   de: {
     pzName: "Pizza-Brüche", pzProblems: "Aufgaben", pzNameIt: "Benennen", pzCmp: "Vergleichen", pzAdd: "Plus", pzMix: "Gemischt",
-    pzPieces: "Stücke", pzUpTo: "Bis {n}", pzPicture: "Bild", pzPizza: "Pizza", pzBar: "Streifen", pzBoth: "Beides",
+    pzPieces: "Stücke", pzUpTo: "Bis {n}",
+    pzLv1: "Benennen, 4 Stücke", pzLv2: "Benennen, 8 Stücke", pzLv3: "Vergleichen, 8 Stücke", pzLv4: "Plus, 8 Stücke", pzLv5: "Gemischt, 12 Stücke", pzPicture: "Bild", pzPizza: "Pizza", pzBar: "Streifen", pzBoth: "Beides",
     pzPicsLabel: "Das Bild vor der Antwort zeigen", pzPicAria: "Bild",
     pzKbd: "Die Tastatur geht auch: 1 bis 4 oder < = > wählt eine Antwort, Enter geht weiter.",
     pzAskPizza: "Welcher Teil der Pizza hat Belag?", pzAskBar: "Welcher Teil des Streifens ist bunt?",
@@ -337,7 +340,7 @@ Loopy.addStrings({
     pzWhole: "{f} ist ein Ganzes.",
     pzBottoms: "Die unteren Zahlen werden nicht zusammengezählt. Sie sagen, wie groß die Stücke sind, und das bleibt gleich.",
     pzReadCmp: "Ist {a} kleiner als, gleich oder größer als {b}?", pzReadAdd: "Wie viel ist {a} plus {b}?", pzReadName: "{q} {list}.",
-    pzTryUpTo: "Probiere bis {n} Stücke", pzTryMix: "Probiere alle drei gemischt", pzNoPics: "Probiere es ohne Bild vorher",
+   
     pzHowName: "Schreibe den Bruch, der markiert ist.", pzHowCmp: "Schreibe <, > oder = in jeden Kreis.", pzHowAdd: "Rechne die Brüche zusammen.",
     pzHowMix: "Schreibe den markierten Bruch, setze <, > oder = in die Kreise und rechne zusammen.",
     pzW2: "halb", pzW2s: "Halbe", pzW3: "Drittel", pzW3s: "Drittel", pzW4: "Viertel", pzW4s: "Viertel",
@@ -386,6 +389,12 @@ Loopy.addStrings({
     if (m) { mode = m[1]; Loopy.log.hint = ""; }
   }
   loadForAge();
+  // The ladder: name with 4 pieces, name with 8, compare, add, then all three mixed with 12 pieces.
+  const LADDER = [[0, "name"], [1, "name"], [1, "cmp"], [1, "add"], [2, "mix"]];
+  const rung = (l, m) => { const i = LADDER.findIndex(r => r[0] === l && r[1] === m); return i >= 0 ? i : m === "name" ? (l ? 1 : 0) : m === "cmp" ? 2 : m === "add" ? 3 : 4; };
+  Loopy.levels.init({ names: ["pzLv1", "pzLv2", "pzLv3", "pzLv4", "pzLv5"],
+    get: () => rung(lv, mode), base: () => rung(levelForAge(age), modeForAge(age)),
+    set: (i) => { [lv, mode] = LADDER[i]; store.set("pz.level.a" + age, lv); store.set("pz.mode.a" + age, mode); render(); } });
   let right = 0, tried = 0, streak = 0;
   let cur = null, answered = false, recent = [];
 
@@ -596,6 +605,7 @@ Loopy.addStrings({
 
   // ---- One round ----
   function render() {
+    Loopy.levels.render();
     $("score").textContent = right + " / " + tried;
     $("streak").textContent = streak;
     modeBtns.forEach(b => b.setAttribute("aria-pressed", String(b.dataset.mode === mode)));
@@ -700,7 +710,7 @@ Loopy.addStrings({
   function finish(ok, yours, pickedFrac) {
     answered = true; tried++;
     if (ok) { right++; streak++; } else { streak = 0; }
-    if (ok) Loopy.rewards.correct("pizza-fractions", streak, harder());
+    if (ok) Loopy.rewards.correct("pizza-fractions", streak);
     else Loopy.rewards.wrong("pizza-fractions", {
       q: cur.type === "name" ? t(cur.look === "bar" ? "pzBar" : "pzPizza") + " " + txt(cur.x) : cur.type === "cmp" ? txt(cur.a) + " ? " + txt(cur.b) : txt(cur.a) + " + " + txt(cur.b),
       a: answerText(cur), y: yours, k: cur.kind
@@ -716,13 +726,6 @@ Loopy.addStrings({
     $("next").focus({ preventScroll: true });
   }
 
-  // What "Make it harder" does after 10 in a row: more pieces, then all three kinds mixed, then no picture first.
-  function harder() {
-    if (lv < 2) return { label: t("pzTryUpTo", { n: Loopy.num(LEVELS[lv + 1].max) }), apply: () => { lv++; store.set("pz.level.a" + age, lv); render(); } };
-    if (mode !== "mix") return { label: t("pzTryMix"), apply: () => { mode = "mix"; store.set("pz.mode.a" + age, mode); render(); } };
-    if (pics) return { label: t("pzNoPics"), apply: () => { pics = false; store.set("pz.pics.a" + age, pics); render(); } };
-    return null;
-  }
 
   modeBtns.forEach(b => b.addEventListener("click", () => { mode = b.dataset.mode; store.set("pz.mode.a" + age, mode); render(); newRound(); }));
   lvBtns.forEach(b => b.addEventListener("click", () => { lv = +b.dataset.lv; store.set("pz.level.a" + age, lv); render(); newRound(); }));

@@ -26,6 +26,8 @@ You can also type on a keyboard. Use the number keys, **Backspace** to erase and
 | 10 to 11 | All tables up to 12 × 12 |
 | 12 and up | All tables up to 12 × 12, with sharing mixed in, like 56 ÷ 8 |
 
+The level shows next to the score, like "Level 2 of 4". After a clean round of 10 or more the game offers the next level. After a round with fewer than half right it offers an easier one. The levels: tables of 2, 5 and 10, all tables to 10 × 10, all tables to 12 × 12, with sharing mixed in. Your own pick of tables stays a separate setting.
+
 ## Best scores
 
 Each child has their own best score, one for each choice of problems and tables. So a best with the 2, 5 and 10 tables does not compete with a best on all tables. Best scores are kept in the browser and move with the stars code.

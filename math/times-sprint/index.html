@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'sha256-KKT67IqGLmvtjdvIabH6ygVrdp1IumC6SWIEaZ9byFU='; style-src 'self' 'sha256-z2P7kGW5Z05eCTjTZdYpc0vThTlOE9vmt97pVSvi2I4=' 'sha256-fEwIdTaHfXdKeWOnT/E5ieo/ySWlwtayhs15/xGPFC4=' 'sha256-RT1053JU5UiKvjrCUFx1rlhdFLMmgtuFJ9T8jnMeawQ=' 'sha256-Y6Wb8g3S5cVZDSuZFDv8jsi8uxCjGvWjFSiWVN+ETTs='; img-src 'self' data:; font-src 'self'; connect-src 'self'; worker-src 'self'; object-src 'none'; base-uri 'none'; form-action 'none'; manifest-src 'self'; upgrade-insecure-requests">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'sha256-lzjdVJlMUqAUy/+GQihLASWPUdllh7ee5oKGysWqnkQ='; style-src 'self' 'sha256-z2P7kGW5Z05eCTjTZdYpc0vThTlOE9vmt97pVSvi2I4=' 'sha256-fEwIdTaHfXdKeWOnT/E5ieo/ySWlwtayhs15/xGPFC4=' 'sha256-RT1053JU5UiKvjrCUFx1rlhdFLMmgtuFJ9T8jnMeawQ=' 'sha256-Y6Wb8g3S5cVZDSuZFDv8jsi8uxCjGvWjFSiWVN+ETTs='; img-src 'self' data:; font-src 'self'; connect-src 'self'; worker-src 'self'; object-src 'none'; base-uri 'none'; form-action 'none'; manifest-src 'self'; upgrade-insecure-requests">
 <meta name="referrer" content="strict-origin-when-cross-origin">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <style>:root{color-scheme:light;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}body{margin:0}[hidden]{display:none!important}</style>
@@ -235,6 +235,7 @@ body { min-height: 100vh; min-height: 100dvh; padding-block: 12px 16px; }
     <h1 id="title" data-t="ttName">Times Tables Sprint</h1>
     <div class="score" aria-live="polite">
       <div class="pill pill-score"><span data-t="score">Score</span><b id="score">0 / 0</b></div>
+      <div id="level"></div>
       <div class="pill pill-streak"><span data-t="streak">Streak</span><b id="streak">0</b></div>
       <div id="last5" data-game="times-sprint"></div>
     </div>
@@ -330,12 +331,16 @@ const pick = (arr) => arr[Math.floor(Math.random() * arr.length)];
 const ALL = [2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12];
 
 // What each age practices: 2, 5 and 10 first, then up to 10 × 10, then 12 × 12, then sharing too.
-function levelForAge(age) {
-  if (age <= 8) return { tables: [2, 5, 10], upTo: 10, op: "mul", note: "note8" };
-  if (age === 9) return { tables: ALL.slice(0, 9), upTo: 10, op: "mul", note: "note9" };
-  if (age <= 11) return { tables: ALL, upTo: 12, op: "mul", note: "note10" };
-  return { tables: ALL, upTo: 12, op: "mix", note: "note12" };
-}
+// The levels, easiest first.
+const LADDER = [
+  { tables: [2, 5, 10], upTo: 10, op: "mul", note: "note8" },
+  { tables: ALL.slice(0, 9), upTo: 10, op: "mul", note: "note9" },
+  { tables: ALL, upTo: 12, op: "mul", note: "note10" },
+  { tables: ALL, upTo: 12, op: "mix", note: "note12" }
+];
+// The level each age starts at, 0-based.
+const rungForAge = (age) => age <= 8 ? 0 : age === 9 ? 1 : age <= 11 ? 2 : 3;
+function levelForAge(age) { return LADDER[rungForAge(age)]; }
 
 // One problem from the tables: a × table, table × a, or (table × a) ÷ table.
 function makeProblem(op, tables, upTo) {
@@ -372,9 +377,11 @@ function makeProblem(op, tables, upTo) {
   }
 
   let age = Loopy.getAge();
-  let level, opMode, mine, calm;
+  let level, rung, opMode, mine, calm;
   function loadForAge() {
-    level = levelForAge(age);
+    const r = read("tt.lv.a" + age);
+    rung = [0, 1, 2, 3].includes(r) ? r : rungForAge(age);
+    level = LADDER[rung];
     const op = read("tt.op.a" + age);
     opMode = ["mul", "div", "mix"].includes(op) ? op : level.op;
     const tb = read("tt.tables.a" + age);
@@ -385,6 +392,10 @@ function makeProblem(op, tables, upTo) {
     if (m) { opMode = m[1]; if (ALL.includes(+m[2])) mine = [+m[2]]; Loopy.log.hint = ""; }
   }
   loadForAge();
+  // The level pill. The level cards come at the end of a round (see over()), never while the clock runs.
+  Loopy.levels.init({ names: LADDER.map(l => () => t(l.note).replace(/\.$/, "")),
+    get: () => rung, base: () => rungForAge(age),
+    set: (i) => { rung = i; level = LADDER[i]; write("tt.lv.a" + age, i); restart(); } });
   const tables = () => mine || level.tables;
   const upTo = () => mine ? Math.max(10, level.upTo) : level.upTo;
   const sig = () => opMode + ":" + tables().join("-");
@@ -407,6 +418,7 @@ function makeProblem(op, tables, upTo) {
     $("round").textContent = t("ttRound", { n: roundRight }) + (best ? " · " + t("ttBest", { n: best }) : "");
   }
   function render() {
+    Loopy.levels.render();
     $("score").textContent = right + " / " + tried;
     $("streak").textContent = streak;
     opBtns.forEach(b => b.setAttribute("aria-pressed", String(b.dataset.op === opMode)));
@@ -507,6 +519,9 @@ function makeProblem(op, tables, upTo) {
     say(roundRight ? "good" : "", t("ttUp", { n: roundRight }), " " + t("ttUpOf", { m: roundTried }) + " " + note);
     render();
     goBtn.focus({ preventScroll: true });
+    // A clean round of 10 or more offers the next level; fewer than half right offers an easier one.
+    if (roundTried >= 10 && roundRight === roundTried) Loopy.levels.offer("harder");
+    else if (roundTried >= 5 && roundRight * 2 < roundTried) Loopy.levels.offer("easier");
   }
 
   function press(d) {
