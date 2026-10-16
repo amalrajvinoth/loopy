@@ -26,6 +26,7 @@ It works on phones, tablets and computers. There is no sign-up and no ads.
 | [Pizza Fractions](math/pizza-fractions/) | Naming, comparing and adding fractions, with pizzas and bars | [README](math/pizza-fractions/README.md) |
 | [Coins and Change](math/coins-change/) | Counting coins and notes, and giving change, in euros, pounds or dollars | [README](math/coins-change/README.md) |
 | [Equation Balance](math/equation-balance/) | First steps in algebra: find x so a see-saw is level, from □ + 4 = 9 to x on both sides | [README](math/equation-balance/README.md) |
+| [Times Tables Sprint](math/times-sprint/) | Times tables against a 60-second clock: beat your best score | [README](math/times-sprint/README.md) |
 | [Sound Spell](languages/sound-spell/) | Starting and ending sounds of English and German words | [README](languages/sound-spell/README.md) |
 | [Word Match](languages/word-match/) | 100 words for animals, food, home and school, in English or German | [README](languages/word-match/README.md) |
 | [Spell It](languages/spell-it/) | Hear a word and spell it on a letter pad, from 3 letters up to 8, in English or German | [README](languages/spell-it/README.md) |
@@ -52,7 +53,7 @@ Open it from the link at the bottom of the home page.
 - **Easier to read.** In **Settings**, turn on **Easier to read** to switch every text to Atkinson Hyperlegible, a font made so letters like b and d, or I, l and 1, are easy to tell apart. Pages only load the font when it is on, and it is saved for offline use like the other fonts.
 - **Stars.** Every right answer gives a star. More stars unlock badges. A streak of right answers sets off confetti.
 - **Sound.** Short happy sounds play. Tap the speaker to turn them off.
-- **Read aloud.** In Plus and Minus, Times and Share, What Time Is It?, Make 10, Bigger or Smaller, Pizza Fractions, Coins and Change, Equation Balance, Quick Facts, Where Is It? and Flags and Capitals, a speaker button reads the question out loud in the device's own voice, in English or German. Nothing is downloaded. It is on by itself for ages 5 to 7. Turn it on or off in **Settings**.
+- **Read aloud.** In Plus and Minus, Times and Share, What Time Is It?, Make 10, Bigger or Smaller, Pizza Fractions, Coins and Change, Equation Balance, Times Tables Sprint, Quick Facts, Where Is It? and Flags and Capitals, a speaker button reads the question out loud in the device's own voice, in English or German. Nothing is downloaded. It is on by itself for ages 5 to 7. Turn it on or off in **Settings**.
 - **Help.** After each answer, the game shows a short reason, so kids learn from mistakes.
 - **Last 5.** Each game shows the last 5 answers as green and red dots.
 - **Back.** The big button with the loopy bunny at the top of a game goes back to all games.
@@ -194,6 +195,7 @@ Page sizes, sent over the network with `loopy.js`, `loopy.css` and the two fonts
 | Pizza Fractions | 77 KB |
 | Coins and Change | 77 KB |
 | Equation Balance | 74 KB |
+| Times Tables Sprint | 73 KB |
 | Sound Spell | 74 KB |
 | Word Match | 74 KB |
 | Spell It | 75 KB |

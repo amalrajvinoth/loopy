@@ -133,9 +133,11 @@ async function closeCheer(p) {
   if (await big.count()) { await big.last().click(); await p.waitForTimeout(300); }
 }
 
-// Go to the next question: Next, or Check that has turned into Next.
+// Go to the next question: Next, or Check that has turned into Next. n is how many questions
+// were asked before this answer; a game that already moved on needs no tap.
 async function next(p, n) {
   await closeCheer(p);
+  if (await asked(p) > n) return;
   for (const id of ["#next", "#k-go"]) {
     const b = p.locator(id);
     if (await b.count() && await b.isVisible() && await b.isEnabled()) { await b.click(); break; }
@@ -161,8 +163,10 @@ for (const game of GAMES) {
       const rounds = daily ? 10 : ROUNDS, starsBefore = await stars(p);
       let marked = 0;
       for (let i = 0; i < rounds; i++) {
+        // Counted before answering: a sprint game shows the next question by itself after Check.
+        const n = await asked(p);
         if (await answer(p)) marked++;
-        if (i < rounds - 1) await next(p, await asked(p));
+        if (i < rounds - 1) await next(p, n);
         else await closeCheer(p);
       }
       const keys = await p.evaluate(() => window.__questions.slice());
