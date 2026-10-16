@@ -102,13 +102,16 @@ document.documentElement.classList.add("loopy-building");
 // progress and game settings. Theme, sound and language stay the same for everyone on the device.
 // The list is kept in this browser's localStorage "loopy.kids" as
 // { on: 1, next: 3, list: [{ id: 1, name: "Dio", pic: "🐰" }, { id: 2, name: "Dia", pic: "🦄" }] }.
+// A new device starts with one child with no name. Devices that already have children (Dio and Dia
+// from before) keep them. Grown-ups add, rename and remove kids in Settings (<div id="kid-settings">).
 // Each child's own things are kept under "loopy.kid.<id>." + key. Use Loopy.store.get / set / remove
 // instead of localStorage for anything that belongs to one child (scores, levels, settings in a game).
-// <div id="kid-picker"></div> becomes the "Who is playing?" row; add data-switch-only to hide add and edit.
+// <div id="kid-picker"></div> becomes the "Who is playing?" row, shown only with two or more children;
+// add data-switch-only to hide add and edit.
 (function () {
   var KEY = "loopy.kids", MAX = 6, LEN = 12, BIG_ID = 1000000;
-  // A new device starts with two children, Dio and Dia. Rename or remove them with ✎.
-  var START = [{ id: 1, name: "Dio", pic: "🐰" }, { id: 2, name: "Dia", pic: "🦄" }];
+  // A new device starts with one child with no name. Add more in Settings.
+  var START = [{ id: 1, name: "", pic: "🐰" }];
   var PICS = ["🐰", "🦊", "🐼", "🐯", "🐸", "🦄", "🐙", "🦖", "🐝", "🐧", "🦁", "🐨"];
   // Keys saved before there were children. On the first visit they move to child 1, so no stars are lost.
   var OLD = /^(?:loopy\.(?:rewards|daily|log|recent|ageOffset|readAloud)$|(?:bs|cc|clockquiz|mk|pm100|pz|qf|si|ss|ts|wi|wm)\.)/;
@@ -119,13 +122,17 @@ document.documentElement.classList.add("loopy-building");
       kidsGroup: "Who is playing?", kidN: "Player {n}", kidAdd: "Add a child", kidEditAria: "Change name or picture",
       kidNew: "New child", kidEdit: "Change {name}", kidName: "Name", kidNameHint: "Name or nickname", kidPic: "Picture",
       kidSave: "Save", kidCancel: "Cancel", kidRemove: "Remove",
-      kidSure: "Tap again to remove {name} and all their stars", kidStars: "{name}'s stars"
+      kidSure: "Tap again to remove {name} and all their stars", kidStars: "{name}'s stars",
+      kidsHead: "Kids", kidsOne: "Add a child to give each one their own stars, levels and place in the games.",
+      kidsMany: "Each child has their own stars, levels and place in the games.", kidChange: "Change {name}"
     },
     de: {
       kidsGroup: "Wer spielt?", kidN: "Kind {n}", kidAdd: "Kind hinzufügen", kidEditAria: "Name oder Bild ändern",
       kidNew: "Neues Kind", kidEdit: "{name} ändern", kidName: "Name", kidNameHint: "Name oder Spitzname", kidPic: "Bild",
       kidSave: "Speichern", kidCancel: "Abbrechen", kidRemove: "Entfernen",
-      kidSure: "Nochmal tippen: {name} mit allen Sternen entfernen", kidStars: "Sterne von {name}"
+      kidSure: "Nochmal tippen: {name} mit allen Sternen entfernen", kidStars: "Sterne von {name}",
+      kidsHead: "Kinder", kidsOne: "Füge ein Kind hinzu, damit jedes eigene Sterne, Stufen und seinen Platz in den Spielen hat.",
+      kidsMany: "Jedes Kind hat eigene Sterne, Stufen und seinen Platz in den Spielen.", kidChange: "{name} ändern"
     }
   });
 
@@ -151,7 +158,7 @@ document.documentElement.classList.add("loopy-building");
     return out;
   }
   function pre(id) { return "loopy.kid." + id + "."; }
-  function save() { try { localStorage.setItem(KEY, JSON.stringify(data)); } catch (e) {} }
+  function save() { try { localStorage.setItem(KEY, JSON.stringify(data)); } catch (e) {} if (Loopy.keep) Loopy.keep.soon(); }
 
   var data = clean(null), stored = null;
   try { stored = localStorage.getItem(KEY); data = clean(JSON.parse(stored)); } catch (e) {}
@@ -168,10 +175,12 @@ document.documentElement.classList.add("loopy-building");
     } catch (e) {}
   }
 
+  // Every save also asks Loopy.keep to copy to IndexedDB.
+  var kept = function () { if (Loopy.keep) Loopy.keep.soon(); };
   Loopy.store = {
     get: function (k) { try { return localStorage.getItem(pre(data.on) + k); } catch (e) { return null; } },
-    set: function (k, v) { try { localStorage.setItem(pre(data.on) + k, String(v)); } catch (e) {} },
-    remove: function (k) { try { localStorage.removeItem(pre(data.on) + k); } catch (e) {} }
+    set: function (k, v) { try { localStorage.setItem(pre(data.on) + k, String(v)); } catch (e) {} kept(); },
+    remove: function (k) { try { localStorage.removeItem(pre(data.on) + k); } catch (e) {} kept(); }
   };
 
   function find(id) { return data.list.filter(function (k) { return k.id === id; })[0]; }
@@ -181,11 +190,16 @@ document.documentElement.classList.add("loopy-building");
 
   Loopy.kids = {
     PICS: PICS, MAX: MAX, cleanName: cleanName,
+    // True when this browser had no list of children when the page opened (a new device, or one whose
+    // storage was cleared). Loopy.keep then looks for a copy in IndexedDB.
+    fresh: stored === null,
     list: function () { return data.list.map(copy); },
     current: function () { return copy(find(data.on)); },
     // What to call a child: their name, or "Player 2" when they have none.
     label: function (k) { return k.name || Loopy.t("kidN", { n: data.list.map(function (x) { return x.id; }).indexOf(k.id) + 1 }); },
     use: use,
+    // Makes id the child playing without reloading (Loopy.backup does this after loading one child).
+    pick: function (id) { if (find(id)) { data.on = id; save(); } },
     // The localStorage key that holds key for child id (used by Loopy.backup).
     key: function (id, k) { return pre(id) + k; },
     // Adds a child without switching to them, and returns their id, or null when there are 6 already.
@@ -332,7 +346,8 @@ document.documentElement.classList.add("loopy-building");
     var box = document.getElementById("kid-picker");
     if (!box) return;
     var only = box.hasAttribute("data-switch-only");
-    if (only && data.list.length < 2) { box.hidden = true; return; }
+    // One child: no names anywhere. Kids are added in Settings.
+    if (data.list.length < 2) { box.hidden = true; return; }
     box.className = "kid-picker";
     box.setAttribute("role", "group");
     box.setAttribute("aria-label", Loopy.t("kidsGroup"));
@@ -357,8 +372,152 @@ document.documentElement.classList.add("loopy-building");
       box.appendChild(add);
     }
   }
-  if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", build);
-  else build();
+
+  // The "Kids" part of Settings: one row per child with ✎, then "Add a child".
+  function settings() {
+    var box = document.getElementById("kid-settings");
+    if (!box || typeof HTMLDialogElement !== "function") return;
+    box.className = "set-kids";
+    box.textContent = "";
+    var head = el("p", "set-head", Loopy.t("kidsHead"));
+    box.appendChild(head);
+    var rows = el("div", "kid-rows");
+    data.list.forEach(function (k) {
+      var b = el("button", "kid-row");
+      b.type = "button";
+      b.setAttribute("aria-label", Loopy.t("kidChange", { name: Loopy.kids.label(k) }));
+      b.appendChild(el("span", "kid-pic", k.pic)).setAttribute("aria-hidden", "true");
+      b.appendChild(el("span", "kid-row-name", Loopy.kids.label(k))).setAttribute("aria-hidden", "true");
+      b.appendChild(el("span", "kid-row-edit", "✎")).setAttribute("aria-hidden", "true");
+      b.addEventListener("click", function () { open(find(k.id)); });
+      rows.appendChild(b);
+    });
+    if (data.list.length < MAX) {
+      var add = el("button", "kid-row add");
+      add.type = "button";
+      add.appendChild(el("span", "kid-pic", "+")).setAttribute("aria-hidden", "true");
+      add.appendChild(el("span", "kid-row-name", Loopy.t("kidAdd")));
+      add.addEventListener("click", function () { open(null); });
+      rows.appendChild(add);
+    }
+    box.appendChild(rows);
+    box.appendChild(el("p", "kid-note", Loopy.t(data.list.length < 2 ? "kidsOne" : "kidsMany")));
+  }
+  function start() { build(); settings(); }
+  if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", start);
+  else start();
+})();
+
+// Safe keeping: everything loopy saves ("loopy." keys in localStorage) is also copied to IndexedDB, a
+// bigger browser store, and loopy asks the browser to keep it (persistent storage) once a child has
+// stars, so it is not cleared by surprise when the device is low on space.
+// localStorage stays the quick copy every page reads when it opens. If it was cleared but IndexedDB
+// still has the copy, the copy comes back and the page reloads once. If IndexedDB is blocked (some
+// private windows), loopy works from localStorage alone, as before.
+// IndexedDB "loopy", store "kv": one row per localStorage key, the value as text.
+(function () {
+  var Loopy = window.Loopy, DB = "loopy", STORE = "kv", PRE = "loopy.", ASKED = "loopy.persistAsked";
+  var db = null, ready = false, timer = null;
+  var keep = Loopy.keep = { db: false, persisted: false, soon: soon };
+  var own = function (k) { return typeof k === "string" && k.indexOf(PRE) === 0; };
+
+  function local() {
+    var out = {};
+    try {
+      for (var i = 0; i < localStorage.length; i++) { var k = localStorage.key(i); if (own(k)) out[k] = localStorage.getItem(k); }
+    } catch (e) {}
+    return out;
+  }
+  // Writes the whole quick copy to IndexedDB in one go, so the two always match.
+  function copy() {
+    timer = null;
+    if (!db || !ready) return;
+    try {
+      var all = local(), tx = db.transaction(STORE, "readwrite"), st = tx.objectStore(STORE);
+      st.clear();
+      Object.keys(all).forEach(function (k) { st.put(all[k], k); });
+    } catch (e) {}
+  }
+  // Called after something is saved. Many saves in a row make one copy.
+  function soon() { if (db && ready && !timer) timer = setTimeout(copy, 400); }
+
+  function ask() {
+    var S = navigator.storage;
+    if (!S || typeof S.persist !== "function") return;
+    S.persisted().then(function (yes) {
+      keep.persisted = yes;
+      // Only once there is something worth keeping, and only once per device.
+      var stars = Loopy.rewards ? Loopy.rewards.get().stars : 0;
+      if (yes || (!stars && Loopy.kids.list().length < 2)) return;
+      try { if (localStorage.getItem(ASKED)) return; localStorage.setItem(ASKED, "1"); } catch (e) { return; }
+      return S.persist().then(function (got) { keep.persisted = got; });
+    }).catch(function () {});
+  }
+
+  // Values from IndexedDB are only put back as loopy text keys; every part checks them again when it reads them.
+  function restore(rows) {
+    var n = 0;
+    try {
+      if (sessionStorage.getItem("loopy.restored")) return false;
+      sessionStorage.setItem("loopy.restored", "1");
+      Object.keys(rows).forEach(function (k) {
+        if (own(k) && typeof rows[k] === "string" && rows[k].length <= 500000) { localStorage.setItem(k, rows[k]); n++; }
+      });
+    } catch (e) { return false; }
+    return n > 0;
+  }
+
+  function start() {
+    var req;
+    try { req = indexedDB.open(DB, 1); } catch (e) { return; }
+    req.onupgradeneeded = function () { req.result.createObjectStore(STORE); };
+    req.onerror = function () {};
+    req.onsuccess = function () {
+      db = req.result;
+      keep.db = true;
+      var rows = {}, cur;
+      try { cur = db.transaction(STORE, "readonly").objectStore(STORE).openCursor(); } catch (e) { return; }
+      cur.onsuccess = function () {
+        var c = cur.result;
+        if (c) { rows[c.key] = c.value; c.continue(); return; }
+        // localStorage lost its list of children but IndexedDB still has it: bring everything back.
+        if (Loopy.kids.fresh && typeof rows["loopy.kids"] === "string" && restore(rows)) { location.reload(); return; }
+        ready = true;
+        copy();
+        ask();
+      };
+    };
+  }
+  try { if (!window.indexedDB) return; } catch (e) { return; }
+  // When the page is left, so the last saves are copied too.
+  document.addEventListener("visibilitychange", function () { if (document.visibilityState === "hidden") copy(); });
+  window.addEventListener("pagehide", copy);
+  // After the page has loaded, so it does not slow the first paint.
+  if (document.readyState === "complete") setTimeout(start, 0);
+  else window.addEventListener("load", function () { setTimeout(start, 0); });
+})();
+
+// Carry on: each child's last game. A game page (one with a Last 5 row) saves its folder, e.g.
+// "math/plus-minus/", per child in "loopy.last". The home page offers "Carry on" for it.
+// Loopy.root is the site's address (where loopy.js is), used for links that open the home page.
+(function () {
+  var Loopy = window.Loopy, KEY = "loopy.last", PATH = /^[a-z0-9-]{1,30}\/[a-z0-9-]{1,40}\/$/;
+  var me = document.currentScript;
+  Loopy.root = me && me.src ? new URL(".", me.src).href : new URL(".", location.href).href;
+  Loopy.last = {
+    // The folder of the child's last game, or "" when there is none (or the saved text is not a folder).
+    get: function () { var v = Loopy.store.get(KEY); return typeof v === "string" && PATH.test(v) ? v : ""; },
+    clean: function (v) { return typeof v === "string" && PATH.test(v) ? v : ""; }
+  };
+  function mark() {
+    if (!document.getElementById("last5")) return;
+    var here = new URL(".", location.href).href;
+    if (here.indexOf(Loopy.root) !== 0) return;
+    var rel = decodeURIComponent(here.slice(Loopy.root.length));
+    if (PATH.test(rel) && Loopy.store.get(KEY) !== rel) Loopy.store.set(KEY, rel);
+  }
+  if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", mark);
+  else mark();
 })();
 
 // Loopy themes: black is the default, the choice is remembered on this device.
@@ -1161,7 +1320,7 @@ window.Loopy.fresh = function (recent, make, keep) {
     var box = document.createElement("div");
     box.className = "set-shared";
     // Only a game with its own settings gets the "This game" heading (Today's 10 has none).
-    var own = [].some.call(panel.children, function (c) { return c !== shared && c !== foot; });
+    var own = [].some.call(panel.children, function (c) { return c !== shared && c !== foot && c.id !== "kid-settings"; });
     box.appendChild(head("setShared"));
     panel.insertBefore(box, foot);
     box.appendChild(shared);
@@ -1711,18 +1870,26 @@ Loopy.nextButton = function (btn, answered) {
   window.addEventListener("afterprint", function () { filled = false; });
 })();
 
-// Stars code: moves stars, badges, day streak, progress, Last 5, age and settings to another device.
-// No account and nothing sent anywhere: the code is copied by hand and pasted on the other device.
+// Stars code: moves stars, badges, day streak, progress, Last 5, age, game levels and settings, and the
+// last game played ("where you left off") to another device, for one child or for all.
+// No account and nothing sent anywhere: the code is copied by hand and pasted on the other device,
+// or sent as a link with the code after the # (loopy/#load=LOOPY2-...), which never reaches the web server.
 // "LOOPY2-Z..." is the data packed small (deflate) and written as letters; "LOOPY2-J..." is the same
 // data unpacked, for browsers that can't pack. Old "LOOPY-..." codes (stars and best scores only) still load.
-// Inside: { v: 2, p: [child, ...], theme, font, sound, lang }, child = { n, pic, rewards, daily, log, recent, age, read }.
-// p holds every child on the device (see Loopy.kids). Loading a code gives each child's things to the child
-// here with the same name, or adds that child. A child with no name, and an old code, go to the child playing.
+// Inside: { v: 2, p: [child, ...], theme, font, sound, lang }, child = { n, pic, rewards, daily, log, recent, age, read, g }.
+// g holds the child's game levels and settings, the last game and the games already seen (each a short text
+// under its own key, e.g. { "pm100.op.a8": "\"mix\"", "loopy.last": "math/plus-minus/" }); codes made before it came in have none.
+// p holds every child on the device, or just one (see Loopy.kids). Loading a code gives each child's things to
+// the child here with the same name, or adds that child. A child with no name, and an old code, go to the child
+// playing. On a device with only one child, who has no name and no stars yet, the first child in the code takes their place.
 // Loading a code adds to what is here and never takes anything away: the bigger number wins,
 // and a setting is only taken when this device has not chosen one yet.
 (function () {
   var Loopy = window.Loopy = window.Loopy || {};
-  var MAX_CODE = 40000, MAX_JSON = 200000, MAX_P = 10;
+  var MAX_CODE = 40000, MAX_JSON = 200000, MAX_P = 10, MAX_G = 300, MAX_GV = 2000;
+  // The keys a child's g may hold: game settings ("ss.mode.a7"), the last game, and the games already seen.
+  // Each game checks its own values again when it reads them (only known choices are used).
+  var GKEY = /^(?:(?:bs|cc|clockquiz|mk|pm100|pz|qf|si|ss|ts|wi|wm)\.[A-Za-z]{1,16}(?:\.a\d{1,2})?|loopy\.(?:last|seen))$/;
   var KEYS = { rewards: "loopy.rewards", daily: "loopy.daily", log: "loopy.log", recent: "loopy.recent",
     age: "loopy.ageOffset", read: "loopy.readAloud", theme: "loopy.theme", font: "loopy.font", sound: "loopy.sound", lang: "loopy.lang" };
   var CHOICES = { read: ["on", "off"], theme: ["black", "sunny", "ocean", "candy", "forest", "contrast"], font: ["easy", "normal"], sound: ["on", "off"], lang: ["en", "de"] };
@@ -1764,8 +1931,31 @@ Loopy.nextButton = function (btn, answered) {
     })();
   }
 
-  function snapshot() {
-    var p = Loopy.kids.list().map(function (kid) {
+  // A child's game settings, last game and seen games, from this device or from a code: only known keys and short text.
+  function cleanG(raw) {
+    var out = {}, n = 0;
+    if (!raw || typeof raw !== "object" || Array.isArray(raw)) return out;
+    Object.keys(raw).forEach(function (k) {
+      if (n >= MAX_G || !GKEY.test(k) || typeof raw[k] !== "string" || raw[k].length > MAX_GV) return;
+      if (k === "loopy.last" && !Loopy.last.clean(raw[k])) return;
+      out[k] = raw[k]; n++;
+    });
+    return out;
+  }
+  function gOf(id) {
+    var raw = {}, pre = Loopy.kids.key(id, "");
+    try {
+      for (var i = 0; i < localStorage.length; i++) {
+        var k = localStorage.key(i);
+        if (k && k.indexOf(pre) === 0) raw[k.slice(pre.length)] = localStorage.getItem(k);
+      }
+    } catch (e) {}
+    return cleanG(raw);
+  }
+
+  // only: a child's id for a code with just that child; leave it out for every child.
+  function snapshot(only) {
+    var p = Loopy.kids.list().filter(function (kid) { return !only || kid.id === only; }).map(function (kid) {
       var id = kid.id;
       return {
         n: kid.name, pic: kid.pic,
@@ -1774,7 +1964,8 @@ Loopy.nextButton = function (btn, answered) {
         log: Loopy.log.clean(read("log", id)),
         recent: Loopy.recent.clean(read("recent", id)),
         age: get("age", id) === null ? null : cleanAge(parseInt(get("age", id), 10) || 0),
-        read: choice("read", get("read", id))
+        read: choice("read", get("read", id)),
+        g: gOf(id)
       };
     });
     return { v: 2, p: p, theme: choice("theme", get("theme")), font: choice("font", get("font")), sound: choice("sound", get("sound")), lang: choice("lang", get("lang")) };
@@ -1814,18 +2005,38 @@ Loopy.nextButton = function (btn, answered) {
 
     if (get("age", id) === null && cleanAge(got.age) !== null) put("age", String(cleanAge(got.age)), id);
     if (get("read", id) === null && choice("read", got.read)) put("read", got.read, id);
+
+    // Game levels and settings, the last game and seen games: only taken when this device has none for that key.
+    var G = cleanG(got.g);
+    Object.keys(G).forEach(function (k) {
+      var full = Loopy.kids.key(id, k);
+      try { if (localStorage.getItem(full) === null) localStorage.setItem(full, G[k]); } catch (e) {}
+    });
+  }
+  // A child with no name and no stars, alone on the device: a new device, ready to take a child from a code.
+  function blank() {
+    var here = Loopy.kids.list();
+    return here.length === 1 && !here[0].name && !Loopy.rewards.clean(read("rewards", here[0].id)).stars ? here[0] : null;
   }
 
-  function load(d) {
-    if (!d || typeof d !== "object" || d.v !== 2 || !Array.isArray(d.p) || !d.p.length || d.p.length > MAX_P) return false;
+  function kidsOf(d) {
+    if (!d || typeof d !== "object" || d.v !== 2 || !Array.isArray(d.p) || !d.p.length || d.p.length > MAX_P) return null;
     var kids = d.p.filter(function (c) { return c && typeof c === "object"; });
-    if (!kids.length) return false;
-    var here = Loopy.kids.list(), now = Loopy.kids.current().id;
+    return kids.length ? kids : null;
+  }
+  function load(d) {
+    var kids = kidsOf(d);
+    if (!kids) return false;
+    var here = Loopy.kids.list(), now = Loopy.kids.current().id, empty = blank(), last = null;
     kids.forEach(function (c) {
-      var name = Loopy.kids.cleanName(c.n), same = function (k) { return k.name.toLowerCase() === name.toLowerCase(); };
-      var id = !name ? now : (here.filter(same)[0] || {}).id || Loopy.kids.create(name, c.pic);
-      if (id) merge(c, id);
+      var name = Loopy.kids.cleanName(c.n), same = function (k) { return name && k.name.toLowerCase() === name.toLowerCase(); };
+      var id = !name ? now : (here.filter(same)[0] || {}).id || null;
+      if (!id && empty) { id = empty.id; Loopy.kids.edit(id, name, c.pic); empty = null; }
+      if (!id) id = Loopy.kids.create(name, c.pic);
+      if (id) { merge(c, id); last = id; }
     });
+    // A code with one child: that child plays next.
+    if (kids.length === 1 && last) Loopy.kids.pick(last);
     ["theme", "font", "sound", "lang"].forEach(function (k) { if (get(k) === null && choice(k, d[k])) put(k, d[k]); });
     return true;
   }
@@ -1836,31 +2047,53 @@ Loopy.nextButton = function (btn, answered) {
     return true;
   }
 
+  // A promise of what a code holds, unchecked: { v2: data } or { old: data }. Rejects for a code that is not a loopy code.
+  function decode(code) {
+    return Promise.resolve().then(function () {
+      code = String(code).replace(/\s+/g, "");
+      if (code.length > MAX_CODE) throw new Error("too long");
+      var m = /^LOOPY2-([ZJ])([A-Za-z0-9+/]+=*)$/i.exec(code);
+      if (m) {
+        var bytes = unb64(m[2]);
+        var json = m[1].toUpperCase() === "J" ? Promise.resolve(bytes) : can ? pipe(bytes, new DecompressionStream("deflate-raw")) : Promise.reject(new Error("can't unpack"));
+        return json.then(function (b) {
+          if (b.length > MAX_JSON) throw new Error("too big");
+          return { v2: JSON.parse(new TextDecoder("utf-8", { fatal: true }).decode(b)) };
+        });
+      }
+      m = /^LOOPY-([A-Za-z0-9+/]+=*)$/i.exec(code);
+      if (!m || m[1].length > 2000) throw new Error("not a code");
+      return { old: JSON.parse(atob(m[1])) };
+    });
+  }
+
   Loopy.backup = {
-    // A promise of the code for everything saved in this browser.
-    exportCode: function () {
-      var bytes = new TextEncoder().encode(JSON.stringify(snapshot()));
+    // A promise of the code for everything saved in this browser; with a child's id, for just that child.
+    exportCode: function (only) {
+      var bytes = new TextEncoder().encode(JSON.stringify(snapshot(only)));
       if (!can) return Promise.resolve("LOOPY2-J" + b64(bytes));
       return pipe(bytes, new CompressionStream("deflate-raw")).then(function (z) { return "LOOPY2-Z" + b64(z); });
     },
     // A promise of true when the code was good and its data is saved. Reload the page to show it.
     importCode: function (code) {
-      return Promise.resolve().then(function () {
-        code = String(code).replace(/\s+/g, "");
-        if (code.length > MAX_CODE) return false;
-        var m = /^LOOPY2-([ZJ])([A-Za-z0-9+/]+=*)$/i.exec(code);
-        if (m) {
-          var bytes = unb64(m[2]);
-          var json = m[1].toUpperCase() === "J" ? Promise.resolve(bytes) : can ? pipe(bytes, new DecompressionStream("deflate-raw")) : Promise.reject(new Error("can't unpack"));
-          return json.then(function (b) {
-            if (b.length > MAX_JSON) return false;
-            return load(JSON.parse(new TextDecoder("utf-8", { fatal: true }).decode(b)));
-          });
-        }
-        m = /^LOOPY-([A-Za-z0-9+/]+=*)$/i.exec(code);
-        return !!m && m[1].length <= 2000 && loadOld(JSON.parse(atob(m[1])));
+      return decode(code).then(function (got) {
+        var ok = got.v2 ? load(got.v2) : loadOld(got.old);
+        if (ok && Loopy.keep) Loopy.keep.soon();
+        return ok;
       }).catch(function () { return false; });
-    }
+    },
+    // A promise of the names in a code, without saving anything (for "Load Mia's stars here?"):
+    // a list of names ("" for a child with no name), or null when the code is no good.
+    peek: function (code) {
+      return decode(code).then(function (got) {
+        if (got.old) return got.old && typeof got.old === "object" && typeof got.old.s === "number" ? [""] : null;
+        var kids = kidsOf(got.v2);
+        return kids ? kids.map(function (c) { return Loopy.kids.cleanName(c.n); }) : null;
+      }).catch(function () { return null; });
+    },
+    // The link that opens the home page and offers to load code.
+    link: function (code) { return Loopy.root + "#load=" + code; },
+    MAX_CODE: MAX_CODE
   };
 })();
 
