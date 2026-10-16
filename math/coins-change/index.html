@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'sha256-/QQ2XEmd741fFIxcnhQIvIPHNxOhspHchm3sOag3OE4='; style-src 'self' 'sha256-z2P7kGW5Z05eCTjTZdYpc0vThTlOE9vmt97pVSvi2I4=' 'sha256-ER4UVxOAHVG2PpFuwsi/fNYnlP9iTYLytTr9Qx7YKqY=' 'sha256-RT1053JU5UiKvjrCUFx1rlhdFLMmgtuFJ9T8jnMeawQ=' 'sha256-hyy9jzvL9jP8AdsG42qy+OWI85m+DGPn0KZLmAYDqFY='; img-src 'self' data:; font-src 'self'; connect-src 'none'; worker-src 'self'; object-src 'none'; base-uri 'none'; form-action 'none'; manifest-src 'self'; upgrade-insecure-requests">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'sha256-rlfX2T4QTyTJbNt0egzgOK42/mnqKAPQ7BGn2ffbvFc='; style-src 'self' 'sha256-z2P7kGW5Z05eCTjTZdYpc0vThTlOE9vmt97pVSvi2I4=' 'sha256-ER4UVxOAHVG2PpFuwsi/fNYnlP9iTYLytTr9Qx7YKqY=' 'sha256-RT1053JU5UiKvjrCUFx1rlhdFLMmgtuFJ9T8jnMeawQ=' 'sha256-hyy9jzvL9jP8AdsG42qy+OWI85m+DGPn0KZLmAYDqFY='; img-src 'self' data:; font-src 'self'; connect-src 'none'; worker-src 'self'; object-src 'none'; base-uri 'none'; form-action 'none'; manifest-src 'self'; upgrade-insecure-requests">
 <meta name="referrer" content="strict-origin-when-cross-origin">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <style>:root{color-scheme:light;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}body{margin:0}[hidden]{display:none!important}</style>
@@ -662,9 +662,7 @@ function tagSvg(c, cur, px) {
   }
 
   function newRound() {
-    current = makeProblem(lv, cur, recent, age);
-    recent.push(current.key);
-    while (recent.length > 8) recent.shift();
+    current = Loopy.fresh(recent, () => makeProblem(lv, cur, null, age));
     typed = ""; answered = false;
     promptEl.textContent = "";
     if (current.items) promptEl.textContent = t("ccHowMuch");

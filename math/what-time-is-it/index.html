@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'sha256-Tf8H26VI4gRHk1EwJeuI9+BKCBWlhvxRjA8zpS5nNfk='; style-src 'self' 'sha256-z2P7kGW5Z05eCTjTZdYpc0vThTlOE9vmt97pVSvi2I4=' 'sha256-QVpmm1g8XiiPgD0F5guH0rbbAL8I1o0yAGUz+Xaa1rw=' 'sha256-RT1053JU5UiKvjrCUFx1rlhdFLMmgtuFJ9T8jnMeawQ=' 'sha256-PZ7JvIBRFIDnGl5yIMUnm9/PC254gCkBsareSmOBRvs='; img-src 'self' data:; font-src 'self'; connect-src 'none'; worker-src 'self'; object-src 'none'; base-uri 'none'; form-action 'none'; manifest-src 'self'; upgrade-insecure-requests">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'sha256-exFzlXxRubzqUFQm3lgl2En64GmbTVn7zH6ypgqg8DA='; style-src 'self' 'sha256-z2P7kGW5Z05eCTjTZdYpc0vThTlOE9vmt97pVSvi2I4=' 'sha256-QVpmm1g8XiiPgD0F5guH0rbbAL8I1o0yAGUz+Xaa1rw=' 'sha256-RT1053JU5UiKvjrCUFx1rlhdFLMmgtuFJ9T8jnMeawQ=' 'sha256-PZ7JvIBRFIDnGl5yIMUnm9/PC254gCkBsareSmOBRvs='; img-src 'self' data:; font-src 'self'; connect-src 'none'; worker-src 'self'; object-src 'none'; base-uri 'none'; form-action 'none'; manifest-src 'self'; upgrade-insecure-requests">
 <meta name="referrer" content="strict-origin-when-cross-origin">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <style>:root{color-scheme:light;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}body{margin:0}[hidden]{display:none!important}</style>
@@ -284,7 +284,7 @@ Loopy.addStrings({
   let step = store.get("clockquiz.step.a" + age, stepForAge(age), [30, 15, 5, 1]);
   let showHelper = store.get("clockquiz.helper", false, [true, false]);
   let right = 0, tried = 0, streak = 0;
-  let current = null, answered = false, lastKey = "", choices = [];
+  let current = null, answered = false, recent = [], choices = [];
 
   function el(tag, attrs, parent) {
     const n = document.createElementNS(NS, tag);
@@ -376,9 +376,7 @@ Loopy.addStrings({
   }
 
   function newRound() {
-    let t;
-    do { t = randomTime(); } while (fmt(t.h, t.m) === lastKey);
-    lastKey = fmt(t.h, t.m);
+    const t = Loopy.fresh(recent, () => { const r = randomTime(); r.key = fmt(r.h, r.m); return r; });
     current = t; answered = false;
     setHands(t.h, t.m);
     choices = [t, ...distractors(t)].sort(() => Math.random() - 0.5);

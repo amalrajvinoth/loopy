@@ -100,7 +100,7 @@ The site is plain HTML, CSS and JavaScript. One small build step makes the share
 | `fonts/` | The Fredoka, Lexend and Atkinson Hyperlegible Next fonts, stored here so no request goes to Google. The `-latin` files are made by the build from `src/fonts/`. Licence: `fonts/OFL.txt` |
 | `.github/` | Forms for problems, ideas and questions, the automatic checks, and Dependabot |
 | `sw.js` | The offline helper (a service worker). Made by the build from `src/sw.js` |
-| `tools/` | Small scripts: `build.py` makes the small files and the offline list, `csp.py` updates each page's security policy, `check_external.py` makes sure nothing loads from other websites, `review.py` checks that all games follow the same rules, `a11y/` checks every page with a keyboard and a screen reader checker ([how](tools/a11y/README.md)) |
+| `tools/` | Small scripts: `build.py` makes the small files and the offline list, `csp.py` updates each page's security policy, `check_external.py` makes sure nothing loads from other websites, `review.py` checks that all games follow the same rules, `a11y/` checks every page with a keyboard and a screen reader checker ([how](tools/a11y/README.md)), `e2e/` plays every game and checks that no question repeats ([how](tools/e2e/README.md)) |
 | `RELEASES.md` | What's new: one line per big change, for parents |
 | `.claude/skills/loopy-review/` | The review checklist for every change: design, architecture, docs, games alike, and release notes after a merge |
 | `math/<game>/index.html` | One game per folder (also `languages/` and `mix/`) |
@@ -128,6 +128,7 @@ Read [DESIGN.md](DESIGN.md) first. It lists the colors, fonts, buttons and layou
 3. Add the shared controls: the `.home-link` back button, `#star-chip`, the score row (`.pill-score`, `.pill-streak` and `<div id="last5" data-game="game-id">`), `#settings-toggle`, and inside `#settings-panel` add `#age-picker`, `#theme-picker`, `#sound-toggle` and `#lang-picker`.
 4. In your script:
    - `Loopy.getAge()` gives the age. The `loopy:age` event fires when it changes.
+   - Make each new question with `Loopy.fresh(recent, make)`. `make()` returns a question with a `key`, and `recent` is the game's own list. No question comes back within 10, and the play test (`tools/e2e/`) checks it.
    - Call `Loopy.rewards.correct("game-id", streak)` after a right answer, and `Loopy.rewards.wrong("game-id", detail)` after a wrong one. These also fill in the Last 5 dots and the grown-ups' page.
    - `detail` tells the grown-ups' page what was missed: `{ q: "52 − 17", a: "35", y: "45", k: "sub-rg" }` is the problem, the right answer, the answer given, and the kind of problem. `Loopy.log.kind(op, a, b)` gives the kind for a sum. A new kind needs a `tip-` line in `progress/index.html` and in the check in `src/loopy.js`.
    - To add a **Print worksheet** button, call `Loopy.worksheet({ title, level, how, layout, make, cell, answer })` once. `make(20)` uses the game's own problem maker. See the comment above `Loopy.worksheet` in `src/loopy.js`.
@@ -144,7 +145,15 @@ Read [DESIGN.md](DESIGN.md) first. It lists the colors, fonts, buttons and layou
 
 The `main` branch is what goes live. Make changes on a new branch and open a pull request. See [CONTRIBUTING.md](CONTRIBUTING.md).
 
-Before a pull request is ready, review it with `.claude/skills/loopy-review/SKILL.md` and run `python3 tools/review.py`. If you changed a page, also run the screen reader and keyboard check: see [tools/a11y/README.md](tools/a11y/README.md). After a big change is merged, add a line to [RELEASES.md](RELEASES.md).
+Before a pull request is ready, review it with `.claude/skills/loopy-review/SKILL.md` and run `python3 tools/review.py`. If you changed a page, also run the screen reader and keyboard check and the play test:
+
+```sh
+npm ci --prefix tools/a11y --ignore-scripts   # once
+node tools/a11y/check.mjs                     # keyboard and screen reader
+node tools/e2e/play.mjs                       # plays every game, no repeated questions
+```
+
+More in [tools/a11y/README.md](tools/a11y/README.md) and [tools/e2e/README.md](tools/e2e/README.md). After a big change is merged, add a line to [RELEASES.md](RELEASES.md).
 
 After editing any page, run `python3 tools/build.py` (or at least `python3 tools/csp.py`). The GitHub check fails otherwise.
 

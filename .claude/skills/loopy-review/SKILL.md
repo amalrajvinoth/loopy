@@ -26,9 +26,10 @@ python3 tools/build.py --check      # loopy.js, loopy.css and sw.js match src/
 python3 tools/csp.py --check        # every page's security policy is up to date
 python3 tools/check_external.py     # nothing loads from another website
 python3 tools/review.py             # games follow the same rules (table of findings)
+node tools/e2e/play.mjs             # plays every game; no errors, stars add up, no repeated questions
 ```
 
-The first three are the GitHub check: any failure must be fixed. `tools/review.py` prints `must`, `should` and `suggest` findings. A `must` that this change added must be fixed. Findings that were already on main go in the report as "already there", not as part of this change.
+The first three and the play test are the GitHub check: any failure must be fixed (the play test needs `npm ci --prefix tools/a11y --ignore-scripts` once, see tools/e2e/README.md). `tools/review.py` prints `must`, `should` and `suggest` findings. A `must` that this change added must be fixed. Findings that were already on main go in the report as "already there", not as part of this change.
 
 ## 3. UI against DESIGN.md
 
