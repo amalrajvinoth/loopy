@@ -1,0 +1,29 @@
+name: Report a game problem
+description: A question or answer in a game is wrong, or something looks wrong. The flag button in each game fills this in.
+title: "Game problem: "
+labels: ["bug"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for helping make Loopy better!
+        **Everything here is public.** Please do not share your child's name, photo, school or any other personal details.
+        The details below came from the game. Check them before you send.
+  - type: textarea
+    id: details
+    attributes:
+      label: What the game saw
+      description: The problem you picked, the game, what was on the screen, the last answer, the age, language, theme, screen size, browser and loopy version.
+    validations:
+      required: true
+  - type: textarea
+    id: more
+    attributes:
+      label: Anything else? (optional)
+      description: What did you expect instead?
+      placeholder: "7 + 5 should be 12, but the game said 13."
+  - type: textarea
+    id: screenshot
+    attributes:
+      label: Picture of the screen (optional)
+      description: Tap "Save picture" in the game, then drag the picture here. Check it does not show anything personal.

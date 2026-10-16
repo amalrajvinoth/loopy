@@ -56,6 +56,10 @@ Tap the speaker button. On a game page, it is inside Settings.
 
 Loopy was made by a parent for their own child. It is open source, so anyone can read the code on GitHub.
 
+## A question or answer in a game is wrong. How do I tell you?
+
+Tap the small flag at the top of the game (or Report a problem in Settings). Pick what is wrong: the question, the answer, or something that looks wrong. Loopy makes a picture of the screen; tap Save picture. Then tap Open GitHub. It opens a form with the details filled in: the game, what was on the screen, the last answer, the age, language, theme, screen size and browser. Add the picture and send it. Nothing is sent until you send the form on GitHub. The child's name is never in it. GitHub is public and for ages 13 and up, so a grown-up should send it.
+
 ## How do I send feedback or report a problem?
 
 See [Helping with Loopy](CONTRIBUTING.md). You need a free GitHub account (ages 13 and up). Everything on GitHub is public, so never share a child's personal details.
