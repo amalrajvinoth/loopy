@@ -6,14 +6,11 @@ updates:
     directory: "/"
     schedule:
       interval: "weekly"
-    labels: ["dependencies"]
   - package-ecosystem: "pip"
     directory: "/tools"
     schedule:
       interval: "weekly"
-    labels: ["dependencies"]
   - package-ecosystem: "npm"
     directory: "/tools/a11y"
     schedule:
       interval: "weekly"
-    labels: ["dependencies"]
