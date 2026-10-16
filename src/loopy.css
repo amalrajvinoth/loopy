@@ -161,6 +161,21 @@
 .kid-row.add { background: transparent; border-style: dashed; }
 .kid-row.add .kid-pic { width: 1.4rem; text-align: center; font-weight: 700; }
 .kid-row:focus-visible { outline: 3px solid var(--mark); outline-offset: 2px; }
+/* The child playing, next to ⚙ Settings: picture and name in a pill. Tapping it changes the name or picture.
+   Long names end in "…"; on narrow top bars only the picture stays (see .rp-noname). */
+.kid-chip {
+  display: inline-flex; align-items: center; gap: 6px; min-height: 44px; min-width: 44px; justify-content: center; padding: 0 14px 0 9px;
+  flex: none; border-radius: 999px; border: 0; background: var(--chip); color: var(--ink); font: inherit; font-weight: 700; cursor: pointer;
+}
+.kid-chip .kid-pic { font-size: 1.3rem; }
+.kid-chip-name { max-width: 7.5em; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.kid-chip.pic-only, .game-bar.rp-noname .kid-chip { padding: 0 9px; }
+.game-bar.rp-nologo a.home-link.loopy-back { padding: 4px 6px; }
+.game-bar.rp-nologo .back-logo { display: none; }
+.game-bar.rp-short .kid-chip-name { max-width: 4em; }
+.game-bar.rp-noname .kid-chip-name { display: none; }
+.kid-chip:focus-visible { outline: 3px solid var(--mark); outline-offset: 2px; }
+.kid-set-row { display: flex; flex-wrap: wrap; gap: 8px; justify-content: center; align-items: center; }
 
 /* Rewards */
 .star-chip { display: inline-flex; align-items: center; gap: 6px; background: var(--chip); border-radius: 999px; padding: 6px 14px 6px 10px; font-weight: 700; font-variant-numeric: tabular-nums; }
@@ -276,7 +291,7 @@ button, a, label, summary { touch-action: manipulation; -webkit-tap-highlight-co
 .panel-foot { display: flex; flex-wrap: wrap; gap: 10px; align-items: center; justify-content: space-between; }
 .panel-foot p { margin: 0; color: var(--muted); font-size: 0.9rem; }
 @media (max-width: 380px) { .settings-toggle span { display: none; } .settings-toggle { padding: 0 11px; } }
-/* "Einstellungen" is long: with the child's picture in the star chip it no longer fits next to the back button on phones. */
+/* "Einstellungen" is long: with the child's name chip it no longer fits next to the back button on phones. */
 @media (max-width: 420px) { :root[lang="de"] .settings-toggle span { display: none; } :root[lang="de"] .settings-toggle { padding: 0 11px; } }
 
 .lang-picker { display: inline-flex; gap: 4px; background: var(--chip); border-radius: 999px; padding: 4px; }
