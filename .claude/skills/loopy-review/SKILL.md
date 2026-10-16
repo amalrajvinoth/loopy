@@ -69,7 +69,7 @@ Children keep their stars, streaks, levels and settings in their own browser. No
 
 What is saved today:
 
-- **Per child** (through `Loopy.store`, kept as `loopy.kid.<id>.` + key): `loopy.rewards`, `loopy.daily`, `loopy.log`, `loopy.recent`, `loopy.ageOffset`, `loopy.readAloud`, `loopy.seen`, and each game's settings (`pm100.`, `ts.`, `clockquiz.`, `ss.`, `mk.`, `bs.`, `pz.`, `cc.`, `wm.`, `si.`, `wi.`, `qf.`, `fc.`).
+- **Per child** (through `Loopy.store`, kept as `loopy.kid.<id>.` + key): `loopy.rewards`, `loopy.daily`, `loopy.log`, `loopy.recent`, `loopy.ageOffset`, `loopy.readAloud`, `loopy.seen`, and each game's settings (`pm100.`, `ts.`, `clockquiz.`, `ss.`, `mk.`, `bs.`, `pz.`, `cc.`, `wm.`, `si.`, `wi.`, `qf.`, `eb.`, `fc.`).
 - **For the whole device**: `loopy.kids` (the children), `loopy.lang`, `loopy.theme`, `loopy.font`, `loopy.sound`.
 - **Moved on a first visit**: keys from before there were children (the OLD list in `src/loopy.js`) move to child 1.
 - **Stars code** (`Loopy.backup`): any code made before must still load.
