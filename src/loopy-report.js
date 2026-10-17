@@ -118,7 +118,8 @@
       while (copy.body.firstChild) body.appendChild(copy.body.firstChild);
       // The picture shows the part of the page that was on screen.
       var shift = ".lp-root{width:" + copy.w + "px;height:" + copy.h + "px;overflow:hidden}" +
-        (copy.x || copy.y ? ".lp-root>.lp-body{transform:translate(" + -copy.x + "px," + -copy.y + "px)}" : "");
+        (copy.x || copy.y ? ".lp-root>.lp-body{transform:translate(" + -copy.x + "px," + -copy.y + "px)}" : "") +
+        (copy.pad ? ".lp-root>.lp-body{padding:16px;margin:0;min-height:0}" : "");
       wrap.appendChild(el("style", "", css + "\n" + shift));
       wrap.appendChild(body);
       var html = new XMLSerializer().serializeToString(wrap);
@@ -139,6 +140,14 @@
         img.src = "data:image/svg+xml;charset=utf-8," + encodeURIComponent(svg);
       });
     }).catch(function () { return null; });
+  }
+
+  // A picture of one part of the page, w × h, with 16px around it: the grown-ups' weekly card.
+  function snap(node, w, h) {
+    var root = document.documentElement, body = el("div");
+    body.appendChild(node.cloneNode(true));
+    return picture({ body: body, w: w, h: h, x: 0, y: 0, pad: true,
+      attrs: ["data-theme", "data-font", "lang"].map(function (a) { return [a, root.getAttribute(a)]; }), cls: root.className });
   }
 
   function open(btn) {
@@ -248,5 +257,5 @@
     if (first) first.focus();
   }
 
-  Loopy.report = { open: open };
+  Loopy.report = { open: open, snap: snap };
 })();

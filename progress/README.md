@@ -1,28 +1,47 @@
 # How it's going
 
-A page for grown-ups. It shows how a child is doing in each game, and what to practise next.
+A page for grown-ups. It shows how the week went, what to practise next, and how a child is doing in each game.
 
 Open it from the link **For grown-ups: how it's going** at the bottom of the home page.
 
 ## What it shows
 
-- **Stars, day streak and badge.** The same ones the child sees on the home page.
-- **This week and last week.** For each game: how many answers were right (✓) and wrong (✗), with a bar. Weeks start on Monday. Today's 10 has its own row.
-- **One tip per game.** The kind of problem missed most this week, for example "Practise taking away with regrouping, like 52 − 17." If nothing was wrong, it suggests a harder level.
-- **Answers to practise.** Every wrong answer from the last 30 days, newest first, with the right answer and the answer given next to it. 20 show at first; tap **Show more** for the rest.
+- **This week in one line.** How many answers this week (Monday to today) and how many percent were right, with "▲ up from 72% last week" or "▼ down from 85% last week", and how many days were played. Under it: stars, day streak and badge, and four small bars with the percent right for the last four weeks.
+- **Practise next.** The three kinds of question missed most this week, for example "7 times table", "Clock: minutes in fives" or "Taking away with regrouping". Each one says how often and in which games, gives one line of what to practise, and has a **Practise →** button. The button opens the game set to just that kind for this visit: Times Tables Sprint with only the 7s, What Time Is It? at five-minute steps, Plus and Minus on taking away with regrouping. The child's saved level does not change. When this week has fewer than three, last week fills in. A game with 20 answers or more and 90% right over two weeks gets a **Ready for more** row with a **Level up →** button, which opens the game with its Settings showing.
+- **Game by game.** For each game played this week or last week: how many answers were right (✓) and wrong (✗), with a bar, "▲ Better than last week" or "▼ Harder than last week" when both weeks have 5 answers or more and the percent moved by 5 or more, and one tip. Today's 10 has its own card. Games not played in two weeks fold into one line.
+- **Answers to practise.** Every wrong answer from the last 30 days, grouped by kind, the kind missed most this week first. Each group says "9 this week · 10 in 30 days" and opens on tap, newest first, with the right answer, the answer given, the game and the day. The first group starts open. 5 show at a time; tap **Show 5 more** for the rest.
 
-## Tips it can give
+- **Share this week.** A button in the week card opens a one-screen card: the child's picture and name, the week's dates, four numbers (answers, percent right, days played, stars and streak), two lines "Going well" and three lines "To practise". **Share picture** draws the card as a picture in the browser and opens the phone's share sheet. On a browser that cannot share pictures the button says **Save picture** and saves the PNG. **Print** prints the card, black on white. Nothing leaves the device unless you share it.
+- **Print a practice sheet.** Under Practise next. It prints one worksheet with 20 problems from the three weak spots, 7 + 7 + 6 (or 10 + 10, or 20), with answers on page 2, in the same style as a game's worksheet. The problems come from the games themselves: each game is opened in a hidden frame with its practise hint, and its own worksheet maker gives the problems. A times table comes from Times Tables Sprint, the game that can pick one table.
 
-| Game | Tips |
+## Kinds of question it knows
+
+| Game | Kinds |
 | --- | --- |
 | Plus and Minus | Adding, adding with carrying, taking away, taking away with regrouping |
-| Times and Share | A times table (for example the 7 times table), sharing by a number, times or sharing with bigger numbers |
+| Times and Share, Times Tables Sprint | A times table (for example the 7 times table), sharing by a number, times or sharing with bigger numbers |
 | Make 10 | Pairs that make 10, pairs that make 20, pairs that make 100 |
-| Coins and Change | Adding small coins, counting notes and coins, change with prices in tens of cents, change with any price |
 | What Time Is It? | O'clock, half past, quarter past and quarter to, minutes in fives, single minutes |
+| Bigger or Smaller | Comparing numbers, putting numbers in order, rounding, comparing decimals, minus numbers |
+| Pizza Fractions | Naming, comparing and adding fractions |
+| Coins and Change | Adding small coins, counting notes and coins, giving change, change with any price |
+| Equation Balance | Missing numbers, x + a = b, 3x = 12, 3x + 4 = 19, x on both sides |
 | Sound Spell | The sound at the start of a word, the sound at the end of a word |
-| Where Is It? | Continents and oceans, countries of Europe, capitals of Europe, countries around the world, capitals around the world |
-| Today's 10 | Any of the tips above, for the problems missed in Today's 10 |
+| Word Match | Words for animals, food, things at home, school |
+| Spell It | 3, 4, 5 and longer words |
+| Quick Facts | Space, animals, the body |
+| Where Is It? | Continents and oceans, countries of Europe, capitals of Europe, countries of the world, capitals of the world |
+| Flags and Capitals | Flags, capitals |
+| Today's 10 | Any of the sums and clock kinds above; the Practise button opens the game that owns the kind |
+
+## How the Practise button works
+
+The button opens the game as `…/math/times-sprint/#practise=mul-7`. `loopy.js` reads the hint once (`Loopy.log.hint`) and takes it off the address, so a reload starts the game as normal. Each game checks the hint when it loads its settings and sets the matching switch in memory only. `#practise=harder` opens the game with the Settings panel open.
+
+## How the weekly picture and the practice sheet work
+
+- The picture uses `Loopy.report.snap(node, w, h)` in `loopy-report.js`, the same code that draws the Report a problem picture: the card is copied with the page's styles and fonts into an SVG, drawn on a canvas and turned into a PNG. `loopy-report.js` loads when Share this week is tapped.
+- The sheet uses `Loopy.worksheet({ quiet: true, layout: "mixed", ... })`: `quiet` means no Print worksheet button in Settings, and the `mixed` layout keeps the 4 × 5 grid with each kind of problem styled as on its own sheet (`print.css`). `make()` returns the problems collected from the games.
 
 ## Your data
 
@@ -37,7 +56,9 @@ The color theme, the reading font and the language (EN or DE) are behind the ⚙
 
 ## Example
 
-> **Plus and Minus**
-> This week: ✓ 18 ✗ 4
-> Last week: ✓ 12 ✗ 6
-> Practise taking away with regrouping, like 52 − 17.
+> **This week, Monday to today**
+> 133 answers · 80% right
+> ▲ up from 72% last week · Played 4 of 5 days
+>
+> **Practise next**
+> 7 times table. Missed 9 times this week in Times and Share and Times Tables Sprint. Practise the 7 times table. [Practise →]
