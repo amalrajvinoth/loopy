@@ -1314,8 +1314,17 @@ document.documentElement.classList.add("loopy-building");
       return b <= 12 && a / b <= 12 ? "div-" + b : "div-big";
     },
     // The kind of a clock time: o'clock, half past, quarter past or to, five-minute steps, single minutes.
-    timeKind: function (m) { return "cl-" + (m === 0 ? 0 : m === 30 ? 30 : m % 15 === 0 ? 15 : m % 5 === 0 ? 5 : 1); }
+    timeKind: function (m) { return "cl-" + (m === 0 ? 0 : m === 30 ? 30 : m % 15 === 0 ? 15 : m % 5 === 0 ? 5 : 1); },
+    // The grown-ups' page opens a game as .../#practise=mul-7 (a kind, or "harder") so the game starts on
+    // just that for this visit. Read once; the hint comes off the address so a reload starts normally.
+    practise: function () {
+      var m = /^#practise=([a-z0-9-]{1,10})$/.exec(location.hash), k = m ? m[1] : "";
+      if (!k) return "";
+      try { history.replaceState(null, "", location.pathname + location.search); } catch (e) {}
+      return k === "harder" || KIND.test(k) ? k : "";
+    }
   };
+  Loopy.log.hint = Loopy.log.practise();
 })();
 
 // Last 5 answers in a game: <div id="last5" data-game="plus-minus"></div> becomes five dots,
@@ -1447,6 +1456,8 @@ window.Loopy.fresh = function (recent, make, keep) {
     group(panel);
     var sync = function () { btn.setAttribute("aria-expanded", String(!panel.hidden)); };
     btn.addEventListener("click", function () { panel.hidden = !panel.hidden; sync(); });
+    // "Level up" on the grown-ups' page opens the game with its levels showing.
+    if (Loopy.log && Loopy.log.hint === "harder") panel.hidden = false;
     sync();
     // A named region, so screen readers can jump to it. Escape closes it and puts focus back on the button.
     panel.setAttribute("role", "region");

@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'sha256-WNgKct3PxOs6OvOR6AsfjYvEmzUQ2gjRpo+dyn6EpOM='; style-src 'self' 'sha256-z2P7kGW5Z05eCTjTZdYpc0vThTlOE9vmt97pVSvi2I4=' 'sha256-ER4UVxOAHVG2PpFuwsi/fNYnlP9iTYLytTr9Qx7YKqY=' 'sha256-RT1053JU5UiKvjrCUFx1rlhdFLMmgtuFJ9T8jnMeawQ=' 'sha256-mwWMixE1/vkBEnQwvOKdRVExrt+0Q+hPdWkRqhv1eIA='; img-src 'self' data:; font-src 'self'; connect-src 'self'; worker-src 'self'; object-src 'none'; base-uri 'none'; form-action 'none'; manifest-src 'self'; upgrade-insecure-requests">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'sha256-a3T1XkuNezMmjoJsrbm01RnyirP1IZdVlAmzGRKJUNo='; style-src 'self' 'sha256-z2P7kGW5Z05eCTjTZdYpc0vThTlOE9vmt97pVSvi2I4=' 'sha256-ER4UVxOAHVG2PpFuwsi/fNYnlP9iTYLytTr9Qx7YKqY=' 'sha256-RT1053JU5UiKvjrCUFx1rlhdFLMmgtuFJ9T8jnMeawQ=' 'sha256-mwWMixE1/vkBEnQwvOKdRVExrt+0Q+hPdWkRqhv1eIA='; img-src 'self' data:; font-src 'self'; connect-src 'self'; worker-src 'self'; object-src 'none'; base-uri 'none'; form-action 'none'; manifest-src 'self'; upgrade-insecure-requests">
 <meta name="referrer" content="strict-origin-when-cross-origin">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <style>:root{color-scheme:light;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}body{margin:0}[hidden]{display:none!important}</style>
@@ -409,6 +409,9 @@ function explain(p) {
     max = store.get("pm100.max.a" + age, maxForAge(age), MAXES);
     opMode = store.get("pm100.op.a" + age, d.op, ["add", "sub", "mix"]);
     rgMode = store.get("pm100.rg.a" + age, d.rg, ["no", "mix", "yes"]);
+    // Opened from the grown-ups' page to practise one kind: set it for this visit, without saving.
+    const m = /^(add|sub)(-rg)?$/.exec(Loopy.log.hint || "");
+    if (m) { opMode = m[1]; rgMode = m[2] ? "yes" : "no"; Loopy.log.hint = ""; }
     showTitle();
   }
   function showTitle() { $("title").textContent = t("pmTitle", { max: Loopy.num(max) }); }

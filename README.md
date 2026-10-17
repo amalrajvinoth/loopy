@@ -39,7 +39,7 @@ It works on phones, tablets and computers. There is no sign-up and no ads.
 
 | Page | What it shows | Read more |
 | --- | --- | --- |
-| [How it's going](progress/) | Right and wrong answers per game this week and last week, each wrong answer with the right one, and one line of what to practise | [README](progress/README.md) |
+| [How it's going](progress/) | The week in one line, what to practise next with one tap into the right game, each game this week and last week, and the wrong answers by kind | [README](progress/README.md) |
 
 Open it from the link at the bottom of the home page.
 
@@ -139,7 +139,7 @@ Read [DESIGN.md](DESIGN.md) first. It lists the colors, fonts, buttons and layou
    - `Loopy.getAge()` gives the age. The `loopy:age` event fires when it changes.
    - Make each new question with `Loopy.fresh(recent, make)`. `make()` returns a question with a `key`, and `recent` is the game's own list. No question comes back within 10, and the play test (`tools/e2e/`) checks it.
    - Call `Loopy.rewards.correct("game-id", streak)` after a right answer, and `Loopy.rewards.wrong("game-id", detail)` after a wrong one. These also fill in the Last 5 dots and the grown-ups' page.
-   - `detail` tells the grown-ups' page what was missed: `{ q: "52 − 17", a: "35", y: "45", k: "sub-rg" }` is the problem, the right answer, the answer given, and the kind of problem. `Loopy.log.kind(op, a, b)` gives the kind for a sum. A new kind needs a `tip-` line in `progress/index.html` and in the check in `src/loopy.js`.
+   - `detail` tells the grown-ups' page what was missed: `{ q: "52 − 17", a: "35", y: "45", k: "sub-rg" }` is the problem, the right answer, the answer given, and the kind of problem. `Loopy.log.kind(op, a, b)` gives the kind for a sum. A new kind needs a `tip-` line and an `nm-` name in `progress/index.html`, a game in its `OWNER` list, and the check in `src/loopy.js`. The game reads `Loopy.log.hint` when it loads its settings, so the grown-ups' page can open it on that kind.
    - To add a **Print worksheet** button, call `Loopy.worksheet({ title, level, how, layout, make, cell, answer })` once. `make(20)` uses the game's own problem maker. See the comment above `Loopy.worksheet` in `src/loopy.js`.
    - Give the button under the answers `id="next"` and call `Loopy.nextButton(button, answered)` when a problem shows (`false`, a small "Skip") and after each answer (`true`, a big "Next").
    - Put the answers in `#choices`, `#answers`, `#pad`, `#letters` or `#map`. The first time a child opens the game, a hint bubble points at them.
@@ -187,7 +187,7 @@ Page sizes, sent over the network with `loopy.js`, `loopy.css` and the two fonts
 | --- | --- |
 | Home | 74 KB |
 | Help | 70 KB |
-| How it's going | 71 KB |
+| How it's going | 75 KB |
 | Today's 10 | 76 KB |
 | What Time Is It? | 72 KB |
 | Plus and Minus | 72 KB |

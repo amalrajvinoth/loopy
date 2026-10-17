@@ -66,6 +66,10 @@ Loopy was made by a parent for their own child. It is open source, so anyone can
 
 Tap the small flag at the top of the game (or Report a problem in Settings). Pick what is wrong: the question, the answer, or something that looks wrong. Loopy makes a picture of the screen; tap Save picture. Then tap Open GitHub. It opens a form with the details filled in: the game, what was on the screen, the last answer, the age, language, theme, screen size and browser. Add the picture and send it. Nothing is sent until you send the form on GitHub. The child's name is never in it. GitHub is public and for ages 13 and up, so a grown-up should send it.
 
+## What does "Practise next" on the grown-ups' page do?
+
+Open **For grown-ups: how it's going** at the bottom of the home page. The first card says how the week went: how many answers, how many percent right, and up or down from last week. **Practise next** shows the three kinds of question your child got wrong most this week, like the 7 times table or clock times in fives. Tap **Practise** and the game opens set to just that kind for this visit. The child's saved level does not change. **Level up** opens a game that is going well, with its Settings showing, so you can pick a harder level. Nothing here leaves your device.
+
 ## How do I send feedback or report a problem?
 
 See [Helping with Loopy](CONTRIBUTING.md). You need a free GitHub account (ages 13 and up). Everything on GitHub is public, so never share a child's personal details.

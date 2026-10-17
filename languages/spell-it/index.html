@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'sha256-Yrhi8QeIKnosj9ifddwmX01SZvW/vHwQTP76uxW6YPc='; style-src 'self' 'sha256-z2P7kGW5Z05eCTjTZdYpc0vThTlOE9vmt97pVSvi2I4=' 'sha256-5/L3e/BVPjm2GPi51M3FkQuzTeZ4bCdHn3SxvjZFuAk=' 'sha256-RT1053JU5UiKvjrCUFx1rlhdFLMmgtuFJ9T8jnMeawQ=' 'sha256-4dEdrKbKL7IOE6FtAmSKmFZuQ7pndyr//hTTqH+uDSo='; img-src 'self' data:; font-src 'self'; connect-src 'self'; worker-src 'self'; object-src 'none'; base-uri 'none'; form-action 'none'; manifest-src 'self'; upgrade-insecure-requests">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'sha256-TXoVrfEIYjzqdumcTJIBFwazEU6+2f9HjtjH2Zl4ttw='; style-src 'self' 'sha256-z2P7kGW5Z05eCTjTZdYpc0vThTlOE9vmt97pVSvi2I4=' 'sha256-5/L3e/BVPjm2GPi51M3FkQuzTeZ4bCdHn3SxvjZFuAk=' 'sha256-RT1053JU5UiKvjrCUFx1rlhdFLMmgtuFJ9T8jnMeawQ=' 'sha256-4dEdrKbKL7IOE6FtAmSKmFZuQ7pndyr//hTTqH+uDSo='; img-src 'self' data:; font-src 'self'; connect-src 'self'; worker-src 'self'; object-src 'none'; base-uri 'none'; form-action 'none'; manifest-src 'self'; upgrade-insecure-requests">
 <meta name="referrer" content="strict-origin-when-cross-origin">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <style>:root{color-scheme:light;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}body{margin:0}[hidden]{display:none!important}</style>
@@ -415,7 +415,12 @@ function makeProblem(lang, len, avoid) {
   let len;
   // Word length is remembered per age: 3 letters up to age 6, 4 at 7, 5 at 8, then 6 to 8 letters.
   const lenForAge = (a) => a <= 6 ? 3 : a === 7 ? 4 : a === 8 ? 5 : 6, LENS = [3, 4, 5, 6];
-  function loadForAge() { len = store.get("si.len.a" + age, lenForAge(age), LENS); }
+  function loadForAge() {
+    len = store.get("si.len.a" + age, lenForAge(age), LENS);
+    // Opened from the grown-ups' page to practise one word length: set it for this visit, without saving.
+    const m = /^si-([3-6])$/.exec(Loopy.log.hint || "");
+    if (m) { len = +m[1]; Loopy.log.hint = ""; }
+  }
   loadForAge();
   Loopy.levels.init({ names: ["siL3", "siL4", "siL5", "siL6"],
     get: () => LENS.indexOf(len), base: () => LENS.indexOf(lenForAge(age)),
