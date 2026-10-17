@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'sha256-j8AFEiW4kuDsfcqtCLaI6bNeYY6ojh+O7h/2YATAwSk='; style-src 'self' 'sha256-z2P7kGW5Z05eCTjTZdYpc0vThTlOE9vmt97pVSvi2I4=' 'sha256-6kMyVyf9c7UM1Oxq9qbT64OjK/qoKmBRHgHXNYLWcKg=' 'sha256-RT1053JU5UiKvjrCUFx1rlhdFLMmgtuFJ9T8jnMeawQ=' 'sha256-pxp/kBLGl+9iEuWmE39iE3rdwOKNvJ0P5qI66lh2pmE='; img-src 'self' data:; font-src 'self'; connect-src 'self'; worker-src 'self'; object-src 'none'; base-uri 'none'; form-action 'none'; manifest-src 'self'; upgrade-insecure-requests">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'sha256-Xntyo2CdLTBxwJtbrGlOBrTbTTX5eYDaptNqFTMm/Ig='; style-src 'self' 'sha256-z2P7kGW5Z05eCTjTZdYpc0vThTlOE9vmt97pVSvi2I4=' 'sha256-6kMyVyf9c7UM1Oxq9qbT64OjK/qoKmBRHgHXNYLWcKg=' 'sha256-RT1053JU5UiKvjrCUFx1rlhdFLMmgtuFJ9T8jnMeawQ=' 'sha256-pxp/kBLGl+9iEuWmE39iE3rdwOKNvJ0P5qI66lh2pmE='; img-src 'self' data:; font-src 'self'; connect-src 'self'; worker-src 'self'; object-src 'none'; base-uri 'none'; form-action 'none'; manifest-src 'self'; upgrade-insecure-requests">
 <meta name="referrer" content="strict-origin-when-cross-origin">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <style>:root{color-scheme:light;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}body{margin:0}[hidden]{display:none!important}</style>
@@ -366,6 +366,8 @@ Loopy.addStrings({
   let age = Loopy.getAge();
   let lv = store.get("bs.level.a" + age, levelForAge(age), LVS);
   let mode = store.get("bs.mode.a" + age, modeForAge(age), MODES);
+  // Opened from the grown-ups' page to practise one kind: set it for this visit, without saving.
+  { const m = /^bs-(cmp|ord|rnd|dec|neg)$/.exec(Loopy.log.hint || ""); if (m) { mode = m[1] === "ord" ? "ord" : m[1] === "rnd" ? "rnd" : "cmp"; Loopy.log.hint = ""; } }
   Loopy.levels.init({ names: LVS.map(i => i < 5 ? () => t("bsUpTo", { n: Loopy.num(LEVELS[i].max) }) : "bsDecNeg"),
     get: () => lv, base: () => levelForAge(age),
     set: (i) => { lv = i; store.set("bs.level.a" + age, lv); render(); } });

@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'sha256-/Ub44vgukHk6gq+KiCFrH65U6dPf+kA/JZkj3Cb0c9s='; style-src 'self' 'sha256-z2P7kGW5Z05eCTjTZdYpc0vThTlOE9vmt97pVSvi2I4=' 'sha256-4KeXVk7w7LjYemdYWRLdakk0uAlZg26cpfiBqMAOD24=' 'sha256-RT1053JU5UiKvjrCUFx1rlhdFLMmgtuFJ9T8jnMeawQ=' 'sha256-3KG381CUtjqBA89CGSEeePMjJDH4mtBX1ixxVdZ02kE='; img-src 'self' data:; font-src 'self'; connect-src 'self'; worker-src 'self'; object-src 'none'; base-uri 'none'; form-action 'none'; manifest-src 'self'; upgrade-insecure-requests">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'sha256-lmam8PIgBJMdoIuVECOtRniTAfhxwz7Kc1mrhmns03k='; style-src 'self' 'sha256-z2P7kGW5Z05eCTjTZdYpc0vThTlOE9vmt97pVSvi2I4=' 'sha256-4KeXVk7w7LjYemdYWRLdakk0uAlZg26cpfiBqMAOD24=' 'sha256-RT1053JU5UiKvjrCUFx1rlhdFLMmgtuFJ9T8jnMeawQ=' 'sha256-3KG381CUtjqBA89CGSEeePMjJDH4mtBX1ixxVdZ02kE='; img-src 'self' data:; font-src 'self'; connect-src 'self'; worker-src 'self'; object-src 'none'; base-uri 'none'; form-action 'none'; manifest-src 'self'; upgrade-insecure-requests">
 <meta name="referrer" content="strict-origin-when-cross-origin">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <style>:root{color-scheme:light;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}body{margin:0}[hidden]{display:none!important}</style>
@@ -384,6 +384,9 @@ Loopy.addStrings({
     mode = store.get("pz.mode.a" + age, modeForAge(age), MODES);
     look = store.get("pz.look.a" + age, lookForAge(age), LOOKS);
     pics = store.get("pz.pics.a" + age, picsForAge(age), [true, false]);
+    // Opened from the grown-ups' page to practise one kind: set it for this visit, without saving.
+    const m = /^pz-(name|cmp|add)$/.exec(Loopy.log.hint || "");
+    if (m) { mode = m[1]; Loopy.log.hint = ""; }
   }
   loadForAge();
   // The ladder: name with 4 pieces, name with 8, compare, add, then all three mixed with 12 pieces.
