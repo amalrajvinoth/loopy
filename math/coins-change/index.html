@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'sha256-RV/0tUbFi3FoDHNBna1jnAt+K9bIo3N5a9X1QRuDwsg='; style-src 'self' 'sha256-z2P7kGW5Z05eCTjTZdYpc0vThTlOE9vmt97pVSvi2I4=' 'sha256-ER4UVxOAHVG2PpFuwsi/fNYnlP9iTYLytTr9Qx7YKqY=' 'sha256-RT1053JU5UiKvjrCUFx1rlhdFLMmgtuFJ9T8jnMeawQ=' 'sha256-hyy9jzvL9jP8AdsG42qy+OWI85m+DGPn0KZLmAYDqFY='; img-src 'self' data:; font-src 'self'; connect-src 'self'; worker-src 'self'; object-src 'none'; base-uri 'none'; form-action 'none'; manifest-src 'self'; upgrade-insecure-requests">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'sha256-2rUcQ2GJgKLWTZmz98SPkWLYaegQkhXAacwSpCAKUT8='; style-src 'self' 'sha256-z2P7kGW5Z05eCTjTZdYpc0vThTlOE9vmt97pVSvi2I4=' 'sha256-ER4UVxOAHVG2PpFuwsi/fNYnlP9iTYLytTr9Qx7YKqY=' 'sha256-RT1053JU5UiKvjrCUFx1rlhdFLMmgtuFJ9T8jnMeawQ=' 'sha256-cEmM4Fi0NMjT7t2B+oBAhqt5jK89DFCgAxwhu8FA3m8='; img-src 'self' data:; font-src 'self'; connect-src 'self'; worker-src 'self'; object-src 'none'; base-uri 'none'; form-action 'none'; manifest-src 'self'; upgrade-insecure-requests">
 <meta name="referrer" content="strict-origin-when-cross-origin">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <style>:root{color-scheme:light;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}body{margin:0}[hidden]{display:none!important}</style>
@@ -206,8 +206,8 @@ body { min-height: 100vh; min-height: 100dvh; padding-block: 12px 16px; }
 .note .paper { stroke: rgb(0 0 0 / 0.35); stroke-width: 2; }
 .note .frame { fill: none; stroke: rgb(0 0 0 / 0.25); stroke-width: 2; }
 .note .seal { fill: rgb(255 255 255 / 0.45); }
-.note .n-eur5 { fill: #bfc3cb; } .note .n-eur10 { fill: #eaa595; } .note .n-eur20 { fill: #a9c1ea; }
-.note .n-gbp5 { fill: #a6d8cf; } .note .n-gbp10 { fill: #f1bd80; } .note .n-gbp20 { fill: #c9b0e6; }
+.note .n-eur5 { fill: #bfc3cb; } .note .n-eur10 { fill: #eaa595; } .note .n-eur20 { fill: #a9c1ea; } .note .n-eur50 { fill: #f0c08a; }
+.note .n-gbp5 { fill: #a6d8cf; } .note .n-gbp10 { fill: #f1bd80; } .note .n-gbp20 { fill: #c9b0e6; } .note .n-gbp50 { fill: #e4a3a3; }
 .note .n-usd { fill: #cfd8c4; }
 .tag .tag-bg { fill: var(--c2); }
 .tag .tag-hole { fill: var(--card); }
@@ -225,7 +225,7 @@ body { min-height: 100vh; min-height: 100dvh; padding-block: 12px 16px; }
 .problem-card.good .eq .ans .slot { border-color: var(--good); }
 .problem-card.bad .eq .ans { color: var(--bad); text-decoration: line-through; text-decoration-thickness: 0.06em; }
 .problem-card.bad .eq .ans .slot { border-color: var(--bad); }
-.seg.four { grid-template-columns: repeat(4, 1fr); }
+.seg.five { grid-template-columns: repeat(auto-fit, minmax(96px, 1fr)); }
 @media (max-height: 900px), (max-width: 599px) {
   .problem-card.good .eq, .problem-card.bad .eq { zoom: 0.75; }
 }
@@ -268,11 +268,12 @@ body { min-height: 100vh; min-height: 100dvh; padding-block: 12px 16px; }
     <div class="controls"><div id="age-picker"></div><div id="theme-picker"></div><button id="sound-toggle"></button><div id="lang-picker"></div></div>
     <div>
       <p class="seg-label" id="lv-label" data-t="ccLevel">Level</p>
-      <div class="seg four" role="group" aria-labelledby="lv-label" id="lv-seg">
+      <div class="seg five" role="group" aria-labelledby="lv-label" id="lv-seg">
         <button type="button" id="lv-small" data-lv="small" data-t="ccLvSmall">Small coins</button>
         <button type="button" id="lv-count" data-lv="count" data-t="ccLvCount">Count it all</button>
         <button type="button" id="lv-easy" data-lv="easy" data-t="ccLvEasy">Easy change</button>
         <button type="button" id="lv-change" data-lv="change" data-t="ccLvChange">Change</button>
+        <button type="button" id="lv-big" data-lv="big" data-t="ccLvBig">Pay with 20 or 50</button>
       </div>
     </div>
     <div>
@@ -320,7 +321,7 @@ body { min-height: 100vh; min-height: 100dvh; padding-block: 12px 16px; }
 Loopy.addStrings({
   en: {
     ccName: "Coins and Change", ccLevel: "Level", ccMoney: "Money",
-    ccLvSmall: "Small coins", ccLvCount: "Count it all", ccLvEasy: "Easy change", ccLvChange: "Change",
+    ccLvSmall: "Small coins", ccLvCount: "Count it all", ccLvEasy: "Easy change", ccLvChange: "Change", ccLvBig: "Pay with 20 or 50",
     ccEur: "€ Euro", ccGbp: "£ Pound", ccUsd: "$ Dollar",
     ccHowMuch: "How much money is this?", ccTotal: "Total", ccChange: "Change",
     ccDeal: "It costs {price}. You pay with {paid}. How much change do you get?",
@@ -338,7 +339,7 @@ Loopy.addStrings({
   },
   de: {
     ccName: "Münzen und Wechselgeld", ccLevel: "Stufe", ccMoney: "Geld",
-    ccLvSmall: "Kleine Münzen", ccLvCount: "Alles zählen", ccLvEasy: "Leichtes Wechselgeld", ccLvChange: "Wechselgeld",
+    ccLvSmall: "Kleine Münzen", ccLvCount: "Alles zählen", ccLvEasy: "Leichtes Wechselgeld", ccLvChange: "Wechselgeld", ccLvBig: "Mit 20 oder 50 zahlen",
     ccEur: "€ Euro", ccGbp: "£ Pfund", ccUsd: "$ Dollar",
     ccHowMuch: "Wie viel Geld ist das?", ccTotal: "Zusammen", ccChange: "Zurück",
     ccDeal: "Es kostet {price}. Du zahlst mit {paid}. Wie viel bekommst du zurück?",
@@ -406,14 +407,14 @@ function spoken(c, cur) {
 //   count   add up 3 to 6 notes and coins (under 10)
 //   easy    change from 5 or 10, the price in steps of 10 cents
 //   change  change from 5 or 10, any price
-const LEVELS = ["small", "count", "easy", "change"];
-const levelName = (lv) => ({ small: "ccLvSmall", count: "ccLvCount", easy: "ccLvEasy", change: "ccLvChange" })[lv];
-const isChange = (lv) => lv === "easy" || lv === "change";
+const LEVELS = ["small", "count", "easy", "change", "big"];
+const levelName = (lv) => ({ small: "ccLvSmall", count: "ccLvCount", easy: "ccLvEasy", change: "ccLvChange", big: "ccLvBig" })[lv];
+const isChange = (lv) => lv === "easy" || lv === "change" || lv === "big";
 function levelForAge(age) {
   if (age <= 6) return "small";
   if (age === 7) return "count";
   if (age === 8) return "easy";
-  return "change";
+  return age === 9 ? "change" : "big";
 }
 
 // One problem. Counting: items (biggest first) and their total. Change: price, paid and the change.
@@ -431,9 +432,9 @@ function makeProblem(lv, cur, avoid, age) {
       if (!items.some(v => v >= 100) || !items.some(v => v < 100)) continue;
       p = { items };
     } else {
-      const paid = pick([500, 1000]);
-      const price = lv === "easy" ? randInt(1, paid / 10 - 1) * 10 : randInt(1, paid - 1);
-      if (lv === "change" && price % 10 === 0 && Math.random() < 0.8) continue;
+      const paid = lv === "big" ? pick([2000, 5000]) : pick([500, 1000]);
+      const price = lv === "easy" ? randInt(1, paid / 10 - 1) * 10 : lv === "big" ? randInt(100, paid - 1) : randInt(1, paid - 1);
+      if (lv !== "easy" && price % 10 === 0 && Math.random() < 0.8) continue;
       if (lv === "easy" && price % 100 === 0 && Math.random() < 0.6) continue;
       p = { price, paid, answer: paid - price, key: lv + ":" + price + ":" + paid };
     }
@@ -574,7 +575,7 @@ function tagSvg(c, cur, px) {
     if (m) { lv = { small: "small", count: "count", ch10: "easy", ch: "change" }[m[1]]; Loopy.log.hint = ""; }
   }
   loadForAge();
-  if (window.Loopy && Loopy.levels) Loopy.levels.init({ names: ["ccLvSmall", "ccLvCount", "ccLvEasy", "ccLvChange"],
+  if (window.Loopy && Loopy.levels) Loopy.levels.init({ names: ["ccLvSmall", "ccLvCount", "ccLvEasy", "ccLvChange", "ccLvBig"],
     get: () => LEVELS.indexOf(lv), base: () => LEVELS.indexOf(levelForAge(age)),
     set: (i) => { lv = LEVELS[i]; store.set("cc.lv.a" + age, lv); recent = []; render(); } });
 
@@ -718,7 +719,7 @@ function tagSvg(c, cur, px) {
     answered = true; tried++;
     const ok = typedValue() === current.answer;
     if (ok) { right++; streak++; } else { streak = 0; }
-    const kind = { small: "small", count: "count", easy: "ch10", change: "ch" }[current.lv];
+    const kind = { small: "small", count: "count", easy: "ch10", change: "ch", big: "ch" }[current.lv];
     if (window.Loopy && Loopy.rewards) ok ? Loopy.rewards.correct("coins-change", streak) : Loopy.rewards.wrong("coins-change", { q: question(), a: asMoney(current.answer), y: asMoney(typedValue()), k: "cc-" + kind });
     card.classList.add(ok ? "good" : "bad");
     feedbackEl.classList.add(ok ? "good" : "bad");

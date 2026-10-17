@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """Build the small files the site serves from the readable files in src/.
 
-    src/loopy.js   ->  loopy.js    (minified; loopy-report.js, loopy-backup.js, loopy-sheet.js the same way)
+    src/loopy.js   ->  loopy.js    (minified; loopy-report.js, loopy-backup.js, loopy-sheet.js, loopy-levels.js the same way)
     src/loopy.css  ->  loopy.css   (minified; print.css the same way)
     src/sw.js      ->  sw.js       (minified, with the list of files to save for offline use and their hash)
     src/fonts/*    ->  fonts/*     (only the letters loopy uses, weights 400 to 700; with --fonts)
@@ -33,7 +33,7 @@ FONTS = {"lexend-latin.woff2": (400, 700), "fredoka-latin.woff2": (600, 700), "a
 
 # src/<name> -> <name> at the root, minified. loopy.js and loopy.css load on every page; the loopy-*.js
 # parts and print.css load only when they are needed (see Loopy.load in src/loopy.js).
-BUILT = ["loopy.js", "loopy.css", "loopy-report.js", "loopy-backup.js", "loopy-sheet.js", "print.css"]
+BUILT = ["loopy.js", "loopy.css", "loopy-report.js", "loopy-backup.js", "loopy-sheet.js", "loopy-levels.js", "print.css"]
 
 
 def banner(name):

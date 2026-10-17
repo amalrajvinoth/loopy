@@ -20,9 +20,10 @@ The pad has every letter the word needs, once, plus a few extra letters. For a d
 | 6 and under | 3 letters, like "cat" or "Hut", 8 keys on the pad |
 | 7 | 4 letters, like "fish" or "Hund", 8 keys |
 | 8 | 5 letters, like "horse" or "Katze", 10 keys |
-| 9 and up | 6 to 8 letters, like "rabbit" or "Elefant", 10 keys |
+| 9 | 6 letters, like "rabbit" or "Banane", 10 keys |
+| 10 and up | 7 to 8 letters, like "giraffe" or "Elefant", 10 keys |
 
-The level shows next to the score, like "Level 2 of 4". After 10 right in a row the game offers the next level. After 3 wrong in the last 5 it offers an easier one, once a visit. A level picked by hand in Settings is kept for that age. The levels: 3, 4, 5 and 6 to 8 letters.
+The level shows next to the score, like "Level 2 of 5". After 10 right in a row the game offers the next level. After 3 wrong in the last 5 it offers an easier one, once a visit. A level picked by hand in Settings is kept for that age. The levels: 3, 4, 5, 6 and 7 to 8 letters.
 
 ## Words
 

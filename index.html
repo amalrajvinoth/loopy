@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'sha256-UcRxxqZaSwswqHQgNVbAdT4GFzL1ozYSCFlfINQbeo4='; style-src 'self' 'sha256-x9+YBpZrpVx67Zb2Dd99+PcEpKgjqf83kqw3zIE/MUo='; img-src 'self' data:; font-src 'self'; connect-src 'self'; worker-src 'self'; object-src 'none'; base-uri 'none'; form-action 'none'; manifest-src 'self'; upgrade-insecure-requests">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'sha256-86LWJ8Uwk36+G8Pb3I5WXOy1Gvsrm3/sp8Rmmb6pxr0='; style-src 'self' 'sha256-REchtnA93Huv5zPio68LSBCxxZ+QCPqmEE+rDQuPQ4I='; img-src 'self' data:; font-src 'self'; connect-src 'self'; worker-src 'self'; object-src 'none'; base-uri 'none'; form-action 'none'; manifest-src 'self'; upgrade-insecure-requests">
 <meta name="referrer" content="strict-origin-when-cross-origin">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <link rel="icon" href="icon.svg" type="image/svg+xml">
@@ -101,6 +101,7 @@ h1 { margin: 0; line-height: 0; color: var(--ink); }
 .fold .badges, .fold .days { margin-top: 12px; }
 .days { display: flex; flex-direction: column; gap: 10px; border-top: 2px solid var(--line); padding-top: 14px; }
 .days p { margin: 0; color: var(--muted); }
+.more-head { margin: 14px 0 0; color: var(--muted); font-weight: 600; }
 .days b { color: var(--ink); }
 .empty { margin: 0; color: var(--muted); font-size: 1.1rem; text-align: center; }
 footer { color: var(--muted); font-size: 0.95rem; text-align: center; display: flex; flex-direction: column; gap: 8px; }
@@ -129,7 +130,7 @@ footer p { margin: 0; }
     <span class="tag" data-t="dmTag">Every day</span>
     <h3 id="today-title" aria-level="2" data-t="dmTitle">Today's 10</h3>
     <p data-t="dmText">10 quick problems from the games that fit your age. Play every day to grow your day streak!</p>
-    <div class="row"><span class="go" id="today-go">Start →</span><span class="day-streak" id="today-streak"></span></div>
+    <div class="row"><span class="go" id="today-go">Start →</span><span class="day-streak" id="today-count"></span><span class="day-streak" id="today-streak"></span></div>
   </a>
   </section>
   <main id="list" class="list"></main>
@@ -143,6 +144,8 @@ footer p { margin: 0; }
     <details class="fold">
       <summary data-t="seeBadges">See all badges and day streak</summary>
       <div class="badges" id="badges"></div>
+      <p class="more-head" data-t="moreBadges">Streaks, explorers and the brave</p>
+      <div class="badges" id="more-badges"></div>
       <div class="days">
         <p id="day-line"></p>
         <div class="badges" id="day-badges"></div>
@@ -186,10 +189,10 @@ Loopy.addStrings({
     bsTitle: "Bigger or Smaller", bsTag: "Comparing numbers", bsText: "Pick <, = or >, put numbers in order and round them, with a number line to show why.",
     pzTitle: "Pizza Fractions", pzTag: "Fractions", pzText: "Name the part of a pizza or bar, compare two fractions, and add halves and quarters.",
     ccTitle: "Coins and Change", ccTag: "Money", ccText: "Count coins and notes, then give change from 5 or 10. Euros, pounds or dollars.",
-    dmTag: "Every day", dmTitle: "Today's 10", dmText: "10 quick problems from the games that fit your age. Play every day to grow your day streak!",
-    dmGo: "Start →", dmAgain: "Done today! Play again →", dmStreak: "🔥 {n} days", dmStreakOne: "🔥 1 day",
+    dmTag: "Every day", dmTitle: "Today's 10", dmText: "10 quick problems from the games that fit your age. Finish it, or get 10 right in any game, to grow your day streak!",
+    dmGo: "Start →", dmAgain: "Done today! Play again →", dmStreak: "🔥 {n} days", dmStreakOne: "🔥 1 day", todayOf: "Today: {n} of {m}", moreBadges: "Streaks, explorers and the brave",
     dayLine: "Day streak: {n} days in a row. Best: {best}.", dayLineOne: "Day streak: 1 day in a row. Best: {best}.",
-    dayNone: "Play Today's 10 on days in a row to earn day badges.", nDays: "{n} days",
+    dayNone: "Play on days in a row to earn day badges: Today's 10, or 10 right in any game.", nDays: "{n} days",
     mkTitle: "Make 10", mkTag: "Number pairs", mkText: "See a number and find the one that makes 10, with ten-frames to count. Grows to 20 and 100 as you grow.",
     ssTitle: "Sound Spell", ssTag: "Starting and ending sounds", ssText: "See a picture, hear the word, and pick the sound it starts or ends with. English and German words.",
     wmTitle: "Word Match", wmTag: "Words and pictures", wmText: "See a picture and pick its word. 100 words about animals, food, home and school, in English or German.",
@@ -221,10 +224,10 @@ Loopy.addStrings({
     bsTitle: "Größer oder kleiner", bsTag: "Zahlen vergleichen", bsText: "Wähle <, = oder >, ordne Zahlen und runde sie, mit einem Zahlenstrahl, der zeigt warum.",
     pzTitle: "Pizza-Brüche", pzTag: "Brüche", pzText: "Benenne den Teil einer Pizza oder eines Streifens, vergleiche zwei Brüche und rechne Halbe und Viertel zusammen.",
     ccTitle: "Münzen und Wechselgeld", ccTag: "Geld", ccText: "Zähle Münzen und Scheine und gib Wechselgeld von 5 oder 10 heraus. Euro, Pfund oder Dollar.",
-    dmTag: "Jeden Tag", dmTitle: "Die 10 von heute", dmText: "10 schnelle Aufgaben aus den Spielen für dein Alter. Spiel jeden Tag, damit deine Tage-Serie wächst!",
-    dmGo: "Los →", dmAgain: "Heute geschafft! Nochmal →", dmStreak: "🔥 {n} Tage", dmStreakOne: "🔥 1 Tag",
+    dmTag: "Jeden Tag", dmTitle: "Die 10 von heute", dmText: "10 schnelle Aufgaben aus den Spielen für dein Alter. Schaff sie, oder 10 richtige in einem Spiel, damit deine Tage-Serie wächst!",
+    dmGo: "Los →", dmAgain: "Heute geschafft! Nochmal →", dmStreak: "🔥 {n} Tage", dmStreakOne: "🔥 1 Tag", todayOf: "Heute: {n} von {m}", moreBadges: "Serien, Entdecker und Mutige",
     dayLine: "Tage-Serie: {n} Tage hintereinander. Beste: {best}.", dayLineOne: "Tage-Serie: 1 Tag hintereinander. Beste: {best}.",
-    dayNone: "Spiele die 10 von heute an Tagen hintereinander, um Tage-Abzeichen zu bekommen.", nDays: "{n} Tage",
+    dayNone: "Spiele an Tagen hintereinander, um Tage-Abzeichen zu bekommen: die 10 von heute, oder 10 richtige in einem Spiel.", nDays: "{n} Tage",
     mkTitle: "Ergänze bis 10", mkTag: "Zahlenpartner", mkText: "Sieh eine Zahl und finde die, die bis 10 fehlt, mit Zehnerfeldern zum Zählen. Später bis 20 und 100.",
     ssTitle: "Anlaut und Endlaut", ssTag: "Anlaute und Endlaute", ssText: "Sieh ein Bild, hör das Wort und wähle den Laut, mit dem es beginnt oder endet. Deutsche und englische Wörter.",
     wmTitle: "Bild und Wort", wmTag: "Wörter und Bilder", wmText: "Sieh ein Bild und wähle das passende Wort. 100 Wörter zu Tieren, Essen, Zuhause und Schule, auf Deutsch oder Englisch.",
@@ -242,13 +245,13 @@ Loopy.addStrings({
 const GAMES = [
   { subject: "math", path: "math/plus-minus/", id: "pm", pic: "➕", ages: [5, 16] },
   { subject: "math", path: "math/times-share/", id: "ts", pic: "✖️", ages: [6, 16] },
-  { subject: "math", path: "math/what-time-is-it/", id: "cl", pic: "🕒", ages: [5, 10] },
-  { subject: "math", path: "math/make-10/", id: "mk", pic: "🔟", ages: [5, 9] },
+  { subject: "math", path: "math/what-time-is-it/", id: "cl", pic: "🕒", ages: [5, 12] },
+  { subject: "math", path: "math/make-10/", id: "mk", pic: "🔟", ages: [5, 11] },
   { subject: "math", path: "math/bigger-or-smaller/", id: "bs", pic: "⚖️", ages: [6, 12] },
   { subject: "math", path: "math/pizza-fractions/", id: "pz", pic: "🍕", ages: [7, 11] },
-  { subject: "math", path: "math/coins-change/", id: "cc", pic: "💰", ages: [6, 10] },
+  { subject: "math", path: "math/coins-change/", id: "cc", pic: "💰", ages: [6, 12] },
   { subject: "math", path: "math/equation-balance/", id: "eb", pic: "🧮", ages: [10, 16] },
-  { subject: "math", path: "math/times-sprint/", id: "tt", pic: "⏱️", ages: [8, 16] },
+  { subject: "math", path: "math/times-sprint/", id: "tt", pic: "⏱️", ages: [5, 16] },
   { subject: "languages", path: "languages/sound-spell/", id: "ss", pic: "👂", ages: [5, 8] },
   { subject: "languages", path: "languages/word-match/", id: "wm", pic: "🖼️", ages: [5, 10] },
   { subject: "languages", path: "languages/spell-it/", id: "si", pic: "✏️", ages: [6, 10] },
@@ -417,10 +420,24 @@ window.addEventListener("loopy:age", render);
     d.children[2].textContent = got ? t("earned") : t("nStars", { n: Loopy.num(b.stars) });
     box.appendChild(d);
   }
+  // Streak, explorer and brave badges: earned by how you play, not by how many stars.
+  const more = document.getElementById("more-badges");
+  for (const b of R.extra()) {
+    const d = document.createElement("div");
+    d.className = "badge" + (b.got ? " got" : "");
+    d.style.setProperty("--tone", "var(" + b.color + ")");
+    d.innerHTML = '<span class="medal"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="' + R.STAR_PATH + '"/></svg></span><span></span><small></small>';
+    d.children[1].textContent = b.name;
+    d.children[2].textContent = b.got ? t("earned") : b.text;
+    more.appendChild(d);
+  }
 
   // Day streak: Today's 10 finished on days in a row, with badges at 3, 7 and 30 days.
   const D = Loopy.daily, day = D.get();
   document.getElementById("today-streak").textContent = day.streak ? t(day.streak === 1 ? "dmStreakOne" : "dmStreak", { n: day.streak }) : "";
+  // Before today is counted: how many right answers today, in any game, out of the 10 that count as a day.
+  const todayN = D.today();
+  document.getElementById("today-count").textContent = !day.doneToday && todayN ? t("todayOf", { n: Math.min(todayN, D.GOAL), m: D.GOAL }) : "";
   document.getElementById("today-go").textContent = t(day.doneToday ? "dmAgain" : "dmGo");
   document.getElementById("day-line").textContent = day.best
     ? t(day.streak === 1 ? "dayLineOne" : "dayLine", { n: day.streak, best: day.best })

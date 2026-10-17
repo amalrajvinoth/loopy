@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'sha256-nQL+3zk0VRgmpBKuS/P7W+4ixa53LZFrzi6NDltb8Yo='; style-src 'self' 'sha256-gttVsi1J3CVyiF6iU9Q/POFBk3SArRQaN/BhtEgJtrE='; img-src 'self' data:; font-src 'self'; connect-src 'self'; worker-src 'self'; object-src 'none'; base-uri 'none'; form-action 'none'; manifest-src 'self'; upgrade-insecure-requests">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'sha256-lu6xRGt+oMsrve5QsBjurEaq0IXl1WYA/AGSLyA/dqw='; style-src 'self' 'sha256-RF9RRvvUBX1Wp82nhDW22UUS66UAqbDqcztlzmV3+GM='; img-src 'self' data:; font-src 'self'; connect-src 'self'; worker-src 'self'; object-src 'none'; base-uri 'none'; form-action 'none'; manifest-src 'self'; upgrade-insecure-requests">
 <meta name="referrer" content="strict-origin-when-cross-origin">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <link rel="icon" href="../icon.svg" type="image/svg+xml">
@@ -60,6 +60,7 @@ section[hidden] { display: none; }
 .split { flex: 1; min-width: 40px; height: 10px; border-radius: 999px; background: var(--line); overflow: hidden; display: flex; }
 .split i { display: block; height: 100%; background: var(--good); }
 .tip { padding: 8px 12px; border-radius: 12px; background: var(--chip); font-weight: 600; }
+.best { margin: 0; color: var(--muted); font-weight: 600; }
 .play { align-self: flex-start; color: var(--ink); font-weight: 600; min-height: 44px; display: inline-flex; align-items: center; }
 .misses { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; }
 .misses h3 { margin: 10px 0 4px; font-size: 0.8rem; font-weight: 600; letter-spacing: 0.06em; text-transform: uppercase; color: var(--muted); }
@@ -227,14 +228,14 @@ Loopy.addStrings({
     prThisN: "{n} this week", prMonthN: "{n} in 30 days", prClockQ: "Read the clock",
     "nm-add": "Adding", "nm-add-rg": "Adding with carrying", "nm-sub": "Taking away", "nm-sub-rg": "Taking away with regrouping",
     "nm-mul": "{n} times table", "nm-mul-big": "Times with bigger numbers", "nm-div": "Sharing by {n}", "nm-div-big": "Sharing bigger numbers",
-    "nm-cl-0": "Clock: o'clock", "nm-cl-30": "Clock: half past", "nm-cl-15": "Clock: quarter past and quarter to", "nm-cl-5": "Clock: minutes in fives", "nm-cl-1": "Clock: single minutes",
+    "nm-cl-0": "Clock: o'clock", "nm-cl-30": "Clock: half past", "nm-cl-15": "Clock: quarter past and quarter to", "nm-cl-5": "Clock: minutes in fives", "nm-cl-1": "Clock: single minutes", "nm-cl-24": "Clock: 24-hour time",
     "nm-ss-start": "Sound at the start of a word", "nm-ss-end": "Sound at the end of a word",
-    "nm-mk-10": "Pairs that make 10", "nm-mk-20": "Pairs that make 20", "nm-mk-100": "Pairs that make 100",
+    "nm-mk-10": "Pairs that make 10", "nm-mk-20": "Pairs that make 20", "nm-mk-100": "Pairs that make 100", "nm-mk-1000": "Pairs that make 1,000",
     "nm-bs-cmp": "Comparing numbers", "nm-bs-ord": "Putting numbers in order", "nm-bs-rnd": "Rounding", "nm-bs-dec": "Comparing decimals", "nm-bs-neg": "Minus numbers",
     "nm-pz-name": "Naming fractions", "nm-pz-cmp": "Comparing fractions", "nm-pz-add": "Adding fractions",
     "nm-cc-small": "Adding small coins", "nm-cc-count": "Counting notes and coins", "nm-cc-ch10": "Giving change", "nm-cc-ch": "Change with any price",
     "nm-wm-animals": "Words for animals", "nm-wm-food": "Words for food", "nm-wm-home": "Words for things at home", "nm-wm-school": "Words for school",
-    "nm-si-3": "Spelling 3-letter words", "nm-si-4": "Spelling 4-letter words", "nm-si-5": "Spelling 5-letter words", "nm-si-6": "Spelling longer words",
+    "nm-si-3": "Spelling 3-letter words", "nm-si-4": "Spelling 4-letter words", "nm-si-5": "Spelling 5-letter words", "nm-si-6": "Spelling 6-letter words", "nm-si-7": "Spelling longer words",
     "nm-qf-space": "Space facts", "nm-qf-animals": "Animal facts", "nm-qf-body": "Body facts",
     "nm-wi-cont": "Continents and oceans", "nm-wi-eu": "Countries of Europe", "nm-wi-euc": "Capitals of Europe", "nm-wi-wd": "Countries of the world", "nm-wi-wdc": "Capitals of the world",
     "nm-eb-box": "Missing numbers", "nm-eb-add": "x + a = b", "nm-eb-mul": "3x = 12", "nm-eb-two": "3x + 4 = 19", "nm-eb-both": "x on both sides",
@@ -247,7 +248,7 @@ Loopy.addStrings({
     prBrand: "loopy · Learn. Play. Repeat.",
     prSheet: "Print a practice sheet", prSheetMaking: "Making the sheet…", prSheetFail: "The sheet could not be made. Open a game and print its worksheet from Settings instead.",
     prSheetTitle: "Practice sheet", prSheetTitleKid: "Practice sheet for {name}", prSheetHow: "20 problems of the kinds missed most. Answers on page 2.",
-    prStars: "⭐ {n} stars", prDays: "🔥 {n} days in a row", prDay: "🔥 1 day in a row", prBadge: "🏅 {name}", prPlay: "Play →",
+    prStars: "⭐ {n} stars", prDays: "🔥 {n} days in a row", prDay: "🔥 1 day in a row", prBadge: "🏅 {name}", prBest: "🏆 Best streak: {n}", prGameBest: "Best streak: {n} in a row", prPlay: "Play →",
     gPlusMinus: "Plus and Minus", gTimesShare: "Times and Share", gTimesSprint: "Times Tables Sprint", gClock: "What Time Is It?", gSoundSpell: "Sound Spell", gDailyMix: "Today's 10", gMake10: "Make 10", gBiggerSmaller: "Bigger or Smaller", gPizza: "Pizza Fractions", gCoinsChange: "Coins and Change", gWordMatch: "Word Match", gSpellIt: "Spell It", gQuickFacts: "Quick Facts", gWhereIsIt: "Where Is It?", gFlags: "Flags and Capitals", gEquation: "Equation Balance",
     tipNone: "Not played this week. A few minutes a day helps.", tipAll: "All right this week. Try a harder level in Settings.",
     tipLast: "Mostly right. Keep going.",
@@ -257,10 +258,10 @@ Loopy.addStrings({
     "tip-div": "Practise sharing by {n}.", "tip-div-big": "Practise sharing bigger numbers.",
     "tip-cl-0": "Practise o'clock times: the long hand points to 12.", "tip-cl-30": "Practise half past: the long hand points to 6.",
     "tip-cl-15": "Practise quarter past and quarter to.", "tip-cl-5": "Practise counting the minutes in fives.",
-    "tip-cl-1": "Practise reading single minutes between the numbers.",
+    "tip-cl-1": "Practise reading single minutes between the numbers.", "tip-cl-24": "Practise 24-hour time: after 12 noon add 12 to the hour, so 3 in the afternoon is 15:00.",
     "tip-ss-start": "Practise the sound at the start of a word.", "tip-ss-end": "Practise the sound at the end of a word.",
     "tip-mk-10": "Practise pairs that make 10, like 7 + 3.", "tip-mk-20": "Practise pairs that make 20, like 13 + 7.",
-    "tip-mk-100": "Practise pairs that make 100, like 64 + 36.",
+    "tip-mk-100": "Practise pairs that make 100, like 64 + 36.", "tip-mk-1000": "Practise pairs that make 1,000, like 640 + 360.",
     "tip-bs-cmp": "Practise comparing numbers: count the digits, then look at the biggest place.", "tip-bs-ord": "Practise putting numbers in order on a number line.",
     "tip-bs-rnd": "Practise rounding: find the halfway point first.", "tip-bs-dec": "Practise comparing decimals: give them the same number of places.",
     "tip-bs-neg": "Practise minus numbers: closer to 0 is bigger.",
@@ -272,7 +273,7 @@ Loopy.addStrings({
     "tip-wm-animals": "Practise words for animals.", "tip-wm-food": "Practise words for food.",
     "tip-wm-home": "Practise words for things at home.", "tip-wm-school": "Practise words for school.",
     "tip-si-3": "Practise spelling 3-letter words: say each sound slowly.", "tip-si-4": "Practise spelling 4-letter words: say each sound slowly.",
-    "tip-si-5": "Practise spelling 5-letter words: clap the parts, then write them.", "tip-si-6": "Practise spelling longer words: clap the parts, then write them.",
+    "tip-si-5": "Practise spelling 5-letter words: clap the parts, then write them.", "tip-si-6": "Practise spelling 6-letter words: clap the parts, then write them.", "tip-si-7": "Practise spelling longer words: clap the parts, then write them.",
     "tip-qf-space": "Talk about space: the Sun, the Moon and the planets.", "tip-qf-animals": "Talk about animals: what they eat and how they live.",
     "tip-qf-body": "Talk about the body: what the heart, lungs and bones do.",
     "tip-wi-cont": "Practise the continents and oceans on a world map or globe.", "tip-wi-eu": "Practise the countries of Europe on a map.",
@@ -304,14 +305,14 @@ Loopy.addStrings({
     prThisN: "{n} diese Woche", prMonthN: "{n} in 30 Tagen", prClockQ: "Uhr ablesen",
     "nm-add": "Plusrechnen", "nm-add-rg": "Plus mit Übertrag", "nm-sub": "Minusrechnen", "nm-sub-rg": "Minus mit Zehnerübergang",
     "nm-mul": "{n}er-Reihe", "nm-mul-big": "Mal mit größeren Zahlen", "nm-div": "Teilen durch {n}", "nm-div-big": "Teilen mit größeren Zahlen",
-    "nm-cl-0": "Uhr: volle Stunden", "nm-cl-30": "Uhr: halbe Stunden", "nm-cl-15": "Uhr: Viertel nach und Viertel vor", "nm-cl-5": "Uhr: Minuten in Fünferschritten", "nm-cl-1": "Uhr: einzelne Minuten",
+    "nm-cl-0": "Uhr: volle Stunden", "nm-cl-30": "Uhr: halbe Stunden", "nm-cl-15": "Uhr: Viertel nach und Viertel vor", "nm-cl-5": "Uhr: Minuten in Fünferschritten", "nm-cl-1": "Uhr: einzelne Minuten", "nm-cl-24": "Uhr: 24-Stunden-Zeit",
     "nm-ss-start": "Laut am Wortanfang", "nm-ss-end": "Laut am Wortende",
-    "nm-mk-10": "Zahlenpartner bis 10", "nm-mk-20": "Ergänzen bis 20", "nm-mk-100": "Ergänzen bis 100",
+    "nm-mk-10": "Zahlenpartner bis 10", "nm-mk-20": "Ergänzen bis 20", "nm-mk-100": "Ergänzen bis 100", "nm-mk-1000": "Ergänzen bis 1.000",
     "nm-bs-cmp": "Zahlen vergleichen", "nm-bs-ord": "Zahlen ordnen", "nm-bs-rnd": "Runden", "nm-bs-dec": "Kommazahlen vergleichen", "nm-bs-neg": "Minuszahlen",
     "nm-pz-name": "Brüche benennen", "nm-pz-cmp": "Brüche vergleichen", "nm-pz-add": "Brüche addieren",
     "nm-cc-small": "Kleine Münzen zusammenzählen", "nm-cc-count": "Scheine und Münzen zählen", "nm-cc-ch10": "Wechselgeld", "nm-cc-ch": "Wechselgeld mit jedem Preis",
     "nm-wm-animals": "Wörter für Tiere", "nm-wm-food": "Wörter für Essen", "nm-wm-home": "Wörter für zu Hause", "nm-wm-school": "Wörter für die Schule",
-    "nm-si-3": "Wörter mit 3 Buchstaben", "nm-si-4": "Wörter mit 4 Buchstaben", "nm-si-5": "Wörter mit 5 Buchstaben", "nm-si-6": "Längere Wörter",
+    "nm-si-3": "Wörter mit 3 Buchstaben", "nm-si-4": "Wörter mit 4 Buchstaben", "nm-si-5": "Wörter mit 5 Buchstaben", "nm-si-6": "Wörter mit 6 Buchstaben", "nm-si-7": "Längere Wörter",
     "nm-qf-space": "Weltall-Wissen", "nm-qf-animals": "Tier-Wissen", "nm-qf-body": "Körper-Wissen",
     "nm-wi-cont": "Kontinente und Ozeane", "nm-wi-eu": "Länder Europas", "nm-wi-euc": "Hauptstädte Europas", "nm-wi-wd": "Länder der Welt", "nm-wi-wdc": "Hauptstädte der Welt",
     "nm-eb-box": "Fehlende Zahlen", "nm-eb-add": "x + a = b", "nm-eb-mul": "3x = 12", "nm-eb-two": "3x + 4 = 19", "nm-eb-both": "x auf beiden Seiten",
@@ -324,7 +325,7 @@ Loopy.addStrings({
     prBrand: "loopy · Lernen. Spielen. Wiederholen.",
     prSheet: "Übungsblatt drucken", prSheetMaking: "Blatt wird gemacht…", prSheetFail: "Das Blatt konnte nicht gemacht werden. Öffnet ein Spiel und druckt dort in den Einstellungen das Arbeitsblatt.",
     prSheetTitle: "Übungsblatt", prSheetTitleKid: "Übungsblatt für {name}", prSheetHow: "20 Aufgaben der Arten, die am häufigsten falsch waren. Lösungen auf Seite 2.",
-    prStars: "⭐ {n} Sterne", prDays: "🔥 {n} Tage hintereinander", prDay: "🔥 1 Tag hintereinander", prBadge: "🏅 {name}", prPlay: "Spielen →",
+    prStars: "⭐ {n} Sterne", prDays: "🔥 {n} Tage hintereinander", prDay: "🔥 1 Tag hintereinander", prBadge: "🏅 {name}", prBest: "🏆 Beste Serie: {n}", prGameBest: "Beste Serie: {n} hintereinander", prPlay: "Spielen →",
     gPlusMinus: "Plus und Minus", gTimesShare: "Mal und Teilen", gTimesSprint: "Einmaleins-Sprint", gClock: "Wie spät ist es?", gSoundSpell: "Anlaut und Endlaut", gDailyMix: "Die 10 von heute", gMake10: "Ergänze bis 10", gBiggerSmaller: "Größer oder kleiner", gPizza: "Pizza-Brüche", gCoinsChange: "Münzen und Wechselgeld", gWordMatch: "Bild und Wort", gSpellIt: "Wörter schreiben", gQuickFacts: "Blitzwissen", gWhereIsIt: "Wo liegt das?", gFlags: "Flaggen und Hauptstädte", gEquation: "Waage",
     tipNone: "Diese Woche nicht gespielt. Ein paar Minuten am Tag helfen.", tipAll: "Diese Woche alles richtig. Probiert in den Einstellungen eine schwerere Stufe.",
     tipLast: "Fast alles richtig. Weiter so.",
@@ -334,10 +335,10 @@ Loopy.addStrings({
     "tip-div": "Übt Teilen durch {n}.", "tip-div-big": "Übt Teilen mit größeren Zahlen.",
     "tip-cl-0": "Übt volle Stunden: der lange Zeiger zeigt auf die 12.", "tip-cl-30": "Übt halbe Stunden: der lange Zeiger zeigt auf die 6.",
     "tip-cl-15": "Übt Viertel nach und Viertel vor.", "tip-cl-5": "Übt, die Minuten in Fünferschritten zu zählen.",
-    "tip-cl-1": "Übt, einzelne Minuten zwischen den Zahlen abzulesen.",
+    "tip-cl-1": "Übt, einzelne Minuten zwischen den Zahlen abzulesen.", "tip-cl-24": "Übt die 24-Stunden-Zeit: nach 12 Uhr mittags 12 zur Stunde zählen, 3 Uhr nachmittags ist 15:00.",
     "tip-ss-start": "Übt den Laut am Wortanfang.", "tip-ss-end": "Übt den Laut am Wortende.",
     "tip-mk-10": "Übt Zahlenpartner bis 10, wie 7 + 3.", "tip-mk-20": "Übt Ergänzen bis 20, wie 13 + 7.",
-    "tip-mk-100": "Übt Ergänzen bis 100, wie 64 + 36.",
+    "tip-mk-100": "Übt Ergänzen bis 100, wie 64 + 36.", "tip-mk-1000": "Übt Ergänzen bis 1.000, wie 640 + 360.",
     "tip-bs-cmp": "Übt Zahlen vergleichen: erst die Stellen zählen, dann die größte Stelle ansehen.", "tip-bs-ord": "Übt Zahlen am Zahlenstrahl ordnen.",
     "tip-bs-rnd": "Übt Runden: zuerst die Mitte finden.", "tip-bs-dec": "Übt Kommazahlen vergleichen: gleich viele Stellen nach dem Komma schreiben.",
     "tip-bs-neg": "Übt Minuszahlen: näher an 0 ist größer.",
@@ -349,7 +350,7 @@ Loopy.addStrings({
     "tip-wm-animals": "Übt Wörter für Tiere.", "tip-wm-food": "Übt Wörter für Essen.",
     "tip-wm-home": "Übt Wörter für Dinge zu Hause.", "tip-wm-school": "Übt Wörter für die Schule.",
     "tip-si-3": "Übt Wörter mit 3 Buchstaben: jeden Laut langsam sprechen.", "tip-si-4": "Übt Wörter mit 4 Buchstaben: jeden Laut langsam sprechen.",
-    "tip-si-5": "Übt Wörter mit 5 Buchstaben: die Silben klatschen, dann schreiben.", "tip-si-6": "Übt längere Wörter: die Silben klatschen, dann schreiben.",
+    "tip-si-5": "Übt Wörter mit 5 Buchstaben: die Silben klatschen, dann schreiben.", "tip-si-6": "Übt Wörter mit 6 Buchstaben: die Silben klatschen, dann schreiben.", "tip-si-7": "Übt längere Wörter: die Silben klatschen, dann schreiben.",
     "tip-qf-space": "Sprecht über das Weltall: Sonne, Mond und Planeten.", "tip-qf-animals": "Sprecht über Tiere: was sie fressen und wie sie leben.",
     "tip-qf-body": "Sprecht über den Körper: was Herz, Lunge und Knochen tun.",
     "tip-wi-cont": "Übt die Kontinente und Ozeane auf einer Weltkarte oder einem Globus.", "tip-wi-eu": "Übt die Länder Europas auf der Karte.",
@@ -460,6 +461,8 @@ Loopy.addStrings({
     box.appendChild(el("span", "", t("prStars", { n: num(stars) })));
     if (day.streak) box.appendChild(el("span", "", day.streak === 1 ? t("prDay") : t("prDays", { n: day.streak })));
     if (badge) box.appendChild(el("span", "", t("prBadge", { name: badge.name })));
+    const best = Loopy.rewards.bestStreak();
+    if (best) box.appendChild(el("span", "", t("prBest", { n: num(best) })));
   }
 
   // The week in one card: answers and percent right, up or down from last week, days played, four week bars.
@@ -558,7 +561,10 @@ Loopy.addStrings({
       weekRow(dl, t("prLast"), before);
       const tr = trend(now, before);
       a.href = g.path;
-      card.append(el("h3", "", t(g.name)), dl, el("p", "tip", (tr ? tr + " " : "") + tip(g.id, now)), a);
+      const best = Loopy.rewards.get().best[g.id];
+      card.append(el("h3", "", t(g.name)), dl);
+      if (best >= 3) card.appendChild(el("p", "best", t("prGameBest", { n: num(best) })));
+      card.append(el("p", "tip", (tr ? tr + " " : "") + tip(g.id, now)), a);
       box.appendChild(card);
     });
     // Games with no answers in both weeks share one folded line, with a link to each.

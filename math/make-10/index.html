@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'sha256-e+98vZLCoNoR+eeEH1qBkZZQ6Tz1S6SrE4VSf+jOB5k='; style-src 'self' 'sha256-z2P7kGW5Z05eCTjTZdYpc0vThTlOE9vmt97pVSvi2I4=' 'sha256-ER4UVxOAHVG2PpFuwsi/fNYnlP9iTYLytTr9Qx7YKqY=' 'sha256-RT1053JU5UiKvjrCUFx1rlhdFLMmgtuFJ9T8jnMeawQ=' 'sha256-GurFyntsoOwZmlM9rIsWmyQI2o7WD+6AstbwSwZ7nC8='; img-src 'self' data:; font-src 'self'; connect-src 'self'; worker-src 'self'; object-src 'none'; base-uri 'none'; form-action 'none'; manifest-src 'self'; upgrade-insecure-requests">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'sha256-3wzqiz/5gX5sd/kPDMxvtgDDKceNXIUZlXWKYKpbWsQ='; style-src 'self' 'sha256-z2P7kGW5Z05eCTjTZdYpc0vThTlOE9vmt97pVSvi2I4=' 'sha256-ER4UVxOAHVG2PpFuwsi/fNYnlP9iTYLytTr9Qx7YKqY=' 'sha256-RT1053JU5UiKvjrCUFx1rlhdFLMmgtuFJ9T8jnMeawQ=' 'sha256-TBTfdtRIrzqNgPvedoteRMbfc3qXICx6Lq/BTtZjO6I='; img-src 'self' data:; font-src 'self'; connect-src 'self'; worker-src 'self'; object-src 'none'; base-uri 'none'; form-action 'none'; manifest-src 'self'; upgrade-insecure-requests">
 <meta name="referrer" content="strict-origin-when-cross-origin">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <style>:root{color-scheme:light;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}body{margin:0}[hidden]{display:none!important}</style>
@@ -207,7 +207,7 @@ body { min-height: 100vh; min-height: 100dvh; padding-block: 12px 16px; }
 .frames i { width: var(--cell); height: var(--cell); border-radius: 22%; border: max(1.5px, calc(var(--cell) * 0.08)) solid var(--line); background: var(--card); display: block; box-sizing: border-box; }
 .frames i.on { background: var(--c1); border-color: var(--c1); }
 .frames i.add { background: var(--c4); border-color: var(--c4); }
-.seg.four { grid-template-columns: repeat(4, 1fr); }
+.seg.five { grid-template-columns: repeat(auto-fit, minmax(96px, 1fr)); }
 .helper { display: flex; align-items: center; gap: 8px; min-height: 40px; cursor: pointer; }
 .helper input { width: 22px; height: 22px; accent-color: var(--c2); }
 @media (max-height: 900px), (max-width: 599px) {
@@ -240,11 +240,12 @@ body { min-height: 100vh; min-height: 100dvh; padding-block: 12px 16px; }
     <div class="controls"><div id="age-picker"></div><div id="theme-picker"></div><button id="sound-toggle"></button><div id="lang-picker"></div></div>
     <div>
       <p class="seg-label" id="lv-label" data-t="mkMake">Make</p>
-      <div class="seg four" role="group" aria-labelledby="lv-label" id="lv-seg">
+      <div class="seg five" role="group" aria-labelledby="lv-label" id="lv-seg">
         <button type="button" id="lv-10" data-lv="10" data-t="mk10">Make 10</button>
         <button type="button" id="lv-20" data-lv="20" data-t="mk20">Make 20</button>
         <button type="button" id="lv-tens" data-lv="tens" data-t="mkTens">Tens to 100</button>
         <button type="button" id="lv-100" data-lv="100" data-t="mk100">Make 100</button>
+        <button type="button" id="lv-1000" data-lv="1000" data-t="mk1000">Make 1,000</button>
       </div>
     </div>
     <label class="helper"><input type="checkbox" id="pics-on"> <span data-t="picsLabel">Show the ten-frame picture</span></label>
@@ -284,7 +285,7 @@ body { min-height: 100vh; min-height: 100dvh; padding-block: 12px 16px; }
 Loopy.addStrings({
   en: {
     mkName: "Make 10", mkTitle: "Make {n}", mkMake: "Make",
-    mk10: "Make 10", mk20: "Make 20", mkTens: "Tens to 100", mk100: "Make 100",
+    mk10: "Make 10", mk20: "Make 20", mkTens: "Tens to 100", mk100: "Make 100", mk1000: "Make 1,000",
     picsLabel: "Show the ten-frame picture",
     mkAria: "{a} plus what makes {n}?", mkHint: "What number makes {n}?", mkCount: "Count the empty boxes, or use what you know.",
     mkPair: "{a} and {b} make {n}.",
@@ -298,7 +299,7 @@ Loopy.addStrings({
   },
   de: {
     mkName: "Ergänze bis 10", mkTitle: "Ergänze bis {n}", mkMake: "Ergänze",
-    mk10: "Bis 10", mk20: "Bis 20", mkTens: "Zehner bis 100", mk100: "Bis 100",
+    mk10: "Bis 10", mk20: "Bis 20", mkTens: "Zehner bis 100", mk100: "Bis 100", mk1000: "Bis 1.000",
     picsLabel: "Zehnerfeld-Bild zeigen",
     mkAria: "{a} plus wie viel ergibt {n}?", mkHint: "Welche Zahl fehlt bis {n}?", mkCount: "Zähle die leeren Kästchen oder rechne im Kopf.",
     mkPair: "{a} und {b} ergeben {n}.",
@@ -318,15 +319,15 @@ const fmt = (n) => Loopy.num(n);
 const t = Loopy.t;
 
 // The levels, easiest first. "tens" is Make 100 with whole tens only (30 + 70).
-const LEVELS = ["10", "20", "tens", "100"];
-const targetOf = (lv) => lv === "10" ? 10 : lv === "20" ? 20 : 100;
-const levelName = (lv) => ({ "10": "mk10", "20": "mk20", tens: "mkTens", "100": "mk100" })[lv];
+const LEVELS = ["10", "20", "tens", "100", "1000"];
+const targetOf = (lv) => lv === "10" ? 10 : lv === "20" ? 20 : lv === "1000" ? 1000 : 100;
+const levelName = (lv) => ({ "10": "mk10", "20": "mk20", tens: "mkTens", "100": "mk100", "1000": "mk1000" })[lv];
 // What each age starts with, and whether the ten-frame picture is on.
 function levelForAge(age) {
   if (age <= 6) return "10";
   if (age === 7) return "20";
   if (age === 8) return "tens";
-  return "100";
+  return age === 9 ? "100" : "1000";
 }
 const picsForAge = (age) => age <= 8;
 
@@ -338,8 +339,10 @@ function makeProblem(lv, avoid) {
     if (lv === "10") a = randInt(1, 9);
     else if (lv === "20") a = randInt(1, 19);
     else if (lv === "tens") a = randInt(1, 9) * 10;
+    else if (lv === "1000") a = Math.random() < 0.8 ? randInt(101, 999) : randInt(1, 9) * 100;
     else a = Math.random() < 0.8 ? randInt(11, 99) : randInt(1, 9) * 10;
     if (lv === "100" && a % 10 === 0 && a > 10 && Math.random() < 0.5) continue;
+    if (lv === "1000" && a % 100 === 0 && Math.random() < 0.5) continue;
     const key = lv + ":" + a;
     if (avoid && avoid.includes(key) && tries < 250) continue;
     return { lv, n, a, key, answer: n - a };
@@ -382,11 +385,11 @@ function explain(p) {
     lv = store.get("mk.lv.a" + age, levelForAge(age), LEVELS);
     pics = store.get("mk.pics.a" + age, picsForAge(age), [true, false]);
     // Opened from the grown-ups' page to practise one level: set it for this visit, without saving.
-    const m = /^mk-(10|20|100)$/.exec(Loopy.log.hint || "");
+    const m = /^mk-(10|20|100|1000)$/.exec(Loopy.log.hint || "");
     if (m) { lv = m[1]; Loopy.log.hint = ""; }
   }
   loadForAge();
-  if (window.Loopy && Loopy.levels) Loopy.levels.init({ names: ["mk10", "mk20", "mkTens", "mk100"],
+  if (window.Loopy && Loopy.levels) Loopy.levels.init({ names: ["mk10", "mk20", "mkTens", "mk100", "mk1000"],
     get: () => LEVELS.indexOf(lv), base: () => LEVELS.indexOf(levelForAge(age)),
     set: (i) => { lv = LEVELS[i]; store.set("mk.lv.a" + age, lv); recent = []; render(); } });
 
@@ -398,7 +401,7 @@ function explain(p) {
   // After answering, the missing part fills in too, so the whole total is full.
   function drawFrames() {
     const p = current;
-    framesEl.hidden = !(pics && p);
+    framesEl.hidden = !(pics && p && p.n <= 100); // 1,000 would need 100 frames
     if (framesEl.hidden) return;
     const frames = p.n / 10, across = frames === 1 ? 1 : 2, down = Math.ceil(frames / across);
     const cols = across * 5, rows = down * 2;

@@ -116,7 +116,7 @@ def base_text(base, path):
 def code_files(read):
     """{path: text} for src/loopy.js and every page, read with read(path) (now or on the base)."""
     out = {}
-    for path in ["src/loopy.js", "src/loopy-report.js", "src/loopy-backup.js", "src/loopy-sheet.js"] + [rel(p) for p in sorted(ROOT.glob("**/index.html"))
+    for path in ["src/loopy.js", "src/loopy-report.js", "src/loopy-backup.js", "src/loopy-sheet.js", "src/loopy-levels.js"] + [rel(p) for p in sorted(ROOT.glob("**/index.html"))
                                      if not build.SKIP_DIRS & set(p.relative_to(ROOT).parts)]:
         text = read(path)
         if text is not None:

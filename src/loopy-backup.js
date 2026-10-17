@@ -106,6 +106,8 @@
     var R = Loopy.rewards.clean(read("rewards", id)), r = Loopy.rewards.clean(got.rewards);
     R.stars = Math.max(R.stars, r.stars);
     Object.keys(r.best).forEach(function (g) { R.best[g] = Math.max(R.best[g] || 0, r.best[g]); });
+    r.played.forEach(function (g) { if (R.played.indexOf(g) === -1) R.played.push(g); });
+    R.brave = R.brave || r.brave;
     put("rewards", Loopy.rewards.clean(R), id);
 
     var D = Loopy.daily.clean(read("daily", id)), d = Loopy.daily.clean(got.daily);

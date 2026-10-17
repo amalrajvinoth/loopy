@@ -33,7 +33,7 @@ It works on phones, tablets and computers. There is no sign-up and no ads.
 | [Quick Facts](science/quick-facts/) | Short science quizzes about space, animals and the body, with one line of why after each answer | [README](science/quick-facts/README.md) |
 | [Where Is It?](geography/where-is-it/) | Continents, oceans, countries and capitals on a map, Europe first, then the world | [README](geography/where-is-it/README.md) |
 | [Flags and Capitals](geography/flags-capitals/) | See a flag, pick its country, then its capital, Europe first, then the world | [README](geography/flags-capitals/README.md) |
-| [Today's 10](mix/daily-mix/) | A daily mix of 10 problems from the games for your age, with a day streak | [README](mix/daily-mix/README.md) |
+| [Today's 10](mix/daily-mix/) | A daily mix of 10 problems from the games for your age, with a day streak (10 right answers in any game count as a day too) | [README](mix/daily-mix/README.md) |
 
 ## For grown-ups
 
@@ -51,7 +51,7 @@ Open it from the link at the bottom of the home page.
 - **Language.** English is the default. Tap **DE** for German, or **EN** to go back.
 - **Colors.** Black is the default. You can also pick Sunny, Ocean, Candy, Forest or High contrast. High contrast is black and white with bright colors and white edges on every button.
 - **Easier to read.** In **Settings**, turn on **Easier to read** to switch every text to Atkinson Hyperlegible, a font made so letters like b and d, or I, l and 1, are easy to tell apart. Pages only load the font when it is on, and it is saved for offline use like the other fonts.
-- **Stars.** Every right answer gives a star. More stars unlock badges. A streak of right answers sets off confetti.
+- **Stars.** Every right answer gives a star. More stars unlock badges, from 10 stars up to 5,000. A streak of right answers sets off confetti, and the best streak earns badges at 10, 20 and 50 in a row. There are badges for playing 5, 10 and all games, and a Brave badge for 10 in a row on a level above your age.
 - **Sound.** Short happy sounds play. Tap the speaker to turn them off.
 - **Read aloud.** In Plus and Minus, Times and Share, What Time Is It?, Make 10, Bigger or Smaller, Pizza Fractions, Coins and Change, Equation Balance, Times Tables Sprint, Quick Facts, Where Is It? and Flags and Capitals, a speaker button reads the question out loud in the device's own voice, in English or German. Nothing is downloaded. It is on by itself for ages 5 to 7. Turn it on or off in **Settings**.
 - **Help.** After each answer, the game shows a short reason, so kids learn from mistakes.
@@ -97,10 +97,10 @@ The site is plain HTML, CSS and JavaScript. One small build step makes the share
 | --- | --- |
 | `index.html` | The home page and the list of games |
 | `src/loopy.js` | Shared code: languages, colors, age, sound, read aloud, stars and badges, Last 5 dots, the back button, and the buttons for the stars code, the worksheet and Report a problem. Edit this one |
-| `src/loopy-report.js`, `src/loopy-backup.js`, `src/loopy-sheet.js`, `src/print.css` | The Report a problem box, the stars code, and the worksheet filling and print styles. `loopy.js` loads each one the first time it is needed (`Loopy.load`). Edit these |
+| `src/loopy-report.js`, `src/loopy-backup.js`, `src/loopy-sheet.js`, `src/loopy-levels.js`, `src/print.css` | The Report a problem box, the stars code, the worksheet filling and print styles, and the list of every game's levels for the grown-ups page. `loopy.js` loads each one the first time it is needed (`Loopy.load`). Edit these |
 | `src/loopy.css` | Shared styles and fonts. Edit this one |
 | `loopy.js`, `loopy.css` | Small copies made by the build. Pages load these. Do not edit them |
-| `loopy-report.js`, `loopy-backup.js`, `loopy-sheet.js`, `print.css` | Parts that load only when they are needed: the Report a problem box, the stars code, and the worksheet with its print styles. Made by the build from `src/`. Do not edit them |
+| `loopy-report.js`, `loopy-backup.js`, `loopy-sheet.js`, `loopy-levels.js`, `print.css` | Parts that load only when they are needed: the Report a problem box, the stars code, the worksheet with its print styles, and the levels list. Made by the build from `src/`. Do not edit them |
 | `DESIGN.md` | How loopy looks: colors, fonts, buttons, layout and rules. Read it before you change a page |
 | `logo.svg`, `logo-white.svg`, `icon.svg` | The logo (for light and dark backgrounds) and the app icon |
 | `help/index.html` | The Help page: FAQ and feedback links |
