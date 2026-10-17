@@ -30,6 +30,10 @@ Yes. A new device starts with one child and shows no names. To add a child, open
 
 Tap EN for English or DE for German. You find it on the home page and in each game's Settings. Loopy remembers your choice.
 
+## What are the badges for?
+
+Stars: every right answer earns one, and badges come at 10, 25, 50, 100 and so on up to 5,000 stars. Streaks: 10, 20 or 50 right in a row in any game. Explorer: 5, 10 or all games played. Brave: 10 in a row on a level above your child's age. Day badges: 3, 7 or 30 days in a row, where a day counts when Today's 10 is finished or 10 answers in any game are right. All badges are in **My stars** on the home page.
+
 ## Where are the stars saved? Can I lose them?
 
 Stars are saved in your browser, in two places: a big store (IndexedDB) and a small one (localStorage). If one is cleared, loopy brings it back from the other. Once a child has stars, loopy asks the browser to keep them, so it does not clear them when the device is low on space. If you clear your browser data yourself or use a private window, they go away. To keep a backup, copy your stars code or link from the home page.

@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'sha256-dYaTmhVN+ywRDePN9qhfMtguhwDIhOUUABWyCIUIUaQ='; style-src 'self' 'sha256-gttVsi1J3CVyiF6iU9Q/POFBk3SArRQaN/BhtEgJtrE='; img-src 'self' data:; font-src 'self'; connect-src 'self'; worker-src 'self'; object-src 'none'; base-uri 'none'; form-action 'none'; manifest-src 'self'; upgrade-insecure-requests">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'sha256-lu6xRGt+oMsrve5QsBjurEaq0IXl1WYA/AGSLyA/dqw='; style-src 'self' 'sha256-RF9RRvvUBX1Wp82nhDW22UUS66UAqbDqcztlzmV3+GM='; img-src 'self' data:; font-src 'self'; connect-src 'self'; worker-src 'self'; object-src 'none'; base-uri 'none'; form-action 'none'; manifest-src 'self'; upgrade-insecure-requests">
 <meta name="referrer" content="strict-origin-when-cross-origin">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <link rel="icon" href="../icon.svg" type="image/svg+xml">
@@ -60,6 +60,7 @@ section[hidden] { display: none; }
 .split { flex: 1; min-width: 40px; height: 10px; border-radius: 999px; background: var(--line); overflow: hidden; display: flex; }
 .split i { display: block; height: 100%; background: var(--good); }
 .tip { padding: 8px 12px; border-radius: 12px; background: var(--chip); font-weight: 600; }
+.best { margin: 0; color: var(--muted); font-weight: 600; }
 .play { align-self: flex-start; color: var(--ink); font-weight: 600; min-height: 44px; display: inline-flex; align-items: center; }
 .misses { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; }
 .misses h3 { margin: 10px 0 4px; font-size: 0.8rem; font-weight: 600; letter-spacing: 0.06em; text-transform: uppercase; color: var(--muted); }
@@ -247,7 +248,7 @@ Loopy.addStrings({
     prBrand: "loopy · Learn. Play. Repeat.",
     prSheet: "Print a practice sheet", prSheetMaking: "Making the sheet…", prSheetFail: "The sheet could not be made. Open a game and print its worksheet from Settings instead.",
     prSheetTitle: "Practice sheet", prSheetTitleKid: "Practice sheet for {name}", prSheetHow: "20 problems of the kinds missed most. Answers on page 2.",
-    prStars: "⭐ {n} stars", prDays: "🔥 {n} days in a row", prDay: "🔥 1 day in a row", prBadge: "🏅 {name}", prPlay: "Play →",
+    prStars: "⭐ {n} stars", prDays: "🔥 {n} days in a row", prDay: "🔥 1 day in a row", prBadge: "🏅 {name}", prBest: "🏆 Best streak: {n}", prGameBest: "Best streak: {n} in a row", prPlay: "Play →",
     gPlusMinus: "Plus and Minus", gTimesShare: "Times and Share", gTimesSprint: "Times Tables Sprint", gClock: "What Time Is It?", gSoundSpell: "Sound Spell", gDailyMix: "Today's 10", gMake10: "Make 10", gBiggerSmaller: "Bigger or Smaller", gPizza: "Pizza Fractions", gCoinsChange: "Coins and Change", gWordMatch: "Word Match", gSpellIt: "Spell It", gQuickFacts: "Quick Facts", gWhereIsIt: "Where Is It?", gFlags: "Flags and Capitals", gEquation: "Equation Balance",
     tipNone: "Not played this week. A few minutes a day helps.", tipAll: "All right this week. Try a harder level in Settings.",
     tipLast: "Mostly right. Keep going.",
@@ -324,7 +325,7 @@ Loopy.addStrings({
     prBrand: "loopy · Lernen. Spielen. Wiederholen.",
     prSheet: "Übungsblatt drucken", prSheetMaking: "Blatt wird gemacht…", prSheetFail: "Das Blatt konnte nicht gemacht werden. Öffnet ein Spiel und druckt dort in den Einstellungen das Arbeitsblatt.",
     prSheetTitle: "Übungsblatt", prSheetTitleKid: "Übungsblatt für {name}", prSheetHow: "20 Aufgaben der Arten, die am häufigsten falsch waren. Lösungen auf Seite 2.",
-    prStars: "⭐ {n} Sterne", prDays: "🔥 {n} Tage hintereinander", prDay: "🔥 1 Tag hintereinander", prBadge: "🏅 {name}", prPlay: "Spielen →",
+    prStars: "⭐ {n} Sterne", prDays: "🔥 {n} Tage hintereinander", prDay: "🔥 1 Tag hintereinander", prBadge: "🏅 {name}", prBest: "🏆 Beste Serie: {n}", prGameBest: "Beste Serie: {n} hintereinander", prPlay: "Spielen →",
     gPlusMinus: "Plus und Minus", gTimesShare: "Mal und Teilen", gTimesSprint: "Einmaleins-Sprint", gClock: "Wie spät ist es?", gSoundSpell: "Anlaut und Endlaut", gDailyMix: "Die 10 von heute", gMake10: "Ergänze bis 10", gBiggerSmaller: "Größer oder kleiner", gPizza: "Pizza-Brüche", gCoinsChange: "Münzen und Wechselgeld", gWordMatch: "Bild und Wort", gSpellIt: "Wörter schreiben", gQuickFacts: "Blitzwissen", gWhereIsIt: "Wo liegt das?", gFlags: "Flaggen und Hauptstädte", gEquation: "Waage",
     tipNone: "Diese Woche nicht gespielt. Ein paar Minuten am Tag helfen.", tipAll: "Diese Woche alles richtig. Probiert in den Einstellungen eine schwerere Stufe.",
     tipLast: "Fast alles richtig. Weiter so.",
@@ -460,6 +461,8 @@ Loopy.addStrings({
     box.appendChild(el("span", "", t("prStars", { n: num(stars) })));
     if (day.streak) box.appendChild(el("span", "", day.streak === 1 ? t("prDay") : t("prDays", { n: day.streak })));
     if (badge) box.appendChild(el("span", "", t("prBadge", { name: badge.name })));
+    const best = Loopy.rewards.bestStreak();
+    if (best) box.appendChild(el("span", "", t("prBest", { n: num(best) })));
   }
 
   // The week in one card: answers and percent right, up or down from last week, days played, four week bars.
@@ -558,7 +561,10 @@ Loopy.addStrings({
       weekRow(dl, t("prLast"), before);
       const tr = trend(now, before);
       a.href = g.path;
-      card.append(el("h3", "", t(g.name)), dl, el("p", "tip", (tr ? tr + " " : "") + tip(g.id, now)), a);
+      const best = Loopy.rewards.get().best[g.id];
+      card.append(el("h3", "", t(g.name)), dl);
+      if (best >= 3) card.appendChild(el("p", "best", t("prGameBest", { n: num(best) })));
+      card.append(el("p", "tip", (tr ? tr + " " : "") + tip(g.id, now)), a);
       box.appendChild(card);
     });
     // Games with no answers in both weeks share one folded line, with a link to each.

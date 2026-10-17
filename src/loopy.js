@@ -38,7 +38,10 @@ document.documentElement.classList.add("loopy-building");
       ageGroup: "Age", ageLabel: "Age {n}", younger: "Younger", older: "Older",
       soundOn: "Sound on", soundOff: "Sound off", settings: "Settings", language: "Language",
       starsEarned: "Stars earned",
-      b10: "First Steps", b25: "Rising Star", b50: "Super Learner", b100: "Brain Builder", b250: "Champion", b500: "Legend", b1000: "loopy Master",
+      b10: "First Steps", b25: "Rising Star", b50: "Super Learner", b100: "Brain Builder", b150: "Star Collector", b200: "Bright Spark", b250: "Champion",
+      b300: "Quick Thinker", b400: "Puzzle Pro", b500: "Legend", b750: "Hero", b1000: "loopy Master", b1500: "Grand Master", b2000: "Wizard", b3000: "Superstar", b5000: "Shooting Star",
+      s10: "Hot Streak", s20: "On Fire", s50: "Unstoppable", e5: "Explorer", e10: "Adventurer", eAll: "World Traveller", brave: "Brave",
+      streakText: "{n} in a row", gamesText: "{n} games played", braveText: "10 in a row above your age's level", bestStreak: "Best streak: {n}",
       newBadge: "New badge: {name}!", badgeText: "You have earned {n} stars. Keep going!",
       levelUp: "{n} in a row! Ready to level up?", levelUpRound: "A clean round! Ready to level up?", makeHarder: "Make it harder", keepGoing: "Keep going", yay: "Yay!",
       inARow: "{n} in a row!", bestYet: "That's your best streak yet!", amazing: "Amazing work!",
@@ -58,7 +61,10 @@ document.documentElement.classList.add("loopy-building");
       ageGroup: "Alter", ageLabel: "Alter {n}", younger: "Jünger", older: "Älter",
       soundOn: "Ton an", soundOff: "Ton aus", settings: "Einstellungen", language: "Sprache",
       starsEarned: "Gesammelte Sterne",
-      b10: "Erste Schritte", b25: "Aufsteiger", b50: "Super-Lerner", b100: "Denk-Profi", b250: "Champion", b500: "Legende", b1000: "loopy-Meister",
+      b10: "Erste Schritte", b25: "Aufsteiger", b50: "Super-Lerner", b100: "Denk-Profi", b150: "Sternesammler", b200: "Helles Köpfchen", b250: "Champion",
+      b300: "Schnelldenker", b400: "Rätsel-Profi", b500: "Legende", b750: "Held", b1000: "loopy-Meister", b1500: "Großmeister", b2000: "Zauberer", b3000: "Superstar", b5000: "Sternschnuppe",
+      s10: "Heiße Serie", s20: "Feuer und Flamme", s50: "Nicht zu stoppen", e5: "Entdecker", e10: "Abenteurer", eAll: "Weltenbummler", brave: "Mutig",
+      streakText: "{n} hintereinander", gamesText: "{n} Spiele gespielt", braveText: "10 hintereinander über der Stufe deines Alters", bestStreak: "Beste Serie: {n}",
       newBadge: "Neues Abzeichen: {name}!", badgeText: "Du hast {n} Sterne gesammelt. Weiter so!",
       levelUp: "{n} richtig hintereinander! Bereit für mehr?", levelUpRound: "Alles richtig! Bereit für mehr?", makeHarder: "Schwieriger machen", keepGoing: "Weiter so", yay: "Juhu!",
       inARow: "{n} richtig hintereinander!", bestYet: "Das ist deine beste Serie!", amazing: "Super gemacht!",
@@ -880,33 +886,38 @@ document.documentElement.classList.add("loopy-building");
 })();
 
 // Loopy rewards: a star for every right answer, badges for star totals, confetti for streaks.
-// Progress is kept in this browser's localStorage (no account, nothing sent anywhere).
+// More badges: for the best streak (10, 20, 50 in a row, in any game), for how many different games
+// were played (5, 10, all), and "Brave" for 10 in a row on a level above the age's start level.
+// Progress is kept in this browser's localStorage (no account, nothing sent anywhere) as
+// { stars, best: { game: best streak }, played: [game, ...], brave: true }.
 (function () {
   var KEY = "loopy.rewards";
-  var BADGES = [
-    { stars: 10,   key: "b10",   color: "--c3" },
-    { stars: 25,   key: "b25",   color: "--c1" },
-    { stars: 50,   key: "b50", color: "--c2" },
-    { stars: 100,  key: "b100", color: "--c4" },
-    { stars: 250,  key: "b250",      color: "--c5" },
-    { stars: 500,  key: "b500",        color: "--c1" },
-    { stars: 1000, key: "b1000",  color: "--c2" }
-  ];
+  // Star badges: [stars, color number]. The name is the string "b" + stars.
+  var BADGES = [[10, 3], [25, 1], [50, 2], [100, 4], [150, 5], [200, 3], [250, 5], [300, 1], [400, 2], [500, 1], [750, 4], [1000, 2], [1500, 3], [2000, 5], [3000, 1], [5000, 4]]
+    .map(function (b) { return { stars: b[0], key: "b" + b[0], color: "--c" + b[1] }; });
+  // More badges: [kind, how many, name key, color]. kind "streak" needs the best streak in any game,
+  // "games" the number of different games played, "brave" the brave flag.
+  var EXTRA = [["streak", 10, "s10", 4], ["streak", 20, "s20", 2], ["streak", 50, "s50", 1], ["games", 5, "e5", 3], ["games", 10, "e10", 5], ["games", 15, "eAll", 2], ["brave", 1, "brave", 1]]
+    .map(function (b) { return { kind: b[0], n: b[1], key: b[2], color: "--c" + b[3] }; });
   var STREAKS = [5, 10, 15, 20, 30, 50];
   var STAR_PATH = "M12 2.5l2.9 6 6.6.9-4.8 4.6 1.2 6.5L12 17.4l-5.9 3.1 1.2-6.5L2.5 9.4l6.6-.9z";
 
-  var data = { stars: 0, best: {} };
+  var data = { stars: 0, best: {}, played: [], brave: false };
   var cheeredBest = {}; // one "new best" cheer per run
+  var owed = []; // badges earned on the same answer as another card, cheered on the next right answer
   var last = null; // the last answer on this page, for "Report a problem"
   var MAX_STARS = 1000000, GAMES = ["plus-minus", "times-share", "clock", "sound-spell", "daily-mix", "make-10", "bigger-smaller", "pizza-fractions", "coins-change", "word-match", "spell-it", "quick-facts", "where-is-it", "equation-balance", "flags-capitals", "times-sprint"];
   var num = function (n) { return typeof n === "number" && isFinite(n) && n >= 0 ? Math.min(Math.floor(n), MAX_STARS) : 0; };
   // Only known games and sane numbers are kept, whatever the stored text says.
   function clean(raw) {
-    var out = { stars: 0, best: {} };
+    var out = { stars: 0, best: {}, played: [], brave: false };
     if (!raw || typeof raw !== "object") return out;
     out.stars = num(raw.stars);
     var b = raw.best && typeof raw.best === "object" ? raw.best : {};
     GAMES.forEach(function (g) { if (b[g] !== undefined) out.best[g] = num(b[g]); });
+    var p = Array.isArray(raw.played) ? raw.played : [];
+    GAMES.forEach(function (g) { if (g !== "daily-mix" && p.indexOf(g) !== -1) out.played.push(g); });
+    out.brave = raw.brave === true;
     return out;
   }
   try { data = clean(JSON.parse(window.Loopy.store.get(KEY))); } catch (e) {}
@@ -1007,8 +1018,30 @@ document.documentElement.classList.add("loopy-building");
   }
 
   BADGES.forEach(function (b) { Object.defineProperty(b, "name", { get: function () { return Loopy.t(b.key); } }); });
+  EXTRA.forEach(function (b) {
+    Object.defineProperty(b, "name", { get: function () { return Loopy.t(b.key); } });
+    Object.defineProperty(b, "text", { get: function () { return Loopy.t(b.kind + "Text", { n: b.n }); } }); // what earns it
+  });
   function badgeFor(stars) { var got = null; BADGES.forEach(function (b) { if (stars >= b.stars) got = b; }); return got; }
   function nextBadge(stars) { for (var i = 0; i < BADGES.length; i++) if (stars < BADGES[i].stars) return BADGES[i]; return null; }
+  function bestStreak() { var m = 0; Object.keys(data.best).forEach(function (g) { m = Math.max(m, data.best[g]); }); return m; }
+  // The games this child has played. A device from before this list had one fills it from the answer log once.
+  function played() {
+    if (!data.played.length && Loopy.log) {
+      var days = Loopy.log.get().days, seen = {};
+      Object.keys(days).forEach(function (d) { Object.keys(days[d]).forEach(function (g) { if (days[d][g][0] > 0) seen[g] = true; }); });
+      data.played = GAMES.filter(function (g) { return g !== "daily-mix" && seen[g]; });
+      if (data.played.length) save();
+    }
+    return data.played;
+  }
+  function hasExtra(b) {
+    return b.kind === "streak" ? bestStreak() >= b.n : b.kind === "games" ? played().length >= b.n : data.brave;
+  }
+  function showBest(game) {
+    var el = document.getElementById("set-best");
+    if (el) el.textContent = Loopy.t("bestStreak", { n: data.best[game] || 0 });
+  }
 
   function updateChips() {
     document.querySelectorAll("[data-loopy-stars]").forEach(function (n) { n.textContent = data.stars; });
@@ -1053,6 +1086,9 @@ document.documentElement.classList.add("loopy-building");
     // The last answer on this page: { ok: true } or { ok: false, d: { q, a, y, k } }, or null before the first one.
     last: function () { return last; },
     badgeFor: badgeFor, nextBadge: nextBadge, confetti: confetti, celebrate: celebrate,
+    // The streak, games and brave badges, each with got: true when earned.
+    extra: function () { return EXTRA.map(function (b) { return { key: b.key, name: b.name, text: b.text, color: b.color, got: hasExtra(b) }; }); },
+    bestStreak: bestStreak, played: played,
     // Call after a wrong answer, with the game's name.
     // detail: optional { q: "52 − 17", a: "35", y: "45", k: "sub-rg" } for the grown-ups' progress page (see Loopy.log).
     wrong: function (game, detail) {
@@ -1072,18 +1108,25 @@ document.documentElement.classList.add("loopy-building");
       last = { ok: true, d: null };
       if (Loopy.recent) Loopy.recent.add(game, true);
       if (Loopy.log) Loopy.log.add(game, true);
-      var before = badgeFor(data.stars);
+      var before = badgeFor(data.stars), had = EXTRA.map(hasExtra);
       data.stars++;
       if (streak <= 1) cheeredBest[game] = false;
       var newBest = streak > (data.best[game] || 0);
-      if (newBest) data.best[game] = streak;
+      if (newBest) { data.best[game] = streak; showBest(game); }
+      if (game !== "daily-mix" && played().indexOf(game) === -1) data.played.push(game);
+      if (streak === 10 && Loopy.levels) { var lv = Loopy.levels.get(); if (lv && lv.at > lv.base) data.brave = true; }
       save(); updateChips(); fly();
       announce(true);
       if (Loopy.hint) Loopy.hint.done();
       var after = badgeFor(data.stars);
-      if (after && after !== before) {
+      if (after && after !== before) owed.push([after.name, Loopy.t("badgeText", { n: data.stars })]);
+      EXTRA.forEach(function (b, i) { if (!had[i] && hasExtra(b)) owed.push([b.name, b.text]); });
+      var day = Loopy.daily ? Loopy.daily.answer() : null; // 10 right today in any game count as a day
+      if (day) owed.push([day.name, Loopy.t("dayStreakBadge", { n: day.days })]);
+      if (owed.length) {
+        var b = owed.shift();
         Loopy.sound.play("badge");
-        celebrate(Loopy.t("newBadge", { name: after.name }), Loopy.t("badgeText", { n: data.stars }), true);
+        celebrate(Loopy.t("newBadge", { name: b[0] }), b[1], true);
       } else if (streak % 10 === 0 && harder) {
         Loopy.sound.play("badge");
         celebrate(Loopy.t("levelUp", { n: streak }), harder.label, true,
@@ -1192,7 +1235,7 @@ document.documentElement.classList.add("loopy-building");
   };
 })();
 
-// Loopy day streak: finishing Today's 10 on days in a row. Badges at 3, 7 and 30 days.
+// Loopy day streak: finishing Today's 10, or 10 right answers in any game, on days in a row. Badges at 3, 7 and 30 days.
 // Kept in this browser's localStorage as { last: "2026-10-15", streak: 3, best: 5 }.
 (function () {
   var KEY = "loopy.daily", MAX = 100000;
@@ -1226,7 +1269,14 @@ document.documentElement.classList.add("loopy-building");
   // A day as "2026-10-15" in local time. offset: days from today, e.g. -1 for yesterday.
   Loopy.dayKey = dayKey;
   Loopy.daily = {
-    BADGES: DAY_BADGES, clean: clean, // clean is used by Loopy.backup
+    BADGES: DAY_BADGES, GOAL: 10, clean: clean, // clean is used by Loopy.backup
+    // Right answers today in every game together, from the answer log.
+    today: function () { return Loopy.log ? Loopy.log.rightToday() : 0; },
+    // Loopy.rewards.correct calls this: 10 right today count as a day. Returns a new day badge, if one was just earned.
+    answer: function () {
+      if (data.last === dayKey(0) || this.today() < this.GOAL) return null;
+      return this.finish().badge;
+    },
     // streak: days in a row that are still alive (finished today or yesterday). doneToday: today's 10 is finished.
     get: function () {
       var alive = data.last === dayKey(0) || data.last === dayKey(-1);
@@ -1303,6 +1353,8 @@ document.documentElement.classList.add("loopy-building");
       save();
     },
     clear: function () { data = clean(null); Loopy.store.remove(KEY); },
+    // Right answers today in every game together, for the day streak.
+    rightToday: function () { var row = data.days[Loopy.dayKey(0)] || {}, n = 0; Object.keys(row).forEach(function (g) { n += row[g][0]; }); return n; },
     // The kind of a sum: "add" or "sub" with "-rg" when it needs carrying or regrouping,
     // "mul-7" or "div-7" for a times table fact, "mul-big" or "div-big" for bigger numbers.
     kind: function (op, a, b) {
@@ -1444,6 +1496,14 @@ window.Loopy.fresh = function (recent, make, keep) {
     panel.insertBefore(box, foot);
     box.appendChild(shared);
     if (own) panel.insertBefore(head("setGame"), panel.firstChild);
+    // The best streak in this game, under "This game". Loopy.rewards keeps it fresh while playing.
+    var last5 = document.getElementById("last5"), game = last5 && last5.getAttribute("data-game");
+    if (own && game && Loopy.rewards) {
+      var best = document.createElement("p");
+      best.className = "set-best"; best.id = "set-best";
+      best.textContent = Loopy.t("bestStreak", { n: Loopy.rewards.get().best[game] || 0 });
+      panel.insertBefore(best, panel.children[1]);
+    }
   }
   var GEAR = '<svg viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.7 1.7 0 0 0 .3 1.8l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.7 1.7 0 0 0-1.8-.3 1.7 1.7 0 0 0-1 1.5V21a2 2 0 1 1-4 0v-.1a1.7 1.7 0 0 0-1.1-1.5 1.7 1.7 0 0 0-1.8.3l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1a1.7 1.7 0 0 0 .3-1.8 1.7 1.7 0 0 0-1.5-1H3a2 2 0 1 1 0-4h.1a1.7 1.7 0 0 0 1.5-1.1 1.7 1.7 0 0 0-.3-1.8l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1a1.7 1.7 0 0 0 1.8.3H9a1.7 1.7 0 0 0 1-1.5V3a2 2 0 1 1 4 0v.1a1.7 1.7 0 0 0 1 1.5 1.7 1.7 0 0 0 1.8-.3l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1a1.7 1.7 0 0 0-.3 1.8V9a1.7 1.7 0 0 0 1.5 1H21a2 2 0 1 1 0 4h-.1a1.7 1.7 0 0 0-1.5 1z"/></svg>';
   function build() {
