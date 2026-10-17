@@ -70,6 +70,10 @@ Tap the small flag at the top of the game (or Report a problem in Settings). Pic
 
 Open **For grown-ups: how it's going** at the bottom of the home page. The first card says how the week went: how many answers, how many percent right, and up or down from last week. **Practise next** shows the three kinds of question your child got wrong most this week, like the 7 times table or clock times in fives. Tap **Practise** and the game opens set to just that kind for this visit. The child's saved level does not change. **Level up** opens a game that is going well, with its Settings showing, so you can pick a harder level. Nothing here leaves your device.
 
+## Can I share or print how the week went?
+
+Yes. On the grown-ups' page, tap **Share this week**. You get a card with the week's numbers, what went well and what to practise. **Share picture** sends it as a picture with your phone's share sheet (or saves it, on a browser that cannot share pictures), and **Print** prints it. Under Practise next, **Print a practice sheet** prints 20 problems of the kinds your child missed most, with answers on page 2. The picture and the sheet are made on your device. Nothing is sent anywhere unless you share the picture.
+
 ## How do I send feedback or report a problem?
 
 See [Helping with Loopy](CONTRIBUTING.md). You need a free GitHub account (ages 13 and up). Everything on GitHub is public, so never share a child's personal details.

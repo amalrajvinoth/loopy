@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'sha256-Zx1Zl/pMW39/AotoNCypohqcYhq3b24eivKBzeERSdY='; style-src 'self' 'sha256-z2P7kGW5Z05eCTjTZdYpc0vThTlOE9vmt97pVSvi2I4=' 'sha256-6kMyVyf9c7UM1Oxq9qbT64OjK/qoKmBRHgHXNYLWcKg=' 'sha256-RT1053JU5UiKvjrCUFx1rlhdFLMmgtuFJ9T8jnMeawQ=' 'sha256-pxp/kBLGl+9iEuWmE39iE3rdwOKNvJ0P5qI66lh2pmE='; img-src 'self' data:; font-src 'self'; connect-src 'self'; worker-src 'self'; object-src 'none'; base-uri 'none'; form-action 'none'; manifest-src 'self'; upgrade-insecure-requests">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'sha256-Xntyo2CdLTBxwJtbrGlOBrTbTTX5eYDaptNqFTMm/Ig='; style-src 'self' 'sha256-z2P7kGW5Z05eCTjTZdYpc0vThTlOE9vmt97pVSvi2I4=' 'sha256-6kMyVyf9c7UM1Oxq9qbT64OjK/qoKmBRHgHXNYLWcKg=' 'sha256-RT1053JU5UiKvjrCUFx1rlhdFLMmgtuFJ9T8jnMeawQ=' 'sha256-pxp/kBLGl+9iEuWmE39iE3rdwOKNvJ0P5qI66lh2pmE='; img-src 'self' data:; font-src 'self'; connect-src 'self'; worker-src 'self'; object-src 'none'; base-uri 'none'; form-action 'none'; manifest-src 'self'; upgrade-insecure-requests">
 <meta name="referrer" content="strict-origin-when-cross-origin">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <style>:root{color-scheme:light;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}body{margin:0}[hidden]{display:none!important}</style>
@@ -262,6 +262,7 @@ body { min-height: 100vh; min-height: 100dvh; padding-block: 12px 16px; }
       <div class="show" id="show" aria-live="polite"></div>
       <svg class="nl off" id="nl" viewBox="0 0 400 104" role="img" aria-label="Number line" data-t-aria="bsLine"></svg>
       <p class="feedback" id="feedback"></p>
+      <p class="loopy-sr" id="bs-said" aria-live="polite"></p>
     </div>
     <div class="side">
       <div class="choices" id="choices"></div>
@@ -277,7 +278,7 @@ Loopy.addStrings({
     bsNumbers: "Numbers", bsUpTo: "Up to {n}", bsDecNeg: "Decimals and minus",
     bsKbd: "Keyboard works too: 1 to 4 or < = > picks an answer, Enter goes on.",
     bsLine: "Number line",
-    bsAskCmp: "Which sign goes in the circle?", bsAskOrd: "Tap the numbers from smallest to biggest.",
+    bsAskCmp: "Which sign goes in the circle?", bsAskOrd: "Tap the numbers from smallest to biggest.", bsPlaced: "{n} is number {i}. Now the next one.",
     bsRound1: "Round to the nearest whole number.", bsRound10: "Round to the nearest ten.", bsRound100: "Round to the nearest hundred.",
     bsRound1000: "Round to the nearest thousand.", bsRound10000: "Round to the nearest ten thousand.",
     bsRoundsTo: "rounds to", bsRoundIs: "{n} rounds to {r}.",
@@ -308,7 +309,7 @@ Loopy.addStrings({
     bsNumbers: "Zahlen", bsUpTo: "Bis {n}", bsDecNeg: "Komma und Minus",
     bsKbd: "Die Tastatur geht auch: 1 bis 4 oder < = > wählt eine Antwort, Enter geht weiter.",
     bsLine: "Zahlenstrahl",
-    bsAskCmp: "Welches Zeichen gehört in den Kreis?", bsAskOrd: "Tippe die Zahlen von der kleinsten zur größten an.",
+    bsAskCmp: "Welches Zeichen gehört in den Kreis?", bsAskOrd: "Tippe die Zahlen von der kleinsten zur größten an.", bsPlaced: "{n} ist Nummer {i}. Jetzt die nächste.",
     bsRound1: "Runde auf eine ganze Zahl.", bsRound10: "Runde auf Zehner.", bsRound100: "Runde auf Hunderter.",
     bsRound1000: "Runde auf Tausender.", bsRound10000: "Runde auf Zehntausender.",
     bsRoundsTo: "gerundet", bsRoundIs: "{n} gerundet ist {r}.",
@@ -614,6 +615,7 @@ Loopy.addStrings({
     nl.textContent = "";
     feedbackEl.className = "feedback";
     feedbackEl.textContent = "";
+    $("bs-said").textContent = "";
     showEl.textContent = "";
     showEl.className = "show " + p.type;
     choicesEl.textContent = "";
@@ -677,6 +679,8 @@ Loopy.addStrings({
       btn.classList.add("right");
       btn.appendChild(span("place", String(picked.length)));
       if (picked.length === 3) { finish(true); return; }
+      // Screen readers: say which place the number took, since nothing else is read until the row is full.
+      $("bs-said").textContent = t("bsPlaced", { n: fmt(x), i: picked.length });
       // Keyboard: the tapped number is now off, so focus moves on to a number still to pick.
       const left = choicesEl.querySelector("button:enabled");
       if (hadFocus && left) left.focus({ preventScroll: true });
