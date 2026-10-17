@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'sha256-lu6xRGt+oMsrve5QsBjurEaq0IXl1WYA/AGSLyA/dqw='; style-src 'self' 'sha256-RF9RRvvUBX1Wp82nhDW22UUS66UAqbDqcztlzmV3+GM='; img-src 'self' data:; font-src 'self'; connect-src 'self'; worker-src 'self'; object-src 'none'; base-uri 'none'; form-action 'none'; manifest-src 'self'; upgrade-insecure-requests">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'sha256-18qhe/JijRzJfaosf3mF5Otih0sgSOGukJGOuIL/JEw='; style-src 'self' 'sha256-2vr4Oe0zJzHDeMtbF5vL5Bez7jZGBYlj1tSI6i2nQ+8='; img-src 'self' data:; font-src 'self'; connect-src 'self'; worker-src 'self'; object-src 'none'; base-uri 'none'; form-action 'none'; manifest-src 'self'; upgrade-insecure-requests">
 <meta name="referrer" content="strict-origin-when-cross-origin">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <link rel="icon" href="../icon.svg" type="image/svg+xml">
@@ -61,6 +61,8 @@ section[hidden] { display: none; }
 .split i { display: block; height: 100%; background: var(--good); }
 .tip { padding: 8px 12px; border-radius: 12px; background: var(--chip); font-weight: 600; }
 .best { margin: 0; color: var(--muted); font-weight: 600; }
+.lvl { margin: 0; color: var(--muted); font-weight: 600; }
+.lvl b { color: var(--ink); margin-left: 6px; }
 .play { align-self: flex-start; color: var(--ink); font-weight: 600; min-height: 44px; display: inline-flex; align-items: center; }
 .misses { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; }
 .misses h3 { margin: 10px 0 4px; font-size: 0.8rem; font-weight: 600; letter-spacing: 0.06em; text-transform: uppercase; color: var(--muted); }
@@ -223,7 +225,8 @@ Loopy.addStrings({
     prDaysPlayed: "Played {p} of {n} days", prBarsAria: "Right answers in the last four weeks: {list}", prBarWeek: "{p}% right", prBarNone: "not played",
     prNext: "Practise next", prNextHow: "Each button opens the game set to just this.", prNextNone: "Nothing to practise yet. Play a few games and come back.",
     prMissed: "Missed {n} times this week in {games}.", prMissedLast: "Missed {n} times last week in {games}.", prAnd: " and ", prPractise: "Practise →",
-    prReady: "Ready for more: {game}", prReadyText: "{r} of {n} right in two weeks.", prReadyHow: "Try the next level.", prLevelUp: "Level up →",
+    prReady: "Ready for more: {game}", prReadyText: "{r} of {n} right in two weeks.", prReadyHow: "Try the next level.", prReadyNext: "Try the next level: {name}.", prLevelUp: "Level up →",
+    prLevel: "Level {n} of {of} · {name}", prLevelWentUp: "▲ went up this week", prLevelEasier: "▼ a bit easier this week",
     prBetter: "▲ Better than last week.", prWorse: "▼ Harder than last week.",
     prThisN: "{n} this week", prMonthN: "{n} in 30 days", prClockQ: "Read the clock",
     "nm-add": "Adding", "nm-add-rg": "Adding with carrying", "nm-sub": "Taking away", "nm-sub-rg": "Taking away with regrouping",
@@ -300,7 +303,8 @@ Loopy.addStrings({
     prDaysPlayed: "An {p} von {n} Tagen gespielt", prBarsAria: "Richtige Antworten in den letzten vier Wochen: {list}", prBarWeek: "{p}% richtig", prBarNone: "nicht gespielt",
     prNext: "Als Nächstes üben", prNextHow: "Jeder Knopf öffnet das Spiel genau damit.", prNextNone: "Noch nichts zu üben. Spielt ein paar Spiele und schaut wieder vorbei.",
     prMissed: "Diese Woche {n}-mal falsch in {games}.", prMissedLast: "Letzte Woche {n}-mal falsch in {games}.", prAnd: " und ", prPractise: "Üben →",
-    prReady: "Bereit für mehr: {game}", prReadyText: "{r} von {n} richtig in zwei Wochen.", prReadyHow: "Probiert die nächste Stufe.", prLevelUp: "Stufe hoch →",
+    prReady: "Bereit für mehr: {game}", prReadyText: "{r} von {n} richtig in zwei Wochen.", prReadyHow: "Probiert die nächste Stufe.", prReadyNext: "Probiert die nächste Stufe: {name}.", prLevelUp: "Stufe hoch →",
+    prLevel: "Stufe {n} von {of} · {name}", prLevelWentUp: "▲ diese Woche aufgestiegen", prLevelEasier: "▼ diese Woche etwas leichter",
     prBetter: "▲ Besser als letzte Woche.", prWorse: "▼ Schwerer als letzte Woche.",
     prThisN: "{n} diese Woche", prMonthN: "{n} in 30 Tagen", prClockQ: "Uhr ablesen",
     "nm-add": "Plusrechnen", "nm-add-rg": "Plus mit Übertrag", "nm-sub": "Minusrechnen", "nm-sub-rg": "Minus mit Zehnerübergang",
@@ -448,6 +452,35 @@ Loopy.addStrings({
     return kindTip(best);
   }
   // "Better" or "harder" than last week, when both weeks have enough answers to tell.
+  // The level of a game for this child's age, from the shared levels list (loaded before the first render).
+  // One small per-child key remembers the level the page last saw per game, as [level, level before, day it
+  // moved], so a card can say the level went up this week. Only what Loopy.levelOf gives is shown, so nothing
+  // here changes a game's own saved settings.
+  const LV_KEY = "loopy.levels", DAY = /^\d{4}-\d{2}-\d{2}$/;
+  const levelOf = (id) => (Loopy.levelOf ? Loopy.levelOf(id) : null);
+  function nextLevelName(id) {
+    const lv = levelOf(id), g = Loopy.levelsTable && Loopy.levelsTable[id];
+    if (!lv || !g || lv.at >= lv.of - 1) return "";
+    return (g.names[Loopy.lang] || g.names.en)[lv.at + 1];
+  }
+  function seenLevels() {
+    try {
+      const v = JSON.parse(Loopy.store.get(LV_KEY)), out = {};
+      if (v && typeof v === "object") Object.keys(v).forEach(k => { if (okRec(v[k]) && Loopy.levelsTable && Loopy.levelsTable[k]) out[k] = v[k]; });
+      return out;
+    } catch (e) { return {}; }
+  }
+  const okRec = (r) => Array.isArray(r) && r.length === 3 && Number.isInteger(r[0]) && (r[1] === null || Number.isInteger(r[1])) && DAY.test(r[2] || "");
+  function levelLine(id, seen) {
+    const lv = levelOf(id);
+    if (!lv) return null;
+    const old = seen[id] || null;
+    const rec = old && old[0] === lv.at ? old : [lv.at, old ? old[0] : null, Loopy.dayKey(0)];
+    if (rec !== old) { seen[id] = rec; try { Loopy.store.set(LV_KEY, JSON.stringify(seen)); } catch (e) {} }
+    const p = el("p", "lvl", t("prLevel", { n: num(lv.at + 1), of: num(lv.of), name: lv.name }));
+    if (rec[1] !== null && rec[1] !== rec[0] && rec[2] >= Loopy.dayKey(-6)) p.append(" ", el("b", "", t(rec[0] > rec[1] ? "prLevelWentUp" : "prLevelEasier")));
+    return p;
+  }
   function trend(now, before) {
     if (now.n < 5 || before.n < 5) return "";
     const d = pct(now) - pct(before);
@@ -523,12 +556,12 @@ Loopy.addStrings({
     // Ready for more: the game with the most right answers at 90% or better over two weeks (20 answers at least).
     const two = thisWeek.concat(lastWeek);
     const ready = GAMES.filter(g => g.id !== "daily-mix").map(g => ({ g, c: totals(two, g.id) }))
-      .filter(x => x.c.n >= 20 && pct(x.c) >= 90).sort((a, b) => b.c.r - a.c.r)[0];
+      .filter(x => x.c.n >= 20 && pct(x.c) >= 90).filter(x => { const lv = levelOf(x.g.id); return !lv || lv.at < lv.of - 1; }).sort((a, b) => b.c.r - a.c.r)[0];
     if (ready) {
       const row = el("div", "pn"), go = el("a", "go soft", t("prLevelUp"));
       go.href = ready.g.path + "#practise=harder";
       go.setAttribute("aria-label", t("prLevelUp") + " " + nameOf(ready.g.id));
-      row.append(el("b", "", t("prReady", { game: nameOf(ready.g.id) })), el("small", "", t("prReadyText", { r: num(ready.c.r), n: num(ready.c.n) })), el("span", "how", t("prReadyHow")), go);
+      row.append(el("b", "", t("prReady", { game: nameOf(ready.g.id) })), el("small", "", t("prReadyText", { r: num(ready.c.r), n: num(ready.c.n) })), el("span", "how", nextLevelName(ready.g.id) ? t("prReadyNext", { name: nextLevelName(ready.g.id) }) : t("prReadyHow")), go);
       box.appendChild(row);
     }
     if (!box.children.length) box.appendChild(el("p", "muted", t("prNextNone")));
@@ -552,7 +585,7 @@ Loopy.addStrings({
   function games() {
     const box = $("games");
     box.textContent = "";
-    const quiet = [];
+    const quiet = [], seen = seenLevels();
     GAMES.forEach(g => {
       const now = totals(thisWeek, g.id), before = totals(lastWeek, g.id);
       if (!now.n && !before.n) { quiet.push(g); return; }
@@ -562,7 +595,10 @@ Loopy.addStrings({
       const tr = trend(now, before);
       a.href = g.path;
       const best = Loopy.rewards.get().best[g.id];
-      card.append(el("h3", "", t(g.name)), dl);
+      card.appendChild(el("h3", "", t(g.name)));
+      const lvl = levelLine(g.id, seen);
+      if (lvl) card.appendChild(lvl);
+      card.appendChild(dl);
       if (best >= 3) card.appendChild(el("p", "best", t("prGameBest", { n: num(best) })));
       card.append(el("p", "tip", (tr ? tr + " " : "") + tip(g.id, now)), a);
       box.appendChild(card);
@@ -749,7 +785,7 @@ Loopy.addStrings({
     $("clear-msg").textContent = t("prCleared");
     render();
   });
-  render();
+  Loopy.load("levels").catch(() => {}).then(render);
 })();
 </script>
 </body>
