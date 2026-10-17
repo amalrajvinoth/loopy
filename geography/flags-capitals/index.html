@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'sha256-MrmHA2UVSe4qm865uvPaF+ItElf7G6/AEMCBHczhlJY='; style-src 'self' 'sha256-z2P7kGW5Z05eCTjTZdYpc0vThTlOE9vmt97pVSvi2I4=' 'sha256-0X+W/Xc6cVdheyH9D1zLVaD+jBRekL1aj7dPgq8HXXY=' 'sha256-RT1053JU5UiKvjrCUFx1rlhdFLMmgtuFJ9T8jnMeawQ=' 'sha256-AbJixgGjrguOw5a9iDl7GMczBsuMXNeP8i3ZkjOlh9U='; img-src 'self' data:; font-src 'self'; connect-src 'self'; worker-src 'self'; object-src 'none'; base-uri 'none'; form-action 'none'; manifest-src 'self'; upgrade-insecure-requests">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'sha256-WyMb2FYFWi++Cj9VbOluPLxZT0BF0OPoOvQZ7PhDwdc='; style-src 'self' 'sha256-z2P7kGW5Z05eCTjTZdYpc0vThTlOE9vmt97pVSvi2I4=' 'sha256-0X+W/Xc6cVdheyH9D1zLVaD+jBRekL1aj7dPgq8HXXY=' 'sha256-RT1053JU5UiKvjrCUFx1rlhdFLMmgtuFJ9T8jnMeawQ=' 'sha256-AbJixgGjrguOw5a9iDl7GMczBsuMXNeP8i3ZkjOlh9U='; img-src 'self' data:; font-src 'self'; connect-src 'self'; worker-src 'self'; object-src 'none'; base-uri 'none'; form-action 'none'; manifest-src 'self'; upgrade-insecure-requests">
 <meta name="referrer" content="strict-origin-when-cross-origin">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <style>:root{color-scheme:light;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}body{margin:0}[hidden]{display:none!important}</style>
@@ -541,6 +541,9 @@ function drawFlag(svg, f) {
   function loadForAge() {
     region = store.get("fc.region.a" + age, age <= 10 ? "eu" : "world", REGIONS);
     mode = store.get("fc.mode.a" + age, age >= 13 ? "cap" : "flag", ["flag", "cap"]);
+    // Opened from the grown-ups' page to practise flags or capitals: set it for this visit, without saving.
+    const m = /^fc-(flag|cap)$/.exec(Loopy.log.hint || "");
+    if (m) { mode = m[1]; Loopy.log.hint = ""; }
   }
   loadForAge();
   // The ladder: flags of Europe, with capitals, flags of the world, with capitals.

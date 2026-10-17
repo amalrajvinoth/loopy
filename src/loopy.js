@@ -554,7 +554,8 @@ document.documentElement.classList.add("loopy-building");
     clean: function (v) { return typeof v === "string" && PATH.test(v) ? v : ""; }
   };
   function mark() {
-    if (!document.getElementById("last5")) return;
+    // A game opened in a hidden frame (the grown-ups' practice sheet) is not where the child left off.
+    if (!document.getElementById("last5") || window.top !== window) return;
     var here = new URL(".", location.href).href;
     if (here.indexOf(Loopy.root) !== 0) return;
     var rel = decodeURIComponent(here.slice(Loopy.root.length));
@@ -1366,8 +1367,17 @@ document.documentElement.classList.add("loopy-building");
       return b <= 12 && a / b <= 12 ? "div-" + b : "div-big";
     },
     // The kind of a clock time: o'clock, half past, quarter past or to, five-minute steps, single minutes.
-    timeKind: function (m) { return "cl-" + (m === 0 ? 0 : m === 30 ? 30 : m % 15 === 0 ? 15 : m % 5 === 0 ? 5 : 1); }
+    timeKind: function (m) { return "cl-" + (m === 0 ? 0 : m === 30 ? 30 : m % 15 === 0 ? 15 : m % 5 === 0 ? 5 : 1); },
+    // The grown-ups' page opens a game as .../#practise=mul-7 (a kind, or "harder") so the game starts on
+    // just that for this visit. Read once; the hint comes off the address so a reload starts normally.
+    practise: function () {
+      var m = /^#practise=([a-z0-9-]{1,10})$/.exec(location.hash), k = m ? m[1] : "";
+      if (!k) return "";
+      try { history.replaceState(null, "", location.pathname + location.search); } catch (e) {}
+      return k === "harder" || KIND.test(k) ? k : "";
+    }
   };
+  Loopy.log.hint = Loopy.log.practise();
 })();
 
 // Last 5 answers in a game: <div id="last5" data-game="plus-minus"></div> becomes five dots,
@@ -1507,6 +1517,8 @@ window.Loopy.fresh = function (recent, make, keep) {
     group(panel);
     var sync = function () { btn.setAttribute("aria-expanded", String(!panel.hidden)); };
     btn.addEventListener("click", function () { panel.hidden = !panel.hidden; sync(); });
+    // "Level up" on the grown-ups' page opens the game with its levels showing.
+    if (Loopy.log && Loopy.log.hint === "harder") panel.hidden = false;
     sync();
     // A named region, so screen readers can jump to it. Escape closes it and puts focus back on the button.
     panel.setAttribute("role", "region");
@@ -1711,6 +1723,7 @@ Loopy.nextButton = function (btn, answered) {
 //   make(n)   n problems, from the game's own problem maker
 //   cell(p)   a node that shows problem p with room to write
 //   answer(p) the answer for the key, as text, e.g. "47 + 25 = 72"
+//   quiet     true: no Print worksheet button in Settings (the grown-ups' page prints its own sheet)
 (function () {
   var PRINTER = '<svg viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9V3h12v6"/><rect x="3" y="9" width="18" height="8" rx="2"/><path d="M6 14h12v7H6z"/></svg>';
   Loopy.addStrings({
@@ -1749,7 +1762,7 @@ Loopy.nextButton = function (btn, answered) {
       // the site has been visited), so printing from the browser's own menu also gives a worksheet.
       setTimeout(function () { Loopy.load("sheet").catch(function () {}); }, 3000);
       var panel = document.getElementById("settings-panel");
-      if (!panel) return;
+      if (!panel || o.quiet) return;
       var row = el("div", "print-row");
       var btn = el("button", "print-btn");
       btn.type = "button";
