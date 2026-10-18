@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'sha256-18qhe/JijRzJfaosf3mF5Otih0sgSOGukJGOuIL/JEw='; style-src 'self' 'sha256-2vr4Oe0zJzHDeMtbF5vL5Bez7jZGBYlj1tSI6i2nQ+8='; img-src 'self' data:; font-src 'self'; connect-src 'self'; worker-src 'self'; object-src 'none'; base-uri 'none'; form-action 'none'; manifest-src 'self'; upgrade-insecure-requests">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'sha256-6GEAE6oKIVqE8QJzA+H7dOcc84xnY3o/7u85xXfqRuU='; style-src 'self' 'sha256-2vr4Oe0zJzHDeMtbF5vL5Bez7jZGBYlj1tSI6i2nQ+8='; img-src 'self' data:; font-src 'self'; connect-src 'self'; worker-src 'self'; object-src 'none'; base-uri 'none'; form-action 'none'; manifest-src 'self'; upgrade-insecure-requests">
 <meta name="referrer" content="strict-origin-when-cross-origin">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <link rel="icon" href="../icon.svg" type="image/svg+xml">
@@ -239,6 +239,7 @@ Loopy.addStrings({
     "nm-cc-small": "Adding small coins", "nm-cc-count": "Counting notes and coins", "nm-cc-ch10": "Giving change", "nm-cc-ch": "Change with any price",
     "nm-wm-animals": "Words for animals", "nm-wm-food": "Words for food", "nm-wm-home": "Words for things at home", "nm-wm-school": "Words for school",
     "nm-si-3": "Spelling 3-letter words", "nm-si-4": "Spelling 4-letter words", "nm-si-5": "Spelling 5-letter words", "nm-si-6": "Spelling 6-letter words", "nm-si-7": "Spelling longer words",
+    "nm-sb-3": "3-word sentences", "nm-sb-5": "4 to 5-word sentences", "nm-sb-6": "6-word sentences and questions", "nm-sb-8": "Longer sentences with a comma",
     "nm-qf-space": "Space facts", "nm-qf-animals": "Animal facts", "nm-qf-body": "Body facts",
     "nm-wi-cont": "Continents and oceans", "nm-wi-eu": "Countries of Europe", "nm-wi-euc": "Capitals of Europe", "nm-wi-wd": "Countries of the world", "nm-wi-wdc": "Capitals of the world",
     "nm-eb-box": "Missing numbers", "nm-eb-add": "x + a = b", "nm-eb-mul": "3x = 12", "nm-eb-two": "3x + 4 = 19", "nm-eb-both": "x on both sides",
@@ -252,7 +253,7 @@ Loopy.addStrings({
     prSheet: "Print a practice sheet", prSheetMaking: "Making the sheet…", prSheetFail: "The sheet could not be made. Open a game and print its worksheet from Settings instead.",
     prSheetTitle: "Practice sheet", prSheetTitleKid: "Practice sheet for {name}", prSheetHow: "20 problems of the kinds missed most. Answers on page 2.",
     prStars: "⭐ {n} stars", prDays: "🔥 {n} days in a row", prDay: "🔥 1 day in a row", prBadge: "🏅 {name}", prBest: "🏆 Best streak: {n}", prGameBest: "Best streak: {n} in a row", prPlay: "Play →",
-    gPlusMinus: "Plus and Minus", gTimesShare: "Times and Share", gTimesSprint: "Times Tables Sprint", gClock: "What Time Is It?", gSoundSpell: "Sound Spell", gDailyMix: "Today's 10", gMake10: "Make 10", gBiggerSmaller: "Bigger or Smaller", gPizza: "Pizza Fractions", gCoinsChange: "Coins and Change", gWordMatch: "Word Match", gSpellIt: "Spell It", gQuickFacts: "Quick Facts", gWhereIsIt: "Where Is It?", gFlags: "Flags and Capitals", gEquation: "Equation Balance",
+    gPlusMinus: "Plus and Minus", gTimesShare: "Times and Share", gTimesSprint: "Times Tables Sprint", gClock: "What Time Is It?", gSoundSpell: "Sound Spell", gDailyMix: "Today's 10", gMake10: "Make 10", gBiggerSmaller: "Bigger or Smaller", gPizza: "Pizza Fractions", gCoinsChange: "Coins and Change", gWordMatch: "Word Match", gSpellIt: "Spell It", gSentence: "Sentence Builder", gQuickFacts: "Quick Facts", gWhereIsIt: "Where Is It?", gFlags: "Flags and Capitals", gEquation: "Equation Balance",
     tipNone: "Not played this week. A few minutes a day helps.", tipAll: "All right this week. Try a harder level in Settings.",
     tipLast: "Mostly right. Keep going.",
     "tip-add": "Practise adding.", "tip-add-rg": "Practise adding with carrying, like 38 + 25.",
@@ -277,6 +278,8 @@ Loopy.addStrings({
     "tip-wm-home": "Practise words for things at home.", "tip-wm-school": "Practise words for school.",
     "tip-si-3": "Practise spelling 3-letter words: say each sound slowly.", "tip-si-4": "Practise spelling 4-letter words: say each sound slowly.",
     "tip-si-5": "Practise spelling 5-letter words: clap the parts, then write them.", "tip-si-6": "Practise spelling 6-letter words: clap the parts, then write them.", "tip-si-7": "Practise spelling longer words: clap the parts, then write them.",
+    "tip-sb-3": "Practise 3-word sentences: say who does it, then what they do.", "tip-sb-5": "Practise short sentences: read them out loud, then build them.",
+    "tip-sb-6": "Practise questions: the question word comes first, the question mark last.", "tip-sb-8": "Practise longer sentences: find the comma, then the part before it comes first.",
     "tip-qf-space": "Talk about space: the Sun, the Moon and the planets.", "tip-qf-animals": "Talk about animals: what they eat and how they live.",
     "tip-qf-body": "Talk about the body: what the heart, lungs and bones do.",
     "tip-wi-cont": "Practise the continents and oceans on a world map or globe.", "tip-wi-eu": "Practise the countries of Europe on a map.",
@@ -317,6 +320,7 @@ Loopy.addStrings({
     "nm-cc-small": "Kleine Münzen zusammenzählen", "nm-cc-count": "Scheine und Münzen zählen", "nm-cc-ch10": "Wechselgeld", "nm-cc-ch": "Wechselgeld mit jedem Preis",
     "nm-wm-animals": "Wörter für Tiere", "nm-wm-food": "Wörter für Essen", "nm-wm-home": "Wörter für zu Hause", "nm-wm-school": "Wörter für die Schule",
     "nm-si-3": "Wörter mit 3 Buchstaben", "nm-si-4": "Wörter mit 4 Buchstaben", "nm-si-5": "Wörter mit 5 Buchstaben", "nm-si-6": "Wörter mit 6 Buchstaben", "nm-si-7": "Längere Wörter",
+    "nm-sb-3": "Sätze mit 3 Wörtern", "nm-sb-5": "Sätze mit 4 bis 5 Wörtern", "nm-sb-6": "Sätze mit 6 Wörtern und Fragen", "nm-sb-8": "Längere Sätze mit Komma",
     "nm-qf-space": "Weltall-Wissen", "nm-qf-animals": "Tier-Wissen", "nm-qf-body": "Körper-Wissen",
     "nm-wi-cont": "Kontinente und Ozeane", "nm-wi-eu": "Länder Europas", "nm-wi-euc": "Hauptstädte Europas", "nm-wi-wd": "Länder der Welt", "nm-wi-wdc": "Hauptstädte der Welt",
     "nm-eb-box": "Fehlende Zahlen", "nm-eb-add": "x + a = b", "nm-eb-mul": "3x = 12", "nm-eb-two": "3x + 4 = 19", "nm-eb-both": "x auf beiden Seiten",
@@ -330,7 +334,7 @@ Loopy.addStrings({
     prSheet: "Übungsblatt drucken", prSheetMaking: "Blatt wird gemacht…", prSheetFail: "Das Blatt konnte nicht gemacht werden. Öffnet ein Spiel und druckt dort in den Einstellungen das Arbeitsblatt.",
     prSheetTitle: "Übungsblatt", prSheetTitleKid: "Übungsblatt für {name}", prSheetHow: "20 Aufgaben der Arten, die am häufigsten falsch waren. Lösungen auf Seite 2.",
     prStars: "⭐ {n} Sterne", prDays: "🔥 {n} Tage hintereinander", prDay: "🔥 1 Tag hintereinander", prBadge: "🏅 {name}", prBest: "🏆 Beste Serie: {n}", prGameBest: "Beste Serie: {n} hintereinander", prPlay: "Spielen →",
-    gPlusMinus: "Plus und Minus", gTimesShare: "Mal und Teilen", gTimesSprint: "Einmaleins-Sprint", gClock: "Wie spät ist es?", gSoundSpell: "Anlaut und Endlaut", gDailyMix: "Die 10 von heute", gMake10: "Ergänze bis 10", gBiggerSmaller: "Größer oder kleiner", gPizza: "Pizza-Brüche", gCoinsChange: "Münzen und Wechselgeld", gWordMatch: "Bild und Wort", gSpellIt: "Wörter schreiben", gQuickFacts: "Blitzwissen", gWhereIsIt: "Wo liegt das?", gFlags: "Flaggen und Hauptstädte", gEquation: "Waage",
+    gPlusMinus: "Plus und Minus", gTimesShare: "Mal und Teilen", gTimesSprint: "Einmaleins-Sprint", gClock: "Wie spät ist es?", gSoundSpell: "Anlaut und Endlaut", gDailyMix: "Die 10 von heute", gMake10: "Ergänze bis 10", gBiggerSmaller: "Größer oder kleiner", gPizza: "Pizza-Brüche", gCoinsChange: "Münzen und Wechselgeld", gWordMatch: "Bild und Wort", gSpellIt: "Wörter schreiben", gSentence: "Satzbau", gQuickFacts: "Blitzwissen", gWhereIsIt: "Wo liegt das?", gFlags: "Flaggen und Hauptstädte", gEquation: "Waage",
     tipNone: "Diese Woche nicht gespielt. Ein paar Minuten am Tag helfen.", tipAll: "Diese Woche alles richtig. Probiert in den Einstellungen eine schwerere Stufe.",
     tipLast: "Fast alles richtig. Weiter so.",
     "tip-add": "Übt Plusrechnen.", "tip-add-rg": "Übt Plusrechnen mit Übertrag, wie 38 + 25.",
@@ -355,6 +359,8 @@ Loopy.addStrings({
     "tip-wm-home": "Übt Wörter für Dinge zu Hause.", "tip-wm-school": "Übt Wörter für die Schule.",
     "tip-si-3": "Übt Wörter mit 3 Buchstaben: jeden Laut langsam sprechen.", "tip-si-4": "Übt Wörter mit 4 Buchstaben: jeden Laut langsam sprechen.",
     "tip-si-5": "Übt Wörter mit 5 Buchstaben: die Silben klatschen, dann schreiben.", "tip-si-6": "Übt Wörter mit 6 Buchstaben: die Silben klatschen, dann schreiben.", "tip-si-7": "Übt längere Wörter: die Silben klatschen, dann schreiben.",
+    "tip-sb-3": "Übt Sätze mit 3 Wörtern: erst wer, dann was er tut.", "tip-sb-5": "Übt kurze Sätze: laut vorlesen, dann bauen.",
+    "tip-sb-6": "Übt Fragen: das Fragewort kommt zuerst, das Fragezeichen zuletzt.", "tip-sb-8": "Übt längere Sätze: das Komma suchen, der Teil davor kommt zuerst.",
     "tip-qf-space": "Sprecht über das Weltall: Sonne, Mond und Planeten.", "tip-qf-animals": "Sprecht über Tiere: was sie fressen und wie sie leben.",
     "tip-qf-body": "Sprecht über den Körper: was Herz, Lunge und Knochen tun.",
     "tip-wi-cont": "Übt die Kontinente und Ozeane auf einer Weltkarte oder einem Globus.", "tip-wi-eu": "Übt die Länder Europas auf der Karte.",
@@ -384,6 +390,7 @@ Loopy.addStrings({
     { id: "sound-spell", name: "gSoundSpell", path: "../languages/sound-spell/" },
     { id: "word-match", name: "gWordMatch", path: "../languages/word-match/" },
     { id: "spell-it", name: "gSpellIt", path: "../languages/spell-it/" },
+    { id: "sentence-builder", name: "gSentence", path: "../languages/sentence-builder/" },
     { id: "quick-facts", name: "gQuickFacts", path: "../science/quick-facts/" },
     { id: "where-is-it", name: "gWhereIsIt", path: "../geography/where-is-it/" },
     { id: "flags-capitals", name: "gFlags", path: "../geography/flags-capitals/" },
@@ -391,7 +398,7 @@ Loopy.addStrings({
   ];
   // Which game practises a kind of question. Today's 10 mixes three games, so its misses point to those.
   const OWNER = { add: "plus-minus", sub: "plus-minus", mul: "times-share", div: "times-share", cl: "clock", ss: "sound-spell", mk: "make-10",
-    bs: "bigger-smaller", pz: "pizza-fractions", cc: "coins-change", wm: "word-match", si: "spell-it", qf: "quick-facts", wi: "where-is-it", eb: "equation-balance", fc: "flags-capitals" };
+    bs: "bigger-smaller", pz: "pizza-fractions", cc: "coins-change", wm: "word-match", si: "spell-it", sb: "sentence-builder", qf: "quick-facts", wi: "where-is-it", eb: "equation-balance", fc: "flags-capitals" };
   const gameOf = (id) => GAMES.find(g => g.id === id);
   const nameOf = (id) => t(gameOf(id).name);
   // Weeks start on Monday. Week 0: Monday to today. Week 1: the 7 days before, and so on, back four weeks.
