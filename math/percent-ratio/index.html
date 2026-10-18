@@ -1,0 +1,661 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'sha256-RxTQa6bUIg7hsvbOC8UOx6W2CFQwGCqoPAwsqJ+vYvA='; style-src 'self' 'sha256-z2P7kGW5Z05eCTjTZdYpc0vThTlOE9vmt97pVSvi2I4=' 'sha256-nzWO/Zp5fHoEAG1TKhQVCMxRphuWD3Glc7tgamR53K4=' 'sha256-RT1053JU5UiKvjrCUFx1rlhdFLMmgtuFJ9T8jnMeawQ=' 'sha256-8mi1cXgKL22AU/PExt3JtyI4gqzbS66XfuUx8kmgVRM='; img-src 'self' data:; font-src 'self'; connect-src 'self'; worker-src 'self'; object-src 'none'; base-uri 'none'; form-action 'none'; manifest-src 'self'; upgrade-insecure-requests">
+<meta name="referrer" content="strict-origin-when-cross-origin">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<style>:root{color-scheme:light;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}body{margin:0}[hidden]{display:none!important}</style>
+<link rel="icon" href="../../icon.svg" type="image/svg+xml">
+<link rel="manifest" href="../../manifest.webmanifest">
+<link rel="apple-touch-icon" href="../../apple-touch-icon.png">
+<meta name="theme-color" content="#0a0a0c">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="loopy">
+<title data-t="prName">Percent and Ratio</title>
+<meta name="description" content="Percent and Ratio on loopy: 25% of 80, 20% off €40, share 20 in the ratio 2 : 3, map scales. A bar shows the part of the whole. Free practice for ages 10 to 16, English and German.">
+<link rel="preload" href="../../fonts/lexend-latin.woff2" as="font" type="font/woff2" crossorigin>
+<style>
+/* Layout: one centered column like a worksheet strip; the problem on a card with a bar picture, big number pad below, settings behind a button. */
+:root {
+  --bg: #f3f6fb;
+  --card: #ffffff;
+  --ink: #1d2a3f;
+  --muted: #5d6b82;
+  --line: #d5dde9;
+  --accent: #2457c5;
+  --accent-ink: #ffffff;
+  --mark: #e2622b;
+  --good: #1f8a4c;
+  --good-bg: #e3f5ea;
+  --bad: #c23a3a;
+  --bad-bg: #fbe6e6;
+  --chip: #e6ecf6;
+  --key: #ffffff;
+  --font: "Lexend", "Segoe UI", "Helvetica Neue", Arial, sans-serif;
+}
+
+* { box-sizing: border-box; }
+body {
+  background: var(--bg); color: var(--ink); font-family: var(--font); font-size: 16px;
+  padding-left: max(16px, env(safe-area-inset-left, 0px));
+  padding-right: max(16px, env(safe-area-inset-right, 0px));
+  padding-block: 20px 32px;
+}
+.wrap { max-width: 520px; margin: 0 auto; display: flex; flex-direction: column; gap: 16px; }
+
+.top { display: flex; flex-wrap: wrap; gap: 12px; align-items: center; justify-content: space-between; }
+h1 { margin: 0; font-size: 1.6rem; font-weight: 700; text-wrap: balance; }
+.score { display: flex; flex-wrap: wrap; gap: 8px; font-variant-numeric: tabular-nums; }
+.pill { background: var(--card); border: 1px solid var(--line); border-radius: 999px; padding: 6px 14px; font-weight: 600; font-size: 1rem; white-space: nowrap; }
+.pill span { color: var(--muted); font-weight: 400; margin-right: 4px; }
+
+.settings { display: flex; flex-direction: column; gap: 8px; }
+.seg-label { font-size: 0.8rem; font-weight: 600; letter-spacing: 0.06em; text-transform: uppercase; color: var(--muted); margin: 0 0 4px 4px; }
+.seg { display: grid; grid-template-columns: repeat(2, 1fr); gap: 6px; background: var(--chip); padding: 5px; border-radius: 14px; }
+.seg button {
+  font: inherit; font-size: 0.95rem; font-weight: 600; color: var(--muted);
+  background: transparent; border: 0; border-radius: 10px; padding: 8px 6px; min-height: 44px; cursor: pointer;
+}
+.seg button[aria-pressed="true"] { background: var(--card); color: var(--ink); box-shadow: 0 1px 3px rgb(0 0 0 / 0.12); }
+
+.problem-card {
+  background: var(--card); border: 1px solid var(--line); border-radius: 24px;
+  padding: 20px 18px 18px; display: flex; flex-direction: column; align-items: center; gap: 14px;
+}
+.problem-card.good { border-color: var(--good); box-shadow: 0 0 0 2px var(--good) inset; }
+.problem-card.bad { border-color: var(--bad); box-shadow: 0 0 0 2px var(--bad) inset; }
+
+.feedback { min-height: 3.1em; text-align: center; font-size: 1.1rem; line-height: 1.45; margin: 0; max-width: 34ch; }
+.feedback strong { display: block; font-size: 1.45rem; }
+.feedback.good strong { color: var(--good); }
+.feedback.bad strong { color: var(--bad); }
+.feedback .hint { color: var(--muted); }
+
+.pad { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; }
+.pad button {
+  font: inherit; font-size: 2rem; font-weight: 700; font-variant-numeric: tabular-nums; color: var(--ink);
+  background: var(--key); border: 2px solid var(--line); border-radius: 18px; min-height: 72px; cursor: pointer;
+  transition: transform .08s ease, border-color .15s ease;
+  touch-action: manipulation; -webkit-tap-highlight-color: transparent;
+}
+.pad button:hover:not(:disabled) { border-color: var(--accent); }
+.pad button:active:not(:disabled) { transform: scale(0.96); }
+.pad button:disabled { opacity: 0.4; cursor: default; }
+.pad .erase { font-size: 1.15rem; color: var(--muted); }
+.pad .go { background: var(--accent); border-color: var(--accent); color: var(--accent-ink); font-size: 1.35rem; }
+.pad .go:hover:not(:disabled) { border-color: var(--accent); filter: brightness(1.08); }
+
+.foot { display: flex; justify-content: space-between; align-items: center; gap: 12px; flex-wrap: wrap; }
+.foot p { margin: 0; color: var(--muted); font-size: 0.9rem; }
+.reset { font: inherit; font-size: 0.95rem; color: var(--muted); background: transparent; border: 2px solid var(--line); border-radius: 14px; padding: 0 16px; min-height: 44px; cursor: pointer; }
+button:focus-visible { outline: 3px solid var(--mark); outline-offset: 3px; }
+
+@media (max-width: 420px) {
+  h1 { font-size: 1.35rem; }
+  .pad button { min-height: 64px; font-size: 1.8rem; }
+  .seg button { font-size: 0.85rem; }
+}
+@media (prefers-reduced-motion: reduce) {
+  * { transition: none !important; }
+}
+</style>
+<style>.home-link{display:inline-flex;align-items:center;min-height:40px;color:var(--muted);font-weight:600;text-decoration:none;font-size:0.95rem}.home-link:hover{color:var(--ink)}</style>
+<style>
+/* Phones and tablets: the game fills one screen; settings sit behind a button. */
+body { min-height: 100vh; min-height: 100dvh; padding-block: 12px 16px; }
+.wrap { gap: 12px; }
+.game-bar { display: flex; align-items: center; justify-content: space-between; gap: 8px; }
+.bar-right { display: flex; align-items: center; gap: 8px; }
+.top { gap: 8px 12px; }
+.play { display: flex; flex-direction: column; gap: 12px; -webkit-user-select: none; user-select: none; }
+@media (min-width: 600px) and (orientation: portrait) { .wrap { max-width: 640px; } }
+@media (orientation: landscape) and (min-width: 640px) {
+  .wrap { max-width: 1100px; }
+  .play { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; align-items: center; }
+}
+
+.problem-card { padding: 14px 14px 12px; gap: 8px; }
+.feedback { min-height: 2.9em; font-size: 1.05rem; }
+.feedback strong { font-size: 1.3rem; }
+.pad { gap: 8px; }
+.pad button { min-height: clamp(50px, 8vh, 92px); min-height: clamp(50px, 8dvh, 92px); }
+@media (min-width: 600px) and (orientation: portrait) {
+  .pad button { min-height: clamp(60px, 10dvh, 120px); font-size: 2.4rem; }
+}
+@media (orientation: landscape) and (min-width: 640px) {
+  .problem-card { height: 100%; justify-content: center; }
+  .pad button { min-height: clamp(44px, calc((100dvh - 150px) / 4.4), 130px); }
+}
+/* Short phones: keep long explanations from pushing the number pad off screen. */
+@media (max-height: 760px) and (orientation: portrait) {
+  .feedback { font-size: 0.95rem; line-height: 1.35; }
+  .feedback strong { font-size: 1.15rem; }
+}
+
+/* Portrait: the page is exactly one screen tall; the pad stays at the bottom
+   and the top part shrinks to fit. With settings open, the page scrolls normally. */
+@media (orientation: portrait) {
+  body { height: calc(100dvh - env(safe-area-inset-top, 0px) - env(safe-area-inset-bottom, 0px)); min-height: 0; display: flex; flex-direction: column; overflow: hidden; }
+  body:has(#settings-panel:not([hidden])) { height: auto; overflow: visible; }
+  .wrap { flex: 1 1 auto; min-height: 0; width: 100%; }
+  .play { flex: 1 1 auto; min-height: 0; }
+  .problem-card { flex: 1 1 auto; min-height: 0; justify-content: center; overflow: hidden; }
+  .feedback { flex: 0 1 auto; min-height: 0; overflow-y: auto; }
+}
+@media (orientation: landscape) and (min-width: 640px) {
+  body { height: calc(100dvh - env(safe-area-inset-top, 0px) - env(safe-area-inset-bottom, 0px)); min-height: 0; display: flex; flex-direction: column; overflow: hidden; }
+  body:has(#settings-panel:not([hidden])) { height: auto; overflow: visible; }
+  .wrap { flex: 1 1 auto; min-height: 0; width: 100%; }
+  .play { flex: 1 1 auto; min-height: 0; grid-template-rows: minmax(0, 1fr); }
+  .problem-card { min-height: 0; overflow: hidden; }
+  .feedback { flex: 0 1 auto; min-height: 0; overflow-y: auto; }
+}
+@media (max-height: 500px) {
+  .feedback { font-size: 0.9rem; line-height: 1.3; }
+  .feedback strong { font-size: 1.05rem; }
+}
+
+/* Percent and Ratio: a one-line question in words (for discounts, ratios and scales), a bar that shows
+   the part of the whole, and the short sum with the answer slot, like "25% of 80 = ?". */
+.prompt { margin: 0; text-align: center; font-size: clamp(1rem, 2.6dvh, 1.3rem); line-height: 1.35; max-width: 36ch; text-wrap: balance; }
+.eq { display: flex; align-items: baseline; justify-content: center; flex-wrap: wrap; gap: 0 0.25em;
+  font-size: clamp(1.7rem, min(8.5vw, 6.5dvh), 3.6rem); font-weight: 600; font-variant-numeric: tabular-nums; line-height: 1.15; white-space: nowrap; }
+.eq .ans { min-width: 1.4ch; text-align: center; color: var(--accent); border-bottom: 0.07em solid var(--ink); position: relative; padding: 0 0.1em; }
+.eq .ans.empty::after { content: "?"; color: var(--muted); }
+.problem-card.good .eq .ans { color: var(--good); border-color: var(--good); }
+.problem-card.bad .eq .ans { color: var(--bad); border-color: var(--bad); text-decoration: line-through; text-decoration-thickness: 0.06em; }
+/* The bar: the whole on a chip background, the part in c1 (a second part in c2, a discount in c4), ticks in the card color. */
+.bar { display: block; width: 100%; max-width: 480px; height: clamp(44px, 11dvh, 96px); flex: 0 0 auto; overflow: visible; }
+.bar text { font-family: var(--font); font-weight: 600; font-variant-numeric: tabular-nums; fill: var(--ink); }
+.bar .c1 { fill: var(--c1); } .bar .c2 { fill: var(--c2); } .bar .c4 { fill: var(--c4); }
+.bar .whole { fill: var(--chip); stroke: var(--line); stroke-width: 2; }
+.bar .tick { stroke: var(--card); stroke-width: 2; }
+.bar .edge { fill: none; stroke: var(--ink); stroke-width: 2; opacity: 0.35; }
+.seg.four { grid-template-columns: repeat(2, 1fr); }
+@media (max-height: 900px), (max-width: 599px) {
+  .problem-card.good .eq, .problem-card.bad .eq { zoom: 0.75; }
+  .problem-card.good .prompt, .problem-card.bad .prompt { font-size: 0.95rem; }
+}
+@media (max-height: 700px) and (orientation: portrait) {
+  .bar { height: clamp(40px, 9dvh, 64px); }
+}
+/* A long reason on a small screen: smaller text, then the sentence goes, then the bar, until it fits (fitReason). */
+.problem-card.fit1 .feedback, .problem-card.fit2 .feedback, .problem-card.fit3 .feedback { font-size: 0.88rem; line-height: 1.3; }
+.problem-card.fit1 .feedback strong, .problem-card.fit2 .feedback strong, .problem-card.fit3 .feedback strong { font-size: 1.05rem; }
+.problem-card.fit1 .bar, .problem-card.fit2 .bar { height: 40px; }
+.problem-card.fit2 .prompt, .problem-card.fit3 .prompt, .problem-card.fit3 .bar { display: none; }
+/* On the worksheet a word problem gets its sentence above the sum. */
+@media print {
+  .sheet-line .ws-pr { display: flex; flex-direction: column; gap: 0.5mm; }
+  .sheet-line .ws-pr small { font-size: 9.5pt; font-weight: 500; color: #333; }
+  .sheet-line .ws-pr .ws-sl { font-size: 15pt; }
+  .sheet-line .ws-pr .ws-blank { width: 18mm; }
+}
+</style>
+<link rel="stylesheet" href="../../loopy.css">
+<script src="../../loopy.js"></script>
+</head>
+<body>
+
+<div class="wrap">
+  <header class="game-bar">
+    <a class="home-link" href="../../">&larr; loopy</a>
+    <div class="bar-right">
+      <span id="star-chip"></span>
+      <button type="button" id="settings-toggle" aria-controls="settings-panel"></button>
+    </div>
+  </header>
+  <section class="top" aria-labelledby="title">
+    <h1 id="title" data-t="prName">Percent and Ratio</h1>
+    <div class="score" aria-live="polite">
+      <div class="pill pill-score"><span data-t="score">Score</span><b id="score">0 / 0</b></div>
+      <div id="level"></div>
+      <div class="pill pill-streak"><span data-t="streak">Streak</span><b id="streak">0</b></div>
+      <div id="last5" data-game="percent-ratio"></div>
+    </div>
+  </section>
+  <div class="settings-panel" id="settings-panel" hidden>
+    <div class="controls"><div id="age-picker"></div><div id="theme-picker"></div><button id="sound-toggle"></button><div id="lang-picker"></div></div>
+    <div>
+      <p class="seg-label" id="lv-label" data-t="prLevel">Level</p>
+      <div class="seg four" role="group" aria-labelledby="lv-label" id="lv-seg">
+        <button type="button" id="lv-frac" data-lv="frac" data-t="prLvFrac">Halves, quarters and tenths</button>
+        <button type="button" id="lv-any" data-lv="any" data-t="prLvAny">Any percent</button>
+        <button type="button" id="lv-disc" data-lv="disc" data-t="prLvDisc">Discounts and increases</button>
+        <button type="button" id="lv-ratio" data-lv="ratio" data-t="prLvRatio">Ratios and scale</button>
+      </div>
+    </div>
+    <div class="panel-foot">
+      <p data-t="kbdHint">Keyboard works too: numbers, Backspace, Enter.</p>
+      <button type="button" class="reset" id="reset" data-t="resetScore">Reset score</button>
+    </div>
+  </div>
+
+  <main class="play">
+    <div class="problem-card" id="card">
+      <p class="prompt" id="prompt" hidden></p>
+      <svg class="bar" id="bar" viewBox="0 0 400 78" aria-hidden="true"></svg>
+      <div class="eq" id="eq" aria-live="polite">
+        <span id="eq-pre">25% of 80 =</span><span class="ans empty" id="ans" role="textbox" aria-readonly="true" aria-label="Your answer" data-t-aria="yourAnswer"></span><span id="eq-post"></span>
+      </div>
+      <p class="feedback" id="feedback"><span class="hint" data-t="tapHint">Tap the numbers to write your answer.</span></p>
+    </div>
+
+    <div class="pad" id="pad">
+      <button type="button" id="k1" data-d="1">1</button>
+      <button type="button" id="k2" data-d="2">2</button>
+      <button type="button" id="k3" data-d="3">3</button>
+      <button type="button" id="k4" data-d="4">4</button>
+      <button type="button" id="k5" data-d="5">5</button>
+      <button type="button" id="k6" data-d="6">6</button>
+      <button type="button" id="k7" data-d="7">7</button>
+      <button type="button" id="k8" data-d="8">8</button>
+      <button type="button" id="k9" data-d="9">9</button>
+      <button type="button" id="k-erase" class="erase" aria-label="Erase last digit" data-t-aria="eraseAria" data-t="erase">Erase</button>
+      <button type="button" id="k0" data-d="0">0</button>
+      <button type="button" id="k-go" class="go" data-t="check">Check</button>
+    </div>
+  </main>
+</div>
+
+<script>
+Loopy.addStrings({
+  en: {
+    prName: "Percent and Ratio", prLevel: "Level",
+    prLvFrac: "Halves, quarters and tenths", prLvAny: "Any percent", prLvDisc: "Discounts and increases", prLvRatio: "Ratios and scale",
+    prOf: "of", prThing0: "sweets", prThing1: "marbles", prThing2: "stickers", prBigger: "bigger", prSmaller: "smaller", prRed: "red",
+    // The question in words, shown above the sum for word problems and read aloud for all of them.
+    prSayOf: "What is {p} percent of {n}?", prSayPct: "{x} of {y}. What percent is that?",
+    prOffQ: "{p} off. New price?", prSayOff: "{p} percent off {n} euros. What is the new price?",
+    prUpQ: "The price goes up {p}. New price?", prSayUp: "The price goes up {p} percent from {n} euros. What is the new price?",
+    prVatQ: "{p} VAT is added. Price with VAT?", prSayVat: "{p} percent VAT on {n} euros. What is the price with VAT?",
+    prShareQ: "Share {n} {things} in the ratio {a} : {b}. The {which} share gets:", prSayShare: "Share {n} {things} in the ratio {a} to {b}. How many does the {which} share get?",
+    prScaleQ: "Map scale 1 : {s}. {cm} cm on the map is how many cm in real life?", prSayScale: "The map scale is 1 to {s}. {cm} centimetres on the map is how many centimetres in real life?",
+    prEveryQ: "{a} of every {b} are red. Out of {n}, how many are red?", prSayEvery: "{a} of every {b} are red. Out of {n}, how many are red?",
+    prWsShare: "{n} in {a} : {b}, {which} share:", prWsEvery: "{a} of every {b}, out of {n}:", prWsScale: "Scale 1 : {s}",
+    // One line of why.
+    prHalf: "{p} is one half. {n} ÷ 2 = {a}.", prQuarter: "{p} is one quarter. {n} ÷ 4 = {a}.",
+    prThreeQ: "{p} is three quarters. {n} ÷ 4 = {q}, and 3 × {q} = {a}.", prTenth: "{p} is one tenth. {n} ÷ 10 = {a}.",
+    prHundredth: "{p} is one hundredth. {n} ÷ 100 = {a}.", prFive: "10% of {n} is {t}. 5% is half of that: {a}.",
+    prFifteen: "10% of {n} is {t} and 5% is {h}. {t} + {h} = {a}.", prTens: "10% of {n} is {t}. {p} is {k} × {t} = {a}.",
+    prPctUp: "{y} × {k} = 100, so {x} × {k} = {a}. {x} of {y} is {a}%.", prPctDown: "{y} ÷ {k} = 100, so {x} ÷ {k} = {a}. {x} of {y} is {a}%.",
+    prOffWhy: "{p} of {n} is {part}. {n} − {part} = {a}.", prUpWhy: "{p} of {n} is {part}. {n} + {part} = {a}.",
+    prShareWhy: "{a} + {b} = {s} parts. {n} ÷ {s} = {u} for each part. {m} × {u} = {ans}.",
+    prScaleWhy: "1 cm on the map is {s} cm in real life. {cm} × {s} = {a}.",
+    prEveryWhy: "{n} ÷ {b} = {g} groups of {b}. {a} × {g} = {ans}.",
+    prHow: "Work out each one. Write the answer on the line."
+  },
+  de: {
+    prName: "Prozent und Verhältnis", prLevel: "Stufe",
+    prLvFrac: "Hälften, Viertel und Zehntel", prLvAny: "Jeder Prozentsatz", prLvDisc: "Rabatt und Aufschlag", prLvRatio: "Verhältnis und Maßstab",
+    prOf: "von", prThing0: "Bonbons", prThing1: "Murmeln", prThing2: "Sticker", prBigger: "größere", prSmaller: "kleinere", prRed: "rot",
+    prSayOf: "Was sind {p} Prozent von {n}?", prSayPct: "{x} von {y}. Wie viel Prozent sind das?",
+    prOffQ: "{p} Rabatt. Neuer Preis?", prSayOff: "{p} Prozent Rabatt auf {n} Euro. Was ist der neue Preis?",
+    prUpQ: "Der Preis steigt um {p}. Neuer Preis?", prSayUp: "Der Preis steigt um {p} Prozent, von {n} Euro. Was ist der neue Preis?",
+    prVatQ: "{p} MwSt. kommen dazu. Preis mit MwSt.?", prSayVat: "{p} Prozent Mehrwertsteuer auf {n} Euro. Was ist der Preis mit Mehrwertsteuer?",
+    prShareQ: "Teile {n} {things} im Verhältnis {a} : {b}. Der {which} Anteil bekommt:", prSayShare: "Teile {n} {things} im Verhältnis {a} zu {b}. Wie viele bekommt der {which} Anteil?",
+    prScaleQ: "Maßstab 1 : {s}. {cm} cm auf der Karte sind wie viele cm in Wirklichkeit?", prSayScale: "Der Maßstab ist 1 zu {s}. {cm} Zentimeter auf der Karte sind wie viele Zentimeter in Wirklichkeit?",
+    prEveryQ: "{a} von je {b} sind rot. Wie viele von {n} sind rot?", prSayEvery: "{a} von je {b} sind rot. Wie viele von {n} sind rot?",
+    prWsShare: "{n} in {a} : {b}, {which} Anteil:", prWsEvery: "{a} von je {b}, von {n}:", prWsScale: "Maßstab 1 : {s}",
+    prHalf: "{p} ist die Hälfte. {n} ÷ 2 = {a}.", prQuarter: "{p} ist ein Viertel. {n} ÷ 4 = {a}.",
+    prThreeQ: "{p} sind drei Viertel. {n} ÷ 4 = {q}, und 3 × {q} = {a}.", prTenth: "{p} ist ein Zehntel. {n} ÷ 10 = {a}.",
+    prHundredth: "{p} ist ein Hundertstel. {n} ÷ 100 = {a}.", prFive: "10 % von {n} sind {t}. 5 % sind die Hälfte davon: {a}.",
+    prFifteen: "10 % von {n} sind {t} und 5 % sind {h}. {t} + {h} = {a}.", prTens: "10 % von {n} sind {t}. {p} sind {k} × {t} = {a}.",
+    prPctUp: "{y} × {k} = 100, also {x} × {k} = {a}. {x} von {y} sind {a} %.", prPctDown: "{y} ÷ {k} = 100, also {x} ÷ {k} = {a}. {x} von {y} sind {a} %.",
+    prOffWhy: "{p} von {n} sind {part}. {n} − {part} = {a}.", prUpWhy: "{p} von {n} sind {part}. {n} + {part} = {a}.",
+    prShareWhy: "{a} + {b} = {s} Teile. {n} ÷ {s} = {u} für jeden Teil. {m} × {u} = {ans}.",
+    prScaleWhy: "1 cm auf der Karte ist {s} cm in Wirklichkeit. {cm} × {s} = {a}.",
+    prEveryWhy: "{n} ÷ {b} = {g} Gruppen zu {b}. {a} × {g} = {ans}.",
+    prHow: "Rechne jede Aufgabe aus. Schreibe das Ergebnis auf die Linie."
+  }
+});
+
+// GEN START
+const randInt = (lo, hi) => lo + Math.floor(Math.random() * (hi - lo + 1));
+const pick = (list) => list[randInt(0, list.length - 1)];
+const gcd = (a, b) => b ? gcd(b, a % b) : a;
+const t = Loopy.t;
+const num = (n) => Loopy.num(n);
+// "25%" in English, "25 %" in German; "€40" in English, "40 €" in German.
+const pct = (p) => Loopy.lang === "de" ? num(p) + " %" : num(p) + "%";
+const money = (n) => Loopy.lang === "de" ? num(n) + " €" : "€" + num(n);
+
+// The levels, easiest first, and the one each age starts at.
+const LEVELS = ["frac", "any", "disc", "ratio"];
+const levelName = (lv) => ({ frac: "prLvFrac", any: "prLvAny", disc: "prLvDisc", ratio: "prLvRatio" })[lv];
+const levelForAge = (age) => age <= 11 ? "frac" : age === 12 ? "any" : age <= 14 ? "disc" : "ratio";
+
+// A number from lo to max that p% of is a whole number (p = 25 needs a multiple of 4, p = 30 a multiple of 10),
+// and a multiple of "also" on top, so the steps in the explanation (10% of it, 5% of it) are whole too.
+function wholeFor(p, max, lo, also) {
+  let g = 100 / gcd(p, 100);
+  if (also) g = g * also / gcd(g, also);
+  return g * randInt(Math.max(1, Math.ceil(lo / g)), Math.floor(max / g));
+}
+
+// One problem. Every answer is a whole number. Types:
+//   of     p% of n                     pct    x of y as a percent
+//   off    n with p% off               up     n with p% added         vat    n plus 19% or 7% VAT
+//   share  n in the ratio a : b        scale  cm on a map at 1 : s    every  a of every b, out of n
+function makeProblem(lv) {
+  let p;
+  if (lv === "frac") {
+    const pc = pick([50, 25, 75, 10]), n = wholeFor(pc, pc === 10 ? 500 : 200, 8);
+    p = { type: "of", p: pc, n, answer: pc * n / 100 };
+  } else if (lv === "any") {
+    if (Math.random() < 0.6) {
+      const pc = pick([1, 5, 15, 20, 30, 40, 60, 70, 80, 90]), n = wholeFor(pc, 500, 10, pc % 10 ? 20 : 10);
+      p = { type: "of", p: pc, n, answer: pc * n / 100 };
+    } else {
+      const y = pick([4, 5, 10, 20, 25, 50, 100, 200, 500]), step = y > 100 ? y / 100 : 1;
+      const x = step * randInt(1, y / step - 1);
+      p = { type: "pct", x, y, answer: 100 * x / y };
+    }
+  } else if (lv === "disc") {
+    const kind = pick(["off", "off", "up", "vat"]);
+    if (kind === "vat") {
+      const pc = pick([19, 19, 7]), n = 100 * randInt(1, 5);
+      p = { type: "vat", p: pc, n, part: pc * n / 100 };
+    } else {
+      const pc = pick([5, 10, 15, 20, 25, 30, 50]), n = wholeFor(pc, kind === "up" ? 400 : 500, 20);
+      p = { type: kind, p: pc, n, part: pc * n / 100 };
+    }
+    p.answer = p.type === "off" ? p.n - p.part : p.n + p.part;
+  } else {
+    const kind = pick(["share", "share", "scale", "every"]);
+    if (kind === "share") {
+      const [a, b] = pick([[1, 2], [1, 3], [2, 3], [1, 4], [3, 4], [2, 5], [3, 5], [1, 5], [3, 7], [4, 5]]), s = a + b;
+      const n = s * randInt(2, Math.floor(60 / s)), big = Math.random() < 0.7;
+      p = { type: "share", a, b, n, big, thing: randInt(0, 2), answer: (big ? b : a) * n / s };
+    } else if (kind === "scale") {
+      const s = pick([10, 50, 100, 1000]), cm = randInt(2, 9);
+      p = { type: "scale", s, cm, answer: cm * s };
+    } else {
+      const b = pick([2, 3, 4, 5, 10]), a = randInt(1, b - 1), n = b * randInt(2, Math.floor(100 / b));
+      p = { type: "every", a, b, n, answer: a * n / b };
+    }
+  }
+  p.lv = lv;
+  p.key = p.type + ":" + Object.keys(p).filter(k => k !== "type" && k !== "lv" && k !== "answer").map(k => p[k]).join(",");
+  return p;
+}
+
+// The sum shown in big letters: the text before the answer slot and after it, like ["25% of 80 =", ""].
+function eqParts(p) {
+  const of = t("prOf"), de = Loopy.lang === "de";
+  if (p.type === "of") return [pct(p.p) + " " + of + " " + num(p.n) + " =", ""];
+  if (p.type === "pct") return [num(p.x) + " " + of + " " + num(p.y) + " =", "%"];
+  if (p.type === "off") return [money(p.n) + " − " + pct(p.p) + " =" + (de ? "" : " €"), de ? "€" : ""];
+  if (p.type === "up" || p.type === "vat") return [money(p.n) + " + " + pct(p.p) + " =" + (de ? "" : " €"), de ? "€" : ""];
+  if (p.type === "share") return ["", t("prThing" + p.thing)];
+  if (p.type === "scale") return [num(p.cm) + " cm × " + num(p.s) + " =", "cm"];
+  return ["", of + " " + num(p.n)];
+}
+// The question in words, for the line above the sum (word problems only) and for the worksheet.
+function promptOf(p) {
+  if (p.type === "off") return t("prOffQ", { p: pct(p.p) });
+  if (p.type === "up") return t("prUpQ", { p: pct(p.p) });
+  if (p.type === "vat") return t("prVatQ", { p: pct(p.p) });
+  if (p.type === "share") return t("prShareQ", { n: num(p.n), things: t("prThing" + p.thing), a: p.a, b: p.b, which: t(p.big ? "prBigger" : "prSmaller") });
+  if (p.type === "scale") return t("prScaleQ", { s: num(p.s), cm: p.cm });
+  if (p.type === "every") return t("prEveryQ", { a: p.a, b: p.b, n: num(p.n) });
+  return "";
+}
+// The question read aloud, in full.
+function sayOf(p) {
+  const v = { p: p.p, n: p.n, x: p.x, y: p.y, s: p.s, cm: p.cm, a: p.a, b: p.b, things: p.type === "share" ? t("prThing" + p.thing) : "", which: t(p.big ? "prBigger" : "prSmaller") };
+  return t({ of: "prSayOf", pct: "prSayPct", off: "prSayOff", up: "prSayUp", vat: "prSayVat", share: "prSayShare", scale: "prSayScale", every: "prSayEvery" }[p.type], v);
+}
+
+// A short, friendly reason.
+function explain(p) {
+  const a = num(p.answer);
+  if (p.type === "of") {
+    const v = { p: pct(p.p), n: num(p.n), a, t: num(p.n / 10) };
+    if (p.p === 50) return t("prHalf", v);
+    if (p.p === 25) return t("prQuarter", v);
+    if (p.p === 75) return t("prThreeQ", Object.assign(v, { q: num(p.n / 4) }));
+    if (p.p === 10) return t("prTenth", v);
+    if (p.p === 1) return t("prHundredth", v);
+    if (p.p === 5) return t("prFive", v);
+    if (p.p === 15) return t("prFifteen", Object.assign(v, { h: num(p.n / 20) }));
+    return t("prTens", Object.assign(v, { k: p.p / 10 }));
+  }
+  if (p.type === "pct") {
+    const k = p.y > 100 ? p.y / 100 : 100 / p.y;
+    return t(p.y > 100 ? "prPctDown" : "prPctUp", { x: num(p.x), y: num(p.y), k, a });
+  }
+  if (p.type === "off" || p.type === "up" || p.type === "vat")
+    return t(p.type === "off" ? "prOffWhy" : "prUpWhy", { p: pct(p.p), n: money(p.n), part: money(p.part), a: money(p.answer) });
+  if (p.type === "share") {
+    const s = p.a + p.b, u = p.n / s;
+    return t("prShareWhy", { a: p.a, b: p.b, s, n: num(p.n), u: num(u), m: p.big ? p.b : p.a, ans: a });
+  }
+  if (p.type === "scale") return t("prScaleWhy", { s: num(p.s), cm: p.cm, a });
+  return t("prEveryWhy", { n: num(p.n), b: p.b, g: num(p.n / p.b), a: p.a, ans: a });
+}
+// GEN END
+
+(function () {
+  const $ = (id) => document.getElementById(id);
+  const card = $("card"), ansEl = $("ans"), feedbackEl = $("feedback"), goBtn = $("k-go"), barEl = $("bar"), promptEl = $("prompt");
+  const lvBtns = [...document.querySelectorAll("#lv-seg button")];
+  const digitBtns = [...document.querySelectorAll("#pad [data-d]")];
+
+  const store = {
+    // ok: the values this setting may have; anything else falls back to the default.
+    get(k, d, ok) { try { const v = JSON.parse(Loopy.store.get(k)); return ok.includes(v) ? v : d; } catch (e) { return d; } },
+    set(k, v) { Loopy.store.set(k, JSON.stringify(v)); }
+  };
+
+  let age = window.Loopy ? Loopy.getAge() : 12;
+  let lv;
+  // The level is remembered per age, so each age starts at the right one.
+  function loadForAge() {
+    lv = store.get("pr.level.a" + age, levelForAge(age), LEVELS);
+    // Opened from the grown-ups' page to practise one level: set it for this visit, without saving.
+    const m = /^pr-(frac|any|disc|ratio)$/.exec(Loopy.log.hint || "");
+    if (m) { lv = m[1]; Loopy.log.hint = ""; }
+  }
+  loadForAge();
+  if (window.Loopy && Loopy.levels) Loopy.levels.init({ names: LEVELS.map(levelName),
+    get: () => LEVELS.indexOf(lv), base: () => LEVELS.indexOf(levelForAge(age)),
+    set: (i) => { lv = LEVELS[i]; store.set("pr.level.a" + age, lv); recent = []; render(); } });
+
+  let right = 0, tried = 0, streak = 0;
+  let current = null, typed = "", answered = false, recent = [];
+
+  // The bar picture. One SVG: the whole on a chip, the parts filled in, ticks for the steps, and labels:
+  // what each part is on top, the numbers underneath. The answer shows as "?" until it is given.
+  const NS = "http://www.w3.org/2000/svg";
+  function el(tag, attrs, parent) {
+    const n = document.createElementNS(NS, tag);
+    Object.keys(attrs).forEach(k => n.setAttribute(k, attrs[k]));
+    parent.appendChild(n);
+    return n;
+  }
+  function label(parent, at, y, text, anchor) {
+    const x = 4 + 392 * at;
+    const n = el("text", { x: Math.max(4, Math.min(396, x)), y, "font-size": 15, "text-anchor": anchor || "middle" }, parent);
+    n.textContent = text;
+  }
+  // What to draw for this problem: { whole, ticks, fills: [[from, to, class]], top: [[at, text]], part: [at, text] }.
+  function barOf(p, done) {
+    const q = done ? null : "?", a = p.answer;
+    const steps = (pc) => 100 / gcd(pc, 100) <= 20 ? 100 / gcd(pc, 100) : 10;
+    if (p.type === "of") { const f = p.p / 100; return { whole: num(p.n), ticks: steps(p.p), fills: [[0, f, "c1"]], top: [[f / 2, pct(p.p)]], part: [f, q || num(a)] }; }
+    if (p.type === "pct") { const f = p.x / p.y; return { whole: num(p.y), ticks: p.y <= 25 ? p.y : 10, fills: [[0, f, "c1"]], top: [[f / 2, q ? "?%" : pct(a)]], part: [f, num(p.x)] }; }
+    if (p.type === "off") { const f = 1 - p.p / 100; return { whole: money(p.n), ticks: steps(p.p), fills: [[0, f, "c1"], [f, 1, "c4"]], top: [[f / 2, q || money(a)], [(1 + f) / 2, "−" + pct(p.p)]] }; }
+    if (p.type === "up" || p.type === "vat") {
+      const f = p.n / a;
+      return { whole: q || money(a), ticks: p.p % 10 ? 0 : 10 + p.p / 10, fills: [[0, f, "c1"], [f, 1, "c2"]], top: [[f / 2, money(p.n)], [(1 + f) / 2, "+" + pct(p.p)]] };
+    }
+    if (p.type === "share") {
+      const s = p.a + p.b, f = p.a / s, mid = p.big ? (1 + f) / 2 : f / 2;
+      return { whole: num(p.n), ticks: s, fills: [[0, f, "c1"], [f, 1, "c2"]], top: [[f / 2, p.a], [(1 + f) / 2, p.b]], part: [mid, q || num(a)] };
+    }
+    if (p.type === "scale") return { whole: q || num(a) + " cm", ticks: p.cm, fills: [[0, 1, "c1"]], top: [[0.5, num(p.cm) + " cm"]] };
+    const fills = [];
+    for (let i = 0; i < p.n / p.b; i++) fills.push([i * p.b / p.n, (i * p.b + p.a) / p.n, "c1"]);
+    return { whole: num(p.n), ticks: p.n <= 40 ? p.n : p.n / p.b, fills, top: [[0.5, q || num(a) + " " + t("prRed")]] };
+  }
+  function drawBar() {
+    barEl.innerHTML = "";
+    if (!current) return;
+    const b = barOf(current, answered);
+    el("rect", { class: "whole", x: 4, y: 24, width: 392, height: 30, rx: 6 }, barEl);
+    const clip = el("clipPath", { id: "bar-clip" }, barEl);
+    el("rect", { x: 4, y: 24, width: 392, height: 30, rx: 6 }, clip);
+    const g = el("g", { "clip-path": "url(#bar-clip)" }, barEl);
+    b.fills.forEach(f => el("rect", { class: f[2], x: 4 + 392 * f[0], y: 24, width: 392 * (f[1] - f[0]), height: 30 }, g));
+    for (let i = 1; i < b.ticks; i++) { const x = 4 + 392 * i / b.ticks; el("line", { class: "tick", x1: x, y1: 24, x2: x, y2: 54 }, g); }
+    el("rect", { class: "edge", x: 4, y: 24, width: 392, height: 30, rx: 6 }, barEl);
+    b.top.forEach(l => label(barEl, l[0], 16, l[1]));
+    // Numbers underneath: 0 on the left, the whole on the right, the part where it ends (unless it would sit on top of one of them).
+    const at = b.part ? b.part[0] : -1;
+    if (at < 0 || at > 0.12) label(barEl, 0, 74, "0", "start");
+    if (at < 0 || at < 0.88) label(barEl, 1, 74, b.whole, "end");
+    if (b.part) label(barEl, at, 74, b.part[1], at <= 0.12 ? "start" : at >= 0.88 ? "end" : "middle");
+  }
+
+  function render() {
+    if (window.Loopy && Loopy.levels) Loopy.levels.render();
+    $("score").textContent = right + " / " + tried;
+    $("streak").textContent = streak;
+    lvBtns.forEach(b => b.setAttribute("aria-pressed", String(b.dataset.lv === lv)));
+    ansEl.textContent = typed === "" ? "" : num(parseInt(typed, 10));
+    ansEl.classList.toggle("empty", !answered && typed === "");
+    goBtn.textContent = t(answered ? "next" : "check");
+    goBtn.disabled = !answered && typed === "";
+    digitBtns.forEach(b => b.disabled = answered);
+    $("k-erase").disabled = answered || typed === "";
+  }
+
+  function showProblem() {
+    const [pre, post] = eqParts(current), words = promptOf(current);
+    $("eq-pre").textContent = pre;
+    $("eq-post").textContent = post;
+    promptEl.textContent = words;
+    promptEl.hidden = !words;
+    $("eq").setAttribute("aria-label", sayOf(current));
+  }
+  function newRound() {
+    current = Loopy.fresh(recent, () => makeProblem(lv), 12);
+    typed = ""; answered = false;
+    showProblem();
+    card.classList.remove("good", "bad");
+    feedbackEl.className = "feedback";
+    feedbackEl.innerHTML = '<span class="hint"></span>';
+    feedbackEl.firstChild.textContent = t("tapHint");
+    render();
+    drawBar();
+    Loopy.speech.read();
+  }
+
+  function press(d) {
+    if (answered || typed.length >= 4) return;
+    if (typed === "0") typed = "";
+    typed += d;
+    render();
+  }
+  function erase() {
+    if (answered) return;
+    typed = typed.slice(0, -1);
+    render();
+  }
+  // The short form of the question for the grown-ups' page and the answer key, like "25% of 80 = ?".
+  function shortQ(p) {
+    const [pre, post] = eqParts(p);
+    if (p.type === "share") return t("prWsShare", { n: num(p.n), a: p.a, b: p.b, which: t(p.big ? "prBigger" : "prSmaller") }) + " ?";
+    if (p.type === "every") return t("prWsEvery", { a: p.a, b: p.b, n: num(p.n) }) + " ?";
+    return (pre + " ? " + post).trim();
+  }
+  function check() {
+    if (answered || typed === "") return;
+    answered = true; tried++;
+    const ok = parseInt(typed, 10) === current.answer;
+    if (ok) { right++; streak++; } else { streak = 0; }
+    if (window.Loopy && Loopy.rewards) ok ? Loopy.rewards.correct("percent-ratio", streak) : Loopy.rewards.wrong("percent-ratio", { q: shortQ(current), a: num(current.answer), y: num(parseInt(typed, 10)), k: "pr-" + current.lv });
+    card.classList.add(ok ? "good" : "bad");
+    feedbackEl.className = "feedback " + (ok ? "good" : "bad");
+    const head = ok
+      ? (streak >= 3 ? t("correctRow", { n: streak }) : t("correct"))
+      : t("notQuite") + " " + shortQ(current).replace("?", num(current.answer)) + ".";
+    feedbackEl.innerHTML = "<strong></strong>";
+    feedbackEl.firstChild.textContent = head;
+    feedbackEl.appendChild(document.createTextNode(explain(current)));
+    render();
+    drawBar();
+    fitReason();
+  }
+  // A long reason on a small phone gets smaller steps (text, sentence, bar) until it fits the card.
+  function fitReason() {
+    card.classList.remove("fit1", "fit2", "fit3");
+    if (!answered) return;
+    for (const step of ["fit1", "fit2", "fit3"]) {
+      if (feedbackEl.scrollHeight <= feedbackEl.clientHeight + 1) break;
+      card.classList.remove("fit1", "fit2", "fit3");
+      card.classList.add(step);
+    }
+  }
+  window.addEventListener("resize", fitReason);
+  function go() { answered ? newRound() : check(); }
+
+  digitBtns.forEach(b => b.addEventListener("click", () => press(b.dataset.d)));
+  $("k-erase").addEventListener("click", erase);
+  goBtn.addEventListener("click", go);
+  lvBtns.forEach(b => b.addEventListener("click", () => {
+    lv = b.dataset.lv; store.set("pr.level.a" + age, lv); recent = []; newRound();
+  }));
+  window.addEventListener("loopy:age", (e) => { age = e.detail; recent = []; loadForAge(); newRound(); });
+  $("reset").addEventListener("click", () => { right = 0; tried = 0; streak = 0; if (window.Loopy && Loopy.recent) Loopy.recent.clear("percent-ratio"); newRound(); });
+  document.addEventListener("keydown", (e) => {
+    if (e.metaKey || e.ctrlKey || e.altKey || document.querySelector(".loopy-cheer.big")) return;
+    if (e.target.tagName === "INPUT") return;
+    if (/^[0-9]$/.test(e.key)) { press(e.key); e.preventDefault(); }
+    else if (e.key === "Backspace") { erase(); e.preventDefault(); }
+    else if (e.key === "Enter") {
+      if (document.activeElement && document.activeElement.tagName === "BUTTON" && document.activeElement !== goBtn) return;
+      go(); e.preventDefault();
+    }
+  });
+
+  // Read aloud: "What is 25 percent of 80?"
+  Loopy.speech.question({ host: card, text: () => sayOf(current) });
+
+  // Print worksheet: 20 problems at the same level as the game, like "25% of 80 = ____".
+  Loopy.worksheet({
+    title: () => t("prName"),
+    level: () => [t("ageLabel", { n: age }), t(levelName(lv))].join(" · "),
+    how: () => t("prHow"),
+    layout: "line",
+    make: (n) => { const list = [], keys = []; for (let tries = 0; list.length < n && tries < 400; tries++) { const p = makeProblem(lv); if (keys.includes(p.key)) continue; keys.push(p.key); list.push(p); } return list; },
+    cell: (p) => {
+      const box = document.createElement("span");
+      box.className = "ws-pr";
+      const words = p.type === "share" ? t("prWsShare", { n: num(p.n), a: p.a, b: p.b, which: t(p.big ? "prBigger" : "prSmaller") })
+        : p.type === "every" ? t("prWsEvery", { a: p.a, b: p.b, n: num(p.n) })
+        : p.type === "scale" ? t("prWsScale", { s: num(p.s) }) : p.type === "of" || p.type === "pct" ? "" : promptOf(p);
+      if (words) { const s = document.createElement("small"); s.textContent = words; box.appendChild(s); }
+      const [pre, post] = eqParts(p);
+      const line = document.createElement("span");
+      line.className = "ws-sl";
+      if (pre) line.appendChild(document.createTextNode(pre));
+      const blank = document.createElement("span");
+      blank.className = "ws-blank";
+      line.appendChild(blank);
+      if (post) line.appendChild(document.createTextNode(" " + post));
+      box.appendChild(line);
+      return box;
+    },
+    answer: (p) => shortQ(p).replace("?", num(p.answer))
+  });
+
+  newRound();
+})();
+</script>
+</body>
+</html>

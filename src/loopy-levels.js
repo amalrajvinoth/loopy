@@ -76,6 +76,11 @@
       at: function (v, a) { return index(val(v, "tt.lv.a{age}", a), [0, 1, 2, 3, 4], this.base(a)); },
       names: { en: ["Tables of 1, 2 and 10, up to 5 times", "Tables of 2, 5 and 10", "All tables up to 10 × 10", "All tables up to 12 × 12", "All tables up to 12 × 12, with sharing mixed in"],
         de: ["Reihen 1, 2 und 10, bis 5 mal", "Reihen 2, 5 und 10", "Alle Reihen bis 10 × 10", "Alle Reihen bis 12 × 12", "Alle Reihen bis 12 × 12, gemischt mit Teilen"] } },
+    "percent-ratio": { keys: ["pr.level.a{age}"], of: 4,
+      base: function (a) { return a <= 11 ? 0 : a === 12 ? 1 : a <= 14 ? 2 : 3; },
+      at: function (v, a) { return index(val(v, "pr.level.a{age}", a), ["frac", "any", "disc", "ratio"], this.base(a)); },
+      names: { en: ["Halves, quarters and tenths", "Any percent", "Discounts and increases", "Ratios and scale"],
+        de: ["Hälften, Viertel und Zehntel", "Jeder Prozentsatz", "Rabatt und Aufschlag", "Verhältnis und Maßstab"] } },
     "sound-spell": { keys: ["ss.mode.a{age}", "ss.choices.a{age}"], of: 3,
       base: function (a) { return a <= 6 ? 0 : 2; },
       at: function (v, a) {
