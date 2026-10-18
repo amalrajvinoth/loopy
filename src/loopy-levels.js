@@ -99,6 +99,11 @@
       base: function (a) { return a <= 8 ? 0 : a <= 10 ? 1 : 2; },
       at: function (v, a) { return index(val(v, "qf.level.a{age}", a), [1, 2, 3], this.base(a)); },
       names: { en: ["Starter", "Explorer", "Expert"], de: ["Einsteiger", "Entdecker", "Profi"] } },
+    "sort-it": { keys: ["so.level.a{age}"], of: 4,
+      base: function (a) { return a <= 7 ? 0 : a === 8 ? 1 : a <= 10 ? 2 : 3; },
+      at: function (v, a) { return index(val(v, "so.level.a{age}", a), [1, 2, 3, 4], this.base(a)); },
+      names: { en: ["Animals and living things", "Materials and matter", "Food, space and senses", "All mixed, with tricky ones"],
+        de: ["Tiere und Lebewesen", "Materialien und Stoffe", "Essen, Weltall und Sinne", "Alles gemischt, mit kniffligen"] } },
     "where-is-it": { keys: ["wi.map.a{age}", "wi.find.a{age}"], of: 5,
       base: function (a) { return a <= 8 ? 0 : a <= 10 ? 1 : a === 11 ? 2 : a === 12 ? 3 : 4; },
       at: function (v, a) {

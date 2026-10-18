@@ -1,0 +1,711 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'sha256-gWSmGUbsxiV2ql+E8fYCUdgBpW8ZWOF1qiN+s1TbDFg='; style-src 'self' 'sha256-z2P7kGW5Z05eCTjTZdYpc0vThTlOE9vmt97pVSvi2I4=' 'sha256-oLQF3jnCxf/mhP8dw8TD8Q631n/SdgEZHa5Z9K9C5do=' 'sha256-RT1053JU5UiKvjrCUFx1rlhdFLMmgtuFJ9T8jnMeawQ=' 'sha256-85jc8QafFRQ/AgP2TO/VDSGWQrc0SF2GVDkf3taMmK0='; img-src 'self' data:; font-src 'self'; connect-src 'self'; worker-src 'self'; object-src 'none'; base-uri 'none'; form-action 'none'; manifest-src 'self'; upgrade-insecure-requests">
+<meta name="referrer" content="strict-origin-when-cross-origin">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<style>:root{color-scheme:light;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}body{margin:0}[hidden]{display:none!important}</style>
+<link rel="icon" href="../../icon.svg" type="image/svg+xml">
+<link rel="manifest" href="../../manifest.webmanifest">
+<link rel="apple-touch-icon" href="../../apple-touch-icon.png">
+<meta name="theme-color" content="#0a0a0c">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="loopy">
+<title data-t="soName">Sort It</title>
+<meta name="description" content="Sort It on loopy: see a thing and pick its group. Animal classes, living or not, solid, liquid or gas, food groups, planets, materials and the five senses, with one line of why. Free, English and German.">
+<link rel="preload" href="../../fonts/lexend-latin.woff2" as="font" type="font/woff2" crossorigin>
+<style>
+/* Layout: a picture and a question, answer buttons below. Shared look with the other games. */
+:root {
+  --bg: #f3f6fb;
+  --card: #ffffff;
+  --ink: #1d2a3f;
+  --muted: #5d6b82;
+  --line: #d5dde9;
+  --accent: #2457c5;
+  --accent-ink: #ffffff;
+  --mark: #e2622b;
+  --good: #1f8a4c;
+  --good-bg: #e3f5ea;
+  --bad: #c23a3a;
+  --bad-bg: #fbe6e6;
+  --chip: #e6ecf6;
+  --key: #ffffff;
+  --font: "Lexend", "Segoe UI", "Helvetica Neue", Arial, sans-serif;
+}
+
+* { box-sizing: border-box; }
+body {
+  background: var(--bg); color: var(--ink); font-family: var(--font); font-size: 16px;
+  padding-left: max(16px, env(safe-area-inset-left, 0px));
+  padding-right: max(16px, env(safe-area-inset-right, 0px));
+  padding-block: 20px 32px;
+}
+.wrap { max-width: 520px; margin: 0 auto; display: flex; flex-direction: column; gap: 16px; }
+
+.top { display: flex; flex-wrap: wrap; gap: 12px; align-items: center; justify-content: space-between; }
+h1 { margin: 0; font-size: 1.6rem; font-weight: 700; text-wrap: balance; }
+.score { display: flex; flex-wrap: wrap; gap: 8px; font-variant-numeric: tabular-nums; }
+.pill { background: var(--card); border: 1px solid var(--line); border-radius: 999px; padding: 6px 14px; font-weight: 600; font-size: 1rem; white-space: nowrap; }
+.pill span { color: var(--muted); font-weight: 400; margin-right: 4px; }
+
+.settings { display: flex; flex-direction: column; gap: 8px; }
+.seg-label { font-size: 0.8rem; font-weight: 600; letter-spacing: 0.06em; text-transform: uppercase; color: var(--muted); margin: 0 0 4px 4px; }
+.seg { display: grid; grid-template-columns: repeat(3, 1fr); gap: 6px; background: var(--chip); padding: 5px; border-radius: 14px; }
+.seg.two { grid-template-columns: repeat(2, 1fr); }
+.seg button {
+  font: inherit; font-size: 0.95rem; font-weight: 600; color: var(--muted);
+  background: transparent; border: 0; border-radius: 10px; padding: 8px 6px; min-height: 44px; cursor: pointer;
+}
+.seg button[aria-pressed="true"] { background: var(--card); color: var(--ink); box-shadow: 0 1px 3px rgb(0 0 0 / 0.12); }
+
+.problem-card {
+  background: var(--card); border: 1px solid var(--line); border-radius: 24px;
+  padding: 20px 18px 18px; display: flex; flex-direction: column; align-items: center; gap: 14px;
+}
+.problem-card.good { border-color: var(--good); box-shadow: 0 0 0 2px var(--good) inset; }
+.problem-card.bad { border-color: var(--bad); box-shadow: 0 0 0 2px var(--bad) inset; }
+
+/* Vertical problem, written like the worksheets: operator on the left, digits right-aligned. */
+.vert {
+  display: grid; grid-template-columns: auto auto; column-gap: 0.35em;
+  font-size: clamp(3.4rem, 15vw, 4.6rem); font-weight: 600; line-height: 1.12;
+  font-variant-numeric: tabular-nums; letter-spacing: 0.04em;
+}
+.vert .num { grid-column: 2; text-align: right; min-width: 3ch; }
+.vert .op { grid-column: 1; grid-row: 2; color: var(--accent); }
+.vert .rule { grid-column: 1 / -1; height: 0.07em; background: var(--ink); border-radius: 2px; margin: 0.1em 0 0.12em; }
+.vert .ans {
+  grid-column: 2; text-align: right; min-width: 3ch; min-height: 1.12em;
+  color: var(--accent); position: relative;
+}
+.vert .ans.empty::after {
+  content: ""; position: absolute; right: 0; bottom: 0.12em; width: 0.55em; height: 0.07em;
+  background: var(--mark); border-radius: 2px; animation: blink 1s steps(2, start) infinite;
+}
+.problem-card.good .ans { color: var(--good); }
+.problem-card.bad .ans { color: var(--bad); text-decoration: line-through; text-decoration-thickness: 0.06em; }
+@keyframes blink { to { visibility: hidden; } }
+
+.feedback { min-height: 3.1em; text-align: center; font-size: 1.1rem; line-height: 1.45; margin: 0; max-width: 34ch; }
+.feedback strong { display: block; font-size: 1.45rem; }
+.feedback.good strong { color: var(--good); }
+.feedback.bad strong { color: var(--bad); }
+.feedback .hint { color: var(--muted); }
+
+.pad { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; }
+.pad button {
+  font: inherit; font-size: 2rem; font-weight: 700; font-variant-numeric: tabular-nums; color: var(--ink);
+  background: var(--key); border: 2px solid var(--line); border-radius: 18px; min-height: 72px; cursor: pointer;
+  transition: transform .08s ease, border-color .15s ease;
+  touch-action: manipulation; -webkit-tap-highlight-color: transparent;
+}
+.pad button:hover:not(:disabled) { border-color: var(--accent); }
+.pad button:active:not(:disabled) { transform: scale(0.96); }
+.pad button:disabled { opacity: 0.4; cursor: default; }
+.pad .erase { font-size: 1.15rem; color: var(--muted); }
+.pad .go { background: var(--accent); border-color: var(--accent); color: var(--accent-ink); font-size: 1.35rem; }
+.pad .go:hover:not(:disabled) { border-color: var(--accent); filter: brightness(1.08); }
+
+.foot { display: flex; justify-content: space-between; align-items: center; gap: 12px; flex-wrap: wrap; }
+.foot p { margin: 0; color: var(--muted); font-size: 0.9rem; }
+.reset { font: inherit; font-size: 0.95rem; color: var(--muted); background: transparent; border: 2px solid var(--line); border-radius: 14px; padding: 0 16px; min-height: 44px; cursor: pointer; }
+button:focus-visible { outline: 3px solid var(--mark); outline-offset: 3px; }
+
+@media (max-width: 420px) {
+  h1 { font-size: 1.35rem; }
+  .pad button { min-height: 64px; font-size: 1.8rem; }
+  .seg button { font-size: 0.85rem; }
+}
+@media (prefers-reduced-motion: reduce) {
+  * { transition: none !important; }
+  .vert .ans.empty::after { animation: none; }
+}
+</style>
+<style>.home-link{display:inline-flex;align-items:center;min-height:40px;color:var(--muted);font-weight:600;text-decoration:none;font-size:0.95rem}.home-link:hover{color:var(--ink)}</style>
+<style>
+/* Phones and tablets: the game fills one screen; settings sit behind a button. */
+body { min-height: 100vh; min-height: 100dvh; padding-block: 12px 16px; }
+.wrap { gap: 12px; }
+.game-bar { display: flex; align-items: center; justify-content: space-between; gap: 8px; }
+.bar-right { display: flex; align-items: center; gap: 8px; }
+.top { gap: 8px 12px; }
+.play { display: flex; flex-direction: column; gap: 12px; -webkit-user-select: none; user-select: none; }
+@media (min-width: 600px) and (orientation: portrait) { .wrap { max-width: 640px; } }
+@media (orientation: landscape) and (min-width: 640px) {
+  .wrap { max-width: 1100px; }
+  .play { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; align-items: center; }
+}
+
+.problem-card { padding: 14px 14px 12px; gap: 8px; }
+.vert { font-size: clamp(2.4rem, min(15vw, 8.5vh), 5rem); font-size: clamp(2.4rem, min(15vw, 8.5dvh), 5rem); }
+.feedback { min-height: 2.9em; font-size: 1.05rem; }
+.feedback strong { font-size: 1.3rem; }
+.pad { gap: 8px; }
+.pad button { min-height: clamp(50px, 8vh, 92px); min-height: clamp(50px, 8dvh, 92px); }
+@media (min-width: 600px) and (orientation: portrait) {
+  .vert { font-size: clamp(3rem, 10dvh, 7rem); }
+  .pad button { min-height: clamp(60px, 10dvh, 120px); font-size: 2.4rem; }
+}
+@media (orientation: landscape) and (min-width: 640px) {
+  .problem-card { height: 100%; justify-content: center; }
+  .vert { font-size: clamp(2.2rem, min(7vw, 13dvh), 7rem); }
+  .pad button { min-height: clamp(44px, calc((100dvh - 150px) / 4.4), 130px); }
+}
+/* Short phones: keep long explanations from pushing the number pad off screen. */
+@media (max-height: 760px) and (orientation: portrait) {
+  .feedback { font-size: 0.95rem; line-height: 1.35; }
+  .feedback strong { font-size: 1.15rem; }
+}
+
+/* Portrait: the page is exactly one screen tall; the pad or answers stay at the bottom
+   and the top part shrinks to fit. With settings open, the page scrolls normally. */
+@media (orientation: portrait) {
+  body { height: calc(100dvh - env(safe-area-inset-top, 0px) - env(safe-area-inset-bottom, 0px)); min-height: 0; display: flex; flex-direction: column; overflow: hidden; }
+  body:has(#settings-panel:not([hidden])) { height: auto; overflow: visible; }
+  .wrap { flex: 1 1 auto; min-height: 0; width: 100%; }
+  .play { flex: 1 1 auto; min-height: 0; }
+}
+@media (orientation: portrait) {
+  .problem-card { flex: 1 1 auto; min-height: 0; justify-content: center; overflow: hidden; }
+  .feedback { flex: 0 1 auto; min-height: 0; overflow-y: auto; }
+}
+@media (orientation: landscape) and (min-width: 640px) {
+  body { height: calc(100dvh - env(safe-area-inset-top, 0px) - env(safe-area-inset-bottom, 0px)); min-height: 0; display: flex; flex-direction: column; overflow: hidden; }
+  body:has(#settings-panel:not([hidden])) { height: auto; overflow: visible; }
+  .wrap { flex: 1 1 auto; min-height: 0; width: 100%; }
+  .play { flex: 1 1 auto; min-height: 0; grid-template-rows: minmax(0, 1fr); }
+  .problem-card { min-height: 0; overflow: hidden; }
+  .feedback { flex: 0 1 auto; min-height: 0; overflow-y: auto; }
+}
+/* After answering on smaller screens, shrink the sum so the reason has room. */
+@media (max-height: 900px), (max-width: 599px) {
+  .problem-card.good .vert, .problem-card.bad .vert { zoom: 0.7; }
+}
+@media (max-height: 500px) {
+  .feedback { font-size: 0.9rem; line-height: 1.3; }
+  .feedback strong { font-size: 1.05rem; }
+}
+
+
+
+
+/* Sort It: a thing with its name, a question, and the groups to pick from. */
+.pic { font-size: clamp(2.6rem, 11dvh, 6.5rem); line-height: 1.1; }
+.name { margin: 0; font-size: clamp(1.3rem, min(6vw, 4dvh), 2.2rem); font-weight: 700; line-height: 1.2; text-align: center; text-wrap: balance; }
+.question { margin: 0; font-size: clamp(1rem, min(4.6vw, 2.8dvh), 1.4rem); font-weight: 600; line-height: 1.25; color: var(--muted);
+  text-align: center; max-width: 30ch; text-wrap: balance; }
+.side { display: flex; flex-direction: column; gap: 10px; }
+.choices { display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; }
+/* Three answers: one column, so no answer looks bigger than the others. */
+.choices.three { grid-template-columns: 1fr; }
+.choices.three button { min-height: clamp(48px, 7dvh, 80px); }
+.choices button {
+  font: inherit; font-size: clamp(1.1rem, min(5.2vw, 3.4dvh), 1.8rem); font-weight: 700; color: var(--ink); line-height: 1.2;
+  background: var(--key); border: 2px solid var(--line); border-radius: 18px; min-height: clamp(56px, 9dvh, 96px); padding: 6px 10px; cursor: pointer;
+  overflow-wrap: anywhere; hyphens: auto;
+  transition: transform .08s ease, border-color .15s ease; touch-action: manipulation; -webkit-tap-highlight-color: transparent;
+}
+.choices button:hover:not(:disabled) { border-color: var(--accent); }
+.choices button:active:not(:disabled) { transform: scale(0.96); }
+.choices button:disabled { cursor: default; }
+.choices button.right { border-color: var(--good); background: var(--good-bg); color: var(--good); }
+.choices button.wrong { border-color: var(--bad); background: var(--bad-bg); color: var(--bad); }
+.choices button.faded { opacity: 0.45; }
+.next { font: inherit; font-size: 1.25rem; font-weight: 700; color: var(--accent-ink); background: var(--accent); border: 0; border-radius: 16px; min-height: clamp(52px, 7dvh, 72px); cursor: pointer; width: 100%; }
+.seg button { padding-inline: 4px; line-height: 1.2; }
+@media (min-width: 600px) and (orientation: portrait) {
+  .choices button { min-height: clamp(64px, 10dvh, 120px); }
+}
+@media (orientation: landscape) and (min-width: 640px) {
+  .problem-card { height: 100%; justify-content: center; }
+  .side { height: 100%; justify-content: center; }
+  .choices button { min-height: clamp(52px, 14dvh, 130px); }
+}
+/* After the answer the picture gets smaller, so the name, the question and the reason have room. */
+@media (max-height: 900px), (max-width: 599px) {
+  .problem-card.good .pic, .problem-card.bad .pic { zoom: 0.6; }
+}
+@media (max-height: 700px) {
+  .pic { font-size: clamp(2.2rem, 9dvh, 4.5rem); }
+  .name { font-size: clamp(1.15rem, min(5.4vw, 3.6dvh), 1.6rem); }
+  .question { font-size: clamp(0.95rem, min(4.2vw, 2.6dvh), 1.2rem); }
+  .problem-card.good .pic, .problem-card.bad .pic { display: none; }
+  .problem-card.good .question, .problem-card.bad .question { display: none; }
+}
+@media (max-height: 500px) {
+  .name { font-size: 1.1rem; }
+  .question { font-size: 0.95rem; }
+}
+
+/* Worksheet cells (only printed): the thing and its name, then the groups to circle. */
+@media print {
+  .sheet-grid li > div.ws-so { align-items: flex-start; gap: 0.6mm; padding-right: 2mm; }
+  .ws-so .ws-q { font-size: 10pt; font-weight: 600; line-height: 1.2; }
+  .ws-so .ws-q span { margin-right: 1.5mm; }
+  .ws-so .ws-opts { display: flex; flex-wrap: wrap; gap: 0.2mm 3mm; font-size: 8.5pt; line-height: 1.2; color: #333; }
+  .ws-so .ws-opts span::before { content: "○ "; }
+}
+</style>
+<link rel="stylesheet" href="../../loopy.css">
+<script src="../../loopy.js"></script>
+</head>
+<body>
+
+<div class="wrap">
+  <header class="game-bar">
+    <a class="home-link" href="../../">&larr; loopy</a>
+    <div class="bar-right">
+      <span id="star-chip"></span>
+      <button type="button" id="settings-toggle" aria-controls="settings-panel"></button>
+    </div>
+  </header>
+  <section class="top" aria-labelledby="title">
+    <h1 id="title" data-t="soName">Sort It</h1>
+    <div class="score" aria-live="polite">
+      <div class="pill pill-score"><span data-t="score">Score</span><b id="score">0 / 0</b></div>
+      <div id="level"></div>
+      <div class="pill pill-streak"><span data-t="streak">Streak</span><b id="streak">0</b></div>
+      <div id="last5" data-game="sort-it"></div>
+    </div>
+  </section>
+  <div class="settings-panel" id="settings-panel" hidden>
+    <div class="controls"><div id="age-picker"></div><div id="theme-picker"></div><button id="sound-toggle"></button><div id="lang-picker"></div></div>
+    <div>
+      <p class="seg-label" id="topic-label" data-t="soTopic">Topic</p>
+      <div class="seg" role="group" aria-labelledby="topic-label" id="topic-seg">
+        <button type="button" data-topic="all" data-t="soAll">All</button>
+        <button type="button" data-topic="animals" data-t="soAnimals">Animals</button>
+        <button type="button" data-topic="matter" data-t="soMatter">Matter</button>
+        <button type="button" data-topic="food" data-t="soFood">Food</button>
+        <button type="button" data-topic="space" data-t="soSpace">Space</button>
+        <button type="button" data-topic="senses" data-t="soSenses">Senses</button>
+      </div>
+    </div>
+    <div>
+      <p class="seg-label" id="level-label" data-t="soLevel">Level</p>
+      <div class="seg two" role="group" aria-labelledby="level-label" id="level-seg">
+        <button type="button" data-level="1" data-t="soL1">Animals and living things</button>
+        <button type="button" data-level="2" data-t="soL2">Materials and matter</button>
+        <button type="button" data-level="3" data-t="soL3">Food, space and senses</button>
+        <button type="button" data-level="4" data-t="soL4">All mixed, with tricky ones</button>
+      </div>
+    </div>
+    <div class="panel-foot">
+      <p data-t="soKbd">Keyboard works too: 1 to 4 picks a group, Enter goes on.</p>
+      <button type="button" class="reset" id="reset" data-t="resetScore">Reset score</button>
+    </div>
+  </div>
+
+  <main class="play">
+    <div class="problem-card" id="card">
+      <div class="pic" id="pic" aria-hidden="true"></div>
+      <p class="name" id="name"></p>
+      <p class="question" id="question"></p>
+      <p class="feedback" id="feedback"></p>
+    </div>
+    <div class="side">
+      <div class="choices" id="choices"></div>
+      <button type="button" class="next skip" id="next" data-t="skip">Skip</button>
+    </div>
+  </main>
+</div>
+
+<script>
+Loopy.addStrings({
+  en: {
+    soName: "Sort It", soTopic: "Topic", soLevel: "Level",
+    soAll: "All", soAnimals: "Animals", soMatter: "Matter", soFood: "Food", soSpace: "Space", soSenses: "Senses",
+    soL1: "Animals and living things", soL2: "Materials and matter", soL3: "Food, space and senses", soL4: "All mixed, with tricky ones",
+    soKbd: "Keyboard works too: 1 to 4 picks a group, Enter goes on.",
+    soAnswerIs: "The answer is: {a}.", soReadQ: "{name}. {q} {list}?",
+    soHow: "Look at each thing. Circle the group it belongs to.",
+    soQ_animal: "Which kind of animal is it?", soQ_living: "Is it alive?", soQ_matter: "Is it a solid, a liquid or a gas?",
+    soQ_material: "What is it made of?", soQ_food: "Which food group is it?", soQ_space: "What is it?", soQ_sense: "Which sense do you use for it?",
+    so_mammal: "Mammal", so_bird: "Bird", so_fish: "Fish", so_reptile: "Reptile", so_amphibian: "Amphibian", so_insect: "Insect",
+    so_alive: "Alive", so_once: "Was alive once", so_never: "Never alive",
+    so_solid: "Solid", so_liquid: "Liquid", so_gas: "Gas",
+    so_wood: "Wood", so_metal: "Metal", so_glass: "Glass", so_plastic: "Plastic", so_fabric: "Fabric",
+    so_fruit: "Fruit", so_veg: "Vegetable", so_grain: "Grain", so_dairy: "Dairy", so_protein: "Protein",
+    so_planet: "Planet", so_star: "Star", so_moon: "Moon", so_dwarf: "Dwarf planet",
+    so_see: "See", so_hear: "Hear", so_smell: "Smell", so_taste: "Taste", so_touch: "Touch"
+  },
+  de: {
+    soName: "Sortieren", soTopic: "Thema", soLevel: "Stufe",
+    soAll: "Alle", soAnimals: "Tiere", soMatter: "Stoffe", soFood: "Essen", soSpace: "Weltall", soSenses: "Sinne",
+    soL1: "Tiere und Lebewesen", soL2: "Materialien und Stoffe", soL3: "Essen, Weltall und Sinne", soL4: "Alles gemischt, mit kniffligen",
+    soKbd: "Die Tastatur geht auch: 1 bis 4 wählt eine Gruppe, Enter geht weiter.",
+    soAnswerIs: "Die Antwort ist: {a}.", soReadQ: "{name}. {q} {list}?",
+    soHow: "Schau dir jedes Ding an. Kreise die Gruppe ein, zu der es gehört.",
+    soQ_animal: "Welche Tierart ist das?", soQ_living: "Lebt es?", soQ_matter: "Ist es fest, flüssig oder gasförmig?",
+    soQ_material: "Woraus ist es gemacht?", soQ_food: "Zu welcher Lebensmittelgruppe gehört es?", soQ_space: "Was ist das?", soQ_sense: "Welchen Sinn brauchst du dafür?",
+    so_mammal: "Säugetier", so_bird: "Vogel", so_fish: "Fisch", so_reptile: "Reptil", so_amphibian: "Amphibie", so_insect: "Insekt",
+    so_alive: "Lebt", so_once: "Hat mal gelebt", so_never: "Hat nie gelebt",
+    so_solid: "Fest", so_liquid: "Flüssig", so_gas: "Gasförmig",
+    so_wood: "Holz", so_metal: "Metall", so_glass: "Glas", so_plastic: "Plastik", so_fabric: "Stoff",
+    so_fruit: "Obst", so_veg: "Gemüse", so_grain: "Getreide", so_dairy: "Milchprodukt", so_protein: "Eiweiß",
+    so_planet: "Planet", so_star: "Stern", so_moon: "Mond", so_dwarf: "Zwergplanet",
+    so_see: "Sehen", so_hear: "Hören", so_smell: "Riechen", so_taste: "Schmecken", so_touch: "Fühlen"
+  }
+});
+
+// GEN START
+// Each thing: [picture, level, set, group, English name, German name, English why, German why].
+// Level 1: animals and living things (ages 6 to 7). Level 2 adds solid, liquid, gas and materials (age 8).
+// Level 3 adds food groups, space and the senses (ages 9 to 10). Level 4 adds the tricky ones (age 11 and up).
+const GROUPS = {
+  animal: ["mammal", "bird", "fish", "reptile", "amphibian", "insect"],
+  living: ["alive", "once", "never"],
+  matter: ["solid", "liquid", "gas"],
+  material: ["wood", "metal", "glass", "plastic", "fabric"],
+  food: ["fruit", "veg", "grain", "dairy", "protein"],
+  space: ["planet", "star", "moon", "dwarf"],
+  sense: ["see", "hear", "smell", "taste", "touch"]
+};
+const TOPICS = { all: Object.keys(GROUPS), animals: ["animal", "living"], matter: ["matter", "material"], food: ["food"], space: ["space"], senses: ["sense"] };
+const THINGS = [
+  ["🐕", 1, "animal", "mammal", "A dog", "Der Hund", "A dog has fur and feeds its puppies milk, so it is a mammal.", "Ein Hund hat Fell und säugt seine Welpen, also ist er ein Säugetier."],
+  ["🐈", 1, "animal", "mammal", "A cat", "Die Katze", "A cat has fur and feeds its kittens milk, so it is a mammal.", "Eine Katze hat Fell und säugt ihre Jungen, also ist sie ein Säugetier."],
+  ["🐄", 1, "animal", "mammal", "A cow", "Die Kuh", "A cow has hair and feeds its calf milk, so it is a mammal.", "Eine Kuh hat ein Fell und säugt ihr Kalb, also ist sie ein Säugetier."],
+  ["🐘", 1, "animal", "mammal", "An elephant", "Der Elefant", "An elephant is born alive and drinks its mother's milk, so it is a mammal.", "Ein Elefant kommt lebend zur Welt und trinkt Milch bei seiner Mutter, also ist er ein Säugetier."],
+  ["🐎", 1, "animal", "mammal", "A horse", "Das Pferd", "A horse has hair and feeds its foal milk, so it is a mammal.", "Ein Pferd hat ein Fell und säugt sein Fohlen, also ist es ein Säugetier."],
+  ["🐒", 1, "animal", "mammal", "A monkey", "Der Affe", "A monkey has fur and feeds its babies milk, so it is a mammal.", "Ein Affe hat Fell und säugt seine Jungen, also ist er ein Säugetier."],
+  ["🐰", 1, "animal", "mammal", "A rabbit", "Das Kaninchen", "A rabbit has soft fur and feeds its babies milk, so it is a mammal.", "Ein Kaninchen hat weiches Fell und säugt seine Jungen, also ist es ein Säugetier."],
+  ["🐬", 4, "animal", "mammal", "A dolphin", "Der Delfin", "A dolphin breathes air and feeds its babies milk, so it is a mammal.", "Ein Delfin atmet Luft und säugt seine Jungen, also ist er ein Säugetier."],
+  ["🐋", 4, "animal", "mammal", "A whale", "Der Wal", "A whale lives in the sea, but it breathes air and feeds its babies milk, so it is a mammal.", "Ein Wal lebt im Meer, aber er atmet Luft und säugt seine Jungen, also ist er ein Säugetier."],
+  ["🦇", 4, "animal", "mammal", "A bat", "Die Fledermaus", "A bat can fly, but it has fur and feeds its babies milk, so it is a mammal, not a bird.", "Eine Fledermaus kann fliegen, aber sie hat Fell und säugt ihre Jungen, also ist sie ein Säugetier und kein Vogel."],
+  ["🦉", 1, "animal", "bird", "An owl", "Die Eule", "An owl has feathers and lays eggs, so it is a bird.", "Eine Eule hat Federn und legt Eier, also ist sie ein Vogel."],
+  ["🦆", 1, "animal", "bird", "A duck", "Die Ente", "A duck has feathers and a beak, so it is a bird.", "Eine Ente hat Federn und einen Schnabel, also ist sie ein Vogel."],
+  ["🐔", 1, "animal", "bird", "A hen", "Das Huhn", "A hen has feathers and lays eggs, so it is a bird.", "Ein Huhn hat Federn und legt Eier, also ist es ein Vogel."],
+  ["🦜", 1, "animal", "bird", "A parrot", "Der Papagei", "A parrot has feathers and a beak, so it is a bird.", "Ein Papagei hat Federn und einen Schnabel, also ist er ein Vogel."],
+  ["🦅", 1, "animal", "bird", "An eagle", "Der Adler", "An eagle has feathers and wings, so it is a bird.", "Ein Adler hat Federn und Flügel, also ist er ein Vogel."],
+  ["🕊️", 1, "animal", "bird", "A dove", "Die Taube", "A dove has feathers and lays eggs, so it is a bird.", "Eine Taube hat Federn und legt Eier, also ist sie ein Vogel."],
+  ["🦢", 1, "animal", "bird", "A swan", "Der Schwan", "A swan has feathers and a beak, so it is a bird.", "Ein Schwan hat Federn und einen Schnabel, also ist er ein Vogel."],
+  ["🐧", 4, "animal", "bird", "A penguin", "Der Pinguin", "A penguin cannot fly, but it has feathers and lays eggs, so it is a bird.", "Ein Pinguin kann nicht fliegen, aber er hat Federn und legt Eier, also ist er ein Vogel."],
+  ["🦈", 1, "animal", "fish", "A shark", "Der Hai", "A shark lives in water and breathes with gills, so it is a fish.", "Ein Hai lebt im Wasser und atmet mit Kiemen, also ist er ein Fisch."],
+  ["🐠", 1, "animal", "fish", "A goldfish", "Der Goldfisch", "A goldfish has fins and gills and lives in water, so it is a fish.", "Ein Goldfisch hat Flossen und Kiemen und lebt im Wasser, also ist er ein Fisch."],
+  ["🐡", 1, "animal", "fish", "A pufferfish", "Der Kugelfisch", "A pufferfish has fins and breathes with gills, so it is a fish.", "Ein Kugelfisch hat Flossen und atmet mit Kiemen, also ist er ein Fisch."],
+  ["🐟", 1, "animal", "fish", "A trout", "Die Forelle", "A trout has scales and gills and lives in rivers, so it is a fish.", "Eine Forelle hat Schuppen und Kiemen und lebt im Fluss, also ist sie ein Fisch."],
+  ["🐟", 1, "animal", "fish", "A salmon", "Der Lachs", "A salmon has fins and gills and lays its eggs in water, so it is a fish.", "Ein Lachs hat Flossen und Kiemen und legt seine Eier ins Wasser, also ist er ein Fisch."],
+  ["🐍", 1, "animal", "reptile", "A snake", "Die Schlange", "A snake has dry scales and lays eggs, so it is a reptile.", "Eine Schlange hat trockene Schuppen und legt Eier, also ist sie ein Reptil."],
+  ["🐢", 1, "animal", "reptile", "A turtle", "Die Schildkröte", "A turtle has scaly skin and a shell and lays eggs, so it is a reptile.", "Eine Schildkröte hat schuppige Haut und einen Panzer und legt Eier, also ist sie ein Reptil."],
+  ["🐊", 1, "animal", "reptile", "A crocodile", "Das Krokodil", "A crocodile has scales and lays its eggs on land, so it is a reptile.", "Ein Krokodil hat Schuppen und legt seine Eier an Land, also ist es ein Reptil."],
+  ["🦎", 1, "animal", "reptile", "A lizard", "Die Eidechse", "A lizard has dry scales and likes to warm up in the sun, so it is a reptile.", "Eine Eidechse hat trockene Schuppen und wärmt sich gern in der Sonne, also ist sie ein Reptil."],
+  ["🦕", 1, "animal", "reptile", "A dinosaur", "Der Dinosaurier", "Dinosaurs had scaly skin and laid eggs, so they were reptiles.", "Dinosaurier hatten schuppige Haut und legten Eier, also waren sie Reptilien."],
+  ["🐸", 1, "animal", "amphibian", "A frog", "Der Frosch", "A frog starts life in water as a tadpole and has wet skin, so it is an amphibian.", "Ein Frosch beginnt sein Leben als Kaulquappe im Wasser und hat feuchte Haut, also ist er eine Amphibie."],
+  ["🐸", 1, "animal", "amphibian", "A toad", "Die Kröte", "A toad lays its eggs in water and has damp skin, so it is an amphibian.", "Eine Kröte legt ihre Eier ins Wasser und hat feuchte Haut, also ist sie eine Amphibie."],
+  ["🦎", 4, "animal", "amphibian", "A newt", "Der Molch", "A newt looks like a lizard, but it has wet skin and grows up in water, so it is an amphibian.", "Ein Molch sieht aus wie eine Eidechse, aber er hat feuchte Haut und wächst im Wasser auf, also ist er eine Amphibie."],
+  ["🦎", 4, "animal", "amphibian", "A salamander", "Der Salamander", "A salamander has smooth wet skin and starts life in water, so it is an amphibian.", "Ein Salamander hat glatte, feuchte Haut und beginnt sein Leben im Wasser, also ist er eine Amphibie."],
+  ["🐝", 1, "animal", "insect", "A bee", "Die Biene", "A bee has 6 legs and 3 body parts, so it is an insect.", "Eine Biene hat 6 Beine und 3 Körperteile, also ist sie ein Insekt."],
+  ["🐜", 1, "animal", "insect", "An ant", "Die Ameise", "An ant has 6 legs and feelers, so it is an insect.", "Eine Ameise hat 6 Beine und Fühler, also ist sie ein Insekt."],
+  ["🦋", 1, "animal", "insect", "A butterfly", "Der Schmetterling", "A butterfly has 6 legs and 3 body parts, so it is an insect.", "Ein Schmetterling hat 6 Beine und 3 Körperteile, also ist er ein Insekt."],
+  ["🐞", 1, "animal", "insect", "A ladybird", "Der Marienkäfer", "A ladybird has 6 legs and a hard shell over its wings, so it is an insect.", "Ein Marienkäfer hat 6 Beine und harte Deckflügel, also ist er ein Insekt."],
+  ["🪰", 1, "animal", "insect", "A fly", "Die Fliege", "A fly has 6 legs and feelers, so it is an insect.", "Eine Fliege hat 6 Beine und Fühler, also ist sie ein Insekt."],
+  ["🦗", 1, "animal", "insect", "A grasshopper", "Die Heuschrecke", "A grasshopper has 6 legs and 3 body parts, so it is an insect.", "Eine Heuschrecke hat 6 Beine und 3 Körperteile, also ist sie ein Insekt."],
+  ["🪲", 1, "animal", "insect", "A beetle", "Der Käfer", "A beetle has 6 legs and a hard shell, so it is an insect.", "Ein Käfer hat 6 Beine und einen harten Panzer, also ist er ein Insekt."],
+  ["🦟", 1, "animal", "insect", "A mosquito", "Die Mücke", "A mosquito has 6 legs and 2 wings, so it is an insect.", "Eine Mücke hat 6 Beine und 2 Flügel, also ist sie ein Insekt."],
+
+  ["🌳", 1, "living", "alive", "A tree", "Der Baum", "A tree grows, needs water and makes seeds, so it is alive.", "Ein Baum wächst, braucht Wasser und macht Samen, also lebt er."],
+  ["🌻", 1, "living", "alive", "A sunflower", "Die Sonnenblume", "A sunflower grows and turns to the sun, so it is alive.", "Eine Sonnenblume wächst und dreht sich zur Sonne, also lebt sie."],
+  ["🐌", 1, "living", "alive", "A snail", "Die Schnecke", "A snail eats, moves and grows, so it is alive.", "Eine Schnecke frisst, bewegt sich und wächst, also lebt sie."],
+  ["🧒", 1, "living", "alive", "A child", "Das Kind", "A child eats, grows and breathes, so a child is alive.", "Ein Kind isst, wächst und atmet, also lebt es."],
+  ["🌵", 1, "living", "alive", "A cactus", "Der Kaktus", "A cactus grows slowly and needs water, so it is alive.", "Ein Kaktus wächst langsam und braucht Wasser, also lebt er."],
+  ["🐛", 1, "living", "alive", "A caterpillar", "Die Raupe", "A caterpillar eats and grows, so it is alive.", "Eine Raupe frisst und wächst, also lebt sie."],
+  ["🍄", 4, "living", "alive", "A mushroom", "Der Pilz", "A mushroom is not a plant and not an animal, but it grows and makes new mushrooms, so it is alive.", "Ein Pilz ist keine Pflanze und kein Tier, aber er wächst und macht neue Pilze, also lebt er."],
+  ["🪸", 4, "living", "alive", "Coral", "Die Koralle", "Coral looks like a rock, but it is made of tiny animals that eat and grow, so it is alive.", "Eine Koralle sieht aus wie ein Stein, aber sie besteht aus winzigen Tieren, die fressen und wachsen, also lebt sie."],
+  ["🪵", 1, "living", "once", "A log", "Das Holzscheit", "A log was part of a tree once. It does not grow any more.", "Ein Holzscheit war einmal Teil eines Baums. Es wächst nicht mehr."],
+  ["🍂", 1, "living", "once", "A fallen leaf", "Ein welkes Blatt", "The leaf grew on a tree once. Now it is dry and does not grow.", "Das Blatt ist einmal an einem Baum gewachsen. Jetzt ist es trocken und wächst nicht mehr."],
+  ["🐚", 1, "living", "once", "A seashell", "Die Muschelschale", "A shell was the home of a sea animal once. The animal is gone.", "Eine Muschelschale war einmal das Haus eines Meerestiers. Das Tier ist weg."],
+  ["🦴", 1, "living", "once", "A bone", "Der Knochen", "A bone was inside an animal once. On its own it does not live.", "Ein Knochen war einmal in einem Tier. Allein lebt er nicht."],
+  ["🪶", 1, "living", "once", "A feather", "Die Feder", "A feather grew on a bird once. Now it does not grow.", "Eine Feder ist einmal an einem Vogel gewachsen. Jetzt wächst sie nicht mehr."],
+  ["🧶", 4, "living", "once", "Wool", "Die Wolle", "Wool was a sheep's coat once. It does not grow any more.", "Wolle war einmal das Fell eines Schafs. Sie wächst nicht mehr."],
+  ["📜", 4, "living", "once", "Paper", "Das Papier", "Paper is made from trees. The tree was alive, the paper is not.", "Papier wird aus Bäumen gemacht. Der Baum hat gelebt, das Papier nicht."],
+  ["🪨", 1, "living", "never", "A rock", "Der Stein", "A rock does not eat, grow or breathe. It was never alive.", "Ein Stein isst nicht, wächst nicht und atmet nicht. Er hat nie gelebt."],
+  ["🚲", 1, "living", "never", "A bicycle", "Das Fahrrad", "A bicycle moves, but only when you pedal. It was never alive.", "Ein Fahrrad bewegt sich, aber nur, wenn du trittst. Es hat nie gelebt."],
+  ["💧", 1, "living", "never", "Water", "Das Wasser", "Water does not eat or grow. It was never alive.", "Wasser isst nicht und wächst nicht. Es hat nie gelebt."],
+  ["☁️", 1, "living", "never", "A cloud", "Die Wolke", "A cloud moves, but it does not eat or grow. It was never alive.", "Eine Wolke bewegt sich, aber sie isst nicht und wächst nicht. Sie hat nie gelebt."],
+  ["🧸", 1, "living", "never", "A teddy bear", "Der Teddybär", "A teddy bear looks like an animal, but it does not eat or grow. It was never alive.", "Ein Teddybär sieht aus wie ein Tier, aber er isst nicht und wächst nicht. Er hat nie gelebt."],
+  ["🚗", 1, "living", "never", "A car", "Das Auto", "A car moves, but it does not grow or have babies. It was never alive.", "Ein Auto fährt, aber es wächst nicht und bekommt keine Jungen. Es hat nie gelebt."],
+  ["🤖", 4, "living", "never", "A robot", "Der Roboter", "A robot moves and talks, but it does not grow, eat or have babies. It was never alive.", "Ein Roboter bewegt sich und spricht, aber er wächst nicht, isst nicht und bekommt keine Jungen. Er hat nie gelebt."],
+  ["🔥", 4, "living", "never", "Fire", "Das Feuer", "Fire moves and grows, but it does not breathe or have babies. It was never alive.", "Feuer bewegt sich und wird größer, aber es atmet nicht und bekommt keine Jungen. Es hat nie gelebt."],
+
+  ["🧊", 2, "matter", "solid", "An ice cube", "Der Eiswürfel", "An ice cube keeps its shape, so it is a solid. When it melts, it turns into a liquid.", "Ein Eiswürfel behält seine Form, also ist er fest. Wenn er schmilzt, wird er flüssig."],
+  ["🧱", 2, "matter", "solid", "A brick", "Der Ziegelstein", "A brick keeps its shape and is hard, so it is a solid.", "Ein Ziegelstein behält seine Form und ist hart, also ist er fest."],
+  ["📚", 2, "matter", "solid", "A book", "Das Buch", "A book keeps its shape, so it is a solid.", "Ein Buch behält seine Form, also ist es fest."],
+  ["🪙", 2, "matter", "solid", "A coin", "Die Münze", "A coin keeps its shape and is hard, so it is a solid.", "Eine Münze behält ihre Form und ist hart, also ist sie fest."],
+  ["❄️", 2, "matter", "solid", "Snow", "Der Schnee", "Snow is frozen water. Each flake keeps its shape, so snow is a solid.", "Schnee ist gefrorenes Wasser. Jede Flocke behält ihre Form, also ist Schnee fest."],
+  ["🍬", 2, "matter", "solid", "A sweet", "Das Bonbon", "A sweet is hard and keeps its shape, so it is a solid.", "Ein Bonbon ist hart und behält seine Form, also ist es fest."],
+  ["🏖️", 4, "matter", "solid", "Sand", "Der Sand", "Sand pours like a liquid, but each grain is a tiny hard piece, so sand is a solid.", "Sand rieselt wie eine Flüssigkeit, aber jedes Korn ist ein winziges hartes Stück, also ist Sand fest."],
+  ["🧂", 4, "matter", "solid", "Salt", "Das Salz", "Salt pours out of the shaker, but each grain is a tiny solid, so salt is a solid.", "Salz rieselt aus dem Streuer, aber jedes Korn ist ein winziges festes Stück, also ist Salz fest."],
+  ["💧", 2, "matter", "liquid", "Water", "Das Wasser", "Water flows and takes the shape of its cup, so it is a liquid.", "Wasser fließt und nimmt die Form seines Bechers an, also ist es flüssig."],
+  ["🥛", 2, "matter", "liquid", "Milk", "Die Milch", "Milk flows and can be poured, so it is a liquid.", "Milch fließt und lässt sich gießen, also ist sie flüssig."],
+  ["🧃", 2, "matter", "liquid", "Juice", "Der Saft", "Juice flows and takes the shape of its glass, so it is a liquid.", "Saft fließt und nimmt die Form seines Glases an, also ist er flüssig."],
+  ["🫗", 2, "matter", "liquid", "Oil", "Das Öl", "Oil flows and can be poured, so it is a liquid.", "Öl fließt und lässt sich gießen, also ist es flüssig."],
+  ["🌧️", 2, "matter", "liquid", "Rain", "Der Regen", "Rain is drops of water that fall and flow, so it is a liquid.", "Regen besteht aus Wassertropfen, die fallen und fließen, also ist er flüssig."],
+  ["🍯", 4, "matter", "liquid", "Honey", "Der Honig", "Honey is thick, but it flows and takes the shape of its jar, so it is a liquid.", "Honig ist dick, aber er fließt und nimmt die Form seines Glases an, also ist er flüssig."],
+  ["🌫️", 4, "matter", "liquid", "Fog", "Der Nebel", "Fog is tiny drops of water floating in the air, so it is a liquid, not a gas.", "Nebel besteht aus winzigen Wassertropfen, die in der Luft schweben, also ist er flüssig und kein Gas."],
+  ["🎈", 2, "matter", "gas", "The air in a balloon", "Die Luft im Ballon", "Air spreads out to fill the whole balloon, so it is a gas.", "Luft breitet sich aus und füllt den ganzen Ballon, also ist sie ein Gas."],
+  ["♨️", 2, "matter", "gas", "Steam", "Der Wasserdampf", "Steam is water that got so hot it spread out into the air, so it is a gas.", "Wasserdampf ist Wasser, das so heiß wurde, dass es sich in der Luft verteilt hat, also ist er ein Gas."],
+  ["🌬️", 2, "matter", "gas", "Wind", "Der Wind", "Wind is moving air. Air has no shape of its own, so it is a gas.", "Wind ist Luft, die sich bewegt. Luft hat keine eigene Form, also ist sie ein Gas."],
+  ["💨", 2, "matter", "gas", "The air you breathe out", "Die Luft, die du ausatmest", "The air you breathe out spreads into the room, so it is a gas.", "Die Luft, die du ausatmest, verteilt sich im Zimmer, also ist sie ein Gas."],
+  ["🕯️", 4, "matter", "gas", "A candle flame", "Die Kerzenflamme", "A candle flame is hot gas that glows. The wax is solid, but the flame is gas.", "Eine Kerzenflamme ist heißes Gas, das leuchtet. Das Wachs ist fest, aber die Flamme ist Gas."],
+
+  ["✏️", 2, "material", "wood", "A pencil", "Der Bleistift", "A pencil is made of wood from a tree, with a thin lead inside.", "Ein Bleistift ist aus Holz von einem Baum, mit einer dünnen Mine darin."],
+  ["🚪", 2, "material", "wood", "A door", "Die Tür", "Most doors are made of wood, cut from trees.", "Die meisten Türen sind aus Holz, das von Bäumen kommt."],
+  ["🎸", 2, "material", "wood", "A guitar", "Die Gitarre", "A guitar is made of wood. Wood makes the sound warm and loud.", "Eine Gitarre ist aus Holz. Holz macht den Klang warm und laut."],
+  ["🥢", 2, "material", "wood", "Chopsticks", "Die Essstäbchen", "Chopsticks are thin sticks of wood.", "Essstäbchen sind dünne Stäbchen aus Holz."],
+  ["🪆", 2, "material", "wood", "Nesting dolls", "Die Matroschka", "Nesting dolls are carved from wood and painted.", "Eine Matroschka wird aus Holz geschnitzt und bemalt."],
+  ["🪑", 2, "material", "wood", "A chair", "Der Stuhl", "Most chairs are made of wood, cut from trees.", "Die meisten Stühle sind aus Holz, das von Bäumen kommt."],
+  ["🔑", 2, "material", "metal", "A key", "Der Schlüssel", "A key is made of metal, so it is hard and does not bend.", "Ein Schlüssel ist aus Metall, darum ist er hart und verbiegt sich nicht."],
+  ["🔩", 2, "material", "metal", "A screw", "Die Schraube", "A screw is made of metal, so it is strong and holds things together.", "Eine Schraube ist aus Metall, darum ist sie stark und hält Dinge zusammen."],
+  ["🥄", 2, "material", "metal", "A spoon", "Der Löffel", "A spoon is made of shiny metal. It feels cold and hard.", "Ein Löffel ist aus glänzendem Metall. Er fühlt sich kalt und hart an."],
+  ["🔔", 2, "material", "metal", "A bell", "Die Glocke", "A bell is made of metal. Metal rings when you hit it.", "Eine Glocke ist aus Metall. Metall klingt, wenn man dagegen schlägt."],
+  ["🧲", 2, "material", "metal", "A magnet", "Der Magnet", "A magnet is made of metal, and it pulls on other metal things.", "Ein Magnet ist aus Metall und zieht andere Dinge aus Metall an."],
+  ["🥫", 2, "material", "metal", "A tin can", "Die Konservendose", "A tin can is made of thin metal.", "Eine Konservendose ist aus dünnem Metall."],
+  ["🚂", 2, "material", "metal", "A train", "Der Zug", "A train is made of metal, so it is strong and heavy.", "Ein Zug ist aus Metall, darum ist er stark und schwer."],
+  ["🪟", 2, "material", "glass", "A window", "Das Fenster", "A window is made of glass, so you can see through it.", "Ein Fenster ist aus Glas, darum kann man hindurchsehen."],
+  ["🪞", 2, "material", "glass", "A mirror", "Der Spiegel", "A mirror is a sheet of glass with a shiny back.", "Ein Spiegel ist eine Glasplatte mit einer glänzenden Rückseite."],
+  ["💡", 2, "material", "glass", "A light bulb", "Die Glühbirne", "A light bulb is made of thin glass, so the light can shine through.", "Eine Glühbirne ist aus dünnem Glas, damit das Licht hindurchscheint."],
+  ["🫙", 2, "material", "glass", "A jar", "Das Einmachglas", "A jar is made of glass. You can see what is inside, and it breaks if it falls.", "Ein Einmachglas ist aus Glas. Man sieht, was drin ist, und es zerbricht, wenn es fällt."],
+  ["🥂", 2, "material", "glass", "A drinking glass", "Das Trinkglas", "A drinking glass is made of clear glass, so you can see what is in it.", "Ein Trinkglas ist aus klarem Glas, darum siehst du, was drin ist."],
+  ["🪣", 2, "material", "plastic", "A bucket", "Der Eimer", "A bucket is made of plastic, so it is light and does not break easily.", "Ein Eimer ist aus Plastik, darum ist er leicht und geht nicht so schnell kaputt."],
+  ["🧴", 2, "material", "plastic", "A shampoo bottle", "Die Shampooflasche", "A shampoo bottle is made of plastic, so you can squeeze it.", "Eine Shampooflasche ist aus Plastik, darum kann man sie drücken."],
+  ["🪥", 2, "material", "plastic", "A toothbrush", "Die Zahnbürste", "A toothbrush has a plastic handle and plastic bristles.", "Eine Zahnbürste hat einen Griff und Borsten aus Plastik."],
+  ["💳", 2, "material", "plastic", "A bank card", "Die Bankkarte", "A bank card is a thin piece of plastic.", "Eine Bankkarte ist ein dünnes Stück Plastik."],
+  ["🥏", 2, "material", "plastic", "A frisbee", "Die Frisbee", "A frisbee is made of plastic, so it is light and flies well.", "Eine Frisbee ist aus Plastik, darum ist sie leicht und fliegt gut."],
+  ["🪀", 2, "material", "plastic", "A yo-yo", "Das Jo-Jo", "Most yo-yos are made of plastic, so they are light.", "Die meisten Jo-Jos sind aus Plastik, darum sind sie leicht."],
+  ["👕", 2, "material", "fabric", "A T-shirt", "Das T-Shirt", "A T-shirt is made of fabric, woven from cotton threads.", "Ein T-Shirt ist aus Stoff, gewebt aus Baumwollfäden."],
+  ["🧣", 2, "material", "fabric", "A scarf", "Der Schal", "A scarf is made of soft fabric, often knitted from wool.", "Ein Schal ist aus weichem Stoff, oft aus Wolle gestrickt."],
+  ["🧦", 2, "material", "fabric", "Socks", "Die Socken", "Socks are made of soft fabric, so they stretch and keep your feet warm.", "Socken sind aus weichem Stoff, darum dehnen sie sich und halten die Füße warm."],
+  ["🧢", 2, "material", "fabric", "A cap", "Die Kappe", "A cap is sewn from fabric.", "Eine Kappe ist aus Stoff genäht."],
+  ["🧤", 2, "material", "fabric", "Gloves", "Die Handschuhe", "Gloves are made of fabric, so they bend with your fingers.", "Handschuhe sind aus Stoff, darum biegen sie sich mit den Fingern."],
+  ["🛏️", 2, "material", "fabric", "A blanket", "Die Decke", "A blanket is made of soft fabric that keeps you warm.", "Eine Decke ist aus weichem Stoff, der dich warm hält."],
+
+  ["🍎", 3, "food", "fruit", "An apple", "Der Apfel", "An apple grows on a tree and has seeds inside, so it is a fruit.", "Ein Apfel wächst am Baum und hat Kerne, also ist er Obst."],
+  ["🍌", 3, "food", "fruit", "A banana", "Die Banane", "A banana grows on a plant and is sweet, so it is a fruit.", "Eine Banane wächst an einer Staude und ist süß, also ist sie Obst."],
+  ["🍇", 3, "food", "fruit", "Grapes", "Die Trauben", "Grapes grow on a vine and have seeds, so they are a fruit.", "Trauben wachsen am Weinstock und haben Kerne, also sind sie Obst."],
+  ["🍓", 3, "food", "fruit", "A strawberry", "Die Erdbeere", "A strawberry is sweet and grows from a flower, so it is a fruit.", "Eine Erdbeere ist süß und wächst aus einer Blüte, also ist sie Obst."],
+  ["🍊", 3, "food", "fruit", "An orange", "Die Orange", "An orange grows on a tree and has seeds inside, so it is a fruit.", "Eine Orange wächst am Baum und hat Kerne, also ist sie Obst."],
+  ["🍉", 3, "food", "fruit", "A watermelon", "Die Wassermelone", "A watermelon is sweet and full of seeds, so it is a fruit.", "Eine Wassermelone ist süß und voller Kerne, also ist sie Obst."],
+  ["🍅", 4, "food", "fruit", "A tomato", "Die Tomate", "A tomato grows from a flower and has seeds inside, so it is a fruit, even if we eat it like a vegetable.", "Eine Tomate wächst aus einer Blüte und hat Kerne, also ist sie Obst, auch wenn wir sie wie Gemüse essen."],
+  ["🥑", 4, "food", "fruit", "An avocado", "Die Avocado", "An avocado grows on a tree and has a big seed inside, so it is a fruit.", "Eine Avocado wächst am Baum und hat einen großen Kern, also ist sie Obst."],
+  ["🥕", 3, "food", "veg", "A carrot", "Die Karotte", "A carrot is the root of a plant, so it is a vegetable.", "Eine Karotte ist die Wurzel einer Pflanze, also ist sie Gemüse."],
+  ["🥦", 3, "food", "veg", "Broccoli", "Der Brokkoli", "Broccoli is the green flower part of a plant, so it is a vegetable.", "Brokkoli ist der grüne Blütenteil einer Pflanze, also ist er Gemüse."],
+  ["🥬", 3, "food", "veg", "Lettuce", "Der Salat", "Lettuce is the leaves of a plant, so it is a vegetable.", "Salat sind die Blätter einer Pflanze, also ist er Gemüse."],
+  ["🧅", 3, "food", "veg", "An onion", "Die Zwiebel", "An onion grows under the ground and is not sweet, so it is a vegetable.", "Eine Zwiebel wächst unter der Erde und ist nicht süß, also ist sie Gemüse."],
+  ["🥔", 3, "food", "veg", "A potato", "Die Kartoffel", "A potato grows under the ground, so it is a vegetable.", "Eine Kartoffel wächst unter der Erde, also ist sie Gemüse."],
+  ["🍞", 3, "food", "grain", "Bread", "Das Brot", "Bread is made from flour, and flour comes from wheat, a grain.", "Brot wird aus Mehl gemacht, und Mehl kommt vom Weizen, einem Getreide."],
+  ["🍚", 3, "food", "grain", "Rice", "Der Reis", "Rice is the seed of a grass plant, so it is a grain.", "Reis ist der Samen einer Graspflanze, also ist er Getreide."],
+  ["🍝", 3, "food", "grain", "Pasta", "Die Nudeln", "Pasta is made from wheat flour, so it is a grain food.", "Nudeln werden aus Weizenmehl gemacht, also gehören sie zum Getreide."],
+  ["🥣", 3, "food", "grain", "Porridge", "Der Haferbrei", "Porridge is made from oats, a grain.", "Haferbrei wird aus Hafer gemacht, einem Getreide."],
+  ["🌾", 3, "food", "grain", "Wheat", "Der Weizen", "Wheat is a grass with seeds we grind into flour, so it is a grain.", "Weizen ist ein Gras mit Körnern, die wir zu Mehl mahlen, also ist er Getreide."],
+  ["🍿", 4, "food", "grain", "Popcorn", "Das Popcorn", "Popcorn is corn seeds that pop when they get hot. Corn is a grain.", "Popcorn sind Maiskörner, die beim Erhitzen aufplatzen. Mais ist ein Getreide."],
+  ["🥛", 3, "food", "dairy", "Milk", "Die Milch", "Milk comes from a cow, so it is dairy.", "Milch kommt von der Kuh, also ist sie ein Milchprodukt."],
+  ["🧀", 3, "food", "dairy", "Cheese", "Der Käse", "Cheese is made from milk, so it is dairy.", "Käse wird aus Milch gemacht, also ist er ein Milchprodukt."],
+  ["🧈", 3, "food", "dairy", "Butter", "Die Butter", "Butter is made from the cream in milk, so it is dairy.", "Butter wird aus dem Rahm der Milch gemacht, also ist sie ein Milchprodukt."],
+  ["🍦", 3, "food", "dairy", "Ice cream", "Das Eis", "Ice cream is made from milk and cream, so it is dairy.", "Speiseeis wird aus Milch und Sahne gemacht, also ist es ein Milchprodukt."],
+  ["🥚", 3, "food", "protein", "An egg", "Das Ei", "An egg is full of protein, which helps you grow muscles.", "Ein Ei steckt voller Eiweiß, das die Muskeln wachsen lässt."],
+  ["🐟", 3, "food", "protein", "Fish", "Der Fisch", "Fish is full of protein, which builds muscles.", "Fisch hat viel Eiweiß, das Muskeln aufbaut."],
+  ["🍗", 3, "food", "protein", "Chicken", "Das Hähnchen", "Chicken meat is full of protein, which builds muscles.", "Hähnchenfleisch hat viel Eiweiß, das Muskeln aufbaut."],
+  ["🫘", 3, "food", "protein", "Beans", "Die Bohnen", "Beans are full of protein, so they are in the protein group with meat and eggs.", "Bohnen haben viel Eiweiß, darum gehören sie mit Fleisch und Eiern zur Eiweißgruppe."],
+  ["🥜", 3, "food", "protein", "Peanuts", "Die Erdnüsse", "Peanuts are full of protein, so they are in the protein group.", "Erdnüsse haben viel Eiweiß, darum gehören sie zur Eiweißgruppe."],
+  ["🥩", 3, "food", "protein", "Meat", "Das Fleisch", "Meat is full of protein, which builds muscles.", "Fleisch hat viel Eiweiß, das Muskeln aufbaut."],
+
+  ["🌍", 3, "space", "planet", "The Earth", "Die Erde", "The Earth goes around the Sun and does not make its own light, so it is a planet.", "Die Erde kreist um die Sonne und leuchtet nicht selbst, also ist sie ein Planet."],
+  ["🔴", 3, "space", "planet", "Mars", "Der Mars", "Mars goes around the Sun and does not make its own light, so it is a planet.", "Der Mars kreist um die Sonne und leuchtet nicht selbst, also ist er ein Planet."],
+  ["🪐", 3, "space", "planet", "Saturn", "Der Saturn", "Saturn is a big ball with rings that goes around the Sun, so it is a planet.", "Der Saturn ist eine große Kugel mit Ringen, die um die Sonne kreist, also ist er ein Planet."],
+  ["🟠", 3, "space", "planet", "Jupiter", "Der Jupiter", "Jupiter is the biggest ball that goes around the Sun, so it is a planet.", "Der Jupiter ist die größte Kugel, die um die Sonne kreist, also ist er ein Planet."],
+  ["🟡", 3, "space", "planet", "Venus", "Die Venus", "Venus goes around the Sun, between Mercury and the Earth, so it is a planet.", "Die Venus kreist zwischen Merkur und Erde um die Sonne, also ist sie ein Planet."],
+  ["🔵", 3, "space", "planet", "Neptune", "Der Neptun", "Neptune is a blue ball that goes around the Sun, far away, so it is a planet.", "Der Neptun ist eine blaue Kugel, die weit draußen um die Sonne kreist, also ist er ein Planet."],
+  ["☀️", 3, "space", "star", "The Sun", "Die Sonne", "The Sun is a giant ball of hot gas that makes its own light, so it is a star.", "Die Sonne ist eine riesige Kugel aus heißem Gas, die selbst leuchtet, also ist sie ein Stern."],
+  ["⭐", 3, "space", "star", "The North Star", "Der Polarstern", "The North Star makes its own light, far away in the night sky, so it is a star.", "Der Polarstern leuchtet selbst, weit weg am Nachthimmel, also ist er ein Stern."],
+  ["✨", 4, "space", "star", "Sirius", "Sirius", "Sirius is the brightest star in the night sky. It makes its own light.", "Sirius ist der hellste Stern am Nachthimmel. Er leuchtet selbst."],
+  ["🌕", 3, "space", "moon", "The Moon", "Der Mond", "The Moon goes around the Earth, not around the Sun, so it is a moon.", "Der Mond kreist um die Erde, nicht um die Sonne, also ist er ein Mond."],
+  ["🌑", 4, "space", "moon", "Europa", "Europa", "Europa goes around Jupiter, so it is a moon. It is covered in ice.", "Europa kreist um den Jupiter, also ist sie ein Mond. Sie ist mit Eis bedeckt."],
+  ["🌘", 4, "space", "moon", "Titan", "Titan", "Titan goes around Saturn, so it is a moon. It is bigger than Mercury.", "Titan kreist um den Saturn, also ist er ein Mond. Er ist größer als Merkur."],
+  ["⚪", 4, "space", "dwarf", "Pluto", "Pluto", "Pluto goes around the Sun, but it is too small to clear its path, so it is a dwarf planet.", "Pluto kreist um die Sonne, aber er ist zu klein, um seine Bahn freizuräumen, also ist er ein Zwergplanet."],
+  ["⚫", 4, "space", "dwarf", "Ceres", "Ceres", "Ceres is a round rock between Mars and Jupiter, too small to be a planet, so it is a dwarf planet.", "Ceres ist ein runder Felsbrocken zwischen Mars und Jupiter, zu klein für einen Planeten, also ist er ein Zwergplanet."],
+
+  ["🌈", 3, "sense", "see", "A rainbow", "Der Regenbogen", "You see a rainbow with your eyes. It makes no sound and has no smell.", "Einen Regenbogen siehst du mit den Augen. Er macht kein Geräusch und riecht nicht."],
+  ["🎨", 3, "sense", "see", "A painting", "Ein Gemälde", "You look at a painting with your eyes to see its colours.", "Ein Gemälde betrachtest du mit den Augen, um seine Farben zu sehen."],
+  ["🚦", 3, "sense", "see", "A traffic light", "Die Ampel", "You see with your eyes whether the light is red or green.", "Mit den Augen siehst du, ob die Ampel rot oder grün ist."],
+  ["🌃", 3, "sense", "see", "The stars at night", "Die Sterne in der Nacht", "You see the stars with your eyes. They are far too far away to hear or touch.", "Die Sterne siehst du mit den Augen. Sie sind viel zu weit weg zum Hören oder Anfassen."],
+  ["📖", 3, "sense", "see", "A picture book", "Das Bilderbuch", "You look at the pictures with your eyes.", "Die Bilder schaust du dir mit den Augen an."],
+  ["🔔", 3, "sense", "hear", "A ringing bell", "Eine läutende Glocke", "You hear a bell with your ears.", "Eine Glocke hörst du mit den Ohren."],
+  ["🥁", 3, "sense", "hear", "A drum", "Die Trommel", "You hear the drum beat with your ears.", "Den Trommelschlag hörst du mit den Ohren."],
+  ["🌩️", 3, "sense", "hear", "Thunder", "Der Donner", "Thunder is a sound, so you hear it with your ears.", "Donner ist ein Geräusch, also hörst du ihn mit den Ohren."],
+  ["🚨", 3, "sense", "hear", "A siren", "Die Sirene", "A siren is a loud sound, so you hear it with your ears.", "Eine Sirene ist ein lautes Geräusch, also hörst du sie mit den Ohren."],
+  ["🎵", 3, "sense", "hear", "A song", "Ein Lied", "You hear a song with your ears.", "Ein Lied hörst du mit den Ohren."],
+  ["🐓", 3, "sense", "hear", "A rooster crowing", "Ein krähender Hahn", "Crowing is a sound, so you hear it with your ears.", "Krähen ist ein Geräusch, also hörst du es mit den Ohren."],
+  ["🌹", 3, "sense", "smell", "A rose", "Die Rose", "You smell a rose with your nose.", "Eine Rose riechst du mit der Nase."],
+  ["🧦", 3, "sense", "smell", "Smelly socks", "Stinkesocken", "You smell smelly socks with your nose, even with your eyes shut.", "Stinkesocken riechst du mit der Nase, auch mit geschlossenen Augen."],
+  ["🧴", 3, "sense", "smell", "Perfume", "Das Parfüm", "You smell perfume with your nose.", "Parfüm riechst du mit der Nase."],
+  ["💨", 3, "sense", "smell", "Smoke", "Der Rauch", "You often smell smoke with your nose before you see it.", "Rauch riechst du mit der Nase oft, bevor du ihn siehst."],
+  ["🍞", 3, "sense", "smell", "Bread in the oven", "Brot im Ofen", "You smell bread baking with your nose, before you can taste it.", "Brot im Ofen riechst du mit der Nase, bevor du es schmecken kannst."],
+  ["🍋", 3, "sense", "taste", "A lemon", "Die Zitrone", "You taste how sour a lemon is with your tongue.", "Wie sauer eine Zitrone ist, schmeckst du mit der Zunge."],
+  ["🍬", 3, "sense", "taste", "A sweet", "Ein Bonbon", "You taste how sweet it is with your tongue.", "Wie süß es ist, schmeckst du mit der Zunge."],
+  ["🧂", 3, "sense", "taste", "Salt", "Das Salz", "You taste salt with your tongue.", "Salz schmeckst du mit der Zunge."],
+  ["🍯", 3, "sense", "taste", "Honey", "Der Honig", "You taste how sweet honey is with your tongue.", "Wie süß Honig ist, schmeckst du mit der Zunge."],
+  ["🌶️", 3, "sense", "taste", "A chilli", "Eine Chili", "You taste how hot a chilli is with your tongue.", "Wie scharf eine Chili ist, schmeckst du mit der Zunge."],
+  ["🧊", 3, "sense", "touch", "An ice cube", "Ein Eiswürfel", "You feel how cold an ice cube is with your skin.", "Wie kalt ein Eiswürfel ist, fühlst du mit der Haut."],
+  ["🐱", 3, "sense", "touch", "Soft fur", "Weiches Fell", "You feel how soft fur is with your hands.", "Wie weich ein Fell ist, fühlst du mit den Händen."],
+  ["🌵", 3, "sense", "touch", "A cactus spike", "Ein Kaktusstachel", "You feel how sharp a spike is with your skin. Ouch!", "Wie spitz ein Stachel ist, fühlst du mit der Haut. Aua!"],
+  ["🪶", 3, "sense", "touch", "A tickling feather", "Eine kitzelnde Feder", "You feel a tickle with your skin.", "Kitzeln fühlst du mit der Haut."],
+  ["🛁", 3, "sense", "touch", "Warm bath water", "Warmes Badewasser", "You feel how warm the water is with your skin.", "Wie warm das Wasser ist, fühlst du mit der Haut."]
+];
+const randInt = (n) => Math.floor(Math.random() * n);
+const pick = (arr) => arr[randInt(arr.length)];
+const shuffle = (arr) => arr.slice().sort(() => Math.random() - 0.5);
+// One thing as { pic, level, set, group, key, en: {name, why}, de: {...} }. The key is the set and its place in the list.
+const ALL = THINGS.map((x, i) => ({ pic: x[0], level: x[1], set: x[2], group: x[3], key: x[2] + i, en: { name: x[4], why: x[6] }, de: { name: x[5], why: x[7] } }));
+
+// A thing from the topic at this level (or, when the topic has nothing at this level, any of its things that are not tricky),
+// with its group and 2 or 3 other groups of the same set to pick from. only: one set, for a practise visit.
+function makeProblem(lang, topic, level, nChoices, only, avoid) {
+  const sets = only ? [only] : TOPICS[topic] || TOPICS.all;
+  let list = ALL.filter(x => sets.includes(x.set) && x.level <= level);
+  if (!list.length) list = ALL.filter(x => sets.includes(x.set) && x.level <= 3);
+  let thing = pick(list);
+  for (let tries = 0; tries < 40 && avoid && avoid.includes(thing.key); tries++) thing = pick(list);
+  const others = shuffle(GROUPS[thing.set].filter(g => g !== thing.group)).slice(0, nChoices - 1);
+  const options = shuffle([thing.group, ...others]);
+  return { thing, text: thing[lang], options, key: thing.key, answer: thing.group };
+}
+// GEN END
+
+(function () {
+  const $ = (id) => document.getElementById(id);
+  const card = $("card"), picEl = $("pic"), nameEl = $("name"), qEl = $("question"), choicesEl = $("choices"), feedbackEl = $("feedback"), nextBtn = $("next");
+  const topicBtns = [...document.querySelectorAll("#topic-seg button")];
+  const levelBtns = [...document.querySelectorAll("#level-seg button")];
+  const t = Loopy.t, lang = Loopy.lang === "de" ? "de" : "en";
+  const groupName = (g) => t("so_" + g);
+  const store = {
+    // ok: the values this setting may have; anything else falls back to the default.
+    get(k, d, ok) { try { const v = JSON.parse(Loopy.store.get(k)); return ok.includes(v) ? v : d; } catch (e) { return d; } },
+    set(k, v) { Loopy.store.set(k, JSON.stringify(v)); }
+  };
+
+  let age = Loopy.getAge();
+  let topic = store.get("so.topic", "all", Object.keys(TOPICS));
+  // Opened from the grown-ups' page to practise one set (#practise=so-animal): just that set for this visit, without saving.
+  let only = "";
+  { const m = /^so-([a-z]+)$/.exec(Loopy.log.hint || ""); if (m && GROUPS[m[1]]) { only = m[1]; topic = Object.keys(TOPICS).find(k => k !== "all" && TOPICS[k].includes(only)); Loopy.log.hint = ""; } }
+  let level;
+  // The level is remembered per age, so each age starts at the right level.
+  const levelForAge = (a) => a <= 7 ? 1 : a === 8 ? 2 : a <= 10 ? 3 : 4;
+  // Ages 6 to 8 pick from 3 groups, 9 and up from 4.
+  const choicesForAge = (a) => a <= 8 ? 3 : 4;
+  function loadForAge() { level = store.get("so.level.a" + age, levelForAge(age), [1, 2, 3, 4]); }
+  loadForAge();
+  Loopy.levels.init({ names: ["soL1", "soL2", "soL3", "soL4"],
+    get: () => level - 1, base: () => levelForAge(age) - 1,
+    set: (i) => { level = i + 1; store.set("so.level.a" + age, level); render(); } });
+  let right = 0, tried = 0, streak = 0;
+  let current = null, answered = false, recent = [];
+
+  function render() {
+    Loopy.levels.render();
+    $("score").textContent = right + " / " + tried;
+    $("streak").textContent = streak;
+    topicBtns.forEach(b => b.setAttribute("aria-pressed", String(b.dataset.topic === topic)));
+    levelBtns.forEach(b => b.setAttribute("aria-pressed", String(+b.dataset.level === level)));
+    Loopy.nextButton(nextBtn, answered);
+  }
+  function newRound() {
+    current = Loopy.fresh(recent, () => makeProblem(lang, topic, level, choicesForAge(age), only), 20);
+    answered = false;
+    picEl.textContent = current.thing.pic;
+    nameEl.textContent = current.text.name;
+    qEl.textContent = t("soQ_" + current.thing.set);
+    choicesEl.textContent = "";
+    choicesEl.classList.toggle("three", current.options.length === 3);
+    current.options.forEach((g, i) => {
+      const b = document.createElement("button");
+      b.type = "button"; b.id = "choice-" + i; b.textContent = groupName(g);
+      b.dataset.correct = String(g === current.answer);
+      b.addEventListener("click", () => choose(b));
+      choicesEl.appendChild(b);
+    });
+    card.classList.remove("good", "bad");
+    feedbackEl.className = "feedback";
+    feedbackEl.textContent = "";
+    render();
+    Loopy.speech.read();
+  }
+  function choose(btn) {
+    if (answered) return;
+    answered = true; tried++;
+    const ok = btn.dataset.correct === "true";
+    [...choicesEl.children].forEach(b => {
+      b.disabled = true;
+      if (b.dataset.correct === "true") b.classList.add("right");
+      else if (b === btn) b.classList.add("wrong");
+      else b.classList.add("faded");
+    });
+    if (ok) { right++; streak++; } else { streak = 0; }
+    // The progress page keeps 40 letters of the question.
+    const q = (current.thing.pic + " " + current.text.name).slice(0, 40);
+    if (ok) Loopy.rewards.correct("sort-it", streak);
+    else Loopy.rewards.wrong("sort-it", { q, a: groupName(current.answer), y: btn.textContent, k: "so-" + current.thing.set });
+    card.classList.remove("good", "bad");
+    card.classList.add(ok ? "good" : "bad");
+    feedbackEl.className = "feedback " + (ok ? "good" : "bad");
+    feedbackEl.innerHTML = "<strong></strong>";
+    feedbackEl.firstChild.textContent = ok ? (streak >= 3 ? t("correctRow", { n: streak }) : t("correct")) : t("notQuite");
+    // One line of why after every answer; after a wrong one, the right group first.
+    feedbackEl.appendChild(document.createTextNode((ok ? "" : t("soAnswerIs", { a: groupName(current.answer) }) + " ") + current.text.why));
+    render();
+    nextBtn.focus({ preventScroll: true });
+  }
+
+  nextBtn.addEventListener("click", newRound);
+  topicBtns.forEach(b => b.addEventListener("click", () => { topic = b.dataset.topic; only = ""; store.set("so.topic", topic); recent = []; newRound(); }));
+  levelBtns.forEach(b => b.addEventListener("click", () => { level = +b.dataset.level; store.set("so.level.a" + age, level); newRound(); }));
+  window.addEventListener("loopy:age", (e) => { age = e.detail; recent = []; loadForAge(); newRound(); });
+  $("reset").addEventListener("click", () => { right = 0; tried = 0; streak = 0; Loopy.recent.clear("sort-it"); newRound(); });
+  document.addEventListener("keydown", (e) => {
+    if (e.target.tagName === "INPUT" || document.querySelector(".loopy-cheer.big")) return;
+    if (e.key === "Enter" && answered && e.target.tagName !== "BUTTON") { newRound(); return; }
+    const n = parseInt(e.key, 10);
+    if (n >= 1 && n <= 4 && !answered) { const b = choicesEl.children[n - 1]; if (b) choose(b); }
+  });
+
+  // Read aloud: "A dolphin. Which kind of animal is it? Fish, mammal, bird or reptile?"
+  Loopy.speech.question({ host: card, text: () => {
+    const o = current.options.map(groupName);
+    return t("soReadQ", { name: current.text.name, q: t("soQ_" + current.thing.set), list: o.slice(0, -1).join(", ") + " " + t("orWord") + " " + o[o.length - 1] });
+  } });
+
+  // Print worksheet: 20 things at the game's topic and level, each with the groups to circle.
+  const part = (cls, text) => { const n = document.createElement("span"); if (cls) n.className = cls; if (text) n.textContent = text; return n; };
+  const TOPIC_KEYS = { all: "soAll", animals: "soAnimals", matter: "soMatter", food: "soFood", space: "soSpace", senses: "soSenses" };
+  Loopy.worksheet({
+    title: () => t("soName"),
+    level: () => [t("ageLabel", { n: age }), t("soTopic") + ": " + t(TOPIC_KEYS[topic]), t("soLevel") + ": " + t("soL" + level)].join(" · "),
+    how: () => t("soHow"),
+    layout: "line",
+    make: (n) => { const list = [], keys = []; while (list.length < n) { const p = makeProblem(lang, topic, level, choicesForAge(age), only, keys); keys.push(p.key); list.push(p); } return list; },
+    cell: (p) => {
+      const box = document.createElement("div");
+      box.className = "ws-so";
+      const q = part("ws-q");
+      q.appendChild(part("", p.thing.pic));
+      q.appendChild(document.createTextNode(p.text.name));
+      box.appendChild(q);
+      const opts = part("ws-opts");
+      p.options.forEach(g => opts.appendChild(part("", groupName(g))));
+      box.appendChild(opts);
+      return box;
+    },
+    answer: (p) => p.thing.pic + " " + p.text.name + ": " + groupName(p.answer)
+  });
+
+  newRound();
+})();
+</script>
+</body>
+</html>
