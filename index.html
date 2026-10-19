@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'sha256-rQ8dDouMXYme1Q+4PSox/5AfqaE71AvN2p94Jgw/D2c='; style-src 'self' 'sha256-ghHnKJ5KO7w7iSzhgzeH2HkZUhdzoXqftLU0nDn0c/Q='; img-src 'self' data:; font-src 'self'; connect-src 'self'; worker-src 'self'; object-src 'none'; base-uri 'none'; form-action 'none'; manifest-src 'self'; upgrade-insecure-requests">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'sha256-hZls49I2X5qa0jhS1ahRNFgzaeEmfXcv4uRG6S58nos='; style-src 'self' 'sha256-fJqr/RpGtKccKf27fhlWWoWclPDej0pWMo6d8XjU1m4='; img-src 'self' data:; font-src 'self'; connect-src 'self'; worker-src 'self'; object-src 'none'; base-uri 'none'; form-action 'none'; manifest-src 'self'; upgrade-insecure-requests">
 <meta name="referrer" content="strict-origin-when-cross-origin">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <link rel="icon" href="icon.svg" type="image/svg+xml">
@@ -110,6 +110,13 @@ h1 { margin: 0; line-height: 0; color: var(--ink); }
 footer { color: var(--muted); font-size: 0.95rem; text-align: center; display: flex; flex-direction: column; gap: 8px; }
 footer p { margin: 0; }
 .help-link { display: inline-flex; align-items: center; min-height: 44px; color: var(--ink); font-weight: 600; }
+/* Add to home screen: the last part of Settings, and the box with the steps for this device. */
+.set-app { display: flex; flex-direction: column; gap: 10px; border-top: 2px dashed var(--line); padding-top: 12px; }
+.app-steps { margin: 0; padding: 0; list-style: none; display: flex; flex-direction: column; gap: 12px; }
+.app-steps li { display: flex; align-items: center; gap: 12px; line-height: 1.35; }
+.app-steps svg { flex: none; width: 40px; height: 40px; padding: 8px; border-radius: 12px; background: var(--chip); color: var(--c1); }
+.app-code { display: flex; gap: 8px; }
+.app-code input { flex: 1; min-width: 0; font-size: 0.9rem; }
 @media (prefers-reduced-motion: reduce) { * { transition: none !important; animation: none !important; } }
 </style>
 <link rel="stylesheet" href="loopy.css">
@@ -483,6 +490,55 @@ window.addEventListener("loopy:age", render);
     d.children[2].textContent = got ? t("earned") : t("nDays", { n: b.days });
     days.appendChild(d);
   }
+})();
+
+// Add to home screen: the last part of ⚙ Settings on the home page. When the browser has its own
+// install box (Chrome, Edge, Samsung Internet), the button opens it. Otherwise it loads loopy-install.js,
+// which shows the steps for this device: iPhone, iPad, Android, a Mac with Safari, or a computer.
+// The part is hidden when loopy already runs from the home screen. Nothing is saved.
+(function homeScreen() {
+  Loopy.addStrings({
+    en: { appHead: "Use like an app", appPhone: "Add loopy to the home screen", appPc: "Install loopy on this computer",
+      appNote: "It opens full screen, like an app, and works offline.", appDone: "Done! loopy is on your home screen." },
+    de: { appHead: "Wie eine App nutzen", appPhone: "loopy zum Home-Bildschirm hinzufügen", appPc: "loopy auf diesem Computer installieren",
+      appNote: "Es öffnet sich im Vollbild wie eine App und geht auch offline.", appDone: "Fertig! loopy ist auf deinem Home-Bildschirm." }
+  });
+  const panel = document.getElementById("settings-panel");
+  const own = ["standalone", "fullscreen", "minimal-ui"].some(m => matchMedia("(display-mode: " + m + ")").matches);
+  if (!panel || own || navigator.standalone === true) return;
+  const ua = navigator.userAgent;
+  // iPads say "Macintosh" but have a touch screen.
+  const kind = /iPhone|iPod/.test(ua) ? "iphone"
+    : /iPad/.test(ua) || (/Macintosh/.test(ua) && navigator.maxTouchPoints > 1) ? "ipad"
+    : /Android/.test(ua) ? (/SamsungBrowser/.test(ua) ? "samsung" : /Firefox\//.test(ua) ? "androidFx" : "android")
+    : /Firefox\//.test(ua) ? "firefox"
+    : /Macintosh/.test(ua) && /Safari\//.test(ua) && !/Chrome|Chromium|Edg\//.test(ua) ? "mac" : "pc";
+  const computer = kind === "mac" || kind === "pc" || kind === "firefox";
+  const el = (tag, cls, text) => { const n = document.createElement(tag); if (cls) n.className = cls; if (text !== undefined) n.textContent = text; return n; };
+  const box = el("div", "set-app"), row = el("div", "print-row"), btn = el("button", "print-btn"), note = el("p", "", t("appNote"));
+  btn.type = "button";
+  btn.innerHTML = '<svg viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">'
+    + (computer ? '<rect x="3" y="4" width="18" height="13" rx="2"/><path d="M8 21h8"/><path d="M12 7v6M9 10l3 3 3-3"/>' : '<rect x="4" y="4" width="16" height="16" rx="4"/><path d="M12 8v8M8 12h8"/>') + "</svg>";
+  btn.appendChild(el("span", "", t(computer ? "appPc" : "appPhone")));
+  btn.setAttribute("aria-haspopup", "dialog");
+  row.append(btn, note);
+  box.append(el("p", "set-head", t("appHead")), row);
+  // The browser's own install box, when it offers one. Kept so the button can open it later.
+  let offer = null;
+  const done = () => { offer = null; btn.hidden = true; note.textContent = t("appDone"); };
+  window.addEventListener("beforeinstallprompt", e => { offer = e; btn.removeAttribute("aria-haspopup"); });
+  window.addEventListener("appinstalled", done);
+  btn.addEventListener("click", () => {
+    if (!offer) { Loopy.load("install").then(() => Loopy.install.open(kind, computer, btn), () => {}); return; }
+    const o = offer;
+    offer = null;
+    o.prompt();
+    o.userChoice.then(c => { if (c.outcome === "accepted") done(); }, () => {});
+  });
+  // After loopy.js has built the Kids and "Age, look and sound" parts, so this part comes last.
+  const add = () => panel.appendChild(box);
+  if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", add);
+  else add();
 })();
 </script>
 </body>
