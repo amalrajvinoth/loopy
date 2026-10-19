@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'sha256-QKXoEVvZuW6D8N4QhZ7/WTNPiH+q4bMPiOhplMQdX7k='; style-src 'self' 'sha256-z2P7kGW5Z05eCTjTZdYpc0vThTlOE9vmt97pVSvi2I4=' 'sha256-X/6TgBlwR/r0pxAaWlbvoxARMjftgwBhtW4mnRo1lys=' 'sha256-RT1053JU5UiKvjrCUFx1rlhdFLMmgtuFJ9T8jnMeawQ=' 'sha256-nZ5SAifs7yg0KHXGahfWDo+SQzH7bM6dB53haqDY1io='; img-src 'self' data:; font-src 'self'; connect-src 'self'; worker-src 'self'; object-src 'none'; base-uri 'none'; form-action 'none'; manifest-src 'self'; upgrade-insecure-requests">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'sha256-uhyBvws2/JDJXYYJ3IAiAaZ29KoFq0Flf4E/uqeRSSw='; style-src 'self' 'sha256-z2P7kGW5Z05eCTjTZdYpc0vThTlOE9vmt97pVSvi2I4=' 'sha256-X/6TgBlwR/r0pxAaWlbvoxARMjftgwBhtW4mnRo1lys=' 'sha256-RT1053JU5UiKvjrCUFx1rlhdFLMmgtuFJ9T8jnMeawQ=' 'sha256-nZ5SAifs7yg0KHXGahfWDo+SQzH7bM6dB53haqDY1io='; img-src 'self' data:; font-src 'self'; connect-src 'self'; worker-src 'self'; object-src 'none'; base-uri 'none'; form-action 'none'; manifest-src 'self'; upgrade-insecure-requests">
 <meta name="referrer" content="strict-origin-when-cross-origin">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <style>:root{color-scheme:light;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}body{margin:0}[hidden]{display:none!important}</style>
@@ -473,8 +473,19 @@ function makeProblem(lang, modeSetting, age, choices, avoid) {
     rest.textContent = current.rest;
     if (current.mode === "start") wordEl.append(blank, rest); else wordEl.append(rest, blank);
   }
+  // Try again: a missed word comes back later (Loopy.retry). The note is "en:start:apple" (words language,
+  // sound, word); a word from the other language, the other sound or an older age's list waits.
+  const note = (p) => wordsLang + ":" + p.mode + ":" + p.word[1];
+  function rebuild(r) {
+    const m = /^(en|de):(start|end):([A-Za-z\u00C0-\u017F]{1,20})$/.exec(r);
+    if (!m || m[1] !== wordsLang || (modeSetting !== "mix" && m[2] !== modeSetting)) return null;
+    const mode = m[2], word = wordsFor(wordsLang, mode, age).find(w => w[1] === m[3]);
+    if (!word) return null;
+    const answer = unitOf(word, mode);
+    return { word, mode, answer, options: shuffle([answer, ...distractors(wordsLang, mode, word, choices - 1)]), key: mode + ":" + word[1], rest: restOf(word, mode) };
+  }
   function newRound() {
-    current = Loopy.fresh(recent, () => makeProblem(wordsLang, modeSetting, age, choices), 12);
+    current = Loopy.retry.fresh("sound-spell", recent, () => makeProblem(wordsLang, modeSetting, age, choices), rebuild, 12);
     answered = false;
     picEl.textContent = current.word[0];
     showWord("");
@@ -505,7 +516,7 @@ function makeProblem(lang, modeSetting, age, choices, avoid) {
       else b.classList.add("faded");
     });
     if (ok) { right++; streak++; } else { streak = 0; }
-    if (window.Loopy && Loopy.rewards) ok ? Loopy.rewards.correct("sound-spell", streak) : Loopy.rewards.wrong("sound-spell", { q: current.word[0] + " " + (current.mode === "start" ? "_" + current.rest : current.rest + "_"), a: current.word[1], y: current.mode === "start" ? btn.textContent + current.rest : current.rest + btn.textContent, k: "ss-" + current.mode });
+    if (window.Loopy && Loopy.rewards) ok ? Loopy.rewards.correct("sound-spell", streak) : Loopy.rewards.wrong("sound-spell", { q: current.word[0] + " " + (current.mode === "start" ? "_" + current.rest : current.rest + "_"), a: current.word[1], y: current.mode === "start" ? btn.textContent + current.rest : current.rest + btn.textContent, k: "ss-" + current.mode, r: note(current) });
     card.className = "problem-card " + (ok ? "good" : "bad");
     feedbackEl.className = "feedback " + (ok ? "good" : "bad");
     showWord(current.answer);
