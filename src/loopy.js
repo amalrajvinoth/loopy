@@ -1095,6 +1095,7 @@ document.documentElement.classList.add("loopy-building");
     // detail: optional { q: "52 − 17", a: "35", y: "45", k: "sub-rg" } for the grown-ups' progress page (see Loopy.log).
     wrong: function (game, detail) {
       last = { ok: false, d: detail && typeof detail === "object" ? detail : null };
+      if (Loopy.retry) Loopy.retry.missed(game, last.d);
       if (Loopy.recent) Loopy.recent.add(game, false);
       if (Loopy.log) Loopy.log.add(game, false, detail);
       Loopy.sound.play("wrong");
@@ -1108,6 +1109,7 @@ document.documentElement.classList.add("loopy-building");
     correct: function (game, streak, harder) {
       if (harder === undefined && Loopy.levels) harder = Loopy.levels.harder();
       last = { ok: true, d: null };
+      if (Loopy.retry) Loopy.retry.fixed(game);
       if (Loopy.recent) Loopy.recent.add(game, true);
       if (Loopy.log) Loopy.log.add(game, true);
       var before = badgeFor(data.stars), had = EXTRA.map(hasExtra);
@@ -1303,9 +1305,10 @@ document.documentElement.classList.add("loopy-building");
 // Answer log for the grown-ups' progress page: right and wrong answers per game per day, and each
 // wrong answer with the right one, for the last 30 days. It goes in the stars code (Loopy.backup) and is never sent anywhere.
 // Kept in this browser's localStorage as
-// { days: { "2026-10-15": { "plus-minus": [right, wrong] } }, wrong: [{ d: day, g: game, q, a: right answer, y: their answer, k: kind }] }.
+// { days: { "2026-10-15": { "plus-minus": [right, wrong] } }, wrong: [{ d: day, g: game, q, a: right answer, y: their answer, k: kind, r, f }] }.
+// r (optional, since Try again) is the game's note of how to rebuild the problem; f counts the times it was answered right since.
 (function () {
-  var KEY = "loopy.log", DAYS = 30, MAX_WRONG = 300, MAX_N = 100000, LEN = 40;
+  var KEY = "loopy.log", DAYS = 30, MAX_WRONG = 300, MAX_N = 100000, LEN = 40, NOTE = 80;
   var GAMES = ["plus-minus", "times-share", "clock", "sound-spell", "daily-mix", "make-10", "bigger-smaller", "pizza-fractions", "coins-change", "word-match", "spell-it", "quick-facts", "where-is-it", "equation-balance", "flags-capitals", "times-sprint", "percent-ratio", "sentence-builder", "sort-it", "graphs-data"];
   // What kind of problem it was, so the page can say what to practise. See Loopy.log.kind.
   var KIND = /^(?:(?:add|sub)(?:-rg)?|(?:mul|div)-(?:big|\d{1,2})|cl-(?:0|30|15|5|1|24)|ss-(?:start|end)|mk-(?:10|20|100|1000)|bs-(?:cmp|ord|rnd|dec|neg)|pz-(?:name|cmp|add)|cc-(?:small|count|ch10|ch)|wm-(?:animals|food|home|school)|si-[3-7]|qf-(?:space|animals|body)|wi-(?:cont|eu|euc|wd|wdc)|eb-(?:box|add|mul|two|both)|fc-(?:flag|cap)|pr-(?:frac|any|disc|ratio)|sb-(?:3|5|6|8)|so-(?:animal|living|matter|food|space|material|sense)|gd-(?:read|total|diff|mean|median|cmp))$/;
@@ -1331,7 +1334,10 @@ document.documentElement.classList.add("loopy-building");
     if (Array.isArray(raw.wrong)) raw.wrong.slice(-MAX_WRONG).forEach(function (w) {
       if (!w || typeof w !== "object" || typeof w.d !== "string" || !DAY.test(w.d) || w.d < oldest) return;
       if (GAMES.indexOf(w.g) === -1 || !text(w.q) || !text(w.a) || !KIND.test(w.k)) return;
-      out.wrong.push({ d: w.d, g: w.g, q: text(w.q), a: text(w.a), y: text(w.y), k: w.k });
+      var row = { d: w.d, g: w.g, q: text(w.q), a: text(w.a), y: text(w.y), k: w.k };
+      if (typeof w.r === "string" && w.r) row.r = w.r.slice(0, NOTE);
+      if (w.f === 1 || w.f === 2) row.f = w.f;
+      out.wrong.push(row);
     });
     return out;
   }
@@ -1349,7 +1355,7 @@ document.documentElement.classList.add("loopy-building");
       var c = row[game] = row[game] || [0, 0];
       c[ok ? 0 : 1] = whole(c[ok ? 0 : 1] + 1);
       if (!ok && detail && typeof detail === "object") {
-        data.wrong.push({ d: today, g: game, q: detail.q, a: detail.a, y: detail.y, k: detail.k });
+        data.wrong.push({ d: today, g: game, q: detail.q, a: detail.a, y: detail.y, k: detail.k, r: detail.r });
       }
       data = clean(data);
       save();
@@ -1380,6 +1386,78 @@ document.documentElement.classList.add("loopy-building");
     }
   };
   Loopy.log.hint = Loopy.log.practise();
+
+  // Try again: a wrong answer from the last 7 days comes back as a question until it is answered right twice.
+  // A game puts a short note in its wrong detail (r) that says how to rebuild the problem, and asks for its
+  // questions through Loopy.retry.fresh. A Today's 10 note names the game that replays it: "plus-minus:add 52 17".
+  var RETRY_DAYS = 7, EVERY = 5, FIXED = 2, handed = null, asked = 0;
+  var first = location.hash === "#retry";
+  if (first) try { history.replaceState(null, "", location.pathname + location.search); } catch (e) {}
+  function owner(w) {
+    var m = w.g === "daily-mix" ? /^([a-z0-9-]{2,20}):(.+)$/.exec(w.r) : null;
+    return w.g === "daily-mix" ? (m ? { g: m[1], r: m[2] } : null) : { g: w.g, r: w.r };
+  }
+  // Mistakes still to fix, newest first, one per problem: [{ g, r, q, a, d }]. For one game, or all.
+  function pending(game) {
+    var oldest = Loopy.dayKey(1 - RETRY_DAYS), out = [], seen = {};
+    for (var i = data.wrong.length - 1; i >= 0; i--) {
+      var w = data.wrong[i], o = w.r && w.d >= oldest ? owner(w) : null;
+      if (!o || (game && o.g !== game)) continue;
+      var id = o.g + "|" + o.r;
+      if (seen[id]) continue;
+      seen[id] = true;
+      if (!(w.f >= FIXED)) out.push({ g: o.g, r: o.r, q: w.q, a: w.a, d: w.d });
+    }
+    return out;
+  }
+  Loopy.retry = {
+    DAYS: RETRY_DAYS, list: pending,
+    // The game the Try again card opens: the one with the most to fix, the newest on a tie.
+    game: function () {
+      var n = {}, best = "";
+      pending().forEach(function (p) { n[p.g] = (n[p.g] || 0) + 1; if (!best || n[p.g] > n[best]) best = p.g; });
+      return best;
+    },
+    // In place of Loopy.fresh(recent, make, keep): rebuild(note) gives the problem for a logged note, or null.
+    // Opened from the Try again card (#retry), the mistakes come first; otherwise every fifth question is one
+    // while any is left. The problem gets again: true. The answer that follows marks it (rewards.correct / wrong).
+    fresh: function (game, recent, make, rebuild, keep) {
+      var q = null, list, i, note;
+      asked++;
+      if (first || asked % EVERY === 0) {
+        list = pending(game);
+        for (i = 0; i < list.length && !q; i++) {
+          note = list[i].r;
+          try { q = rebuild(note); } catch (e) { q = null; }
+          if (!q || typeof q !== "object" || !q.key || recent.indexOf(q.key) !== -1) q = null;
+        }
+        if (!q) first = false;
+      }
+      if (!q) return Loopy.fresh(recent, make, keep);
+      handed = { g: game, r: note };
+      q.again = true;
+      recent.push(q.key);
+      while (recent.length > (keep || 10)) recent.shift();
+      document.body.setAttribute("data-q", q.key);
+      return q;
+    },
+    // rewards.correct: the mistake handed out last was answered right (every row of that problem counts it).
+    fixed: function (game) {
+      if (handed && handed.g === game) {
+        data.wrong.forEach(function (w) {
+          var o = owner(w);
+          if (o && o.g === game && o.r === handed.r) w.f = Math.min(FIXED, (w.f || 0) + 1);
+        });
+        save();
+      }
+      handed = null;
+    },
+    // rewards.wrong: a replayed mistake missed again keeps its note, so it stays on the list.
+    missed: function (game, detail) {
+      if (handed && handed.g === game && detail && !detail.r) detail.r = handed.r;
+      handed = null;
+    }
+  };
 })();
 
 // Last 5 answers in a game: <div id="last5" data-game="plus-minus"></div> becomes five dots,
