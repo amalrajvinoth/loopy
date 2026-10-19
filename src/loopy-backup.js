@@ -83,15 +83,17 @@
     return cleanG(raw);
   }
 
+  function lightLog(log, light) { if (light) log.wrong = []; return log; }
   // only: a child's id for a code with just that child; leave it out for every child.
-  function snapshot(only) {
+  // light: leave out the list of wrong answers (the biggest part), for a code short enough for a QR code.
+  function snapshot(only, light) {
     var p = Loopy.kids.list().filter(function (kid) { return !only || kid.id === only; }).map(function (kid) {
       var id = kid.id;
       return {
         n: kid.name, pic: kid.pic,
         rewards: Loopy.rewards.clean(read("rewards", id)),
         daily: Loopy.daily.clean(read("daily", id)),
-        log: Loopy.log.clean(read("log", id)),
+        log: lightLog(Loopy.log.clean(read("log", id)), light),
         recent: Loopy.recent.clean(read("recent", id)),
         age: get("age", id) === null ? null : cleanAge(parseInt(get("age", id), 10) || 0),
         read: choice("read", get("read", id)),
@@ -204,8 +206,9 @@
 
   Loopy.backup = {
     // A promise of the code for everything saved in this browser; with a child's id, for just that child.
-    exportCode: function (only) {
-      var bytes = new TextEncoder().encode(JSON.stringify(snapshot(only)));
+    // light: without the list of wrong answers, so the code stays short enough for a QR code.
+    exportCode: function (only, light) {
+      var bytes = new TextEncoder().encode(JSON.stringify(snapshot(only, light)));
       if (!can) return Promise.resolve("LOOPY2-J" + b64(bytes));
       return pipe(bytes, new CompressionStream("deflate-raw")).then(function (z) { return "LOOPY2-Z" + b64(z); });
     },
@@ -228,6 +231,157 @@
     },
     // The link that opens the home page and offers to load code.
     link: function (code) { return Loopy.root + "#load=" + code; },
+    // { n, path } for an SVG of the QR code of text, or null when it needs more than maxVersion (see qr above).
+    qr: qr,
     MAX_CODE: MAX_CODE
   };
+
+  // The QR code for the stars link, drawn here so no picture is fetched from anywhere. Byte mode, the smallest
+  // version (size) that holds the text, error level L (M when it fits the same size), the best of the 8 masks.
+  // qr(text, maxVersion) gives { n: modules per side, path: an SVG path of the dark modules } or null when
+  // the text does not fit in maxVersion (40 is the biggest; past about 25 a phone camera struggles with a screen).
+  var ECC = [[7, 10, 15, 20, 26, 18, 20, 24, 30, 18, 20, 24, 26, 30, 22, 24, 28, 30, 28, 28, 28, 28, 30, 30, 26, 28, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30],
+    [10, 16, 26, 18, 24, 16, 18, 22, 22, 26, 30, 22, 22, 24, 24, 28, 28, 26, 26, 26, 26, 28, 28, 28, 28, 28, 28, 28, 28, 28, 28, 28, 28, 28, 28, 28, 28, 28, 28, 28]];
+  var BLOCKS = [[1, 1, 1, 1, 1, 2, 2, 2, 2, 4, 4, 4, 4, 4, 6, 6, 6, 6, 7, 8, 8, 9, 9, 10, 12, 12, 12, 13, 14, 15, 16, 17, 18, 19, 19, 20, 21, 22, 24, 25],
+    [1, 1, 1, 2, 2, 4, 4, 4, 5, 5, 5, 8, 9, 9, 10, 10, 11, 13, 14, 16, 17, 17, 18, 20, 21, 23, 25, 26, 28, 29, 31, 33, 35, 37, 38, 40, 43, 45, 47, 49]];
+  // Codewords (bytes) a version holds in all, before error correction.
+  function rawWords(v) {
+    var n = (16 * v + 128) * v + 64;
+    if (v >= 2) { var a = Math.floor(v / 7) + 2; n -= (25 * a - 10) * a - 55; if (v >= 7) n -= 36; }
+    return Math.floor(n / 8);
+  }
+  function dataWords(v, lv) { return rawWords(v) - ECC[lv][v - 1] * BLOCKS[lv][v - 1]; }
+  // GF(256) for Reed-Solomon.
+  function gfMul(x, y) { var z = 0; for (var i = 7; i >= 0; i--) { z = (z << 1) ^ ((z >>> 7) * 0x11D); z ^= ((y >>> i) & 1) * x; } return z; }
+  function rsRemainder(data, deg) {
+    var gen = [], rem = [], i, root = 1;
+    for (i = 0; i < deg; i++) { gen.push(i === deg - 1 ? 1 : 0); rem.push(0); }
+    for (i = 0; i < deg; i++) {
+      for (var j = 0; j < deg; j++) { gen[j] = gfMul(gen[j], root); if (j + 1 < deg) gen[j] ^= gen[j + 1]; }
+      root = gfMul(root, 2);
+    }
+    data.forEach(function (b) {
+      var f = b ^ rem.shift(); rem.push(0);
+      for (var k = 0; k < deg; k++) rem[k] ^= gfMul(gen[k], f);
+    });
+    return rem;
+  }
+  function qr(text, maxVersion) {
+    var bytes = new TextEncoder().encode(text), v, lv = 0;
+    for (v = 1; v <= Math.min(maxVersion || 40, 40); v++) if (dataWords(v, 0) >= bytes.length + (v > 9 ? 3 : 2)) break;
+    if (v > 40 || v > (maxVersion || 40)) return null;
+    if (dataWords(v, 1) >= bytes.length + (v > 9 ? 3 : 2)) lv = 1;
+    var n = v * 4 + 17, cap = dataWords(v, lv), bits = [], i, x, y;
+    var push = function (val, len) { for (var b = len - 1; b >= 0; b--) bits.push((val >>> b) & 1); };
+    push(4, 4); push(bytes.length, v > 9 ? 16 : 8);
+    for (i = 0; i < bytes.length; i++) push(bytes[i], 8);
+    push(0, Math.min(4, cap * 8 - bits.length));
+    while (bits.length % 8) bits.push(0);
+    for (i = 0xEC; bits.length < cap * 8; i ^= 0xEC ^ 0x11) push(i, 8);
+    var data = []; for (i = 0; i < bits.length; i += 8) data.push(parseInt(bits.slice(i, i + 8).join(""), 2));
+    // Split into blocks, add error correction to each, and interleave.
+    var nb = BLOCKS[lv][v - 1], ecc = ECC[lv][v - 1], raw = rawWords(v), short = nb - raw % nb, len = Math.floor(raw / nb), blocks = [], k = 0;
+    for (i = 0; i < nb; i++) {
+      var part = data.slice(k, k + len - ecc + (i < short ? 0 : 1)); k += part.length;
+      var rem = rsRemainder(part, ecc);
+      if (i < short) part.push(0);
+      blocks.push(part.concat(rem));
+    }
+    var out = [];
+    for (i = 0; i < blocks[0].length; i++) blocks.forEach(function (b, j) { if (i !== len - ecc || j >= short) out.push(b[i]); });
+    // The modules: m[y][x] is 1 for dark; f[y][x] marks the fixed patterns, which no mask touches.
+    var m = [], f = [];
+    for (y = 0; y < n; y++) { m.push([]); f.push([]); for (x = 0; x < n; x++) { m[y].push(0); f[y].push(0); } }
+    var set = function (x, y, dark) { if (x >= 0 && y >= 0 && x < n && y < n) { m[y][x] = dark ? 1 : 0; f[y][x] = 1; } };
+    var finder = function (cx, cy) { for (var dy = -4; dy <= 4; dy++) for (var dx = -4; dx <= 4; dx++) { var d = Math.max(Math.abs(dx), Math.abs(dy)); set(cx + dx, cy + dy, d !== 2 && d !== 4); } };
+    for (i = 0; i < n; i++) { set(6, i, i % 2 === 0); set(i, 6, i % 2 === 0); }
+    finder(3, 3); finder(n - 4, 3); finder(3, n - 4);
+    var pos = [];
+    if (v > 1) {
+      var na = Math.floor(v / 7) + 2, step = v === 32 ? 26 : Math.ceil((v * 4 + 4) / (na * 2 - 2)) * 2;
+      for (i = 0, k = n - 7; i < na - 1; i++, k -= step) pos.unshift(k);
+      pos.unshift(6);
+    }
+    pos.forEach(function (cy, a) { pos.forEach(function (cx, b) {
+      if ((a === 0 && b === 0) || (a === 0 && b === pos.length - 1) || (a === pos.length - 1 && b === 0)) return;
+      for (var dy = -2; dy <= 2; dy++) for (var dx = -2; dx <= 2; dx++) set(cx + dx, cy + dy, Math.max(Math.abs(dx), Math.abs(dy)) !== 1);
+    }); });
+    var format = function (mask) {
+      var d = ((lv ? 0 : 1) << 3) | mask, r = d;
+      for (var j = 0; j < 10; j++) r = (r << 1) ^ ((r >>> 9) * 0x537);
+      var b = ((d << 10) | r) ^ 0x5412, bit = function (j) { return (b >>> j) & 1; };
+      for (j = 0; j <= 5; j++) set(8, j, bit(j));
+      set(8, 7, bit(6)); set(8, 8, bit(7)); set(7, 8, bit(8));
+      for (j = 9; j < 15; j++) set(14 - j, 8, bit(j));
+      for (j = 0; j < 8; j++) set(n - 1 - j, 8, bit(j));
+      for (j = 8; j < 15; j++) set(8, n - 15 + j, bit(j));
+      set(8, n - 8, 1);
+    };
+    format(0);
+    if (v >= 7) {
+      var r = v; for (i = 0; i < 12; i++) r = (r << 1) ^ ((r >>> 11) * 0x1F25);
+      var vb = (v << 12) | r;
+      for (i = 0; i < 18; i++) { var a = n - 11 + i % 3, b = Math.floor(i / 3), d = (vb >>> i) & 1; set(a, b, d); set(b, a, d); }
+    }
+    // Data goes in zigzag columns from the right, skipping the fixed patterns.
+    i = 0;
+    for (var right = n - 1; right >= 1; right -= 2) {
+      if (right === 6) right = 5;
+      for (var vert = 0; vert < n; vert++) for (var j = 0; j < 2; j++) {
+        x = right - j; y = ((right + 1) & 2) === 0 ? n - 1 - vert : vert;
+        if (!f[y][x] && i < out.length * 8) { m[y][x] = (out[i >>> 3] >>> (7 - (i & 7))) & 1; i++; }
+      }
+    }
+    var MASKS = [function (x, y) { return (x + y) % 2 === 0; }, function (x, y) { return y % 2 === 0; }, function (x) { return x % 3 === 0; },
+      function (x, y) { return (x + y) % 3 === 0; }, function (x, y) { return (Math.floor(x / 3) + Math.floor(y / 2)) % 2 === 0; },
+      function (x, y) { return x * y % 2 + x * y % 3 === 0; }, function (x, y) { return (x * y % 2 + x * y % 3) % 2 === 0; },
+      function (x, y) { return ((x + y) % 2 + x * y % 3) % 2 === 0; }];
+    var apply = function (mask) { for (var yy = 0; yy < n; yy++) for (var xx = 0; xx < n; xx++) if (!f[yy][xx] && MASKS[mask](xx, yy)) m[yy][xx] ^= 1; };
+    // The penalty of the current picture, as the standard counts it: long runs, 2x2 blocks, finder-like runs, dark share.
+    var penalty = function () {
+      var p = 0, dark = 0;
+      // Runs and finder-like patterns, rows then columns (a plain check of the 1:1:3:1:1 pattern with a 4-light side).
+      var scan = function (get) {
+        for (var a = 0; a < n; a++) {
+          var run = 0, last = -1, b;
+          for (b = 0; b < n; b++) {
+            var c = get(a, b);
+            if (c === last) run++; else { if (run >= 5) p += run - 2; run = 1; last = c; }
+          }
+          if (run >= 5) p += run - 2;
+          for (b = 0; b + 7 <= n; b++) {
+            if (get(a, b) && !get(a, b + 1) && get(a, b + 2) && get(a, b + 3) && get(a, b + 4) && !get(a, b + 5) && get(a, b + 6)) {
+              var before = b >= 4 && !get(a, b - 1) && !get(a, b - 2) && !get(a, b - 3) && !get(a, b - 4);
+              var after = b + 10 < n && !get(a, b + 7) && !get(a, b + 8) && !get(a, b + 9) && !get(a, b + 10);
+              if (before || after || b < 4 || b + 11 > n) p += 40;
+            }
+          }
+        }
+      };
+      scan(function (a, b) { return m[a][b]; });
+      scan(function (a, b) { return m[b][a]; });
+      for (y = 0; y < n - 1; y++) for (x = 0; x < n - 1; x++) {
+        var c = m[y][x];
+        if (c === m[y][x + 1] && c === m[y + 1][x] && c === m[y + 1][x + 1]) p += 3;
+      }
+      for (y = 0; y < n; y++) for (x = 0; x < n; x++) dark += m[y][x];
+      p += 10 * (Math.ceil(Math.abs(dark * 20 - n * n * 10) / (n * n)) - 1);
+      return p;
+    };
+    var best = 0, bestP = Infinity;
+    for (i = 0; i < 8; i++) {
+      apply(i); format(i);
+      var p = penalty();
+      if (p < bestP) { bestP = p; best = i; }
+      apply(i);
+    }
+    apply(best); format(best);
+    var path = "";
+    for (y = 0; y < n; y++) for (x = 0; x < n; x++) if (m[y][x]) {
+      var w = 1; while (x + w < n && m[y][x + w]) w++;
+      path += "M" + x + " " + y + "h" + w + "v1h-" + w + "z";
+      x += w - 1;
+    }
+    return { n: n, path: path, v: v };
+  }
 })();

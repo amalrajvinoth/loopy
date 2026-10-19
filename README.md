@@ -79,7 +79,7 @@ In a game, tap **Settings** to change age, language, colors, the reading font, s
 
 Stars, settings, children's names and the answers on the grown-ups' page are saved in your browser. Nothing is sent anywhere. There are no ads, no tracking and no outside services. Even the fonts are stored on the site.
 Everything is saved twice in the browser: in IndexedDB (a bigger store) and in localStorage (quick to read when a page opens). If one is cleared, loopy brings it back from the other. Once a child has stars, loopy asks the browser to keep them (persistent storage). If IndexedDB is blocked, for example in a private window, loopy works from localStorage alone.
-To move stars to another device, open the home page, tap **Move my stars to another device**, and copy the code or the link across. With two or more children, pick everyone or one child. The code also carries the day streak, progress, Last 5, the age, the game levels and settings, and the last game. The link holds the code after the `#`, so it never reaches the web server; opening it asks first. Loading a code only adds, it never takes anything away. Old codes still load.
+To move stars to another device, open the home page and tap **Move my stars to another device**. Scan the QR code with the other device's camera, tap **Send** to share the link, or copy the code or the link across. **Save backup** writes the code to a small file (`loopy-stars-<date>.json`) that lands in Downloads or Files, so iCloud Drive or Google Drive can keep it; **Open backup** loads such a file. The QR code is drawn on the device and the file is made on the device, so still nothing is sent anywhere. With two or more children, pick everyone or one child. The code also carries the day streak, progress, Last 5, the age, the game levels and settings, and the last game. The link holds the code after the `#`, so it never reaches the web server; opening it asks first. Loading a code only adds, it never takes anything away. Old codes still load.
 
 ## Screen readers and keyboards
 
@@ -87,7 +87,7 @@ Every game works without touching the screen. Tab moves between buttons, Enter p
 
 ## Add Loopy to your home screen
 
-On a phone or tablet, open the site and choose **Add to Home Screen**. Loopy then opens full screen like an app.
+On the home page, open ⚙ **Settings** and tap **Add loopy to the home screen** (on a computer: **Install loopy on this computer**). In Chrome, Edge and Samsung Internet this opens the browser's own install box. Everywhere else it shows the steps for that device: iPhone, iPad, Android (Chrome, Samsung Internet, Firefox), a Mac with Safari, a computer with Chrome or Edge, or Firefox on a computer (which cannot add apps, so it suggests a bookmark). Loopy then opens full screen like an app. On an iPhone, iPad or Mac the home screen copy keeps its own stars, so the box also shows the stars code to load there. The part is hidden when loopy already runs from the home screen.
 
 ## Works offline
 
@@ -103,10 +103,10 @@ The site is plain HTML, CSS and JavaScript. One small build step makes the share
 | --- | --- |
 | `index.html` | The home page and the list of games |
 | `src/loopy.js` | Shared code: languages, colors, age, sound, read aloud, stars and badges, Last 5 dots, the back button, and the buttons for the stars code, the worksheet and Report a problem. Edit this one |
-| `src/loopy-report.js`, `src/loopy-backup.js`, `src/loopy-sheet.js`, `src/loopy-levels.js`, `src/print.css` | The Report a problem box, the stars code, the worksheet filling and print styles, and the list of every game's levels for the grown-ups page. `loopy.js` loads each one the first time it is needed (`Loopy.load`). Edit these |
+| `src/loopy-report.js`, `src/loopy-backup.js`, `src/loopy-sheet.js`, `src/loopy-levels.js`, `src/loopy-install.js`, `src/print.css` | The Report a problem box, the stars code, the worksheet filling and print styles, the list of every game's levels for the grown-ups page, and the Add to home screen steps. `loopy.js` loads each one the first time it is needed (`Loopy.load`). Edit these |
 | `src/loopy.css` | Shared styles and fonts. Edit this one |
 | `loopy.js`, `loopy.css` | Small copies made by the build. Pages load these. Do not edit them |
-| `loopy-report.js`, `loopy-backup.js`, `loopy-sheet.js`, `loopy-levels.js`, `print.css` | Parts that load only when they are needed: the Report a problem box, the stars code, the worksheet with its print styles, and the levels list. Made by the build from `src/`. Do not edit them |
+| `loopy-report.js`, `loopy-backup.js`, `loopy-sheet.js`, `loopy-levels.js`, `loopy-install.js`, `print.css` | Parts that load only when they are needed: the Report a problem box, the stars code, the worksheet with its print styles, the levels list, and the Add to home screen steps. Made by the build from `src/`. Do not edit them |
 | `DESIGN.md` | How loopy looks: colors, fonts, buttons, layout and rules. Read it before you change a page |
 | `logo.svg`, `logo-white.svg`, `icon.svg` | The logo (for light and dark backgrounds) and the app icon |
 | `help/index.html` | The Help page: FAQ and feedback links |
