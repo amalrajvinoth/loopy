@@ -177,12 +177,14 @@ for (const game of GAMES) {
     await next(p, 1);
     for (let i = 0; i < 12 && !row; i++) {
       const n = await asked(p);
+      // The key is read before answering: a sprint game shows the next question by itself after an answer.
+      const key = await p.evaluate(() => window.__questions[window.__questions.length - 1]);
       await answerWrong(p);
       await p.waitForFunction(() => Loopy.rewards.last() !== null);
       const last = await lastAnswer(p);
       if (last && !last.ok) {
         row = await p.evaluate(() => Loopy.log.get().wrong.slice(-1)[0] || null);
-        missedKey = await p.evaluate(() => window.__questions[window.__questions.length - 1]);
+        missedKey = key;
       } else await next(p, n);
     }
     if (process.env.DEBUG) console.error("row", JSON.stringify(row), missedKey);
