@@ -124,10 +124,13 @@
         row[g] = [Math.max(a[0], b[0]), Math.max(a[1], b[1])];
       });
     });
+    // The same wrong answer from both sides is one row; the bigger "answered right since" count (Try again) wins.
     var seen = {};
     L.wrong = L.wrong.concat(l.wrong).filter(function (w) {
-      var k = JSON.stringify(w);
-      return seen[k] ? false : (seen[k] = true);
+      var k = JSON.stringify([w.d, w.g, w.q, w.a, w.y, w.k, w.r || ""]);
+      if (seen[k]) { if (w.f > (seen[k].f || 0)) seen[k].f = w.f; return false; }
+      seen[k] = w;
+      return true;
     }).sort(function (a, b) { return a.d < b.d ? -1 : a.d > b.d ? 1 : 0; }).slice(-Loopy.log.MAX_WRONG);
     put("log", Loopy.log.clean(L), id);
 

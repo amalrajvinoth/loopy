@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'sha256-GKkBjEc/HcZdiKO/zygYKGwQm+Sm48jqwXLsVGX9YUM='; style-src 'self' 'sha256-z2P7kGW5Z05eCTjTZdYpc0vThTlOE9vmt97pVSvi2I4=' 'sha256-5JO1h7tSI5wCTIIhUzDJIFW8EwNxVWUfZASppZRdlqw=' 'sha256-RT1053JU5UiKvjrCUFx1rlhdFLMmgtuFJ9T8jnMeawQ=' 'sha256-OIwjrhLB/u0tYCQzUiKhRUdVDaU//hKl+YLFIFw2pHI='; img-src 'self' data:; font-src 'self'; connect-src 'self'; worker-src 'self'; object-src 'none'; base-uri 'none'; form-action 'none'; manifest-src 'self'; upgrade-insecure-requests">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'sha256-8n585dfIvITOFMkKFAlNP3H4pnqdoQgB2q3CoFIygBQ='; style-src 'self' 'sha256-z2P7kGW5Z05eCTjTZdYpc0vThTlOE9vmt97pVSvi2I4=' 'sha256-5JO1h7tSI5wCTIIhUzDJIFW8EwNxVWUfZASppZRdlqw=' 'sha256-RT1053JU5UiKvjrCUFx1rlhdFLMmgtuFJ9T8jnMeawQ=' 'sha256-OIwjrhLB/u0tYCQzUiKhRUdVDaU//hKl+YLFIFw2pHI='; img-src 'self' data:; font-src 'self'; connect-src 'self'; worker-src 'self'; object-src 'none'; base-uri 'none'; form-action 'none'; manifest-src 'self'; upgrade-insecure-requests">
 <meta name="referrer" content="strict-origin-when-cross-origin">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <style>:root{color-scheme:light;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}body{margin:0}[hidden]{display:none!important}</style>
@@ -532,8 +532,42 @@ function explain(p) {
     $("k-erase").disabled = answered || typed === "";
   }
 
+  // Try again: a missed equation comes back later (Loopy.retry). The note is the problem's key, which holds the
+  // level and every number: "box:0:5:12", "add:2:7:20", "mul:3:4", "two:3:-5:7" or "both:2:1:5:3:l".
+  const note = (p) => p.key;
+  function rebuild(r) {
+    const m = /^(box|add|mul|two|both)((?::(?:0|-?[1-9]\d{0,2})){2,4})(?::([lr]))?$/.exec(r);
+    if (!m) return null;
+    const level = m[1], v = m[2].slice(1).split(":").map(Number), [a, b, c, d] = v, side = m[3];
+    const within = (x, lo, hi) => x >= lo && x <= hi;
+    let L, R, x;
+    if ((level === "box" || level === "add") && v.length === 3 && !side) {
+      const lo = level === "box" ? 1 : 2, top = level === "box" ? 20 : 30;
+      x = c;
+      if (!within(a, 0, 2) || !within(b, lo, top) || !within(x - (a === 2 ? b : 0), 1, top)) return null;
+      const one = level === "box" ? { box: true } : { k: 1 };
+      if (a === 0) { L = [one, { n: b }]; R = [{ n: x + b }]; }
+      else if (a === 1) { L = [{ n: b }, one]; R = [{ n: b + x }]; }
+      else { L = [one, { n: -b }]; R = [{ n: x - b }]; }
+    } else if (level === "mul" && v.length === 2 && !side) {
+      x = b;
+      if (!within(a, 2, 10) || !within(x, 2, 12)) return null;
+      L = [{ k: a }]; R = [{ n: a * x }];
+    } else if (level === "two" && v.length === 3 && !side) {
+      x = c;
+      if (!within(a, 2, 9) || !b || !within(Math.abs(b), 1, 20) || !within(x, 1, 20) || a * x + b < 1) return null;
+      L = [{ k: a }, { n: b }]; R = [{ n: a * x + b }];
+    } else if (level === "both" && v.length === 4 && side) {
+      x = d;
+      if (!within(a, 1, 4) || !within(b, 1, 4) || !within(c, 1, 15) || !within(x, 1, 10)) return null;
+      L = [{ k: a + b }, { n: c }]; R = [{ k: a }, { n: b * x + c }];
+      if (side === "r") { const s = L; L = R; R = s; }
+    } else return null;
+    return { lv: level, L, R, x, key: r, text: sideText(L) + " = " + sideText(R) };
+  }
+
   function newRound() {
-    current = Loopy.fresh(recent, () => makeProblem(lv, age));
+    current = Loopy.retry.fresh("equation-balance", recent, () => makeProblem(lv, age), rebuild);
     typed = ""; answered = false;
     card.className = "problem-card";
     feedbackEl.className = "feedback";
@@ -562,7 +596,7 @@ function explain(p) {
     answered = true; tried++;
     const y = parseInt(typed, 10), ok = y === current.x;
     if (ok) { right++; streak++; } else { streak = 0; }
-    if (window.Loopy && Loopy.rewards) ok ? Loopy.rewards.correct("equation-balance", streak) : Loopy.rewards.wrong("equation-balance", { q: current.text, a: fmt(current.x), y: fmt(y), k: "eb-" + current.lv });
+    if (window.Loopy && Loopy.rewards) ok ? Loopy.rewards.correct("equation-balance", streak) : Loopy.rewards.wrong("equation-balance", { q: current.text, a: fmt(current.x), y: fmt(y), k: "eb-" + current.lv, r: note(current) });
     tilt(y);
     card.className = "problem-card " + (ok ? "good" : "bad");
     feedbackEl.className = "feedback " + (ok ? "good" : "bad");

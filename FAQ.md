@@ -74,6 +74,10 @@ Tap the small flag at the top of the game (or Report a problem in Settings). Pic
 
 Open **For grown-ups: how it's going** at the bottom of the home page. The first card says how the week went: how many answers, how many percent right, and up or down from last week. **Practise next** shows the three kinds of question your child got wrong most this week, like the 7 times table or clock times in fives. Tap **Practise** and the game opens set to just that kind for this visit. The child's saved level does not change. **Level up** opens a game that is going well, with its Settings showing, so you can pick a harder level. Nothing here leaves your device.
 
+## What is "Try again" on the home page?
+
+A wrong answer is not lost. When a child gets something wrong, the home page shows a **Try again** card with this week's mistakes, like "3 from this week · 52 − 17 · 7 × 8". Tap it and the game starts with those exact problems. Inside any game, every fifth question can be an old mistake too. Once a mistake is answered right twice, it goes off the list. Mistakes from Today's 10 come back in the game they belong to. Nothing is sent anywhere; the list lives on your device, and the stars code carries it to another device.
+
 ## Can I share or print how the week went?
 
 Yes. On the grown-ups' page, tap **Share this week**. You get a card with the week's numbers, what went well and what to practise. **Share picture** sends it as a picture with your phone's share sheet (or saves it, on a browser that cannot share pictures), and **Print** prints it. Under Practise next, **Print a practice sheet** prints 20 problems of the kinds your child missed most, with answers on page 2. The picture and the sheet are made on your device. Nothing is sent anywhere unless you share the picture.

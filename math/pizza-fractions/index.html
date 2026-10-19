@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'sha256-lmam8PIgBJMdoIuVECOtRniTAfhxwz7Kc1mrhmns03k='; style-src 'self' 'sha256-z2P7kGW5Z05eCTjTZdYpc0vThTlOE9vmt97pVSvi2I4=' 'sha256-4KeXVk7w7LjYemdYWRLdakk0uAlZg26cpfiBqMAOD24=' 'sha256-RT1053JU5UiKvjrCUFx1rlhdFLMmgtuFJ9T8jnMeawQ=' 'sha256-3KG381CUtjqBA89CGSEeePMjJDH4mtBX1ixxVdZ02kE='; img-src 'self' data:; font-src 'self'; connect-src 'self'; worker-src 'self'; object-src 'none'; base-uri 'none'; form-action 'none'; manifest-src 'self'; upgrade-insecure-requests">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'sha256-bkUVc6lLeWhrp9k6m9t1jEBlTb8pYfdSZL/X5f0ArxI='; style-src 'self' 'sha256-z2P7kGW5Z05eCTjTZdYpc0vThTlOE9vmt97pVSvi2I4=' 'sha256-4KeXVk7w7LjYemdYWRLdakk0uAlZg26cpfiBqMAOD24=' 'sha256-RT1053JU5UiKvjrCUFx1rlhdFLMmgtuFJ9T8jnMeawQ=' 'sha256-3KG381CUtjqBA89CGSEeePMjJDH4mtBX1ixxVdZ02kE='; img-src 'self' data:; font-src 'self'; connect-src 'self'; worker-src 'self'; object-src 'none'; base-uri 'none'; form-action 'none'; manifest-src 'self'; upgrade-insecure-requests">
 <meta name="referrer" content="strict-origin-when-cross-origin">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <style>:root{color-scheme:light;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}body{margin:0}[hidden]{display:none!important}</style>
@@ -415,8 +415,11 @@ Loopy.addStrings({
   // ---- Problems ----
   // Name: a picture cut into d pieces with n colored in; four fractions to pick from.
   function makeName(L) {
-    const d = pick(L.dens), n = rand(1, d - 1), x = fr(n, d);
-    const opts = [x];
+    const d = pick(L.dens);
+    return nameProblem(L, fr(rand(1, d - 1), d));
+  }
+  function nameProblem(L, x) {
+    const { n, d } = x, opts = [x];
     // Common mix-ups first: the part left over, colored over not colored, the numbers swapped, one piece off.
     const wrong = shuffle([fr(d - n, d), fr(n, d - n), fr(n, d + 1)]).concat(shuffle([fr(n + 1, d), fr(n - 1, d), fr(n, d - 1), fr(n + 1, d + 1)]));
     for (const w of wrong) {
@@ -462,23 +465,28 @@ Loopy.addStrings({
   function makeAdd(L) {
     const dens = L.max === 4 ? [2, 4] : L.dens;
     for (let tries = 0; tries < 200; tries++) {
-      const d1 = pick(dens), d2 = pick(dens);
-      if (Math.max(d1, d2) % Math.min(d1, d2)) continue;
-      const D = Math.max(d1, d2), a = fr(rand(1, d1 - 1), d1), b = fr(rand(1, d2 - 1), d2);
-      const s = a.n * D / d1 + b.n * D / d2;
-      if (s > D) continue;
-      const ans = fr(s, D), opts = [ans];
-      // The classic slip first: adding the bottoms too.
-      const wrong = [fr(a.n + b.n, d1 + d2)];
-      if (d1 !== d2) wrong.push(fr(a.n + b.n, D));
-      wrong.push(...shuffle([fr(s + 1, D), fr(s - 1, D), fr(s, D * 2), fr(s - 2, D)]));
-      for (const w of wrong) {
-        if (opts.length < 4 && w.n >= 1 && w.n <= w.d && !opts.some(o => same(o, w))) opts.push(w);
-      }
-      if (opts.length < 4) continue;
-      return { type: "add", a, b, ans, opts: shuffle(opts), kind: "pz-add", key: "a" + txt(a) + txt(b) };
+      const d1 = pick(dens), d2 = pick(dens), p = addProblem(fr(rand(1, d1 - 1), d1), fr(rand(1, d2 - 1), d2));
+      if (p) return p;
     }
     return { type: "add", a: fr(1, 2), b: fr(1, 4), ans: fr(3, 4), opts: shuffle([fr(3, 4), fr(2, 6), fr(2, 4), fr(1, 4)]), kind: "pz-add", key: "a1/21/4" };
+  }
+
+  // The sum of two fractions with its four answers, or null when the bottoms do not fit or the sum is over one whole.
+  function addProblem(a, b) {
+    const d1 = a.d, d2 = b.d;
+    if (Math.max(d1, d2) % Math.min(d1, d2)) return null;
+    const D = Math.max(d1, d2), s = a.n * D / d1 + b.n * D / d2;
+    if (s > D) return null;
+    const ans = fr(s, D), opts = [ans];
+    // The classic slip first: adding the bottoms too.
+    const wrong = [fr(a.n + b.n, d1 + d2)];
+    if (d1 !== d2) wrong.push(fr(a.n + b.n, D));
+    wrong.push(...shuffle([fr(s + 1, D), fr(s - 1, D), fr(s, D * 2), fr(s - 2, D)]));
+    for (const w of wrong) {
+      if (opts.length < 4 && w.n >= 1 && w.n <= w.d && !opts.some(o => same(o, w))) opts.push(w);
+    }
+    if (opts.length < 4) return null;
+    return { type: "add", a, b, ans, opts: shuffle(opts), kind: "pz-add", key: "a" + txt(a) + txt(b) };
   }
 
   // What comes up in each mode. A picture kind is picked for each problem when the setting is Both.
@@ -648,8 +656,26 @@ Loopy.addStrings({
     return b;
   }
 
+  // Try again: a missed problem comes back later (Loopy.retry). The note is "name 3/4", "cmp 3/4 5/8" or "add 1/2 1/4".
+  // Pieces the current level does not cut wait. The picture (pizza or bar) follows the current setting.
+  const plain = (x) => x.n + "/" + x.d;
+  const note = (p) => p.type === "name" ? "name " + plain(p.x) : p.type + " " + plain(p.a) + " " + plain(p.b);
+  function rebuild(r) {
+    const m = /^(name|cmp|add) (\d{1,2})\/(\d{1,2})(?: (\d{1,2})\/(\d{1,2}))?$/.exec(r);
+    if (!m || (m[1] === "name") === !!m[4]) return null;
+    const L = LEVELS[lv], a = fr(+m[2], +m[3]), b = m[4] ? fr(+m[4], +m[5]) : null;
+    const fits = (x) => L.dens.includes(x.d) && x.n >= 1 && x.n < x.d;
+    if (!fits(a) || (b && !fits(b))) return null;
+    let p = null;
+    if (m[1] === "name") p = nameProblem(L, a);
+    else if (m[1] === "cmp") { if (a.d === b.d || a.n === b.n || same(a, b) || lcm(a.d, b.d) <= 24) p = { type: "cmp", a, b, kind: "pz-cmp", key: "c" + txt(a) + txt(b) }; }
+    else if (L.max > 4 || (a.d !== 3 && b.d !== 3)) p = addProblem(a, b);
+    if (p) p.look = look === "both" ? pick(["pizza", "bar"]) : look;
+    return p;
+  }
+
   function newRound() {
-    const p = cur = Loopy.fresh(recent, makeProblem); answered = false;
+    const p = cur = Loopy.retry.fresh("pizza-fractions", recent, makeProblem, rebuild); answered = false;
     card.classList.remove("good", "bad");
     feedbackEl.className = "feedback";
     feedbackEl.textContent = "";
@@ -713,7 +739,7 @@ Loopy.addStrings({
     if (ok) Loopy.rewards.correct("pizza-fractions", streak);
     else Loopy.rewards.wrong("pizza-fractions", {
       q: cur.type === "name" ? t(cur.look === "bar" ? "pzBar" : "pzPizza") + " " + txt(cur.x) : cur.type === "cmp" ? txt(cur.a) + " ? " + txt(cur.b) : txt(cur.a) + " + " + txt(cur.b),
-      a: answerText(cur), y: yours, k: cur.kind
+      a: answerText(cur), y: yours, k: cur.kind, r: note(cur)
     });
     card.classList.add(ok ? "good" : "bad");
     pic.classList.remove("off");

@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'sha256-dO2/PkcXJj89DtgAsmz24Ia5Ncy4qKP8Ocr0yHnIraw='; style-src 'self' 'sha256-REchtnA93Huv5zPio68LSBCxxZ+QCPqmEE+rDQuPQ4I='; img-src 'self' data:; font-src 'self'; connect-src 'self'; worker-src 'self'; object-src 'none'; base-uri 'none'; form-action 'none'; manifest-src 'self'; upgrade-insecure-requests">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'sha256-rQ8dDouMXYme1Q+4PSox/5AfqaE71AvN2p94Jgw/D2c='; style-src 'self' 'sha256-ghHnKJ5KO7w7iSzhgzeH2HkZUhdzoXqftLU0nDn0c/Q='; img-src 'self' data:; font-src 'self'; connect-src 'self'; worker-src 'self'; object-src 'none'; base-uri 'none'; form-action 'none'; manifest-src 'self'; upgrade-insecure-requests">
 <meta name="referrer" content="strict-origin-when-cross-origin">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <link rel="icon" href="icon.svg" type="image/svg+xml">
@@ -92,6 +92,9 @@ h1 { margin: 0; line-height: 0; color: var(--ink); }
 .carry-text { display: flex; flex-direction: column; gap: 4px; flex: 1; min-width: 0; }
 .carry-name { font-family: var(--display); font-weight: 700; font-size: 1.4rem; line-height: 1.15; color: var(--tone); overflow-wrap: anywhere; }
 .carry .go { margin: 0; align-self: center; flex: none; }
+/* Try again: this week's mistakes, one row under Carry on. */
+.wrap .again { --tone: var(--c4); }
+.again-list { color: var(--muted); font-size: 0.9rem; line-height: 1.3; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
 .today .row { display: flex; flex-wrap: wrap; gap: 8px 12px; align-items: center; justify-content: space-between; margin-top: auto; }
 .today .go { margin-top: 0; }
 .day-streak { font-weight: 700; }
@@ -125,6 +128,7 @@ footer p { margin: 0; }
     </div>
   </header>
   <a class="quiz carry" id="carry" href="./" hidden><span class="pic" id="carry-pic" aria-hidden="true"></span><span class="carry-text"><span class="tag" data-t="carryTag">Carry on</span><span class="carry-name" id="carry-name"></span></span><span class="go" data-t="carryGo">Go →</span></a>
+  <a class="quiz carry again" id="again" href="./" hidden><span class="pic" aria-hidden="true">🔁</span><span class="carry-text"><span class="tag" data-t="againTag">Try again</span><span class="carry-name" id="again-name"></span><span class="again-list" id="again-list"></span></span><span class="go" data-t="carryGo">Go →</span></a>
   <section aria-labelledby="today-title">
   <a class="quiz today" id="today" href="mix/daily-mix/">
     <span class="tag" data-t="dmTag">Every day</span>
@@ -172,7 +176,7 @@ Loopy.addStrings({
     moveHow: "This code holds your stars, badges, day streak, progress, game levels and where you left off. Copy the code or the link, then paste or open it on the other device.", yourCode: "Your stars code", copy: "Copy",
     moveKidStars: "Move stars to another device", copyLink: "Copy link", linkCopied: "Link copied! Open it on the other device.",
     whose: "Whose stars?", everyone: "Everyone",
-    carryTag: "Carry on", carryGo: "Go →",
+    carryTag: "Carry on", carryGo: "Go →", againTag: "Try again", againLine: "{n} from this week",
     askOne: "Load {name}'s stars here?", askMany: "Load the stars of {names} here?", askNone: "Load these stars here?",
     askText: "This adds their stars, progress, game levels and where they left off to this device. Nothing here is taken away.",
     askLoad: "Load", askNo: "Not now",
@@ -211,7 +215,7 @@ Loopy.addStrings({
     moveHow: "Dieser Code enthält deine Sterne, Abzeichen, Tage in Folge, deinen Fortschritt, die Stufen in den Spielen und wo du aufgehört hast. Kopiere den Code oder den Link und füge ihn auf dem anderen Gerät ein oder öffne ihn dort.", yourCode: "Dein Sterne-Code", copy: "Kopieren",
     moveKidStars: "Sterne auf ein anderes Gerät bringen", copyLink: "Link kopieren", linkCopied: "Link kopiert! Öffne ihn auf dem anderen Gerät.",
     whose: "Wessen Sterne?", everyone: "Alle",
-    carryTag: "Weiterspielen", carryGo: "Los →",
+    carryTag: "Weiterspielen", carryGo: "Los →", againTag: "Nochmal versuchen", againLine: "{n} von dieser Woche",
     askOne: "Die Sterne von {name} hier laden?", askMany: "Die Sterne von {names} hier laden?", askNone: "Diese Sterne hier laden?",
     askText: "Das fügt Sterne, Fortschritt, Stufen in den Spielen und wo aufgehört wurde zu diesem Gerät hinzu. Hier geht nichts verloren.",
     askLoad: "Laden", askNo: "Nicht jetzt",
@@ -323,6 +327,20 @@ window.addEventListener("loopy:age", render);
   a.href = g.path;
   document.getElementById("carry-pic").textContent = g.pic;
   document.getElementById("carry-name").textContent = t(g.id + "Title");
+  a.hidden = false;
+})();
+
+// Try again: this week's mistakes, under Carry on. Opens the game with the most of them, mistakes first.
+(function tryAgain() {
+  const R = window.Loopy && Loopy.retry;
+  if (!R) return;
+  const FOLDER = { clock: "what-time-is-it", "bigger-smaller": "bigger-or-smaller" };
+  const id = R.game(), g = id && GAMES.find(x => x.path.endsWith("/" + (FOLDER[id] || id) + "/"));
+  if (!g) return;
+  const mine = R.list(id), a = document.getElementById("again");
+  a.href = g.path + "#retry";
+  document.getElementById("again-name").textContent = t(g.id + "Title");
+  document.getElementById("again-list").textContent = [t("againLine", { n: Loopy.num(mine.length) })].concat(mine.slice(0, 3).map(x => x.q)).join(" · ");
   a.hidden = false;
 })();
 

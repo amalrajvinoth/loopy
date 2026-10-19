@@ -17,4 +17,4 @@ A game id has to be in several lists. Missing one breaks stars, the progress pag
 5. **Saved settings:** through `Loopy.store.get/set` with keys `<prefix>.<setting>`, never `localStorage` directly. Add the new prefix to `GKEY` in the stars code block of `src/loopy.js`, so the settings move with the stars code.
 6. **Extras the other games have:** Read aloud (`Loopy.speech.question`), a printable worksheet (`Loopy.worksheet`), Settings in the same order as the other games, keyboard support.
 7. **Docs:** `<game>/README.md` (How to play, Age levels, Settings, Print a worksheet, example help text) and a row in README.md "The games".
-8. Then `python3 tools/build.py` and the `ship-pr` skill. The play test (`tools/e2e/play.mjs`) picks the new game up by itself.
+8. Then `python3 tools/build.py` and the `ship-pr` skill. The play test (`tools/e2e/play.mjs`) and the Try again test (`tools/e2e/retry.mjs`) pick the new game up by themselves; the game must log a rebuild note with each wrong answer and ask for questions through `Loopy.retry.fresh` (see the README's "Build a game").

@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'sha256-8wsp4q1BawZb0yzaw3+Nblwca6uveQzjA+xUP5f671M='; style-src 'self' 'sha256-z2P7kGW5Z05eCTjTZdYpc0vThTlOE9vmt97pVSvi2I4=' 'sha256-w9pga+IPnYxVi/pukmXin+IOmxddRTaP61YpupfEqSI=' 'sha256-RT1053JU5UiKvjrCUFx1rlhdFLMmgtuFJ9T8jnMeawQ=' 'sha256-wfARG683SNrAHdQC1q1b7CsDtVGlEMOeHzsWFpbU4kg='; img-src 'self' data:; font-src 'self'; connect-src 'self'; worker-src 'self'; object-src 'none'; base-uri 'none'; form-action 'none'; manifest-src 'self'; upgrade-insecure-requests">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'sha256-XR7/NK5PebKvDA5nVjWl8Xsc150qT80QqplW8sjmx1M='; style-src 'self' 'sha256-z2P7kGW5Z05eCTjTZdYpc0vThTlOE9vmt97pVSvi2I4=' 'sha256-w9pga+IPnYxVi/pukmXin+IOmxddRTaP61YpupfEqSI=' 'sha256-RT1053JU5UiKvjrCUFx1rlhdFLMmgtuFJ9T8jnMeawQ=' 'sha256-wfARG683SNrAHdQC1q1b7CsDtVGlEMOeHzsWFpbU4kg='; img-src 'self' data:; font-src 'self'; connect-src 'self'; worker-src 'self'; object-src 'none'; base-uri 'none'; form-action 'none'; manifest-src 'self'; upgrade-insecure-requests">
 <meta name="referrer" content="strict-origin-when-cross-origin">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <style>:root{color-scheme:light;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}body{margin:0}[hidden]{display:none!important}</style>
@@ -390,28 +390,29 @@ function nearby(ans, others, step) {
 }
 // One question: the chart to draw, the question, the right answer, the choices, one line of why,
 // and the data as a sentence. want: a kind to prefer ("mean"), from the grown-ups' page.
-function makeProblem(level, want) {
+// fixed: the choices of a missed question (Try again) in place of the random ones, so the same chart comes back.
+function makeProblem(level, want, fixed) {
   const t = Loopy.t, num = Loopy.num;
+  const fx = (k, make) => fixed ? fixed[k] : make();
   let type, kinds;
-  if (level === 1) { type = pick(["bar", "bar", "pict"]); kinds = ["read", "most", "least", "diff"]; }
-  else if (level === 2) { type = pick(["table", "line"]); kinds = type === "line" ? ["change", "change", "total", "read"] : ["total", "total", "diff", "read"]; }
-  else if (level === 3) { type = pick(["bar", "table"]); kinds = ["mean", "median"]; }
-  else { type = pick(["bars2", "table2"]); kinds = ["cmpTotal", "cmpMean", "cmpDiff", "meanOf"]; }
+  if (level === 1) { type = fx("type", () => pick(["bar", "bar", "pict"])); kinds = ["read", "most", "least", "diff"]; }
+  else if (level === 2) { type = fx("type", () => pick(["table", "line"])); kinds = type === "line" ? ["change", "change", "total", "read"] : ["total", "total", "diff", "read"]; }
+  else if (level === 3) { type = fx("type", () => pick(["bar", "table"])); kinds = ["mean", "median"]; }
+  else { type = fx("type", () => pick(["bars2", "table2"])); kinds = ["cmpTotal", "cmpMean", "cmpDiff", "meanOf"]; }
   if (want) { const w = kinds.filter(k => KIND[k] === "gd-" + want); if (w.length) kinds = w; }
-  let kind = pick(kinds);
-  const topic = pick(type === "line" ? TOPICS.filter(x => x.ordered) : TOPICS);
+  let kind = fx("kind", () => pick(kinds));
+  const topic = fx("topic", () => pick(type === "line" ? TOPICS.filter(x => x.ordered) : TOPICS));
   const W = words(topic.set), title = t("gdT" + topic.id), unit = t("gdU" + topic.id), uq = t("gdQ" + topic.id);
   const two = type === "bars2" || type === "table2";
-  const n = type === "line" ? 4 + randInt(3) : kind === "median" ? pick([3, 5]) : two ? 3 + randInt(2) : 3 + randInt(level === 1 ? 2 : 3);
-  const start = topic.ordered ? randInt(W.long.length - n + 1) : 0;
-  const idx = topic.ordered ? Array.from({ length: n }, (_, i) => start + i) : shuffle([0, 1, 2, 3, 4]).slice(0, n).sort();
+  const n = fixed ? fixed.idx.length : type === "line" ? Math.min(4 + randInt(3), W.long.length) : kind === "median" ? pick([3, 5]) : two ? 3 + randInt(2) : 3 + randInt(level === 1 ? 2 : 3);
+  const idx = fx("idx", () => { const start = randInt(W.long.length - n + 1); return topic.ordered ? Array.from({ length: n }, (_, i) => start + i) : shuffle([0, 1, 2, 3, 4]).slice(0, n).sort(); });
   const cats = idx.map(i => W.long[i]), short = idx.map(i => (W.short || W.long)[i]);
   const emoji = topic.set === "Pet" ? idx.map(i => PET_EMOJI[i]) : idx.map(() => topic.emoji);
   // The pictogram key: one picture stands for 1, 2 or 5 (always 5 for minutes).
-  const per = type === "pict" ? (topic.id === "Play" ? 5 : pick([1, 2, 5])) : 1;
+  const per = fx("per", () => type === "pict" ? (topic.id === "Play" ? 5 : pick([1, 2, 5])) : 1);
   const step = topic.id === "Play" ? 5 : per, hi = type === "pict" ? 8 * per : level === 1 || two ? (topic.id === "Play" ? 40 : 9) : (topic.id === "Play" ? 60 : 20);
-  const vals = values(n, step, hi, step, kind === "mean" || kind === "meanOf" || kind === "cmpMean");
-  const vals2 = two ? values(n, step, hi, step, kind === "meanOf" || kind === "cmpMean") : null;
+  const vals = fx("vals", () => values(n, step, hi, step, kind === "mean" || kind === "meanOf" || kind === "cmpMean"));
+  const vals2 = two ? fx("vals2", () => values(n, step, hi, step, kind === "meanOf" || kind === "cmpMean")) : null;
   const list = (v) => cats.map((c, i) => c + " " + num(v[i])).join(", ");
   const dataText = two ? t("gdDataTwo", { title, la: list(vals), lb: list(vals2) })
     : type === "pict" ? t("gdDataKey", { title, k: num(per), list: list(vals) }) : t("gdData", { title, list: list(vals) });
@@ -419,20 +420,20 @@ function makeProblem(level, want) {
   let q, answer, options, why, key = kind;
   const choicesNear = (a, others) => shuffle([a, ...nearby(a, others, step)].map(num));
   if (kind === "read") {
-    const i = randInt(n);
+    const i = fx("i", () => randInt(n));
     q = tidy(t("gdQRead", { u: uq, at: W.at(cats[i]) })); answer = num(vals[i]); options = choicesNear(vals[i], vals); why = t("gdWhyRead", { c: cap(cats[i]), v: num(vals[i]) }); key += i;
   } else if (kind === "most" || kind === "least") {
     const v = kind === "most" ? Math.max(...vals) : Math.min(...vals), i = vals.indexOf(v);
     q = kind === "most" ? W.most : W.least; answer = cap(cats[i]); options = shuffle(cats.map(cap));
     why = t(kind === "most" ? "gdWhyMost" : "gdWhyLeast", { c: cap(cats[i]), v: num(v) });
   } else if (kind === "diff") {
-    let i = randInt(n), j = randInt(n - 1); if (j >= i) j++;
+    let i = fx("i", () => randInt(n)), j = fx("j", () => randInt(n - 1)); if (!fixed && j >= i) j++;
     if (vals[i] < vals[j]) { const s = i; i = j; j = s; }
     const d = vals[i] - vals[j];
     q = t("gdQDiff", { a: W.at(cats[i]), b: W.at(cats[j]) }); answer = num(d); options = choicesNear(d, [vals[i] + vals[j], vals[i], vals[j]]);
     why = num(vals[i]) + " − " + num(vals[j]) + " = " + num(d) + "."; key += i + "-" + j;
   } else if (kind === "change") {
-    let i = randInt(n - 1); for (let k = 0; k < n && vals[i] === vals[i + 1]; k++) i = (i + 1) % (n - 1);
+    let i = fx("i", () => randInt(n - 1)); for (let k = 0; k < n && vals[i] === vals[i + 1]; k++) i = (i + 1) % (n - 1);
     const up = vals[i + 1] > vals[i], d = Math.abs(vals[i + 1] - vals[i]);
     q = t(up ? "gdQUp" : "gdQDown", { a: cats[i], b: cats[i + 1] }); answer = num(d); options = choicesNear(d, [vals[i], vals[i + 1], vals[i] + vals[i + 1]]);
     why = num(Math.max(vals[i], vals[i + 1])) + " − " + num(Math.min(vals[i], vals[i + 1])) + " = " + num(d) + "."; key += i;
@@ -441,7 +442,7 @@ function makeProblem(level, want) {
     q = t("gdQTotal"); answer = num(s); options = choicesNear(s, [s - Math.min(...vals), s + Math.min(...vals), s - Math.max(...vals)]);
     why = vals.map(num).join(" + ") + " = " + num(s) + ".";
   } else if (kind === "mean" || kind === "meanOf") {
-    const x = kind === "meanOf" ? pick(["A", "B"]) : "", v = x === "B" ? vals2 : vals, s = sum(v), m = s / n;
+    const x = kind === "meanOf" ? fx("x", () => pick(["A", "B"])) : "", v = x === "B" ? vals2 : vals, s = sum(v), m = s / n;
     q = kind === "meanOf" ? t("gdQMeanOf", { x }) : t("gdQMean"); answer = num(m);
     options = choicesNear(m, [s, Math.max(...v), Math.min(...v)]);
     why = t("gdWhyMean", { sum: v.map(num).join(" + "), n: num(n), t: num(s), m: num(m) }); key += x;
@@ -454,7 +455,7 @@ function makeProblem(level, want) {
     const sa = sum(vals), sb = sum(vals2), ma = sa / n, mb = sb / n;
     const showSum = (v, s) => v.map(num).join(" + ") + " = " + num(s);
     if (kind === "cmpDiff") {
-      if (sa === sb) return makeProblem(level, want);
+      if (sa === sb) return fixed ? null : makeProblem(level, want);
       const big = sa > sb ? "A" : "B", d = Math.abs(sa - sb);
       q = t("gdQCmpDiff", { x: big, y: big === "A" ? "B" : "A" }); answer = num(d);
       options = choicesNear(d, [sa, sb, Math.abs(vals[0] - vals2[0])]);
@@ -468,7 +469,7 @@ function makeProblem(level, want) {
     }
   }
   key = [level, type, topic.id, vals.join(","), vals2 ? vals2.join(",") : "", key].join(":");
-  return { type, kind: KIND[kind], title, unit, hdr: W.hdr, cats, short, emoji, per, vals, vals2, q, answer, options, why, dataText, key };
+  return { type, kind: KIND[kind], title, unit, hdr: W.hdr, cats, short, emoji, idx, per, vals, vals2, q, answer, options, why, dataText, key };
 }
 // GEN END
 
@@ -576,8 +577,36 @@ function makeProblem(level, want) {
     levelBtns.forEach(b => b.setAttribute("aria-pressed", String(+b.dataset.level === level)));
     Loopy.nextButton(nextBtn, answered);
   }
+  // Try again: a missed question comes back later (Loopy.retry) with the same chart. The note is the level, the chart,
+  // the topic, the things along the bottom, the pictogram key, the values (A/B for two charts) and the question,
+  // like "1 bar Rain 1,2,3 1 8,5,3 diff0-2". makeProblem takes these in place of its random choices.
+  const note = (p) => { const k = p.key.split(":"); return [k[0], k[1], k[2], p.idx.join(","), p.per, k[3] + (k[4] ? "/" + k[4] : ""), k[5]].join(" "); };
+  // The question kinds each level and chart can ask, as makeProblem picks them.
+  const KINDS = { "1bar": "read most least diff", "1pict": "read most least diff", "2table": "total diff read", "2line": "change total read",
+    "3bar": "mean median", "3table": "mean median", "4bars2": "cmpTotal cmpMean cmpDiff meanOf", "4table2": "cmpTotal cmpMean cmpDiff meanOf" };
+  function rebuild(r) {
+    const m = /^([1-4]) ([a-z2]{3,6}) ([A-Z][a-z]+) ([0-5](?:,[0-5]){2,5}) ([125]) (\d{1,2}(?:,\d{1,2}){2,5})(?:\/(\d{1,2}(?:,\d{1,2}){2,5}))? (\S{1,8})$/.exec(r);
+    const q = m && /^(read|change)(\d)$|^(diff)(\d)-(\d)$|^(meanOf)([AB])$|^(most|least|total|mean|median|cmpTotal|cmpMean|cmpDiff)$/.exec(m[8]);
+    if (!q) return null;
+    const lvl = +m[1], type = m[2], topic = TOPICS.find(x => x.id === m[3]), idx = m[4].split(",").map(Number), per = +m[5];
+    const vals = m[6].split(",").map(Number), vals2 = m[7] ? m[7].split(",").map(Number) : null, n = idx.length;
+    const kind = q[1] || q[3] || q[6] || q[8], i = q[2] !== undefined ? +q[2] : q[4] !== undefined ? +q[4] : undefined, j = q[5] !== undefined ? +q[5] : undefined, x = q[7];
+    if (!topic || !(KINDS[lvl + type] || "").split(" ").includes(kind) || (type === "line" && !topic.ordered)) return null;
+    // The things along the bottom: in a row for days and months, any few of the five for pets and names.
+    const two = type === "bars2" || type === "table2", len = words(topic.set).long.length;
+    const nOk = type === "line" ? n >= 4 && n <= 6 : kind === "median" ? n === 3 || n === 5 : two ? n <= 4 : n <= (lvl === 1 ? 4 : 5);
+    if (!nOk || idx.some((v, k) => v >= len || (k && v <= idx[k - 1])) || (topic.ordered && idx[n - 1] !== idx[0] + n - 1)) return null;
+    if (type === "pict" ? (topic.id === "Play" ? per !== 5 : ![1, 2, 5].includes(per)) : per !== 1) return null;
+    // The values: the same range and steps as values() makes, one biggest, one smallest, a mean that is whole.
+    const step = topic.id === "Play" ? 5 : per, hi = type === "pict" ? 8 * per : lvl === 1 || two ? (topic.id === "Play" ? 40 : 9) : (topic.id === "Play" ? 60 : 20);
+    const good = (v, div) => { const s = sorted(v); return v.length === n && v.every(y => y >= step && y <= hi && y % step === 0) && s[0] !== s[1] && s[n - 1] !== s[n - 2] && !(div && sum(v) % n); };
+    if (!good(vals, kind === "mean" || kind === "meanOf" || kind === "cmpMean") || (two ? !vals2 || !good(vals2, kind === "meanOf" || kind === "cmpMean") : vals2)) return null;
+    if (i >= (kind === "change" ? n - 1 : n) || j >= n || (j !== undefined && j === i)) return null;
+    return makeProblem(lvl, "", { type, kind, topic, idx, per, vals, vals2, i, j, x });
+  }
+
   function newRound() {
-    current = Loopy.fresh(recent, () => makeProblem(level, want));
+    current = Loopy.retry.fresh("graphs-data", recent, () => makeProblem(level, want), rebuild);
     answered = false;
     chartEl.textContent = "";
     chartEl.appendChild(draw(current, false));
@@ -612,7 +641,7 @@ function makeProblem(level, want) {
     // The progress page keeps 40 letters of the question.
     const q = current.q.length > 40 ? current.q.slice(0, 39) + "…" : current.q;
     if (ok) Loopy.rewards.correct("graphs-data", streak);
-    else Loopy.rewards.wrong("graphs-data", { q, a: current.answer, y: btn.textContent, k: current.kind });
+    else Loopy.rewards.wrong("graphs-data", { q, a: current.answer, y: btn.textContent, k: current.kind, r: note(current) });
     card.classList.remove("good", "bad");
     card.classList.add(ok ? "good" : "bad");
     feedbackEl.className = "feedback " + (ok ? "good" : "bad");

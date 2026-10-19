@@ -17,7 +17,8 @@ Every session in the loopy repo starts with these. Add one with the add-rule ski
 
 ## Every change
 - Look for speed and size wins (loopy.js size, work on load, what is saved, page size, fonts, sw.js cache, Lighthouse) and say in the PR what was found, or that nothing was. (16 Oct 2026.)
-- Review with the loopy-review skill, run `tools/review.py`, the play test `node tools/e2e/play.mjs` and the accessibility check `node tools/a11y/check.mjs`.
+- Review with the loopy-review skill, run `tools/review.py`, the play test `node tools/e2e/play.mjs`, the Try again test `node tools/e2e/retry.mjs` and the accessibility check `node tools/a11y/check.mjs`.
+- Every game logs a short rebuild note with each wrong answer and asks for its questions through `Loopy.retry.fresh`, so a mistake comes back (Try again). `tools/e2e/retry.mjs` checks it.
 - Docs in plain, short sentences. Each game has its own README. After a major merge add a parent-friendly row at the top of RELEASES.md.
 - Pull requests use `.github/pull_request_template.md`, with before and after screenshots when the screen changes.
 

@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'sha256-gWSmGUbsxiV2ql+E8fYCUdgBpW8ZWOF1qiN+s1TbDFg='; style-src 'self' 'sha256-z2P7kGW5Z05eCTjTZdYpc0vThTlOE9vmt97pVSvi2I4=' 'sha256-oLQF3jnCxf/mhP8dw8TD8Q631n/SdgEZHa5Z9K9C5do=' 'sha256-RT1053JU5UiKvjrCUFx1rlhdFLMmgtuFJ9T8jnMeawQ=' 'sha256-85jc8QafFRQ/AgP2TO/VDSGWQrc0SF2GVDkf3taMmK0='; img-src 'self' data:; font-src 'self'; connect-src 'self'; worker-src 'self'; object-src 'none'; base-uri 'none'; form-action 'none'; manifest-src 'self'; upgrade-insecure-requests">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'sha256-6XM2g3P4RQ2myP/+iX+agRIOVoPS6ptlvpu2JxrqyG4='; style-src 'self' 'sha256-z2P7kGW5Z05eCTjTZdYpc0vThTlOE9vmt97pVSvi2I4=' 'sha256-oLQF3jnCxf/mhP8dw8TD8Q631n/SdgEZHa5Z9K9C5do=' 'sha256-RT1053JU5UiKvjrCUFx1rlhdFLMmgtuFJ9T8jnMeawQ=' 'sha256-85jc8QafFRQ/AgP2TO/VDSGWQrc0SF2GVDkf3taMmK0='; img-src 'self' data:; font-src 'self'; connect-src 'self'; worker-src 'self'; object-src 'none'; base-uri 'none'; form-action 'none'; manifest-src 'self'; upgrade-insecure-requests">
 <meta name="referrer" content="strict-origin-when-cross-origin">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <style>:root{color-scheme:light;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}body{margin:0}[hidden]{display:none!important}</style>
@@ -615,8 +615,22 @@ function makeProblem(lang, topic, level, nChoices, only, avoid) {
     levelBtns.forEach(b => b.setAttribute("aria-pressed", String(+b.dataset.level === level)));
     Loopy.nextButton(nextBtn, answered);
   }
+  // Try again: a missed thing comes back later (Loopy.retry). The note is "animal3" (the thing's key); a thing
+  // the topic and level set now would not ask waits. The groups are mixed the way makeProblem does it.
+  const note = (p) => p.key;
+  function rebuild(r) {
+    if (!/^[a-z]{4,8}\d{1,3}$/.test(r)) return null;
+    const sets = only ? [only] : TOPICS[topic] || TOPICS.all;
+    let list = ALL.filter(x => sets.includes(x.set) && x.level <= level);
+    if (!list.length) list = ALL.filter(x => sets.includes(x.set) && x.level <= 3);
+    const thing = list.find(x => x.key === r);
+    if (!thing) return null;
+    const others = shuffle(GROUPS[thing.set].filter(g => g !== thing.group)).slice(0, choicesForAge(age) - 1);
+    return { thing, text: thing[lang], options: shuffle([thing.group, ...others]), key: thing.key, answer: thing.group };
+  }
+
   function newRound() {
-    current = Loopy.fresh(recent, () => makeProblem(lang, topic, level, choicesForAge(age), only), 20);
+    current = Loopy.retry.fresh("sort-it", recent, () => makeProblem(lang, topic, level, choicesForAge(age), only), rebuild, 20);
     answered = false;
     picEl.textContent = current.thing.pic;
     nameEl.textContent = current.text.name;
@@ -650,7 +664,7 @@ function makeProblem(lang, topic, level, nChoices, only, avoid) {
     // The progress page keeps 40 letters of the question.
     const q = (current.thing.pic + " " + current.text.name).slice(0, 40);
     if (ok) Loopy.rewards.correct("sort-it", streak);
-    else Loopy.rewards.wrong("sort-it", { q, a: groupName(current.answer), y: btn.textContent, k: "so-" + current.thing.set });
+    else Loopy.rewards.wrong("sort-it", { q, a: groupName(current.answer), y: btn.textContent, k: "so-" + current.thing.set, r: note(current) });
     card.classList.remove("good", "bad");
     card.classList.add(ok ? "good" : "bad");
     feedbackEl.className = "feedback " + (ok ? "good" : "bad");

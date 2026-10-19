@@ -20,6 +20,7 @@ description: Finish a loopy change and open its pull request with every check, s
    python3 plugins/test_hooks.py              # only when plugins/ changed
    node tools/a11y/check.mjs
    node tools/e2e/play.mjs        # GAME=<id> for one game while you work; the full run before the PR
+   node tools/e2e/retry.mjs       # Try again in every game (GAME=<id> for one): a mistake comes back until it is fixed
    ```
 4. **Review** with the loopy-review skill (or the `reviewer` agent). Fix every "must". Note speed and size findings for the PR.
 5. **Screenshots** when anything on screen changed: `node plugins/loopy/scripts/screens.mjs --out <scratch>/after` on the branch, and with `--root <worktree of origin/main> --out <scratch>/before` for main. It fails if a page scrolls; fix that first. Copy the phone-size pair you show into `docs/screenshots/`, commit, and link them by raw.githubusercontent.com URL pinned to the commit.

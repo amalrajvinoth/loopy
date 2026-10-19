@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'sha256-ajK3cd0x2G0r7v5MF/NFI/3ZjonT3oKXcMPSHc9uRIo='; style-src 'self' 'sha256-z2P7kGW5Z05eCTjTZdYpc0vThTlOE9vmt97pVSvi2I4=' 'sha256-ibtFOuTMIdUHzBb1O1DUg3O6mNXIeZNbOW0riCE9CtE='; img-src 'self' data:; font-src 'self'; connect-src 'self'; worker-src 'self'; object-src 'none'; base-uri 'none'; form-action 'none'; manifest-src 'self'; upgrade-insecure-requests">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'sha256-Bnxm281yzr/fdr9bX6jAMkGMIY2wkVdoLBzHJtJqbhA='; style-src 'self' 'sha256-z2P7kGW5Z05eCTjTZdYpc0vThTlOE9vmt97pVSvi2I4=' 'sha256-ibtFOuTMIdUHzBb1O1DUg3O6mNXIeZNbOW0riCE9CtE='; img-src 'self' data:; font-src 'self'; connect-src 'self'; worker-src 'self'; object-src 'none'; base-uri 'none'; form-action 'none'; manifest-src 'self'; upgrade-insecure-requests">
 <meta name="referrer" content="strict-origin-when-cross-origin">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <style>:root{color-scheme:light;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}body{margin:0}[hidden]{display:none!important}</style>
@@ -543,11 +543,12 @@ const keyOf = (p) => p.kind + (p.kind === "ss" ? p.word[1] + p.mode : p.kind ===
   }
 
   // A wrong answer for the grown-ups' progress page: the problem, the right answer and the one picked.
+  // r is the note Try again (Loopy.retry) replays it from, in the format of the game that owns the problem, with that game in front.
   function missed(p, given) {
-    if (p.kind === "pm" || p.kind === "ts") return { q: num(p.a) + sign[p.op] + num(p.b), a: num(p.answer), y: given, k: Loopy.log.kind(p.op, p.a, p.b) };
-    if (p.kind === "cl") return { q: "🕒", a: p.answer, y: given, k: Loopy.log.timeKind(p.m) };
+    if (p.kind === "pm" || p.kind === "ts") return { q: num(p.a) + sign[p.op] + num(p.b), a: num(p.answer), y: given, k: Loopy.log.kind(p.op, p.a, p.b), r: (p.kind === "pm" ? "plus-minus:" : "times-share:") + p.op + " " + p.a + " " + p.b };
+    if (p.kind === "cl") return { q: "🕒", a: p.answer, y: given, k: Loopy.log.timeKind(p.m), r: "clock:" + p.answer };
     return { q: p.word[0] + " " + (p.mode === "start" ? "_" + p.rest : p.rest + "_"), a: p.word[1],
-      y: p.mode === "start" ? given + p.rest : p.rest + given, k: "ss-" + p.mode };
+      y: p.mode === "start" ? given + p.rest : p.rest + given, k: "ss-" + p.mode, r: "sound-spell:" + p.lang + ":" + p.mode + ":" + p.word[1] };
   }
 
   function choose(btn) {

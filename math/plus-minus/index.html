@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'sha256-TatwW7P3v8VtaNnMvsQVIcZaLAA1LQM1fCTLwoneWWg='; style-src 'self' 'sha256-z2P7kGW5Z05eCTjTZdYpc0vThTlOE9vmt97pVSvi2I4=' 'sha256-ER4UVxOAHVG2PpFuwsi/fNYnlP9iTYLytTr9Qx7YKqY=' 'sha256-RT1053JU5UiKvjrCUFx1rlhdFLMmgtuFJ9T8jnMeawQ=' 'sha256-mwWMixE1/vkBEnQwvOKdRVExrt+0Q+hPdWkRqhv1eIA='; img-src 'self' data:; font-src 'self'; connect-src 'self'; worker-src 'self'; object-src 'none'; base-uri 'none'; form-action 'none'; manifest-src 'self'; upgrade-insecure-requests">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'sha256-koZe2O1oeBbCHtLYpiUQP37rATbkcj5pGCXz11jhMcA='; style-src 'self' 'sha256-z2P7kGW5Z05eCTjTZdYpc0vThTlOE9vmt97pVSvi2I4=' 'sha256-ER4UVxOAHVG2PpFuwsi/fNYnlP9iTYLytTr9Qx7YKqY=' 'sha256-RT1053JU5UiKvjrCUFx1rlhdFLMmgtuFJ9T8jnMeawQ=' 'sha256-mwWMixE1/vkBEnQwvOKdRVExrt+0Q+hPdWkRqhv1eIA='; img-src 'self' data:; font-src 'self'; connect-src 'self'; worker-src 'self'; object-src 'none'; base-uri 'none'; form-action 'none'; manifest-src 'self'; upgrade-insecure-requests">
 <meta name="referrer" content="strict-origin-when-cross-origin">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <style>:root{color-scheme:light;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}body{margin:0}[hidden]{display:none!important}</style>
@@ -446,8 +446,18 @@ function explain(p) {
     $("k-erase").disabled = answered || typed === "";
   }
 
+  // Try again: a missed sum comes back later (Loopy.retry). The note is "add 52 17"; one above the top number waits.
+  const note = (p) => p.op + " " + p.a + " " + p.b;
+  function rebuild(r) {
+    const m = /^(add|sub) (\d{1,6}) (\d{1,6})$/.exec(r);
+    if (!m) return null;
+    const op = m[1], a = +m[2], b = +m[3], answer = op === "add" ? a + b : a - b;
+    if (answer < 0 || Math.max(a, b, answer) > max) return null;
+    return { op, a, b, key: op + a + "," + b, answer };
+  }
+
   function newRound() {
-    current = Loopy.fresh(recent, () => makeProblem(opMode, rgMode, null, max), 15);
+    current = Loopy.retry.fresh("plus-minus", recent, () => makeProblem(opMode, rgMode, null, max), rebuild, 15);
     typed = ""; answered = false;
     $("top-num").textContent = Loopy.num(current.a);
     $("bot-num").textContent = Loopy.num(current.b);
@@ -477,7 +487,7 @@ function explain(p) {
     answered = true; tried++;
     const ok = parseInt(typed, 10) === current.answer;
     if (ok) { right++; streak++; } else { streak = 0; }
-    if (window.Loopy && Loopy.rewards) ok ? Loopy.rewards.correct("plus-minus", streak) : Loopy.rewards.wrong("plus-minus", { q: Loopy.num(current.a) + (current.op === "add" ? " + " : " − ") + Loopy.num(current.b), a: Loopy.num(current.answer), y: Loopy.num(parseInt(typed, 10)), k: Loopy.log.kind(current.op, current.a, current.b) });
+    if (window.Loopy && Loopy.rewards) ok ? Loopy.rewards.correct("plus-minus", streak) : Loopy.rewards.wrong("plus-minus", { q: Loopy.num(current.a) + (current.op === "add" ? " + " : " − ") + Loopy.num(current.b), a: Loopy.num(current.answer), y: Loopy.num(parseInt(typed, 10)), k: Loopy.log.kind(current.op, current.a, current.b), r: note(current) });
     card.className = "problem-card " + (ok ? "good" : "bad");
     feedbackEl.className = "feedback " + (ok ? "good" : "bad");
     const sign = current.op === "add" ? " + " : " − ";
