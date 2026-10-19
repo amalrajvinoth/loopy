@@ -8,7 +8,8 @@
     "checks.yml: The Claude Code plugins match the repo",
     "checks.yml: Install the checker (exact versions from the lock file, no browser download)",
     "checks.yml: Every page works with a keyboard and a screen reader",
-    "checks.yml: Every game plays, and no question comes back too soon"
+    "checks.yml: Every game plays, and no question comes back too soon",
+    "checks.yml: A mistake comes back in every game until it is fixed"
   ],
   "tools": [
     "tools/a11y/check.mjs",
@@ -16,6 +17,7 @@
     "tools/check_external.py",
     "tools/csp.py",
     "tools/e2e/play.mjs",
+    "tools/e2e/retry.mjs",
     "tools/review.py"
   ],
   "repo_skills": [
@@ -45,5 +47,5 @@
     "844 × 390"
   ],
   "games_lists": 3,
-  "learned_at": "1482902"
+  "learned_at": "92e7407"
 }
