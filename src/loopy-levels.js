@@ -86,6 +86,11 @@
       at: function (v, a) { return index(val(v, "gd.level.a{age}", a), [1, 2, 3, 4], this.base(a)); },
       names: { en: ["Bar charts and pictograms", "Tables and line charts", "Mean and median", "Two charts compared"],
         de: ["Balkendiagramme und Piktogramme", "Tabellen und Liniendiagramme", "Mittelwert und Median", "Zwei Diagramme vergleichen"] } },
+    "step-by-step": { keys: ["st.lv.a{age}"], of: 6,
+      base: function (a) { return a <= 6 ? 0 : a <= 10 ? a - 6 : 5; },
+      at: function (v, a) { return index(val(v, "st.lv.a{age}", a), [0, 1, 2, 3, 4, 5], this.base(a)); },
+      names: { en: ["Over the ten, to 20", "Up to " + num(100), "Up to " + num(100) + " with carrying", "Up to " + num(1000), "Up to " + num(1000) + " with carrying", "Up to " + num(10000)],
+        de: ["Über den Zehner, bis 20", "Bis " + num(100), "Bis " + num(100) + " mit Übertrag", "Bis " + num(1000), "Bis " + num(1000) + " mit Übertrag", "Bis " + num(10000)] } },
     "sound-spell": { keys: ["ss.mode.a{age}", "ss.choices.a{age}"], of: 3,
       base: function (a) { return a <= 6 ? 0 : 2; },
       at: function (v, a) {

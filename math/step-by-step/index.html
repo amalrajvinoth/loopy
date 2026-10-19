@@ -1,0 +1,796 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'sha256-kMiniGVxlxwb1zBJPmnSj06KX14Z2oyVVBQkYVwn2ro='; style-src 'self' 'sha256-z2P7kGW5Z05eCTjTZdYpc0vThTlOE9vmt97pVSvi2I4=' 'sha256-szyiiYBKHrhKNCfFtGjz4zCGjbtUD63U2D+oZo26JY0=' 'sha256-RT1053JU5UiKvjrCUFx1rlhdFLMmgtuFJ9T8jnMeawQ=' 'sha256-b5GpSAYzPo0TvtyRiu0B+YF9vZJz6rcal1rjiDmWQYs='; img-src 'self' data:; font-src 'self'; connect-src 'self'; worker-src 'self'; object-src 'none'; base-uri 'none'; form-action 'none'; manifest-src 'self'; upgrade-insecure-requests">
+<meta name="referrer" content="strict-origin-when-cross-origin">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<style>:root{color-scheme:light;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}body{margin:0}[hidden]{display:none!important}</style>
+<link rel="icon" href="../../icon.svg" type="image/svg+xml">
+<link rel="manifest" href="../../manifest.webmanifest">
+<link rel="apple-touch-icon" href="../../apple-touch-icon.png">
+<meta name="theme-color" content="#0a0a0c">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="loopy">
+<title data-t="stName">Step by Step</title>
+<meta name="description" content="Step by Step on loopy: free practice for kids in adding and taking away in steps, the way it is taught in school. Split 25 into 20 and 5, write 47 + 20 = 67, then 67 + 5 = 72, with a number line on the easy levels. English and German, no ads.">
+<link rel="preload" href="../../fonts/lexend-latin.woff2" as="font" type="font/woff2" crossorigin>
+<style>
+/* Layout: the sum on top of a card, one line per step under it, a number line on the easy levels, the number pad below. */
+:root {
+  --bg: #f3f6fb;
+  --card: #ffffff;
+  --ink: #1d2a3f;
+  --muted: #5d6b82;
+  --line: #d5dde9;
+  --accent: #2457c5;
+  --accent-ink: #ffffff;
+  --mark: #e2622b;
+  --good: #1f8a4c;
+  --good-bg: #e3f5ea;
+  --bad: #c23a3a;
+  --bad-bg: #fbe6e6;
+  --chip: #e6ecf6;
+  --key: #ffffff;
+  --font: "Lexend", "Segoe UI", "Helvetica Neue", Arial, sans-serif;
+}
+
+* { box-sizing: border-box; }
+body {
+  background: var(--bg); color: var(--ink); font-family: var(--font); font-size: 16px;
+  padding-left: max(16px, env(safe-area-inset-left, 0px));
+  padding-right: max(16px, env(safe-area-inset-right, 0px));
+  padding-block: 20px 32px;
+}
+.wrap { max-width: 520px; margin: 0 auto; display: flex; flex-direction: column; gap: 16px; }
+
+.top { display: flex; flex-wrap: wrap; gap: 12px; align-items: center; justify-content: space-between; }
+h1 { margin: 0; font-size: 1.6rem; font-weight: 700; text-wrap: balance; }
+.score { display: flex; flex-wrap: wrap; gap: 8px; font-variant-numeric: tabular-nums; }
+.pill { background: var(--card); border: 1px solid var(--line); border-radius: 999px; padding: 6px 14px; font-weight: 600; font-size: 1rem; white-space: nowrap; }
+.pill span { color: var(--muted); font-weight: 400; margin-right: 4px; }
+
+.seg-label { font-size: 0.8rem; font-weight: 600; letter-spacing: 0.06em; text-transform: uppercase; color: var(--muted); margin: 0 0 4px 4px; }
+.seg { display: grid; grid-template-columns: repeat(3, 1fr); gap: 6px; background: var(--chip); padding: 5px; border-radius: 14px; }
+.seg.two { grid-template-columns: repeat(2, 1fr); }
+.seg button {
+  font: inherit; font-size: 0.95rem; font-weight: 600; color: var(--muted);
+  background: transparent; border: 0; border-radius: 10px; padding: 8px 6px; min-height: 44px; cursor: pointer;
+}
+.seg button[aria-pressed="true"] { background: var(--card); color: var(--ink); box-shadow: 0 1px 3px rgb(0 0 0 / 0.12); }
+.seg button:disabled { opacity: 0.4; cursor: default; }
+.seg-note { margin: 4px 0 0 4px; font-size: 0.85rem; color: var(--muted); }
+
+.problem-card {
+  background: var(--card); border: 1px solid var(--line); border-radius: 24px;
+  padding: 20px 18px 18px; display: flex; flex-direction: column; align-items: center; gap: 14px;
+}
+.problem-card.good { border-color: var(--good); box-shadow: 0 0 0 2px var(--good) inset; }
+.problem-card.bad { border-color: var(--bad); box-shadow: 0 0 0 2px var(--bad) inset; }
+
+/* The three stages when "Split first" is on. */
+.stage { display: flex; gap: 6px; font-size: 0.85rem; font-weight: 600; color: var(--muted); }
+.stage span { border: 1px solid var(--line); border-radius: 999px; padding: 2px 10px; }
+.stage span.on { color: var(--accent-ink); background: var(--accent); border-color: var(--accent); }
+
+/* The sum, and under it one line per step: "47 + 20 =" and a box for the number. */
+.sum { font-size: clamp(1.8rem, 4.5dvh, 2.6rem); font-weight: 700; font-variant-numeric: tabular-nums; letter-spacing: 0.03em; line-height: 1.1; }
+.steps { display: flex; flex-direction: column; gap: clamp(6px, 1.2dvh, 10px); width: 100%; max-width: 320px; }
+.step { display: grid; grid-template-columns: 1fr auto; align-items: center; gap: 10px; font-size: clamp(1.1rem, 2.8dvh, 1.45rem); font-weight: 600; font-variant-numeric: tabular-nums; }
+.step span { text-align: right; color: var(--muted); }
+.step.now span { color: var(--ink); }
+.box {
+  display: inline-flex; align-items: center; justify-content: center; min-width: 3.2ch; height: clamp(40px, 6.2dvh, 54px); padding: 0 10px;
+  border: 2px solid var(--line); border-radius: 14px; background: var(--chip); font-size: clamp(1.2rem, 3dvh, 1.6rem); position: relative; color: var(--ink);
+}
+.box.todo { border-style: dashed; color: var(--muted); }
+.box.ok { border-color: var(--good); color: var(--good); background: var(--good-bg); }
+.box.cur { border-color: var(--accent); color: var(--accent); background: var(--card); }
+.box.cur.empty::after {
+  content: ""; width: 0.5em; height: 3px; background: var(--mark); border-radius: 2px; animation: blink 1s steps(2, start) infinite;
+}
+.box.no { border-color: var(--bad); color: var(--bad); background: var(--bad-bg); }
+.box.no s { text-decoration-thickness: 2px; }
+.box.no b { margin-left: 8px; color: var(--good); font-weight: 700; }
+@keyframes blink { to { visibility: hidden; } }
+
+/* The split chips: which two numbers make 25? */
+.split { display: flex; gap: 8px; flex-wrap: wrap; justify-content: center; }
+.split button {
+  font: inherit; font-size: clamp(1rem, 2.6dvh, 1.25rem); font-weight: 700; font-variant-numeric: tabular-nums; color: var(--ink);
+  background: var(--key); border: 2px solid var(--line); border-radius: 16px; min-height: clamp(44px, 7dvh, 56px); padding: 0 16px; cursor: pointer;
+  touch-action: manipulation; -webkit-tap-highlight-color: transparent;
+}
+.split button.ok { border-color: var(--good); color: var(--good); background: var(--good-bg); }
+.split button.no { border-color: var(--bad); color: var(--bad); background: var(--bad-bg); }
+.split button:disabled { cursor: default; }
+
+/* The number line: a jump for each step. */
+.nl { display: block; width: 100%; max-width: 320px; height: clamp(56px, 11dvh, 96px); overflow: visible; }
+.nl text { font-family: var(--font); font-weight: 700; font-size: 15px; fill: var(--ink); }
+.nl .rail { stroke: var(--line); stroke-width: 3; stroke-linecap: round; }
+.nl .done { stroke: var(--good); fill: none; stroke-width: 3; }
+.nl .done-t { fill: var(--good); }
+.nl .now { stroke: var(--accent); fill: none; stroke-width: 3; stroke-dasharray: 6 5; }
+.nl .now-t { fill: var(--accent); }
+.nl .todo { stroke: var(--muted); fill: none; stroke-width: 2; stroke-dasharray: 3 5; opacity: 0.7; }
+.nl .todo-t { fill: var(--muted); }
+.nl .dot { fill: var(--ink); } .nl .dot.done { fill: var(--good); stroke: none; } .nl .dot.now { fill: var(--accent); stroke: none; } .nl .dot.todo { fill: var(--muted); stroke: none; opacity: 0.7; }
+
+.feedback { min-height: 2.6em; text-align: center; font-size: 1.1rem; line-height: 1.45; margin: 0; max-width: 34ch; }
+.feedback strong { display: block; font-size: 1.3rem; }
+.feedback.good strong { color: var(--good); }
+.feedback.bad strong { color: var(--bad); }
+.feedback .hint { color: var(--muted); }
+
+.pad { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; }
+.pad button {
+  font: inherit; font-size: 2rem; font-weight: 700; font-variant-numeric: tabular-nums; color: var(--ink);
+  background: var(--key); border: 2px solid var(--line); border-radius: 18px; min-height: 72px; cursor: pointer;
+  transition: transform .08s ease, border-color .15s ease;
+  touch-action: manipulation; -webkit-tap-highlight-color: transparent;
+}
+.pad button:hover:not(:disabled) { border-color: var(--accent); }
+.pad button:active:not(:disabled) { transform: scale(0.96); }
+.pad button:disabled { opacity: 0.4; cursor: default; }
+.pad .erase { font-size: 1.15rem; color: var(--muted); }
+.pad .go { background: var(--accent); border-color: var(--accent); color: var(--accent-ink); font-size: 1.35rem; }
+.pad .go:hover:not(:disabled) { border-color: var(--accent); filter: brightness(1.08); }
+
+.reset { font: inherit; font-size: 0.95rem; color: var(--muted); background: transparent; border: 2px solid var(--line); border-radius: 14px; padding: 0 16px; min-height: 44px; cursor: pointer; }
+button:focus-visible { outline: 3px solid var(--mark); outline-offset: 3px; }
+
+@media (max-width: 420px) {
+  h1 { font-size: 1.35rem; }
+  .pad button { min-height: 64px; font-size: 1.8rem; }
+  .seg button { font-size: 0.85rem; }
+}
+@media (prefers-reduced-motion: reduce) {
+  * { transition: none !important; }
+  .box.cur.empty::after { animation: none; }
+}
+</style>
+<style>.home-link{display:inline-flex;align-items:center;min-height:40px;color:var(--muted);font-weight:600;text-decoration:none;font-size:0.95rem}.home-link:hover{color:var(--ink)}</style>
+<style>
+/* Phones and tablets: the game fills one screen; settings sit behind a button. */
+body { min-height: 100vh; min-height: 100dvh; padding-block: 12px 16px; }
+.wrap { gap: 12px; }
+.game-bar { display: flex; align-items: center; justify-content: space-between; gap: 8px; }
+.bar-right { display: flex; align-items: center; gap: 8px; }
+.top { gap: 8px 12px; }
+.play { display: flex; flex-direction: column; gap: 12px; -webkit-user-select: none; user-select: none; }
+@media (min-width: 600px) and (orientation: portrait) { .wrap { max-width: 640px; } }
+@media (orientation: landscape) and (min-width: 640px) {
+  .wrap { max-width: 1100px; }
+  .play { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; align-items: center; }
+}
+
+.problem-card { padding: 12px 14px 10px; gap: clamp(6px, 1.4dvh, 12px); }
+.feedback { min-height: 2.4em; font-size: 1.02rem; }
+.feedback strong { font-size: 1.2rem; }
+.pad { gap: 8px; }
+.pad button { min-height: clamp(50px, 8vh, 92px); min-height: clamp(50px, 8dvh, 92px); }
+@media (min-width: 600px) and (orientation: portrait) {
+  .sum { font-size: clamp(2.4rem, 5dvh, 3.4rem); }
+  .steps { max-width: 440px; }
+  .step { font-size: clamp(1.3rem, 3dvh, 2rem); }
+  .box { height: clamp(48px, 6dvh, 72px); font-size: clamp(1.4rem, 3.2dvh, 2.1rem); }
+  .nl { max-width: 420px; }
+  .pad button { min-height: clamp(60px, 10dvh, 120px); font-size: 2.4rem; }
+}
+@media (orientation: landscape) and (min-width: 640px) {
+  .problem-card { height: 100%; justify-content: center; }
+  .pad button { min-height: clamp(44px, calc((100dvh - 150px) / 4.4), 130px); }
+  .nl { height: clamp(44px, 14dvh, 96px); }
+  .feedback { min-height: 1.5em; }
+}
+/* Short screens: the number line goes, so the steps and the pad keep their size. */
+@media (max-height: 700px) and (orientation: portrait), (max-height: 420px) and (orientation: landscape) {
+  .nl { display: none; }
+  .feedback { font-size: 0.95rem; line-height: 1.35; min-height: 1.4em; }
+  .feedback strong { font-size: 1.1rem; display: inline; margin-right: 0.3em; }
+  .steps { gap: 4px; }
+  .step { font-size: 1.05rem; }
+  .box { height: 36px; font-size: 1.15rem; border-radius: 12px; }
+  .split button { min-height: 40px; font-size: 1rem; }
+  .stage { font-size: 0.75rem; }
+  .problem-card.good .sum, .problem-card.bad .sum { font-size: 1.4rem; }
+  /* While picking the split, the empty step lines wait, so the question fits. */
+  .problem-card.splitting .steps { display: none; }
+}
+
+/* Portrait: the page is exactly one screen tall; the pad stays at the bottom and the card shrinks to fit. */
+@media (orientation: portrait) {
+  body { height: calc(100dvh - env(safe-area-inset-top, 0px) - env(safe-area-inset-bottom, 0px)); min-height: 0; display: flex; flex-direction: column; overflow: hidden; }
+  body:has(#settings-panel:not([hidden])) { height: auto; overflow: visible; }
+  .wrap { flex: 1 1 auto; min-height: 0; width: 100%; }
+  .play { flex: 1 1 auto; min-height: 0; }
+  .problem-card { flex: 1 1 auto; min-height: 0; justify-content: center; overflow: hidden; }
+  .feedback { flex: 0 1 auto; min-height: 0; overflow-y: auto; }
+}
+@media (orientation: landscape) and (min-width: 640px) {
+  body { height: calc(100dvh - env(safe-area-inset-top, 0px) - env(safe-area-inset-bottom, 0px)); min-height: 0; display: flex; flex-direction: column; overflow: hidden; }
+  body:has(#settings-panel:not([hidden])) { height: auto; overflow: visible; }
+  .wrap { flex: 1 1 auto; min-height: 0; width: 100%; }
+  .play { flex: 1 1 auto; min-height: 0; grid-template-rows: minmax(0, 1fr); }
+  .problem-card { min-height: 0; overflow: hidden; }
+  .feedback { flex: 0 1 auto; min-height: 0; overflow-y: auto; }
+}
+@media (max-height: 500px) {
+  .feedback { font-size: 0.9rem; line-height: 1.3; }
+  .feedback strong { font-size: 1.05rem; }
+}
+</style>
+<link rel="stylesheet" href="../../loopy.css">
+<script src="../../loopy.js"></script>
+</head>
+<body>
+
+<div class="wrap">
+  <header class="game-bar">
+    <a class="home-link" href="../../">&larr; loopy</a>
+    <div class="bar-right">
+      <span id="star-chip"></span>
+      <button type="button" id="settings-toggle" aria-controls="settings-panel"></button>
+    </div>
+  </header>
+  <section class="top" aria-labelledby="title">
+    <h1 id="title" data-t="stName">Step by Step</h1>
+    <div class="score" aria-live="polite">
+      <div class="pill pill-score"><span data-t="score">Score</span><b id="score">0 / 0</b></div>
+      <div id="level"></div>
+      <div class="pill pill-streak"><span data-t="streak">Streak</span><b id="streak">0</b></div>
+      <div id="last5" data-game="step-by-step"></div>
+    </div>
+  </section>
+  <div class="settings-panel" id="settings-panel" hidden>
+    <div class="controls"><div id="age-picker"></div><div id="theme-picker"></div><button id="sound-toggle"></button><div id="lang-picker"></div></div>
+    <div>
+      <p class="seg-label" id="lv-label" data-t="stLevel">Level</p>
+      <div class="seg two" role="group" aria-labelledby="lv-label" id="lv-seg">
+        <button type="button" id="lv-0" data-lv="0">Over the ten, to 20</button>
+        <button type="button" id="lv-1" data-lv="1">Up to 100</button>
+        <button type="button" id="lv-2" data-lv="2">Up to 100 with carrying</button>
+        <button type="button" id="lv-3" data-lv="3">Up to 1,000</button>
+        <button type="button" id="lv-4" data-lv="4">Up to 1,000 with carrying</button>
+        <button type="button" id="lv-5" data-lv="5">Up to 10,000</button>
+      </div>
+    </div>
+    <div>
+      <p class="seg-label" id="op-label" data-t="problems">Problems</p>
+      <div class="seg" role="group" aria-labelledby="op-label" id="op-seg">
+        <button type="button" id="op-add" data-op="add" data-t="adding">Adding</button>
+        <button type="button" id="op-sub" data-op="sub" data-t="takingAway">Taking away</button>
+        <button type="button" id="op-mix" data-op="mix" data-t="both">Both</button>
+      </div>
+    </div>
+    <div>
+      <p class="seg-label" id="mode-label" data-t="stMode">Mode</p>
+      <div class="seg two" role="group" aria-labelledby="mode-label" id="mode-seg">
+        <button type="button" id="mode-steps" data-mode="steps" data-t="stModeSteps">Steps: fill every box</button>
+        <button type="button" id="mode-quick" data-mode="quick" data-t="stModeQuick">Quick: one box is missing</button>
+      </div>
+    </div>
+    <div>
+      <p class="seg-label" id="way-label" data-t="stWay">Way</p>
+      <div class="seg" role="group" aria-labelledby="way-label" id="way-seg">
+        <button type="button" id="way-tens" data-way="tens" data-t="stWayTens">Tens first</button>
+        <button type="button" id="way-place" data-way="place" data-t="stWayPlace">Place by place</button>
+        <button type="button" id="way-round" data-way="round" data-t="stWayRound">Nearly round</button>
+      </div>
+      <p class="seg-note" id="way-note" data-t="stWayNote">Over the ten has its own way. Place by place is for sums up to 100. Split first works with Tens first.</p>
+    </div>
+    <div>
+      <p class="seg-label" id="split-label" data-t="stSplit">Split first</p>
+      <div class="seg two" role="group" aria-labelledby="split-label" id="split-seg">
+        <button type="button" id="split-off" data-split="off" data-t="stSplitOff">Off: the split is shown</button>
+        <button type="button" id="split-on" data-split="on" data-t="stSplitOn">On: pick the split yourself</button>
+      </div>
+    </div>
+    <div class="panel-foot">
+      <p data-t="kbdHint">Keyboard works too: numbers, Backspace, Enter.</p>
+      <button type="button" class="reset" id="reset" data-t="resetScore">Reset score</button>
+    </div>
+  </div>
+
+  <main class="play">
+    <div class="problem-card" id="card">
+      <div class="stage" id="stage" hidden><span id="stage-split" data-t="stStageSplit">Split</span><span id="stage-steps" data-t="stStageSteps">Steps</span><span id="stage-answer" data-t="stStageAnswer">Answer</span></div>
+      <div class="sum" id="sum" aria-live="polite">47 + 25</div>
+      <div class="split" id="split" hidden></div>
+      <div class="steps" id="steps" aria-live="polite"></div>
+      <svg class="nl" id="nl" viewBox="0 0 320 96" aria-hidden="true"></svg>
+      <p class="feedback" id="feedback"><span class="hint" data-t="tapHint">Tap the numbers to write your answer.</span></p>
+    </div>
+
+    <div class="pad" id="pad">
+      <button type="button" id="k1" data-d="1">1</button>
+      <button type="button" id="k2" data-d="2">2</button>
+      <button type="button" id="k3" data-d="3">3</button>
+      <button type="button" id="k4" data-d="4">4</button>
+      <button type="button" id="k5" data-d="5">5</button>
+      <button type="button" id="k6" data-d="6">6</button>
+      <button type="button" id="k7" data-d="7">7</button>
+      <button type="button" id="k8" data-d="8">8</button>
+      <button type="button" id="k9" data-d="9">9</button>
+      <button type="button" id="k-erase" class="erase" aria-label="Erase last digit" data-t-aria="eraseAria" data-t="erase">Erase</button>
+      <button type="button" id="k0" data-d="0">0</button>
+      <button type="button" id="k-go" class="go" data-t="check">Check</button>
+    </div>
+  </main>
+</div>
+
+<script>
+Loopy.addStrings({
+  en: {
+    stName: "Step by Step", stLevel: "Level", stLvTen: "Over the ten, to 20", stUpTo: "Up to {n}", stLvCarry: "Up to {n} with carrying",
+    problems: "Problems", adding: "Adding", takingAway: "Taking away",
+    stMode: "Mode", stModeSteps: "Steps: fill every box", stModeQuick: "Quick: one box is missing",
+    stWay: "Way", stWayTens: "Tens first", stWayPlace: "Place by place", stWayRound: "Nearly round",
+    stWayNote: "Over the ten has its own way. Place by place is for sums up to 100. Split first works with Tens first.",
+    stSplit: "Split first", stSplitOff: "Off: the split is shown", stSplitOn: "On: pick the split yourself",
+    stStageSplit: "Split", stStageSteps: "Steps", stStageAnswer: "Answer",
+    stStepOf: "Step {n} of {m}: {q} = ?", stMissing: "Which number is missing? {q} = ?", stPickSplit: "How do you split {n}?",
+    stSplitIs: "{n} is {s}.", stSplitRight: "Yes, {n} is {s}.",
+    stFirstPlace: "First the {place}: {s}.", stNowPlace: "Now the {place}: {s}.", stLast: "Last step: {s}.",
+    stMakeTen: "First make 10: {s}.", stRest: "Then the rest: {s}.", stDownTen: "First go down to 10: {s}.",
+    stPlace: "{place}: {s}.", stTogether: "Put them together: {s}.",
+    stRoundEasy: "{r} is easy: {s}.", stRoundMore: "{r} is {d} more than {b}. Fix it: {s}.", stRoundLess: "{r} is {d} less than {b}. Fix it: {s}.",
+    stDone: "{q} = {a}.",
+    place0: "ones", place1: "tens", place2: "hundreds", place3: "thousands",
+    plus: "plus", minus: "minus",
+    stHow: "Work out each sum in steps: first the tens, then the ones. Write the steps and the answer."
+  },
+  de: {
+    stName: "Schrittweise rechnen", stLevel: "Stufe", stLvTen: "Über den Zehner, bis 20", stUpTo: "Bis {n}", stLvCarry: "Bis {n} mit Übertrag",
+    problems: "Aufgaben", adding: "Plus", takingAway: "Minus",
+    stMode: "Modus", stModeSteps: "Schritte: jedes Feld füllen", stModeQuick: "Schnell: ein Feld fehlt",
+    stWay: "Weg", stWayTens: "Zehner zuerst", stWayPlace: "Stellenweise", stWayRound: "Fast rund",
+    stWayNote: "Über den Zehner hat seinen eigenen Weg. Stellenweise gibt es bis 100. Zuerst zerlegen geht mit Zehner zuerst.",
+    stSplit: "Zuerst zerlegen", stSplitOff: "Aus: die Zerlegung steht da", stSplitOn: "An: selbst zerlegen",
+    stStageSplit: "Zerlegen", stStageSteps: "Schritte", stStageAnswer: "Ergebnis",
+    stStepOf: "Schritt {n} von {m}: {q} = ?", stMissing: "Welche Zahl fehlt? {q} = ?", stPickSplit: "Wie zerlegst du {n}?",
+    stSplitIs: "{n} ist {s}.", stSplitRight: "Ja, {n} ist {s}.",
+    stFirstPlace: "Zuerst die {place}: {s}.", stNowPlace: "Jetzt die {place}: {s}.", stLast: "Letzter Schritt: {s}.",
+    stMakeTen: "Erst bis 10: {s}.", stRest: "Dann der Rest: {s}.", stDownTen: "Erst runter bis 10: {s}.",
+    stPlace: "{place}: {s}.", stTogether: "Zusammen: {s}.",
+    stRoundEasy: "{r} ist leicht: {s}.", stRoundMore: "{r} ist {d} mehr als {b}. Korrigiere: {s}.", stRoundLess: "{r} ist {d} weniger als {b}. Korrigiere: {s}.",
+    stDone: "{q} = {a}.",
+    place0: "Einer", place1: "Zehner", place2: "Hunderter", place3: "Tausender",
+    plus: "plus", minus: "minus",
+    stHow: "Rechne jede Aufgabe in Schritten: erst die Zehner, dann die Einer. Schreibe die Schritte und das Ergebnis."
+  }
+});
+
+// GEN START
+const randInt = (lo, hi) => lo + Math.floor(Math.random() * (hi - lo + 1));
+const pick = (list) => list[Math.floor(Math.random() * list.length)];
+// The ladder: over the ten (to 20), to 100, to 100 with carrying, to 1,000, with carrying, to 10,000.
+const LEVELS = [
+  { max: 20, rg: "ten" }, { max: 100, rg: "no" }, { max: 100, rg: "mix" },
+  { max: 1000, rg: "no" }, { max: 1000, rg: "mix" }, { max: 10000, rg: "mix" }
+];
+const levelForAge = (age) => age <= 6 ? 0 : age <= 10 ? age - 6 : 5;
+const WAYS = ["tens", "place", "round"];
+// Which ways a level allows: over the ten has its own; place by place needs sums up to 100.
+const waysAt = (lv) => lv === 0 ? ["ten"] : lv <= 2 ? WAYS : ["tens", "round"];
+const wayAt = (lv, way) => waysAt(lv).includes(way) ? way : waysAt(lv)[0];
+
+const digitSum = (n) => String(n).split("").reduce((t, d) => t + +d, 0);
+const needsRegroup = (op, a, b) => op === "add" ? digitSum(a) + digitSum(b) !== digitSum(a + b) : digitSum(a - b) + digitSum(b) !== digitSum(a);
+const digit = (n, i) => Math.floor(n / Math.pow(10, i)) % 10;
+// 225 → [200, 20, 5], biggest place first; zeros are left out.
+function parts(n) {
+  const out = [];
+  for (let i = 4; i >= 0; i--) { const d = digit(n, i); if (d) out.push(d * Math.pow(10, i)); }
+  return out;
+}
+const sign = (op) => op === "add" ? " + " : " − ";
+
+// The steps of one sum, for one way. Each step: { from, d (signed), to, kind }. fromStep / dStep: the step
+// whose answer is this step's first number / second number (-1: known from the start).
+function stepsFor(op, a, b, way) {
+  const s = op === "add" ? 1 : -1, total = op === "add" ? a + b : a - b;
+  const chain = (list) => list.map((st, i) => Object.assign(st, { fromStep: i - 1, dStep: -1 }));
+  if (way === "ten") {
+    const c1 = op === "add" ? 10 - a : a - 10;
+    return chain([{ from: a, d: s * c1, to: 10, kind: "ten" }, { from: 10, d: s * (b - c1), to: total, kind: "rest" }]);
+  }
+  if (way === "place") {
+    const ta = 10 * digit(a, 1), tb = 10 * digit(b, 1), oa = digit(a, 0), ob = digit(b, 0);
+    const T = ta + s * tb, O = oa + s * ob;
+    return [{ from: ta, d: s * tb, to: T, kind: "place", place: 1, fromStep: -1, dStep: -1 },
+      { from: oa, d: s * ob, to: O, kind: "place", place: 0, fromStep: -1, dStep: -1 },
+      { from: T, d: O, to: total, kind: "together", fromStep: 0, dStep: 1 }];
+  }
+  if (way === "round") {
+    const unit = b >= 100 ? 100 : 10, r = Math.round(b / unit) * unit, d = b - r;
+    return chain([{ from: a, d: s * r, to: a + s * r, kind: "round", r }, { from: a + s * r, d: s * d, to: total, kind: "fix", r, b, off: Math.abs(d), more: d < 0 }]);
+  }
+  let cur = a;
+  const ps = parts(b);
+  return chain(ps.map((p, i) => { const st = { from: cur, d: s * p, to: cur + s * p, kind: "tens", place: String(p).length - 1, n: i, last: i === ps.length - 1 }; cur = st.to; return st; }));
+}
+
+// One random sum for a level, way and kind of problem. Never negative, never zero.
+function makeSum(lv, way, opMode, avoid) {
+  const L = LEVELS[lv], max = L.max;
+  for (let tries = 0; tries < 5000; tries++) {
+    const op = opMode === "mix" ? (Math.random() < 0.5 ? "add" : "sub") : opMode;
+    let a, b;
+    if (way === "ten") {
+      if (op === "add") { a = randInt(5, 9); b = randInt(11 - a, 9); }
+      else { a = randInt(11, 18); b = randInt(a - 9, 9); }
+    } else if (way === "place") {
+      // Both numbers have tens and ones. Taking away does not trade, so each place works on its own.
+      a = 10 * randInt(1, 8) + randInt(1, 9); b = 10 * randInt(1, 8) + randInt(1, 9);
+      if (op === "add" && a + b > 100) continue;
+      if (op === "sub" && (digit(a, 1) <= digit(b, 1) || digit(a, 0) < digit(b, 0))) continue;
+      if (L.rg === "no" && needsRegroup(op, a, b)) continue;
+    } else if (way === "round") {
+      // b is 1 or 2 away from a round number: 29, 102, 298.
+      const unit = max >= 1000 ? 100 : 10, lo = max >= 1000 ? 100 : 10;
+      b = unit * randInt(2, 8) + pick([-2, -1, 1, 2]);
+      if (op === "add" && max - b < lo + 1) continue;
+      a = op === "add" ? randInt(lo + 1, max - b) : randInt(b + lo, max);
+      if (digit(a, 0) === 0) continue;
+    } else {
+      // Tens first: the number added or taken away has two parts up to 100, three parts above that.
+      b = max === 100 ? 10 * randInt(1, 8) + randInt(1, 9) : 100 * randInt(1, 8) + 10 * randInt(1, 9) + randInt(1, 9);
+      const lo = max === 100 ? 11 : max === 1000 ? 101 : 1001;
+      if (op === "add" && max - b < lo) continue;
+      a = op === "add" ? randInt(lo, max - b) : randInt(b + lo, max);
+      if (digit(a, 0) === 0) continue;
+      const rg = needsRegroup(op, a, b);
+      if (L.rg === "no" && rg) continue;
+      if (L.rg === "mix" && !rg && Math.random() < 0.6) continue;
+    }
+    const key = op + a + "," + b + ":" + way;
+    if (avoid && avoid.some(k => k.startsWith(key + ":"))) continue;
+    return { op, a, b, way, key, answer: op === "add" ? a + b : a - b, steps: stepsFor(op, a, b, way) };
+  }
+  return { op: "add", a: 47, b: 25, way: "tens", key: "add47,25:tens", answer: 72, steps: stepsFor("add", 47, 25, "tens") };
+}
+
+const t = Loopy.t, num = Loopy.num;
+const line = (st) => num(st.from) + (st.d < 0 ? " − " : " + ") + num(Math.abs(st.d));
+const done = (st) => line(st) + " = " + num(st.to);
+const place = (i) => t("place" + i);
+// A short reason for one step.
+function explain(st, sum) {
+  const s = done(st);
+  if (st.kind === "ten") return t(sum.op === "add" ? "stMakeTen" : "stDownTen", { s });
+  if (st.kind === "rest") return t("stRest", { s });
+  if (st.kind === "place") return t("stPlace", { place: place(st.place).replace(/^./, c => c.toUpperCase()), s });
+  if (st.kind === "together") return t("stTogether", { s });
+  if (st.kind === "round") return t("stRoundEasy", { r: num(st.r), s });
+  if (st.kind === "fix") return t(st.more ? "stRoundMore" : "stRoundLess", { r: num(st.r), d: num(st.off), b: num(st.b), s });
+  if (st.last && st.n > 0) return t("stLast", { s });
+  return t(st.n ? "stNowPlace" : "stFirstPlace", { place: place(st.place), s });
+}
+// The split chips: the right split of b, and two wrong ones (the digits alone, and the places swapped).
+function splitChips(sum) {
+  const ps = parts(sum.b), join = (l) => l.map(num).join(" + ");
+  const right = join(ps);
+  const digits = join(ps.map(p => +String(p)[0]));
+  const swapped = join(ps.map((p, i) => +String(p)[0] * Math.pow(10, String(ps[(i + 1) % ps.length]).length - 1)));
+  const all = [right, digits, swapped].filter((x, i, l) => l.indexOf(x) === i);
+  for (let i = all.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [all[i], all[j]] = [all[j], all[i]]; }
+  return { right, all };
+}
+// GEN END
+
+(function () {
+  const $ = (id) => document.getElementById(id);
+  const card = $("card"), feedbackEl = $("feedback"), goBtn = $("k-go"), stepsEl = $("steps"), splitEl = $("split"), nlEl = $("nl");
+  const segs = { lv: [...document.querySelectorAll("#lv-seg button")], op: [...document.querySelectorAll("#op-seg button")],
+    mode: [...document.querySelectorAll("#mode-seg button")], way: [...document.querySelectorAll("#way-seg button")], split: [...document.querySelectorAll("#split-seg button")] };
+  const digitBtns = [...document.querySelectorAll("#pad [data-d]")];
+
+  const store = {
+    // ok: the values this setting may have; anything else falls back to the default.
+    get(k, d, ok) { try { const v = JSON.parse(Loopy.store.get(k)); return ok.includes(v) ? v : d; } catch (e) { return d; } },
+    set(k, v) { Loopy.store.set(k, JSON.stringify(v)); }
+  };
+
+  let age = window.Loopy ? Loopy.getAge() : 8;
+  let lv, opMode, mode, way, splitFirst;
+  // Level, problems and way are remembered per age, so each age starts at the right level.
+  function loadForAge() {
+    lv = store.get("st.lv.a" + age, levelForAge(age), [0, 1, 2, 3, 4, 5]);
+    opMode = store.get("st.op.a" + age, age <= 6 ? "add" : "mix", ["add", "sub", "mix"]);
+    way = store.get("st.way.a" + age, "tens", WAYS);
+    mode = store.get("st.mode", "steps", ["steps", "quick"]);
+    splitFirst = store.get("st.split", "off", ["off", "on"]);
+    // Opened from the grown-ups' page to practise one kind: set it for this visit, without saving.
+    const m = /^st-(add|sub)$/.exec(Loopy.log.hint || "");
+    if (m) { opMode = m[1]; Loopy.log.hint = ""; }
+  }
+  loadForAge();
+  const upTo = (n, carry) => () => t(carry ? "stLvCarry" : "stUpTo", { n: num(n) });
+  const levelNames = ["stLvTen", upTo(100), upTo(100, true), upTo(1000), upTo(1000, true), upTo(10000)];
+  const levelName = (i) => typeof levelNames[i] === "function" ? levelNames[i]() : t(levelNames[i]);
+  function setLevel(i) { lv = i; store.set("st.lv.a" + age, lv); recent = []; newSum(); }
+  if (window.Loopy && Loopy.levels) Loopy.levels.init({ names: levelNames, get: () => lv, base: () => levelForAge(age), set: setLevel });
+
+  let right = 0, tried = 0, streak = 0, recent = [];
+  // The sum on screen, where the child is (the split, or step i), the steps already filled, the wrong ones.
+  let sum = null, pos = null, again = false, filled = [], missed = {}, typed = "", answered = false, lead = "";
+  const curWay = () => wayAt(lv, way);
+  const maxLen = () => String(LEVELS[lv].max).length;
+  const quick = () => mode === "quick" && !again;
+  const splitOn = (s) => splitFirst === "on" && mode === "steps" && s.way === "tens";
+
+  function render() {
+    if (window.Loopy && Loopy.levels) Loopy.levels.render();
+    $("score").textContent = right + " / " + tried;
+    $("streak").textContent = streak;
+    segs.lv.forEach((b, i) => { b.setAttribute("aria-pressed", String(i === lv)); b.textContent = levelName(i); });
+    segs.op.forEach(b => b.setAttribute("aria-pressed", String(b.dataset.op === opMode)));
+    segs.mode.forEach(b => b.setAttribute("aria-pressed", String(b.dataset.mode === mode)));
+    segs.way.forEach(b => { b.setAttribute("aria-pressed", String(b.dataset.way === curWay())); b.disabled = !waysAt(lv).includes(b.dataset.way); });
+    segs.split.forEach(b => b.setAttribute("aria-pressed", String(b.dataset.split === splitFirst)));
+    const onSplit = pos.type === "split";
+    goBtn.textContent = t(answered ? "next" : "check");
+    goBtn.disabled = !answered && (onSplit || typed === "");
+    digitBtns.forEach(b => b.disabled = answered || onSplit);
+    $("k-erase").disabled = answered || onSplit || typed === "";
+    drawSteps();
+    drawLine();
+  }
+
+  // The step lines: "47 + 20 =" and a box. A number that comes from a box not filled yet shows as "__".
+  const known = (j) => j < 0 || filled.includes(j);
+  function drawSteps() {
+    stepsEl.textContent = "";
+    sum.steps.forEach((st, i) => {
+      const row = document.createElement("div"), lab = document.createElement("span"), box = document.createElement("b");
+      const cur = pos.type === "step" && pos.i === i;
+      row.className = "step" + (cur ? " now" : "");
+      const op = st.d < 0 ? " − " : " + ";
+      lab.textContent = pos.type === "split" ? "__" + op + "__ =" : (known(st.fromStep) ? num(st.from) : "__") + op + (known(st.dStep) ? num(Math.abs(st.d)) : "__") + " =";
+      box.className = "box";
+      if (filled.includes(i)) {
+        box.classList.add(i in missed ? "no" : "ok");
+        if (i in missed && cur) {
+          const s = document.createElement("s"), b = document.createElement("b");
+          s.textContent = num(missed[i]); b.textContent = num(st.to);
+          box.appendChild(s); box.appendChild(b);
+        } else box.textContent = num(st.to);
+      } else if (cur) {
+        box.classList.add("cur");
+        if (typed === "") box.classList.add("empty"); else box.textContent = num(parseInt(typed, 10));
+        box.setAttribute("role", "textbox"); box.setAttribute("aria-readonly", "true"); box.setAttribute("aria-label", t("yourAnswer"));
+      } else { box.classList.add("todo"); box.textContent = "?"; }
+      row.appendChild(lab); row.appendChild(box); stepsEl.appendChild(row);
+    });
+  }
+
+  // The number line: a jump for each step, for sums up to 100 that move along one line.
+  const SVG = "http://www.w3.org/2000/svg";
+  function drawLine() {
+    nlEl.textContent = "";
+    const show = sum.answer <= 100 && sum.a <= 100 && sum.way !== "place" && pos.type !== "split";
+    // An <svg> has no hidden property, so set the attribute itself.
+    nlEl.toggleAttribute("hidden", !show);
+    if (!show) return;
+    const pts = [sum.a].concat(sum.steps.map(s => s.to));
+    const lo = Math.min(...pts), hi = Math.max(...pts), span = Math.max(hi - lo, 5);
+    const x = (v) => 24 + (v - lo) / span * 272;
+    const add = (tag, attrs, text) => {
+      const n = document.createElementNS(SVG, tag);
+      Object.keys(attrs).forEach(k => n.setAttribute(k, attrs[k]));
+      if (text !== undefined) n.textContent = text;
+      nlEl.appendChild(n);
+    };
+    const state = (i) => filled.includes(i) ? "done" : pos.i === i ? "now" : "todo";
+    add("line", { class: "rail", x1: 8, y1: 70, x2: 312, y2: 70 });
+    sum.steps.forEach((st, i) => {
+      const x1 = x(st.from), x2 = x(st.to), h = 18 + 40 * Math.min(1, Math.abs(st.d) / Math.max(10, span * 0.6)), c = state(i);
+      add("path", { class: c, d: "M" + x1 + " 70 Q" + ((x1 + x2) / 2) + " " + (70 - h * 1.8) + " " + x2 + " 70" });
+      add("text", { class: c + "-t", x: (x1 + x2) / 2, y: 70 - h - 4, "text-anchor": "middle" }, (st.d < 0 ? "−" : "+") + num(Math.abs(st.d)));
+    });
+    // Labels under the dots; two dots close together push their labels apart.
+    const lx = pts.map(x);
+    for (let i = 1; i < lx.length; i++) {
+      const gap = lx[i] - lx[i - 1];
+      if (Math.abs(gap) < 30) { const push = (30 - Math.abs(gap)) / 2 * (gap < 0 ? -1 : 1); lx[i] += push; lx[i - 1] -= push; }
+    }
+    pts.forEach((v, i) => {
+      const c = i === 0 ? "" : state(i - 1);
+      add("circle", { class: "dot " + c, cx: x(v), cy: 70, r: 5 });
+      add("text", { class: c ? c + "-t" : "", x: lx[i], y: 92, "text-anchor": "middle" }, i === 0 || filled.includes(i - 1) ? num(v) : "?");
+    });
+  }
+
+  function showSplit() {
+    splitEl.textContent = "";
+    splitEl.hidden = pos.type !== "split";
+    if (pos.type !== "split") return;
+    pos.chips.all.forEach(label => {
+      const b = document.createElement("button");
+      b.type = "button"; b.textContent = label;
+      // The right chip carries data-correct, so the browser test knows a right tap.
+      b.setAttribute("data-correct", String(label === pos.chips.right));
+      b.addEventListener("click", () => chooseSplit(label, b));
+      splitEl.appendChild(b);
+    });
+  }
+  function showStage() {
+    const on = splitOn(sum);
+    $("stage").hidden = !on;
+    if (!on) return;
+    const last = pos.type === "step" && pos.i === sum.steps.length - 1;
+    $("stage-split").className = pos.type === "split" ? "on" : "";
+    $("stage-steps").className = pos.type === "step" && !last ? "on" : "";
+    $("stage-answer").className = last ? "on" : "";
+  }
+  function prompt() {
+    feedbackEl.className = "feedback";
+    feedbackEl.innerHTML = '<span class="hint"></span>';
+    let text;
+    if (pos.type === "split") text = t("stPickSplit", { n: num(sum.b) });
+    else if (quick()) text = t("stMissing", { q: line(sum.steps[pos.i]) });
+    else text = t("stStepOf", { n: pos.i + 1, m: sum.steps.length, q: line(sum.steps[pos.i]) });
+    feedbackEl.firstChild.textContent = (lead ? lead + " " : "") + text;
+    lead = "";
+  }
+  function show() {
+    card.classList.remove("good", "bad");
+    card.classList.toggle("splitting", pos.type === "split");
+    showSplit(); showStage(); prompt(); render();
+    Loopy.speech.read();
+  }
+
+  // Try again: a missed step comes back later (Loopy.retry). The note is "add 47 25 tens 1": the sum, the way
+  // and the step (s for the split). A sum bigger than the level allows waits.
+  const note = () => sum.op + " " + sum.a + " " + sum.b + " " + sum.way + " " + (pos.type === "split" ? "s" : pos.i);
+  function rebuild(r) {
+    const m = /^(add|sub) (\d{1,5}) (\d{1,5}) (ten|tens|place|round) (s|\d)$/.exec(r);
+    if (!m) return null;
+    const op = m[1], a = +m[2], b = +m[3], w = m[4], answer = op === "add" ? a + b : a - b;
+    if (answer <= 0 || Math.max(a, b, answer) > LEVELS[lv].max) return null;
+    const s = { op, a, b, way: w, key: op + a + "," + b + ":" + w, answer, steps: stepsFor(op, a, b, w) };
+    if (m[5] === "s") return w === "tens" ? { sum: s, type: "split", key: s.key + ":s" } : null;
+    const i = +m[5];
+    return i < s.steps.length ? { sum: s, type: "step", i, key: s.key + ":" + i } : null;
+  }
+  // The first question of a new sum: the split, the first step, or in Quick mode the one missing box.
+  function make() {
+    const s = makeSum(lv, curWay(), opMode, recent);
+    if (mode === "quick") { const i = randInt(0, s.steps.length - 1); return { sum: s, type: "step", i, key: s.key + ":" + i }; }
+    if (splitOn(s)) return { sum: s, type: "split", key: s.key + ":s" };
+    return { sum: s, type: "step", i: 0, key: s.key + ":0" };
+  }
+  function newSum() {
+    const q = Loopy.retry.fresh("step-by-step", recent, make, rebuild, 15);
+    sum = q.sum; again = !!q.again; pos = { type: q.type, i: q.i };
+    typed = ""; answered = false; missed = {}; lead = "";
+    if (q.type === "split") pos.chips = splitChips(sum);
+    // In Quick mode every other box is filled already; a replayed step shows the steps before it.
+    filled = [];
+    if (q.type === "step") sum.steps.forEach((st, i) => { if (quick() ? i !== q.i : i < q.i) filled.push(i); });
+    $("sum").textContent = num(sum.a) + sign(sum.op) + num(sum.b);
+    $("sum").setAttribute("aria-label", sum.a + " " + t(sum.op === "add" ? "plus" : "minus") + " " + sum.b);
+    show();
+  }
+  // The next step of the same sum is a question of its own.
+  function nextStep(i) {
+    pos = { type: "step", i }; typed = ""; answered = false;
+    const key = sum.key + ":" + i;
+    recent.push(key);
+    while (recent.length > 15) recent.shift();
+    document.body.setAttribute("data-q", key);
+    show();
+  }
+  // After an answer: the next step, or a new sum when this one is done.
+  function moveOn() {
+    if (pos.type === "split") return nextStep(0);
+    if (quick() || pos.i + 1 >= sum.steps.length) newSum(); else nextStep(pos.i + 1);
+  }
+
+  // Every box (and the split) is one answer: a star when right, one wrong answer when not.
+  function count(ok, detail) {
+    tried++;
+    if (ok) { right++; streak++; } else { streak = 0; }
+    if (window.Loopy && Loopy.rewards) ok ? Loopy.rewards.correct("step-by-step", streak) : Loopy.rewards.wrong("step-by-step", detail);
+  }
+  function result(ok, text) {
+    answered = true;
+    card.classList.add(ok ? "good" : "bad");
+    feedbackEl.className = "feedback " + (ok ? "good" : "bad");
+    feedbackEl.innerHTML = "<strong></strong>";
+    feedbackEl.firstChild.textContent = ok ? (streak >= 3 ? t("correctRow", { n: streak }) : t("correct")) : t("notQuite");
+    feedbackEl.appendChild(document.createTextNode(text));
+    render();
+  }
+  function chooseSplit(label, btn) {
+    if (pos.type !== "split" || answered) return;
+    const ok = label === pos.chips.right;
+    count(ok, { q: num(sum.b) + " = ?", a: pos.chips.right, y: label, k: "st-" + sum.op, r: note() });
+    [...splitEl.children].forEach(b => { b.disabled = true; if (b.textContent === pos.chips.right) b.classList.add("ok"); });
+    // A right split goes straight on to the first step.
+    if (ok) { lead = t("stSplitRight", { n: num(sum.b), s: pos.chips.right }); return nextStep(0); }
+    btn.classList.add("no");
+    result(false, t("stSplitIs", { n: num(sum.b), s: pos.chips.right }));
+  }
+
+  function press(d) {
+    if (answered || pos.type !== "step" || typed.length >= maxLen()) return;
+    if (typed === "0") typed = "";
+    typed += d;
+    render();
+  }
+  function erase() {
+    if (answered) return;
+    typed = typed.slice(0, -1);
+    render();
+  }
+  function check() {
+    if (answered || pos.type !== "step" || typed === "") return;
+    const st = sum.steps[pos.i], y = parseInt(typed, 10), ok = y === st.to;
+    const last = quick() || pos.i === sum.steps.length - 1;
+    count(ok, { q: line(st), a: num(st.to), y: num(y), k: "st-" + sum.op, r: note() });
+    filled.push(pos.i);
+    if (!ok) missed[pos.i] = y;
+    // A right step goes straight on to the next one; the box stays green.
+    if (ok && !last) return nextStep(pos.i + 1);
+    result(ok, ok ? t("stDone", { q: num(sum.a) + sign(sum.op) + num(sum.b), a: num(sum.answer) }) : explain(st, sum));
+  }
+  function go() { answered ? moveOn() : check(); }
+
+  digitBtns.forEach(b => b.addEventListener("click", () => press(b.dataset.d)));
+  $("k-erase").addEventListener("click", erase);
+  goBtn.addEventListener("click", go);
+  segs.lv.forEach((b, i) => b.addEventListener("click", () => setLevel(i)));
+  segs.op.forEach(b => b.addEventListener("click", () => { opMode = b.dataset.op; store.set("st.op.a" + age, opMode); newSum(); }));
+  segs.mode.forEach(b => b.addEventListener("click", () => { mode = b.dataset.mode; store.set("st.mode", mode); newSum(); }));
+  segs.way.forEach(b => b.addEventListener("click", () => { way = b.dataset.way; store.set("st.way.a" + age, way); recent = []; newSum(); }));
+  segs.split.forEach(b => b.addEventListener("click", () => { splitFirst = b.dataset.split; store.set("st.split", splitFirst); newSum(); }));
+  window.addEventListener("loopy:age", (e) => { age = e.detail; recent = []; loadForAge(); newSum(); });
+  $("reset").addEventListener("click", () => { right = 0; tried = 0; streak = 0; if (window.Loopy && Loopy.recent) Loopy.recent.clear("step-by-step"); newSum(); });
+  document.addEventListener("keydown", (e) => {
+    if (e.metaKey || e.ctrlKey || e.altKey || document.querySelector(".loopy-cheer.big")) return;
+    if (/^[0-9]$/.test(e.key)) { press(e.key); e.preventDefault(); }
+    else if (e.key === "Backspace") { erase(); e.preventDefault(); }
+    else if (e.key === "Enter") {
+      if (document.activeElement && document.activeElement.tagName === "BUTTON" && document.activeElement !== goBtn) return;
+      go(); e.preventDefault();
+    }
+  });
+
+  // Read aloud: the step on screen, "What is 47 plus 20?", or "How do you split 25?"
+  Loopy.speech.question({ host: card, text: () => {
+    if (pos.type === "split") return t("stPickSplit", { n: sum.b });
+    const st = sum.steps[pos.i];
+    return t("whatIs", { q: st.from + " " + t(st.d < 0 ? "minus" : "plus") + " " + Math.abs(st.d) });
+  } });
+
+  // Print worksheet: 20 sums at the same level and way. Page 2 has the steps and the answers.
+  Loopy.worksheet({
+    title: () => t("stName"),
+    level: () => [t("ageLabel", { n: age }), levelName(lv), t("problems") + ": " + t({ add: "adding", sub: "takingAway", mix: "both" }[opMode])].join(" · "),
+    how: () => t("stHow"),
+    layout: "line",
+    make: (n) => { const list = [], keys = []; while (list.length < n) { const p = makeSum(lv, curWay(), opMode, keys); keys.push(p.key + ":0"); list.push(p); } return list; },
+    cell: (p) => {
+      const box = document.createElement("span"), s = document.createElement("span"), blank = document.createElement("span");
+      s.className = "ws-sl"; s.textContent = num(p.a) + sign(p.op) + num(p.b) + " =";
+      blank.className = "ws-blank";
+      box.appendChild(s); box.appendChild(blank);
+      return box;
+    },
+    // The answer with its steps; long ones (big numbers, three steps) keep only the numbers in between, so page 2 fits.
+    answer: (p) => {
+      const head = num(p.a) + sign(p.op) + num(p.b) + " = " + num(p.answer), full = head + " (" + p.steps.map(done).join(", ") + ")";
+      return full.length <= 44 ? full : head + " (" + p.steps.slice(0, -1).map(st => num(st.to)).join(", ") + ")";
+    }
+  });
+
+  newSum();
+})();
+</script>
+</body>
+</html>
