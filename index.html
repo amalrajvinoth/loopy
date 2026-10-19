@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'sha256-rQ8dDouMXYme1Q+4PSox/5AfqaE71AvN2p94Jgw/D2c='; style-src 'self' 'sha256-tVPfyURz+QSBTn7TiHoRz4Hs76FUR32x0fTCY5PQn64='; img-src 'self' data:; font-src 'self'; connect-src 'self'; worker-src 'self'; object-src 'none'; base-uri 'none'; form-action 'none'; manifest-src 'self'; upgrade-insecure-requests">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'sha256-rQ8dDouMXYme1Q+4PSox/5AfqaE71AvN2p94Jgw/D2c='; style-src 'self' 'sha256-ghHnKJ5KO7w7iSzhgzeH2HkZUhdzoXqftLU0nDn0c/Q='; img-src 'self' data:; font-src 'self'; connect-src 'self'; worker-src 'self'; object-src 'none'; base-uri 'none'; form-action 'none'; manifest-src 'self'; upgrade-insecure-requests">
 <meta name="referrer" content="strict-origin-when-cross-origin">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <link rel="icon" href="icon.svg" type="image/svg+xml">
@@ -94,7 +94,7 @@ h1 { margin: 0; line-height: 0; color: var(--ink); }
 .carry .go { margin: 0; align-self: center; flex: none; }
 /* Try again: this week's mistakes, one row under Carry on. */
 .wrap .again { --tone: var(--c4); }
-.again-list { color: var(--muted); font-size: 0.9rem; line-height: 1.3; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.again-list { color: var(--muted); font-size: 0.9rem; line-height: 1.3; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
 .today .row { display: flex; flex-wrap: wrap; gap: 8px 12px; align-items: center; justify-content: space-between; margin-top: auto; }
 .today .go { margin-top: 0; }
 .day-streak { font-weight: 700; }
