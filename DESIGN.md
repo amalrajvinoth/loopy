@@ -276,7 +276,7 @@ Each game has a top bar with the back button on the left, and the star counter, 
 
 ### Settings
 
-Age, language, color theme, sound and levels go behind the ⚙ button, on the home page and the grown-ups page too. The panel is the same in every game: **This game** first (the game's own levels and switches, then Print worksheet), then **Age, look and sound** (the shared row, after a dashed line), then the keyboard line and Reset score at the bottom. The two headings are small uppercase `c1` labels; `loopy.js` adds them. Today's 10 and the home page have no game settings, so they show only the second part. The toggle is a chip pill. It turns `c1` when open. The panel is a card with a 2px border and radius 20px. On very small phones (under 380px, or under 420px in German, where "Einstellungen" is long) the toggle shows only the gear.
+Age, language, color theme, sound and levels go behind the ⚙ button, on the home page and the grown-ups page too. The panel is the same in every game: **This game** first (the game's own levels and switches, then Print worksheet), then **Age, look and sound** (the shared row, after a dashed line), then the keyboard line and Reset score at the bottom. The two headings are small uppercase `c1` labels; `loopy.js` adds them. Today's 10 and the home page have no game settings, so they show only the second part. The home page starts with **Kids** and ends with **Use like an app** (see Screens). The toggle is a chip pill. It turns `c1` when open. The panel is a card with a 2px border and radius 20px. On very small phones (under 380px, or under 420px in German, where "Einstellungen" is long) the toggle shows only the gear.
 
 - **Age picker:** a chip pill with round minus and plus buttons and the age in the middle.
 - **Language picker:** EN and DE in a chip pill. The chosen one gets the card color.
@@ -430,6 +430,7 @@ Test every page at these sizes:
 - Short phones (under 760px tall) use smaller feedback text, so the pad stays on screen.
 - Buttons use `touch-action: manipulation`, so a double tap does not zoom.
 - "Add to Home Screen" opens loopy full screen. The status bar is black.
+- **Use like an app** (home page Settings, last part, after a dashed line): a `c1` uppercase heading, one pill styled like Print worksheet ("Add loopy to the home screen" with an add-square icon, or "Install loopy on this computer" with a screen icon) and a muted line. When the browser offers its own install box, the pill opens it. Otherwise it opens a box like the Kids box with three numbered steps for the device, each with a 40px icon tile (`chip` background, `c1` icon). On Apple devices with stars, the box also shows the stars code with a Copy pill. The part is hidden when loopy runs from the home screen.
 
 ## 9. Prompt guide
 
