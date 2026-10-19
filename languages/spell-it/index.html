@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'sha256-Kk7pDny7iXsTTDzjp+De3W93TqXZQT7uzXwV4LbOiz4='; style-src 'self' 'sha256-z2P7kGW5Z05eCTjTZdYpc0vThTlOE9vmt97pVSvi2I4=' 'sha256-5/L3e/BVPjm2GPi51M3FkQuzTeZ4bCdHn3SxvjZFuAk=' 'sha256-RT1053JU5UiKvjrCUFx1rlhdFLMmgtuFJ9T8jnMeawQ=' 'sha256-nnHT/yp9/bcQWezNOoiKHtvXRiJS9w/rrwbtn2h3e9o='; img-src 'self' data:; font-src 'self'; connect-src 'self'; worker-src 'self'; object-src 'none'; base-uri 'none'; form-action 'none'; manifest-src 'self'; upgrade-insecure-requests">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'sha256-EV9qFdmHxYSn+epXM5fVUqQrf5mw2ootR5BOG2xyGwI='; style-src 'self' 'sha256-z2P7kGW5Z05eCTjTZdYpc0vThTlOE9vmt97pVSvi2I4=' 'sha256-5/L3e/BVPjm2GPi51M3FkQuzTeZ4bCdHn3SxvjZFuAk=' 'sha256-RT1053JU5UiKvjrCUFx1rlhdFLMmgtuFJ9T8jnMeawQ=' 'sha256-nnHT/yp9/bcQWezNOoiKHtvXRiJS9w/rrwbtn2h3e9o='; img-src 'self' data:; font-src 'self'; connect-src 'self'; worker-src 'self'; object-src 'none'; base-uri 'none'; form-action 'none'; manifest-src 'self'; upgrade-insecure-requests">
 <meta name="referrer" content="strict-origin-when-cross-origin">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <style>:root{color-scheme:light;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}body{margin:0}[hidden]{display:none!important}</style>
@@ -485,9 +485,22 @@ function makeProblem(lang, len, avoid) {
     drawSlots();
   }
   function stopReveal() { timers.forEach(clearTimeout); timers = []; }
+  // Try again: a missed word comes back later (Loopy.retry). The note is "en:apple"; a word in the other
+  // language, or longer than the length set now, waits. The pad is mixed the way makeProblem does it.
+  const note = (p) => wordsLang + ":" + p.word;
+  function rebuild(r) {
+    const m = /^(en|de):([^\s:]{3,8})$/.exec(r);
+    if (!m || m[1] !== wordsLang) return null;
+    const w = WORDS[wordsLang].find(x => x[1] === m[2]);
+    if (!w || lenOf(w[1]) > len) return null;
+    const letters = [...w[1].toLowerCase()], need = [...new Set(letters)], keys = lenOf(w[1]) <= 4 ? 8 : 10;
+    const extra = shuffle([...EXTRA[wordsLang]].filter(c => !need.includes(c))).slice(0, Math.max(2, keys - need.length));
+    return { pic: w[0], word: w[1], letters, tiles: shuffle([...need, ...extra]), len: lenOf(w[1]), key: w[1] };
+  }
+
   function newRound() {
     stopReveal();
-    current = Loopy.fresh(recent, () => makeProblem(wordsLang, len), 15);
+    current = Loopy.retry.fresh("spell-it", recent, () => makeProblem(wordsLang, len), rebuild, 15);
     typed = []; answered = false;
     picEl.textContent = current.pic;
     picEl.setAttribute("aria-label", t("siPic"));
@@ -540,7 +553,7 @@ function makeProblem(lang, len, avoid) {
     const yours = typed.map(shown).join("");
     if (ok) { right++; streak++; } else { streak = 0; }
     if (ok) Loopy.rewards.correct("spell-it", streak);
-    else Loopy.rewards.wrong("spell-it", { q: current.pic, a: current.word, y: yours, k: "si-" + current.len });
+    else Loopy.rewards.wrong("spell-it", { q: current.pic, a: current.word, y: yours, k: "si-" + current.len, r: note(current) });
     card.classList.remove("good", "bad");
     card.classList.add(ok ? "good" : "bad");
     feedbackEl.className = "feedback " + (ok ? "good" : "bad");

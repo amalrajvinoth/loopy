@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'sha256-3MXE1oTNJqn13XpMfhaFKbCO+/He43Wr2dkUrUfCQNk='; style-src 'self' 'sha256-z2P7kGW5Z05eCTjTZdYpc0vThTlOE9vmt97pVSvi2I4=' 'sha256-B1/34nWPbkOgQvjShds4VMrIOiMhFRoP1nBsay1oDds='; img-src 'self' data:; font-src 'self'; connect-src 'self'; worker-src 'self'; object-src 'none'; base-uri 'none'; form-action 'none'; manifest-src 'self'; upgrade-insecure-requests">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'sha256-Edf7UAup1Y8PU9tPcGuCnNb3GsON7AS6Oa0yGH3W1Jo='; style-src 'self' 'sha256-z2P7kGW5Z05eCTjTZdYpc0vThTlOE9vmt97pVSvi2I4=' 'sha256-B1/34nWPbkOgQvjShds4VMrIOiMhFRoP1nBsay1oDds='; img-src 'self' data:; font-src 'self'; connect-src 'self'; worker-src 'self'; object-src 'none'; base-uri 'none'; form-action 'none'; manifest-src 'self'; upgrade-insecure-requests">
 <meta name="referrer" content="strict-origin-when-cross-origin">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <style>:root{color-scheme:light;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}body{margin:0}[hidden]{display:none!important}</style>
@@ -846,8 +846,20 @@ function makeProblem(map, find, age, avoid) {
       else { p.removeAttribute("tabindex"); p.removeAttribute("role"); p.removeAttribute("aria-label"); }
     });
   }
+  // Try again: a missed place comes back later (Loopy.retry). The note is "eu:FRA:cap" (the map, the place and
+  // whether its capital was asked); a place not on the map shown now, or asked the other way, waits.
+  const note = (p) => map + ":" + p.id + (p.cap ? ":cap" : "");
+  function rebuild(r) {
+    const m = /^(cont|eu|world):([a-z]{2,8}|[A-Z]{3})(:cap)?$/.exec(r);
+    if (!m || m[1] !== map || !!m[3] !== (map !== "cont" && find === "cap")) return null;
+    const q = poolFor(map, find, age).find(x => x.id === m[2]);
+    if (!q) return null;
+    q.key = q.id;
+    return q;
+  }
+
   function newRound() {
-    current = Loopy.fresh(recent, () => { const q = makeProblem(map, find, age); q.key = q.id; return q; }, 12);
+    current = Loopy.retry.fresh("where-is-it", recent, () => { const q = makeProblem(map, find, age); q.key = q.id; return q; }, rebuild, 12);
     answered = false;
     marks = [];
     view = current.view;
@@ -906,7 +918,7 @@ function makeProblem(map, find, age, avoid) {
     if (ok) { right++; streak++; } else { streak = 0; }
     const capital = current.type === "land" ? current.place[lang === "de" ? 4 : 3] : "";
     if (ok) Loopy.rewards.correct("where-is-it", streak);
-    else Loopy.rewards.wrong("where-is-it", { q: current.cap ? capital : nameOfHit(want, false), a: nameOfHit(want, false), y: nameOfHit(hit, false), k: kind() });
+    else Loopy.rewards.wrong("where-is-it", { q: current.cap ? capital : nameOfHit(want, false), a: nameOfHit(want, false), y: nameOfHit(hit, false), k: kind(), r: note(current) });
     // Name the right place on the map (and the one tapped, if it was wrong). Capitals get a dot.
     marks = [Object.assign({ text: nameOfHit(want, false), below: current.cap }, labelAt(want))];
     if (current.cap) marks.push({ text: capital, lon: current.place[5], lat: current.place[6], dot: true });

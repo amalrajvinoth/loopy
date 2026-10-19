@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'sha256-WyMb2FYFWi++Cj9VbOluPLxZT0BF0OPoOvQZ7PhDwdc='; style-src 'self' 'sha256-z2P7kGW5Z05eCTjTZdYpc0vThTlOE9vmt97pVSvi2I4=' 'sha256-0X+W/Xc6cVdheyH9D1zLVaD+jBRekL1aj7dPgq8HXXY=' 'sha256-RT1053JU5UiKvjrCUFx1rlhdFLMmgtuFJ9T8jnMeawQ=' 'sha256-AbJixgGjrguOw5a9iDl7GMczBsuMXNeP8i3ZkjOlh9U='; img-src 'self' data:; font-src 'self'; connect-src 'self'; worker-src 'self'; object-src 'none'; base-uri 'none'; form-action 'none'; manifest-src 'self'; upgrade-insecure-requests">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'sha256-TFNoRcrrE5cy57TDG+Q4YARo9XtT42ma9w9U1SdbhfE='; style-src 'self' 'sha256-z2P7kGW5Z05eCTjTZdYpc0vThTlOE9vmt97pVSvi2I4=' 'sha256-0X+W/Xc6cVdheyH9D1zLVaD+jBRekL1aj7dPgq8HXXY=' 'sha256-RT1053JU5UiKvjrCUFx1rlhdFLMmgtuFJ9T8jnMeawQ=' 'sha256-AbJixgGjrguOw5a9iDl7GMczBsuMXNeP8i3ZkjOlh9U='; img-src 'self' data:; font-src 'self'; connect-src 'self'; worker-src 'self'; object-src 'none'; base-uri 'none'; form-action 'none'; manifest-src 'self'; upgrade-insecure-requests">
 <meta name="referrer" content="strict-origin-when-cross-origin">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <style>:root{color-scheme:light;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}body{margin:0}[hidden]{display:none!important}</style>
@@ -586,9 +586,22 @@ function drawFlag(svg, f) {
     render();
     Loopy.speech.read();
   }
+  // Try again: a missed flag or capital comes back later (Loopy.retry). The note is "FRA" for the flag step and
+  // "FRA:cap" for the capital step; a flag not in the region set now, or a capital while only flags are asked, waits.
+  // The choices are mixed the way makeProblem does it. A capital comes back at its capital step.
+  const note = (p) => p.f.code + (step === "cap" ? ":cap" : "");
+  function rebuild(r) {
+    const m = /^([A-Z]{3})(:cap)?$/.exec(r), f = m && byCode[m[1]];
+    if (!f || !poolFor(region, age).includes(f) || (m[2] && (mode !== "cap" || !f.en.cap))) return null;
+    const q = { f, key: f.code, options: shuffle([f, ...others(f, region, age)]), caps: f.en.cap ? shuffle([f, ...others(f, region, age, true)]) : null };
+    if (m[2]) q.step = "cap";
+    return q;
+  }
+
   function newRound() {
-    current = Loopy.fresh(recent, () => makeProblem(region, age), 12);
-    step = "flag";
+    current = Loopy.retry.fresh("flags-capitals", recent, () => makeProblem(region, age), rebuild, 12);
+    step = current.step === "cap" ? "cap" : "flag";
+    if (step === "cap") document.body.setAttribute("data-q", current.key + ".cap");
     drawFlag(flagEl, current.f);
     showStep();
   }
@@ -606,8 +619,8 @@ function drawFlag(svg, f) {
     const of = nameOf(f, lang);
     if (ok) Loopy.rewards.correct("flags-capitals", streak);
     else Loopy.rewards.wrong("flags-capitals", step === "flag"
-      ? { q: t("fcLogFlag", { c: of }), a: f[lang].name, y: btn.textContent, k: "fc-flag" }
-      : { q: t("fcLogCap", { c: of }), a: f[lang].cap, y: btn.textContent, k: "fc-cap" });
+      ? { q: t("fcLogFlag", { c: of }), a: f[lang].name, y: btn.textContent, k: "fc-flag", r: note(current) }
+      : { q: t("fcLogCap", { c: of }), a: f[lang].cap, y: btn.textContent, k: "fc-cap", r: note(current) });
     card.classList.remove("good", "bad");
     card.classList.add(ok ? "good" : "bad");
     feedbackEl.className = "feedback " + (ok ? "good" : "bad");

@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'sha256-Nr7agob+ZdfKglV+UUV27sSPYHxbehzYpSsK09JLbRw='; style-src 'self' 'sha256-z2P7kGW5Z05eCTjTZdYpc0vThTlOE9vmt97pVSvi2I4=' 'sha256-WWljH6mORp+HVqd7o54ypaTOXgb7ewuIQGVtPmm8W00=' 'sha256-RT1053JU5UiKvjrCUFx1rlhdFLMmgtuFJ9T8jnMeawQ=' 'sha256-MNL5xgN/uLoT5Phi1GTe9oymb1hV1WzMG3JetjqhQ30='; img-src 'self' data:; font-src 'self'; connect-src 'self'; worker-src 'self'; object-src 'none'; base-uri 'none'; form-action 'none'; manifest-src 'self'; upgrade-insecure-requests">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'sha256-DyQqklu2J+QXVjEZ5ofaseiEnCcpdgKd4hFQLAIOqjw='; style-src 'self' 'sha256-z2P7kGW5Z05eCTjTZdYpc0vThTlOE9vmt97pVSvi2I4=' 'sha256-WWljH6mORp+HVqd7o54ypaTOXgb7ewuIQGVtPmm8W00=' 'sha256-RT1053JU5UiKvjrCUFx1rlhdFLMmgtuFJ9T8jnMeawQ=' 'sha256-MNL5xgN/uLoT5Phi1GTe9oymb1hV1WzMG3JetjqhQ30='; img-src 'self' data:; font-src 'self'; connect-src 'self'; worker-src 'self'; object-src 'none'; base-uri 'none'; form-action 'none'; manifest-src 'self'; upgrade-insecure-requests">
 <meta name="referrer" content="strict-origin-when-cross-origin">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <style>:root{color-scheme:light;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}body{margin:0}[hidden]{display:none!important}</style>
@@ -352,10 +352,15 @@ const line = (words) => words.join(" ").replace(/ ([.!?])$/, "$1");
 
 // One sentence to build. level: 1 to 4. The tiles are the words mixed up, never in the right order.
 // From level 2 the full stop, question mark or exclamation mark is its own tile.
+const keyOf = (s) => s.replace(/\*/g, "").slice(s.indexOf(" ") + 1);
 function makeProblem(lang, level, avoid) {
-  const list = SENTENCES[lang][level - 1], keyOf = (s) => s.replace(/\*/g, "").slice(s.indexOf(" ") + 1);
+  const list = SENTENCES[lang][level - 1];
   let s = pick(list);
   for (let tries = 0; tries < 40 && avoid && avoid.includes(keyOf(s)); tries++) s = pick(list);
+  return problemFor(s, level);
+}
+// The problem for one sentence from the list of its level.
+function problemFor(s, level) {
   const parts = s.split(" "), pic = parts.shift();
   let verb = -1;
   const words = parts.map((w, i) => { if (w[0] === "*") { verb = i; return w.slice(1); } return w; });
@@ -439,9 +444,22 @@ function makeProblem(lang, level, avoid) {
     drawSlots();
   }
   function stopReveal() { timers.forEach(clearTimeout); timers = []; }
+  // Try again: a missed sentence comes back later (Loopy.retry). The note is "en:The dog sleeps." (the sentences
+  // language and the sentence's key); one in the other language, or from a level above the one set now, waits.
+  const note = (p) => wordsLang + ":" + p.key;
+  function rebuild(r) {
+    const m = /^(en|de):([^:]{3,70})$/.exec(r);
+    if (!m || m[1] !== wordsLang) return null;
+    for (let lv = 1; lv <= level; lv++) {
+      const s = SENTENCES[wordsLang][lv - 1].find(x => keyOf(x) === m[2]);
+      if (s) return problemFor(s, lv);
+    }
+    return null;
+  }
+
   function newRound() {
     stopReveal();
-    current = Loopy.fresh(recent, () => makeProblem(wordsLang, level), 15);
+    current = Loopy.retry.fresh("sentence-builder", recent, () => makeProblem(wordsLang, level), rebuild, 15);
     picked = []; answered = false;
     picEl.textContent = current.pic;
     picEl.setAttribute("aria-label", t("sbPic"));
@@ -510,7 +528,7 @@ function makeProblem(lang, level, avoid) {
     const ok = i === current.words.length;
     if (ok) { right++; streak++; } else { streak = 0; }
     if (ok) Loopy.rewards.correct("sentence-builder", streak);
-    else Loopy.rewards.wrong("sentence-builder", { q: current.text, a: current.text, y: yours, k: KINDS[current.level] });
+    else Loopy.rewards.wrong("sentence-builder", { q: current.text, a: current.text, y: yours, k: KINDS[current.level], r: note(current) });
     card.classList.remove("good", "bad");
     card.classList.add(ok ? "good" : "bad");
     feedbackEl.className = "feedback " + (ok ? "good" : "bad");
