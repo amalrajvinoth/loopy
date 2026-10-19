@@ -40,9 +40,11 @@ Stars are saved in your browser, in two places: a big store (IndexedDB) and a sm
 
 ## How do I move stars to another device?
 
-On the home page, open "Move my stars to another device". Copy the code, then paste it on the other device and tap Load. Or tap **Copy link** and open the link on the other device: loopy asks "Load Mia's stars here?" before it changes anything. With two or more children, pick **Everyone** or one child first. Each child's stars go to the child with the same name on the other device, or a new child is added. On a new device, the first child takes the place of the empty one.
+On the home page, open "Move my stars to another device". The quickest way: point the other device's camera at the QR code. Or tap **Send** to share the link (WhatsApp, AirDrop, mail), or **Copy link** and open it on the other device. Or copy the code, paste it on the other device and tap Load. A link asks "Load Mia's stars here?" before it changes anything. When there is a lot of progress, the QR code leaves out the list of wrong answers (the caption says so); Send and Copy link carry everything. With two or more children, pick **Everyone** or one child first. Each child's stars go to the child with the same name on the other device, or a new child is added. On a new device, the first child takes the place of the empty one.
 
-The link holds the stars itself, after the `#`. That part of a link never reaches the website, so nothing is sent anywhere.
+The link holds the stars itself, after the `#`. That part of a link never reaches the website, so nothing is sent anywhere. The QR code is drawn on your device too.
+
+To keep a backup, tap **Save backup**. loopy makes a small file (`loopy-stars-2026-10-19.json`) that lands in Downloads or in Files on an iPhone. Keep it in iCloud Drive or Google Drive and it survives a lost phone or cleared browser data. **Open backup** loads it on any device, and asks first.
 
 The code carries stars, badges, best scores, the day streak, the answers on the grown-ups' page, the Last 5 dots, the age, the game levels and settings, and the last game played (so "Carry on" works on the other device). Loading a code only adds. It never takes stars or answers away, and loading the same code twice counts nothing twice. Codes from before still work: they move stars and best scores.
 
