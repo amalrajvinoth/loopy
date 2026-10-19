@@ -19,7 +19,7 @@
   var MAX_CODE = 40000, MAX_JSON = 200000, MAX_P = 10, MAX_G = 300, MAX_GV = 2000;
   // The keys a child's g may hold: game settings ("ss.mode.a7"), the last game, the games already seen, and the levels the grown-ups page last saw.
   // Each game checks its own values again when it reads them (only known choices are used).
-  var GKEY = /^(?:(?:bs|cc|clockquiz|eb|fc|mk|pm100|pr|pz|qf|si|ss|ts|tt|wi|wm)\.[A-Za-z]{1,16}(?:\.a\d{1,2})?|loopy\.(?:last|seen|levels))$/;
+  var GKEY = /^(?:(?:bs|cc|clockquiz|eb|fc|mk|pm100|pr|pz|qf|sb|si|ss|ts|tt|wi|wm)\.[A-Za-z]{1,16}(?:\.a\d{1,2})?|loopy\.(?:last|seen|levels))$/;
   var KEYS = { rewards: "loopy.rewards", daily: "loopy.daily", log: "loopy.log", recent: "loopy.recent",
     age: "loopy.ageOffset", read: "loopy.readAloud", theme: "loopy.theme", font: "loopy.font", sound: "loopy.sound", lang: "loopy.lang" };
   var CHOICES = { read: ["on", "off"], theme: ["black", "sunny", "ocean", "candy", "forest", "contrast"], font: ["easy", "normal"], sound: ["on", "off"], lang: ["en", "de"] };

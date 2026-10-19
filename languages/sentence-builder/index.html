@@ -1,0 +1,568 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'sha256-Nr7agob+ZdfKglV+UUV27sSPYHxbehzYpSsK09JLbRw='; style-src 'self' 'sha256-z2P7kGW5Z05eCTjTZdYpc0vThTlOE9vmt97pVSvi2I4=' 'sha256-WWljH6mORp+HVqd7o54ypaTOXgb7ewuIQGVtPmm8W00=' 'sha256-RT1053JU5UiKvjrCUFx1rlhdFLMmgtuFJ9T8jnMeawQ=' 'sha256-MNL5xgN/uLoT5Phi1GTe9oymb1hV1WzMG3JetjqhQ30='; img-src 'self' data:; font-src 'self'; connect-src 'self'; worker-src 'self'; object-src 'none'; base-uri 'none'; form-action 'none'; manifest-src 'self'; upgrade-insecure-requests">
+<meta name="referrer" content="strict-origin-when-cross-origin">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<style>:root{color-scheme:light;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}body{margin:0}[hidden]{display:none!important}</style>
+<link rel="icon" href="../../icon.svg" type="image/svg+xml">
+<link rel="manifest" href="../../manifest.webmanifest">
+<link rel="apple-touch-icon" href="../../apple-touch-icon.png">
+<meta name="theme-color" content="#0a0a0c">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="loopy">
+<title data-t="sbName">Sentence Builder</title>
+<meta name="description" content="Sentence Builder on loopy: tap the words in the right order to build a sentence, from 3 words up to 8, with questions and commas. Free practice for kids, English and German.">
+<link rel="preload" href="../../fonts/lexend-latin.woff2" as="font" type="font/woff2" crossorigin>
+<style>
+/* Layout: a picture card with one box per word, and the words mixed up below. Shared look with the other games. */
+:root {
+  --bg: #f3f6fb;
+  --card: #ffffff;
+  --ink: #1d2a3f;
+  --muted: #5d6b82;
+  --line: #d5dde9;
+  --accent: #2457c5;
+  --accent-ink: #ffffff;
+  --mark: #e2622b;
+  --good: #1f8a4c;
+  --good-bg: #e3f5ea;
+  --bad: #c23a3a;
+  --bad-bg: #fbe6e6;
+  --chip: #e6ecf6;
+  --key: #ffffff;
+  --font: "Lexend", "Segoe UI", "Helvetica Neue", Arial, sans-serif;
+}
+
+* { box-sizing: border-box; }
+body {
+  background: var(--bg); color: var(--ink); font-family: var(--font); font-size: 16px;
+  padding-left: max(16px, env(safe-area-inset-left, 0px));
+  padding-right: max(16px, env(safe-area-inset-right, 0px));
+  padding-block: 20px 32px;
+}
+.wrap { max-width: 520px; margin: 0 auto; display: flex; flex-direction: column; gap: 16px; }
+
+.top { display: flex; flex-wrap: wrap; gap: 12px; align-items: center; justify-content: space-between; }
+h1 { margin: 0; font-size: 1.6rem; font-weight: 700; text-wrap: balance; }
+.score { display: flex; flex-wrap: wrap; gap: 8px; font-variant-numeric: tabular-nums; }
+.pill { background: var(--card); border: 1px solid var(--line); border-radius: 999px; padding: 6px 14px; font-weight: 600; font-size: 1rem; white-space: nowrap; }
+.pill span { color: var(--muted); font-weight: 400; margin-right: 4px; }
+
+.settings { display: flex; flex-direction: column; gap: 8px; }
+.seg-label { font-size: 0.8rem; font-weight: 600; letter-spacing: 0.06em; text-transform: uppercase; color: var(--muted); margin: 0 0 4px 4px; }
+.seg { display: grid; grid-template-columns: repeat(3, 1fr); gap: 6px; background: var(--chip); padding: 5px; border-radius: 14px; }
+.seg.two { grid-template-columns: repeat(2, 1fr); }
+.seg button {
+  font: inherit; font-size: 0.95rem; font-weight: 600; color: var(--muted);
+  background: transparent; border: 0; border-radius: 10px; padding: 8px 6px; min-height: 44px; cursor: pointer;
+}
+.seg button[aria-pressed="true"] { background: var(--card); color: var(--ink); box-shadow: 0 1px 3px rgb(0 0 0 / 0.12); }
+
+.problem-card {
+  background: var(--card); border: 1px solid var(--line); border-radius: 24px;
+  padding: 20px 18px 18px; display: flex; flex-direction: column; align-items: center; gap: 14px;
+}
+.problem-card.good { border-color: var(--good); box-shadow: 0 0 0 2px var(--good) inset; }
+.problem-card.bad { border-color: var(--bad); box-shadow: 0 0 0 2px var(--bad) inset; }
+
+.feedback { min-height: 3.1em; text-align: center; font-size: 1.1rem; line-height: 1.45; margin: 0; max-width: 34ch; }
+.feedback strong { display: block; font-size: 1.45rem; }
+.feedback.good strong { color: var(--good); }
+.feedback.bad strong { color: var(--bad); }
+.feedback .hint { color: var(--muted); }
+
+.foot { display: flex; justify-content: space-between; align-items: center; gap: 12px; flex-wrap: wrap; }
+.foot p { margin: 0; color: var(--muted); font-size: 0.9rem; }
+.reset { font: inherit; font-size: 0.95rem; color: var(--muted); background: transparent; border: 2px solid var(--line); border-radius: 14px; padding: 0 16px; min-height: 44px; cursor: pointer; }
+button:focus-visible { outline: 3px solid var(--mark); outline-offset: 3px; }
+
+@media (max-width: 420px) {
+  h1 { font-size: 1.35rem; }
+  .seg button { font-size: 0.85rem; }
+}
+@media (prefers-reduced-motion: reduce) {
+  * { transition: none !important; }
+}
+</style>
+<style>.home-link{display:inline-flex;align-items:center;min-height:40px;color:var(--muted);font-weight:600;text-decoration:none;font-size:0.95rem}.home-link:hover{color:var(--ink)}</style>
+<style>
+/* Phones and tablets: the game fills one screen; settings sit behind a button. */
+body { min-height: 100vh; min-height: 100dvh; padding-block: 12px 16px; }
+.wrap { gap: 12px; }
+.game-bar { display: flex; align-items: center; justify-content: space-between; gap: 8px; }
+.bar-right { display: flex; align-items: center; gap: 8px; }
+.top { gap: 8px 12px; }
+.play { display: flex; flex-direction: column; gap: 12px; -webkit-user-select: none; user-select: none; }
+@media (min-width: 600px) and (orientation: portrait) { .wrap { max-width: 640px; } }
+@media (orientation: landscape) and (min-width: 640px) {
+  .wrap { max-width: 1100px; }
+  .play { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; align-items: center; }
+}
+
+.problem-card { padding: 14px 14px 12px; gap: 8px; }
+.feedback { min-height: 2.9em; font-size: 1.05rem; }
+.feedback strong { font-size: 1.3rem; }
+/* Short phones: keep long explanations from pushing the words off screen. */
+@media (max-height: 760px) and (orientation: portrait) {
+  .feedback { font-size: 0.95rem; line-height: 1.35; }
+  .feedback strong { font-size: 1.15rem; }
+}
+
+/* Portrait: the page is exactly one screen tall; the words stay at the bottom
+   and the top part shrinks to fit. With settings open, the page scrolls normally. */
+@media (orientation: portrait) {
+  body { height: calc(100dvh - env(safe-area-inset-top, 0px) - env(safe-area-inset-bottom, 0px)); min-height: 0; display: flex; flex-direction: column; overflow: hidden; }
+  body:has(#settings-panel:not([hidden])) { height: auto; overflow: visible; }
+  .wrap { flex: 1 1 auto; min-height: 0; width: 100%; }
+  .play { flex: 1 1 auto; min-height: 0; }
+  .problem-card { flex: 1 1 auto; min-height: 0; justify-content: center; overflow: hidden; }
+  .feedback { flex: 0 1 auto; min-height: 0; overflow-y: auto; }
+}
+@media (orientation: landscape) and (min-width: 640px) {
+  body { height: calc(100dvh - env(safe-area-inset-top, 0px) - env(safe-area-inset-bottom, 0px)); min-height: 0; display: flex; flex-direction: column; overflow: hidden; }
+  body:has(#settings-panel:not([hidden])) { height: auto; overflow: visible; }
+  .wrap { flex: 1 1 auto; min-height: 0; width: 100%; }
+  .play { flex: 1 1 auto; min-height: 0; grid-template-rows: minmax(0, 1fr); }
+  .problem-card { min-height: 0; overflow: hidden; height: 100%; justify-content: center; }
+  .feedback { flex: 0 1 auto; min-height: 0; overflow-y: auto; }
+}
+@media (max-height: 500px) {
+  .feedback { font-size: 0.9rem; line-height: 1.3; }
+  .feedback strong { font-size: 1.05rem; }
+}
+
+/* Sentence Builder: a picture, one box per word, and the words mixed up as tiles to tap in order. */
+.pic { font-size: clamp(2.4rem, 11dvh, 6rem); line-height: 1.15; }
+.slots { display: flex; flex-wrap: wrap; justify-content: center; gap: 0.25em 0.4em; font-size: clamp(1.15rem, min(4.6vw, 3.6dvh), 1.7rem); font-weight: 700; line-height: 1.3; }
+.slot { min-width: 1.6em; padding: 0 0.15em; text-align: center; border-bottom: 0.12em solid var(--line); color: var(--ink); white-space: nowrap; }
+.slot:empty::before { content: "\00a0"; }
+.slot.cur { border-color: var(--accent); }
+.slot.ok { color: var(--good); border-color: var(--good); }
+.slot.no { color: var(--bad); border-color: var(--bad); text-decoration: line-through; text-decoration-thickness: 0.08em; }
+.slots.reveal { font-size: clamp(1.05rem, min(4vw, 3.2dvh), 1.5rem); color: var(--muted); }
+.slots.reveal .slot { border-color: transparent; color: inherit; opacity: 0; transform: translateY(0.2em); transition: opacity .2s ease, transform .2s ease; }
+.slots.reveal .slot.show { opacity: 1; transform: none; }
+.slots.reveal .slot.mark { color: var(--accent); border-color: var(--accent); }
+.side { display: flex; flex-direction: column; gap: 8px; }
+.words { display: flex; flex-wrap: wrap; justify-content: center; gap: 8px; }
+.words button, .actions button {
+  font: inherit; font-size: clamp(1.1rem, 2.8dvh, 1.6rem); font-weight: 700; color: var(--ink);
+  background: var(--key); border: 2px solid var(--line); border-radius: 16px; min-height: clamp(48px, 7dvh, 80px); cursor: pointer;
+  transition: transform .08s ease, border-color .15s ease; touch-action: manipulation; -webkit-tap-highlight-color: transparent;
+}
+.words button { flex: 1 0 auto; padding: 0 16px; min-width: 56px; }
+.words button:hover:not(:disabled), .actions button:hover:not(:disabled) { border-color: var(--accent); }
+.words button:active:not(:disabled), .actions button:active:not(:disabled) { transform: scale(0.96); }
+.words button:disabled, .actions button:disabled { opacity: 0.4; cursor: default; }
+.actions { display: grid; grid-template-columns: 1fr 2fr; gap: 8px; }
+.actions .erase { font-size: 1.1rem; color: var(--muted); }
+.actions .go { background: var(--accent); border-color: var(--accent); color: var(--accent-ink); font-size: 1.3rem; }
+.actions .go:hover:not(:disabled) { border-color: var(--accent); filter: brightness(1.08); }
+.seg.four { grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); }
+.seg button { padding-inline: 4px; }
+@media (min-width: 600px) and (orientation: portrait) {
+  .words button, .actions button { min-height: clamp(56px, 8dvh, 100px); font-size: clamp(1.3rem, 3dvh, 1.9rem); }
+}
+@media (orientation: landscape) and (min-width: 640px) {
+  .side { height: 100%; justify-content: center; }
+  .words button, .actions button { min-height: clamp(44px, 13dvh, 100px); }
+}
+@media (max-height: 900px), (max-width: 599px) {
+  .problem-card.good .pic, .problem-card.bad .pic { zoom: 0.7; }
+}
+/* Short phones: a smaller picture, so the word boxes and the explanation have room. */
+@media (max-height: 700px) {
+  .pic { font-size: clamp(2rem, 9dvh, 4rem); }
+  .problem-card.good .pic, .problem-card.bad .pic { zoom: 0.6; }
+}
+/* Short phones in portrait: after a wrong answer the right sentence needs the picture's room. */
+@media (max-height: 700px) and (orientation: portrait) {
+  .problem-card.bad .pic { display: none; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .slots.reveal .slot { transform: none; }
+}
+/* The printed worksheet: the words mixed up, and a line to write the sentence on. */
+@media print {
+  .loopy-sheet .ws-sb { display: flex; flex-direction: column; align-items: flex-start; flex: 1 1 auto; gap: 1.5mm; }
+  .loopy-sheet .ws-sbw { font-size: 11pt; color: #333; line-height: 1.3; }
+  .loopy-sheet .ws-sbl { display: block; width: 100%; max-width: 80mm; height: 6mm; border-bottom: 0.4mm solid #000; }
+  .loopy-sheet .sheet-mixed .ws-sbl { height: 8mm; }
+}
+</style>
+<link rel="stylesheet" href="../../loopy.css">
+<script src="../../loopy.js"></script>
+</head>
+<body>
+
+<div class="wrap">
+  <header class="game-bar">
+    <a class="home-link" href="../../">&larr; loopy</a>
+    <div class="bar-right">
+      <span id="star-chip"></span>
+      <button type="button" id="settings-toggle" aria-controls="settings-panel"></button>
+    </div>
+  </header>
+  <section class="top" aria-labelledby="title">
+    <h1 id="title" data-t="sbName">Sentence Builder</h1>
+    <div class="score" aria-live="polite">
+      <div class="pill pill-score"><span data-t="score">Score</span><b id="score">0 / 0</b></div>
+      <div id="level"></div>
+      <div class="pill pill-streak"><span data-t="streak">Streak</span><b id="streak">0</b></div>
+      <div id="last5" data-game="sentence-builder"></div>
+    </div>
+  </section>
+  <div class="settings-panel" id="settings-panel" hidden>
+    <div class="controls"><div id="age-picker"></div><div id="theme-picker"></div><button id="sound-toggle"></button><div id="lang-picker"></div></div>
+    <div>
+      <p class="seg-label" id="words-label" data-t="sbWords">Sentences in</p>
+      <div class="seg two" role="group" aria-labelledby="words-label" id="words-seg">
+        <button type="button" data-words="en">English</button>
+        <button type="button" data-words="de">Deutsch</button>
+      </div>
+    </div>
+    <div>
+      <p class="seg-label" id="level-label" data-t="sbLevel">Sentences</p>
+      <div class="seg four" role="group" aria-labelledby="level-label" id="level-seg">
+        <button type="button" data-level="1" data-t="sbL1">3 words</button>
+        <button type="button" data-level="2" data-t="sbL2">4 to 5 words</button>
+        <button type="button" data-level="3" data-t="sbL3">6 words, with questions</button>
+        <button type="button" data-level="4" data-t="sbL4">7 to 8 words, with a comma</button>
+      </div>
+    </div>
+    <div class="panel-foot">
+      <p data-t="sbKbd">Keyboard works too: 1 to 9 tap a word, Backspace erases, Enter checks.</p>
+      <button type="button" class="reset" id="reset" data-t="resetScore">Reset score</button>
+    </div>
+  </div>
+
+  <main class="play">
+    <div class="problem-card" id="card">
+      <div class="pic" id="pic" role="img" aria-label=""></div>
+      <div class="slots" id="slots" role="group" aria-live="polite"></div>
+      <div class="slots reveal" id="reveal" aria-hidden="true" hidden></div>
+      <p class="feedback" id="feedback"><span class="hint"></span></p>
+    </div>
+    <div class="side">
+      <div class="words" id="words"></div>
+      <div class="actions">
+        <button type="button" class="erase" id="k-erase" data-t="erase" data-t-aria="sbEraseAria">Erase</button>
+        <button type="button" class="go" id="k-go" data-t="check">Check</button>
+      </div>
+    </div>
+  </main>
+</div>
+
+<script>
+Loopy.addStrings({
+  en: {
+    sbName: "Sentence Builder", sbWords: "Sentences in", sbLevel: "Sentences",
+    sbL1: "3 words", sbL2: "4 to 5 words", sbL3: "6 words, with questions", sbL4: "7 to 8 words, with a comma",
+    sbEraseAria: "Erase the last word",
+    sbKbd: "Keyboard works too: 1 to 9 tap a word, Backspace erases, Enter checks.",
+    sbAsk: "Tap the words in the right order.", sbPic: "Picture", sbBoxes: "{n} words",
+    sbYes: "You built “{s}”.", sbRight: "The sentence is “{s}”.",
+    sbCap: "A sentence starts with a capital letter.", sbVerb: "The verb comes right after who does it.",
+    sbDot: "The full stop goes at the end.", sbBang: "The exclamation mark goes at the end.", sbQ: "The question mark goes at the end.",
+    sbStart: "The sentence starts with “{w}”.", sbAfter: "After “{a}” comes “{b}”.",
+    sbHow: "Read the words. Write them as a sentence on the line, in the right order."
+  },
+  de: {
+    sbName: "Satzbau", sbWords: "Sätze auf", sbLevel: "Sätze",
+    sbL1: "3 Wörter", sbL2: "4 bis 5 Wörter", sbL3: "6 Wörter, mit Fragen", sbL4: "7 bis 8 Wörter, mit Komma",
+    sbEraseAria: "Letztes Wort löschen",
+    sbKbd: "Die Tastatur geht auch: 1 bis 9 tippt ein Wort, Rücktaste löscht, Enter prüft.",
+    sbAsk: "Tippe die Wörter in der richtigen Reihenfolge an.", sbPic: "Bild", sbBoxes: "{n} Wörter",
+    sbYes: "Du hast „{s}“ gebaut.", sbRight: "Der Satz heißt „{s}“.",
+    sbCap: "Ein Satz beginnt mit einem großen Buchstaben.", sbVerb: "Das Verb steht an zweiter Stelle.",
+    sbDot: "Der Punkt kommt ans Ende.", sbBang: "Das Ausrufezeichen kommt ans Ende.", sbQ: "Das Fragezeichen kommt ans Ende.",
+    sbStart: "Der Satz beginnt mit „{w}“.", sbAfter: "Nach „{a}“ kommt „{b}“.",
+    sbHow: "Lies die Wörter. Schreibe sie in der richtigen Reihenfolge als Satz auf die Linie."
+  }
+});
+
+// GEN START
+// Each sentence: "picture words...". A * marks the verb (for the hint "the verb comes second").
+// Four levels: 3 words with the full stop on the last word; 4 to 5 words, the full stop as its own
+// tile; 6 words with questions; 7 to 8 words with a comma. English and German are written separately,
+// so each has its natural word order.
+const SENTENCES = {
+  en: [
+    ["🐶 The dog *sleeps.", "🐱 The cat *purrs.", "🐦 The bird *sings.", "🐸 The frog *jumps.", "🐟 The fish *swims.", "👶 The baby *laughs.",
+     "☀️ The sun *shines.", "🌧️ The rain *falls.", "🐄 The cow *moos.", "🐝 The bee *buzzes.", "🚌 The bus *stops.", "🔔 The bell *rings.",
+     "🐴 The horse *runs.", "👧 My sister *reads.", "👦 My brother *draws.", "👩 My mum *cooks.", "👨 My dad *sings.", "🐑 The sheep *eats.",
+     "🦆 The duck *quacks.", "🐷 The pig *rolls.", "🌳 The tree *grows.", "🐭 The mouse *hides.", "🦁 The lion *roars.", "🐔 The hen *clucks.",
+     "🏫 School *starts today.", "⭐ Stars *shine brightly.", "🚂 The train *waits.", "🐢 The turtle *crawls.", "🌙 The moon *glows.", "🧸 My teddy *smiles."],
+    ["🐱 The cat *drinks milk.", "🐶 The dog *likes bones.", "🍎 I *eat an apple.", "⚽ We *play football.", "🐦 Birds *fly high.", "📚 Tom *reads a book.",
+     "🛏️ The baby *sleeps now.", "🌧️ It *rains today.", "🍦 I *love ice cream.", "🏫 We *go to school.", "🐸 The frog *is green.", "🚗 Dad *drives the car.",
+     "🍪 Mum *bakes cookies.", "🎒 My bag *is heavy.", "☀️ The sun *is hot.", "🐟 Fish *swim in water.", "🐴 The horse *eats hay.", "🎈 The balloon *is red.",
+     "🐱 Cats *like warm beds.", "🌸 Flowers *smell nice.", "🧦 My socks *are blue.", "🐝 Bees *make honey.", "🚌 The bus *is late.", "🍌 Monkeys *love bananas.",
+     "❄️ Snow *is cold.", "🎉 Happy birthday to you!", "🐘 Elephants *are big.", "🧹 We *clean the room.", "🎵 Anna *sings a song.", "🌈 Look at the rainbow!"],
+    ["⚽ Where is my red ball?", "🐶 Where does the dog sleep?", "🍎 Do you like green apples?", "🏫 What time does school start?", "🐱 My cat *sleeps all day.",
+     "🎂 How old are you today?", "🐸 Frogs *jump into the pond.", "🚌 The bus *comes at eight.", "🍕 Can we eat pizza tonight?", "🌧️ It *rains a lot today.",
+     "🐦 The little bird *sings loudly.", "📚 Who reads the big book?", "🎈 My balloon *is bright red.", "🐴 Why is the horse sad?", "🏠 We *live in a house.",
+     "🌙 The moon *shines at night.", "🍪 Mum *bakes cookies on Sunday.", "🐟 Which fish is the biggest?", "🧸 My teddy *has a hat.", "🚂 When does the train leave?",
+     "🌳 The old tree *is tall.", "🐝 Busy bees *make sweet honey.", "🎒 Is this your school bag?", "❄️ Snow *falls in the winter.", "🍌 Monkeys *eat bananas every day.",
+     "🐘 Elephants *have very big ears.", "🎵 Can you sing this song?", "🏖️ We *build a sand castle.", "🐭 Where does the mouse hide?", "🌈 Look at the pretty rainbow!"],
+    ["🌧️ When it rains, we *play inside.", "☀️ When the sun shines, we *go outside.", "🍎 After lunch, I *eat an apple.", "🐶 If the dog barks, the cat *runs.",
+     "🏫 On Monday, we *go to school.", "🛏️ At night, the baby *sleeps well.", "🎂 On my birthday, I *get a cake.", "❄️ When it snows, we *build a snowman.",
+     "🐱 If you are quiet, the cat *comes.", "🍪 After school, Mum *bakes cookies.", "🌙 When the moon rises, the owls *wake.", "🚌 If the bus is late, we *walk.",
+     "🎒 Before school, I *pack my bag.", "🐸 In spring, the frogs *sing all night.", "🍕 On Fridays, we *eat pizza together.", "🌳 In autumn, the leaves *fall down.",
+     "🐦 Every morning, the birds *sing loudly.", "🏖️ In summer, we *swim in the sea.", "🧸 If I am tired, I *sleep early.", "🐴 In the field, the horse *runs fast.",
+     "🎵 After dinner, we *sing a song.", "🚂 When the train stops, we *get off.", "🐟 In the pond, the fish *swim quickly.", "🌈 After the rain, a rainbow *appears.",
+     "🍌 At the zoo, the monkeys *eat bananas.", "🧹 On Saturday, we *clean our room.", "🐝 In the garden, the bees *are busy.", "🎈 At the party, we *had red balloons.",
+     "🐘 At the zoo, the elephant *sprays water.", "📚 Before bed, Dad *reads a story."]
+  ],
+  de: [
+    ["🐶 Der Hund *schläft.", "🐱 Die Katze *schnurrt.", "🐦 Der Vogel *singt.", "🐸 Der Frosch *hüpft.", "🐟 Der Fisch *schwimmt.", "👶 Das Baby *lacht.",
+     "☀️ Die Sonne *scheint.", "🌧️ Der Regen *fällt.", "🐄 Die Kuh *muht.", "🐝 Die Biene *summt.", "🚌 Der Bus *hält.", "🔔 Die Glocke *läutet.",
+     "🐴 Das Pferd *rennt.", "👧 Meine Schwester *liest.", "👦 Mein Bruder *malt.", "👩 Mama *kocht Suppe.", "👨 Papa *singt laut.", "🐑 Das Schaf *frisst.",
+     "🦆 Die Ente *schnattert.", "🐷 Das Schwein *grunzt.", "🌳 Der Baum *wächst.", "🐭 Die Maus *piept.", "🦁 Der Löwe *brüllt.", "🐔 Das Huhn *gackert.",
+     "🏫 Die Schule *beginnt.", "⭐ Sterne *leuchten hell.", "🚂 Der Zug *wartet.", "🐢 Die Schildkröte *kriecht.", "🌙 Der Mond *leuchtet.", "🧸 Mein Teddy *lächelt."],
+    ["🐱 Die Katze *trinkt Milch.", "🐶 Der Hund *mag Knochen.", "🍎 Ich *esse einen Apfel.", "⚽ Wir *spielen Fußball.", "🐦 Vögel *fliegen hoch.", "📚 Tom *liest ein Buch.",
+     "🛏️ Das Baby *schläft jetzt.", "🌧️ Heute *regnet es.", "🍦 Ich *liebe Eis.", "🏫 Wir *gehen zur Schule.", "🐸 Der Frosch *ist grün.", "🚗 Papa *fährt das Auto.",
+     "🍪 Mama *backt Kekse.", "🎒 Mein Ranzen *ist schwer.", "☀️ Die Sonne *ist heiß.", "🐟 Fische *schwimmen im Wasser.", "🐴 Das Pferd *frisst Heu.", "🎈 Der Ballon *ist rot.",
+     "🐱 Katzen *mögen warme Betten.", "🌸 Blumen *duften gut.", "🧦 Meine Socken *sind blau.", "🐝 Bienen *machen Honig.", "🚌 Der Bus *kommt spät.", "🍌 Affen *lieben Bananen.",
+     "❄️ Schnee *ist kalt.", "🎉 Alles Gute zum Geburtstag!", "🐘 Elefanten *sind groß.", "🧹 Wir *putzen das Zimmer.", "🎵 Anna *singt ein Lied.", "🌈 Schau den Regenbogen an!"],
+    ["⚽ Wo ist mein roter Ball?", "🐶 Wo schläft der kleine Hund?", "🍎 Isst du gern grüne Äpfel?", "🏫 Wann beginnt die Schule heute?", "🐱 Die Katze *schläft im Bett.",
+     "🎂 Wie alt bist du heute?", "🐸 Frösche *springen in den Teich.", "🚌 Der Bus *kommt um acht.", "🍕 Essen wir heute Abend Pizza?", "🌧️ Heute *regnet es sehr viel.",
+     "🐦 Der kleine Vogel *singt laut.", "📚 Wer liest das dicke Buch?", "🎈 Mein Ballon *ist ganz rot.", "🐴 Warum ist das Pferd traurig?", "🏠 Wir *wohnen in einem Haus.",
+     "🌙 Der Mond *scheint nachts hell.", "🍪 Mama *backt am Sonntag Kekse.", "🐟 Welcher Fisch ist am größten?", "🧸 Mein Teddy *hat einen Hut.", "🚂 Wann fährt der Zug ab?",
+     "🌳 Der alte Baum *ist hoch.", "🐝 Fleißige Bienen *machen süßen Honig.", "🎒 Ist das hier dein Ranzen?", "❄️ Im Winter *fällt viel Schnee.", "🍌 Affen *essen jeden Tag Bananen.",
+     "🐘 Elefanten *haben sehr große Ohren.", "🎵 Kannst du dieses Lied singen?", "🏖️ Wir *bauen eine große Sandburg.", "🐭 Wo versteckt sich die Maus?", "🌈 Sieh den bunten Regenbogen an!"],
+    ["🌧️ Wenn es regnet, *spielen wir drinnen.", "☀️ Wenn die Sonne scheint, *gehen wir raus.", "🍞 Wenn ich Hunger habe, *esse ich Brot.", "🐶 Wenn der Hund bellt, *rennt die Katze.",
+     "🛏️ Wenn es dunkel wird, *gehe ich schlafen.", "🎂 Wenn ich Geburtstag habe, *gibt es Kuchen.", "❄️ Wenn es schneit, *bauen wir einen Schneemann.", "🐱 Wenn du leise bist, *kommt die Katze.",
+     "🍪 Mama *backt Kekse, und wir helfen.", "🌙 Wenn der Mond scheint, *schlafen wir.", "🚌 Wenn der Bus fehlt, *laufen wir.", "🎒 Ich *packe die Tasche, bevor ich gehe.",
+     "🐸 Frösche *singen laut, wenn es warm ist.", "🍕 Wenn Freitag ist, *essen wir Pizza.", "🌳 Wenn es Herbst wird, *fallen die Blätter.", "🐦 Die Vögel *singen, bevor ich aufstehe.",
+     "🏖️ Wenn Sommer ist, *schwimmen wir im Meer.", "🧸 Wenn ich müde bin, *schlafe ich früh.", "🐴 Das Pferd *rennt, wenn es sich freut.", "🎵 Wir *singen ein Lied, und Papa lacht.",
+     "🚂 Wenn der Zug hält, *steigen wir aus.", "🐟 Die Fische *schwimmen schnell, wenn ich komme.", "🌈 Wenn der Regen aufhört, *kommt der Regenbogen.", "🍌 Die Affen *essen Bananen, und wir lachen.",
+     "🧹 Am Samstag *putzen wir, dann spielen wir.", "🐝 Die Bienen *summen, weil die Blumen blühen.", "🎈 Ich *mag Ballons, aber Lea mag Kuchen.", "🐘 Der Elefant *spritzt Wasser, und alle lachen.",
+     "📚 Papa *liest vor, bevor ich schlafe.", "🍎 Ich *esse Äpfel, weil sie süß sind."]
+  ]
+};
+const randInt = (n) => Math.floor(Math.random() * n);
+const pick = (arr) => arr[randInt(arr.length)];
+const shuffle = (arr) => arr.slice().sort(() => Math.random() - 0.5);
+// The words as one line: "The dog sleeps." (the end mark goes back onto the last word).
+const line = (words) => words.join(" ").replace(/ ([.!?])$/, "$1");
+
+// One sentence to build. level: 1 to 4. The tiles are the words mixed up, never in the right order.
+// From level 2 the full stop, question mark or exclamation mark is its own tile.
+function makeProblem(lang, level, avoid) {
+  const list = SENTENCES[lang][level - 1], keyOf = (s) => s.replace(/\*/g, "").slice(s.indexOf(" ") + 1);
+  let s = pick(list);
+  for (let tries = 0; tries < 40 && avoid && avoid.includes(keyOf(s)); tries++) s = pick(list);
+  const parts = s.split(" "), pic = parts.shift();
+  let verb = -1;
+  const words = parts.map((w, i) => { if (w[0] === "*") { verb = i; return w.slice(1); } return w; });
+  if (level > 1) {
+    const last = words[words.length - 1], m = /[.!?]$/.exec(last);
+    if (m && last.length > 1) { words[words.length - 1] = last.slice(0, -1); words.push(m[0]); }
+  }
+  let tiles = shuffle(words);
+  for (let i = 0; i < 20 && tiles.join(" ") === words.join(" "); i++) tiles = shuffle(words);
+  return { pic, words, verb, tiles, level, text: line(words), key: keyOf(s) };
+}
+// GEN END
+
+(function () {
+  const $ = (id) => document.getElementById(id);
+  const card = $("card"), picEl = $("pic"), slotsEl = $("slots"), revealEl = $("reveal"), wordsEl = $("words"),
+    feedbackEl = $("feedback"), goBtn = $("k-go"), eraseBtn = $("k-erase");
+  const wordsBtns = [...document.querySelectorAll("#words-seg button")];
+  const levelBtns = [...document.querySelectorAll("#level-seg button")];
+  const t = Loopy.t;
+  const store = {
+    // ok: the values this setting may have; anything else falls back to the default.
+    get(k, d, ok) { try { const v = JSON.parse(Loopy.store.get(k)); return ok.includes(v) ? v : d; } catch (e) { return d; } },
+    set(k, v) { Loopy.store.set(k, JSON.stringify(v)); }
+  };
+  const still = window.matchMedia && matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+  let age = Loopy.getAge();
+  let wordsLang = store.get("sb.words", Loopy.lang === "de" ? "de" : "en", ["en", "de"]);
+  let level;
+  // The level is remembered per age: 3 words up to age 7, 4 to 5 words at 8 and 9, questions at 10, commas from 11.
+  const levelForAge = (a) => a <= 7 ? 1 : a <= 9 ? 2 : a === 10 ? 3 : 4, LEVELS = [1, 2, 3, 4];
+  // The kind of question in the answer log, by level.
+  const KINDS = { 1: "sb-3", 2: "sb-5", 3: "sb-6", 4: "sb-8" };
+  function loadForAge() {
+    level = store.get("sb.level.a" + age, levelForAge(age), LEVELS);
+    // Opened from the grown-ups' page to practise one level: set it for this visit, without saving.
+    const m = /^sb-([3568])$/.exec(Loopy.log.hint || "");
+    if (m) { level = +Object.keys(KINDS).find(l => KINDS[l] === m[0]); Loopy.log.hint = ""; }
+  }
+  loadForAge();
+  Loopy.levels.init({ names: ["sbL1", "sbL2", "sbL3", "sbL4"],
+    get: () => level - 1, base: () => levelForAge(age) - 1,
+    set: (i) => { level = LEVELS[i]; store.set("sb.level.a" + age, level); recent = []; render(); } });
+  let right = 0, tried = 0, streak = 0;
+  let current = null, picked = [], answered = false, recent = [], timers = [];
+  const built = () => picked.map(i => current.tiles[i]);
+
+  // Read aloud reads the sentence to build, in the language of the sentences.
+  Loopy.speech.question({ host: card, text: () => current ? current.text : "", lang: () => wordsLang });
+
+  function drawSlots() {
+    const words = built();
+    slotsEl.textContent = "";
+    current.words.forEach((w, i) => {
+      const s = document.createElement("span");
+      s.className = "slot";
+      s.style.minWidth = Math.max(1.6, w.length * 0.62 + 0.4) + "em";
+      if (words[i] !== undefined) s.textContent = words[i];
+      if (answered) s.classList.add(words[i] === w ? "ok" : "no");
+      else if (i === words.length) s.classList.add("cur");
+      slotsEl.appendChild(s);
+    });
+    slotsEl.setAttribute("aria-label", t("sbBoxes", { n: current.words.length }) + (words.length ? ": " + line(words) : ""));
+  }
+  function render() {
+    Loopy.levels.render();
+    $("score").textContent = right + " / " + tried;
+    $("streak").textContent = streak;
+    wordsBtns.forEach(b => b.setAttribute("aria-pressed", String(b.dataset.words === wordsLang)));
+    levelBtns.forEach(b => b.setAttribute("aria-pressed", String(+b.dataset.level === level)));
+    goBtn.textContent = t(answered ? "next" : "check");
+    goBtn.disabled = !answered && picked.length < current.words.length;
+    eraseBtn.disabled = answered || !picked.length;
+    // The tile(s) with the next word carry data-correct, so the browser test knows a right tap.
+    const next = answered || picked.length >= current.words.length ? null : current.words[picked.length];
+    [...wordsEl.children].forEach((b, i) => {
+      b.disabled = answered || picked.includes(i);
+      b.setAttribute("data-correct", String(!b.disabled && b.textContent === next));
+    });
+    drawSlots();
+  }
+  function stopReveal() { timers.forEach(clearTimeout); timers = []; }
+  function newRound() {
+    stopReveal();
+    current = Loopy.fresh(recent, () => makeProblem(wordsLang, level), 15);
+    picked = []; answered = false;
+    picEl.textContent = current.pic;
+    picEl.setAttribute("aria-label", t("sbPic"));
+    wordsEl.textContent = "";
+    current.tiles.forEach((w, i) => {
+      const b = document.createElement("button");
+      b.type = "button"; b.textContent = w; b.lang = wordsLang;
+      b.addEventListener("click", () => add(i));
+      wordsEl.appendChild(b);
+    });
+    revealEl.hidden = true; revealEl.textContent = "";
+    card.classList.remove("good", "bad");
+    feedbackEl.className = "feedback";
+    feedbackEl.innerHTML = '<span class="hint"></span>';
+    feedbackEl.firstChild.textContent = t("sbAsk");
+    render();
+    Loopy.speech.read();
+  }
+  function add(i) {
+    if (answered || picked.includes(i) || picked.length >= current.words.length) return;
+    picked.push(i);
+    const fromKeys = wordsEl.contains(document.activeElement);
+    render();
+    // With the keyboard, the tapped tile greys out, so focus moves on to the next word, or to Check.
+    if (fromKeys) (wordsEl.querySelector("button:not(:disabled)") || goBtn).focus({ preventScroll: true });
+  }
+  function erase() {
+    if (answered || !picked.length) return;
+    picked.pop();
+    render();
+  }
+  // One short line on why the first wrong word is wrong. i: where the child's sentence first differs.
+  function why(words, i) {
+    const b = words[i], w = current.words[i];
+    if (/^[.!?]$/.test(b)) return t(b === "." ? "sbDot" : b === "!" ? "sbBang" : "sbQ");
+    if (i === 0 && /^[a-zäöü]/.test(b)) return t("sbCap");
+    if (i === current.verb && i > 0) return t("sbVerb");
+    if (i === 0) return t("sbStart", { w });
+    return t("sbAfter", { a: current.words[i - 1], b: w });
+  }
+  // After a wrong answer, the right sentence appears under the child's try, one word at a time,
+  // with the first wrong spot marked.
+  function reveal(mark) {
+    revealEl.textContent = "";
+    const boxes = [];
+    current.words.forEach((w, i) => {
+      // The end mark stays on its word, unless it is the wrong spot to show.
+      if (/^[.!?]$/.test(w) && i !== mark && boxes.length) { boxes[boxes.length - 1].textContent += w; return; }
+      const s = document.createElement("span");
+      s.className = "slot" + (i === mark ? " mark" : ""); s.textContent = w;
+      revealEl.appendChild(s);
+      boxes.push(s);
+    });
+    revealEl.hidden = false;
+    boxes.forEach((s, i) => {
+      if (still) s.classList.add("show");
+      else timers.push(setTimeout(() => s.classList.add("show"), 250 + i * 300));
+    });
+  }
+  function check() {
+    if (answered || picked.length < current.words.length) return;
+    answered = true; tried++;
+    const words = built(), yours = line(words);
+    let i = 0;
+    while (i < current.words.length && words[i] === current.words[i]) i++;
+    const ok = i === current.words.length;
+    if (ok) { right++; streak++; } else { streak = 0; }
+    if (ok) Loopy.rewards.correct("sentence-builder", streak);
+    else Loopy.rewards.wrong("sentence-builder", { q: current.text, a: current.text, y: yours, k: KINDS[current.level] });
+    card.classList.remove("good", "bad");
+    card.classList.add(ok ? "good" : "bad");
+    feedbackEl.className = "feedback " + (ok ? "good" : "bad");
+    feedbackEl.innerHTML = "<strong></strong>";
+    feedbackEl.firstChild.textContent = ok ? (streak >= 3 ? t("correctRow", { n: streak }) : t("correct")) : t("notQuite");
+    feedbackEl.appendChild(document.createTextNode(ok ? t("sbYes", { s: current.text }) : why(words, i)));
+    if (!ok) reveal(i);
+    render();
+    goBtn.focus({ preventScroll: true });
+    Loopy.speech.read();
+  }
+
+  eraseBtn.addEventListener("click", erase);
+  goBtn.addEventListener("click", () => { answered ? newRound() : check(); });
+  wordsBtns.forEach(b => b.addEventListener("click", () => { wordsLang = b.dataset.words; store.set("sb.words", wordsLang); recent = []; newRound(); }));
+  levelBtns.forEach(b => b.addEventListener("click", () => { level = +b.dataset.level; store.set("sb.level.a" + age, level); recent = []; newRound(); }));
+  window.addEventListener("loopy:age", (e) => { age = e.detail; recent = []; loadForAge(); newRound(); });
+  $("reset").addEventListener("click", () => { right = 0; tried = 0; streak = 0; Loopy.recent.clear("sentence-builder"); newRound(); });
+  document.addEventListener("keydown", (e) => {
+    if (e.target.tagName === "INPUT" || e.ctrlKey || e.metaKey || e.altKey || document.querySelector(".loopy-cheer.big")) return;
+    if (e.key === "Enter") {
+      if (e.target.tagName === "BUTTON") return;
+      answered ? newRound() : check();
+      e.preventDefault();
+      return;
+    }
+    if (e.key === "Backspace") { erase(); e.preventDefault(); return; }
+    // 1 to 9: tap the first, second, ... word tile.
+    if (/^[1-9]$/.test(e.key) && +e.key <= current.tiles.length) add(+e.key - 1);
+  });
+
+  // Print worksheet: 20 sentences with the words mixed up, and a line to write each one on.
+  const part = (cls, text) => { const n = document.createElement("span"); n.className = cls; if (text) n.textContent = text; return n; };
+  Loopy.worksheet({
+    title: () => t("sbName"),
+    level: () => [t("ageLabel", { n: age }), t("sbLevel") + ": " + t("sbL" + level),
+      t("sbWords") + ": " + (wordsLang === "de" ? "Deutsch" : "English")].join(" · "),
+    how: () => t("sbHow"),
+    layout: "line",
+    make: (n) => { const list = [], keys = []; while (list.length < n) { const p = makeProblem(wordsLang, level, keys); keys.push(p.key); list.push(p); } return list; },
+    cell: (p) => {
+      const box = document.createElement("div");
+      box.className = "ws-sb";
+      box.appendChild(part("ws-sbw", p.pic + " " + p.tiles.join("  ")));
+      box.appendChild(part("ws-sbl"));
+      return box;
+    },
+    answer: (p) => p.pic + " " + p.text
+  });
+
+  newRound();
+})();
+</script>
+</body>
+</html>

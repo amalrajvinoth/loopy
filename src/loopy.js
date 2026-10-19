@@ -53,7 +53,7 @@ document.documentElement.classList.add("loopy-building");
       erase: "Erase", eraseAria: "Erase last digit", check: "Check", next: "Next", yourAnswer: "Your answer", both: "Both",
       skip: "Skip", setGame: "This game", setShared: "Age, look and sound",
       hintChoices: "Tap the right answer!", hintPad: "Tap the numbers, then Check!",
-      hintLetters: "Tap the letters to spell the word!", hintMap: "Tap the right place on the map!"
+      hintLetters: "Tap the letters to spell the word!", hintWords: "Tap the words in order!", hintMap: "Tap the right place on the map!"
     },
     de: {
       theme: "Farbthema", black: "Schwarz", sunny: "Sonnig", ocean: "Ozean", candy: "Bonbon", forest: "Wald", contrast: "Hoher Kontrast",
@@ -76,7 +76,7 @@ document.documentElement.classList.add("loopy-building");
       erase: "Löschen", eraseAria: "Letzte Ziffer löschen", check: "Prüfen", next: "Weiter", yourAnswer: "Deine Antwort", both: "Beides",
       skip: "Überspringen", setGame: "Dieses Spiel", setShared: "Alter, Aussehen und Ton",
       hintChoices: "Tippe auf die richtige Antwort!", hintPad: "Tippe die Zahlen, dann Prüfen!",
-      hintLetters: "Tippe die Buchstaben für das Wort!", hintMap: "Tippe die richtige Stelle auf der Karte an!"
+      hintLetters: "Tippe die Buchstaben für das Wort!", hintWords: "Tippe die Wörter der Reihe nach an!", hintMap: "Tippe die richtige Stelle auf der Karte an!"
     }
   });
 
@@ -780,6 +780,7 @@ document.documentElement.classList.add("loopy-building");
 // A game calls Loopy.speech.question({ host: card, text: function () { return "What is 4 plus 3?"; } })
 // once, then Loopy.speech.read() each time a new question shows. The button sits in the host's top
 // right corner; with inline: true it sits after the host's text instead (for a one-line prompt).
+// lang() (optional) gives "en" or "de" when the text is not in the page's language (a "Words in" setting).
 (function () {
   var Loopy = window.Loopy;
   var KEY = "loopy.readAloud", OLDEST_ON = 7;
@@ -808,8 +809,9 @@ document.documentElement.classList.add("loopy-building");
     try {
       speechSynthesis.cancel();
       var u = new SpeechSynthesisUtterance(text);
-      u.lang = Loopy.lang === "de" ? "de-DE" : "en-US";
-      var v = voiceFor(Loopy.lang);
+      var lang = opts && opts.lang ? opts.lang() : Loopy.lang;
+      u.lang = lang === "de" ? "de-DE" : "en-US";
+      var v = voiceFor(lang);
       if (v) u.voice = v;
       u.rate = 0.9;
       talking = u;
@@ -906,7 +908,7 @@ document.documentElement.classList.add("loopy-building");
   var cheeredBest = {}; // one "new best" cheer per run
   var owed = []; // badges earned on the same answer as another card, cheered on the next right answer
   var last = null; // the last answer on this page, for "Report a problem"
-  var MAX_STARS = 1000000, GAMES = ["plus-minus", "times-share", "clock", "sound-spell", "daily-mix", "make-10", "bigger-smaller", "pizza-fractions", "coins-change", "word-match", "spell-it", "quick-facts", "where-is-it", "equation-balance", "flags-capitals", "times-sprint", "percent-ratio"];
+  var MAX_STARS = 1000000, GAMES = ["plus-minus", "times-share", "clock", "sound-spell", "daily-mix", "make-10", "bigger-smaller", "pizza-fractions", "coins-change", "word-match", "spell-it", "quick-facts", "where-is-it", "equation-balance", "flags-capitals", "times-sprint", "percent-ratio", "sentence-builder"];
   var num = function (n) { return typeof n === "number" && isFinite(n) && n >= 0 ? Math.min(Math.floor(n), MAX_STARS) : 0; };
   // Only known games and sane numbers are kept, whatever the stored text says.
   function clean(raw) {
@@ -1304,9 +1306,9 @@ document.documentElement.classList.add("loopy-building");
 // { days: { "2026-10-15": { "plus-minus": [right, wrong] } }, wrong: [{ d: day, g: game, q, a: right answer, y: their answer, k: kind }] }.
 (function () {
   var KEY = "loopy.log", DAYS = 30, MAX_WRONG = 300, MAX_N = 100000, LEN = 40;
-  var GAMES = ["plus-minus", "times-share", "clock", "sound-spell", "daily-mix", "make-10", "bigger-smaller", "pizza-fractions", "coins-change", "word-match", "spell-it", "quick-facts", "where-is-it", "equation-balance", "flags-capitals", "times-sprint", "percent-ratio"];
+  var GAMES = ["plus-minus", "times-share", "clock", "sound-spell", "daily-mix", "make-10", "bigger-smaller", "pizza-fractions", "coins-change", "word-match", "spell-it", "quick-facts", "where-is-it", "equation-balance", "flags-capitals", "times-sprint", "percent-ratio", "sentence-builder"];
   // What kind of problem it was, so the page can say what to practise. See Loopy.log.kind.
-  var KIND = /^(?:(?:add|sub)(?:-rg)?|(?:mul|div)-(?:big|\d{1,2})|cl-(?:0|30|15|5|1|24)|ss-(?:start|end)|mk-(?:10|20|100|1000)|bs-(?:cmp|ord|rnd|dec|neg)|pz-(?:name|cmp|add)|cc-(?:small|count|ch10|ch)|wm-(?:animals|food|home|school)|si-[3-7]|qf-(?:space|animals|body)|wi-(?:cont|eu|euc|wd|wdc)|eb-(?:box|add|mul|two|both)|fc-(?:flag|cap)|pr-(?:frac|any|disc|ratio))$/;
+  var KIND = /^(?:(?:add|sub)(?:-rg)?|(?:mul|div)-(?:big|\d{1,2})|cl-(?:0|30|15|5|1|24)|ss-(?:start|end)|mk-(?:10|20|100|1000)|bs-(?:cmp|ord|rnd|dec|neg)|pz-(?:name|cmp|add)|cc-(?:small|count|ch10|ch)|wm-(?:animals|food|home|school)|si-[3-7]|qf-(?:space|animals|body)|wi-(?:cont|eu|euc|wd|wdc)|eb-(?:box|add|mul|two|both)|fc-(?:flag|cap)|pr-(?:frac|any|disc|ratio)|sb-(?:3|5|6|8))$/;
   var DAY = /^\d{4}-\d{2}-\d{2}$/;
   var Loopy = window.Loopy = window.Loopy || {};
   var whole = function (n) { return typeof n === "number" && isFinite(n) && n >= 0 ? Math.min(Math.floor(n), MAX_N) : 0; };
@@ -1384,7 +1386,7 @@ document.documentElement.classList.add("loopy-building");
 // green for right and red for wrong, newest on the right. rewards.correct / wrong fill it in.
 // Kept in this browser's localStorage as { "plus-minus": [1, 1, 0, 1, 1], ... }.
 (function () {
-  var KEY = "loopy.recent", N = 5, GAMES = ["plus-minus", "times-share", "clock", "sound-spell", "daily-mix", "make-10", "bigger-smaller", "pizza-fractions", "coins-change", "word-match", "spell-it", "quick-facts", "where-is-it", "equation-balance", "flags-capitals", "times-sprint", "percent-ratio"];
+  var KEY = "loopy.recent", N = 5, GAMES = ["plus-minus", "times-share", "clock", "sound-spell", "daily-mix", "make-10", "bigger-smaller", "pizza-fractions", "coins-change", "word-match", "spell-it", "quick-facts", "where-is-it", "equation-balance", "flags-capitals", "times-sprint", "percent-ratio", "sentence-builder"];
   var TICK = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 12.5l4 4 8-9"/></svg>';
   var CROSS = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M7 7l10 10M17 7L7 17"/></svg>';
   var Loopy = window.Loopy = window.Loopy || {};
@@ -1617,7 +1619,7 @@ Loopy.nextButton = function (btn, answered) {
 // moves to the first key instead of getting lost.
 (function () {
   var FIRST = '#choices button:not(:disabled), #answers button:not(:disabled), #map [tabindex="0"]';
-  var PAD = "#pad button:not(:disabled), #letters button:not(:disabled)";
+  var PAD = "#pad button:not(:disabled), #letters button:not(:disabled), #words button:not(:disabled)";
   function after(from) {
     if (!from || (from.id !== "next" && from.id !== "k-go")) return;
     setTimeout(function () {
@@ -1657,7 +1659,7 @@ Loopy.nextButton = function (btn, answered) {
 // (Loopy.rewards calls Loopy.hint.done). Kept per child in "loopy.seen" as a list of game folders.
 (function () {
   var KEY = "loopy.seen", NAME = /^[a-z0-9-]{1,40}$/;
-  var AREAS = [["#letters", "hintLetters"], ["#pad", "hintPad"], ["#map", "hintMap"], ["#choices", "hintChoices"], ["#answers", "hintChoices"]];
+  var AREAS = [["#letters", "hintLetters"], ["#words", "hintWords"], ["#pad", "hintPad"], ["#map", "hintMap"], ["#choices", "hintChoices"], ["#answers", "hintChoices"]];
   var Loopy = window.Loopy;
   var seen = [];
   // Only short folder names are kept, whatever the stored text says.
