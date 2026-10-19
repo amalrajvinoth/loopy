@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'sha256-7j1zr1ycaw3Cg+iebAOVKIGfqkfWhA0Zxl6rVLpXRuI='; style-src 'self' 'sha256-REchtnA93Huv5zPio68LSBCxxZ+QCPqmEE+rDQuPQ4I='; img-src 'self' data:; font-src 'self'; connect-src 'self'; worker-src 'self'; object-src 'none'; base-uri 'none'; form-action 'none'; manifest-src 'self'; upgrade-insecure-requests">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'sha256-DWPmGXYauhZa1q8HNdwEgKQkBSyDRy/tiD4D/AZPtEw='; style-src 'self' 'sha256-REchtnA93Huv5zPio68LSBCxxZ+QCPqmEE+rDQuPQ4I='; img-src 'self' data:; font-src 'self'; connect-src 'self'; worker-src 'self'; object-src 'none'; base-uri 'none'; form-action 'none'; manifest-src 'self'; upgrade-insecure-requests">
 <meta name="referrer" content="strict-origin-when-cross-origin">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <link rel="icon" href="icon.svg" type="image/svg+xml">
@@ -200,6 +200,7 @@ Loopy.addStrings({
     siTitle: "Spell It", siTag: "Spelling", siText: "Hear a word and spell it with a letter pad. Starts with 3-letter words and grows to long ones. English or German.",
     sbTitle: "Sentence Builder", sbTag: "Word order", sbText: "Tap the words in the right order to build a sentence. From 3 words up to 8, with questions and commas. English or German.",
     qfTitle: "Quick Facts", qfTag: "Science quiz", qfText: "Short picture quizzes about space, animals and your body, with one line of why after each answer.",
+    soTitle: "Sort It", soTag: "Sorting things", soText: "See a thing and pick its group: mammal or bird, solid or liquid, fruit or vegetable, planet or star, with one line of why.",
     ebTitle: "Equation Balance", ebTag: "First steps in algebra", ebText: "Find x so the see-saw is level. Starts with a missing number and grows to x on both sides.",
     wiTitle: "Where Is It?", wiTag: "Maps", wiText: "Tap continents, oceans, countries and capitals on a map. Europe first, then the whole world.",
     fcTitle: "Flags and Capitals", fcTag: "Flags", fcText: "See a flag and pick its country, then its capital. Europe first, then the whole world."
@@ -237,6 +238,7 @@ Loopy.addStrings({
     sbTitle: "Satzbau", sbTag: "Wortstellung", sbText: "Tippe die Wörter in der richtigen Reihenfolge an und baue einen Satz. Von 3 Wörtern bis 8, mit Fragen und Kommas. Deutsch oder Englisch.",
     siTitle: "Wörter schreiben", siTag: "Rechtschreibung", siText: "Hör ein Wort und schreibe es mit den Buchstaben. Erst Wörter mit 3 Buchstaben, dann längere. Deutsch oder Englisch.",
     qfTitle: "Blitzwissen", qfTag: "Wissens-Quiz", qfText: "Kurze Bilder-Quizze über das Weltall, Tiere und deinen Körper, mit einem Satz zum Warum nach jeder Antwort.",
+    soTitle: "Sortieren", soTag: "Dinge sortieren", soText: "Sieh ein Ding und wähle seine Gruppe: Säugetier oder Vogel, fest oder flüssig, Obst oder Gemüse, Planet oder Stern, mit einem Satz zum Warum.",
     ebTitle: "Waage", ebTag: "Erste Schritte in Algebra", ebText: "Finde x, damit die Waage gerade steht. Erst eine fehlende Zahl, später x auf beiden Seiten.",
     wiTitle: "Wo liegt das?", wiTag: "Landkarten", wiText: "Tippe Kontinente, Ozeane, Länder und Hauptstädte auf der Karte an. Erst Europa, dann die ganze Welt.",
     fcTitle: "Flaggen und Hauptstädte", fcTag: "Flaggen", fcText: "Sieh eine Flagge und wähle das Land, dann die Hauptstadt. Erst Europa, dann die ganze Welt."
@@ -262,6 +264,7 @@ const GAMES = [
   { subject: "languages", path: "languages/spell-it/", id: "si", pic: "✏️", ages: [6, 10] },
   { subject: "languages", path: "languages/sentence-builder/", id: "sb", pic: "🧩", ages: [6, 12] },
   { subject: "science", path: "science/quick-facts/", id: "qf", pic: "🔬", ages: [7, 12] },
+  { subject: "science", path: "science/sort-it/", id: "so", pic: "🗂️", ages: [6, 12] },
   { subject: "geography", path: "geography/where-is-it/", id: "wi", pic: "🗺️", ages: [7, 14] },
   { subject: "geography", path: "geography/flags-capitals/", id: "fc", pic: "🚩", ages: [7, 16] },
 ];

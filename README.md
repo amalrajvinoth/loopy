@@ -33,6 +33,7 @@ It works on phones, tablets and computers. There is no sign-up and no ads.
 | [Spell It](languages/spell-it/) | Hear a word and spell it on a letter pad, from 3 letters up to 8, in English or German | [README](languages/spell-it/README.md) |
 | [Sentence Builder](languages/sentence-builder/) | Tap the words in the right order to build a sentence, from 3 words up to 8, with questions and commas, in English or German | [README](languages/sentence-builder/README.md) |
 | [Quick Facts](science/quick-facts/) | Short science quizzes about space, animals and the body, with one line of why after each answer | [README](science/quick-facts/README.md) |
+| [Sort It](science/sort-it/) | See a thing and pick its group: mammal or bird, solid or liquid, fruit or vegetable, planet or star, with one line of why | [README](science/sort-it/README.md) |
 | [Where Is It?](geography/where-is-it/) | Continents, oceans, countries and capitals on a map, Europe first, then the world | [README](geography/where-is-it/README.md) |
 | [Flags and Capitals](geography/flags-capitals/) | See a flag, pick its country, then its capital, Europe first, then the world | [README](geography/flags-capitals/README.md) |
 | [Today's 10](mix/daily-mix/) | A daily mix of 10 problems from the games for your age, with a day streak (10 right answers in any game count as a day too) | [README](mix/daily-mix/README.md) |
@@ -55,7 +56,7 @@ Open it from the link at the bottom of the home page.
 - **Easier to read.** In **Settings**, turn on **Easier to read** to switch every text to Atkinson Hyperlegible, a font made so letters like b and d, or I, l and 1, are easy to tell apart. Pages only load the font when it is on, and it is saved for offline use like the other fonts.
 - **Stars.** Every right answer gives a star. More stars unlock badges, from 10 stars up to 5,000. A streak of right answers sets off confetti, and the best streak earns badges at 10, 20 and 50 in a row. There are badges for playing 5, 10 and all games, and a Brave badge for 10 in a row on a level above your age.
 - **Sound.** Short happy sounds play. Tap the speaker to turn them off.
-- **Read aloud.** In Plus and Minus, Times and Share, What Time Is It?, Make 10, Bigger or Smaller, Pizza Fractions, Coins and Change, Equation Balance, Times Tables Sprint, Percent and Ratio, Sentence Builder, Quick Facts, Where Is It? and Flags and Capitals, a speaker button reads the question out loud in the device's own voice, in English or German. Nothing is downloaded. It is on by itself for ages 5 to 7. Turn it on or off in **Settings**.
+- **Read aloud.** In Plus and Minus, Times and Share, What Time Is It?, Make 10, Bigger or Smaller, Pizza Fractions, Coins and Change, Equation Balance, Times Tables Sprint, Percent and Ratio, Sentence Builder, Quick Facts, Sort It, Where Is It? and Flags and Capitals, a speaker button reads the question out loud in the device's own voice, in English or German. Nothing is downloaded. It is on by itself for ages 5 to 7. Turn it on or off in **Settings**.
 - **Help.** After each answer, the game shows a short reason, so kids learn from mistakes.
 - **Last 5.** Each game shows the last 5 answers as green and red dots.
 - **Back.** The big button with the loopy bunny at the top of a game goes back to all games.
@@ -208,6 +209,7 @@ Page sizes, sent over the network with `loopy.js`, `loopy.css` and the two fonts
 | Where Is It? | 99 KB |
 | Flags and Capitals | 78 KB |
 | Quick Facts | 84 KB |
+| Sort It | 78 KB |
 
 Measured on 16 October 2026 the way `tools/review.py` counts it (text compressed like GitHub Pages does, fonts as they are). The review fails a page over 100 KB. When the faster loading work landed (PR #23), the first pages went from about 60 to 87 KB down to 33 to 51 KB, and Lighthouse scored 100 on a phone on slow 4G. Pages have grown since with more children, offline mode, reading aloud and the report button.
 
