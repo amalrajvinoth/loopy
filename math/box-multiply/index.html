@@ -1,0 +1,680 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'sha256-2xlIIy6HNjmyR2KA/wbimvTGwWmh2mE88jMhTVvo5QY='; style-src 'self' 'sha256-z2P7kGW5Z05eCTjTZdYpc0vThTlOE9vmt97pVSvi2I4=' 'sha256-fzN74ISGZYbXNQFvvIkH1u1MzZUMouCUpC5HIKGDYFA=' 'sha256-RT1053JU5UiKvjrCUFx1rlhdFLMmgtuFJ9T8jnMeawQ=' 'sha256-HkU2q6ezOlf1O9SgFgdGKJXjVCyc19qsCeIm+YpG84E='; img-src 'self' data:; font-src 'self'; connect-src 'self'; worker-src 'self'; object-src 'none'; base-uri 'none'; form-action 'none'; manifest-src 'self'; upgrade-insecure-requests">
+<meta name="referrer" content="strict-origin-when-cross-origin">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<style>:root{color-scheme:light;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}body{margin:0}[hidden]{display:none!important}</style>
+<link rel="icon" href="../../icon.svg" type="image/svg+xml">
+<link rel="manifest" href="../../manifest.webmanifest">
+<link rel="apple-touch-icon" href="../../apple-touch-icon.png">
+<meta name="theme-color" content="#0a0a0c">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="loopy">
+<title data-t="bmName">Box Multiplication</title>
+<meta name="description" content="Box Multiplication on loopy: learn the grid method step by step. Split 23 × 14 into 20 + 3 and 10 + 4, fill each box, then add them up. Free practice for ages 7 to 12, English and German.">
+<link rel="preload" href="../../fonts/lexend-latin.woff2" as="font" type="font/woff2" crossorigin>
+<style>
+/* Layout: one centered column like a worksheet strip; the sum and its grid on a card, big number pad below, settings behind a button. */
+:root {
+  --bg: #f3f6fb;
+  --card: #ffffff;
+  --ink: #1d2a3f;
+  --muted: #5d6b82;
+  --line: #d5dde9;
+  --accent: #2457c5;
+  --accent-ink: #ffffff;
+  --mark: #e2622b;
+  --good: #1f8a4c;
+  --good-bg: #e3f5ea;
+  --bad: #c23a3a;
+  --bad-bg: #fbe6e6;
+  --chip: #e6ecf6;
+  --key: #ffffff;
+  --font: "Lexend", "Segoe UI", "Helvetica Neue", Arial, sans-serif;
+}
+
+* { box-sizing: border-box; }
+body {
+  background: var(--bg); color: var(--ink); font-family: var(--font); font-size: 16px;
+  padding-left: max(16px, env(safe-area-inset-left, 0px));
+  padding-right: max(16px, env(safe-area-inset-right, 0px));
+  padding-block: 20px 32px;
+}
+.wrap { max-width: 520px; margin: 0 auto; display: flex; flex-direction: column; gap: 16px; }
+
+.top { display: flex; flex-wrap: wrap; gap: 12px; align-items: center; justify-content: space-between; }
+h1 { margin: 0; font-size: 1.6rem; font-weight: 700; text-wrap: balance; }
+.score { display: flex; flex-wrap: wrap; gap: 8px; font-variant-numeric: tabular-nums; }
+.pill { background: var(--card); border: 1px solid var(--line); border-radius: 999px; padding: 6px 14px; font-weight: 600; font-size: 1rem; white-space: nowrap; }
+.pill span { color: var(--muted); font-weight: 400; margin-right: 4px; }
+
+.settings { display: flex; flex-direction: column; gap: 8px; }
+.seg-label { font-size: 0.8rem; font-weight: 600; letter-spacing: 0.06em; text-transform: uppercase; color: var(--muted); margin: 0 0 4px 4px; }
+.seg { display: grid; grid-template-columns: repeat(2, 1fr); gap: 6px; background: var(--chip); padding: 5px; border-radius: 14px; }
+.seg button {
+  font: inherit; font-size: 0.95rem; font-weight: 600; color: var(--muted);
+  background: transparent; border: 0; border-radius: 10px; padding: 8px 6px; min-height: 44px; cursor: pointer;
+}
+.seg button[aria-pressed="true"] { background: var(--card); color: var(--ink); box-shadow: 0 1px 3px rgb(0 0 0 / 0.12); }
+
+.problem-card {
+  background: var(--card); border: 1px solid var(--line); border-radius: 24px;
+  padding: 20px 18px 18px; display: flex; flex-direction: column; align-items: center; gap: 14px;
+}
+.problem-card.good { border-color: var(--good); box-shadow: 0 0 0 2px var(--good) inset; }
+.problem-card.bad { border-color: var(--bad); box-shadow: 0 0 0 2px var(--bad) inset; }
+
+.feedback { min-height: 3.1em; text-align: center; font-size: 1.1rem; line-height: 1.45; margin: 0; max-width: 34ch; }
+.feedback strong { display: block; font-size: 1.45rem; }
+.feedback.good strong { color: var(--good); }
+.feedback.bad strong { color: var(--bad); }
+.feedback .hint { color: var(--muted); }
+
+.pad { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; }
+.pad button {
+  font: inherit; font-size: 2rem; font-weight: 700; font-variant-numeric: tabular-nums; color: var(--ink);
+  background: var(--key); border: 2px solid var(--line); border-radius: 18px; min-height: 72px; cursor: pointer;
+  transition: transform .08s ease, border-color .15s ease;
+  touch-action: manipulation; -webkit-tap-highlight-color: transparent;
+}
+.pad button:hover:not(:disabled) { border-color: var(--accent); }
+.pad button:active:not(:disabled) { transform: scale(0.96); }
+.pad button:disabled { opacity: 0.4; cursor: default; }
+.pad .erase { font-size: 1.15rem; color: var(--muted); }
+.pad .go { background: var(--accent); border-color: var(--accent); color: var(--accent-ink); font-size: 1.35rem; }
+.pad .go:hover:not(:disabled) { border-color: var(--accent); filter: brightness(1.08); }
+
+.foot { display: flex; justify-content: space-between; align-items: center; gap: 12px; flex-wrap: wrap; }
+.foot p { margin: 0; color: var(--muted); font-size: 0.9rem; }
+.reset { font: inherit; font-size: 0.95rem; color: var(--muted); background: transparent; border: 2px solid var(--line); border-radius: 14px; padding: 0 16px; min-height: 44px; cursor: pointer; }
+button:focus-visible { outline: 3px solid var(--mark); outline-offset: 3px; }
+
+@media (max-width: 420px) {
+  h1 { font-size: 1.35rem; }
+  .pad button { min-height: 64px; font-size: 1.8rem; }
+  .seg button { font-size: 0.85rem; }
+}
+@media (prefers-reduced-motion: reduce) {
+  * { transition: none !important; }
+}
+</style>
+<style>.home-link{display:inline-flex;align-items:center;min-height:40px;color:var(--muted);font-weight:600;text-decoration:none;font-size:0.95rem}.home-link:hover{color:var(--ink)}</style>
+<style>
+/* Phones and tablets: the game fills one screen; settings sit behind a button. */
+body { min-height: 100vh; min-height: 100dvh; padding-block: 12px 16px; }
+.wrap { gap: 12px; }
+.game-bar { display: flex; align-items: center; justify-content: space-between; gap: 8px; }
+.bar-right { display: flex; align-items: center; gap: 8px; }
+.top { gap: 8px 12px; }
+.play { display: flex; flex-direction: column; gap: 12px; -webkit-user-select: none; user-select: none; }
+@media (min-width: 600px) and (orientation: portrait) { .wrap { max-width: 640px; } }
+@media (orientation: landscape) and (min-width: 640px) {
+  .wrap { max-width: 1100px; }
+  .play { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; align-items: center; }
+}
+
+.problem-card { padding: 14px 14px 12px; gap: 8px; }
+.feedback { min-height: 2.9em; font-size: 1.05rem; }
+.feedback strong { font-size: 1.3rem; }
+.pad { gap: 8px; }
+.pad button { min-height: clamp(50px, 8vh, 92px); min-height: clamp(50px, 8dvh, 92px); }
+@media (min-width: 600px) and (orientation: portrait) {
+  .pad button { min-height: clamp(60px, 10dvh, 120px); font-size: 2.4rem; }
+}
+@media (orientation: landscape) and (min-width: 640px) {
+  .problem-card { height: 100%; justify-content: center; }
+  .pad button { min-height: clamp(44px, calc((100dvh - 150px) / 4.4), 130px); }
+}
+/* Short phones: keep long explanations from pushing the number pad off screen. */
+@media (max-height: 760px) and (orientation: portrait) {
+  .feedback { font-size: 0.95rem; line-height: 1.35; }
+  .feedback strong { font-size: 1.15rem; }
+}
+
+/* Portrait: the page is exactly one screen tall; the pad stays at the bottom
+   and the top part shrinks to fit. With settings open, the page scrolls normally. */
+@media (orientation: portrait) {
+  body { height: calc(100dvh - env(safe-area-inset-top, 0px) - env(safe-area-inset-bottom, 0px)); min-height: 0; display: flex; flex-direction: column; overflow: hidden; }
+  body:has(#settings-panel:not([hidden])) { height: auto; overflow: visible; }
+  .wrap { flex: 1 1 auto; min-height: 0; width: 100%; }
+  .play { flex: 1 1 auto; min-height: 0; }
+  .problem-card { flex: 1 1 auto; min-height: 0; justify-content: center; overflow: hidden; }
+  .feedback { flex: 0 1 auto; min-height: 0; overflow-y: auto; }
+}
+@media (orientation: landscape) and (min-width: 640px) {
+  body { height: calc(100dvh - env(safe-area-inset-top, 0px) - env(safe-area-inset-bottom, 0px)); min-height: 0; display: flex; flex-direction: column; overflow: hidden; }
+  body:has(#settings-panel:not([hidden])) { height: auto; overflow: visible; }
+  .wrap { flex: 1 1 auto; min-height: 0; width: 100%; }
+  .play { flex: 1 1 auto; min-height: 0; grid-template-rows: minmax(0, 1fr); }
+  .problem-card { min-height: 0; overflow: hidden; }
+  .feedback { flex: 0 1 auto; min-height: 0; overflow-y: auto; }
+}
+@media (max-height: 500px) {
+  .feedback { font-size: 0.9rem; line-height: 1.3; }
+  .feedback strong { font-size: 1.05rem; }
+}
+
+/* Box Multiplication: the sum on top, the grid under it (the parts of the first number across the top, the parts
+   of the second down the side, one box for each pair), the total line, then the feedback line. */
+.q { margin: 0; text-align: center; font-size: clamp(1.6rem, min(8vw, 5.5dvh), 3rem); font-weight: 700; font-variant-numeric: tabular-nums; line-height: 1.1; white-space: nowrap; }
+.grid { border-collapse: separate; border-spacing: clamp(4px, 0.8dvh, 8px); margin: -4px auto; font-variant-numeric: tabular-nums; font-weight: 700; }
+.grid th, .grid td { padding: 0 6px; text-align: center; vertical-align: middle; border-radius: 12px;
+  height: clamp(36px, 6.2dvh, 68px); min-width: clamp(54px, 18vw, 120px); font-size: clamp(1.1rem, min(5.4vw, 3.6dvh), 2rem); line-height: 1; white-space: nowrap; }
+.grid th { background: var(--chip); color: var(--muted); font-weight: 700; }
+.grid td.corner { background: transparent; border: 0; color: var(--muted); min-width: 0; padding: 0 4px; }
+.grid th[scope="row"] { min-width: clamp(44px, 14vw, 96px); }
+.grid td { border: 2px dashed var(--line); color: var(--muted); }
+.grid td.given { border: 2px solid var(--line); color: var(--ink); }
+.grid td.ok { border: 2px solid var(--good); background: var(--good-bg); color: var(--good); }
+.grid td.fixed { border: 2px solid var(--bad); color: var(--ink); }
+.grid td.now, .total .val.now { border: 3px solid var(--accent); color: var(--accent); }
+.grid td.bad, .total .val.bad { border: 3px solid var(--bad); background: var(--bad-bg); color: var(--bad); text-decoration: line-through; text-decoration-thickness: 0.08em; }
+.total { display: flex; align-items: center; justify-content: center; gap: 0.5em; font-size: clamp(1.2rem, min(6vw, 4dvh), 2.2rem); font-weight: 700; font-variant-numeric: tabular-nums; margin: 0; }
+.total .lbl { color: var(--muted); font-weight: 600; font-size: 0.8em; }
+.total .val { min-width: 3.4ch; padding: 0.12em 0.4em; text-align: center; border: 2px dashed var(--line); border-radius: 12px; color: var(--muted); white-space: nowrap; }
+.total .val.ok { border: 2px solid var(--good); background: var(--good-bg); color: var(--good); }
+.total .val.fixed { border: 2px solid var(--bad); color: var(--ink); }
+.total .val.given { border: 2px solid var(--line); color: var(--ink); }
+/* Three parts across (three digits times two) need narrower boxes on a phone. */
+.grid.wide th, .grid.wide td { min-width: clamp(48px, 15vw, 110px); font-size: clamp(1rem, min(4.6vw, 3.4dvh), 1.9rem); }
+.grid.wide th[scope="row"] { min-width: clamp(40px, 11vw, 90px); }
+/* Decimals: a comma or point key joins the bottom row, so it holds four keys. */
+.pad.dec { grid-template-columns: repeat(12, 1fr); }
+.pad.dec button { grid-column: span 4; }
+.pad.dec #k-erase, .pad.dec #k0, .pad.dec #k-dot, .pad.dec #k-go { grid-column: span 3; }
+.pad.dec .erase { font-size: 1rem; }
+.pad.dec .go { font-size: 1.15rem; }
+@media (max-width: 420px) { .pad.dec .erase { font-size: 0.85rem; } .pad.dec .go { font-size: 1rem; } }
+.seg.six { grid-template-columns: repeat(2, 1fr); }
+/* The feedback line: "Not quite." and the hint on one or two lines, so the grid keeps its room. */
+.problem-card .feedback strong { display: inline; font-size: inherit; }
+/* When a hint still does not fit, the boxes get shorter (fit). */
+.problem-card.tight .grid th, .problem-card.tight .grid td { height: clamp(28px, 4.6dvh, 52px); }
+.problem-card.tight .grid { border-spacing: 3px; }
+.problem-card.tight .q { font-size: clamp(1.3rem, 4dvh, 2.2rem); }
+.problem-card.tight .feedback { font-size: 0.92rem; line-height: 1.3; }
+.problem-card.tighter .grid th, .problem-card.tighter .grid td { height: 26px; font-size: 1rem; }
+.problem-card.tighter .grid { border-spacing: 2px; margin: -2px auto; }
+.problem-card.tighter .q { font-size: 1.25rem; }
+.problem-card.tighter .total { font-size: 1.05rem; }
+.problem-card.tighter .total .val { padding: 0 0.4em; }
+.problem-card.tighter .feedback { font-size: 0.86rem; line-height: 1.25; }
+@media (max-height: 700px) and (orientation: portrait) {
+  .grid { border-spacing: 4px; }
+  .grid th, .grid td { height: clamp(30px, 5.6dvh, 60px); }
+  .q { font-size: clamp(1.4rem, 4.6dvh, 2.2rem); }
+  .total { font-size: clamp(1.1rem, 3.4dvh, 1.6rem); }
+}
+/* Landscape: the card is half the screen wide, so the boxes are measured against that. */
+@media (orientation: landscape) and (min-width: 640px) {
+  .grid th, .grid td { min-width: clamp(50px, 9vw, 120px); }
+  .grid.wide th, .grid.wide td { min-width: clamp(44px, 7vw, 110px); }
+  .grid th[scope="row"], .grid.wide th[scope="row"] { min-width: clamp(36px, 5vw, 90px); }
+}
+/* Phone landscape: the card is short, so the boxes get shorter too. */
+@media (orientation: landscape) and (max-height: 500px) {
+  .grid th, .grid td { height: clamp(30px, 9dvh, 48px); font-size: clamp(1rem, 5dvh, 1.5rem); }
+  .q { font-size: clamp(1.4rem, 8dvh, 2.2rem); }
+  .total { font-size: clamp(1.1rem, 6dvh, 1.6rem); }
+}
+/* On the worksheet each sum gets its own empty grid and a line for the total. */
+@media print {
+  .sheet-clock .ws-bm { display: flex; flex-direction: column; align-items: center; gap: 1.2mm; }
+  .sheet-clock .ws-bm b { font-size: 14pt; font-weight: 700; }
+  .sheet-clock .ws-bm table { border-collapse: collapse; font-size: 9pt; }
+  .sheet-clock .ws-bm th, .sheet-clock .ws-bm td { border: 0.3mm solid #000; height: 6.2mm; min-width: 8mm; padding: 0 0.8mm; text-align: center; font-weight: 600; }
+  .sheet-clock .ws-bm th { background: #eee; }
+  .sheet-clock .ws-bm .ws-x { border: 0; background: none; }
+  .sheet-clock .ws-bm span { font-size: 11pt; }
+  .sheet-clock .ws-bm i { display: inline-block; width: 16mm; border-bottom: 0.4mm solid #000; margin-left: 1mm; }
+}
+</style>
+<link rel="stylesheet" href="../../loopy.css">
+<script src="../../loopy.js"></script>
+</head>
+<body>
+
+<div class="wrap">
+  <header class="game-bar">
+    <a class="home-link" href="../../">&larr; loopy</a>
+    <div class="bar-right">
+      <span id="star-chip"></span>
+      <button type="button" id="settings-toggle" aria-controls="settings-panel"></button>
+    </div>
+  </header>
+  <section class="top" aria-labelledby="title">
+    <h1 id="title" data-t="bmName">Box Multiplication</h1>
+    <div class="score" aria-live="polite">
+      <div class="pill pill-score"><span data-t="score">Score</span><b id="score">0 / 0</b></div>
+      <div id="level"></div>
+      <div class="pill pill-streak"><span data-t="streak">Streak</span><b id="streak">0</b></div>
+      <div id="last5" data-game="box-multiply"></div>
+    </div>
+  </section>
+  <div class="settings-panel" id="settings-panel" hidden>
+    <div class="controls"><div id="age-picker"></div><div id="theme-picker"></div><button id="sound-toggle"></button><div id="lang-picker"></div></div>
+    <div>
+      <p class="seg-label" id="mode-label" data-t="bmMode">How to play</p>
+      <div class="seg" role="group" aria-labelledby="mode-label" id="mode-seg">
+        <button type="button" id="mode-steps" data-mode="steps" data-t="bmSteps">Steps: fill every box</button>
+        <button type="button" id="mode-quick" data-mode="quick" data-t="bmQuick">Quick: one box is empty</button>
+      </div>
+    </div>
+    <div>
+      <p class="seg-label" id="lv-label" data-t="bmLevel">Level</p>
+      <div class="seg six" role="group" aria-labelledby="lv-label" id="lv-seg">
+        <button type="button" id="lv-0" data-lv="0" data-t="bmLv0">Two digits × 2 to 5</button>
+        <button type="button" id="lv-1" data-lv="1" data-t="bmLv1">Two digits × one digit</button>
+        <button type="button" id="lv-2" data-lv="2" data-t="bmLv2">Three digits × one digit</button>
+        <button type="button" id="lv-3" data-lv="3" data-t="bmLv3">Two digits × two digits</button>
+        <button type="button" id="lv-4" data-lv="4" data-t="bmLv4">Three digits × two digits</button>
+        <button type="button" id="lv-5" data-lv="5" data-t="bmLv5">Decimals</button>
+      </div>
+    </div>
+    <div class="panel-foot">
+      <p data-t="kbdHint">Keyboard works too: numbers, Backspace, Enter.</p>
+      <button type="button" class="reset" id="reset" data-t="resetScore">Reset score</button>
+    </div>
+  </div>
+
+  <main class="play">
+    <div class="problem-card" id="card">
+      <p class="q" id="q">23 × 14</p>
+      <table class="grid" id="grid"></table>
+      <p class="total"><span class="lbl" data-t="bmTotal">Total</span><span class="val" id="tot">?</span></p>
+      <p class="feedback" id="feedback" aria-live="polite"><span class="hint" data-t="tapHint">Tap the numbers to write your answer.</span></p>
+    </div>
+
+    <div class="pad" id="pad">
+      <button type="button" id="k1" data-d="1">1</button>
+      <button type="button" id="k2" data-d="2">2</button>
+      <button type="button" id="k3" data-d="3">3</button>
+      <button type="button" id="k4" data-d="4">4</button>
+      <button type="button" id="k5" data-d="5">5</button>
+      <button type="button" id="k6" data-d="6">6</button>
+      <button type="button" id="k7" data-d="7">7</button>
+      <button type="button" id="k8" data-d="8">8</button>
+      <button type="button" id="k9" data-d="9">9</button>
+      <button type="button" id="k-erase" class="erase" aria-label="Erase last digit" data-t-aria="eraseAria" data-t="erase">Erase</button>
+      <button type="button" id="k0" data-d="0">0</button>
+      <button type="button" id="k-dot" data-d="." aria-label="Decimal point" data-t-aria="bmDotAria" hidden disabled>.</button>
+      <button type="button" id="k-go" class="go" data-t="check">Check</button>
+    </div>
+  </main>
+</div>
+
+<script>
+Loopy.addStrings({
+  en: {
+    bmName: "Box Multiplication", bmLevel: "Level", bmMode: "How to play", bmSteps: "Steps: fill every box", bmQuick: "Quick: one box is empty",
+    bmLv0: "Two digits × 2 to 5", bmLv1: "Two digits × one digit", bmLv2: "Three digits × one digit",
+    bmLv3: "Two digits × two digits", bmLv4: "Three digits × two digits", bmLv5: "Decimals",
+    bmTotal: "Total", bmDotAria: "Decimal point", bmGrid: "Boxes for {s}",
+    bmSay: "What is {a} times {b}?",
+    // The line under the grid: which box is next.
+    bmBox: "Box {i} of {n}: {x} × {y} = ?", bmAdd: "Now add the boxes up.", bmOneBox: "One box is empty. What goes in it?", bmWhatTotal: "What is the total?",
+    // A first wrong try: a hint, not the answer.
+    bmHintZero: "Work out {p} × {q}, then add one zero.", bmHintZeros: "Work out {p} × {q}, then add {z} zeros.",
+    bmHintOnes: "Count in {q}s, {p} times.", bmHintDec: "Work out {p} × {q} first, then make it 10 times smaller.",
+    bmHintAdd: "Add up all {n} boxes. Start with the biggest.", bmWhyRows: "Row by row: {rows}. Together {v}.",
+    // A second wrong try (and the reason in Quick): the answer.
+    bmShowBox: "{x} × {y} = {v}. On to the next box.", bmWhyBox: "{x} × {y} = {v}.", bmWhyTotal: "{list} = {v}.",
+    bmDone: "All done!", bmSum: "{s} = {v}.",
+    bmQBox: "{s}: {x} × {y} = ?",
+    bmHow: "Fill in each box, then add them up. Write the total on the line."
+  },
+  de: {
+    bmName: "Malkreuz", bmLevel: "Stufe", bmMode: "Spielart", bmSteps: "Schritte: jedes Kästchen", bmQuick: "Schnell: ein Kästchen fehlt",
+    bmLv0: "Zweistellig × 2 bis 5", bmLv1: "Zweistellig × einstellig", bmLv2: "Dreistellig × einstellig",
+    bmLv3: "Zweistellig × zweistellig", bmLv4: "Dreistellig × zweistellig", bmLv5: "Kommazahlen",
+    bmTotal: "Gesamt", bmDotAria: "Komma", bmGrid: "Kästchen für {s}",
+    bmSay: "Was ist {a} mal {b}?",
+    bmBox: "Kästchen {i} von {n}: {x} × {y} = ?", bmAdd: "Jetzt zähle die Kästchen zusammen.", bmOneBox: "Ein Kästchen ist leer. Was gehört hinein?", bmWhatTotal: "Was ist das Ergebnis?",
+    bmHintZero: "Rechne {p} × {q} und hänge eine Null an.", bmHintZeros: "Rechne {p} × {q} und hänge {z} Nullen an.",
+    bmHintOnes: "Zähle in {q}er-Schritten, {p}-mal.", bmHintDec: "Rechne erst {p} × {q} und mach es dann 10-mal kleiner.",
+    bmHintAdd: "Zähle alle {n} Kästchen zusammen. Fang mit dem größten an.", bmWhyRows: "Zeile für Zeile: {rows}. Zusammen {v}.",
+    bmShowBox: "{x} × {y} = {v}. Weiter zum nächsten Kästchen.", bmWhyBox: "{x} × {y} = {v}.", bmWhyTotal: "{list} = {v}.",
+    bmDone: "Geschafft!", bmSum: "{s} = {v}.",
+    bmQBox: "{s}: {x} × {y} = ?",
+    bmHow: "Fülle jedes Kästchen aus und zähle dann zusammen. Schreibe das Ergebnis auf die Linie."
+  }
+});
+
+// GEN START
+const randInt = (lo, hi) => lo + Math.floor(Math.random() * (hi - lo + 1));
+const digit = () => randInt(1, 9);
+const t = Loopy.t;
+
+// The levels, easiest first. Each says how to make the two numbers. a is counted in tenths on the decimals level
+// (scale 10), so 23 there means 2.3; every other number is a whole number. No digit is ever 0, so every box is used.
+const LEVELS = [
+  { kind: "small", scale: 1, a: () => 10 * randInt(1, 4) + digit(), b: () => randInt(2, 5) },
+  { kind: "one", scale: 1, a: () => 10 * digit() + digit(), b: () => randInt(2, 9) },
+  { kind: "three", scale: 1, a: () => 100 * digit() + 10 * digit() + digit(), b: () => randInt(2, 9) },
+  { kind: "two", scale: 1, a: () => 10 * digit() + digit(), b: () => 10 * digit() + digit() },
+  { kind: "big", scale: 1, a: () => 100 * digit() + 10 * digit() + digit(), b: () => 10 * randInt(1, 4) + digit() },
+  { kind: "dec", scale: 10, a: () => 10 * digit() + digit(), b: () => 10 * digit() + digit() }
+];
+const KINDS = LEVELS.map(l => l.kind);
+const levelForAge = (age) => age <= 7 ? 0 : age >= 12 ? 5 : age - 7;
+
+// 234 → [200, 30, 4]: the place parts, biggest first.
+function parts(n) {
+  const out = [];
+  for (let p = 1; n > 0; p *= 10) { const d = n % 10; if (d) out.unshift(d * p); n = Math.floor(n / 10); }
+  return out;
+}
+// A number in the language's own way: 1,234 or 1.234, and 2.3 or 2,3. v is in units of 1/scale.
+const show = (v, scale) => Loopy.num(v / scale);
+
+// One sum: a × b, its parts, and the boxes in reading order (row by row), each with its value.
+function sum(lv, a, b) {
+  const L = LEVELS[lv], cols = parts(a), rows = parts(b), boxes = [];
+  rows.forEach((y, r) => cols.forEach((x, c) => boxes.push({ r, c, x, y, v: x * y })));
+  return { lv, a, b, scale: L.scale, cols, rows, boxes, total: a * b, key: lv + ":" + a + "x" + b };
+}
+function makeProblem(lv) { const L = LEVELS[lv]; return sum(lv, L.a(), L.b()); }
+
+// The sum as text, like "23 × 14" or "2.3 × 14".
+const sumText = (p) => show(p.a, p.scale) + " × " + Loopy.num(p.b);
+const boxText = (p, bx) => [show(bx.x, p.scale), Loopy.num(bx.y), show(bx.v, p.scale)];
+const listText = (p) => p.boxes.map(bx => show(bx.v, p.scale)).join(" + ");
+// Why the total is what it is: every box added up, or with two rows, each row's sum first (shorter on a phone).
+const whyTotal = (p) => p.rows.length === 1 ? t("bmWhyTotal", { list: listText(p), v: show(p.total, p.scale) })
+  : t("bmWhyRows", { rows: p.rows.map(y => show(p.a * y, p.scale)).join(" + "), v: show(p.total, p.scale) });
+
+// A hint for a box, without the answer: the two first digits to multiply, then the zeros to add.
+function hint(p, bx) {
+  const lead = (n) => { let z = 0; while (n % 10 === 0) { n /= 10; z++; } return [n, z]; };
+  const [pa, za] = lead(bx.x), [qb, zb] = lead(bx.y);
+  if (p.scale === 10 && za === 0) return t("bmHintDec", { p: pa, q: Loopy.num(bx.y) });
+  const z = za + zb - (p.scale === 10 ? 1 : 0);
+  if (z === 0) return t("bmHintOnes", { p: pa, q: qb });
+  return t(z === 1 ? "bmHintZero" : "bmHintZeros", { p: pa, q: qb, z });
+}
+// GEN END
+
+(function () {
+  const $ = (id) => document.getElementById(id);
+  const card = $("card"), gridEl = $("grid"), totEl = $("tot"), feedbackEl = $("feedback"), goBtn = $("k-go"), dotBtn = $("k-dot"), padEl = $("pad");
+  const lvBtns = [...document.querySelectorAll("#lv-seg button")], modeBtns = [...document.querySelectorAll("#mode-seg button")];
+  const digitBtns = [...document.querySelectorAll("#pad [data-d]")].filter(b => b !== dotBtn);
+  const GAME = "box-multiply";
+
+  const store = {
+    // ok: the values this setting may have; anything else falls back to the default.
+    get(k, d, ok) { try { const v = JSON.parse(Loopy.store.get(k)); return ok.includes(v) ? v : d; } catch (e) { return d; } },
+    set(k, v) { Loopy.store.set(k, JSON.stringify(v)); }
+  };
+
+  let age = Loopy.getAge();
+  let lv, mode = store.get("bm.mode", "steps", ["steps", "quick"]);
+  // The level is remembered per age, so each age starts at the right one.
+  function loadForAge() {
+    lv = store.get("bm.level.a" + age, levelForAge(age), [0, 1, 2, 3, 4, 5]);
+    // Opened from the grown-ups' page to practise one level: set it for this visit, without saving.
+    const m = /^bm-(small|one|three|two|big|dec)$/.exec(Loopy.log.hint || "");
+    if (m) { lv = KINDS.indexOf(m[1]); Loopy.log.hint = ""; }
+  }
+  loadForAge();
+  Loopy.levels.init({ names: LEVELS.map((l, i) => "bmLv" + i),
+    get: () => lv, base: () => levelForAge(age),
+    set: (i) => { lv = i; store.set("bm.level.a" + age, lv); recent = []; render(); } });
+
+  let right = 0, tried = 0, streak = 0;
+  // current: the sum. step: the box being filled (boxes.length = the total). Quick mode: one step only, the empty one.
+  // tries: wrong tries on this step. missed: a mistake was made in this sum (it is logged once, at the first one).
+  let current = null, step = 0, typed = "", tries = 0, missed = false, done = false, shaken = false, recent = [];
+  let cells = [];
+
+  const isTotal = () => step >= current.boxes.length;
+  const want = () => isTotal() ? current.total : current.boxes[step].v;
+  // What was typed, in units of 1/scale: "3.5" is 35 on the decimals level. NaN when nothing is typed.
+  const typedValue = () => typed === "" || typed === "." ? NaN : Math.round(parseFloat(typed) * current.scale);
+  function typedText() {
+    if (typed === "") return "";
+    const [w, f] = typed.split(".");
+    const whole = w === "" ? "0" : Loopy.num(parseInt(w, 10));
+    return f === undefined ? whole : whole + (Loopy.lang === "de" ? "," : ".") + f;
+  }
+
+  // The grid: a corner, the parts of the first number across, the parts of the second down the side.
+  function drawGrid() {
+    const p = current;
+    gridEl.textContent = "";
+    gridEl.classList.toggle("wide", p.cols.length > 2);
+    gridEl.setAttribute("aria-label", t("bmGrid", { s: sumText(p) }));
+    const head = gridEl.createTHead().insertRow();
+    const corner = document.createElement("td");
+    corner.className = "corner"; corner.textContent = "×"; corner.setAttribute("aria-hidden", "true");
+    head.appendChild(corner);
+    p.cols.forEach(x => { const th = document.createElement("th"); th.scope = "col"; th.textContent = show(x, p.scale); head.appendChild(th); });
+    const body = gridEl.createTBody();
+    cells = [];
+    p.rows.forEach((y, r) => {
+      const tr = body.insertRow(), th = document.createElement("th");
+      th.scope = "row"; th.textContent = Loopy.num(y); tr.appendChild(th);
+      p.cols.forEach(() => { const td = document.createElement("td"); tr.appendChild(td); cells.push(td); });
+    });
+  }
+  // Each box (and the total) shows what is known: ? when empty, the typed digits while it is the one being filled.
+  function paint() {
+    const p = current, all = cells.concat([totEl]);
+    all.forEach((el, i) => {
+      const quickHidden = mode === "quick" && i === step;
+      const filled = mode === "quick" ? !quickHidden || done : i < step || (done && i === step);
+      const value = i < p.boxes.length ? p.boxes[i].v : p.total;
+      el.className = (i === all.length - 1 ? "val " : "") + (el.dataset.state || "");
+      el.removeAttribute("role"); el.removeAttribute("aria-readonly"); el.removeAttribute("aria-label"); el.removeAttribute("data-a");
+      if (i === step && !done) {
+        el.textContent = typed === "" ? "?" : typedText();
+        el.classList.add(shaken ? "bad" : "now");
+        el.setAttribute("role", "textbox"); el.setAttribute("aria-readonly", "true"); el.setAttribute("aria-label", t("yourAnswer"));
+        // For the browser tests (tools/e2e), like data-correct on a right choice in other games.
+        el.dataset.a = String(value / p.scale);
+      } else if (filled) {
+        el.textContent = show(value, p.scale);
+        if (!el.dataset.state) el.classList.add(mode === "quick" && i !== step ? "given" : "ok");
+      } else el.textContent = "?";
+    });
+    card.dataset.steps = mode === "steps" && !done ? "on" : "off";
+  }
+  function say(text, head, cls) {
+    feedbackEl.className = "feedback" + (cls ? " " + cls : "");
+    feedbackEl.textContent = "";
+    if (head) { const s = document.createElement("strong"); s.textContent = head; feedbackEl.appendChild(s); feedbackEl.appendChild(document.createTextNode(" " + text)); }
+    else { const s = document.createElement("span"); s.className = "hint"; s.textContent = text; feedbackEl.appendChild(s); }
+  }
+  // The line that says what to do now.
+  function prompt() {
+    const p = current, n = p.boxes.length;
+    if (mode === "quick") return t(isTotal() ? "bmWhatTotal" : "bmOneBox");
+    if (isTotal()) return t("bmAdd");
+    const [x, y] = boxText(p, p.boxes[step]);
+    return t("bmBox", { i: step + 1, n, x, y });
+  }
+
+  function render() {
+    Loopy.levels.render();
+    $("score").textContent = right + " / " + tried;
+    $("streak").textContent = streak;
+    lvBtns.forEach(b => b.setAttribute("aria-pressed", String(+b.dataset.lv === lv)));
+    modeBtns.forEach(b => b.setAttribute("aria-pressed", String(b.dataset.mode === mode)));
+    const dec = current && current.scale === 10;
+    padEl.classList.toggle("dec", dec);
+    dotBtn.hidden = !dec;
+    dotBtn.textContent = Loopy.lang === "de" ? "," : ".";
+    goBtn.textContent = t(done ? "next" : "check");
+    goBtn.disabled = !done && (typed === "" || typed === "." || shaken);
+    digitBtns.forEach(b => b.disabled = done);
+    dotBtn.disabled = done || !dec || typed.includes(".");
+    $("k-erase").disabled = done || typed === "";
+    if (current) paint();
+    fit();
+  }
+  // A long hint on a small screen: shorter boxes until the feedback line fits the card.
+  function fit() {
+    card.classList.remove("tight", "tighter");
+    const over = () => feedbackEl.scrollHeight > feedbackEl.clientHeight + 1;
+    if (over()) card.classList.add("tight");
+    if (over()) card.classList.add("tighter");
+  }
+  window.addEventListener("resize", fit);
+
+  // Try again: a missed sum comes back later (Loopy.retry). The note is the key: the level and both numbers, "3:23x14".
+  function rebuild(r) {
+    const m = /^([0-5]):(\d{1,3})x(\d{1,2})$/.exec(r);
+    if (!m) return null;
+    const level = +m[1], a = +m[2], b = +m[3];
+    const noZero = (n) => !String(n).includes("0");
+    const ok = [[11, 49, 2, 5], [11, 99, 2, 9], [111, 999, 2, 9], [11, 99, 11, 99], [111, 999, 11, 49], [11, 99, 11, 99]][level];
+    if (!noZero(a) || !noZero(b) || a < ok[0] || a > ok[1] || b < ok[2] || b > ok[3]) return null;
+    return sum(level, a, b);
+  }
+
+  function newRound() {
+    current = Loopy.retry.fresh(GAME, recent, () => makeProblem(lv), rebuild, 12);
+    // Quick: one of the boxes or the total is empty; the total a third of the time.
+    step = mode === "quick" ? (Math.random() < 0.34 ? current.boxes.length : randInt(0, current.boxes.length - 1)) : 0;
+    typed = ""; tries = 0; missed = false; done = false; shaken = false;
+    $("q").textContent = sumText(current);
+    card.classList.remove("good", "bad");
+    drawGrid();
+    totEl.dataset.state = "";
+    say(prompt());
+    render();
+    Loopy.speech.read();
+  }
+
+  function press(d) {
+    if (done) return;
+    if (shaken) { typed = ""; shaken = false; }
+    if (d === "." && (current.scale !== 10 || typed.includes("."))) return;
+    if (typed.includes(".") && d !== "." && typed.split(".")[1].length >= 1) return;
+    if (typed.replace(".", "").length >= 6) return;
+    if (typed === "0" && d !== ".") typed = "";
+    typed += d;
+    render();
+  }
+  function erase() {
+    if (done) return;
+    if (shaken) { typed = ""; shaken = false; } else typed = typed.slice(0, -1);
+    render();
+  }
+
+  // The log row for a mistake: the question as asked, like "23 × 14: 20 × 4 = ?" or "23 × 14 = ?".
+  function logWrong() {
+    const p = current, s = sumText(p);
+    const q = isTotal() ? s + " = ?" : t("bmQBox", { s, x: boxText(p, p.boxes[step])[0], y: boxText(p, p.boxes[step])[1] });
+    Loopy.rewards.wrong(GAME, { q, a: show(want(), p.scale), y: typedText(), k: "bm-" + LEVELS[p.lv].kind, r: p.key });
+  }
+  function finish(ok) {
+    done = true; tried++;
+    if (ok) { right++; streak++; Loopy.rewards.correct(GAME, streak); }
+    card.classList.add(ok ? "good" : "bad");
+    const line = t("bmSum", { s: sumText(current), v: show(current.total, current.scale) });
+    if (ok) say(line, streak >= 3 ? t("correctRow", { n: streak }) : t("correct"), "good");
+  }
+  function mark(i, state) { (i < cells.length ? cells[i] : totEl).dataset.state = state; }
+
+  function check() {
+    if (done || typed === "" || typed === "." || shaken) return;
+    const p = current, ok = typedValue() === want();
+    if (!ok && !missed) { missed = true; streak = 0; logWrong(); }
+    if (mode === "quick") {
+      if (!ok) mark(step, "fixed");
+      const why = isTotal() ? whyTotal(p) : t("bmWhyBox", { x: boxText(p, p.boxes[step])[0], y: boxText(p, p.boxes[step])[1], v: boxText(p, p.boxes[step])[2] });
+      typed = "";
+      finish(ok);
+      if (!ok) say(why, t("notQuite"), "bad");
+      render();
+      return;
+    }
+    if (ok) {
+      typed = ""; tries = 0;
+      if (isTotal()) { finish(!missed); if (missed) say(t("bmSum", { s: sumText(p), v: show(p.total, p.scale) }), t("bmDone"), "bad"); }
+      else { step++; say(prompt()); }
+      render();
+      return;
+    }
+    tries++;
+    if (tries === 1) {
+      // First wrong try: the box turns red and a hint shows. The next digit starts again.
+      shaken = true;
+      say(isTotal() ? t("bmHintAdd", { n: p.boxes.length }) : hint(p, p.boxes[step]), t("notQuite"), "bad");
+      render();
+      return;
+    }
+    // Second wrong try: the answer goes in, in red, and the sum carries on.
+    mark(step, "fixed");
+    typed = ""; tries = 0; shaken = false;
+    if (isTotal()) { finish(false); say(whyTotal(p), t("notQuite"), "bad"); }
+    else {
+      const [x, y, v] = boxText(p, p.boxes[step]);
+      step++;
+      say(t("bmShowBox", { x, y, v }) + " " + prompt(), t("notQuite"), "bad");
+    }
+    render();
+  }
+  function go() { done ? newRound() : check(); }
+
+  digitBtns.concat([dotBtn]).forEach(b => b.addEventListener("click", () => press(b.dataset.d)));
+  $("k-erase").addEventListener("click", erase);
+  goBtn.addEventListener("click", go);
+  lvBtns.forEach(b => b.addEventListener("click", () => {
+    lv = +b.dataset.lv; store.set("bm.level.a" + age, lv); recent = []; newRound();
+  }));
+  modeBtns.forEach(b => b.addEventListener("click", () => { mode = b.dataset.mode; store.set("bm.mode", mode); newRound(); }));
+  window.addEventListener("loopy:age", (e) => { age = e.detail; recent = []; loadForAge(); newRound(); });
+  $("reset").addEventListener("click", () => { right = 0; tried = 0; streak = 0; Loopy.recent.clear(GAME); newRound(); });
+  document.addEventListener("keydown", (e) => {
+    if (e.metaKey || e.ctrlKey || e.altKey || document.querySelector(".loopy-cheer.big")) return;
+    if (e.target.tagName === "INPUT") return;
+    if (/^[0-9]$/.test(e.key)) { press(e.key); e.preventDefault(); }
+    else if (e.key === "." || e.key === ",") { press("."); e.preventDefault(); }
+    else if (e.key === "Backspace") { erase(); e.preventDefault(); }
+    else if (e.key === "Enter") {
+      if (document.activeElement && document.activeElement.tagName === "BUTTON" && document.activeElement !== goBtn) return;
+      go(); e.preventDefault();
+    }
+  });
+
+  // Read aloud: "What is 23 times 14?"
+  Loopy.speech.question({ host: card, text: () => t("bmSay", { a: show(current.a, current.scale), b: Loopy.num(current.b) }) });
+
+  // Print worksheet: 20 sums at the game's level, each with its own empty grid and a line for the total.
+  Loopy.worksheet({
+    title: () => t("bmName"),
+    level: () => [t("ageLabel", { n: age }), t("bmLv" + lv)].join(" · "),
+    how: () => t("bmHow"),
+    layout: "clock",
+    make: (n) => { const list = [], keys = []; for (let i = 0; list.length < n && i < 400; i++) { const p = makeProblem(lv); if (keys.includes(p.key)) continue; keys.push(p.key); list.push(p); } return list; },
+    cell: (p) => {
+      const box = document.createElement("div");
+      box.className = "ws-bm";
+      const b = document.createElement("b");
+      b.textContent = sumText(p);
+      box.appendChild(b);
+      const table = document.createElement("table"), head = table.insertRow(), x = document.createElement("th");
+      x.className = "ws-x"; x.textContent = "×"; head.appendChild(x);
+      p.cols.forEach(c => { const th = document.createElement("th"); th.textContent = show(c, p.scale); head.appendChild(th); });
+      p.rows.forEach(r => { const tr = table.insertRow(), th = document.createElement("th"); th.textContent = Loopy.num(r); tr.appendChild(th); p.cols.forEach(() => tr.insertCell()); });
+      box.appendChild(table);
+      const line = document.createElement("span");
+      line.textContent = t("bmTotal") + " =";
+      line.appendChild(document.createElement("i"));
+      box.appendChild(line);
+      return box;
+    },
+    answer: (p) => sumText(p) + " = " + show(p.total, p.scale)
+  });
+
+  newRound();
+})();
+</script>
+</body>
+</html>
