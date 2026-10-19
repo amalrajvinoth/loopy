@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'sha256-sJ5DqX+1N7MLEpozcr/T/0DqH36UxfOcBFwNCKZqIfw='; style-src 'self' 'sha256-z2P7kGW5Z05eCTjTZdYpc0vThTlOE9vmt97pVSvi2I4=' 'sha256-ER4UVxOAHVG2PpFuwsi/fNYnlP9iTYLytTr9Qx7YKqY=' 'sha256-RT1053JU5UiKvjrCUFx1rlhdFLMmgtuFJ9T8jnMeawQ=' 'sha256-fDcdKt0NOAY6n9Nok4/ouw7wfZ36jlKcoxXKNjj6K0U='; img-src 'self' data:; font-src 'self'; connect-src 'self'; worker-src 'self'; object-src 'none'; base-uri 'none'; form-action 'none'; manifest-src 'self'; upgrade-insecure-requests">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'sha256-9TFb8cFZpqIhUNQ4+RtALz1GXc7NA8XafKa9yej4JP8='; style-src 'self' 'sha256-z2P7kGW5Z05eCTjTZdYpc0vThTlOE9vmt97pVSvi2I4=' 'sha256-ER4UVxOAHVG2PpFuwsi/fNYnlP9iTYLytTr9Qx7YKqY=' 'sha256-RT1053JU5UiKvjrCUFx1rlhdFLMmgtuFJ9T8jnMeawQ=' 'sha256-fDcdKt0NOAY6n9Nok4/ouw7wfZ36jlKcoxXKNjj6K0U='; img-src 'self' data:; font-src 'self'; connect-src 'self'; worker-src 'self'; object-src 'none'; base-uri 'none'; form-action 'none'; manifest-src 'self'; upgrade-insecure-requests">
 <meta name="referrer" content="strict-origin-when-cross-origin">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <style>:root{color-scheme:light;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}body{margin:0}[hidden]{display:none!important}</style>
@@ -470,8 +470,23 @@ function explain(p) {
     $("k-erase").disabled = answered || typed === "";
   }
 
+  // Try again: a missed problem comes back later (Loopy.retry). The note is "mul 7 8" or "div 56 8";
+  // one the current level or problems setting cannot show waits.
+  const note = (p) => p.op + " " + p.a + " " + p.b;
+  function rebuild(r) {
+    const m = /^(mul|div) (\d{1,4}) (\d{1,4})$/.exec(r);
+    if (!m) return null;
+    const op = m[1], a = +m[2], b = +m[3], answer = op === "mul" ? a * b : a / b;
+    if (a < 1 || b < 1 || answer % 1 !== 0 || (opMode !== "mix" && op !== opMode)) return null;
+    if (level.kind === "facts") {
+      const fits = (tb, n) => level.tables.includes(tb) && n >= 1 && n <= level.upTo;
+      if (op === "mul" ? !fits(a, b) && !fits(b, a) : !fits(b, answer)) return null;
+    } else if (Math.max(a, b, answer) > 9999) return null;
+    return { op, a, b, key: op + a + "," + b, answer };
+  }
+
   function newRound() {
-    current = Loopy.fresh(recent, () => makeProblem(opMode, level), 12);
+    current = Loopy.retry.fresh("times-share", recent, () => makeProblem(opMode, level), rebuild, 12);
     typed = ""; answered = false;
     $("eq-a").textContent = fmt(current.a);
     $("eq-b").textContent = fmt(current.b);
@@ -502,7 +517,7 @@ function explain(p) {
     answered = true; tried++;
     const ok = parseInt(typed, 10) === current.answer;
     if (ok) { right++; streak++; } else { streak = 0; }
-    if (window.Loopy && Loopy.rewards) ok ? Loopy.rewards.correct("times-share", streak) : Loopy.rewards.wrong("times-share", { q: fmt(current.a) + (current.op === "mul" ? " × " : " ÷ ") + fmt(current.b), a: fmt(current.answer), y: fmt(parseInt(typed, 10)), k: Loopy.log.kind(current.op, current.a, current.b) });
+    if (window.Loopy && Loopy.rewards) ok ? Loopy.rewards.correct("times-share", streak) : Loopy.rewards.wrong("times-share", { q: fmt(current.a) + (current.op === "mul" ? " × " : " ÷ ") + fmt(current.b), a: fmt(current.answer), y: fmt(parseInt(typed, 10)), k: Loopy.log.kind(current.op, current.a, current.b), r: note(current) });
     card.className = "problem-card " + (ok ? "good" : "bad");
     feedbackEl.className = "feedback " + (ok ? "good" : "bad");
     const sign = current.op === "mul" ? " × " : " ÷ ";

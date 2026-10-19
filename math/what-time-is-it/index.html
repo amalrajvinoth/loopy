@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'sha256-SEG/AaiCPHExDmzKy9SvwEX0C8zQUSuJ3w5vJ9LgDXE='; style-src 'self' 'sha256-z2P7kGW5Z05eCTjTZdYpc0vThTlOE9vmt97pVSvi2I4=' 'sha256-3sj3uh9aH31RxV19ctqG8YL7yN3Ky+2+/ma80S4P6xw=' 'sha256-RT1053JU5UiKvjrCUFx1rlhdFLMmgtuFJ9T8jnMeawQ=' 'sha256-5l6V+0rs32MZBxOmHM8a+NkXfKUwwyzAJ74f5R8vnvw='; img-src 'self' data:; font-src 'self'; connect-src 'self'; worker-src 'self'; object-src 'none'; base-uri 'none'; form-action 'none'; manifest-src 'self'; upgrade-insecure-requests">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'sha256-tySA9yqcRJJ8H6d5o3rX5fZo5dBmd75Hli4HBHWfQbs='; style-src 'self' 'sha256-z2P7kGW5Z05eCTjTZdYpc0vThTlOE9vmt97pVSvi2I4=' 'sha256-3sj3uh9aH31RxV19ctqG8YL7yN3Ky+2+/ma80S4P6xw=' 'sha256-RT1053JU5UiKvjrCUFx1rlhdFLMmgtuFJ9T8jnMeawQ=' 'sha256-5l6V+0rs32MZBxOmHM8a+NkXfKUwwyzAJ74f5R8vnvw='; img-src 'self' data:; font-src 'self'; connect-src 'self'; worker-src 'self'; object-src 'none'; base-uri 'none'; form-action 'none'; manifest-src 'self'; upgrade-insecure-requests">
 <meta name="referrer" content="strict-origin-when-cross-origin">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <style>:root{color-scheme:light;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}body{margin:0}[hidden]{display:none!important}</style>
@@ -409,8 +409,20 @@ Loopy.addStrings({
     minuteLabels.style.display = showHelper ? "" : "none";
   }
 
+  // Try again: a missed time comes back later (Loopy.retry). The note is "9:35", or "21:35" in 24-hour time;
+  // a note from the other kind of time, or between the level's steps, waits.
+  const note = fmtT;
+  function rebuild(r) {
+    const m = (h24() ? /^([01]\d|2[0-3]):([0-5]\d)$/ : /^(1[0-2]|[1-9]):([0-5]\d)$/).exec(r);
+    if (!m || +m[2] % mins() !== 0) return null;
+    const t = { h: (+m[1] % 12) || 12, m: +m[2] };
+    if (h24()) t.pm = +m[1] >= 12;
+    t.key = fmtT(t);
+    return t;
+  }
+
   function newRound() {
-    const t = Loopy.fresh(recent, () => { const r = randomTime(); r.key = fmtT(r); return r; });
+    const t = Loopy.retry.fresh("clock", recent, () => { const r = randomTime(); r.key = fmtT(r); return r; }, rebuild);
     current = t; answered = false;
     promptEl.textContent = L(t.pm == null ? "clPrompt" : t.pm ? "clPmPrompt" : "clAmPrompt");
     setHands(t.h, t.m);
@@ -444,7 +456,7 @@ Loopy.addStrings({
       else b.classList.add("faded");
     });
     if (ok) { right++; streak++; } else { streak = 0; }
-    if (window.Loopy && Loopy.rewards) ok ? Loopy.rewards.correct("clock", streak) : Loopy.rewards.wrong("clock", { q: "🕒", a: fmtT(current), y: btn.textContent, k: current.pm == null ? Loopy.log.timeKind(current.m) : "cl-24" });
+    if (window.Loopy && Loopy.rewards) ok ? Loopy.rewards.correct("clock", streak) : Loopy.rewards.wrong("clock", { q: "🕒", a: fmtT(current), y: btn.textContent, k: current.pm == null ? Loopy.log.timeKind(current.m) : "cl-24", r: note(current) });
     feedbackEl.className = "feedback " + (ok ? "good" : "bad");
     feedbackEl.parentNode.classList.add(ok ? "good" : "bad");
     const head = ok ? (streak >= 3 ? L("correctRow", { n: streak }) : L("correct")) : L("clItIs", { time: fmtT(current) });
