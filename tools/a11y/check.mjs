@@ -174,7 +174,7 @@ for (const page of GAMES) {
   let found = false;
   for (let i = 0; i < 60 && !found; i++) {
     await p.keyboard.press("Tab");
-    found = await p.evaluate(() => { const e = document.activeElement; return !!(e.closest("#choices, #answers, #pad, #letters, #map") ); });
+    found = await p.evaluate(() => { const e = document.activeElement; return !!(e.closest("#choices, #answers, #pad, #letters, #words, #map") ); });
   }
   if (!found) { fail(where, "Tab never reaches the answers"); await p.context().close(); continue; }
   const said = () => p.evaluate(() => {
@@ -183,7 +183,7 @@ for (const page of GAMES) {
   });
   for (let round = 0; round < 2; round++) {
     // Answer: choices and the map are picked with Enter; the number and letter pads are typed into, then Check.
-    const pad = await p.evaluate(() => !!document.activeElement.closest("#pad, #letters"));
+    const pad = await p.evaluate(() => !!document.activeElement.closest("#pad, #letters, #words"));
     if (pad) {
       // Type with the focused key until Check turns on, then Tab to Check and press Enter.
       for (let i = 0; i < 10 && await p.evaluate(() => document.getElementById("k-go").disabled); i++) await p.keyboard.press("Enter");
@@ -207,7 +207,7 @@ for (const page of GAMES) {
       // Check is now Next: Enter on it brings the next problem, and focus must go back to the keys.
       await p.waitForTimeout(300);
       await p.keyboard.press("Enter"); await p.waitForTimeout(250);
-      if (!(await p.evaluate(() => !!document.activeElement.closest("#pad, #letters")))) fail(where, `after Next, focus is on ${await focusIn()}, not on the keys`);
+      if (!(await p.evaluate(() => !!document.activeElement.closest("#pad, #letters, #words")))) fail(where, `after Next, focus is on ${await focusIn()}, not on the keys`);
     }
   }
   results.play++;

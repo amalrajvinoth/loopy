@@ -104,7 +104,16 @@ const asked = p => p.evaluate(() => window.__questions.length);
 // Returns true when the answer was the marked right one.
 async function answer(p) {
   const right = p.locator('[data-correct="true"]:enabled');
-  if (await right.count()) { await right.first().click(); return true; }
+  if (await right.count()) {
+    await right.first().click();
+    // A sentence is built word by word: keep tapping the marked word until Check turns on, then Check.
+    const go = p.locator("#k-go");
+    if (await go.count() && await go.isDisabled()) {
+      for (let i = 0; i < 12 && await go.isDisabled() && await right.count(); i++) await right.first().click();
+      await go.click();
+    }
+    return true;
+  }
   if (await p.locator("#pad, #letters").count()) {
     // Number and letter pads: type with the first key until Check turns on.
     const key = p.locator("#pad button:enabled:not(#k-go):not(#k-erase), #letters button:enabled");
