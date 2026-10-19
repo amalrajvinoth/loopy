@@ -241,6 +241,10 @@
 .transfer .transfer-who button { background: var(--chip); color: var(--ink); border: 2px solid transparent; border-radius: 999px; padding: 0 14px; }
 .transfer .transfer-who button[aria-pressed="true"] { background: var(--card); border-color: var(--c1); }
 .transfer button:focus-visible, .transfer input:focus-visible { outline: 3px solid var(--mark); outline-offset: 2px; }
+.transfer button.quiet { background: var(--chip); color: var(--ink); }
+.transfer-qr { display: flex; flex-direction: column; align-items: center; gap: 6px; }
+.transfer-qr svg { display: block; width: min(100%, 260px); height: auto; border-radius: 12px; background: #fff; }
+.transfer-qr p { text-align: center; }
 
 /* Touch screens: no double-tap zoom or grey flash on buttons. */
 button, a, label, summary { touch-action: manipulation; -webkit-tap-highlight-color: transparent; }

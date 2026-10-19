@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'sha256-rQ8dDouMXYme1Q+4PSox/5AfqaE71AvN2p94Jgw/D2c='; style-src 'self' 'sha256-ghHnKJ5KO7w7iSzhgzeH2HkZUhdzoXqftLU0nDn0c/Q='; img-src 'self' data:; font-src 'self'; connect-src 'self'; worker-src 'self'; object-src 'none'; base-uri 'none'; form-action 'none'; manifest-src 'self'; upgrade-insecure-requests">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'sha256-R7BTtJGgaBMQLU8a0iDjElxLBGvrjviiLWebpD6cON0='; style-src 'self' 'sha256-ghHnKJ5KO7w7iSzhgzeH2HkZUhdzoXqftLU0nDn0c/Q='; img-src 'self' data:; font-src 'self'; connect-src 'self'; worker-src 'self'; object-src 'none'; base-uri 'none'; form-action 'none'; manifest-src 'self'; upgrade-insecure-requests">
 <meta name="referrer" content="strict-origin-when-cross-origin">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <link rel="icon" href="icon.svg" type="image/svg+xml">
@@ -158,10 +158,13 @@ footer p { margin: 0; }
     <details class="transfer">
       <summary data-t="moveStars">Move my stars to another device</summary>
       <div class="transfer-body">
-        <p data-t="moveHow">This code holds your stars, badges, day streak, progress, game levels and where you left off. Copy the code or the link, then paste or open it on the other device.</p>
+        <p data-t="moveHow">This code holds your stars, badges, day streak, progress, game levels and where you left off. Scan the picture with the other device, send the link, or copy the code and paste it there. Save backup keeps a copy in a file.</p>
         <div class="transfer-who" id="code-who" hidden></div>
+        <div class="transfer-qr" id="code-qr" hidden><svg id="qr-pic" role="img" aria-label="QR code with your stars link" data-t-aria="qrLabel" viewBox="-4 -4 29 29"><rect id="qr-back" x="-4" y="-4" width="29" height="29" fill="#fff"></rect><path id="qr-path" fill="#000" shape-rendering="crispEdges" d=""></path></svg><p id="qr-note"></p></div>
+        <div class="transfer-row"><button type="button" id="link-copy" class="wide" data-t="copyLink">Copy link</button><button type="button" id="link-send" class="wide" data-t="sendLink" hidden>Send</button></div>
         <div class="transfer-row"><input id="code-out" readonly data-t-aria="yourCode" aria-label="Your stars code"><button type="button" id="code-copy" data-t="copy">Copy</button></div>
-        <div class="transfer-row"><button type="button" id="link-copy" class="wide" data-t="copyLink">Copy link</button></div>
+        <div class="transfer-row"><button type="button" id="file-save" class="wide quiet" data-t="saveFile">Save backup</button><button type="button" id="file-open" class="wide quiet" data-t="openFile">Open backup</button></div>
+        <input type="file" id="file-in" accept=".json,.txt,application/json,text/plain" hidden>
         <div class="transfer-row"><input id="code-in" placeholder="Paste a code here" data-t-placeholder="pasteHere" data-t-aria="pasteCode" aria-label="Paste a stars code"><button type="button" id="code-load" data-t="load">Load</button></div>
         <p id="code-msg" aria-live="polite"></p>
       </div>
@@ -173,8 +176,13 @@ footer p { margin: 0; }
 Loopy.addStrings({
   en: {
     tagline: "Learn. Play. Repeat.", myStars: "My stars", seeBadges: "See all badges and day streak", moveStars: "Move my stars to another device",
-    moveHow: "This code holds your stars, badges, day streak, progress, game levels and where you left off. Copy the code or the link, then paste or open it on the other device.", yourCode: "Your stars code", copy: "Copy",
+    moveHow: "This code holds your stars, badges, day streak, progress, game levels and where you left off. Scan the picture with the other device, send the link, or copy the code and paste it there. Save backup keeps a copy in a file.", yourCode: "Your stars code", copy: "Copy",
     moveKidStars: "Move stars to another device", copyLink: "Copy link", linkCopied: "Link copied! Open it on the other device.",
+    sendLink: "Send", qrLabel: "QR code with your stars link", qrScan: "Or point the other device's camera at this code.",
+    qrLight: "This code carries everything except the list of wrong answers. Send or Copy link carries it all.",
+    saveFile: "Save backup", openFile: "Open backup",
+    fileSaved: "Backup file made. Find it in Downloads or Files, and keep it in iCloud Drive or Google Drive.",
+    badFile: "That file didn't work. Pick a loopy backup file.",
     whose: "Whose stars?", everyone: "Everyone",
     carryTag: "Carry on", carryGo: "Go →", againTag: "Try again", againLine: "{n} from this week",
     askOne: "Load {name}'s stars here?", askMany: "Load the stars of {names} here?", askNone: "Load these stars here?",
@@ -212,8 +220,13 @@ Loopy.addStrings({
   },
   de: {
     tagline: "Lernen. Spielen. Wiederholen.", myStars: "Meine Sterne", seeBadges: "Alle Abzeichen und die Tage-Serie zeigen", moveStars: "Sterne auf ein anderes Gerät bringen",
-    moveHow: "Dieser Code enthält deine Sterne, Abzeichen, Tage in Folge, deinen Fortschritt, die Stufen in den Spielen und wo du aufgehört hast. Kopiere den Code oder den Link und füge ihn auf dem anderen Gerät ein oder öffne ihn dort.", yourCode: "Dein Sterne-Code", copy: "Kopieren",
+    moveHow: "Dieser Code enthält deine Sterne, Abzeichen, Tage in Folge, deinen Fortschritt, die Stufen in den Spielen und wo du aufgehört hast. Scanne das Bild mit dem anderen Gerät, sende den Link, oder kopiere den Code und füge ihn dort ein. Sicherung speichern legt eine Kopie in einer Datei ab.", yourCode: "Dein Sterne-Code", copy: "Kopieren",
     moveKidStars: "Sterne auf ein anderes Gerät bringen", copyLink: "Link kopieren", linkCopied: "Link kopiert! Öffne ihn auf dem anderen Gerät.",
+    sendLink: "Senden", qrLabel: "QR-Code mit deinem Sterne-Link", qrScan: "Oder richte die Kamera des anderen Geräts auf diesen Code.",
+    qrLight: "Dieser Code enthält alles außer der Liste der falschen Antworten. Senden oder Link kopieren bringt alles mit.",
+    saveFile: "Sicherung speichern", openFile: "Sicherung öffnen",
+    fileSaved: "Sicherungsdatei erstellt. Du findest sie unter Downloads oder Dateien. Bewahre sie in iCloud Drive oder Google Drive auf.",
+    badFile: "Die Datei hat nicht geklappt. Wähle eine loopy-Sicherungsdatei.",
     whose: "Wessen Sterne?", everyone: "Alle",
     carryTag: "Weiterspielen", carryGo: "Los →", againTag: "Nochmal versuchen", againLine: "{n} von dieser Woche",
     askOne: "Die Sterne von {name} hier laden?", askMany: "Die Sterne von {names} hier laden?", askNone: "Diese Sterne hier laden?",
@@ -357,12 +370,33 @@ window.addEventListener("loopy:age", render);
     : t("allBadges");
   document.getElementById("meter-fill").style.width = next ? Math.round((stars - from) / (next.stars - from) * 100) + "%" : "100%";
   const out = document.getElementById("code-out"), msg = document.getElementById("code-msg");
+  const qrBox = document.getElementById("code-qr"), qrPath = document.getElementById("qr-path"), qrNote = document.getElementById("qr-note");
   const kids = Loopy.kids.list();
-  let who = 0, made = false;
+  let who = 0, made = false, turn = 0;
+  // The QR code holds the link, drawn here (nothing is fetched). Past version 25 (117 squares a side) a phone
+  // camera struggles with a screen, so a long code first drops the list of wrong answers, then the picture is left out.
+  const QR_MAX = 25;
+  const showQr = (q, light) => {
+    const span = q.n + 8;
+    document.getElementById("qr-pic").setAttribute("viewBox", "-4 -4 " + span + " " + span);
+    const back = document.getElementById("qr-back"); back.setAttribute("width", span); back.setAttribute("height", span);
+    qrPath.setAttribute("d", q.path);
+    qrNote.textContent = t(light ? "qrLight" : "qrScan");
+    qrBox.hidden = false;
+  };
+  const drawQr = (code, my) => {
+    const full = Loopy.backup.qr(Loopy.backup.link(code), QR_MAX);
+    if (full) return showQr(full, false);
+    Loopy.backup.exportCode(who || undefined, true).then(light => {
+      const q = my === turn && Loopy.backup.qr(Loopy.backup.link(light), QR_MAX);
+      if (q) showQr(q, true);
+    }, () => {});
+  };
   // The code is only made when the box is opened, so the home page opens faster.
   const make = () => {
-    made = true; out.value = ""; msg.textContent = "";
-    Loopy.backup.exportCode(who || undefined).then(code => { out.value = code; }, () => { out.value = ""; });
+    const my = ++turn;
+    made = true; out.value = ""; msg.textContent = ""; qrBox.hidden = true;
+    Loopy.backup.exportCode(who || undefined).then(code => { if (my !== turn) return; out.value = code; drawQr(code, my); }, () => { out.value = ""; });
   };
   document.querySelector(".transfer").addEventListener("toggle", e => { if (e.target.open && !made) make(); });
   // With more than one child, pick everyone or one child.
@@ -393,11 +427,51 @@ window.addEventListener("loopy:age", render);
   const copy = (text, ok) => navigator.clipboard.writeText(text).then(() => { msg.textContent = t(ok); }, () => { msg.textContent = t("copyByHand"); });
   document.getElementById("code-copy").addEventListener("click", () => { if (!out.value) return; out.select(); copy(out.value, "copied"); });
   document.getElementById("link-copy").addEventListener("click", () => { if (out.value) copy(Loopy.backup.link(out.value), "linkCopied"); });
+  // Send: the phone's share sheet (WhatsApp, AirDrop, mail) with the link. Only where the browser has one.
+  const send = document.getElementById("link-send");
+  if (navigator.share) {
+    send.hidden = false;
+    send.addEventListener("click", () => { if (out.value) navigator.share({ title: "loopy", url: Loopy.backup.link(out.value) }).catch(() => {}); });
+  }
   document.getElementById("code-load").addEventListener("click", () => {
     Loopy.backup.importCode(document.getElementById("code-in").value).then(ok => {
       if (ok) location.reload();
       else msg.textContent = t("badCode");
     });
+  });
+  // Save backup file: the code in a small file, made here, that lands in Downloads or Files (so iCloud Drive or Google Drive can keep it).
+  document.getElementById("file-save").addEventListener("click", () => {
+    if (!out.value) return;
+    const day = Loopy.dayKey(0);
+    const blob = new Blob([JSON.stringify({ loopy: "stars", saved: day, code: out.value }, null, 1)], { type: "application/json" });
+    const a = document.createElement("a");
+    a.href = URL.createObjectURL(blob);
+    a.download = "loopy-stars-" + day + ".json";
+    document.body.appendChild(a);
+    a.click();
+    a.remove();
+    setTimeout(() => URL.revokeObjectURL(a.href), 60000);
+    msg.textContent = t("fileSaved");
+  });
+  // Open backup file: read the code back out of such a file (or a file with just the code) and ask before loading.
+  const fileIn = document.getElementById("file-in");
+  document.getElementById("file-open").addEventListener("click", () => { fileIn.value = ""; fileIn.click(); });
+  fileIn.addEventListener("change", () => {
+    const f = fileIn.files && fileIn.files[0];
+    if (!f) return;
+    if (f.size > 300000) { msg.textContent = t("badFile"); return; }
+    const r = new FileReader();
+    r.onerror = () => { msg.textContent = t("badFile"); };
+    r.onload = () => {
+      let code = String(r.result).trim();
+      try { const j = JSON.parse(code); if (j && typeof j.code === "string") code = j.code; } catch (e) {}
+      if (typeof HTMLDialogElement !== "function") {
+        Loopy.backup.importCode(code).then(ok => { if (ok) location.reload(); else msg.textContent = t("badFile"); });
+        return;
+      }
+      ask(code, "badFile");
+    };
+    r.readAsText(f);
   });
   // A link from another device (loopy/#load=LOOPY2-...): ask first, then load. A bad or too-long link does nothing.
   function fromLink() {
@@ -406,8 +480,13 @@ window.addEventListener("loopy:age", render);
     history.replaceState(null, "", location.pathname + location.search);
     try { code = decodeURIComponent(code); } catch (e) { return; }
     if (code.length > Loopy.backup.MAX_CODE || typeof HTMLDialogElement !== "function") return;
+    ask(code);
+  }
+  // "Load Mia's stars here?" for a code from a link or a backup file. bad: the message when the code is no good.
+  function ask(code, bad) {
+    if (code.length > Loopy.backup.MAX_CODE) { if (bad) msg.textContent = t(bad); return; }
     Loopy.backup.peek(code).then(names => {
-      if (!names) return;
+      if (!names) { if (bad) msg.textContent = t(bad); return; }
       const named = names.filter(Boolean);
       const list = typeof Intl.ListFormat === "function" ? new Intl.ListFormat(Loopy.lang, { type: "conjunction" }).format(named) : named.join(", ");
       const dlg = document.createElement("dialog"), form = document.createElement("form"), h = document.createElement("h2"), p = document.createElement("p");
