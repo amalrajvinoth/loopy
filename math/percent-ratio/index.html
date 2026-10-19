@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'sha256-RxTQa6bUIg7hsvbOC8UOx6W2CFQwGCqoPAwsqJ+vYvA='; style-src 'self' 'sha256-z2P7kGW5Z05eCTjTZdYpc0vThTlOE9vmt97pVSvi2I4=' 'sha256-nzWO/Zp5fHoEAG1TKhQVCMxRphuWD3Glc7tgamR53K4=' 'sha256-RT1053JU5UiKvjrCUFx1rlhdFLMmgtuFJ9T8jnMeawQ=' 'sha256-8mi1cXgKL22AU/PExt3JtyI4gqzbS66XfuUx8kmgVRM='; img-src 'self' data:; font-src 'self'; connect-src 'self'; worker-src 'self'; object-src 'none'; base-uri 'none'; form-action 'none'; manifest-src 'self'; upgrade-insecure-requests">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'sha256-69nqUiMLHmSCm4sfXl7HAtKl31TpgMaZiHPp2jnJo8I='; style-src 'self' 'sha256-z2P7kGW5Z05eCTjTZdYpc0vThTlOE9vmt97pVSvi2I4=' 'sha256-nzWO/Zp5fHoEAG1TKhQVCMxRphuWD3Glc7tgamR53K4=' 'sha256-RT1053JU5UiKvjrCUFx1rlhdFLMmgtuFJ9T8jnMeawQ=' 'sha256-8mi1cXgKL22AU/PExt3JtyI4gqzbS66XfuUx8kmgVRM='; img-src 'self' data:; font-src 'self'; connect-src 'self'; worker-src 'self'; object-src 'none'; base-uri 'none'; form-action 'none'; manifest-src 'self'; upgrade-insecure-requests">
 <meta name="referrer" content="strict-origin-when-cross-origin">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <style>:root{color-scheme:light;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}body{margin:0}[hidden]{display:none!important}</style>
@@ -336,6 +336,9 @@ function wholeFor(p, max, lo, also) {
   return g * randInt(Math.max(1, Math.ceil(lo / g)), Math.floor(max / g));
 }
 
+// The key for "no repeats": the type and its numbers in order, like "of:25,80" or "share:1,2,30,true,1".
+const keyOf = (p) => p.type + ":" + Object.keys(p).filter(k => k !== "type" && k !== "lv" && k !== "answer").map(k => p[k]).join(",");
+
 // One problem. Every answer is a whole number. Types:
 //   of     p% of n                     pct    x of y as a percent
 //   off    n with p% off               up     n with p% added         vat    n plus 19% or 7% VAT
@@ -379,7 +382,7 @@ function makeProblem(lv) {
     }
   }
   p.lv = lv;
-  p.key = p.type + ":" + Object.keys(p).filter(k => k !== "type" && k !== "lv" && k !== "answer").map(k => p[k]).join(",");
+  p.key = keyOf(p);
   return p;
 }
 
@@ -542,8 +545,40 @@ function explain(p) {
     promptEl.hidden = !words;
     $("eq").setAttribute("aria-label", sayOf(current));
   }
+  // Try again: a missed question comes back later (Loopy.retry). The note is the level and the key, which holds the
+  // kind and every number: "frac of:25,80", "disc off:20,150,30", "ratio share:1,2,30,true,1".
+  const note = (p) => p.lv + " " + p.key;
+  function rebuild(r) {
+    const m = /^(frac|any|disc|ratio) (of|pct|off|up|vat|share|scale|every):([\w,]{1,30})$/.exec(r);
+    if (!m) return null;
+    const level = m[1], type = m[2], v = m[3].split(","), n = v.map(Number);
+    const within = (x, lo, hi) => Number.isInteger(x) && x >= lo && x <= hi;
+    let p = null;
+    if (type === "of" && n.length === 2) {
+      const pcs = level === "frac" ? [50, 25, 75, 10] : level === "any" ? [1, 5, 15, 20, 30, 40, 60, 70, 80, 90] : [];
+      if (pcs.includes(n[0]) && within(n[1], 1, 500) && n[0] * n[1] % 100 === 0) p = { type, p: n[0], n: n[1], answer: n[0] * n[1] / 100 };
+    } else if (type === "pct" && level === "any" && n.length === 2) {
+      if ([4, 5, 10, 20, 25, 50, 100, 200, 500].includes(n[1]) && within(n[0], 1, n[1] - 1) && 100 * n[0] % n[1] === 0) p = { type, x: n[0], y: n[1], answer: 100 * n[0] / n[1] };
+    } else if ((type === "off" || type === "up" || type === "vat") && level === "disc" && n.length === 3) {
+      const ok = type === "vat" ? [19, 7].includes(n[0]) && within(n[1], 100, 500) && n[1] % 100 === 0
+        : [5, 10, 15, 20, 25, 30, 50].includes(n[0]) && within(n[1], 1, type === "up" ? 400 : 500) && n[0] * n[1] % 100 === 0;
+      if (ok && n[2] === n[0] * n[1] / 100) p = { type, p: n[0], n: n[1], part: n[2], answer: type === "off" ? n[1] - n[2] : n[1] + n[2] };
+    } else if (type === "share" && level === "ratio" && n.length === 5) {
+      const s = n[0] + n[1], pair = [[1, 2], [1, 3], [2, 3], [1, 4], [3, 4], [2, 5], [3, 5], [1, 5], [3, 7], [4, 5]].some(q => q[0] === n[0] && q[1] === n[1]);
+      if (pair && within(n[2], 2 * s, 60) && n[2] % s === 0 && (v[3] === "true" || v[3] === "false") && within(n[4], 0, 2))
+        p = { type, a: n[0], b: n[1], n: n[2], big: v[3] === "true", thing: n[4], answer: (v[3] === "true" ? n[1] : n[0]) * n[2] / s };
+    } else if (type === "scale" && level === "ratio" && n.length === 2) {
+      if ([10, 50, 100, 1000].includes(n[0]) && within(n[1], 2, 9)) p = { type, s: n[0], cm: n[1], answer: n[0] * n[1] };
+    } else if (type === "every" && level === "ratio" && n.length === 3) {
+      if ([2, 3, 4, 5, 10].includes(n[1]) && within(n[0], 1, n[1] - 1) && within(n[2], 2 * n[1], 100) && n[2] % n[1] === 0) p = { type, a: n[0], b: n[1], n: n[2], answer: n[0] * n[2] / n[1] };
+    }
+    if (!p) return null;
+    p.lv = level; p.key = keyOf(p);
+    return p.key === m[2] + ":" + m[3] ? p : null;
+  }
+
   function newRound() {
-    current = Loopy.fresh(recent, () => makeProblem(lv), 12);
+    current = Loopy.retry.fresh("percent-ratio", recent, () => makeProblem(lv), rebuild, 12);
     typed = ""; answered = false;
     showProblem();
     card.classList.remove("good", "bad");
@@ -578,7 +613,7 @@ function explain(p) {
     answered = true; tried++;
     const ok = parseInt(typed, 10) === current.answer;
     if (ok) { right++; streak++; } else { streak = 0; }
-    if (window.Loopy && Loopy.rewards) ok ? Loopy.rewards.correct("percent-ratio", streak) : Loopy.rewards.wrong("percent-ratio", { q: shortQ(current), a: num(current.answer), y: num(parseInt(typed, 10)), k: "pr-" + current.lv });
+    if (window.Loopy && Loopy.rewards) ok ? Loopy.rewards.correct("percent-ratio", streak) : Loopy.rewards.wrong("percent-ratio", { q: shortQ(current), a: num(current.answer), y: num(parseInt(typed, 10)), k: "pr-" + current.lv, r: note(current) });
     card.classList.add(ok ? "good" : "bad");
     feedbackEl.className = "feedback " + (ok ? "good" : "bad");
     const head = ok

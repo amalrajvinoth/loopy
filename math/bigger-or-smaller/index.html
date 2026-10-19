@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'sha256-Xntyo2CdLTBxwJtbrGlOBrTbTTX5eYDaptNqFTMm/Ig='; style-src 'self' 'sha256-z2P7kGW5Z05eCTjTZdYpc0vThTlOE9vmt97pVSvi2I4=' 'sha256-6kMyVyf9c7UM1Oxq9qbT64OjK/qoKmBRHgHXNYLWcKg=' 'sha256-RT1053JU5UiKvjrCUFx1rlhdFLMmgtuFJ9T8jnMeawQ=' 'sha256-pxp/kBLGl+9iEuWmE39iE3rdwOKNvJ0P5qI66lh2pmE='; img-src 'self' data:; font-src 'self'; connect-src 'self'; worker-src 'self'; object-src 'none'; base-uri 'none'; form-action 'none'; manifest-src 'self'; upgrade-insecure-requests">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'sha256-yKYmfpFnCjKIEEUkf07q00B7IB7e4lwcDVHuNXdHGDE='; style-src 'self' 'sha256-z2P7kGW5Z05eCTjTZdYpc0vThTlOE9vmt97pVSvi2I4=' 'sha256-6kMyVyf9c7UM1Oxq9qbT64OjK/qoKmBRHgHXNYLWcKg=' 'sha256-RT1053JU5UiKvjrCUFx1rlhdFLMmgtuFJ9T8jnMeawQ=' 'sha256-pxp/kBLGl+9iEuWmE39iE3rdwOKNvJ0P5qI66lh2pmE='; img-src 'self' data:; font-src 'self'; connect-src 'self'; worker-src 'self'; object-src 'none'; base-uri 'none'; form-action 'none'; manifest-src 'self'; upgrade-insecure-requests">
 <meta name="referrer" content="strict-origin-when-cross-origin">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <style>:root{color-scheme:light;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}body{margin:0}[hidden]{display:none!important}</style>
@@ -468,6 +468,10 @@ Loopy.addStrings({
       if (Math.random() < 0.15) n = whole(rand(1, top) * u + u / 2);
       else { let v; do { v = rand(u + 1, top * u + u - 1); } while (v % u === 0); n = whole(v); }
     }
+    return roundProblem(L, n, u);
+  }
+  // The rounding problem for a number and a unit, with its four answers.
+  function roundProblem(L, n, u) {
     const lo = Math.floor(n.v / u) * u, hi = lo + u, r = Math.floor(n.v / u + 0.5) * u;
     const other = r === lo ? hi : lo, opts = [r, other], wrong = [r + u, r - u, r + 2 * u, r - 2 * u, r + 3 * u];
     if (u >= 100) wrong.unshift(Math.floor(n.v / (u / 10) + 0.5) * (u / 10));
@@ -608,8 +612,44 @@ Loopy.addStrings({
     return b;
   }
 
+  // Try again: a missed problem comes back later (Loopy.retry). The note is "c 34 43", "o 12 7 30" or "r 47 10";
+  // a decimal keeps its places ("0.50"). A note the current level does not show (too big, decimals, minus) waits.
+  const txt = (x) => x.d ? x.v.toFixed(x.d) : String(x.v);
+  const note = (p) => p.type === "cmp" ? "c " + txt(p.a) + " " + txt(p.b) : p.type === "ord" ? "o " + p.list.map(txt).join(" ") : "r " + txt(p.n) + " " + p.u;
+  function readNum(s) {
+    const m = /^(-?\d{1,7})(?:\.(\d{1,2}))?$/.exec(s);
+    if (!m || (m[2] && (m[1][0] === "-" || !+m[2]))) return null;
+    return m[2] ? { v: hundredths(+s), d: m[2].length } : { v: +m[1], d: 0 };
+  }
+  // The kind of these numbers at the current level, or "" when the level does not show them.
+  function kindOf(xs, base) {
+    const L = LEVELS[lv];
+    if (xs.some(x => x.d)) return L.extra && xs.every(x => x.d && x.v < 10) ? "bs-dec" : "";
+    if (xs.some(x => x.v < 0)) return L.extra && xs.every(x => x.v >= -20 && x.v <= 20) ? "bs-neg" : "";
+    return xs.every(x => x.v <= (L.extra ? 999999 : L.max)) ? base : "";
+  }
+  function rebuild(r) {
+    const m = /^([cor]) (\S+) (\S+)(?: (\S+))?$/.exec(r);
+    if (!m || (m[1] === "o") !== !!m[4]) return null;
+    const L = LEVELS[lv], xs = (m[1] === "r" ? [m[2]] : m.slice(2, m[1] === "o" ? 5 : 4)).map(readNum);
+    if (xs.includes(null)) return null;
+    if (m[1] === "c") {
+      const kind = kindOf(xs, "bs-cmp");
+      return kind ? { type: "cmp", a: xs[0], b: xs[1], kind, key: "c" + fmt(xs[0]) + fmt(xs[1]) } : null;
+    }
+    if (m[1] === "o") {
+      const kind = kindOf(xs, "bs-ord"), sorted = xs.slice().sort((p, q) => p.v - q.v);
+      if (!kind || new Set(xs.map(x => x.v)).size < 3 || xs.every((x, i) => x === sorted[i])) return null;
+      return { type: "ord", list: xs, sorted, kind, key: "o" + xs.map(fmt).join() };
+    }
+    const n = xs[0], u = +m[3], top = L.extra ? 1000000 : L.max;
+    if (!/^(1|10|100|1000|10000)$/.test(m[3])) return null;
+    if (u === 1 ? !(L.extra && n.d === 1 && n.v < 20) : !(L.units.includes(u) && !n.d && n.v > u && n.v < top && n.v % u)) return null;
+    return roundProblem(L, n, u);
+  }
+
   function newRound() {
-    const p = cur = Loopy.fresh(recent, makeProblem); answered = false; picked = [];
+    const p = cur = Loopy.retry.fresh("bigger-smaller", recent, makeProblem, rebuild); answered = false; picked = [];
     card.classList.remove("good", "bad");
     nl.classList.add("off");
     nl.textContent = "";
@@ -702,7 +742,7 @@ Loopy.addStrings({
     if (ok) Loopy.rewards.correct("bigger-smaller", streak);
     else Loopy.rewards.wrong("bigger-smaller", {
       q: cur.type === "cmp" ? fmt(cur.a) + " ? " + fmt(cur.b) : cur.type === "ord" ? cur.list.map(fmt).join(", ") : fmt(cur.n) + " (" + Loopy.num(cur.u) + ")",
-      a: answerText(cur), y: yours, k: cur.kind
+      a: answerText(cur), y: yours, k: cur.kind, r: note(cur)
     });
     card.classList.add(ok ? "good" : "bad");
     if (cur.type === "rnd") drawRound(cur);
