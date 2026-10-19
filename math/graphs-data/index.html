@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'sha256-T71yOLpq9hNh2FsvDD2PeXVGrY6laOFOer10rGiv1Jc='; style-src 'self' 'sha256-z2P7kGW5Z05eCTjTZdYpc0vThTlOE9vmt97pVSvi2I4=' 'sha256-w9pga+IPnYxVi/pukmXin+IOmxddRTaP61YpupfEqSI=' 'sha256-RT1053JU5UiKvjrCUFx1rlhdFLMmgtuFJ9T8jnMeawQ=' 'sha256-wfARG683SNrAHdQC1q1b7CsDtVGlEMOeHzsWFpbU4kg='; img-src 'self' data:; font-src 'self'; connect-src 'self'; worker-src 'self'; object-src 'none'; base-uri 'none'; form-action 'none'; manifest-src 'self'; upgrade-insecure-requests">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'sha256-XR7/NK5PebKvDA5nVjWl8Xsc150qT80QqplW8sjmx1M='; style-src 'self' 'sha256-z2P7kGW5Z05eCTjTZdYpc0vThTlOE9vmt97pVSvi2I4=' 'sha256-w9pga+IPnYxVi/pukmXin+IOmxddRTaP61YpupfEqSI=' 'sha256-RT1053JU5UiKvjrCUFx1rlhdFLMmgtuFJ9T8jnMeawQ=' 'sha256-wfARG683SNrAHdQC1q1b7CsDtVGlEMOeHzsWFpbU4kg='; img-src 'self' data:; font-src 'self'; connect-src 'self'; worker-src 'self'; object-src 'none'; base-uri 'none'; form-action 'none'; manifest-src 'self'; upgrade-insecure-requests">
 <meta name="referrer" content="strict-origin-when-cross-origin">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <style>:root{color-scheme:light;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}body{margin:0}[hidden]{display:none!important}</style>
@@ -404,7 +404,7 @@ function makeProblem(level, want, fixed) {
   const topic = fx("topic", () => pick(type === "line" ? TOPICS.filter(x => x.ordered) : TOPICS));
   const W = words(topic.set), title = t("gdT" + topic.id), unit = t("gdU" + topic.id), uq = t("gdQ" + topic.id);
   const two = type === "bars2" || type === "table2";
-  const n = fixed ? fixed.idx.length : type === "line" ? 4 + randInt(3) : kind === "median" ? pick([3, 5]) : two ? 3 + randInt(2) : 3 + randInt(level === 1 ? 2 : 3);
+  const n = fixed ? fixed.idx.length : type === "line" ? Math.min(4 + randInt(3), W.long.length) : kind === "median" ? pick([3, 5]) : two ? 3 + randInt(2) : 3 + randInt(level === 1 ? 2 : 3);
   const idx = fx("idx", () => { const start = randInt(W.long.length - n + 1); return topic.ordered ? Array.from({ length: n }, (_, i) => start + i) : shuffle([0, 1, 2, 3, 4]).slice(0, n).sort(); });
   const cats = idx.map(i => W.long[i]), short = idx.map(i => (W.short || W.long)[i]);
   const emoji = topic.set === "Pet" ? idx.map(i => PET_EMOJI[i]) : idx.map(() => topic.emoji);
