@@ -127,6 +127,22 @@ async function answerWrong(p) {
   else await p.locator("#map").click({ position: { x: 5, y: 5 } });
 }
 
+// Miss the question on screen and wait until the answer counts: a new wrong row in the log, or a star.
+// A tap that only puts one number in order counts as nothing yet, so it taps again. Returns true when
+// the answer was wrong, false when the guess happened to be right, null when nothing counted.
+async function miss(p) {
+  const state = () => p.evaluate(() => [Loopy.log.get().wrong.length, +document.querySelector("[data-loopy-stars]").textContent]);
+  const [w0, s0] = await state();
+  for (let t = 0; t < 4; t++) {
+    await answerWrong(p);
+    try {
+      await p.waitForFunction(([w, s]) => Loopy.log.get().wrong.length > w || +document.querySelector("[data-loopy-stars]").textContent > s, [w0, s0], { timeout: 1500 });
+    } catch (e) { continue; }
+    return (await state())[0] > w0;
+  }
+  return null;
+}
+
 // Answer right: the marked choice, or the logged right answer typed on the pad. Returns false when it cannot.
 async function answerRight(p, row) {
   const right = p.locator('[data-correct="true"]:enabled');
@@ -172,17 +188,13 @@ for (const game of GAMES) {
     // 1. Miss a question (up to 12 tries, in case a guess happens to be right). Not the first one, so that
     //    "comes back first" means the newest mistake and not just the game's first question.
     let row = null, missedKey = "";
-    await answerWrong(p);
-    await p.waitForFunction(() => Loopy.rewards.last() !== null);
+    await miss(p);
     await next(p, 1);
     for (let i = 0; i < 12 && !row; i++) {
       const n = await asked(p);
       // The key is read before answering: a sprint game shows the next question by itself after an answer.
       const key = await p.evaluate(() => window.__questions[window.__questions.length - 1]);
-      await answerWrong(p);
-      await p.waitForFunction(() => Loopy.rewards.last() !== null);
-      const last = await lastAnswer(p);
-      if (last && !last.ok) {
+      if (await miss(p)) {
         row = await p.evaluate(() => Loopy.log.get().wrong.slice(-1)[0] || null);
         missedKey = key;
       } else await next(p, n);
