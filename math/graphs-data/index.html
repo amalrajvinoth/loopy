@@ -1,0 +1,678 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'sha256-8wsp4q1BawZb0yzaw3+Nblwca6uveQzjA+xUP5f671M='; style-src 'self' 'sha256-z2P7kGW5Z05eCTjTZdYpc0vThTlOE9vmt97pVSvi2I4=' 'sha256-w9pga+IPnYxVi/pukmXin+IOmxddRTaP61YpupfEqSI=' 'sha256-RT1053JU5UiKvjrCUFx1rlhdFLMmgtuFJ9T8jnMeawQ=' 'sha256-wfARG683SNrAHdQC1q1b7CsDtVGlEMOeHzsWFpbU4kg='; img-src 'self' data:; font-src 'self'; connect-src 'self'; worker-src 'self'; object-src 'none'; base-uri 'none'; form-action 'none'; manifest-src 'self'; upgrade-insecure-requests">
+<meta name="referrer" content="strict-origin-when-cross-origin">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<style>:root{color-scheme:light;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}body{margin:0}[hidden]{display:none!important}</style>
+<link rel="icon" href="../../icon.svg" type="image/svg+xml">
+<link rel="manifest" href="../../manifest.webmanifest">
+<link rel="apple-touch-icon" href="../../apple-touch-icon.png">
+<meta name="theme-color" content="#0a0a0c">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="loopy">
+<title data-t="gdName">Graphs and Data</title>
+<meta name="description" content="Graphs and Data on loopy: read bar charts, pictograms, line charts and tables, then find the total, the difference, the mean or the median. Free, English and German.">
+<link rel="preload" href="../../fonts/lexend-latin.woff2" as="font" type="font/woff2" crossorigin>
+<style>
+/* Layout: a chart and a question, answer buttons below. Shared look with the other games. */
+:root {
+  --bg: #f3f6fb;
+  --card: #ffffff;
+  --ink: #1d2a3f;
+  --muted: #5d6b82;
+  --line: #d5dde9;
+  --accent: #2457c5;
+  --accent-ink: #ffffff;
+  --mark: #e2622b;
+  --good: #1f8a4c;
+  --good-bg: #e3f5ea;
+  --bad: #c23a3a;
+  --bad-bg: #fbe6e6;
+  --chip: #e6ecf6;
+  --key: #ffffff;
+  --font: "Lexend", "Segoe UI", "Helvetica Neue", Arial, sans-serif;
+}
+
+* { box-sizing: border-box; }
+body {
+  background: var(--bg); color: var(--ink); font-family: var(--font); font-size: 16px;
+  padding-left: max(16px, env(safe-area-inset-left, 0px));
+  padding-right: max(16px, env(safe-area-inset-right, 0px));
+  padding-block: 20px 32px;
+}
+.wrap { max-width: 520px; margin: 0 auto; display: flex; flex-direction: column; gap: 16px; }
+
+.top { display: flex; flex-wrap: wrap; gap: 12px; align-items: center; justify-content: space-between; }
+h1 { margin: 0; font-size: 1.6rem; font-weight: 700; text-wrap: balance; }
+.score { display: flex; flex-wrap: wrap; gap: 8px; font-variant-numeric: tabular-nums; }
+.pill { background: var(--card); border: 1px solid var(--line); border-radius: 999px; padding: 6px 14px; font-weight: 600; font-size: 1rem; white-space: nowrap; }
+.pill span { color: var(--muted); font-weight: 400; margin-right: 4px; }
+
+.settings { display: flex; flex-direction: column; gap: 8px; }
+.seg-label { font-size: 0.8rem; font-weight: 600; letter-spacing: 0.06em; text-transform: uppercase; color: var(--muted); margin: 0 0 4px 4px; }
+.seg { display: grid; grid-template-columns: repeat(2, 1fr); gap: 6px; background: var(--chip); padding: 5px; border-radius: 14px; }
+.seg button {
+  font: inherit; font-size: 0.95rem; font-weight: 600; color: var(--muted);
+  background: transparent; border: 0; border-radius: 10px; padding: 8px 6px; min-height: 44px; cursor: pointer;
+}
+.seg button[aria-pressed="true"] { background: var(--card); color: var(--ink); box-shadow: 0 1px 3px rgb(0 0 0 / 0.12); }
+
+.problem-card {
+  background: var(--card); border: 1px solid var(--line); border-radius: 24px;
+  padding: 20px 18px 18px; display: flex; flex-direction: column; align-items: center; gap: 14px;
+}
+.problem-card.good { border-color: var(--good); box-shadow: 0 0 0 2px var(--good) inset; }
+.problem-card.bad { border-color: var(--bad); box-shadow: 0 0 0 2px var(--bad) inset; }
+
+.feedback { min-height: 3.1em; text-align: center; font-size: 1.1rem; line-height: 1.45; margin: 0; max-width: 34ch; }
+.feedback strong { display: block; font-size: 1.45rem; }
+.feedback.good strong { color: var(--good); }
+.feedback.bad strong { color: var(--bad); }
+.feedback .hint { color: var(--muted); }
+
+.foot { display: flex; justify-content: space-between; align-items: center; gap: 12px; flex-wrap: wrap; }
+.foot p { margin: 0; color: var(--muted); font-size: 0.9rem; }
+.reset { font: inherit; font-size: 0.95rem; color: var(--muted); background: transparent; border: 2px solid var(--line); border-radius: 14px; padding: 0 16px; min-height: 44px; cursor: pointer; }
+button:focus-visible { outline: 3px solid var(--mark); outline-offset: 3px; }
+
+@media (max-width: 420px) {
+  h1 { font-size: 1.35rem; }
+  .seg button { font-size: 0.85rem; }
+}
+@media (prefers-reduced-motion: reduce) {
+  * { transition: none !important; }
+}
+</style>
+<style>.home-link{display:inline-flex;align-items:center;min-height:40px;color:var(--muted);font-weight:600;text-decoration:none;font-size:0.95rem}.home-link:hover{color:var(--ink)}</style>
+<style>
+/* Phones and tablets: the game fills one screen; settings sit behind a button. */
+body { min-height: 100vh; min-height: 100dvh; padding-block: 12px 16px; }
+.wrap { gap: 12px; }
+.game-bar { display: flex; align-items: center; justify-content: space-between; gap: 8px; }
+.bar-right { display: flex; align-items: center; gap: 8px; }
+.top { gap: 8px 12px; }
+.play { display: flex; flex-direction: column; gap: 12px; -webkit-user-select: none; user-select: none; }
+@media (min-width: 600px) and (orientation: portrait) { .wrap { max-width: 640px; } }
+@media (orientation: landscape) and (min-width: 640px) {
+  .wrap { max-width: 1100px; }
+  .play { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; align-items: center; }
+}
+
+.problem-card { padding: 14px 14px 12px; gap: 8px; }
+.feedback { min-height: 2.9em; font-size: 1.05rem; }
+.feedback strong { font-size: 1.3rem; }
+/* Short phones: keep long explanations from pushing the answers off screen. */
+@media (max-height: 760px) and (orientation: portrait) {
+  .feedback { font-size: 0.95rem; line-height: 1.35; }
+  .feedback strong { font-size: 1.15rem; }
+}
+
+/* Portrait: the page is exactly one screen tall; the answers stay at the bottom
+   and the top part shrinks to fit. With settings open, the page scrolls normally. */
+@media (orientation: portrait) {
+  body { height: calc(100dvh - env(safe-area-inset-top, 0px) - env(safe-area-inset-bottom, 0px)); min-height: 0; display: flex; flex-direction: column; overflow: hidden; }
+  body:has(#settings-panel:not([hidden])) { height: auto; overflow: visible; }
+  .wrap { flex: 1 1 auto; min-height: 0; width: 100%; }
+  .play { flex: 1 1 auto; min-height: 0; }
+}
+@media (orientation: portrait) {
+  .problem-card { flex: 1 1 auto; min-height: 0; justify-content: center; overflow: hidden; }
+  .feedback { flex: 0 1 auto; min-height: 0; overflow-y: auto; }
+}
+@media (orientation: landscape) and (min-width: 640px) {
+  body { height: calc(100dvh - env(safe-area-inset-top, 0px) - env(safe-area-inset-bottom, 0px)); min-height: 0; display: flex; flex-direction: column; overflow: hidden; }
+  body:has(#settings-panel:not([hidden])) { height: auto; overflow: visible; }
+  .wrap { flex: 1 1 auto; min-height: 0; width: 100%; }
+  .play { flex: 1 1 auto; min-height: 0; grid-template-rows: minmax(0, 1fr); }
+  .problem-card { min-height: 0; overflow: hidden; }
+  .feedback { flex: 0 1 auto; min-height: 0; overflow-y: auto; }
+}
+@media (max-height: 500px) {
+  .feedback { font-size: 0.9rem; line-height: 1.3; }
+  .feedback strong { font-size: 1.05rem; }
+}
+
+/* Graphs and Data: a chart (SVG drawn by the script) or a small table, a question, and answers to pick from. */
+/* The chart yields its height first: on a short phone it shrinks until the question and the answers fit. */
+.chart { width: 100%; max-width: 380px; display: flex; align-items: center; justify-content: center; flex: 1 1 auto; min-height: 0; }
+.chart svg { width: 100%; height: 100%; max-height: min(28dvh, 200px); display: block; font-weight: 600; }
+.feedback:empty { min-height: 0; }
+.chart .bar { fill: var(--c1); }
+.chart .bar.b { fill: var(--c2); }
+.chart .ta { fill: var(--c1); }
+.chart .tb { fill: var(--c2); }
+.chart .ln { fill: none; stroke: var(--c1); stroke-width: 3; stroke-linejoin: round; stroke-linecap: round; }
+.chart .dot { fill: var(--c1); }
+.chart .grid { stroke: currentColor; opacity: 0.18; }
+.chart .base { stroke: currentColor; stroke-width: 1.5; }
+.chart .lbl { font-weight: 400; }
+.chart .muted { opacity: 0.7; }
+table.data { border-collapse: collapse; font-size: clamp(0.9rem, 2.4dvh, 1.15rem); font-variant-numeric: tabular-nums; }
+.data th, .data td { padding: 2px 12px; text-align: left; border-bottom: 1px solid var(--line); line-height: 1.35; }
+.data td:not(:first-child), .data th:not(:first-child) { text-align: right; }
+.data thead th { color: var(--muted); font-weight: 600; font-size: 0.8em; text-transform: uppercase; letter-spacing: 0.04em; }
+.data tbody th { font-weight: 600; }
+.data td.b, .data th.b { color: var(--c2); }
+.data td.a, .data th.a { color: var(--c1); }
+.question { margin: 0; font-size: clamp(1.05rem, min(5vw, 3.1dvh), 1.7rem); font-weight: 700; line-height: 1.25;
+  text-align: center; max-width: 32ch; text-wrap: balance; }
+.side { display: flex; flex-direction: column; gap: 10px; }
+.choices { display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; }
+/* Three answers: one column, so no answer looks bigger than the others. */
+.choices.three { grid-template-columns: 1fr; }
+.choices.three button { min-height: clamp(48px, 7dvh, 80px); }
+.choices button {
+  font: inherit; font-size: clamp(1.1rem, min(5.2vw, 3.4dvh), 1.8rem); font-weight: 700; color: var(--ink); line-height: 1.2;
+  font-variant-numeric: tabular-nums;
+  background: var(--key); border: 2px solid var(--line); border-radius: 18px; min-height: clamp(56px, 9dvh, 96px); padding: 6px 10px; cursor: pointer;
+  overflow-wrap: anywhere; hyphens: auto;
+  transition: transform .08s ease, border-color .15s ease; touch-action: manipulation; -webkit-tap-highlight-color: transparent;
+}
+.choices button:hover:not(:disabled) { border-color: var(--accent); }
+.choices button:active:not(:disabled) { transform: scale(0.96); }
+.choices button:disabled { cursor: default; }
+.choices button.right { border-color: var(--good); background: var(--good-bg); color: var(--good); }
+.choices button.wrong { border-color: var(--bad); background: var(--bad-bg); color: var(--bad); }
+.choices button.faded { opacity: 0.45; }
+.next { font: inherit; font-size: 1.25rem; font-weight: 700; color: var(--accent-ink); background: var(--accent); border: 0; border-radius: 16px; min-height: clamp(52px, 7dvh, 72px); cursor: pointer; width: 100%; }
+.seg button { padding-inline: 4px; }
+@media (min-width: 600px) and (orientation: portrait) {
+  .choices button { min-height: clamp(64px, 10dvh, 120px); }
+  .chart svg { max-height: min(32dvh, 300px); }
+  .chart { max-width: 520px; }
+}
+@media (orientation: landscape) and (min-width: 640px) {
+  .problem-card { height: 100%; justify-content: center; }
+  .side { height: 100%; justify-content: center; }
+  .choices button { min-height: clamp(52px, 14dvh, 130px); }
+  .chart svg { max-height: min(48dvh, 300px); }
+}
+/* After the answer the chart gets smaller, so the question and the reason have room. */
+@media (max-height: 900px), (max-width: 599px) {
+  .problem-card.good .chart, .problem-card.bad .chart { zoom: 0.7; }
+}
+@media (max-height: 700px) {
+  .question { font-size: clamp(1rem, min(4.6vw, 3dvh), 1.4rem); }
+  .problem-card.good .chart, .problem-card.bad .chart { display: none; }
+}
+@media (max-height: 500px) {
+  .question { font-size: 1rem; }
+  .problem-card.good .chart, .problem-card.bad .chart { display: none; }
+}
+
+/* Worksheet cells (only printed): a small chart, the question, and a line to write the answer. */
+@media print {
+  .sheet-grid li > div.ws-gd { align-items: center; gap: 1mm; padding: 0 2mm; width: 100%; }
+  .ws-gd .ws-chart { width: 38mm; height: 19mm; display: block; }
+  .ws-gd .ws-q { margin: 0; font-size: 7.5pt; font-weight: 600; line-height: 1.2; text-align: center; }
+  .ws-gd .ws-blank { display: inline-block; width: 16mm; border-bottom: 0.4mm solid #000; height: 5mm; }
+  .ws-gd table.data { font-size: 7pt; border-collapse: collapse; }
+  .ws-gd .data th, .ws-gd .data td { padding: 0 2mm; border-bottom: 0.2mm solid #999; line-height: 1.3; text-align: left; }
+  .ws-gd .data td:not(:first-child), .ws-gd .data th:not(:first-child) { text-align: right; }
+  .ws-gd .data thead th { font-weight: 600; color: #444; }
+}
+</style>
+<link rel="stylesheet" href="../../loopy.css">
+<script src="../../loopy.js"></script>
+</head>
+<body>
+
+<div class="wrap">
+  <header class="game-bar">
+    <a class="home-link" href="../../">&larr; loopy</a>
+    <div class="bar-right">
+      <span id="star-chip"></span>
+      <button type="button" id="settings-toggle" aria-controls="settings-panel"></button>
+    </div>
+  </header>
+  <section class="top" aria-labelledby="title">
+    <h1 id="title" data-t="gdName">Graphs and Data</h1>
+    <div class="score" aria-live="polite">
+      <div class="pill pill-score"><span data-t="score">Score</span><b id="score">0 / 0</b></div>
+      <div id="level"></div>
+      <div class="pill pill-streak"><span data-t="streak">Streak</span><b id="streak">0</b></div>
+      <div id="last5" data-game="graphs-data"></div>
+    </div>
+  </section>
+  <div class="settings-panel" id="settings-panel" hidden>
+    <div class="controls"><div id="age-picker"></div><div id="theme-picker"></div><button id="sound-toggle"></button><div id="lang-picker"></div></div>
+    <div>
+      <p class="seg-label" id="level-label" data-t="gdLevel">Level</p>
+      <div class="seg" role="group" aria-labelledby="level-label" id="level-seg">
+        <button type="button" data-level="1" data-t="gdL1">Bar charts and pictograms</button>
+        <button type="button" data-level="2" data-t="gdL2">Tables and line charts</button>
+        <button type="button" data-level="3" data-t="gdL3">Mean and median</button>
+        <button type="button" data-level="4" data-t="gdL4">Two charts compared</button>
+      </div>
+    </div>
+    <div class="panel-foot">
+      <p data-t="gdKbd">Keyboard works too: 1 to 4 picks an answer, Enter goes on.</p>
+      <button type="button" class="reset" id="reset" data-t="resetScore">Reset score</button>
+    </div>
+  </div>
+
+  <main class="play">
+    <div class="problem-card" id="card">
+      <div class="chart" id="chart" role="img"></div>
+      <p class="question" id="question"></p>
+      <p class="feedback" id="feedback"></p>
+    </div>
+    <div class="side">
+      <div class="choices" id="choices"></div>
+      <button type="button" class="next skip" id="next" data-t="skip">Skip</button>
+    </div>
+  </main>
+</div>
+
+<script>
+Loopy.addStrings({
+  en: {
+    gdName: "Graphs and Data", gdLevel: "Level",
+    gdL1: "Bar charts and pictograms", gdL2: "Tables and line charts", gdL3: "Mean and median", gdL4: "Two charts compared",
+    gdKbd: "Keyboard works too: 1 to 4 picks an answer, Enter goes on.",
+    gdAnswerIs: "The answer is: {a}.", gdReadQ: "{data} {q} Is it {list}?",
+    gdHow: "Read each chart or table. Write the answer on the line.",
+    // The topics (the chart title and the word for the numbers) and the things along the bottom.
+    gdTFruit: "Apples sold", gdUFruit: "Apples", gdQFruit: "apples",
+    gdTPets: "Pets in the class", gdUPets: "How many", gdQPets: "",
+    gdTGoals: "Goals scored", gdUGoals: "Goals", gdQGoals: "goals",
+    gdTRain: "Rainy days", gdURain: "Rainy days", gdQRain: "rainy days",
+    gdTBooks: "Books read", gdUBooks: "Books", gdQBooks: "books",
+    gdTPlay: "Minutes of play", gdUPlay: "Minutes", gdQPlay: "minutes",
+    gdDays: "Monday|Tuesday|Wednesday|Thursday|Friday", gdDaysS: "Mon|Tue|Wed|Thu|Fri", gdAtDay: "on {c}", gdHdrDay: "Day",
+    gdMostDay: "Which day had the most?", gdLeastDay: "Which day had the least?",
+    gdMonths: "January|February|March|April|May|June", gdMonthsS: "Jan|Feb|Mar|Apr|May|Jun", gdAtMonth: "in {c}", gdHdrMonth: "Month",
+    gdMostMonth: "Which month had the most?", gdLeastMonth: "Which month had the least?",
+    gdPets: "dogs|cats|fish|birds|rabbits", gdPetsS: "Dogs|Cats|Fish|Birds|Rabbits", gdAtPet: "{c}", gdHdrPet: "Pet",
+    gdMostPet: "Which pet is there most of?", gdLeastPet: "Which pet is there least of?",
+    gdNames: "Mia|Ben|Lea|Tom|Ana", gdNames2: "Noah|Emma|Finn|Lina|Paul", gdAtName: "for {c}", gdHdrName: "Name",
+    gdMostName: "Who has the most?", gdLeastName: "Who has the least?",
+    // Questions.
+    gdQRead: "How many {u} {at}?", gdQDiff: "How many more {a} than {b}?", gdQTotal: "How many in total?",
+    gdQUp: "By how much did it go up from {a} to {b}?", gdQDown: "By how much did it go down from {a} to {b}?",
+    gdQMean: "What is the mean?", gdQMedian: "What is the median?",
+    gdQCmpTotal: "Which has the bigger total, A or B?", gdQCmpMean: "Which has the bigger mean, A or B?",
+    gdQCmpDiff: "How much bigger is the total of {x} than the total of {y}?", gdQMeanOf: "What is the mean of {x}?",
+    gdSame: "Both the same",
+    // One line of why.
+    gdWhyRead: "{c}: {v}.", gdWhyMost: "Most: {c} with {v}.", gdWhyLeast: "Least: {c} with {v}.",
+    gdWhyMean: "Mean: ({sum}) ÷ {n} = {t} ÷ {n} = {m}.", gdWhyMedian: "In order: {list}. The middle one is {m}.",
+    gdWhyCmp: "A: {sa}. B: {sb}. {w}", gdWhyCmpMean: "Mean of A: {ma}. Mean of B: {mb}. {w}",
+    gdBigger: "{x} is bigger.", gdEqual: "They are the same.",
+    // The data read out, for screen readers and Read aloud.
+    gdData: "{title}: {list}.", gdDataKey: "{title}, one picture is {k}: {list}.", gdDataTwo: "{title}. A: {la}. B: {lb}."
+  },
+  de: {
+    gdName: "Diagramme und Daten", gdLevel: "Stufe",
+    gdL1: "Balkendiagramme und Piktogramme", gdL2: "Tabellen und Liniendiagramme", gdL3: "Mittelwert und Median", gdL4: "Zwei Diagramme vergleichen",
+    gdKbd: "Die Tastatur geht auch: 1 bis 4 wählt eine Antwort, Enter geht weiter.",
+    gdAnswerIs: "Die Antwort ist: {a}.", gdReadQ: "{data} {q} Ist es {list}?",
+    gdHow: "Lies jedes Diagramm oder jede Tabelle. Schreib die Antwort auf die Linie.",
+    gdTFruit: "Verkaufte Äpfel", gdUFruit: "Äpfel", gdQFruit: "Äpfel",
+    gdTPets: "Haustiere in der Klasse", gdUPets: "Wie viele", gdQPets: "",
+    gdTGoals: "Geschossene Tore", gdUGoals: "Tore", gdQGoals: "Tore",
+    gdTRain: "Regentage", gdURain: "Regentage", gdQRain: "Regentage",
+    gdTBooks: "Gelesene Bücher", gdUBooks: "Bücher", gdQBooks: "Bücher",
+    gdTPlay: "Spielminuten", gdUPlay: "Minuten", gdQPlay: "Minuten",
+    gdDays: "Montag|Dienstag|Mittwoch|Donnerstag|Freitag", gdDaysS: "Mo|Di|Mi|Do|Fr", gdAtDay: "am {c}", gdHdrDay: "Tag",
+    gdMostDay: "Welcher Tag hatte am meisten?", gdLeastDay: "Welcher Tag hatte am wenigsten?",
+    gdMonths: "Januar|Februar|März|April|Mai|Juni", gdMonthsS: "Jan|Feb|Mär|Apr|Mai|Jun", gdAtMonth: "im {c}", gdHdrMonth: "Monat",
+    gdMostMonth: "Welcher Monat hatte am meisten?", gdLeastMonth: "Welcher Monat hatte am wenigsten?",
+    gdPets: "Hunde|Katzen|Fische|Vögel|Hasen", gdPetsS: "Hunde|Katzen|Fische|Vögel|Hasen", gdAtPet: "{c}", gdHdrPet: "Tier",
+    gdMostPet: "Welches Haustier gibt es am meisten?", gdLeastPet: "Welches Haustier gibt es am wenigsten?",
+    gdNames: "Mia|Ben|Lea|Tom|Ana", gdNames2: "Noah|Emma|Finn|Lina|Paul", gdAtName: "bei {c}", gdHdrName: "Name",
+    gdMostName: "Wer hat am meisten?", gdLeastName: "Wer hat am wenigsten?",
+    gdQRead: "Wie viele {u} {at}?", gdQDiff: "Wie viel mehr {a} als {b}?", gdQTotal: "Wie viele insgesamt?",
+    gdQUp: "Um wie viel ist es von {a} bis {b} gestiegen?", gdQDown: "Um wie viel ist es von {a} bis {b} gesunken?",
+    gdQMean: "Was ist der Mittelwert?", gdQMedian: "Was ist der Median?",
+    gdQCmpTotal: "Welches hat die größere Summe, A oder B?", gdQCmpMean: "Welches hat den größeren Mittelwert, A oder B?",
+    gdQCmpDiff: "Um wie viel ist die Summe von {x} größer als die Summe von {y}?", gdQMeanOf: "Was ist der Mittelwert von {x}?",
+    gdSame: "Beide gleich",
+    gdWhyRead: "{c}: {v}.", gdWhyMost: "Am meisten: {c} mit {v}.", gdWhyLeast: "Am wenigsten: {c} mit {v}.",
+    gdWhyMean: "Mittelwert: ({sum}) ÷ {n} = {t} ÷ {n} = {m}.", gdWhyMedian: "Der Reihe nach: {list}. Die Mitte ist {m}.",
+    gdWhyCmp: "A: {sa}. B: {sb}. {w}", gdWhyCmpMean: "Mittelwert A: {ma}. Mittelwert B: {mb}. {w}",
+    gdBigger: "{x} ist größer.", gdEqual: "Sie sind gleich.",
+    gdData: "{title}: {list}.", gdDataKey: "{title}, ein Bild ist {k}: {list}.", gdDataTwo: "{title}. A: {la}. B: {lb}."
+  }
+});
+
+// GEN START
+// The data behind every question is made up fresh each time. A topic gives the chart its title, its picture
+// for the pictogram and the things along the bottom (days, months, pets or children's names).
+const TOPICS = [
+  { id: "Fruit", set: "Day", emoji: "🍎", ordered: true },
+  { id: "Pets", set: "Pet", emoji: "", ordered: false },
+  { id: "Goals", set: "Name", emoji: "⚽", ordered: false },
+  { id: "Rain", set: "Month", emoji: "🌧️", ordered: true },
+  { id: "Books", set: "Name2", emoji: "📚", ordered: false },
+  { id: "Play", set: "Day", emoji: "🎮", ordered: true }
+];
+const PET_EMOJI = ["🐶", "🐱", "🐟", "🐦", "🐰"];
+const KIND = { read: "gd-read", most: "gd-read", least: "gd-read", total: "gd-total", diff: "gd-diff", change: "gd-diff",
+  mean: "gd-mean", meanOf: "gd-mean", median: "gd-median", cmpTotal: "gd-cmp", cmpMean: "gd-cmp", cmpDiff: "gd-cmp" };
+const randInt = (n) => Math.floor(Math.random() * n);
+const pick = (arr) => arr[randInt(arr.length)];
+const shuffle = (arr) => arr.slice().sort(() => Math.random() - 0.5);
+const sum = (a) => a.reduce((x, y) => x + y, 0);
+const sorted = (a) => a.slice().sort((x, y) => x - y);
+const median = (a) => { const s = sorted(a); return s[(s.length - 1) / 2]; };
+// The words of one set of things along the bottom: long names, short labels for the axis, the "on Monday" form, the table heading.
+const LONG = { Day: "gdDays", Month: "gdMonths", Pet: "gdPets", Name: "gdNames", Name2: "gdNames2" }, SHORT = { Day: "gdDaysS", Month: "gdMonthsS", Pet: "gdPetsS" };
+function words(set) {
+  const t = Loopy.t, base = set === "Name2" ? "Name" : set, long = t(LONG[set]).split("|");
+  return { long, short: SHORT[set] ? t(SHORT[set]).split("|") : long,
+    at: (c) => t("gdAt" + base, { c }), hdr: t("gdHdr" + base), most: t("gdMost" + base), least: t("gdLeast" + base) };
+}
+const cap = (s) => s.charAt(0).toUpperCase() + s.slice(1);
+// n random whole numbers from lo to hi, with one biggest and one smallest, and (when asked) a sum that divides by n.
+function values(n, lo, hi, step, divisible) {
+  for (let tries = 0; tries < 400; tries++) {
+    const v = []; for (let i = 0; i < n; i++) v.push(lo + step * randInt((hi - lo) / step + 1));
+    const s = sorted(v);
+    if (s[0] === s[1] || s[n - 1] === s[n - 2]) continue;
+    if (divisible && sum(v) % n) continue;
+    return v;
+  }
+  return Array.from({ length: n }, (_, i) => lo + i * step);
+}
+// Three wrong numbers near the right one: off by one or two, another bar's value, the total or the mean.
+function nearby(ans, others, step) {
+  const near = shuffle([ans + step, ans - step, ans + 2 * step, ans - 2 * step]), far = shuffle(others);
+  const out = [], seen = new Set([ans]);
+  const add = (v) => { if (out.length < 3 && Number.isInteger(v) && v >= 0 && !seen.has(v)) { seen.add(v); out.push(v); } };
+  far.slice(0, 1).forEach(add); near.forEach(add); far.forEach(add);
+  for (let k = 3; out.length < 3; k++) add(ans + k * step);
+  return out;
+}
+// One question: the chart to draw, the question, the right answer, the choices, one line of why,
+// and the data as a sentence. want: a kind to prefer ("mean"), from the grown-ups' page.
+function makeProblem(level, want) {
+  const t = Loopy.t, num = Loopy.num;
+  let type, kinds;
+  if (level === 1) { type = pick(["bar", "bar", "pict"]); kinds = ["read", "most", "least", "diff"]; }
+  else if (level === 2) { type = pick(["table", "line"]); kinds = type === "line" ? ["change", "change", "total", "read"] : ["total", "total", "diff", "read"]; }
+  else if (level === 3) { type = pick(["bar", "table"]); kinds = ["mean", "median"]; }
+  else { type = pick(["bars2", "table2"]); kinds = ["cmpTotal", "cmpMean", "cmpDiff", "meanOf"]; }
+  if (want) { const w = kinds.filter(k => KIND[k] === "gd-" + want); if (w.length) kinds = w; }
+  let kind = pick(kinds);
+  const topic = pick(type === "line" ? TOPICS.filter(x => x.ordered) : TOPICS);
+  const W = words(topic.set), title = t("gdT" + topic.id), unit = t("gdU" + topic.id), uq = t("gdQ" + topic.id);
+  const two = type === "bars2" || type === "table2";
+  const n = type === "line" ? 4 + randInt(3) : kind === "median" ? pick([3, 5]) : two ? 3 + randInt(2) : 3 + randInt(level === 1 ? 2 : 3);
+  const start = topic.ordered ? randInt(W.long.length - n + 1) : 0;
+  const idx = topic.ordered ? Array.from({ length: n }, (_, i) => start + i) : shuffle([0, 1, 2, 3, 4]).slice(0, n).sort();
+  const cats = idx.map(i => W.long[i]), short = idx.map(i => (W.short || W.long)[i]);
+  const emoji = topic.set === "Pet" ? idx.map(i => PET_EMOJI[i]) : idx.map(() => topic.emoji);
+  // The pictogram key: one picture stands for 1, 2 or 5 (always 5 for minutes).
+  const per = type === "pict" ? (topic.id === "Play" ? 5 : pick([1, 2, 5])) : 1;
+  const step = topic.id === "Play" ? 5 : per, hi = type === "pict" ? 8 * per : level === 1 || two ? (topic.id === "Play" ? 40 : 9) : (topic.id === "Play" ? 60 : 20);
+  const vals = values(n, step, hi, step, kind === "mean" || kind === "meanOf" || kind === "cmpMean");
+  const vals2 = two ? values(n, step, hi, step, kind === "meanOf" || kind === "cmpMean") : null;
+  const list = (v) => cats.map((c, i) => c + " " + num(v[i])).join(", ");
+  const dataText = two ? t("gdDataTwo", { title, la: list(vals), lb: list(vals2) })
+    : type === "pict" ? t("gdDataKey", { title, k: num(per), list: list(vals) }) : t("gdData", { title, list: list(vals) });
+  const tidy = (s) => s.replace(/\s+/g, " ").replace(" ?", "?");
+  let q, answer, options, why, key = kind;
+  const choicesNear = (a, others) => shuffle([a, ...nearby(a, others, step)].map(num));
+  if (kind === "read") {
+    const i = randInt(n);
+    q = tidy(t("gdQRead", { u: uq, at: W.at(cats[i]) })); answer = num(vals[i]); options = choicesNear(vals[i], vals); why = t("gdWhyRead", { c: cap(cats[i]), v: num(vals[i]) }); key += i;
+  } else if (kind === "most" || kind === "least") {
+    const v = kind === "most" ? Math.max(...vals) : Math.min(...vals), i = vals.indexOf(v);
+    q = kind === "most" ? W.most : W.least; answer = cap(cats[i]); options = shuffle(cats.map(cap));
+    why = t(kind === "most" ? "gdWhyMost" : "gdWhyLeast", { c: cap(cats[i]), v: num(v) });
+  } else if (kind === "diff") {
+    let i = randInt(n), j = randInt(n - 1); if (j >= i) j++;
+    if (vals[i] < vals[j]) { const s = i; i = j; j = s; }
+    const d = vals[i] - vals[j];
+    q = t("gdQDiff", { a: W.at(cats[i]), b: W.at(cats[j]) }); answer = num(d); options = choicesNear(d, [vals[i] + vals[j], vals[i], vals[j]]);
+    why = num(vals[i]) + " − " + num(vals[j]) + " = " + num(d) + "."; key += i + "-" + j;
+  } else if (kind === "change") {
+    let i = randInt(n - 1); for (let k = 0; k < n && vals[i] === vals[i + 1]; k++) i = (i + 1) % (n - 1);
+    const up = vals[i + 1] > vals[i], d = Math.abs(vals[i + 1] - vals[i]);
+    q = t(up ? "gdQUp" : "gdQDown", { a: cats[i], b: cats[i + 1] }); answer = num(d); options = choicesNear(d, [vals[i], vals[i + 1], vals[i] + vals[i + 1]]);
+    why = num(Math.max(vals[i], vals[i + 1])) + " − " + num(Math.min(vals[i], vals[i + 1])) + " = " + num(d) + "."; key += i;
+  } else if (kind === "total") {
+    const s = sum(vals);
+    q = t("gdQTotal"); answer = num(s); options = choicesNear(s, [s - Math.min(...vals), s + Math.min(...vals), s - Math.max(...vals)]);
+    why = vals.map(num).join(" + ") + " = " + num(s) + ".";
+  } else if (kind === "mean" || kind === "meanOf") {
+    const x = kind === "meanOf" ? pick(["A", "B"]) : "", v = x === "B" ? vals2 : vals, s = sum(v), m = s / n;
+    q = kind === "meanOf" ? t("gdQMeanOf", { x }) : t("gdQMean"); answer = num(m);
+    options = choicesNear(m, [s, Math.max(...v), Math.min(...v)]);
+    why = t("gdWhyMean", { sum: v.map(num).join(" + "), n: num(n), t: num(s), m: num(m) }); key += x;
+  } else if (kind === "median") {
+    const m = median(vals), s = sum(vals);
+    q = t("gdQMedian"); answer = num(m); options = choicesNear(m, [s % n ? Math.round(s / n) : s / n, Math.max(...vals), Math.min(...vals)]);
+    why = t("gdWhyMedian", { list: sorted(vals).map(num).join(", "), m: num(m) });
+  } else {
+    // Two charts: which total or mean is bigger (A, B or the same), or how much bigger the total is.
+    const sa = sum(vals), sb = sum(vals2), ma = sa / n, mb = sb / n;
+    const showSum = (v, s) => v.map(num).join(" + ") + " = " + num(s);
+    if (kind === "cmpDiff") {
+      if (sa === sb) return makeProblem(level, want);
+      const big = sa > sb ? "A" : "B", d = Math.abs(sa - sb);
+      q = t("gdQCmpDiff", { x: big, y: big === "A" ? "B" : "A" }); answer = num(d);
+      options = choicesNear(d, [sa, sb, Math.abs(vals[0] - vals2[0])]);
+      why = t("gdWhyCmp", { sa: showSum(vals, sa), sb: showSum(vals2, sb), w: t("gdBigger", { x: big }) });
+    } else {
+      const a = kind === "cmpMean" ? ma : sa, b = kind === "cmpMean" ? mb : sb;
+      answer = a === b ? t("gdSame") : a > b ? "A" : "B";
+      q = t(kind === "cmpMean" ? "gdQCmpMean" : "gdQCmpTotal"); options = ["A", "B", t("gdSame")];
+      const w = a === b ? t("gdEqual") : t("gdBigger", { x: answer });
+      why = kind === "cmpMean" ? t("gdWhyCmpMean", { ma: num(ma), mb: num(mb), w }) : t("gdWhyCmp", { sa: showSum(vals, sa), sb: showSum(vals2, sb), w });
+    }
+  }
+  key = [level, type, topic.id, vals.join(","), vals2 ? vals2.join(",") : "", key].join(":");
+  return { type, kind: KIND[kind], title, unit, hdr: W.hdr, cats, short, emoji, per, vals, vals2, q, answer, options, why, dataText, key };
+}
+// GEN END
+
+(function () {
+  const $ = (id) => document.getElementById(id);
+  const card = $("card"), chartEl = $("chart"), qEl = $("question"), choicesEl = $("choices"), feedbackEl = $("feedback"), nextBtn = $("next");
+  const levelBtns = [...document.querySelectorAll("#level-seg button")];
+  const t = Loopy.t, lang = Loopy.lang === "de" ? "de" : "en", num = Loopy.num;
+  const store = {
+    // ok: the values this setting may have; anything else falls back to the default.
+    get(k, d, ok) { try { const v = JSON.parse(Loopy.store.get(k)); return ok.includes(v) ? v : d; } catch (e) { return d; } },
+    set(k, v) { Loopy.store.set(k, JSON.stringify(v)); }
+  };
+
+  // ---- Drawing. Everything is SVG made here, so nothing is downloaded. paper: black on white for the worksheet.
+  const NS = "http://www.w3.org/2000/svg";
+  function svgEl(tag, attrs, parent) {
+    const n = document.createElementNS(NS, tag);
+    for (const k in attrs) if (attrs[k] !== "") n.setAttribute(k, attrs[k]);
+    if (parent) parent.appendChild(n);
+    return n;
+  }
+  const text = (parent, x, y, s, attrs) => { const n = svgEl("text", Object.assign({ x, y, fill: "currentColor", "text-anchor": "middle", "font-size": 13 }, attrs), parent); n.textContent = s; return n; };
+  // Bars in the box from x0 to x0 + w, with value labels above and names below. top: room above for a title.
+  function drawBars(svg, p, v, x0, w, top, paper, cls) {
+    const n = v.length, max = Math.max(...v), H = 150 - top - 22, slot = (w - 12) / n, bw = Math.min(slot * 0.62, 56);
+    svgEl("line", { x1: x0 + 4, y1: 128, x2: x0 + w - 4, y2: 128, class: "base", stroke: paper ? "#000" : "" }, svg);
+    v.forEach((val, i) => {
+      const h = Math.max(2, val / max * H), x = x0 + 6 + slot * i + (slot - bw) / 2;
+      svgEl("rect", { x, y: 128 - h, width: bw, height: h, rx: 3, class: "bar " + cls, fill: paper ? "#c8c8c8" : "", stroke: paper ? "#000" : "none" }, svg);
+      text(svg, x + bw / 2, 128 - h - 5, num(val));
+      text(svg, x + bw / 2, 144, p.short[i], { class: "lbl", "font-size": n > 4 || w < 200 ? 11 : 12 });
+    });
+  }
+  function drawPict(svg, p, paper) {
+    const n = p.vals.length, rowH = (150 - 18) / n, size = Math.min(rowH * 0.72, 22), stepX = size + 4, x0 = 72;
+    p.vals.forEach((val, i) => {
+      const y = rowH * i + rowH / 2;
+      text(svg, x0 - 8, y + 4.5, p.short[i], { "text-anchor": "end", class: "lbl", "font-size": 12 });
+      const g = svgEl("g", {}, svg);
+      for (let j = 0; j < val / p.per; j++) text(g, x0 + stepX * j + size / 2, y + size * 0.36, p.emoji[i], { "font-size": size });
+    });
+    text(svg, 294, 146, p.emoji[0] + " = " + num(p.per), { "text-anchor": "end", "font-size": 12, class: "lbl" });
+  }
+  function drawLine(svg, p, paper) {
+    const v = p.vals, n = v.length, max = Math.max(...v), H = 100;
+    for (let k = 0; k <= 4; k++) svgEl("line", { x1: 12, y1: 128 - H * k / 4, x2: 288, y2: 128 - H * k / 4, class: k ? "grid" : "base", stroke: paper ? (k ? "#aaa" : "#000") : "" }, svg);
+    const pts = v.map((val, i) => [12 + i * (276 / (n - 1)), 128 - val / max * H]);
+    svgEl("polyline", { points: pts.map(q => q.join(",")).join(" "), class: "ln", fill: "none", "stroke-width": 2.5, "stroke-linejoin": "round", stroke: paper ? "#000" : "" }, svg);
+    pts.forEach((q, i) => {
+      svgEl("circle", { cx: q[0], cy: q[1], r: 4, class: "dot", fill: paper ? "#000" : "" }, svg);
+      text(svg, q[0], q[1] - 9, num(v[i]));
+      text(svg, q[0], 144, p.short[i], { class: "lbl", "font-size": 12 });
+    });
+  }
+  function table(p, paper) {
+    const tb = document.createElement("table"), el = (tag, s, cls, parent) => { const n = document.createElement(tag); n.textContent = s; if (cls) n.className = cls; parent.appendChild(n); return n; };
+    tb.className = "data";
+    const head = el("tr", "", "", el("thead", "", "", tb)), body = el("tbody", "", "", tb);
+    if (p.vals2) {
+      el("th", "", "", head); p.short.forEach(s => el("th", s, "", head));
+      [["A", p.vals, "a"], ["B", p.vals2, "b"]].forEach(([name, v, cls]) => { const tr = el("tr", "", "", body); el("th", name, paper ? "" : cls, tr); v.forEach(x => el("td", num(x), "", tr)); });
+    } else {
+      el("th", p.hdr, "", head); el("th", p.unit, "", head);
+      p.cats.forEach((c, i) => { const tr = el("tr", "", "", body); el("th", c, "", tr); el("td", num(p.vals[i]), "", tr); });
+    }
+    return tb;
+  }
+  // The chart or table for a problem, as one node. paper: the worksheet, black on white.
+  function draw(p, paper) {
+    if (p.type === "table" || p.type === "table2") return table(p, paper);
+    const svg = svgEl("svg", { viewBox: "0 0 300 150", "aria-hidden": "true", class: paper ? "ws-chart" : "" });
+    if (paper) { svg.setAttribute("width", "38mm"); svg.setAttribute("height", "19mm"); }
+    if (p.type === "bar") drawBars(svg, p, p.vals, 0, 300, 22, paper, "");
+    else if (p.type === "pict") drawPict(svg, p, paper);
+    else if (p.type === "line") drawLine(svg, p, paper);
+    else {
+      // Two charts side by side, A in the first accent and B in the second, with a faint line between them.
+      text(svg, 75, 13, "A", { "font-size": 14, class: "ta" }); text(svg, 225, 13, "B", { "font-size": 14, class: "tb" });
+      svgEl("line", { x1: 150, y1: 4, x2: 150, y2: 146, class: "grid", stroke: paper ? "#aaa" : "" }, svg);
+      drawBars(svg, p, p.vals, 0, 150, 36, paper, ""); drawBars(svg, p, p.vals2, 150, 150, 36, paper, "b");
+    }
+    return svg;
+  }
+
+  // ---- The game.
+  let age = Loopy.getAge();
+  // The level is remembered per age, so each age starts at the right level.
+  const levelForAge = (a) => a <= 9 ? 1 : a <= 11 ? 2 : a === 12 ? 3 : 4;
+  let level, want = "";
+  function loadForAge() { level = store.get("gd.level.a" + age, levelForAge(age), [1, 2, 3, 4]); }
+  loadForAge();
+  // Opened from the grown-ups' page to practise one kind: the level that teaches it, for this visit, without saving.
+  { const m = /^gd-(read|total|diff|mean|median|cmp)$/.exec(Loopy.log.hint || ""); if (m) { want = m[1]; level = { read: 1, diff: 1, total: 2, mean: 3, median: 3, cmp: 4 }[want]; Loopy.log.hint = ""; } }
+  Loopy.levels.init({ names: ["gdL1", "gdL2", "gdL3", "gdL4"],
+    get: () => level - 1, base: () => levelForAge(age) - 1,
+    set: (i) => { level = i + 1; want = ""; store.set("gd.level.a" + age, level); render(); } });
+  let right = 0, tried = 0, streak = 0;
+  let current = null, answered = false, recent = [];
+
+  function render() {
+    Loopy.levels.render();
+    $("score").textContent = right + " / " + tried;
+    $("streak").textContent = streak;
+    levelBtns.forEach(b => b.setAttribute("aria-pressed", String(+b.dataset.level === level)));
+    Loopy.nextButton(nextBtn, answered);
+  }
+  function newRound() {
+    current = Loopy.fresh(recent, () => makeProblem(level, want));
+    answered = false;
+    chartEl.textContent = "";
+    chartEl.appendChild(draw(current, false));
+    chartEl.setAttribute("aria-label", current.dataText);
+    qEl.textContent = current.q;
+    choicesEl.textContent = "";
+    choicesEl.classList.toggle("three", current.options.length === 3);
+    current.options.forEach((a, i) => {
+      const b = document.createElement("button");
+      b.type = "button"; b.id = "choice-" + i; b.textContent = a;
+      b.dataset.correct = String(a === current.answer);
+      b.addEventListener("click", () => choose(b));
+      choicesEl.appendChild(b);
+    });
+    card.classList.remove("good", "bad");
+    feedbackEl.className = "feedback";
+    feedbackEl.textContent = "";
+    render();
+    Loopy.speech.read();
+  }
+  function choose(btn) {
+    if (answered) return;
+    answered = true; tried++;
+    const ok = btn.dataset.correct === "true";
+    [...choicesEl.children].forEach(b => {
+      b.disabled = true;
+      if (b.dataset.correct === "true") b.classList.add("right");
+      else if (b === btn) b.classList.add("wrong");
+      else b.classList.add("faded");
+    });
+    if (ok) { right++; streak++; } else { streak = 0; }
+    // The progress page keeps 40 letters of the question.
+    const q = current.q.length > 40 ? current.q.slice(0, 39) + "…" : current.q;
+    if (ok) Loopy.rewards.correct("graphs-data", streak);
+    else Loopy.rewards.wrong("graphs-data", { q, a: current.answer, y: btn.textContent, k: current.kind });
+    card.classList.remove("good", "bad");
+    card.classList.add(ok ? "good" : "bad");
+    feedbackEl.className = "feedback " + (ok ? "good" : "bad");
+    feedbackEl.innerHTML = "<strong></strong>";
+    feedbackEl.firstChild.textContent = ok ? (streak >= 3 ? t("correctRow", { n: streak }) : t("correct")) : t("notQuite");
+    // One line of why after every answer; after a wrong one, the right answer first.
+    feedbackEl.appendChild(document.createTextNode((ok ? "" : t("gdAnswerIs", { a: current.answer }) + " ") + current.why));
+    render();
+    nextBtn.focus({ preventScroll: true });
+  }
+
+  nextBtn.addEventListener("click", newRound);
+  levelBtns.forEach(b => b.addEventListener("click", () => { level = +b.dataset.level; want = ""; store.set("gd.level.a" + age, level); newRound(); }));
+  window.addEventListener("loopy:age", (e) => { age = e.detail; recent = []; want = ""; loadForAge(); newRound(); });
+  $("reset").addEventListener("click", () => { right = 0; tried = 0; streak = 0; Loopy.recent.clear("graphs-data"); newRound(); });
+  document.addEventListener("keydown", (e) => {
+    if (e.target.tagName === "INPUT" || document.querySelector(".loopy-cheer.big")) return;
+    if (e.key === "Enter" && answered && e.target.tagName !== "BUTTON") { newRound(); return; }
+    const n = parseInt(e.key, 10);
+    if (n >= 1 && n <= 4 && !answered) { const b = choicesEl.children[n - 1]; if (b) choose(b); }
+  });
+
+  // Read aloud: the data as a sentence, then the question and the choices.
+  Loopy.speech.question({ host: card, text: () => {
+    const o = current.options;
+    return t("gdReadQ", { data: current.dataText, q: current.q, list: o.slice(0, -1).join(", ") + " " + t("orWord") + " " + o[o.length - 1] });
+  } });
+
+  // Print worksheet: 20 problems at the game's level, each with its own small chart and a line to write on.
+  Loopy.worksheet({
+    title: () => t("gdName"),
+    level: () => [t("ageLabel", { n: age }), t("gdLevel") + ": " + t("gdL" + level)].join(" · "),
+    how: () => t("gdHow"),
+    layout: "clock",
+    make: (n) => {
+      const list = [], keys = new Set();
+      for (let tries = 0; list.length < n; tries++) {
+        const p = makeProblem(level, want);
+        if (keys.has(p.key) && tries < 500) continue;
+        keys.add(p.key); list.push(p);
+      }
+      return list;
+    },
+    cell: (p) => {
+      const box = document.createElement("div");
+      box.className = "ws-gd";
+      box.appendChild(draw(p, true));
+      const q = document.createElement("p");
+      q.className = "ws-q"; q.textContent = p.q;
+      box.appendChild(q);
+      const blank = document.createElement("span");
+      blank.className = "ws-blank";
+      box.appendChild(blank);
+      return box;
+    },
+    answer: (p) => p.answer
+  });
+
+  newRound();
+})();
+</script>
+</body>
+</html>

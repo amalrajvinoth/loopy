@@ -81,6 +81,11 @@
       at: function (v, a) { return index(val(v, "pr.level.a{age}", a), ["frac", "any", "disc", "ratio"], this.base(a)); },
       names: { en: ["Halves, quarters and tenths", "Any percent", "Discounts and increases", "Ratios and scale"],
         de: ["Hälften, Viertel und Zehntel", "Jeder Prozentsatz", "Rabatt und Aufschlag", "Verhältnis und Maßstab"] } },
+    "graphs-data": { keys: ["gd.level.a{age}"], of: 4,
+      base: function (a) { return a <= 9 ? 0 : a <= 11 ? 1 : a === 12 ? 2 : 3; },
+      at: function (v, a) { return index(val(v, "gd.level.a{age}", a), [1, 2, 3, 4], this.base(a)); },
+      names: { en: ["Bar charts and pictograms", "Tables and line charts", "Mean and median", "Two charts compared"],
+        de: ["Balkendiagramme und Piktogramme", "Tabellen und Liniendiagramme", "Mittelwert und Median", "Zwei Diagramme vergleichen"] } },
     "sound-spell": { keys: ["ss.mode.a{age}", "ss.choices.a{age}"], of: 3,
       base: function (a) { return a <= 6 ? 0 : 2; },
       at: function (v, a) {
