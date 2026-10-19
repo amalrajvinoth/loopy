@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'sha256-2rUcQ2GJgKLWTZmz98SPkWLYaegQkhXAacwSpCAKUT8='; style-src 'self' 'sha256-z2P7kGW5Z05eCTjTZdYpc0vThTlOE9vmt97pVSvi2I4=' 'sha256-ER4UVxOAHVG2PpFuwsi/fNYnlP9iTYLytTr9Qx7YKqY=' 'sha256-RT1053JU5UiKvjrCUFx1rlhdFLMmgtuFJ9T8jnMeawQ=' 'sha256-cEmM4Fi0NMjT7t2B+oBAhqt5jK89DFCgAxwhu8FA3m8='; img-src 'self' data:; font-src 'self'; connect-src 'self'; worker-src 'self'; object-src 'none'; base-uri 'none'; form-action 'none'; manifest-src 'self'; upgrade-insecure-requests">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'sha256-lbRg/YrQi5F2FpzzZmF45xjgpYTUm8eJpl+mY7XFguk='; style-src 'self' 'sha256-z2P7kGW5Z05eCTjTZdYpc0vThTlOE9vmt97pVSvi2I4=' 'sha256-ER4UVxOAHVG2PpFuwsi/fNYnlP9iTYLytTr9Qx7YKqY=' 'sha256-RT1053JU5UiKvjrCUFx1rlhdFLMmgtuFJ9T8jnMeawQ=' 'sha256-cEmM4Fi0NMjT7t2B+oBAhqt5jK89DFCgAxwhu8FA3m8='; img-src 'self' data:; font-src 'self'; connect-src 'self'; worker-src 'self'; object-src 'none'; base-uri 'none'; form-action 'none'; manifest-src 'self'; upgrade-insecure-requests">
 <meta name="referrer" content="strict-origin-when-cross-origin">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <style>:root{color-scheme:light;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}body{margin:0}[hidden]{display:none!important}</style>
@@ -673,8 +673,34 @@ function tagSvg(c, cur, px) {
     return t("ccHintChange");
   }
 
+  // Try again: a missed problem comes back later (Loopy.retry). The note is the level, the money and the amounts in
+  // cents: "small eur 20,5" (the coins to add) or "easy eur 350 500" (price and paid). A note in other money waits.
+  const note = (p) => p.lv + " " + p.cur + " " + (p.items ? p.items.join(",") : p.price + " " + p.paid);
+  function rebuild(r) {
+    const m = /^(small|count|easy|change|big) (eur|gbp|usd) (\d{1,4}(?:,\d{1,4}){0,5})(?: (\d{1,4}))?$/.exec(r);
+    if (!m || m[2] !== cur) return null;
+    const level = m[1], c = CUR[cur], coins = Object.keys(c.coins).map(Number);
+    let p;
+    if (m[4]) {
+      const price = +m[3], paid = +m[4];
+      if (!isChange(level) || m[3].includes(",") || paid !== (level === "big" ? 2000 : 500) && paid !== (level === "big" ? 5000 : 1000)) return null;
+      if (price < (level === "big" ? 100 : 1) || price >= paid || (level === "easy" && price % 10)) return null;
+      p = { price, paid, answer: paid - price, key: level + ":" + price + ":" + paid };
+    } else {
+      const items = m[3].split(",").map(Number).sort((a, b) => b - a), n = items.length;
+      const pool = level === "small" ? coins.filter(v => v < 100) : coins.concat(c.notes).filter(v => v <= 500);
+      if (isChange(level) || n < 2 || items.some(v => !pool.includes(v))) return null;
+      if (level === "small" ? n > 4 : n < 3 || n > 6 || !items.some(v => v >= 100) || !items.some(v => v < 100)) return null;
+      const answer = items.reduce((s, v) => s + v, 0);
+      if (level === "small" ? answer >= 100 : answer >= 1000) return null;
+      p = { items, answer, key: level + ":" + items.join(",") };
+    }
+    p.lv = level; p.cur = cur;
+    return p;
+  }
+
   function newRound() {
-    current = Loopy.fresh(recent, () => makeProblem(lv, cur, null, age));
+    current = Loopy.retry.fresh("coins-change", recent, () => makeProblem(lv, cur, null, age), rebuild);
     typed = ""; answered = false;
     promptEl.textContent = "";
     if (current.items) promptEl.textContent = t("ccHowMuch");
@@ -720,7 +746,7 @@ function tagSvg(c, cur, px) {
     const ok = typedValue() === current.answer;
     if (ok) { right++; streak++; } else { streak = 0; }
     const kind = { small: "small", count: "count", easy: "ch10", change: "ch", big: "ch" }[current.lv];
-    if (window.Loopy && Loopy.rewards) ok ? Loopy.rewards.correct("coins-change", streak) : Loopy.rewards.wrong("coins-change", { q: question(), a: asMoney(current.answer), y: asMoney(typedValue()), k: "cc-" + kind });
+    if (window.Loopy && Loopy.rewards) ok ? Loopy.rewards.correct("coins-change", streak) : Loopy.rewards.wrong("coins-change", { q: question(), a: asMoney(current.answer), y: asMoney(typedValue()), k: "cc-" + kind, r: note(current) });
     card.classList.add(ok ? "good" : "bad");
     feedbackEl.classList.add(ok ? "good" : "bad");
     const head = ok
