@@ -25,6 +25,7 @@
   ],
   "built_files": [
     "loopy-backup.js",
+    "loopy-install.js",
     "loopy-levels.js",
     "loopy-report.js",
     "loopy-sheet.js",

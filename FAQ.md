@@ -50,7 +50,9 @@ The code carries stars, badges, best scores, the day streak, the answers on the 
 
 ## Can I use Loopy like an app?
 
-Yes. On a phone or tablet, open Loopy in the browser and choose "Add to Home Screen". It then opens full screen. After one visit with internet, it also works offline, on a plane or in the car. When you are online, it gets the newest version by itself.
+Yes. On the home page, open ⚙ **Settings** and tap **Add loopy to the home screen** (on a computer: **Install loopy on this computer**). Where the browser has its own install box (Chrome, Edge, Samsung Internet), it opens. Otherwise loopy shows the steps for your device: iPhone, iPad, Android, a Mac with Safari, or a computer. It then opens full screen.
+
+On an iPhone, iPad or Mac, the loopy on the home screen keeps its own stars, apart from Safari. The steps box shows your stars code: copy it, open the new loopy, and load it under **My stars → Move my stars to another device**. Firefox on a computer cannot add sites as apps, so there loopy suggests a bookmark. After one visit with internet, it also works offline, on a plane or in the car. When you are online, it gets the newest version by itself.
 
 ## Can Loopy read the questions out loud?
 
