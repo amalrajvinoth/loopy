@@ -4,7 +4,7 @@ Answers to common questions about Loopy. The same answers are on the site at htt
 
 ## Is there a guide that explains everything?
 
-Yes. The loopy guide at https://amalrajvinoth.github.io/loopy/guide/ explains every game, setup, settings, the grown-ups page, backups and how to report a problem. It is in English and German. Each game page starts with three short steps for kids, with a **Read this to me** button. You find it at the bottom of the home page and on the Help page.
+Yes. The loopy guide at https://amalrajvinoth.github.io/loopy/guide/ explains every game, setup, settings, the grown-ups page, backups and how to report a problem. It is in English and German. Each game page starts with three short steps for kids, with a **Read this to me** button. Tap the **Guide** button at the bottom of the home page, or find it on the Help page.
 
 ## Is Loopy free?
 
@@ -80,7 +80,7 @@ Tap the small flag at the top of the game (or Report a problem in Settings). Pic
 
 ## What does "Practise next" on the grown-ups' page do?
 
-Open **For grown-ups: how it's going** at the bottom of the home page. The first card says how the week went: how many answers, how many percent right, and up or down from last week. **Practise next** shows the three kinds of question your child got wrong most this week, like the 7 times table or clock times in fives. Tap **Practise** and the game opens set to just that kind for this visit. The child's saved level does not change. **Level up** opens a game that is going well, with its Settings showing, so you can pick a harder level. Nothing here leaves your device.
+Tap the **Grown-ups** button at the bottom of the home page. The first card says how the week went: how many answers, how many percent right, and up or down from last week. **Practise next** shows the three kinds of question your child got wrong most this week, like the 7 times table or clock times in fives. Tap **Practise** and the game opens set to just that kind for this visit. The child's saved level does not change. **Level up** opens a game that is going well, with its Settings showing, so you can pick a harder level. Nothing here leaves your device.
 
 ## What is "Try again" on the home page?
 

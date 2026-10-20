@@ -49,7 +49,7 @@ It works on phones, tablets and computers. There is no sign-up and no ads.
 | --- | --- | --- |
 | [How it's going](progress/) | The week in one line, what to practise next with one tap into the right game, a weekly card to share or print, a practice sheet from the weak spots, each game this week and last week, and the wrong answers by kind | [README](progress/README.md) |
 
-Open it from the link at the bottom of the home page.
+Open it with the Grown-ups button at the bottom of the home page.
 
 ## How it works
 

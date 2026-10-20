@@ -6,7 +6,7 @@ sidebar:
 ---
 Got a question? The answer may be here.
 
-Short answers to the most common questions. The same questions are on loopy's own Help page. Open it with **Help and feedback** at the bottom of the home page.
+Short answers to the most common questions. The same questions are on loopy's own Help page. Open it with the **Help** button at the bottom of the home page.
 
 ## Is loopy free?
 
@@ -58,7 +58,7 @@ Wrong answers come back, until each one is answered right twice. See [Try again]
 
 ## How do I see how my child is doing?
 
-Tap **For grown-ups: how it's going** at the bottom of the home page. See [The grown-ups page](/loopy/guide/grown-ups/grown-ups-page/).
+Tap the **Grown-ups** button at the bottom of the home page. See [The grown-ups page](/loopy/guide/grown-ups/grown-ups-page/).
 
 ## A question or answer is wrong. How do I tell you?
 

@@ -6,7 +6,7 @@ sidebar:
 ---
 Hast du eine Frage? Vielleicht steht die Antwort hier.
 
-Kurze Antworten auf die häufigsten Fragen. Die gleichen Fragen stehen auf der Hilfe-Seite von loopy. Du öffnest sie mit **Hilfe und Feedback** unten auf der Startseite.
+Kurze Antworten auf die häufigsten Fragen. Die gleichen Fragen stehen auf der Hilfe-Seite von loopy. Du öffnest sie mit dem Knopf **Hilfe** unten auf der Startseite.
 
 ## Ist loopy kostenlos?
 
@@ -58,7 +58,7 @@ Falsche Antworten kommen wieder, bis jede zweimal richtig beantwortet wurde. Meh
 
 ## Wie sehe ich, wie es meinem Kind geht?
 
-Tippe unten auf der Startseite auf **Für Erwachsene: so läuft es**. Mehr unter [Die Seite für Erwachsene](/loopy/guide/de/grown-ups/grown-ups-page/).
+Tippe unten auf der Startseite auf den Knopf **Erwachsene**. Mehr unter [Die Seite für Erwachsene](/loopy/guide/de/grown-ups/grown-ups-page/).
 
 ## Eine Aufgabe oder Lösung ist falsch. Wie sage ich es euch?
 
