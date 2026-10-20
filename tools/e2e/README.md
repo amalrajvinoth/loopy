@@ -17,7 +17,7 @@ It takes a few minutes, prints a table with one row per game and age, and fails 
 
 ## What it does
 
-It serves the site at `/loopy/`, like GitHub Pages. Then, for every game, as a 5-year-old (English), an 8-year-old (German) and a 16-year-old (English), it answers 30 questions in a row. Today's 10 plays one set of 10. It picks the right answer when the game marks it (the multiple-choice games), otherwise the first answer, then presses Next.
+It serves the site at `/loopy/`, like GitHub Pages. Then, for every game, as a 5-year-old (English), an 8-year-old (German) and a 16-year-old (English), it answers 30 questions in a row. Today's 10 plays one set of 10. It picks the right answer when the game marks it (the multiple-choice games), otherwise the first answer, then presses Next. Box Multiplication is played in steps: while its card says `data-steps="on"`, the test types the answer the game puts on the box being filled (`data-a`), box by box and then the total. The Try again test does the same to finish or replay a sum.
 
 It checks:
 

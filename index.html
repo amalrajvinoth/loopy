@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'sha256-j6O4X55HlrLq0Of85hxAUYYyvBy+nxCw13G8yQHFOO0='; style-src 'self' 'sha256-fJqr/RpGtKccKf27fhlWWoWclPDej0pWMo6d8XjU1m4='; img-src 'self' data:; font-src 'self'; connect-src 'self'; worker-src 'self'; object-src 'none'; base-uri 'none'; form-action 'none'; manifest-src 'self'; upgrade-insecure-requests">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'sha256-H9yM/9fhQ+2dqEwa5iR7cJrUTbSfObvgIK2F8XFisC4='; style-src 'self' 'sha256-fJqr/RpGtKccKf27fhlWWoWclPDej0pWMo6d8XjU1m4='; img-src 'self' data:; font-src 'self'; connect-src 'self'; worker-src 'self'; object-src 'none'; base-uri 'none'; form-action 'none'; manifest-src 'self'; upgrade-insecure-requests">
 <meta name="referrer" content="strict-origin-when-cross-origin">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <link rel="icon" href="icon.svg" type="image/svg+xml">
@@ -205,6 +205,7 @@ Loopy.addStrings({
     ttTitle: "Times Tables Sprint", ttTag: "Times tables against the clock", ttText: "60 seconds. Answer as many as you can, then beat your best.",
     prTitle: "Percent and Ratio", prTag: "Percents, discounts and ratios", prText: "25% of 80, 20% off €40, share 20 in the ratio 2 : 3. A bar shows the part of the whole.",
     gdTitle: "Graphs and Data", gdTag: "Read charts and tables", gdText: "Bar charts, pictograms, line charts and tables: how many more, the total, the mean and the median.",
+    bmTitle: "Box Multiplication", bmTag: "The grid method", bmText: "Split 23 × 14 into tens and ones, fill each box, then add them up. Bigger numbers as you grow.",
     tsTitle: "Times and Share", tsTag: "Times and division", tsText: "Times tables with dots to count, and sharing into equal groups. Bigger numbers as you grow.",
     clTitle: "What Time Is It?", clTag: "Telling time", clText: "Read the hands on the clock and pick the right time, from half hours down to the minute.",
     bsTitle: "Bigger or Smaller", bsTag: "Comparing numbers", bsText: "Pick <, = or >, put numbers in order and round them, with a number line to show why.",
@@ -249,6 +250,7 @@ Loopy.addStrings({
     ttTitle: "Einmaleins-Sprint", ttTag: "Einmaleins gegen die Uhr", ttText: "60 Sekunden. Löse so viele Aufgaben wie du kannst und knacke deinen Rekord.",
     prTitle: "Prozent und Verhältnis", prTag: "Prozent, Rabatt und Verhältnis", prText: "25 % von 80, 20 % Rabatt auf 40 €, 20 im Verhältnis 2 : 3 teilen. Ein Balken zeigt den Teil vom Ganzen.",
     gdTitle: "Diagramme und Daten", gdTag: "Diagramme und Tabellen lesen", gdText: "Balkendiagramme, Piktogramme, Liniendiagramme und Tabellen: wie viel mehr, die Summe, der Mittelwert und der Median.",
+    bmTitle: "Malkreuz", bmTag: "Malnehmen im Kreuz", bmText: "Zerlege 23 × 14 in Zehner und Einer, fülle jedes Kästchen und zähle dann zusammen. Größere Zahlen, wenn du wächst.",
     tsTitle: "Mal und Teilen", tsTag: "Malnehmen und Teilen", tsText: "Einmaleins mit Punkten zum Zählen und Teilen in gleiche Gruppen. Größere Zahlen, wenn du wächst.",
     clTitle: "Wie spät ist es?", clTag: "Uhr lesen", clText: "Lies die Zeiger der Uhr und wähle die richtige Zeit, von halben Stunden bis zur Minute.",
     bsTitle: "Größer oder kleiner", bsTag: "Zahlen vergleichen", bsText: "Wähle <, = oder >, ordne Zahlen und runde sie, mit einem Zahlenstrahl, der zeigt warum.",
@@ -286,6 +288,7 @@ const GAMES = [
   { subject: "math", path: "math/times-sprint/", id: "tt", pic: "⏱️", ages: [5, 16] },
   { subject: "math", path: "math/percent-ratio/", id: "pr", pic: "💯", ages: [10, 16] },
   { subject: "math", path: "math/graphs-data/", id: "gd", pic: "📊", ages: [8, 14] },
+  { subject: "math", path: "math/box-multiply/", id: "bm", pic: "🔲", ages: [7, 12] },
   { subject: "languages", path: "languages/sound-spell/", id: "ss", pic: "👂", ages: [5, 8] },
   { subject: "languages", path: "languages/word-match/", id: "wm", pic: "🖼️", ages: [5, 10] },
   { subject: "languages", path: "languages/spell-it/", id: "si", pic: "✏️", ages: [6, 10] },

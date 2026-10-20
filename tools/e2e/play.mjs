@@ -100,9 +100,20 @@ const stars = p => p.evaluate(() => +document.querySelector("[data-loopy-stars]"
 const score = p => p.evaluate(() => { const s = document.getElementById("score"); return s ? s.textContent.split("/").map(n => +n.replace(/\D/g, "")) : null; });
 const asked = p => p.evaluate(() => window.__questions.length);
 
+// A sum in steps (Box Multiplication): the card says data-steps="on" until every box and the total are done.
+// The box being filled carries its answer in data-a, the way choice games mark the right one with data-correct.
+async function steps(p) {
+  for (let i = 0; i < 40 && await p.locator('[data-steps="on"]').count(); i++) {
+    const a = await p.locator("[data-a]").first().getAttribute("data-a");
+    for (const ch of a) await p.click(`#pad [data-d="${ch}"]`);
+    await p.click("#k-go");
+  }
+}
+
 // Answer the question on screen: the right answer when the page marks it, otherwise the first one.
 // Returns true when the answer was the marked right one.
 async function answer(p) {
+  if (await p.locator('[data-steps="on"]').count()) { await steps(p); return true; }
   const right = p.locator('[data-correct="true"]:enabled');
   if (await right.count()) {
     await right.first().click();
