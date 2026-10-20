@@ -47,7 +47,7 @@ Check:
 - **Touch.** Tap targets at least 44px. Focus ring with `:focus-visible`. `prefers-reduced-motion` turns movement off. No hover-only effects.
 - **Words.** Lowercase "loopy" on screen. Every word in English and German. Numbers through `Loopy.num()`.
 - **Security.** No `style=` attributes, no `on...=` handlers, no outside requests.
-- **Print.** If the change touches a game or the worksheet code, print-preview the worksheet (`page.emulateMedia({ media: "print" })` and `page.pdf()` for A4 and Letter). It must be exactly 2 pages.
+- **Print.** If the change touches a game or the worksheet code, print-preview the worksheet (`page.emulateMedia({ media: "print" })` and `page.pdf()` for A4 and Letter). It must be exactly 2 pages. Anything that prints (worksheet, weekly card, a printed page, any new print) must show the real loopy logo (`Loopy.logo()`) in a fitting place; a missing logo is a Must fix (owner's rule, 20 Oct 2026).
 
 Compare with the same screens on main, so you can say what looks different.
 

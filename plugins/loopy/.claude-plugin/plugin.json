@@ -1,6 +1,6 @@
 {
   "name": "loopy",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "description": "loopy only: build the next roadmap task, add a game, ship a PR with every check, heal failing checks, and keep the plugin in step with the repo.",
   "author": { "name": "amalrajvinoth" },
   "repository": "https://github.com/amalrajvinoth/loopy"

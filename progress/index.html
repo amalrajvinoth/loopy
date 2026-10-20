@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'sha256-6Mmqo0c1srTcbyuVS4LghDrlOczK9kHtMUR2IIp+Jsw='; style-src 'self' 'sha256-uCTUGi7tq2gCtsmTyByQ9RhEijXQUda9e60iQFRptMA='; img-src 'self' data:; font-src 'self'; connect-src 'self'; worker-src 'self'; object-src 'none'; base-uri 'none'; form-action 'none'; manifest-src 'self'; upgrade-insecure-requests">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'sha256-LlPF6Vf0Ql/0bs5a7NwH53+9uQFiE7MCmG7QmdqmtCo='; style-src 'self' 'sha256-R73JVBfQRPmcMT4FSBiUxJ39k8Se2bGGNHdZUWUyPoY='; img-src 'self' data:; font-src 'self'; connect-src 'self'; worker-src 'self'; object-src 'none'; base-uri 'none'; form-action 'none'; manifest-src 'self'; upgrade-insecure-requests">
 <meta name="referrer" content="strict-origin-when-cross-origin">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <link rel="icon" href="../icon.svg" type="image/svg+xml">
@@ -130,6 +130,12 @@ section[hidden] { display: none; }
 .week h3 { margin: 4px 0 0; font-size: 0.8rem; font-weight: 600; letter-spacing: 0.06em; text-transform: uppercase; color: var(--muted); }
 .week ul { margin: 0; padding-left: 1.2em; }
 .week .brand { color: var(--muted); font-size: 0.85rem; text-align: center; }
+/* The real loopy logo, top right of the card, like on the worksheet. */
+.brand-logo { color: var(--ink); display: flex; margin-left: auto; align-self: flex-start; flex: 0 0 auto; }
+.brand-logo svg { height: 28px; width: auto; overflow: visible; }
+/* The loopy logo at the top of a printed page; only on paper. */
+.print-head { display: none; }
+.print-head svg { height: 12mm; width: auto; overflow: visible; color: #000; }
 .week-foot { display: flex; gap: 8px; flex-wrap: wrap; align-items: center; margin-top: -8px; }
 .btn.main { background: var(--c1); border-color: var(--c1); color: var(--accent-ink, #fff); }
 .btn:disabled { opacity: 0.6; cursor: wait; }
@@ -140,6 +146,7 @@ section[hidden] { display: none; }
 @media print {
   html:root, html:root[data-theme] { --bg: #fff; --card: #fff; --ink: #000; --muted: #444; --line: #999; --chip: #fff; }
   html, body { background: #fff !important; color: #000; }
+  .print-head { display: block; }
   .bar, .settings-panel, #kid-picker, .week-foot, .sheet-row, .wrap .btn, .wrap button { display: none !important; }
   section, .game { box-shadow: none; break-inside: avoid; }
   html.week-print body > :not(main), html.week-print .wrap > :not(.week) { display: none !important; }
@@ -153,6 +160,7 @@ section[hidden] { display: none; }
 </head>
 <body>
 <main class="wrap">
+  <div class="print-head" id="print-head" aria-hidden="true"></div>
   <header class="bar">
     <a class="home-link" href="../">&larr; loopy</a>
     <button type="button" id="settings-toggle" aria-controls="settings-panel"></button>
@@ -176,13 +184,13 @@ section[hidden] { display: none; }
   </section>
 
   <section class="week" id="week" aria-labelledby="week-title" hidden>
-    <div class="who"><span id="week-pic" aria-hidden="true"></span><div><h2 id="week-title"></h2><p class="muted" id="week-dates"></p></div></div>
+    <div class="who"><span id="week-pic" aria-hidden="true"></span><div><h2 id="week-title"></h2><p class="muted" id="week-dates"></p></div><span class="brand-logo" id="week-logo" role="img" aria-label="loopy"></span></div>
     <div class="stat" id="week-stat"></div>
     <h3 data-t="prGoingWell">Going well</h3>
     <ul id="week-good"></ul>
     <h3 data-t="prToPractise">To practise</h3>
     <ul id="week-prac"></ul>
-    <p class="brand" data-t="prBrand">loopy · Learn. Play. Repeat.</p>
+    <p class="brand" data-t="prBrand">Learn. Play. Repeat.</p>
   </section>
   <div class="week-foot" id="week-foot" hidden>
     <button type="button" class="btn main" id="week-share" data-t="prSharePic">Share picture</button>
@@ -258,7 +266,7 @@ Loopy.addStrings({
     prGoingWell: "Going well", prToPractise: "To practise", prAllRight: "{game}: every answer right.", prMostRight: "{game}: {r} of {n} right.",
     prGoodNone: "Play a bit more this week to fill this line.", prPracNone: "Nothing missed this week.",
     prSharePic: "Share picture", prSavePic: "Save picture", prPrint: "Print", prMaking: "Making the picture…", prNoPic: "This browser cannot make the picture. Print instead.", prShared: "Shared.", prSaved: "Saved to your pictures or downloads.",
-    prBrand: "loopy · Learn. Play. Repeat.",
+    prBrand: "Learn. Play. Repeat.",
     prSheet: "Print a practice sheet", prSheetMaking: "Making the sheet…", prSheetFail: "The sheet could not be made. Open a game and print its worksheet from Settings instead.",
     prSheetTitle: "Practice sheet", prSheetTitleKid: "Practice sheet for {name}", prSheetHow: "20 problems of the kinds missed most. Answers on page 2.",
     prStars: "⭐ {n} stars", prDays: "🔥 {n} days in a row", prDay: "🔥 1 day in a row", prBadge: "🏅 {name}", prBest: "🏆 Best streak: {n}", prGameBest: "Best streak: {n} in a row", prPlay: "Play →",
@@ -364,7 +372,7 @@ Loopy.addStrings({
     prGoingWell: "Läuft gut", prToPractise: "Zum Üben", prAllRight: "{game}: alles richtig.", prMostRight: "{game}: {r} von {n} richtig.",
     prGoodNone: "Spielt diese Woche noch ein bisschen, dann steht hier etwas.", prPracNone: "Diese Woche nichts falsch.",
     prSharePic: "Bild teilen", prSavePic: "Bild speichern", prPrint: "Drucken", prMaking: "Bild wird gemacht…", prNoPic: "Dieser Browser kann das Bild nicht machen. Druckt es stattdessen.", prShared: "Geteilt.", prSaved: "In den Bildern oder Downloads gespeichert.",
-    prBrand: "loopy · Lernen. Spielen. Wiederholen.",
+    prBrand: "Lernen. Spielen. Wiederholen.",
     prSheet: "Übungsblatt drucken", prSheetMaking: "Blatt wird gemacht…", prSheetFail: "Das Blatt konnte nicht gemacht werden. Öffnet ein Spiel und druckt dort in den Einstellungen das Arbeitsblatt.",
     prSheetTitle: "Übungsblatt", prSheetTitleKid: "Übungsblatt für {name}", prSheetHow: "20 Aufgaben der Arten, die am häufigsten falsch waren. Lösungen auf Seite 2.",
     prStars: "⭐ {n} Sterne", prDays: "🔥 {n} Tage hintereinander", prDay: "🔥 1 Tag hintereinander", prBadge: "🏅 {name}", prBest: "🏆 Beste Serie: {n}", prGameBest: "Beste Serie: {n} hintereinander", prPlay: "Spielen →",
@@ -756,6 +764,9 @@ Loopy.addStrings({
     weakSpots().forEach(e => prac.appendChild(el("li", "", kindName(e.k))));
     if (!prac.children.length) prac.appendChild(el("li", "muted", t("prPracNone")));
   }
+  // The real loopy logo on everything that prints: the weekly card and the top of the printed page.
+  $("week-logo").innerHTML = Loopy.logo("logo", "lwc");
+  $("print-head").innerHTML = Loopy.logo("logo", "lph");
   $("week-open").addEventListener("click", () => {
     week();
     $("week").hidden = false; $("week-foot").hidden = false; $("week-open").hidden = true;
