@@ -1,0 +1,51 @@
+---
+// The "For kids" box at the top of every game page: 3 big steps, a picture of the game,
+// a Play it button, and Read this to me (the device's own voice, nothing is downloaded).
+//   <KidsBox game="math/box-multiply" steps={["…", "…", "…"]} />
+// The picture comes from src/assets/screens/<en|de>/<subject>-<game>.jpg (npm run screens makes them).
+import { Image } from "astro:assets";
+import type { ImageMetadata } from "astro";
+
+interface Props { game: string; steps: string[]; title?: string }
+const { game, steps, title } = Astro.props;
+const de = Astro.currentLocale === "de";
+const lang = de ? "de" : "en";
+const shots = import.meta.glob<{ default: ImageMetadata }>("../assets/screens/*/*.jpg", { eager: true });
+const shot = shots[`../assets/screens/${lang}/${game.replace("/", "-")}.jpg`]?.default;
+const T = de
+  ? { kids: "Für Kinder", play: "Spielen", say: "Lies es mir vor", stop: "Stopp", alt: "So sieht das Spiel aus" }
+  : { kids: "For kids", play: "Play it", say: "Read this to me", stop: "Stop", alt: "What the game looks like" };
+---
+<section class="kids not-content" aria-labelledby="kids-title" data-lang={de ? "de-DE" : "en-US"}>
+  <div class="kids-text">
+    <h2 id="kids-title" class="kids-title">🧒 {title ?? T.kids}</h2>
+    <ol class="kids-steps">
+      {steps.map((s) => <li>{s}</li>)}
+    </ol>
+    <div class="kids-actions">
+      <a class="kids-play" href={`/loopy/${game}/`}>▶ {T.play}</a>
+      <button type="button" class="kids-say" hidden data-say={T.say} data-stop={T.stop}>🔊 {T.say}</button>
+    </div>
+  </div>
+  {shot && <Image class="kids-shot" src={shot} alt={T.alt} widths={[260, 520]} sizes="260px" />}
+</section>
+
+<script>
+  // Read the kids box out loud with the device's own voice. The button only shows when the device has one.
+  const synth = "speechSynthesis" in window ? window.speechSynthesis : null;
+  for (const box of document.querySelectorAll<HTMLElement>(".kids")) {
+    const btn = box.querySelector<HTMLButtonElement>(".kids-say");
+    if (!btn || !synth) continue;
+    btn.hidden = false;
+    btn.addEventListener("click", () => {
+      if (synth.speaking) { synth.cancel(); btn.textContent = "🔊 " + btn.dataset.say; return; }
+      const steps = [...box.querySelectorAll("li")].map((li, i) => `${i + 1}. ${li.textContent}`);
+      const u = new SpeechSynthesisUtterance(steps.join(" "));
+      u.lang = box.dataset.lang || "en-US";
+      u.rate = 0.9;
+      u.addEventListener("end", () => { btn.textContent = "🔊 " + btn.dataset.say; });
+      btn.textContent = "⏹ " + btn.dataset.stop;
+      synth.speak(u);
+    });
+  }
+</script>

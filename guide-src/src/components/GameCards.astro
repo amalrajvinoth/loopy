@@ -1,0 +1,27 @@
+---
+// Big picture cards for the games, grouped by subject, like the home page.
+//   <GameCards />            every game
+//   <GameCards subject="math" />
+import { GAMES, SUBJECTS, TODAY } from "../games";
+interface Props { subject?: string }
+const { subject } = Astro.props;
+const de = Astro.currentLocale === "de";
+const base = de ? "/loopy/guide/de/" : "/loopy/guide/";
+const ages = (a: [number, number]) => (de ? `${a[0]} bis ${a[1]} Jahre` : `Ages ${a[0]} to ${a[1]}`);
+const subjects = subject ? [subject] : Object.keys(SUBJECTS);
+---
+{!subject && (
+  <ul class="cards not-content">
+    <li><a class="card-link today" href={`${base}${TODAY.slug}/`}><span class="pic" aria-hidden="true">{TODAY.pic}</span><b>{de ? TODAY.de : TODAY.en}</b><small>{de ? "Jeden Tag" : "Every day"}</small></a></li>
+  </ul>
+)}
+{subjects.map((s) => (
+  <>
+    {!subject && <h2 id={s}>{SUBJECTS[s].pic} {de ? SUBJECTS[s].de : SUBJECTS[s].en}</h2>}
+    <ul class={`cards not-content subject-${s}`}>
+      {GAMES.filter((g) => g.subject === s).map((g) => (
+        <li><a class="card-link" href={`${base}${g.slug}/`}><span class="pic" aria-hidden="true">{g.pic}</span><b>{de ? g.de : g.en}</b><small>{ages(g.ages)}</small></a></li>
+      ))}
+    </ul>
+  </>
+))}

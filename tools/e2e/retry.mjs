@@ -24,7 +24,7 @@ const { chromium } = require("playwright-core");
 const GAMES = [], ONLY = process.env.GAME || "";
 for (const subject of fs.readdirSync(ROOT).sort()) {
   const dir = path.join(ROOT, subject);
-  if (!fs.statSync(dir).isDirectory() || /^[._]|^(docs|fonts|tools|src|help|progress|node_modules|mix)$/.test(subject)) continue;
+  if (!fs.statSync(dir).isDirectory() || /^[._]|^(docs|fonts|tools|src|help|progress|node_modules|mix|guide-src)$/.test(subject)) continue;
   for (const game of fs.readdirSync(dir).sort()) {
     const file = path.join(dir, game, "index.html");
     if (`${subject}/${game}/`.includes(ONLY) && fs.existsSync(file) && !/http-equiv="refresh"|location\.replace/.test(fs.readFileSync(file, "utf8"))) GAMES.push(`${subject}/${game}/`);

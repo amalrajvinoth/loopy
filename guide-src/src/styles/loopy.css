@@ -1,0 +1,118 @@
+/* The loopy look for the guide. Colors come from loopy.css: Black (dark) and Sunny (light).
+   Fonts are the site's own files in /loopy/fonts/, so nothing loads from another website
+   and the browser reuses the fonts it already has from the games. */
+@font-face { font-family: "Fredoka"; font-weight: 600 700; font-display: swap; src: url("/loopy/fonts/fredoka-latin.woff2") format("woff2"); }
+@font-face { font-family: "Fredoka"; font-weight: 600 700; font-display: swap; src: url("/loopy/fonts/fredoka-latin-ext.woff2") format("woff2"); unicode-range: U+0100-02BA, U+1E00-1E9F, U+20A0-20C4; }
+@font-face { font-family: "Lexend"; font-weight: 400 700; font-display: swap; src: url("/loopy/fonts/lexend-latin.woff2") format("woff2"); }
+@font-face { font-family: "Lexend"; font-weight: 400 700; font-display: swap; src: url("/loopy/fonts/lexend-latin-ext.woff2") format("woff2"); unicode-range: U+0100-02BA, U+1E00-1E9F, U+20A0-20C4; }
+
+:root {
+  --sl-font: "Lexend", "Segoe UI", "Helvetica Neue", Arial, sans-serif;
+  --display: "Fredoka", "Lexend", "Segoe UI", Arial, sans-serif;
+  --sl-text-base: 1.0625rem;
+  --sl-line-height: 1.65;
+  /* Black theme */
+  --sl-color-accent-low: #10203d;
+  --sl-color-accent: #5b9dff;
+  --sl-color-accent-high: #bcd6ff;
+  --sl-color-white: #f5f5f7;
+  --sl-color-gray-1: #e4e4ea;
+  --sl-color-gray-2: #c4c4cc;
+  --sl-color-gray-3: #a1a1ab;
+  --sl-color-gray-4: #6e6e78;
+  --sl-color-gray-5: #2a2a33;
+  --sl-color-gray-6: #16161b;
+  --sl-color-black: #0a0a0c;
+  --c1: #5b9dff; --c2: #ff8a4c; --c3: #3fd68a; --c4: #e070ff; --c5: #ffd23f;
+  --kids-bg: linear-gradient(135deg, #17213b, #261a31);
+  --on-accent: #0a0a0c;
+}
+:root[data-theme="light"] {
+  /* Sunny theme */
+  --sl-color-accent-low: #dde7fb;
+  --sl-color-accent: #2457c5;
+  --sl-color-accent-high: #16367d;
+  --sl-color-white: #1d2a3f;
+  --sl-color-gray-1: #26334a;
+  --sl-color-gray-2: #3b4860;
+  --sl-color-gray-3: #5d6b82;
+  --sl-color-gray-4: #8a95a8;
+  --sl-color-gray-5: #f0e2c8;
+  --sl-color-gray-6: #fdeccc;
+  --sl-color-gray-7: #fff3dd;
+  --sl-color-black: #fff8ec;
+  --c1: #2457c5; --c2: #e2622b; --c3: #1a7742; --c4: #b0359c; --c5: #a87f00;
+  --kids-bg: linear-gradient(135deg, #e8f0ff, #fde9f6);
+  --on-accent: #ffffff;
+}
+
+h1, h2, h3, h4, .sl-markdown-content :is(h1, h2, h3, h4), .site-title, [data-page-title], .kids-title {
+  font-family: var(--display);
+  font-weight: 700;
+}
+.sl-markdown-content h2 { font-size: 1.6rem; }
+.site-title img { height: 2.1rem; width: auto; }
+.site-title { gap: 0.5rem; }
+.sidebar-content .large { font-family: var(--display); font-size: 1.05rem; }
+
+/* Play loopy, in the top bar */
+.play-loopy {
+  display: inline-flex; align-items: center; min-height: 40px; padding: 0 14px; border-radius: 999px;
+  background: var(--c3); color: var(--on-accent); font-family: var(--display); font-weight: 700; text-decoration: none; white-space: nowrap;
+}
+.play-loopy:hover { filter: brightness(1.08); }
+
+/* For kids box */
+.kids {
+  display: flex; gap: 1.5rem; align-items: center; justify-content: space-between; flex-wrap: wrap;
+  margin: 0.5rem 0 2rem; padding: 1.25rem 1.5rem; border: 3px solid var(--c1); border-radius: 22px; background: var(--kids-bg);
+}
+.kids-text { flex: 1 1 280px; }
+.kids-title { margin: 0 0 0.5rem; font-size: 1.6rem; color: var(--c5); }
+.kids-steps { list-style: none; counter-reset: step; margin: 0; padding: 0; display: grid; gap: 0.6rem; }
+.kids-steps li {
+  counter-increment: step; display: flex; gap: 0.75rem; align-items: center; font-size: 1.25rem; line-height: 1.35; color: var(--sl-color-white);
+}
+.kids-steps li::before {
+  content: counter(step); flex: none; display: grid; place-items: center; width: 2.2rem; height: 2.2rem; border-radius: 50%;
+  background: var(--c2); color: var(--on-accent); font-family: var(--display); font-weight: 700;
+}
+.kids-actions { display: flex; gap: 0.75rem; align-items: center; flex-wrap: wrap; margin-top: 1rem; }
+.kids-play, .kids-say {
+  display: inline-flex; align-items: center; min-height: 48px; padding: 0 1.1rem; border-radius: 14px;
+  font-family: var(--display); font-size: 1.15rem; font-weight: 700; text-decoration: none; cursor: pointer;
+}
+.kids-play { background: var(--c3); color: var(--on-accent); }
+.kids-say { background: transparent; color: var(--sl-color-white); border: 2px solid var(--sl-color-gray-4); }
+.kids-say[hidden] { display: none; }
+.kids-shot { width: 260px; max-width: 100%; height: auto; border-radius: 18px; border: 1px solid var(--sl-color-gray-5); }
+@media (max-width: 40rem) { .kids { padding: 1rem; } .kids-shot { width: 100%; max-width: 320px; margin: 0 auto; } }
+
+/* Picture cards for games and topics */
+.cards { list-style: none; padding: 0; margin: 1rem 0 2rem; display: grid; grid-template-columns: repeat(auto-fill, minmax(165px, 1fr)); gap: 0.75rem; }
+.card-link {
+  display: flex; flex-direction: column; gap: 0.2rem; height: 100%; padding: 1rem; border-radius: 18px; text-decoration: none;
+  background: var(--sl-color-gray-6); border: 2px solid var(--sl-color-gray-5); color: var(--sl-color-white);
+}
+.card-link:hover { border-color: var(--sl-color-accent); }
+.card-link .pic { font-size: 2.2rem; line-height: 1.2; }
+.card-link b { font-family: var(--display); font-size: 1.15rem; }
+.card-link small { color: var(--sl-color-gray-3); }
+.card-link.today { border-color: var(--c5); }
+.subject-math .card-link { border-left: 6px solid var(--c1); }
+.subject-languages .card-link { border-left: 6px solid var(--c2); }
+.subject-science .card-link { border-left: 6px solid var(--c3); }
+.subject-geography .card-link { border-left: 6px solid var(--c4); }
+
+/* Pictures of the site in the text */
+.sl-markdown-content img.shot { border-radius: 16px; border: 1px solid var(--sl-color-gray-5); max-width: min(100%, 320px); height: auto; }
+.sl-markdown-content table { display: table; width: 100%; }
+
+/* The logo in the top bar: white on Black, dark ink on Sunny. */
+.loopy-title { display: flex; align-items: center; gap: 0.6rem; text-decoration: none; color: var(--sl-color-white); }
+.loopy-title img { height: 2.4rem; width: auto; }
+.loopy-title .guide-word { font-family: var(--display); font-weight: 700; font-size: 1.35rem; color: var(--sl-color-gray-3); }
+.logo-light { display: none; }
+:root[data-theme="light"] .logo-light { display: block; }
+:root[data-theme="light"] .logo-dark { display: none; }
+.sl-markdown-content img.shot.wide { max-width: min(100%, 640px); }

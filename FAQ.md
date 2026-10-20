@@ -2,6 +2,10 @@
 
 Answers to common questions about Loopy. The same answers are on the site at https://amalrajvinoth.github.io/loopy/help/ (in English and German).
 
+## Is there a guide that explains everything?
+
+Yes. The loopy guide at https://amalrajvinoth.github.io/loopy/guide/ explains every game, setup, settings, the grown-ups page, backups and how to report a problem. It is in English and German. Each game page starts with three short steps for kids, with a **Read this to me** button. You find it at the bottom of the home page and on the Help page.
+
 ## Is Loopy free?
 
 Yes. Loopy is free. There are no ads, no sign-up and nothing to buy.

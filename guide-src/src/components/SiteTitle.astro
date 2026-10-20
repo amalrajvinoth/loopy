@@ -1,0 +1,10 @@
+---
+// The real loopy logo (the same files the games use), then "guide".
+const de = Astro.currentLocale === "de";
+const home = de ? "/loopy/guide/de/" : "/loopy/guide/";
+---
+<a href={home} class="site-title loopy-title">
+  <img class="logo-dark" src="/loopy/logo-white.svg" alt="loopy" width="96" height="51" />
+  <img class="logo-light" src="/loopy/logo.svg" alt="loopy" width="96" height="51" />
+  <span class="guide-word">{de ? "Anleitung" : "guide"}</span>
+</a>

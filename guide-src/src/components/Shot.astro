@@ -1,0 +1,15 @@
+---
+// A picture of the site, in the page's language.
+//   <Shot name="home" alt="The home page" />
+// The file is src/assets/screens/<en|de>/<name>.jpg (npm run screens makes them).
+import { Image } from "astro:assets";
+import type { ImageMetadata } from "astro";
+
+interface Props { name: string; alt: string; wide?: boolean }
+const { name, alt, wide } = Astro.props;
+const lang = Astro.currentLocale === "de" ? "de" : "en";
+const shots = import.meta.glob<{ default: ImageMetadata }>("../assets/screens/*/*.jpg", { eager: true });
+const shot = shots[`../assets/screens/${lang}/${name}.jpg`]?.default;
+if (!shot) throw new Error(`No picture src/assets/screens/${lang}/${name}.jpg. Run: npm run screens`);
+---
+<Image class:list={["shot", { wide }]} src={shot} alt={alt} widths={wide ? [640, 1280] : [320, 640]} sizes={wide ? "640px" : "320px"} />

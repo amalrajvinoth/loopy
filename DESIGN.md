@@ -450,6 +450,17 @@ Example prompts:
 - "Make a multiple-choice answer grid like What Time Is It?: two columns, card color, 3px line border, radius 18px, big bold Lexend. Green when right, red when wrong, others fade."
 - "Add a home page card for this game: 3px border and a `0 6px 0` shadow in its tone color, radius 24px, Fredoka title, uppercase age tag, and a go pill."
 
+## The guide
+
+The guide (`guide-src/`, live at `/loopy/guide/`) is a docs site, not a game, so it scrolls and has a side menu. It still looks like loopy:
+
+- Black colors when the device is in dark mode, Sunny colors in light mode (`guide-src/src/styles/loopy.css`). The reader can switch.
+- Fredoka for headings and Lexend for text, from the site's own `fonts/`.
+- The real logo files (`logo-white.svg` on dark, `logo.svg` on light) in the top bar, and a green **Play loopy** button back to the games.
+- The **For kids** box on each game page: a blue frame, numbered orange steps in big text, a green **Play it** button, and a picture of the game.
+
+When a game's look changes, run `npm run screens --prefix guide-src` so its pictures match.
+
 ## Known gaps
 
 - Each game page still has its own copy of some base styles (pad, problem card, top bar). Only themes, rewards, settings, the back button and the Last 5 pill are shared today.

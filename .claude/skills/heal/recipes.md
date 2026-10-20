@@ -45,3 +45,11 @@ One per failure. Add new ones at the end (the heal skill step 3). Keep each to f
 ## Plugin copies out of date
 - Looks like: `plugins/sync.py --check` fails, or CI "plugin copies".
 - Fix: `python3 plugins/sync.py`, commit `.claude/`. Edit `plugins/`, never `.claude/skills` copies.
+
+## Guide page missing for a game
+- Looks like: `guide_check.py` says "no guide page games/<subject>/<game>.mdx" or "missing in guide-src/src/games.ts", or CI "Every game has a page in the guide".
+- Fix: copy `guide-src/src/content/docs/games/math/box-multiply.mdx` (and its `de/` twin) for the game, add it to `guide-src/src/games.ts`, run `npm run screens --prefix guide-src`. See guide-src/README.md. (20 Oct 2026)
+
+## Guide build or check fails
+- Looks like: CI "guide" job: "No picture src/assets/screens/...", "still has a style attribute", a broken link, or an MDX error at a line.
+- Fix: run `npm run screens --prefix guide-src` for a missing picture; in `.mdx` text never write a bare `<`, `{` or `}`; links start with `/loopy/guide/` (German `/loopy/guide/de/`). Then `npm run build --prefix guide-src && node guide-src/scripts/check.mjs`. (20 Oct 2026)

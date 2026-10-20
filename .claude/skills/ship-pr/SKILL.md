@@ -14,6 +14,7 @@ description: Finish a loopy change and open its pull request with every check, s
    python3 tools/build.py --check
    python3 tools/csp.py --check
    python3 tools/check_external.py
+   python3 tools/guide_check.py              # every game has a guide page, EN and DE
    python3 tools/review.py
    python3 plugins/sync.py --check            # plugin copies in .claude/
    python3 plugins/loopy/scripts/drift.py     # plugin in step with the repo
@@ -21,6 +22,12 @@ description: Finish a loopy change and open its pull request with every check, s
    node tools/a11y/check.mjs
    node tools/e2e/play.mjs        # GAME=<id> for one game while you work; the full run before the PR
    node tools/e2e/retry.mjs       # Try again in every game (GAME=<id> for one): a mistake comes back until it is fixed
+   ```
+   When `guide-src/` changed (or a game looks different), build and check the guide too (the CI "guide" job does the same):
+   ```sh
+   npm ci --prefix guide-src && npm run build --prefix guide-src   # also writes the guide pages' security policy
+   npm run screens --prefix guide-src                             # only when a game looks different
+   node guide-src/scripts/check.mjs                               # links, errors, search, accessibility
    ```
 4. **Review** with the loopy-review skill (or the `reviewer` agent). Fix every "must". Note speed and size findings for the PR.
 5. **Screenshots** when anything on screen changed: `node plugins/loopy/scripts/screens.mjs --out <scratch>/after` on the branch, and with `--root <worktree of origin/main> --out <scratch>/before` for main. It fails if a page scrolls; fix that first. Copy the phone-size pair you show into `docs/screenshots/`, commit, and link them by raw.githubusercontent.com URL pinned to the commit.

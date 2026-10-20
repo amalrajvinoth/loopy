@@ -18,6 +18,8 @@ jobs:
         run: python3 tools/csp.py --check
       - name: Nothing is loaded from other websites
         run: python3 tools/check_external.py
+      - name: Every game has a page in the guide, in English and German
+        run: python3 tools/guide_check.py
       - name: Install the minifiers (exact versions, checked by hash)
         run: |
           python3 -m venv "$RUNNER_TEMP/venv"
@@ -49,5 +51,32 @@ jobs:
           A11Y_DEPS: ${{ runner.temp }}/a11y
       - name: A mistake comes back in every game until it is fixed
         run: node tools/e2e/retry.mjs
+        env:
+          A11Y_DEPS: ${{ runner.temp }}/a11y
+
+  # The loopy guide (guide-src/): it builds, every page passes the same safety checks as the games,
+  # links work, and no page has an error in Chrome. See guide-src/README.md.
+  guide:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - name: Install Astro and Starlight (exact versions from the lock file)
+        run: npm ci --prefix guide-src --no-audit --no-fund
+      - name: Build the guide (this also writes each page's security policy)
+        run: npm run build --prefix guide-src
+      - name: Every guide page's security policy matches its code
+        run: python3 tools/csp.py --check
+      - name: Nothing in the guide is loaded from other websites
+        run: python3 tools/check_external.py
+      - name: Install the Chrome driver (same as the accessibility check)
+        run: |
+          mkdir -p "$RUNNER_TEMP/a11y"
+          cp tools/a11y/package.json tools/a11y/package-lock.json "$RUNNER_TEMP/a11y/"
+          npm ci --prefix "$RUNNER_TEMP/a11y" --ignore-scripts --no-audit --no-fund
+      - name: Links work, no errors, search works, no accessibility problems
+        run: node guide-src/scripts/check.mjs
         env:
           A11Y_DEPS: ${{ runner.temp }}/a11y
