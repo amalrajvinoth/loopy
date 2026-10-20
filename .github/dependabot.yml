@@ -6,6 +6,10 @@ updates:
     directory: "/"
     schedule:
       interval: "weekly"
+    # One pull request for all action updates, so the workflows never mix old and new versions.
+    groups:
+      actions:
+        patterns: ["*"]
   - package-ecosystem: "pip"
     directory: "/tools"
     schedule:
