@@ -207,12 +207,13 @@ The "loopy" bunny logo sits at the top of the home page. Its letters hop one aft
 - Three tiles per row at every size. On phones (under 600px) the tile is compact: picture 2rem, title `clamp(0.85rem, 3.7vw, 1.45rem)` in ink (the tone color is not readable enough at that size; the border and shadow keep the tone), tag 0.62rem, padding 10px 6px 8px, so 16 games fit in about 2.4 phone screens. From 600px wide it is roomier: picture 2.8rem, tag 0.78rem, padding 14px 10px 12px. From 700px wide the tile also shows one muted line about the game.
 - Pressed: the tile moves down 4px and the shadow shrinks to 2px. It looks like a button being pushed.
 - Tones cycle `c1`, `c2`, `c3`, `c4`, `c5`.
-- Order on the home page: the logo, "Who is playing?" (or, with one child, the child chip next to Settings), the ⚙ Settings button (age, colors, sound, language), **Today's 10**, the games by subject, then **My stars**, then the links for grown-ups.
+- Order on the home page: the logo, "Who is playing?" (or, with one child, the child chip next to Settings), the ⚙ Settings button (age, colors, sound, language), **Today's 10**, the games by subject, then **My stars**, then "More games are on the way!" and three footer buttons: Grown-ups, Help and Guide.
 - **Today's 10** is one wide card in yellow (`c5`) with a "go" pill. It is not in the GAMES list.
 
 ### Buttons
 
 - **Pill buttons** (radius 999px): the "go" pill, the settings toggle, the language picker, the cheer buttons. At least 44px tall.
+- **Footer buttons** (home page): chip pills like the settings toggle, each with a 20px line icon and one word (Grown-ups, Help, Guide; German Erwachsene, Hilfe, Anleitung), centered in one row that wraps on small phones. Their names for screen readers are the full ones, like "For grown-ups: how it's going". In High contrast they get the white edge.
 - **Number pad keys:** key color, 2px line border, radius 18px. They shrink a little (`scale(0.96)`) when pressed. The "check" key is filled with `c1`. The erase key is muted.
 - **Answer buttons** (the clock and multiple-choice games): card color, 3px line border, radius 18px, big bold text. Word answers are at least 1.1rem and grow to about 2rem; letters, times and fractions are bigger. Four answers sit in a 2 × 2 grid; three answers sit in one column, so none looks bigger than the others. Right turns green, wrong turns red, the rest fade to 45%.
 - **Skip and Next** (the button under the answers, `Loopy.nextButton()`): before an answer it is a small quiet pill, "Skip", in the middle (muted text, 2px line border, no fill). After an answer it is the full-width `c1` button "Next". Every game uses these two words.

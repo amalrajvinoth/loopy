@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'sha256-jkmcNO2dONmOivgBPEixwsBHrsbbtJEE9Xq8ceOH23Y='; style-src 'self' 'sha256-fJqr/RpGtKccKf27fhlWWoWclPDej0pWMo6d8XjU1m4='; img-src 'self' data:; font-src 'self'; connect-src 'self'; worker-src 'self'; object-src 'none'; base-uri 'none'; form-action 'none'; manifest-src 'self'; upgrade-insecure-requests">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'sha256-4K3OnoUI5AMQOnYTfimNKRfnB1bvkmPCba4mR265tXU='; style-src 'self' 'sha256-DiBQxLEfoYMLusr9ENgJ3eVJJ2puwaq95NPKZkQgZ60='; img-src 'self' data:; font-src 'self'; connect-src 'self'; worker-src 'self'; object-src 'none'; base-uri 'none'; form-action 'none'; manifest-src 'self'; upgrade-insecure-requests">
 <meta name="referrer" content="strict-origin-when-cross-origin">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <link rel="icon" href="icon.svg" type="image/svg+xml">
@@ -107,9 +107,15 @@ h1 { margin: 0; line-height: 0; color: var(--ink); }
 .more-head { margin: 14px 0 0; color: var(--muted); font-weight: 600; }
 .days b { color: var(--ink); }
 .empty { margin: 0; color: var(--muted); font-size: 1.1rem; text-align: center; }
-footer { color: var(--muted); font-size: 0.95rem; text-align: center; display: flex; flex-direction: column; gap: 8px; }
+footer { color: var(--muted); font-size: 0.95rem; text-align: center; display: flex; flex-direction: column; gap: 14px; }
 footer p { margin: 0; }
-.help-link { display: inline-flex; align-items: center; min-height: 44px; color: var(--ink); font-weight: 600; }
+/* The footer buttons: chip pills with a line icon and one word, like the Settings button at the top. */
+.foot-nav { display: flex; flex-wrap: wrap; justify-content: center; gap: 10px; }
+.foot-btn { display: inline-flex; align-items: center; gap: 6px; min-height: 44px; padding: 0 16px; border-radius: 999px; background: var(--chip); color: var(--ink); font-weight: 600; text-decoration: none; }
+.foot-btn svg { flex: none; width: 20px; height: 20px; fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+.foot-btn:active { transform: translateY(1px); }
+.foot-btn:focus-visible { outline: 3px solid var(--mark); outline-offset: 2px; }
+:root[data-theme="contrast"] .foot-btn:not(:focus-visible) { outline: 2px solid var(--line); outline-offset: -2px; }
 /* Add to home screen: the last part of Settings, and the box with the steps for this device. */
 .set-app { display: flex; flex-direction: column; gap: 10px; border-top: 2px dashed var(--line); padding-top: 12px; }
 .app-steps { margin: 0; padding: 0; list-style: none; display: flex; flex-direction: column; gap: 12px; }
@@ -177,7 +183,14 @@ footer p { margin: 0; }
       </div>
     </details>
   </section>
-  <footer><p data-t="moreSoon">More games are on the way!</p><p><a class="help-link" href="progress/" data-t="progressLink">For grown-ups: how it's going</a></p><p><a class="help-link" href="help/" data-t="helpLink">Help and feedback</a></p><p><a class="help-link" id="guide-link" href="guide/" data-t="guideLink">How loopy works: the guide</a></p></footer>
+  <footer>
+    <p data-t="moreSoon">More games are on the way!</p>
+    <nav class="foot-nav">
+      <a class="foot-btn" href="progress/" data-t-aria="progressLink" aria-label="For grown-ups: how it's going"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 21h18"/><path d="M6 17v-5"/><path d="M11 17V7"/><path d="M16 17V9"/><path d="M20 17v-3"/></svg><span data-t="footGrown">Grown-ups</span></a>
+      <a class="foot-btn" href="help/" data-t-aria="helpLink" aria-label="Help and feedback"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M9.5 9.2a2.6 2.6 0 1 1 3.6 2.4c-.7.3-1.1.9-1.1 1.6v.6"/><path d="M12 17.2h.01"/></svg><span data-t="footHelp">Help</span></a>
+      <a class="foot-btn" id="guide-link" href="guide/" data-t-aria="guideLink" aria-label="How loopy works: the guide"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 19.5V5a2 2 0 0 1 2-2h14v15H6.5A2.5 2.5 0 0 0 4 20.5 2.5 2.5 0 0 0 6.5 23H20"/><path d="M8 7h8"/><path d="M8 11h6"/></svg><span data-t="footGuide">Guide</span></a>
+    </nav>
+  </footer>
 </div>
 <script>
 Loopy.addStrings({
@@ -195,7 +208,7 @@ Loopy.addStrings({
     askOne: "Load {name}'s stars here?", askMany: "Load the stars of {names} here?", askNone: "Load these stars here?",
     askText: "This adds their stars, progress, game levels and where they left off to this device. Nothing here is taken away.",
     askLoad: "Load", askNo: "Not now",
-    pasteHere: "Paste a code here", pasteCode: "Paste a stars code", load: "Load", moreSoon: "More games are on the way!", helpLink: "Help and feedback", guideLink: "How loopy works: the guide", progressLink: "For grown-ups: how it's going",
+    pasteHere: "Paste a code here", pasteCode: "Paste a stars code", load: "Load", moreSoon: "More games are on the way!", helpLink: "Help and feedback", guideLink: "How loopy works: the guide", progressLink: "For grown-ups: how it's going", footGrown: "Grown-ups", footHelp: "Help", footGuide: "Guide",
     copied: "Copied!", copyByHand: "Select the code and copy it.", badCode: "That code didn't work. Check it was copied in full.",
     toNext: "{n} more stars to the {name} badge. Every right answer earns a star.", toNextOne: "1 more star to the {name} badge. Every right answer earns a star.",
     allBadges: "You have every badge. You're a loopy Master!", earned: "Earned", nStars: "{n} stars",
@@ -241,7 +254,7 @@ Loopy.addStrings({
     askOne: "Die Sterne von {name} hier laden?", askMany: "Die Sterne von {names} hier laden?", askNone: "Diese Sterne hier laden?",
     askText: "Das fügt Sterne, Fortschritt, Stufen in den Spielen und wo aufgehört wurde zu diesem Gerät hinzu. Hier geht nichts verloren.",
     askLoad: "Laden", askNo: "Nicht jetzt",
-    pasteHere: "Code hier einfügen", pasteCode: "Sterne-Code einfügen", load: "Laden", moreSoon: "Bald kommen mehr Spiele!", helpLink: "Hilfe und Feedback", guideLink: "So geht loopy: die Anleitung", progressLink: "Für Erwachsene: so läuft es",
+    pasteHere: "Code hier einfügen", pasteCode: "Sterne-Code einfügen", load: "Laden", moreSoon: "Bald kommen mehr Spiele!", helpLink: "Hilfe und Feedback", guideLink: "So geht loopy: die Anleitung", progressLink: "Für Erwachsene: so läuft es", footGrown: "Erwachsene", footHelp: "Hilfe", footGuide: "Anleitung",
     copied: "Kopiert!", copyByHand: "Markiere den Code und kopiere ihn.", badCode: "Der Code hat nicht geklappt. Prüfe, ob er ganz kopiert wurde.",
     toNext: "Noch {n} Sterne bis zum Abzeichen {name}. Jede richtige Antwort gibt einen Stern.", toNextOne: "Noch 1 Stern bis zum Abzeichen {name}. Jede richtige Antwort gibt einen Stern.",
     allBadges: "Du hast alle Abzeichen. Du bist ein loopy-Meister!", earned: "Geschafft", nStars: "{n} Sterne",
