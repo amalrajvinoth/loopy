@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'sha256-Ovfmtrdfd5WqVMRid3ov/yui3BA2ZskWgQDOHqzbM0o='; style-src 'self' 'sha256-fJqr/RpGtKccKf27fhlWWoWclPDej0pWMo6d8XjU1m4='; img-src 'self' data:; font-src 'self'; connect-src 'self'; worker-src 'self'; object-src 'none'; base-uri 'none'; form-action 'none'; manifest-src 'self'; upgrade-insecure-requests">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'sha256-jkmcNO2dONmOivgBPEixwsBHrsbbtJEE9Xq8ceOH23Y='; style-src 'self' 'sha256-fJqr/RpGtKccKf27fhlWWoWclPDej0pWMo6d8XjU1m4='; img-src 'self' data:; font-src 'self'; connect-src 'self'; worker-src 'self'; object-src 'none'; base-uri 'none'; form-action 'none'; manifest-src 'self'; upgrade-insecure-requests">
 <meta name="referrer" content="strict-origin-when-cross-origin">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <link rel="icon" href="icon.svg" type="image/svg+xml">
@@ -177,7 +177,7 @@ footer p { margin: 0; }
       </div>
     </details>
   </section>
-  <footer><p data-t="moreSoon">More games are on the way!</p><p><a class="help-link" href="progress/" data-t="progressLink">For grown-ups: how it's going</a></p><p><a class="help-link" href="help/" data-t="helpLink">Help and feedback</a></p></footer>
+  <footer><p data-t="moreSoon">More games are on the way!</p><p><a class="help-link" href="progress/" data-t="progressLink">For grown-ups: how it's going</a></p><p><a class="help-link" href="help/" data-t="helpLink">Help and feedback</a></p><p><a class="help-link" id="guide-link" href="guide/" data-t="guideLink">How loopy works: the guide</a></p></footer>
 </div>
 <script>
 Loopy.addStrings({
@@ -195,7 +195,7 @@ Loopy.addStrings({
     askOne: "Load {name}'s stars here?", askMany: "Load the stars of {names} here?", askNone: "Load these stars here?",
     askText: "This adds their stars, progress, game levels and where they left off to this device. Nothing here is taken away.",
     askLoad: "Load", askNo: "Not now",
-    pasteHere: "Paste a code here", pasteCode: "Paste a stars code", load: "Load", moreSoon: "More games are on the way!", helpLink: "Help and feedback", progressLink: "For grown-ups: how it's going",
+    pasteHere: "Paste a code here", pasteCode: "Paste a stars code", load: "Load", moreSoon: "More games are on the way!", helpLink: "Help and feedback", guideLink: "How loopy works: the guide", progressLink: "For grown-ups: how it's going",
     copied: "Copied!", copyByHand: "Select the code and copy it.", badCode: "That code didn't work. Check it was copied in full.",
     toNext: "{n} more stars to the {name} badge. Every right answer earns a star.", toNextOne: "1 more star to the {name} badge. Every right answer earns a star.",
     allBadges: "You have every badge. You're a loopy Master!", earned: "Earned", nStars: "{n} stars",
@@ -241,7 +241,7 @@ Loopy.addStrings({
     askOne: "Die Sterne von {name} hier laden?", askMany: "Die Sterne von {names} hier laden?", askNone: "Diese Sterne hier laden?",
     askText: "Das fügt Sterne, Fortschritt, Stufen in den Spielen und wo aufgehört wurde zu diesem Gerät hinzu. Hier geht nichts verloren.",
     askLoad: "Laden", askNo: "Nicht jetzt",
-    pasteHere: "Code hier einfügen", pasteCode: "Sterne-Code einfügen", load: "Laden", moreSoon: "Bald kommen mehr Spiele!", helpLink: "Hilfe und Feedback", progressLink: "Für Erwachsene: so läuft es",
+    pasteHere: "Code hier einfügen", pasteCode: "Sterne-Code einfügen", load: "Laden", moreSoon: "Bald kommen mehr Spiele!", helpLink: "Hilfe und Feedback", guideLink: "So geht loopy: die Anleitung", progressLink: "Für Erwachsene: so läuft es",
     copied: "Kopiert!", copyByHand: "Markiere den Code und kopiere ihn.", badCode: "Der Code hat nicht geklappt. Prüfe, ob er ganz kopiert wurde.",
     toNext: "Noch {n} Sterne bis zum Abzeichen {name}. Jede richtige Antwort gibt einen Stern.", toNextOne: "Noch 1 Stern bis zum Abzeichen {name}. Jede richtige Antwort gibt einen Stern.",
     allBadges: "Du hast alle Abzeichen. Du bist ein loopy-Meister!", earned: "Geschafft", nStars: "{n} Sterne",
@@ -303,6 +303,8 @@ const GAMES = [
 ];
 const t = Loopy.t;
 const list = document.getElementById("list");
+// The guide has its own page for each language.
+document.getElementById("guide-link").href = Loopy.lang === "de" ? "guide/de/" : "guide/";
 
 function card(g) {
   const a = document.createElement("a");

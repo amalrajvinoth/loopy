@@ -1,2 +1,6 @@
 # The accessibility check installs its tools here (see tools/a11y/README.md).
 tools/a11y/node_modules/
+# The guide's tools and build (see guide-src/README.md).
+guide-src/node_modules/
+guide-src/dist/
+guide-src/.astro/

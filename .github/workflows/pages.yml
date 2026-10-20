@@ -1,0 +1,63 @@
+# Put loopy live on GitHub Pages: the games exactly as they are in the repo, and the guide,
+# built from guide-src/, at /loopy/guide/.
+#
+# One-time setup by the repo owner: Settings → Pages → Build and deployment → Source: GitHub Actions.
+# Until then Pages keeps serving the main branch as before, and this workflow's deploy step fails.
+name: Pages
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: pages
+  cancel-in-progress: false
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - name: Build the guide
+        run: |
+          npm ci --prefix guide-src --no-audit --no-fund
+          npm run build --prefix guide-src
+      - name: The same safety checks as on every pull request
+        run: |
+          python3 tools/csp.py --check
+          python3 tools/check_external.py
+          python3 tools/guide_check.py
+      - name: Put the site together
+        run: |
+          mkdir -p "$RUNNER_TEMP/site"
+          # The games: every file in the repo, as Pages served the main branch before.
+          tar --exclude=./.git --exclude=./guide-src -cf - . | tar -xf - -C "$RUNNER_TEMP/site"
+          # The guide.
+          cp -R guide-src/dist "$RUNNER_TEMP/site/guide"
+          tar --dereference --hard-dereference -C "$RUNNER_TEMP/site" -cf "$RUNNER_TEMP/artifact.tar" .
+      - uses: actions/upload-artifact@v4
+        with:
+          name: github-pages
+          path: ${{ runner.temp }}/artifact.tar
+          retention-days: 1
+          if-no-files-found: error
+
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    permissions:
+      pages: write
+      id-token: write
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - id: deployment
+        uses: actions/deploy-pages@v4

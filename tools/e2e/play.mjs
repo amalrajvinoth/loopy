@@ -31,7 +31,7 @@ const RUNS = [{ age: 5, lang: "en" }, { age: 8, lang: "de" }, { age: 16, lang: "
 const GAMES = [], ONLY = process.env.GAME || ""; // GAME=plus-minus plays just that one
 for (const subject of fs.readdirSync(ROOT).sort()) {
   const dir = path.join(ROOT, subject);
-  if (!fs.statSync(dir).isDirectory() || /^[._]|^(docs|fonts|tools|src|help|progress|node_modules)$/.test(subject)) continue;
+  if (!fs.statSync(dir).isDirectory() || /^[._]|^(docs|fonts|tools|src|help|progress|node_modules|guide-src)$/.test(subject)) continue;
   for (const game of fs.readdirSync(dir).sort()) {
     const file = path.join(dir, game, "index.html");
     if (`${subject}/${game}/`.includes(ONLY) && fs.existsSync(file) && !/http-equiv="refresh"|location\.replace/.test(fs.readFileSync(file, "utf8"))) GAMES.push(`${subject}/${game}/`);

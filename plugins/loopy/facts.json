@@ -3,13 +3,26 @@
     "checks.yml: Checks",
     "checks.yml: Every page's security policy matches its code",
     "checks.yml: Nothing is loaded from other websites",
+    "checks.yml: Every game has a page in the guide, in English and German",
     "checks.yml: Install the minifiers (exact versions, checked by hash)",
     "checks.yml: loopy.js and loopy.css match their sources in src/",
     "checks.yml: The Claude Code plugins match the repo",
     "checks.yml: Install the checker (exact versions from the lock file, no browser download)",
     "checks.yml: Every page works with a keyboard and a screen reader",
     "checks.yml: Every game plays, and no question comes back too soon",
-    "checks.yml: A mistake comes back in every game until it is fixed"
+    "checks.yml: A mistake comes back in every game until it is fixed",
+    "checks.yml: Install Astro and Starlight (exact versions from the lock file)",
+    "checks.yml: Build the guide (this also writes each page's security policy)",
+    "checks.yml: Every guide page's security policy matches its code",
+    "checks.yml: Nothing in the guide is loaded from other websites",
+    "checks.yml: Install the Chrome driver (same as the accessibility check)",
+    "checks.yml: Links work, no errors, search works, no accessibility problems",
+    "pages.yml: Pages",
+    "pages.yml: Build the guide",
+    "pages.yml: The same safety checks as on every pull request",
+    "pages.yml: Put the site together",
+    "pages.yml: github-pages",
+    "pages.yml: github-pages"
   ],
   "tools": [
     "tools/a11y/check.mjs",
@@ -18,6 +31,7 @@
     "tools/csp.py",
     "tools/e2e/play.mjs",
     "tools/e2e/retry.mjs",
+    "tools/guide_check.py",
     "tools/review.py"
   ],
   "repo_skills": [
@@ -48,5 +62,5 @@
     "844 × 390"
   ],
   "games_lists": 3,
-  "learned_at": "92e7407"
+  "learned_at": "99b1043"
 }

@@ -29,7 +29,7 @@ const THEMES = [...new Set([...fs.readFileSync(path.join(ROOT, "src/loopy.css"),
 const PAGES = ["", "help/", "progress/"];
 for (const subject of fs.readdirSync(ROOT).sort()) {
   const dir = path.join(ROOT, subject);
-  if (!fs.statSync(dir).isDirectory() || /^[._]|^(docs|fonts|tools|src|help|progress|node_modules)$/.test(subject)) continue;
+  if (!fs.statSync(dir).isDirectory() || /^[._]|^(docs|fonts|tools|src|help|progress|node_modules|guide-src)$/.test(subject)) continue;
   for (const game of fs.readdirSync(dir).sort()) {
     const file = path.join(dir, game, "index.html");
     // Old addresses that only forward to a new one (e.g. plus-minus-100) have nothing to check.

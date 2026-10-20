@@ -1,0 +1,5 @@
+---
+// Top bar, next to search: a big "Play loopy" button back to the games.
+const de = Astro.currentLocale === "de";
+---
+<a class="play-loopy" href="/loopy/">▶ {de ? "loopy spielen" : "Play loopy"}</a>

@@ -9,7 +9,8 @@ import base64, hashlib, pathlib, re, sys
 
 ROOT = pathlib.Path(__file__).resolve().parent.parent
 PAGES = sorted(p for p in ROOT.rglob("*.html") if ".git" not in p.parts and "node_modules" not in p.parts)
-META = re.compile(r'<meta http-equiv="Content-Security-Policy" content="[^"]*">')
+# The guide's pages are made by its build (guide-src/dist). Its source has no pages of its own.
+META = re.compile(r'<meta http-equiv="Content-Security-Policy" content="[^"]*"\s*/?>')
 BLOCK = re.compile(r"<(script|style)(\s[^>]*)?>(.*?)</\1>", re.S)
 INLINE_ATTR = re.compile(r'<[^>]+\sstyle="', re.I)
 HANDLER = re.compile(r'<[^>]+\son[a-z]+="', re.I)
@@ -24,8 +25,9 @@ def hashes(html, kind):
     return out
 
 
-def policy(html):
-    script = " ".join(["'self'"] + hashes(html, "script"))
+def policy(html, guide=False):
+    # The guide's search (Pagefind) runs a small WebAssembly file from this site, which needs 'wasm-unsafe-eval'.
+    script = " ".join(["'self'"] + (["'wasm-unsafe-eval'"] if guide else []) + hashes(html, "script"))
     style = " ".join(["'self'"] + hashes(html, "style"))
     return (f"default-src 'self'; script-src {script}; style-src {style}; img-src 'self' data:; font-src 'self'; "
             "connect-src 'self'; worker-src 'self'; object-src 'none'; base-uri 'none'; form-action 'none'; manifest-src 'self'; "
@@ -44,7 +46,7 @@ def main():
         if HANDLER.search(html):
             print(f"{rel}: has an on...=\"\" handler. Use addEventListener, the policy blocks inline handlers.")
             bad += 1
-        tag = f'<meta http-equiv="Content-Security-Policy" content="{policy(html)}">'
+        tag = f'<meta http-equiv="Content-Security-Policy" content="{policy(html, rel.parts[0] == "guide-src")}">'
         if not META.search(html):
             print(f"{rel}: has no Content-Security-Policy meta tag.")
             bad += 1

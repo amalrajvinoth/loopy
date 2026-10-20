@@ -56,7 +56,7 @@ def minified():
 
 # Files the offline helper (sw.js) saves on the device: everything a page loads. Not saved: the
 # folders and file types below, which are for people working on loopy, not for the site.
-SKIP_DIRS = {".git", ".github", ".claude", ".claude-plugin", ".well-known", "docs", "plugins", "src", "tools", "node_modules"}
+SKIP_DIRS = {".git", ".github", ".claude", ".claude-plugin", ".well-known", "docs", "plugins", "src", "tools", "node_modules", "guide-src"}
 SAVE = {".html", ".js", ".css", ".woff2", ".png", ".svg", ".webmanifest"}
 
 
