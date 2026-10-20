@@ -10,6 +10,7 @@ Every session in the loopy repo starts with these. Add one with the add-rule ski
 - Difficulty follows the age picker. Right and wrong go through `Loopy.rewards.correct()` / `.wrong()`. Questions come from `Loopy.fresh()` (no repeat within 10).
 - One phone or tablet screen, no scrolling, portrait and landscape: 360×640, 390×844, 844×390, 820×1180, 1180×820. Settings behind ⚙. Follow DESIGN.md and keep it in sync.
 - Black is the default theme. Others: Sunny, Ocean, Candy, Forest, High contrast.
+- Everything that prints shows the real loopy logo (`Loopy.logo()`, not just the word) in a fitting place: top right on worksheets and the weekly card, top left on a printed page. A new print needs it too. (Owner's rule, 20 Oct 2026.)
 
 ## Safety
 - No outside requests. No `style=` attributes, no `on*=` handlers (a hook blocks them). `tools/csp.py` and `tools/check_external.py` must pass.
