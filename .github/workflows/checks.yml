@@ -1,4 +1,8 @@
 # Safety checks on every change. They must pass before a pull request is merged.
+#
+# The fast checks run on every change. The long browser tests and the guide check run only when
+# a pull request changes files they read (tools/ci_changes.py says which). Pushes to main run
+# everything. "All checks" at the end always reports, so it is the one check to mark as required.
 name: Checks
 
 on:
@@ -9,7 +13,32 @@ on:
 permissions:
   contents: read
 
+# A new push to a pull request stops its older run. Runs on main are never stopped.
+concurrency:
+  group: checks-${{ github.event.pull_request.number || github.sha }}
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
+
 jobs:
+  changes:
+    runs-on: ubuntu-latest
+    outputs:
+      site: ${{ steps.which.outputs.site }}
+      guide: ${{ steps.which.outputs.guide }}
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          # A pull request is checked out as a merge commit: its first parent is the base branch.
+          fetch-depth: 2
+      - name: Which long checks this change needs
+        id: which
+        run: |
+          if [ "${{ github.event_name }}" = pull_request ]; then
+            python3 tools/ci_changes.py HEAD^1 HEAD >> "$GITHUB_OUTPUT"
+          else
+            printf 'site=true\nguide=true\n' >> "$GITHUB_OUTPUT"
+          fi
+          cat "$GITHUB_OUTPUT"
+
   checks:
     runs-on: ubuntu-latest
     steps:
@@ -33,7 +62,14 @@ jobs:
           python3 plugins/test_hooks.py
 
   accessibility:
+    name: accessibility (part ${{ matrix.part }} of 2)
+    needs: changes
+    if: needs.changes.outputs.site == 'true'
     runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        part: [1, 2]
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
       - name: Install the checker (exact versions from the lock file, no browser download)
@@ -45,10 +81,42 @@ jobs:
         run: node tools/a11y/check.mjs
         env:
           A11Y_DEPS: ${{ runner.temp }}/a11y
+          SHARD: ${{ matrix.part }}/2
+
+  play:
+    name: play test (part ${{ matrix.part }} of 2)
+    needs: changes
+    if: needs.changes.outputs.site == 'true'
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        part: [1, 2]
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - name: Install the checker (exact versions from the lock file, no browser download)
+        run: |
+          mkdir -p "$RUNNER_TEMP/a11y"
+          cp tools/a11y/package.json tools/a11y/package-lock.json "$RUNNER_TEMP/a11y/"
+          npm ci --prefix "$RUNNER_TEMP/a11y" --ignore-scripts --no-audit --no-fund
       - name: Every game plays, and no question comes back too soon
         run: node tools/e2e/play.mjs
         env:
           A11Y_DEPS: ${{ runner.temp }}/a11y
+          SHARD: ${{ matrix.part }}/2
+
+  retry:
+    name: Try again test
+    needs: changes
+    if: needs.changes.outputs.site == 'true'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - name: Install the checker (exact versions from the lock file, no browser download)
+        run: |
+          mkdir -p "$RUNNER_TEMP/a11y"
+          cp tools/a11y/package.json tools/a11y/package-lock.json "$RUNNER_TEMP/a11y/"
+          npm ci --prefix "$RUNNER_TEMP/a11y" --ignore-scripts --no-audit --no-fund
       - name: A mistake comes back in every game until it is fixed
         run: node tools/e2e/retry.mjs
         env:
@@ -57,6 +125,8 @@ jobs:
   # The loopy guide (guide-src/): it builds, every page passes the same safety checks as the games,
   # links work, and no page has an error in Chrome. See guide-src/README.md.
   guide:
+    needs: changes
+    if: needs.changes.outputs.guide == 'true'
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
@@ -82,3 +152,23 @@ jobs:
         run: node guide-src/scripts/check.mjs
         env:
           A11Y_DEPS: ${{ runner.temp }}/a11y
+
+  # One check that always reports: it fails if any job above failed or was stopped.
+  # A job that was skipped because the change does not need it counts as passed.
+  all:
+    name: All checks
+    needs: [changes, checks, accessibility, play, retry, guide]
+    if: always()
+    runs-on: ubuntu-latest
+    steps:
+      - name: Every needed check passed
+        env:
+          NEEDS: ${{ toJSON(needs) }}
+        run: |
+          python3 - <<'PY'
+          import json, os, sys
+          results = {job: v["result"] for job, v in json.loads(os.environ["NEEDS"]).items()}
+          for job, result in results.items():
+              print(f"{job}: {result}")
+          sys.exit(any(r not in ("success", "skipped") for r in results.values()))
+          PY

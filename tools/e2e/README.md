@@ -26,6 +26,8 @@ It checks:
 3. **Stars.** The star counter goes up by exactly the number of right answers.
 4. **No repeats.** A question never comes back within the next 10 questions. When a game has fewer than 11 questions at that level (Make 10 to 10, halves and quarters in Pizza Fractions), the questions go round: every one of them comes before any comes back, and never the same one twice in a row. In Today's 10, all ten questions are different.
 
+`SHARD=1/2` plays every other game, starting with the first, and `SHARD=2/2` the rest. CI runs both halves at once to save time.
+
 ## How games avoid repeats
 
 Each game gets its next question from `Loopy.fresh(recent, make)` in `src/loopy.js`. It skips the questions in the game's `recent` list. When there are too few questions to skip them all, the oldest ones may come back first. It also puts the question's key on `<body data-q="…">`, which is how this test sees each question, even the same one twice.

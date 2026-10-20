@@ -36,6 +36,11 @@ for (const subject of fs.readdirSync(ROOT).sort()) {
     if (fs.existsSync(file) && !/http-equiv="refresh"|location\.replace/.test(fs.readFileSync(file, "utf8"))) PAGES.push(`${subject}/${game}/`);
   }
 }
+// SHARD=1/2 checks only the first half of the pages (every other one), SHARD=2/2 the rest. CI runs both at once.
+const [SHARD, SHARDS] = (process.env.SHARD || "1/1").split("/").map(Number);
+if (!(SHARDS >= 1 && SHARD >= 1 && SHARD <= SHARDS)) throw new Error(`SHARD must look like 1/2, not ${process.env.SHARD}`);
+const mine = (_, i) => i % SHARDS === SHARD - 1;
+PAGES.splice(0, PAGES.length, ...PAGES.filter(mine));
 const GAMES = PAGES.filter(p => p.split("/").length === 3);
 
 const TYPES = { ".html": "text/html", ".js": "text/javascript", ".css": "text/css", ".svg": "image/svg+xml", ".png": "image/png",
@@ -217,6 +222,7 @@ for (const page of GAMES) {
 await browser.close();
 server.close();
 
+if (SHARDS > 1) console.log(`Part ${SHARD} of ${SHARDS}.\n`);
 console.log(`| Check | Pages | Result |\n|---|---|---|`);
 const ok = what => problems.some(x => x.includes(what)) ? "problems" : "pass";
 console.log(`| axe-core, WCAG 2.1 AA + best practice (${THEMES.length} themes, EN + DE, Settings open and closed) | ${PAGES.length} | ${results.axe} runs |`);
