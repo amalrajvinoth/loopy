@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'sha256-mj4/+vgJ2bxVnoPo0Gzb2gPwaIsZUP/emv+1Q7H4sAs='; style-src 'self' 'sha256-2vr4Oe0zJzHDeMtbF5vL5Bez7jZGBYlj1tSI6i2nQ+8='; img-src 'self' data:; font-src 'self'; connect-src 'self'; worker-src 'self'; object-src 'none'; base-uri 'none'; form-action 'none'; manifest-src 'self'; upgrade-insecure-requests">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'sha256-5Row+Xlx1QoGYSkvTCkOCYWH6Yp7pWP+DOYIxni3RO4='; style-src 'self' 'sha256-uCTUGi7tq2gCtsmTyByQ9RhEijXQUda9e60iQFRptMA='; img-src 'self' data:; font-src 'self'; connect-src 'self'; worker-src 'self'; object-src 'none'; base-uri 'none'; form-action 'none'; manifest-src 'self'; upgrade-insecure-requests">
 <meta name="referrer" content="strict-origin-when-cross-origin">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <link rel="icon" href="../icon.svg" type="image/svg+xml">
@@ -134,8 +134,14 @@ section[hidden] { display: none; }
 .btn.main { background: var(--c1); border-color: var(--c1); color: var(--accent-ink, #fff); }
 .btn:disabled { opacity: 0.6; cursor: wait; }
 .sheet-row { display: flex; gap: 8px 14px; flex-wrap: wrap; align-items: center; }
-/* Printing the weekly card: only the card, black on white. The practice sheet prints through print.css. */
+/* Printing: black on white, whatever the theme. Browsers leave out background colours when printing,
+   so the light text of the dark themes would print white on white, a blank page. Buttons stay off paper.
+   The weekly card's Print button prints only the card; the practice sheet prints through print.css. */
 @media print {
+  html:root, html:root[data-theme] { --bg: #fff; --card: #fff; --ink: #000; --muted: #444; --line: #999; --chip: #fff; }
+  html, body { background: #fff !important; color: #000; }
+  .bar, .settings-panel, #kid-picker, .week-foot, .sheet-row, .wrap .btn, .wrap button { display: none !important; }
+  section, .game { box-shadow: none; break-inside: avoid; }
   html.week-print body > :not(main), html.week-print .wrap > :not(.week) { display: none !important; }
   html.week-print, html.week-print body { background: #fff !important; }
   html.week-print .week { --ink: #000; --muted: #444; --chip: #fff; --card: #fff; --c1: #000; --line: #999; box-shadow: none; color: #000; background: #fff; }
@@ -770,13 +776,25 @@ Loopy.addStrings({
       });
     }).catch(() => { msg.textContent = t("prNoPic"); }).then(() => { btn.disabled = false; });
   });
+  // Print only the card. The card stays the thing to print until the next tap or key on the page:
+  // Safari on iPhone and iPad sends "afterprint" before it draws the page for paper, so undoing it
+  // there printed the whole page instead (and in the dark themes that came out blank).
   $("week-print").addEventListener("click", () => {
     const html = document.documentElement, hadSheet = html.classList.contains("loopy-print");
     html.classList.add("week-print"); html.classList.remove("loopy-print");
-    const back = () => { html.classList.remove("week-print"); if (hadSheet) html.classList.add("loopy-print"); window.removeEventListener("afterprint", back); };
-    window.addEventListener("afterprint", back);
+    const back = () => {
+      html.classList.remove("week-print"); if (hadSheet) html.classList.add("loopy-print");
+      ["pointerdown", "keydown"].forEach(k => document.removeEventListener(k, back, true));
+    };
+    ["pointerdown", "keydown"].forEach(k => document.addEventListener(k, back, true));
     window.print();
   });
+  // The practice sheet's print styles (print.css) are added when the sheet is first made. Wait for them,
+  // so the browser does not print before they are there.
+  function printStyles() {
+    const l = document.querySelector('link[href$="print.css"]');
+    return l && !l.sheet ? new Promise(r => { l.addEventListener("load", r); l.addEventListener("error", r); setTimeout(r, 3000); }) : Promise.resolve();
+  }
 
   // The practice sheet: 20 problems from the weak spots. Each game is opened in a hidden frame with its
   // practise hint, and its own worksheet maker gives the problems, so they look like the game's worksheet.
@@ -818,7 +836,11 @@ Loopy.addStrings({
           make: () => sheetItems, cell: p => p.cell, answer: p => p.answer
         });
       }
-      return Loopy.load("sheet").then(() => { Loopy.sheet.fill(); msg.textContent = ""; window.print(); });
+      return Promise.all([Loopy.load("sheet"), printStyles()]).then(() => {
+        const html = document.documentElement;
+        html.classList.remove("week-print"); html.classList.add("loopy-print");
+        Loopy.sheet.fill(); msg.textContent = ""; window.print();
+      });
     }).catch(() => { msg.textContent = t("prSheetFail"); }).then(() => { btn.disabled = false; });
   });
 
