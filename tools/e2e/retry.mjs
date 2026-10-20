@@ -89,11 +89,24 @@ async function openRetry(p, game) {
 const lastAnswer = p => p.evaluate(() => Loopy.rewards.last());
 const firstKey = p => p.evaluate(() => window.__questions[0]);
 
+// A sum in steps (Box Multiplication): the card says data-steps="on" until every box and the total are done.
+// The box being filled carries its answer in data-a, the way choice games mark the right one with data-correct.
+async function steps(p) {
+  for (let i = 0; i < 40 && await p.locator('[data-steps="on"]').count(); i++) {
+    const a = await p.locator("[data-a]").first().getAttribute("data-a");
+    for (const ch of a) await p.click(`#pad [data-d="${ch}"]`);
+    await p.click("#k-go");
+  }
+}
+
 async function closeCheer(p) {
   const big = p.locator(".loopy-cheer.big button");
   if (await big.count()) { await big.last().click(); await p.waitForTimeout(300); }
 }
 async function next(p, n) {
+  await closeCheer(p);
+  // A sum in steps that was missed is finished first, so Check turns into Next.
+  await steps(p);
   await closeCheer(p);
   if (await asked(p) > n) return;
   for (const id of ["#next", "#k-go"]) {
@@ -145,6 +158,7 @@ async function miss(p) {
 
 // Answer right: the marked choice, or the logged right answer typed on the pad. Returns false when it cannot.
 async function answerRight(p, row) {
+  if (await p.locator('[data-steps="on"]').count()) { await steps(p); return true; }
   const right = p.locator('[data-correct="true"]:enabled');
   if (await right.count()) {
     await right.first().click();
