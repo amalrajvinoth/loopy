@@ -7,8 +7,8 @@
     "dev": "astro dev",
     "build": "astro build && node scripts/finish.mjs && python3 ../tools/csp.py",
     "screens": "node scripts/screens.mjs",
-    "prebuild": "cp ../icon.svg public/favicon.svg",
-    "predev": "cp ../icon.svg public/favicon.svg",
+    "prebuild": "node -e \"require('fs').mkdirSync('public',{recursive:true});require('fs').copyFileSync('../icon.svg','public/favicon.svg')\"",
+    "predev": "node -e \"require('fs').mkdirSync('public',{recursive:true});require('fs').copyFileSync('../icon.svg','public/favicon.svg')\"",
     "check": "node scripts/check.mjs"
   },
   "dependencies": {
