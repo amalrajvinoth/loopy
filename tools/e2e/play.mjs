@@ -38,6 +38,12 @@ for (const subject of fs.readdirSync(ROOT).sort()) {
   }
 }
 
+// SHARD=1/2 checks only the first half of the games (every other one), SHARD=2/2 the rest. CI runs both at once.
+const [SHARD, SHARDS] = (process.env.SHARD || "1/1").split("/").map(Number);
+if (!(SHARDS >= 1 && SHARD >= 1 && SHARD <= SHARDS)) throw new Error(`SHARD must look like 1/2, not ${process.env.SHARD}`);
+const mine = (_, i) => i % SHARDS === SHARD - 1;
+GAMES.splice(0, GAMES.length, ...GAMES.filter(mine));
+
 // The site at /loopy/, the way GitHub Pages serves it.
 const TYPES = { ".html": "text/html", ".js": "text/javascript", ".css": "text/css", ".svg": "image/svg+xml", ".png": "image/png",
   ".woff2": "font/woff2", ".webmanifest": "application/manifest+json", ".json": "application/json", ".txt": "text/plain" };
@@ -209,6 +215,7 @@ for (const game of GAMES) {
 await browser.close();
 server.close();
 
+if (SHARDS > 1) console.log(`Part ${SHARD} of ${SHARDS}.\n`);
 console.log("| Game | Age | Language | Questions | Different | Right (stars) | Result |\n|---|---|---|---|---|---|---|");
 console.log(rows.join("\n"));
 if (problems.length) {

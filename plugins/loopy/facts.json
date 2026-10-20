@@ -1,15 +1,21 @@
 {
   "ci_steps": [
     "checks.yml: Checks",
+    "checks.yml: Which long checks this change needs",
     "checks.yml: Every page's security policy matches its code",
     "checks.yml: Nothing is loaded from other websites",
     "checks.yml: Every game has a page in the guide, in English and German",
     "checks.yml: Install the minifiers (exact versions, checked by hash)",
     "checks.yml: loopy.js and loopy.css match their sources in src/",
     "checks.yml: The Claude Code plugins match the repo",
+    "checks.yml: accessibility (part ${{ matrix.part }} of 2)",
     "checks.yml: Install the checker (exact versions from the lock file, no browser download)",
     "checks.yml: Every page works with a keyboard and a screen reader",
+    "checks.yml: play test (part ${{ matrix.part }} of 2)",
+    "checks.yml: Install the checker (exact versions from the lock file, no browser download)",
     "checks.yml: Every game plays, and no question comes back too soon",
+    "checks.yml: Try again test",
+    "checks.yml: Install the checker (exact versions from the lock file, no browser download)",
     "checks.yml: A mistake comes back in every game until it is fixed",
     "checks.yml: Install Astro and Starlight (exact versions from the lock file)",
     "checks.yml: Build the guide (this also writes each page's security policy)",
@@ -17,6 +23,8 @@
     "checks.yml: Nothing in the guide is loaded from other websites",
     "checks.yml: Install the Chrome driver (same as the accessibility check)",
     "checks.yml: Links work, no errors, search works, no accessibility problems",
+    "checks.yml: All checks",
+    "checks.yml: Every needed check passed",
     "pages.yml: Pages",
     "pages.yml: Build the guide",
     "pages.yml: The same safety checks as on every pull request",
@@ -28,6 +36,7 @@
     "tools/a11y/check.mjs",
     "tools/build.py",
     "tools/check_external.py",
+    "tools/ci_changes.py",
     "tools/csp.py",
     "tools/e2e/play.mjs",
     "tools/e2e/retry.mjs",
@@ -62,5 +71,5 @@
     "844 × 390"
   ],
   "games_lists": 3,
-  "learned_at": "99b1043"
+  "learned_at": "83e63fd"
 }

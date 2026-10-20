@@ -13,6 +13,8 @@ node tools/a11y/check.mjs
 
 If it cannot find Chrome, point it there: `CHROME=/path/to/chrome node tools/a11y/check.mjs`.
 
+`SHARD=1/2` checks every other page, starting with the first, and `SHARD=2/2` the rest. CI runs both halves at once to save time. Without `SHARD` it checks every page.
+
 The two packages are only for this check. No page loads them, and `node_modules` is not committed.
 
 ## What it checks

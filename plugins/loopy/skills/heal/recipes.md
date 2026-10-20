@@ -53,3 +53,8 @@ One per failure. Add new ones at the end (the heal skill step 3). Keep each to f
 ## Guide build or check fails
 - Looks like: CI "guide" job: "No picture src/assets/screens/...", "still has a style attribute", a broken link, or an MDX error at a line.
 - Fix: run `npm run screens --prefix guide-src` for a missing picture; in `.mdx` text never write a bare `<`, `{` or `}`; links start with `/loopy/guide/` (German `/loopy/guide/de/`). Then `npm run build --prefix guide-src && node guide-src/scripts/check.mjs`. (20 Oct 2026)
+
+## All checks fails, or a long check did not run
+- Looks like: CI "All checks" lists a job as failure or cancelled; or a page change passed without the accessibility, play or guide jobs running.
+- Cause: a job above it failed (fix that job), a newer push stopped this run (cancelled: look at the newer run), or `tools/ci_changes.py` treats a file the pages read as docs.
+- Fix: open the failed job named in the list. For a wrong skip, narrow the DOCS or GUIDE pattern in `tools/ci_changes.py` and test it with `python3 tools/ci_changes.py origin/main HEAD`. (20 Oct 2026)
