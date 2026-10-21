@@ -24,15 +24,22 @@ The level shows next to the score, like "Level 2 of 4". After 10 right in a row 
 
 ## Things to sort
 
-182 things, each with a picture, a name in English and German, and one line of why:
+225 things, each with a picture, a name in English and German, and one line of why:
 
-- **Animals:** 40 animals in six classes.
-- **Living things:** 23 things that are alive, were alive once (a log, a feather, a shell) or were never alive (a rock, a robot, fire).
-- **Matter:** 20 things that are solid, liquid or gas.
-- **Materials:** 30 things made of wood, metal, glass, plastic or fabric.
-- **Food:** 29 foods in the five food groups.
-- **Space:** 14 planets, stars, moons and dwarf planets.
-- **Senses:** 26 things you see, hear, smell, taste or touch.
+- **Animals:** 47 animals in six classes.
+- **Living things:** 27 things that are alive, were alive once (a log, a feather, a shell) or were never alive (a rock, a robot, fire).
+- **Matter:** 25 things that are solid, liquid or gas.
+- **Materials:** 36 things made of wood, metal, glass, plastic or fabric.
+- **Food:** 38 foods in the five food groups.
+- **Space:** 21 planets, stars, moons and dwarf planets.
+- **Senses:** 31 things you see, hear, smell, taste or touch.
+
+## No repeats
+
+- A thing does not come back until the other things at that topic and level have had their turn. This holds on the next visit too: the game keeps a short list of the last 60 things in this browser, for each child.
+- The same picture or name (Water is a liquid and was never alive) does not come twice in 10 questions.
+- When a topic has more than one kind of question, the same kind does not come 3 times in a row. So "Which kind of animal is it?" does not come again and again.
+- A missed thing still comes back on purpose, as Try again, until it is answered right twice.
 
 ## Last 5
 
@@ -65,5 +72,5 @@ Tap **Settings**, then **Print worksheet**. The print window opens. Print it, or
 ## For grown-ups
 
 - The pictures are emoji, so nothing is loaded from other websites. They look a little different on each device.
-- To add a thing, edit the `THINGS` list in `index.html`: picture, level, set, group, then the English and German name and one line of why in each language. The groups of each set are in `GROUPS`.
+- To add a thing, add a line at the end of the `THINGS` list in `index.html`: picture, level, set, group, then the English and German name and one line of why in each language. Add new things at the end only: a thing's place in the list is its key, and saved Try again mistakes use it. The groups of each set are in `GROUPS`.
 - The progress page groups missed answers by set, like "Animal groups" or "Solid, liquid or gas", with a tip for each.

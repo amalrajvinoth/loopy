@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'sha256-6XM2g3P4RQ2myP/+iX+agRIOVoPS6ptlvpu2JxrqyG4='; style-src 'self' 'sha256-z2P7kGW5Z05eCTjTZdYpc0vThTlOE9vmt97pVSvi2I4=' 'sha256-oLQF3jnCxf/mhP8dw8TD8Q631n/SdgEZHa5Z9K9C5do=' 'sha256-RT1053JU5UiKvjrCUFx1rlhdFLMmgtuFJ9T8jnMeawQ=' 'sha256-85jc8QafFRQ/AgP2TO/VDSGWQrc0SF2GVDkf3taMmK0='; img-src 'self' data:; font-src 'self'; connect-src 'self'; worker-src 'self'; object-src 'none'; base-uri 'none'; form-action 'none'; manifest-src 'self'; upgrade-insecure-requests">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'sha256-QMSO3WQ9RAnrviYN4JPadVEkeSG33J+ASXGI+yD487c='; style-src 'self' 'sha256-z2P7kGW5Z05eCTjTZdYpc0vThTlOE9vmt97pVSvi2I4=' 'sha256-oLQF3jnCxf/mhP8dw8TD8Q631n/SdgEZHa5Z9K9C5do=' 'sha256-RT1053JU5UiKvjrCUFx1rlhdFLMmgtuFJ9T8jnMeawQ=' 'sha256-85jc8QafFRQ/AgP2TO/VDSGWQrc0SF2GVDkf3taMmK0='; img-src 'self' data:; font-src 'self'; connect-src 'self'; worker-src 'self'; object-src 'none'; base-uri 'none'; form-action 'none'; manifest-src 'self'; upgrade-insecure-requests">
 <meta name="referrer" content="strict-origin-when-cross-origin">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <style>:root{color-scheme:light;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}body{margin:0}[hidden]{display:none!important}</style>
@@ -554,7 +554,51 @@ const THINGS = [
   ["🐱", 3, "sense", "touch", "Soft fur", "Weiches Fell", "You feel how soft fur is with your hands.", "Wie weich ein Fell ist, fühlst du mit den Händen."],
   ["🌵", 3, "sense", "touch", "A cactus spike", "Ein Kaktusstachel", "You feel how sharp a spike is with your skin. Ouch!", "Wie spitz ein Stachel ist, fühlst du mit der Haut. Aua!"],
   ["🪶", 3, "sense", "touch", "A tickling feather", "Eine kitzelnde Feder", "You feel a tickle with your skin.", "Kitzeln fühlst du mit der Haut."],
-  ["🛁", 3, "sense", "touch", "Warm bath water", "Warmes Badewasser", "You feel how warm the water is with your skin.", "Wie warm das Wasser ist, fühlst du mit der Haut."]
+  ["🛁", 3, "sense", "touch", "Warm bath water", "Warmes Badewasser", "You feel how warm the water is with your skin.", "Wie warm das Wasser ist, fühlst du mit der Haut."],
+  // Added later. New things go at the end: a thing's key is its place in this list, and saved Try again notes use it.
+  ["🦁", 1, "animal", "mammal", "A lion", "Der Löwe", "A lion has fur and feeds its cubs milk, so it is a mammal.", "Ein Löwe hat Fell und säugt seine Jungen, also ist er ein Säugetier."],
+  ["🐖", 1, "animal", "mammal", "A pig", "Das Schwein", "A pig has hair and feeds its piglets milk, so it is a mammal.", "Ein Schwein hat Borsten und säugt seine Ferkel, also ist es ein Säugetier."],
+  ["🦒", 1, "animal", "mammal", "A giraffe", "Die Giraffe", "A giraffe is born alive and drinks its mother's milk, so it is a mammal.", "Eine Giraffe kommt lebend zur Welt und trinkt Milch bei ihrer Mutter, also ist sie ein Säugetier."],
+  ["🐑", 1, "animal", "mammal", "A sheep", "Das Schaf", "A sheep has a woolly coat and feeds its lambs milk, so it is a mammal.", "Ein Schaf hat ein Wollfell und säugt seine Lämmer, also ist es ein Säugetier."],
+  ["🦩", 1, "animal", "bird", "A flamingo", "Der Flamingo", "A flamingo has pink feathers and lays eggs, so it is a bird.", "Ein Flamingo hat rosa Federn und legt Eier, also ist er ein Vogel."],
+  ["🦚", 1, "animal", "bird", "A peacock", "Der Pfau", "A peacock has long, colourful feathers and a beak, so it is a bird.", "Ein Pfau hat lange, bunte Federn und einen Schnabel, also ist er ein Vogel."],
+  ["🐦", 1, "animal", "bird", "A sparrow", "Der Spatz", "A sparrow has feathers and lays its eggs in a nest, so it is a bird.", "Ein Spatz hat Federn und legt seine Eier in ein Nest, also ist er ein Vogel."],
+  ["🌷", 1, "living", "alive", "A tulip", "Die Tulpe", "A tulip grows and needs water and light, so it is alive.", "Eine Tulpe wächst und braucht Wasser und Licht, also lebt sie."],
+  ["🥀", 1, "living", "once", "A dead flower", "Eine verwelkte Blume", "The flower grew once, but now it has died, so it was alive once.", "Die Blume ist einmal gewachsen, aber jetzt ist sie verwelkt, also hat sie mal gelebt."],
+  ["⚽", 1, "living", "never", "A ball", "Der Ball", "A ball rolls only when you kick it. It never eats or grows, so it was never alive.", "Ein Ball rollt nur, wenn du ihn schießt. Er isst nicht und wächst nicht, also hat er nie gelebt."],
+  ["⏰", 1, "living", "never", "An alarm clock", "Der Wecker", "An alarm clock ticks and rings, but it does not eat or grow, so it was never alive.", "Ein Wecker tickt und klingelt, aber er isst nicht und wächst nicht, also hat er nie gelebt."],
+  ["🍪", 2, "matter", "solid", "A biscuit", "Der Keks", "A biscuit keeps its shape, so it is a solid.", "Ein Keks behält seine Form, also ist er fest."],
+  ["🎲", 2, "matter", "solid", "A dice", "Der Spielwürfel", "A dice keeps its shape when you roll it, so it is a solid.", "Ein Spielwürfel behält seine Form, wenn du ihn wirfst, also ist er fest."],
+  ["🍵", 2, "matter", "liquid", "Tea", "Der Tee", "Tea flows and takes the shape of the cup, so it is a liquid.", "Tee fließt und nimmt die Form der Tasse an, also ist er flüssig."],
+  ["🌊", 2, "matter", "liquid", "Sea water", "Das Meerwasser", "Sea water flows and makes waves, so it is a liquid.", "Meerwasser fließt und schlägt Wellen, also ist es flüssig."],
+  ["🥤", 2, "matter", "gas", "The bubbles in a fizzy drink", "Die Bläschen in der Limo", "The bubbles are gas in the drink. That is why they rise to the top.", "Die Bläschen sind Gas im Getränk. Darum steigen sie nach oben."],
+  ["🧪", 2, "material", "glass", "A test tube", "Das Reagenzglas", "A test tube is made of glass, so you can see what is inside.", "Ein Reagenzglas ist aus Glas, damit man hineinsehen kann."],
+  ["🔮", 2, "material", "glass", "A crystal ball", "Die Glaskugel", "A crystal ball is a round ball of clear glass.", "Eine Glaskugel ist eine runde Kugel aus klarem Glas."],
+  ["🏏", 2, "material", "wood", "A cricket bat", "Der Kricketschläger", "A cricket bat is carved from willow wood.", "Ein Kricketschläger wird aus Weidenholz geschnitzt."],
+  ["📎", 2, "material", "metal", "A paper clip", "Die Büroklammer", "A paper clip is a bent piece of metal wire.", "Eine Büroklammer ist ein gebogener Draht aus Metall."],
+  ["🛟", 2, "material", "plastic", "A swim ring", "Der Schwimmring", "A swim ring is made of plastic and filled with air.", "Ein Schwimmring ist aus Plastik und mit Luft gefüllt."],
+  ["👗", 2, "material", "fabric", "A dress", "Das Kleid", "A dress is sewn from fabric.", "Ein Kleid wird aus Stoff genäht."],
+  ["🍐", 3, "food", "fruit", "A pear", "Die Birne", "A pear grows on a tree and has seeds inside, so it is a fruit.", "Eine Birne wächst am Baum und hat Kerne, also ist sie Obst."],
+  ["🍒", 3, "food", "fruit", "Cherries", "Die Kirschen", "Cherries grow on a tree and each has a stone inside, so they are fruit.", "Kirschen wachsen am Baum und haben einen Kern, also sind sie Obst."],
+  ["🍍", 3, "food", "fruit", "A pineapple", "Die Ananas", "A pineapple grows from a flower and tastes sweet, so it is a fruit.", "Eine Ananas wächst aus einer Blüte und schmeckt süß, also ist sie Obst."],
+  ["🥝", 3, "food", "fruit", "A kiwi", "Die Kiwi", "A kiwi grows on a vine and has tiny seeds inside, so it is a fruit.", "Eine Kiwi wächst an einer Ranke und hat kleine Kerne, also ist sie Obst."],
+  ["🧄", 3, "food", "veg", "Garlic", "Der Knoblauch", "Garlic grows under the ground, like an onion, so it is a vegetable.", "Knoblauch wächst unter der Erde, wie eine Zwiebel, also ist er Gemüse."],
+  ["🍠", 3, "food", "veg", "A sweet potato", "Die Süßkartoffel", "A sweet potato grows under the ground, so it is a vegetable.", "Eine Süßkartoffel wächst unter der Erde, also ist sie Gemüse."],
+  ["🥨", 3, "food", "grain", "A pretzel", "Die Brezel", "A pretzel is baked from wheat flour, so it is a grain food.", "Eine Brezel wird aus Weizenmehl gebacken, also gehört sie zum Getreide."],
+  ["🥯", 3, "food", "grain", "A bagel", "Der Bagel", "A bagel is baked from wheat flour, so it is a grain food.", "Ein Bagel wird aus Weizenmehl gebacken, also gehört er zum Getreide."],
+  ["🦐", 3, "food", "protein", "Prawns", "Die Garnelen", "Prawns are full of protein, like fish.", "Garnelen haben viel Eiweiß, wie Fisch."],
+  ["🟤", 3, "space", "planet", "Mercury", "Der Merkur", "Mercury is the planet closest to the Sun. It goes around the Sun.", "Merkur ist der Planet, der der Sonne am nächsten ist. Er kreist um die Sonne."],
+  ["🟢", 3, "space", "planet", "Uranus", "Der Uranus", "Uranus is a blue-green planet that goes around the Sun, far away.", "Uranus ist ein blaugrüner Planet, der weit draußen um die Sonne kreist."],
+  ["🌒", 4, "space", "moon", "Ganymede", "Ganymed", "Ganymede goes around Jupiter, so it is a moon. It is the biggest moon of all.", "Ganymed kreist um den Jupiter, also ist er ein Mond. Er ist der größte Mond von allen."],
+  ["🌓", 4, "space", "moon", "Io", "Io", "Io goes around Jupiter, so it is a moon. It has lots of volcanoes.", "Io kreist um den Jupiter, also ist er ein Mond. Er hat viele Vulkane."],
+  ["🌗", 4, "space", "moon", "Phobos", "Phobos", "Phobos goes around Mars, so it is a moon. It is small and shaped like a potato.", "Phobos kreist um den Mars, also ist er ein Mond. Er ist klein und sieht aus wie eine Kartoffel."],
+  ["🌟", 4, "space", "star", "Betelgeuse", "Beteigeuze", "Betelgeuse is a giant red star. It makes its own light, like the Sun.", "Beteigeuze ist ein riesiger roter Stern. Er leuchtet selbst, wie die Sonne."],
+  ["🔘", 4, "space", "dwarf", "Eris", "Eris", "Eris goes around the Sun, but it is too small to clear its path, so it is a dwarf planet.", "Eris kreist um die Sonne, aber sie ist zu klein, um ihre Bahn freizuräumen, also ist sie ein Zwergplanet."],
+  ["🌅", 3, "sense", "see", "A sunset", "Der Sonnenuntergang", "You see the colours of a sunset with your eyes.", "Die Farben vom Sonnenuntergang siehst du mit den Augen."],
+  ["🎺", 3, "sense", "hear", "A trumpet", "Die Trompete", "You hear a trumpet with your ears.", "Eine Trompete hörst du mit den Ohren."],
+  ["🗑️", 3, "sense", "smell", "A full bin", "Ein voller Mülleimer", "You smell a full bin with your nose. Pooh!", "Einen vollen Mülleimer riechst du mit der Nase. Puh!"],
+  ["🍫", 3, "sense", "taste", "Chocolate", "Die Schokolade", "You taste how sweet chocolate is with your tongue.", "Wie süß Schokolade ist, schmeckst du mit der Zunge."],
+  ["🧽", 3, "sense", "touch", "A wet sponge", "Ein nasser Schwamm", "You feel how wet and squishy a sponge is with your hands.", "Wie nass und weich ein Schwamm ist, fühlst du mit den Händen."]
 ];
 const randInt = (n) => Math.floor(Math.random() * n);
 const pick = (arr) => arr[randInt(arr.length)];
@@ -562,14 +606,33 @@ const shuffle = (arr) => arr.slice().sort(() => Math.random() - 0.5);
 // One thing as { pic, level, set, group, key, en: {name, why}, de: {...} }. The key is the set and its place in the list.
 const ALL = THINGS.map((x, i) => ({ pic: x[0], level: x[1], set: x[2], group: x[3], key: x[2] + i, en: { name: x[4], why: x[6] }, de: { name: x[5], why: x[7] } }));
 
-// A thing from the topic at this level (or, when the topic has nothing at this level, any of its things that are not tricky),
-// with its group and 2 or 3 other groups of the same set to pick from. only: one set, for a practise visit.
-function makeProblem(lang, topic, level, nChoices, only, avoid) {
+const BY_KEY = Object.fromEntries(ALL.map(x => [x.key, x]));
+
+// The topic's things at this level (or, when the topic has nothing at this level, all its things that are not tricky).
+// only: one set, for a practise visit.
+function thingsFor(topic, level, only) {
   const sets = only ? [only] : TOPICS[topic] || TOPICS.all;
-  let list = ALL.filter(x => sets.includes(x.set) && x.level <= level);
-  if (!list.length) list = ALL.filter(x => sets.includes(x.set) && x.level <= 3);
-  let thing = pick(list);
-  for (let tries = 0; tries < 40 && avoid && avoid.includes(thing.key); tries++) thing = pick(list);
+  const list = ALL.filter(x => sets.includes(x.set) && x.level <= level);
+  return list.length ? list : ALL.filter(x => sets.includes(x.set) && x.level <= 3);
+}
+// One of them, with its group and 2 or 3 other groups of the same set to pick from.
+// seen: the keys shown before, newest last. A thing not shown lately comes first, so every thing comes round before
+// one comes back. While something else is left, it also skips a picture or name from the last 10 (Water is in two
+// sets) and a third question of the same kind in a row.
+function makeProblem(lang, topic, level, nChoices, only, seen) {
+  seen = seen || [];
+  const list = thingsFor(topic, level, only);
+  const last = seen.slice(-10), shown = last.map(k => BY_KEY[k]).filter(Boolean);
+  const looks = new Set(shown.flatMap(x => [x.pic, x.en.name]));
+  const n = shown.length, run = n > 1 && shown[n - 1].set === shown[n - 2].set ? shown[n - 1].set : "";
+  const keep = (arr, ok) => { const out = arr.filter(ok); return out.length ? out : arr; };
+  let pool = keep(list, x => !last.includes(x.key));
+  pool = keep(pool, x => !looks.has(x.pic) && !looks.has(x.en.name));
+  pool = keep(pool, x => x.set !== run);
+  // Never shown (or not in seen any more) first; otherwise one of the quarter shown longest ago.
+  const when = (x) => seen.lastIndexOf(x.key);
+  const unseen = pool.filter(x => when(x) < 0);
+  const thing = unseen.length ? pick(unseen) : pick(pool.sort((a, b) => when(a) - when(b)).slice(0, Math.max(1, pool.length >> 2)));
   const others = shuffle(GROUPS[thing.set].filter(g => g !== thing.group)).slice(0, nChoices - 1);
   const options = shuffle([thing.group, ...others]);
   return { thing, text: thing[lang], options, key: thing.key, answer: thing.group };
@@ -606,6 +669,20 @@ function makeProblem(lang, topic, level, nChoices, only, avoid) {
     set: (i) => { level = i + 1; store.set("so.level.a" + age, level); render(); } });
   let right = 0, tried = 0, streak = 0;
   let current = null, answered = false, recent = [];
+  // The last 60 things shown, newest last, kept for the next visit too, so a thing does not come straight back when
+  // the child plays again. Saved as each thing's place in THINGS, in base 36 ("3k.1b.a"). Not in stars codes, to keep
+  // them short: on a new device it starts again.
+  const SEEN = 60, SEEN_KEY = "so-seen";
+  let seen = [];
+  try {
+    const v = Loopy.store.get(SEEN_KEY);
+    if (typeof v === "string" && v.length < 400) seen = v.split(".").filter(c => /^[0-9a-z]{1,2}$/.test(c)).map(c => ALL[parseInt(c, 36)]).filter(Boolean).map(x => x.key).slice(-SEEN);
+  } catch (e) { seen = []; }
+  function remember(key) {
+    seen.push(key);
+    while (seen.length > SEEN) seen.shift();
+    Loopy.store.set(SEEN_KEY, seen.map(k => (+/\d+$/.exec(k)[0]).toString(36)).join("."));
+  }
 
   function render() {
     Loopy.levels.render();
@@ -620,17 +697,17 @@ function makeProblem(lang, topic, level, nChoices, only, avoid) {
   const note = (p) => p.key;
   function rebuild(r) {
     if (!/^[a-z]{4,8}\d{1,3}$/.test(r)) return null;
-    const sets = only ? [only] : TOPICS[topic] || TOPICS.all;
-    let list = ALL.filter(x => sets.includes(x.set) && x.level <= level);
-    if (!list.length) list = ALL.filter(x => sets.includes(x.set) && x.level <= 3);
-    const thing = list.find(x => x.key === r);
+    const thing = thingsFor(topic, level, only).find(x => x.key === r);
     if (!thing) return null;
     const others = shuffle(GROUPS[thing.set].filter(g => g !== thing.group)).slice(0, choicesForAge(age) - 1);
     return { thing, text: thing[lang], options: shuffle([thing.group, ...others]), key: thing.key, answer: thing.group };
   }
 
   function newRound() {
-    current = Loopy.retry.fresh("sort-it", recent, () => makeProblem(lang, topic, level, choicesForAge(age), only), rebuild, 20);
+    // Nothing back within 20, or, when the topic has fewer things (Space has 11), before all the others.
+    const keep = Math.max(1, Math.min(20, thingsFor(topic, level, only).length - 1));
+    current = Loopy.retry.fresh("sort-it", recent, () => makeProblem(lang, topic, level, choicesForAge(age), only, seen), rebuild, keep);
+    remember(current.key);
     answered = false;
     picEl.textContent = current.thing.pic;
     nameEl.textContent = current.text.name;

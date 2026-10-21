@@ -221,7 +221,7 @@ Page sizes, sent over the network with `loopy.js`, `loopy.css` and the two fonts
 | Where Is It? | 99 KB |
 | Flags and Capitals | 78 KB |
 | Quick Facts | 84 KB |
-| Sort It | 78 KB |
+| Sort It | 81 KB |
 
 Measured on 16 October 2026 the way `tools/review.py` counts it (text compressed like GitHub Pages does, fonts as they are). The review fails a page over 100 KB. When the faster loading work landed (PR #23), the first pages went from about 60 to 87 KB down to 33 to 51 KB, and Lighthouse scored 100 on a phone on slow 4G. Pages have grown since with more children, offline mode, reading aloud and the report button.
 
