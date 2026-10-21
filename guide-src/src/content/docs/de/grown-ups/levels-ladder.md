@@ -45,6 +45,7 @@ Von der ersten bis zur letzten Stufe. Die 10 von heute hat keine Stufen.
 | Bild und Wort | 3 | 3 Wörter → 4 Wörter → 4, knifflig |
 | Wörter schreiben | 5 | 3 Buchstaben → 4 Buchstaben → 5 Buchstaben → 6 Buchstaben → 7 bis 8 Buchstaben |
 | Satzbau | 4 | 3 Wörter → 4 bis 5 Wörter → 6 Wörter, mit Fragen → 7 bis 8 Wörter, mit Komma |
+| Rechtschreib-Quiz | 5 | Wörter Klasse 1 → Wörter Klasse 2 → Wörter Klasse 3 → Wörter Klasse 4 bis 5, 4 zur Auswahl → Wörter ab Klasse 6 |
 | Blitzwissen | 3 | Einsteiger → Entdecker → Profi |
 | Sortieren | 4 | Tiere und Lebewesen → Materialien und Stoffe → Essen, Weltall und Sinne → Alles gemischt, mit kniffligen |
 | Wo liegt das? | 5 | Kontinente und Ozeane → Länder Europas → Hauptstädte Europas → Länder der Welt → Hauptstädte der Welt |

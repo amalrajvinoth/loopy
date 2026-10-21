@@ -26,6 +26,7 @@ export const GAMES: Game[] = [
   g("languages", "word-match", "🖼️", [5, 10], "Word Match", "Bild und Wort"),
   g("languages", "spell-it", "✏️", [6, 10], "Spell It", "Wörter schreiben"),
   g("languages", "sentence-builder", "🧩", [6, 12], "Sentence Builder", "Satzbau"),
+  g("languages", "spelling-quiz", "🐝", [6, 12], "Spelling Quiz", "Rechtschreib-Quiz"),
   g("science", "quick-facts", "🔬", [7, 12], "Quick Facts", "Blitzwissen"),
   g("science", "sort-it", "🗂️", [6, 12], "Sort It", "Sortieren"),
   g("geography", "where-is-it", "🗺️", [7, 14], "Where Is It?", "Wo liegt das?"),

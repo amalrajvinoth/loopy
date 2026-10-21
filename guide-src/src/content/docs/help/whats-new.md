@@ -8,6 +8,10 @@ loopy keeps getting new games. Here is what came lately!
 
 The big changes, newest first. Small fixes are not listed. See [the full list on GitHub](https://github.com/amalrajvinoth/loopy/blob/main/RELEASES.md).
 
+## 21 October 2026
+
+- **New game: [Spelling Quiz](/loopy/guide/games/languages/spelling-quiz/)**, for ages 6 to 12. Pick the right spelling out of 3 or 4. Grown-ups can type in the week's spelling words, and the wrong spellings are new every time.
+
 ## 19 October 2026
 
 - **New game: [Step by Step](/loopy/guide/games/math/step-by-step/)**, for ages 6 to 12. Work out 47 + 25 in steps, the way school teaches it: 47 + 20 = 67, then 67 + 5 = 72. A number line shows the jumps. Six levels, up to 10,000.
