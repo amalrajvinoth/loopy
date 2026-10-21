@@ -12,6 +12,10 @@
    time loopy opens (at least once a day) and installs the new helper. That helper copies the files
    whose hash did not change from the old saved copy and downloads only the changed ones, then
    drops the old copy. The next page that opens shows the new version.
+   Every file is checked against its hash before it is saved, the copied ones too. Right after an update
+   the site's servers can still hand out the old file for a few minutes; that file is then asked for
+   again past them (with ?v=<hash>), so an old page is never saved as the new one. A saved copy that
+   is already wrong (from before this check) is downloaded again.
    Edit this file, then run: python3 tools/build.py */
 
 var CACHE = "loopy-" + VERSION;
@@ -44,20 +48,42 @@ function oldCopy() {
   }).catch(function () { return null; });
 }
 
+// Does this response hold the file with this short hash (the first 10 hex digits of its SHA-256)?
+function matches(res, want) {
+  if (!res || !self.crypto || !crypto.subtle) return Promise.resolve(!!res);
+  return res.clone().arrayBuffer().then(function (buf) { return crypto.subtle.digest("SHA-256", buf); }).then(function (d) {
+    return Array.prototype.map.call(new Uint8Array(d), function (b) { return (b < 16 ? "0" : "") + b.toString(16); }).join("").slice(0, 10) === want;
+  }, function () { return true; });
+}
+// Download one file. "reload" skips the browser's own short-term copy. If what comes back is not this
+// version yet, ask once more with ?v=<hash>, which the site's servers have not seen before.
+function download(url) {
+  var get = function (u) {
+    return fetch(new Request(u, { cache: "reload" })).then(function (r) {
+      if (!r.ok) throw new Error("could not save " + url);
+      return r;
+    });
+  };
+  return get(url).then(function (r) {
+    return matches(r, SAVED[url]).then(function (ok) {
+      if (ok) return r;
+      var u = new URL(url);
+      u.searchParams.set("v", SAVED[url]);
+      return get(u.href);
+    });
+  });
+}
+
 self.addEventListener("install", function (e) {
   e.waitUntil(Promise.all([caches.open(CACHE), oldCopy()]).then(function (got) {
     var cache = got[0], old = got[1];
     return Promise.all(Object.keys(SAVED).map(function (url) {
-      // A file with the same hash as before is copied from the old saved copy, not downloaded again.
+      // A file with the same hash as before is copied from the old saved copy, not downloaded again,
+      // when the saved file really is that one.
       var same = old && old.list[url] === SAVED[url] ? old.cache.match(url) : Promise.resolve(null);
       return same.then(function (res) {
-        if (res) return cache.put(url, res);
-        // "reload" skips the browser's own short-term copy, so the saved files are the new ones.
-        return fetch(new Request(url, { cache: "reload" })).then(function (r) {
-          if (!r.ok) throw new Error("could not save " + url);
-          return cache.put(url, r);
-        });
-      });
+        return matches(res, SAVED[url]).then(function (ok) { return res && ok ? res : download(url); });
+      }).then(function (res) { return cache.put(url, res); });
     })).then(function () {
       return cache.put(LIST, new Response(JSON.stringify(SAVED), { headers: { "Content-Type": "application/json" } }));
     });

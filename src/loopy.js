@@ -1807,8 +1807,8 @@ Loopy.nextButton = function (btn, answered) {
 (function () {
   var PRINTER = '<svg viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9V3h12v6"/><rect x="3" y="9" width="18" height="8" rx="2"/><path d="M6 14h12v7H6z"/></svg>';
   Loopy.addStrings({
-    en: { printSheet: "Print worksheet", printNote: "20 problems at this level. Answers on page 2." },
-    de: { printSheet: "Arbeitsblatt drucken", printNote: "20 Aufgaben auf dieser Stufe. Lösungen auf Seite 2." }
+    en: { printSheet: "Print worksheet", printNote: "20 problems at this level. Answers on page 2.", printApp: "No print menu? Open loopy in Safari to print. The home screen app cannot print on iPhone." },
+    de: { printSheet: "Arbeitsblatt drucken", printNote: "20 Aufgaben auf dieser Stufe. Lösungen auf Seite 2.", printApp: "Kein Druckmenü? Öffne loopy in Safari zum Drucken. Die App auf dem Home-Bildschirm kann auf dem iPhone nicht drucken." }
   });
   var state = { opts: null, sheet: null, filled: false }, linked = false;
 
@@ -1826,8 +1826,14 @@ Loopy.nextButton = function (btn, answered) {
     l.rel = "stylesheet"; l.media = "print"; l.href = Loopy.root + "print.css";
     document.head.appendChild(l);
   }
+  // Straight from the tap when the filling part is already here (it loads a moment after the game opens):
+  // phones may ignore a print that comes later. loopy opened from the home screen icon on iPhone has no
+  // print menu, so the line under the button then says to open loopy in Safari.
   function print() {
-    Loopy.load("sheet").then(function () { Loopy.sheet.fill(); window.print(); }, function () {});
+    var go = function () { Loopy.sheet.fill(); window.print(); };
+    if (Loopy.sheet) go(); else Loopy.load("sheet").then(go, function () {});
+    var btn = document.getElementById("print-sheet"), note = btn && btn.parentNode.querySelector("p");
+    if (navigator.standalone === true && note) note.textContent = Loopy.t("printApp");
   }
 
   Loopy.worksheet = function (o) {

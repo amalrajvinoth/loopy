@@ -119,7 +119,8 @@
       // The picture shows the part of the page that was on screen.
       var shift = ".lp-root{width:" + copy.w + "px;height:" + copy.h + "px;overflow:hidden}" +
         (copy.x || copy.y ? ".lp-root>.lp-body{transform:translate(" + -copy.x + "px," + -copy.y + "px)}" : "") +
-        (copy.pad ? ".lp-root>.lp-body{padding:16px;margin:0;min-height:0}" : "");
+        (copy.pad ? ".lp-root>.lp-body{padding:16px;margin:0;min-height:0}" : "") +
+        (copy.white ? ".lp-root,.lp-root>.lp-body{background:#fff}" : "");
       wrap.appendChild(el("style", "", css + "\n" + shift));
       wrap.appendChild(body);
       var html = new XMLSerializer().serializeToString(wrap);
@@ -143,10 +144,11 @@
   }
 
   // A picture of one part of the page, w × h, with 16px around it: the grown-ups' weekly card.
-  function snap(node, w, h) {
+  // white: true puts it on white, for the picture that is printed.
+  function snap(node, w, h, white) {
     var root = document.documentElement, body = el("div");
     body.appendChild(node.cloneNode(true));
-    return picture({ body: body, w: w, h: h, x: 0, y: 0, pad: true,
+    return picture({ body: body, w: w, h: h, x: 0, y: 0, pad: true, white: white,
       attrs: ["data-theme", "data-font", "lang"].map(function (a) { return [a, root.getAttribute(a)]; }), cls: root.className });
   }
 
