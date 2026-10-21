@@ -45,3 +45,13 @@ For each game, as an 8-year-old in English, it answers a question wrong on purpo
 ## Add a new game
 
 Nothing to add here: the test finds every `<subject>/<game>/index.html` by itself. In the game, make the next question with `Loopy.retry.fresh` (which calls `Loopy.fresh`), give each question a `key` that is the same for the same question, log a rebuild note with each wrong answer and rebuild from it (see the README's "Build a game"), and keep the usual ids: `score`, `next` (or `k-go` for a pad), and `choices`, `answers`, `pad`, `letters` or `map` for the answers.
+
+## Offline copy test
+
+`offline.mjs` checks that after an update every phone saves the new pages, never an old one:
+
+```sh
+node tools/e2e/offline.mjs
+```
+
+Right after an update, the site's servers can still hand out an old file for a few minutes. The offline helper (`sw.js`) checks every file against its hash before it saves it, and asks again with `?v=<hash>` when it gets an old one. The test serves the site with a server that lags like that and checks three things: the new grown-ups page is saved, a wrong page saved by an older helper is downloaded again, and a server that never gives the right file does not stop the update. CI runs it with the Try again test.

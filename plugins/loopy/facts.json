@@ -17,6 +17,7 @@
     "checks.yml: Try again test",
     "checks.yml: Install the checker (exact versions from the lock file, no browser download)",
     "checks.yml: A mistake comes back in every game until it is fixed",
+    "checks.yml: After an update, phones save the new pages, never an old one",
     "checks.yml: Install Astro and Starlight (exact versions from the lock file)",
     "checks.yml: Build the guide (this also writes each page's security policy)",
     "checks.yml: Every guide page's security policy matches its code",
@@ -38,6 +39,7 @@
     "tools/check_external.py",
     "tools/ci_changes.py",
     "tools/csp.py",
+    "tools/e2e/offline.mjs",
     "tools/e2e/play.mjs",
     "tools/e2e/retry.mjs",
     "tools/guide_check.py",
@@ -71,5 +73,5 @@
     "844 × 390"
   ],
   "games_lists": 3,
-  "learned_at": "83e63fd"
+  "learned_at": "25671a1"
 }

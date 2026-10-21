@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'sha256-LlPF6Vf0Ql/0bs5a7NwH53+9uQFiE7MCmG7QmdqmtCo='; style-src 'self' 'sha256-R73JVBfQRPmcMT4FSBiUxJ39k8Se2bGGNHdZUWUyPoY='; img-src 'self' data:; font-src 'self'; connect-src 'self'; worker-src 'self'; object-src 'none'; base-uri 'none'; form-action 'none'; manifest-src 'self'; upgrade-insecure-requests">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'sha256-govKD+K5fKS3k4SziFShsKUw4W6d6c+W0MnS/OK42Tg='; style-src 'self' 'sha256-k11lQFueFwQ3YwRbeQvCuYEOOMoUClszpnm1RGYulf4='; img-src 'self' data:; font-src 'self'; connect-src 'self'; worker-src 'self'; object-src 'none'; base-uri 'none'; form-action 'none'; manifest-src 'self'; upgrade-insecure-requests">
 <meta name="referrer" content="strict-origin-when-cross-origin">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <link rel="icon" href="../icon.svg" type="image/svg+xml">
@@ -140,6 +140,9 @@ section[hidden] { display: none; }
 .btn.main { background: var(--c1); border-color: var(--c1); color: var(--accent-ink, #fff); }
 .btn:disabled { opacity: 0.6; cursor: wait; }
 .sheet-row { display: flex; gap: 8px 14px; flex-wrap: wrap; align-items: center; }
+/* The card as a picture to print (home screen app on iPhone): black on white, like on paper. */
+.week.paper { --ink: #000; --muted: #444; --chip: #fff; --card: #fff; --c1: #000; --line: #999; box-shadow: none; color: #000; background: #fff; }
+.week.paper .stat div { border: 1px solid #999; }
 /* Printing: black on white, whatever the theme. Browsers leave out background colours when printing,
    so the light text of the dark themes would print white on white, a blank page. Buttons stay off paper.
    The weekly card's Print button prints only the card; the practice sheet prints through print.css. */
@@ -265,7 +268,7 @@ Loopy.addStrings({
     prStatAnswers: "answers", prStatRight: "right", prStatRightUp: "right, up from {p}%", prStatRightDown: "right, down from {p}%", prStatDays: "days played", prStatStars: "stars",
     prGoingWell: "Going well", prToPractise: "To practise", prAllRight: "{game}: every answer right.", prMostRight: "{game}: {r} of {n} right.",
     prGoodNone: "Play a bit more this week to fill this line.", prPracNone: "Nothing missed this week.",
-    prSharePic: "Share picture", prSavePic: "Save picture", prPrint: "Print", prMaking: "Making the picture…", prNoPic: "This browser cannot make the picture. Print instead.", prShared: "Shared.", prSaved: "Saved to your pictures or downloads.",
+    prSharePic: "Share picture", prSavePic: "Save picture", prPrint: "Print", prMaking: "Making the picture…", prNoPic: "This browser cannot make the picture. Print instead.", prPickPrint: "In the menu, pick Print.", prAppPrint: "If no print menu opened: open loopy in Safari to print. The app on the home screen cannot print on iPhone.", prShared: "Shared.", prSaved: "Saved to your pictures or downloads.",
     prBrand: "Learn. Play. Repeat.",
     prSheet: "Print a practice sheet", prSheetMaking: "Making the sheet…", prSheetFail: "The sheet could not be made. Open a game and print its worksheet from Settings instead.",
     prSheetTitle: "Practice sheet", prSheetTitleKid: "Practice sheet for {name}", prSheetHow: "20 problems of the kinds missed most. Answers on page 2.",
@@ -371,7 +374,7 @@ Loopy.addStrings({
     prStatAnswers: "Antworten", prStatRight: "richtig", prStatRightUp: "richtig, vorher {p}%", prStatRightDown: "richtig, vorher {p}%", prStatDays: "Tage gespielt", prStatStars: "Sterne",
     prGoingWell: "Läuft gut", prToPractise: "Zum Üben", prAllRight: "{game}: alles richtig.", prMostRight: "{game}: {r} von {n} richtig.",
     prGoodNone: "Spielt diese Woche noch ein bisschen, dann steht hier etwas.", prPracNone: "Diese Woche nichts falsch.",
-    prSharePic: "Bild teilen", prSavePic: "Bild speichern", prPrint: "Drucken", prMaking: "Bild wird gemacht…", prNoPic: "Dieser Browser kann das Bild nicht machen. Druckt es stattdessen.", prShared: "Geteilt.", prSaved: "In den Bildern oder Downloads gespeichert.",
+    prSharePic: "Bild teilen", prSavePic: "Bild speichern", prPrint: "Drucken", prMaking: "Bild wird gemacht…", prNoPic: "Dieser Browser kann das Bild nicht machen. Druckt es stattdessen.", prPickPrint: "Wähle im Menü Drucken.", prAppPrint: "Wenn sich kein Druckmenü geöffnet hat: Öffne loopy in Safari, um zu drucken. Die App auf dem Home-Bildschirm kann auf dem iPhone nicht drucken.", prShared: "Geteilt.", prSaved: "In den Bildern oder Downloads gespeichert.",
     prBrand: "Lernen. Spielen. Wiederholen.",
     prSheet: "Übungsblatt drucken", prSheetMaking: "Blatt wird gemacht…", prSheetFail: "Das Blatt konnte nicht gemacht werden. Öffnet ein Spiel und druckt dort in den Einstellungen das Arbeitsblatt.",
     prSheetTitle: "Übungsblatt", prSheetTitleKid: "Übungsblatt für {name}", prSheetHow: "20 Aufgaben der Arten, die am häufigsten falsch waren. Lösungen auf Seite 2.",
@@ -772,26 +775,44 @@ Loopy.addStrings({
     $("week").hidden = false; $("week-foot").hidden = false; $("week-open").hidden = true;
     $("week").scrollIntoView({ behavior: "smooth", block: "start" });
     $("week-share").textContent = t(navigator.canShare ? "prSharePic" : "prSavePic");
-    Loopy.load("report").catch(() => {});
+    // Make the pictures now, so Share and Print can open the share menu straight from the tap:
+    // phones only allow that right after a tap, and drawing the picture can take longer.
+    pics = { screen: cardPic(false), paper: inApp ? cardPic(true) : null };
   });
   // The picture is drawn in the browser (the same code as Report a problem), then shared with the phone's
   // own share sheet, or saved when the browser cannot share pictures. Nothing leaves the device otherwise.
-  $("week-share").addEventListener("click", () => {
-    const btn = $("week-share"), msg = $("week-msg"), card = $("week"), r = card.getBoundingClientRect();
-    btn.disabled = true; msg.textContent = t("prMaking");
-    Loopy.load("report").then(() => Loopy.report.snap(card, Math.round(r.width) + 32, Math.round(r.height) + 32)).then(url => {
-      if (!url) throw new Error("no picture");
+  // loopy opened from the home screen icon on iPhone or iPad has no print menu, so Print shares a
+  // black-on-white picture of the card instead; the share menu has Print.
+  const inApp = navigator.standalone === true;
+  let pics = {};
+  function cardPic(paper) {
+    const card = $("week"), r = card.getBoundingClientRect(), copy = card.cloneNode(true);
+    if (paper) copy.classList.add("paper");
+    const job = Loopy.load("report").then(() => Loopy.report.snap(copy, Math.round(r.width) + 32, Math.round(r.height) + 32, paper)).then(url => {
+      if (!url) return null;
       // The PNG comes back as a data: address; it is turned into a file here (the page may not fetch data: addresses).
       const bin = atob(url.split(",")[1]), bytes = new Uint8Array(bin.length);
       for (let i = 0; i < bin.length; i++) bytes[i] = bin.charCodeAt(i);
-      return Promise.resolve(new Blob([bytes], { type: "image/png" })).then(blob => {
-        const file = new File([blob], "loopy-week.png", { type: "image/png" });
-        if (navigator.canShare && navigator.canShare({ files: [file] })) {
-          return navigator.share({ files: [file], title: $("week-title").textContent }).then(() => { msg.textContent = t("prShared"); }, e => { if (e && e.name !== "AbortError") throw e; msg.textContent = ""; });
-        }
-        const a = el("a"); a.href = url; a.download = "loopy-week.png"; document.body.appendChild(a); a.click(); a.remove();
-        msg.textContent = t("prSaved");
-      });
+      return { url, file: new File([bytes], paper ? "loopy-week-print.png" : "loopy-week.png", { type: "image/png" }) };
+    }).catch(() => null);
+    job.then(p => { job.done = p; });
+    return job;
+  }
+  const canShare = p => p && navigator.canShare && navigator.canShare({ files: [p.file] });
+  function share(p, msg, after) {
+    return navigator.share({ files: [p.file], title: $("week-title").textContent })
+      .then(() => { msg.textContent = after; }, e => { if (e && e.name !== "AbortError") throw e; msg.textContent = ""; });
+  }
+  $("week-share").addEventListener("click", () => {
+    const btn = $("week-share"), msg = $("week-msg"), job = pics.screen || (pics.screen = cardPic(false));
+    // Ready: share straight from the tap.
+    if (job.done && canShare(job.done)) { share(job.done, msg, t("prShared")).catch(() => { msg.textContent = t("prNoPic"); }); return; }
+    btn.disabled = true; msg.textContent = t("prMaking");
+    job.then(p => {
+      if (!p) throw new Error("no picture");
+      if (canShare(p)) return share(p, msg, t("prShared"));
+      const a = el("a"); a.href = p.url; a.download = "loopy-week.png"; document.body.appendChild(a); a.click(); a.remove();
+      msg.textContent = t("prSaved");
     }).catch(() => { msg.textContent = t("prNoPic"); }).then(() => { btn.disabled = false; });
   });
   // Print only the card. The card stays the thing to print until the next tap or key on the page:
@@ -805,7 +826,14 @@ Loopy.addStrings({
       ["pointerdown", "keydown"].forEach(k => document.removeEventListener(k, back, true));
     };
     ["pointerdown", "keydown"].forEach(k => document.addEventListener(k, back, true));
+    const msg = $("week-msg"), job = pics.paper;
+    if (inApp && job && job.done && canShare(job.done)) {
+      msg.textContent = t("prPickPrint");
+      share(job.done, msg, "").catch(() => { msg.textContent = t("prAppPrint"); });
+      return;
+    }
     window.print();
+    if (inApp) msg.textContent = t("prAppPrint");
   });
   // The practice sheet's print styles (print.css) are added when the sheet is first made. Wait for them,
   // so the browser does not print before they are there.
@@ -858,6 +886,7 @@ Loopy.addStrings({
         const html = document.documentElement;
         html.classList.remove("week-print"); html.classList.add("loopy-print");
         Loopy.sheet.fill(); msg.textContent = ""; window.print();
+        if (inApp) msg.textContent = t("prAppPrint");
       });
     }).catch(() => { msg.textContent = t("prSheetFail"); }).then(() => { btn.disabled = false; });
   });
