@@ -8,6 +8,10 @@ loopy bekommt immer wieder neue Spiele. Das ist zuletzt dazugekommen!
 
 Die großen Änderungen, die neuesten zuerst. Kleine Korrekturen stehen nicht dabei. Die [ganze Liste steht auf GitHub](https://github.com/amalrajvinoth/loopy/blob/main/RELEASES.md) (auf Englisch).
 
+## 21. Oktober 2026
+
+- **Neues Spiel: [Rechtschreib-Quiz](/loopy/guide/de/games/languages/spelling-quiz/)**, für 6 bis 12 Jahre. Finde das richtig geschriebene Wort unter 3 oder 4. Eltern können die Übungswörter der Woche eintragen, und die falschen Schreibweisen sind jedes Mal neu.
+
 ## 19. Oktober 2026
 
 - **Neues Spiel: [Schrittweise rechnen](/loopy/guide/de/games/math/step-by-step/)**, für 6 bis 12 Jahre. Rechne 47 + 25 in Schritten, wie in der Schule: 47 + 20 = 67, dann 67 + 5 = 72. Ein Zahlenstrahl zeigt die Sprünge. Sechs Stufen, bis 10.000.

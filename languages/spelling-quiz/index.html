@@ -1,0 +1,680 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'sha256-Xdj/bBX+kf09j36KdSOVuiQJS2O8MJIiQNuj3aRDzTk='; style-src 'self' 'sha256-z2P7kGW5Z05eCTjTZdYpc0vThTlOE9vmt97pVSvi2I4=' 'sha256-t2PZo07Wgpfqgc/H1F1SYDRM0CNO5GbRA7u4WVGaGKo=' 'sha256-RT1053JU5UiKvjrCUFx1rlhdFLMmgtuFJ9T8jnMeawQ=' 'sha256-ZVtMEPo3z2GP/pry+1F9e4OBVbycAVZwPEHnPU17WYs='; img-src 'self' data:; font-src 'self'; connect-src 'self'; worker-src 'self'; object-src 'none'; base-uri 'none'; form-action 'none'; manifest-src 'self'; upgrade-insecure-requests">
+<meta name="referrer" content="strict-origin-when-cross-origin">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<style>:root{color-scheme:light;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}body{margin:0}[hidden]{display:none!important}</style>
+<link rel="icon" href="../../icon.svg" type="image/svg+xml">
+<link rel="manifest" href="../../manifest.webmanifest">
+<link rel="apple-touch-icon" href="../../apple-touch-icon.png">
+<meta name="theme-color" content="#0a0a0c">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="loopy">
+<title data-t="sqName">Spelling Quiz</title>
+<meta name="description" content="Spelling Quiz on loopy: pick the right spelling out of 3 or 4. Grown-ups can add the week's spelling words, and the wrong spellings are new every time. English and German, free, no ads.">
+<link rel="preload" href="../../fonts/lexend-latin.woff2" as="font" type="font/woff2" crossorigin>
+<style>
+/* Layout: a question, spellings to pick from below. Shared look with the other games. */
+:root {
+  --bg: #f3f6fb;
+  --card: #ffffff;
+  --ink: #1d2a3f;
+  --muted: #5d6b82;
+  --line: #d5dde9;
+  --accent: #2457c5;
+  --accent-ink: #ffffff;
+  --mark: #e2622b;
+  --good: #1f8a4c;
+  --good-bg: #e3f5ea;
+  --bad: #c23a3a;
+  --bad-bg: #fbe6e6;
+  --chip: #e6ecf6;
+  --key: #ffffff;
+  --font: "Lexend", "Segoe UI", "Helvetica Neue", Arial, sans-serif;
+}
+
+* { box-sizing: border-box; }
+body {
+  background: var(--bg); color: var(--ink); font-family: var(--font); font-size: 16px;
+  padding-left: max(16px, env(safe-area-inset-left, 0px));
+  padding-right: max(16px, env(safe-area-inset-right, 0px));
+  padding-block: 20px 32px;
+}
+.wrap { max-width: 520px; margin: 0 auto; display: flex; flex-direction: column; gap: 16px; }
+
+.top { display: flex; flex-wrap: wrap; gap: 12px; align-items: center; justify-content: space-between; }
+h1 { margin: 0; font-size: 1.6rem; font-weight: 700; text-wrap: balance; }
+.score { display: flex; flex-wrap: wrap; gap: 8px; font-variant-numeric: tabular-nums; }
+.pill { background: var(--card); border: 1px solid var(--line); border-radius: 999px; padding: 6px 14px; font-weight: 600; font-size: 1rem; white-space: nowrap; }
+.pill span { color: var(--muted); font-weight: 400; margin-right: 4px; }
+
+.settings { display: flex; flex-direction: column; gap: 8px; }
+.seg-label { font-size: 0.8rem; font-weight: 600; letter-spacing: 0.06em; text-transform: uppercase; color: var(--muted); margin: 0 0 4px 4px; }
+.seg { display: grid; grid-template-columns: repeat(3, 1fr); gap: 6px; background: var(--chip); padding: 5px; border-radius: 14px; }
+.seg.two { grid-template-columns: repeat(2, 1fr); }
+.seg button {
+  font: inherit; font-size: 0.95rem; font-weight: 600; color: var(--muted);
+  background: transparent; border: 0; border-radius: 10px; padding: 8px 6px; min-height: 44px; cursor: pointer;
+}
+.seg button[aria-pressed="true"] { background: var(--card); color: var(--ink); box-shadow: 0 1px 3px rgb(0 0 0 / 0.12); }
+
+.problem-card {
+  background: var(--card); border: 1px solid var(--line); border-radius: 24px;
+  padding: 20px 18px 18px; display: flex; flex-direction: column; align-items: center; gap: 14px;
+}
+.problem-card.good { border-color: var(--good); box-shadow: 0 0 0 2px var(--good) inset; }
+.problem-card.bad { border-color: var(--bad); box-shadow: 0 0 0 2px var(--bad) inset; }
+
+/* Vertical problem, written like the worksheets: operator on the left, digits right-aligned. */
+.vert {
+  display: grid; grid-template-columns: auto auto; column-gap: 0.35em;
+  font-size: clamp(3.4rem, 15vw, 4.6rem); font-weight: 600; line-height: 1.12;
+  font-variant-numeric: tabular-nums; letter-spacing: 0.04em;
+}
+.vert .num { grid-column: 2; text-align: right; min-width: 3ch; }
+.vert .op { grid-column: 1; grid-row: 2; color: var(--accent); }
+.vert .rule { grid-column: 1 / -1; height: 0.07em; background: var(--ink); border-radius: 2px; margin: 0.1em 0 0.12em; }
+.vert .ans {
+  grid-column: 2; text-align: right; min-width: 3ch; min-height: 1.12em;
+  color: var(--accent); position: relative;
+}
+.vert .ans.empty::after {
+  content: ""; position: absolute; right: 0; bottom: 0.12em; width: 0.55em; height: 0.07em;
+  background: var(--mark); border-radius: 2px; animation: blink 1s steps(2, start) infinite;
+}
+.problem-card.good .ans { color: var(--good); }
+.problem-card.bad .ans { color: var(--bad); text-decoration: line-through; text-decoration-thickness: 0.06em; }
+@keyframes blink { to { visibility: hidden; } }
+
+.feedback { min-height: 3.1em; text-align: center; font-size: 1.1rem; line-height: 1.45; margin: 0; max-width: 34ch; }
+.feedback strong { display: block; font-size: 1.45rem; }
+.feedback.good strong { color: var(--good); }
+.feedback.bad strong { color: var(--bad); }
+.feedback .hint { color: var(--muted); }
+
+.pad { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; }
+.pad button {
+  font: inherit; font-size: 2rem; font-weight: 700; font-variant-numeric: tabular-nums; color: var(--ink);
+  background: var(--key); border: 2px solid var(--line); border-radius: 18px; min-height: 72px; cursor: pointer;
+  transition: transform .08s ease, border-color .15s ease;
+  touch-action: manipulation; -webkit-tap-highlight-color: transparent;
+}
+.pad button:hover:not(:disabled) { border-color: var(--accent); }
+.pad button:active:not(:disabled) { transform: scale(0.96); }
+.pad button:disabled { opacity: 0.4; cursor: default; }
+.pad .erase { font-size: 1.15rem; color: var(--muted); }
+.pad .go { background: var(--accent); border-color: var(--accent); color: var(--accent-ink); font-size: 1.35rem; }
+.pad .go:hover:not(:disabled) { border-color: var(--accent); filter: brightness(1.08); }
+
+.foot { display: flex; justify-content: space-between; align-items: center; gap: 12px; flex-wrap: wrap; }
+.foot p { margin: 0; color: var(--muted); font-size: 0.9rem; }
+.reset { font: inherit; font-size: 0.95rem; color: var(--muted); background: transparent; border: 2px solid var(--line); border-radius: 14px; padding: 0 16px; min-height: 44px; cursor: pointer; }
+button:focus-visible { outline: 3px solid var(--mark); outline-offset: 3px; }
+
+@media (max-width: 420px) {
+  h1 { font-size: 1.35rem; }
+  .pad button { min-height: 64px; font-size: 1.8rem; }
+  .seg button { font-size: 0.85rem; }
+}
+@media (prefers-reduced-motion: reduce) {
+  * { transition: none !important; }
+  .vert .ans.empty::after { animation: none; }
+}
+</style>
+<style>.home-link{display:inline-flex;align-items:center;min-height:40px;color:var(--muted);font-weight:600;text-decoration:none;font-size:0.95rem}.home-link:hover{color:var(--ink)}</style>
+<style>
+/* Phones and tablets: the game fills one screen; settings sit behind a button. */
+body { min-height: 100vh; min-height: 100dvh; padding-block: 12px 16px; }
+.wrap { gap: 12px; }
+.game-bar { display: flex; align-items: center; justify-content: space-between; gap: 8px; }
+.bar-right { display: flex; align-items: center; gap: 8px; }
+.top { gap: 8px 12px; }
+.play { display: flex; flex-direction: column; gap: 12px; -webkit-user-select: none; user-select: none; }
+@media (min-width: 600px) and (orientation: portrait) { .wrap { max-width: 640px; } }
+@media (orientation: landscape) and (min-width: 640px) {
+  .wrap { max-width: 1100px; }
+  .play { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; align-items: center; }
+}
+
+.problem-card { padding: 14px 14px 12px; gap: 8px; }
+.vert { font-size: clamp(2.4rem, min(15vw, 8.5vh), 5rem); font-size: clamp(2.4rem, min(15vw, 8.5dvh), 5rem); }
+.feedback { min-height: 2.9em; font-size: 1.05rem; }
+.feedback strong { font-size: 1.3rem; }
+.pad { gap: 8px; }
+.pad button { min-height: clamp(50px, 8vh, 92px); min-height: clamp(50px, 8dvh, 92px); }
+@media (min-width: 600px) and (orientation: portrait) {
+  .vert { font-size: clamp(3rem, 10dvh, 7rem); }
+  .pad button { min-height: clamp(60px, 10dvh, 120px); font-size: 2.4rem; }
+}
+@media (orientation: landscape) and (min-width: 640px) {
+  .problem-card { height: 100%; justify-content: center; }
+  .vert { font-size: clamp(2.2rem, min(7vw, 13dvh), 7rem); }
+  .pad button { min-height: clamp(44px, calc((100dvh - 150px) / 4.4), 130px); }
+}
+/* Short phones: keep long explanations from pushing the number pad off screen. */
+@media (max-height: 760px) and (orientation: portrait) {
+  .feedback { font-size: 0.95rem; line-height: 1.35; }
+  .feedback strong { font-size: 1.15rem; }
+}
+
+/* Portrait: the page is exactly one screen tall; the pad or answers stay at the bottom
+   and the top part shrinks to fit. With settings open, the page scrolls normally. */
+@media (orientation: portrait) {
+  body { height: calc(100dvh - env(safe-area-inset-top, 0px) - env(safe-area-inset-bottom, 0px)); min-height: 0; display: flex; flex-direction: column; overflow: hidden; }
+  body:has(#settings-panel:not([hidden])) { height: auto; overflow: visible; }
+  .wrap { flex: 1 1 auto; min-height: 0; width: 100%; }
+  .play { flex: 1 1 auto; min-height: 0; }
+}
+@media (orientation: portrait) {
+  .problem-card { flex: 1 1 auto; min-height: 0; justify-content: center; overflow: hidden; }
+  .feedback { flex: 0 1 auto; min-height: 0; overflow-y: auto; }
+}
+@media (orientation: landscape) and (min-width: 640px) {
+  body { height: calc(100dvh - env(safe-area-inset-top, 0px) - env(safe-area-inset-bottom, 0px)); min-height: 0; display: flex; flex-direction: column; overflow: hidden; }
+  body:has(#settings-panel:not([hidden])) { height: auto; overflow: visible; }
+  .wrap { flex: 1 1 auto; min-height: 0; width: 100%; }
+  .play { flex: 1 1 auto; min-height: 0; grid-template-rows: minmax(0, 1fr); }
+  .problem-card { min-height: 0; overflow: hidden; }
+  .feedback { flex: 0 1 auto; min-height: 0; overflow-y: auto; }
+}
+/* After answering on smaller screens, shrink the sum so the reason has room. */
+@media (max-height: 900px), (max-width: 599px) {
+  .problem-card.good .vert, .problem-card.bad .vert { zoom: 0.7; }
+}
+@media (max-height: 500px) {
+  .feedback { font-size: 0.9rem; line-height: 1.3; }
+  .feedback strong { font-size: 1.05rem; }
+}
+
+/* Spelling Quiz: a bee, the question, and the spellings to pick from. The word list for grown-ups sits in Settings. */
+.pic { font-size: clamp(2.6rem, 11dvh, 6.5rem); line-height: 1.1; }
+.src { margin: 0; font-size: 0.9rem; font-weight: 600; color: var(--muted); text-align: center; }
+.question { margin: 0; font-size: clamp(1.2rem, min(5.6vw, 3.6dvh), 2rem); font-weight: 700; line-height: 1.2;
+  text-align: center; max-width: 24ch; text-wrap: balance; }
+.feedback .word { font-weight: 700; font-size: 1.15em; color: var(--ink); white-space: nowrap; font-variant-ligatures: none; letter-spacing: 0.02em; }
+.feedback .word u { color: var(--accent); text-decoration-thickness: 0.12em; text-underline-offset: 0.18em; }
+.side { display: flex; flex-direction: column; gap: 10px; }
+.choices { display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; }
+/* Three answers: one column, so no answer looks bigger than the others. */
+.choices.three { grid-template-columns: 1fr; }
+.choices.three button { min-height: clamp(48px, 7dvh, 80px); }
+.choices button {
+  font: inherit; font-size: clamp(1.25rem, min(6vw, 3.8dvh), 2rem); font-weight: 700; color: var(--ink); line-height: 1.2;
+  letter-spacing: 0.03em; font-variant-ligatures: none;
+  background: var(--key); border: 2px solid var(--line); border-radius: 18px; min-height: clamp(56px, 9dvh, 96px); padding: 6px 10px; cursor: pointer;
+  overflow-wrap: anywhere;
+  transition: transform .08s ease, border-color .15s ease; touch-action: manipulation; -webkit-tap-highlight-color: transparent;
+}
+.choices button:hover:not(:disabled) { border-color: var(--accent); }
+.choices button:active:not(:disabled) { transform: scale(0.96); }
+.choices button:disabled { cursor: default; }
+.choices button.right { border-color: var(--good); background: var(--good-bg); color: var(--good); }
+.choices button.wrong { border-color: var(--bad); background: var(--bad-bg); color: var(--bad); text-decoration: line-through; }
+.choices button.faded { opacity: 0.45; }
+.next { font: inherit; font-size: 1.25rem; font-weight: 700; color: var(--accent-ink); background: var(--accent); border: 0; border-radius: 16px; min-height: clamp(52px, 7dvh, 72px); cursor: pointer; width: 100%; }
+.seg button { padding-inline: 4px; line-height: 1.2; }
+/* The word list: a box to type or paste into, Save and Clear, and a line that says what was saved. */
+.list-box { display: flex; flex-direction: column; gap: 8px; }
+.list-help, .list-status, .level-note { margin: 0 4px; color: var(--muted); font-size: 0.9rem; line-height: 1.4; }
+.list-status:empty { display: none; }
+#word-list { font: inherit; font-size: 1rem; color: var(--ink); background: var(--key); border: 2px solid var(--line); border-radius: 14px;
+  padding: 10px 12px; min-height: 88px; width: 100%; resize: vertical; line-height: 1.4; }
+#word-list:focus-visible { outline: 3px solid var(--mark); outline-offset: 2px; }
+.list-row { display: flex; gap: 8px; flex-wrap: wrap; }
+.list-row button { font: inherit; font-size: 0.95rem; font-weight: 600; min-height: 44px; padding: 0 18px; border-radius: 14px; cursor: pointer;
+  color: var(--ink); background: transparent; border: 2px solid var(--line); }
+.list-row button.save { color: var(--accent-ink); background: var(--accent); border-color: var(--accent); }
+@media (min-width: 600px) and (orientation: portrait) {
+  .choices button { min-height: clamp(64px, 10dvh, 120px); }
+}
+@media (orientation: landscape) and (min-width: 640px) {
+  .problem-card { height: 100%; justify-content: center; }
+  .side { height: 100%; justify-content: center; }
+  .choices button { min-height: clamp(52px, 14dvh, 130px); }
+}
+/* After the answer the bee gets smaller, so the reason has room. */
+@media (max-height: 900px), (max-width: 599px) {
+  .problem-card.good .pic, .problem-card.bad .pic { zoom: 0.6; }
+}
+@media (max-height: 700px) {
+  .pic { font-size: clamp(2.2rem, 9dvh, 4.5rem); }
+  .question { font-size: clamp(1.1rem, min(5vw, 3.2dvh), 1.5rem); }
+  .problem-card.good .pic, .problem-card.bad .pic { display: none; }
+}
+@media (max-height: 500px) {
+  .question { font-size: 1.05rem; }
+  .src { font-size: 0.8rem; }
+}
+
+/* Worksheet cells (only printed): the spellings to circle, the right one among them. */
+@media print {
+  .sheet-grid li > div.ws-sq { align-items: flex-start; gap: 0.6mm; padding-right: 2mm; }
+  .ws-sq .ws-opts { display: flex; flex-wrap: wrap; gap: 0.6mm 4mm; font-size: 11pt; line-height: 1.3; letter-spacing: 0.02em; font-variant-ligatures: none; }
+  .ws-sq .ws-opts span::before { content: "○ "; color: #333; }
+}
+</style>
+<link rel="stylesheet" href="../../loopy.css">
+<script src="../../loopy.js"></script>
+</head>
+<body>
+
+<div class="wrap">
+  <header class="game-bar">
+    <a class="home-link" href="../../">&larr; loopy</a>
+    <div class="bar-right">
+      <span id="star-chip"></span>
+      <button type="button" id="settings-toggle" aria-controls="settings-panel"></button>
+    </div>
+  </header>
+  <section class="top" aria-labelledby="title">
+    <h1 id="title" data-t="sqName">Spelling Quiz</h1>
+    <div class="score" aria-live="polite">
+      <div class="pill pill-score"><span data-t="score">Score</span><b id="score">0 / 0</b></div>
+      <div id="level"></div>
+      <div class="pill pill-streak"><span data-t="streak">Streak</span><b id="streak">0</b></div>
+      <div id="last5" data-game="spelling-quiz"></div>
+    </div>
+  </section>
+  <div class="settings-panel" id="settings-panel" hidden>
+    <div class="controls"><div id="age-picker"></div><div id="theme-picker"></div><button id="sound-toggle"></button><div id="lang-picker"></div></div>
+    <div>
+      <p class="seg-label" id="words-label" data-t="sqWordsIn">Words in</p>
+      <div class="seg two" role="group" aria-labelledby="words-label" id="words-seg">
+        <button type="button" data-words="en">English</button>
+        <button type="button" data-words="de">Deutsch</button>
+      </div>
+    </div>
+    <div class="list-box">
+      <label class="seg-label" for="word-list" data-t="sqList">Your word list</label>
+      <p class="list-help" id="list-help" data-t="sqListHelp">For grown-ups: type or paste the words to practise, with commas between them. Up to 50 words. Leave it empty and loopy picks words for the age.</p>
+      <textarea id="word-list" rows="3" autocomplete="off" autocapitalize="off" spellcheck="false" aria-describedby="list-help list-status"></textarea>
+      <div class="list-row">
+        <button type="button" class="save" id="list-save" data-t="sqSave">Save list</button>
+        <button type="button" id="list-clear" data-t="sqClear">Clear list</button>
+      </div>
+      <p class="list-status" id="list-status" role="status"></p>
+    </div>
+    <div>
+      <p class="seg-label" id="level-label" data-t="sqLevel">Level</p>
+      <div class="seg" role="group" aria-labelledby="level-label" id="level-seg">
+        <button type="button" data-level="1" data-t="sqL1">Grade 1 words</button>
+        <button type="button" data-level="2" data-t="sqL2">Grade 2 words</button>
+        <button type="button" data-level="3" data-t="sqL3">Grade 3 words</button>
+        <button type="button" data-level="4" data-t="sqL4">Grade 4 to 5 words</button>
+        <button type="button" data-level="5" data-t="sqL5">Grade 6 words and up</button>
+      </div>
+      <p class="level-note" data-t="sqLevelNote">Levels 1 to 3 show 3 spellings, levels 4 and 5 show 4. With your own list, the level only changes that.</p>
+    </div>
+    <div class="panel-foot">
+      <p data-t="sqKbd">Keyboard works too: 1 to 4 picks a spelling, Enter goes on.</p>
+      <button type="button" class="reset" id="reset" data-t="resetScore">Reset score</button>
+    </div>
+  </div>
+
+  <main class="play">
+    <div class="problem-card" id="card">
+      <p class="src" id="src"></p>
+      <div class="pic" aria-hidden="true">🐝</div>
+      <p class="question" id="question" data-t="sqAsk">Which spelling is right?</p>
+      <p class="feedback" id="feedback"></p>
+    </div>
+    <div class="side">
+      <div class="choices" id="choices"></div>
+      <button type="button" class="next skip" id="next" data-t="skip">Skip</button>
+    </div>
+  </main>
+</div>
+
+<script>
+Loopy.addStrings({
+  en: {
+    sqName: "Spelling Quiz", sqAsk: "Which spelling is right?", sqWordsIn: "Words in", sqLevel: "Level",
+    sqList: "Your word list", sqListHelp: "For grown-ups: type or paste the words to practise, with commas between them. Up to 50 words. Leave it empty and loopy picks words for the age.",
+    sqPlaceholder: "friend, because, said, beautiful", sqSave: "Save list", sqClear: "Clear list",
+    sqSaved: "{n} words saved. The quiz now uses your list.", sqSaved1: "1 word saved. Add a few more for a better mix.",
+    sqLeftOut: "Left out (letters only, 2 to 24 long): {list}.", sqTooMany: "Only the first 50 words are kept.",
+    sqEmpty: "The list is empty. loopy picks words for the age.",
+    sqL1: "Grade 1 words", sqL2: "Grade 2 words", sqL3: "Grade 3 words", sqL4: "Grade 4 to 5 words", sqL5: "Grade 6 words and up",
+    sqLevelNote: "Levels 1 to 3 show 3 spellings, levels 4 and 5 show 4. With your own list, the level only changes that.",
+    sqKbd: "Keyboard works too: 1 to 4 picks a spelling, Enter goes on.",
+    sqMine: "Your list · {n} words",
+    sqRightIs: "It is spelled {w}.", sqWell: "{w} is spelled right.",
+    sqHow: "Circle the right spelling in each row."
+  },
+  de: {
+    sqName: "Rechtschreib-Quiz", sqAsk: "Welches Wort ist richtig geschrieben?", sqWordsIn: "Wörter auf", sqLevel: "Stufe",
+    sqList: "Eure Wortliste", sqListHelp: "Für Erwachsene: Tippt oder kopiert die Übungswörter hier hinein, mit Kommas dazwischen. Bis zu 50 Wörter. Bleibt die Liste leer, wählt loopy Wörter für das Alter.",
+    sqPlaceholder: "Freund, Straße, fahren, plötzlich", sqSave: "Liste speichern", sqClear: "Liste leeren",
+    sqSaved: "{n} Wörter gespeichert. Das Quiz nimmt jetzt eure Liste.", sqSaved1: "1 Wort gespeichert. Mit ein paar mehr wird es abwechslungsreicher.",
+    sqLeftOut: "Weggelassen (nur Buchstaben, 2 bis 24 lang): {list}.", sqTooMany: "Nur die ersten 50 Wörter bleiben.",
+    sqEmpty: "Die Liste ist leer. loopy wählt Wörter für das Alter.",
+    sqL1: "Wörter Klasse 1", sqL2: "Wörter Klasse 2", sqL3: "Wörter Klasse 3", sqL4: "Wörter Klasse 4 bis 5", sqL5: "Wörter ab Klasse 6",
+    sqLevelNote: "Stufe 1 bis 3 zeigt 3 Schreibweisen, Stufe 4 und 5 zeigt 4. Mit eurer eigenen Liste ändert die Stufe nur das.",
+    sqKbd: "Die Tastatur geht auch: 1 bis 4 wählt ein Wort, Enter geht weiter.",
+    sqMine: "Eure Liste · {n} Wörter",
+    sqRightIs: "Richtig geschrieben: {w}.", sqWell: "{w} ist richtig geschrieben.",
+    sqHow: "Kreise in jeder Reihe das richtig geschriebene Wort ein."
+  }
+});
+
+// GEN START
+// loopy's own words for each level (grade 1, 2, 3, 4 to 5, 6 and up), used when there is no list from a grown-up.
+// Words with a common look-alike (there and their, das and dass) are left out, so a wrong spelling is never a real word.
+const WORDS = {
+  en: [
+    "the said was you they are come some have like one here what when love give play day look book went want ball call",
+    "because could should people water again every many any school friend house little after laugh eight night light mother father brother sister pretty happy money children Monday",
+    "beautiful different believe library through enough thought address answer island minute knife write wrong special surprise February Wednesday height weight guess busy caught early heart question quarter remember sentence straight together tomorrow",
+    "accident actually appear calendar certain continue describe disappear exercise experience grammar imagine important knowledge naughty occasion opposite ordinary particular peculiar perhaps possession potatoes pressure probably purpose separate strength although various",
+    "accommodate achieve aggressive amateur ancient apparent appreciate available awkward bargain cemetery committee conscience conscious definite desperate embarrass environment especially exaggerate excellent existence familiar foreign forty government guarantee immediately interrupt leisure mischievous necessary nuisance opportunity parliament persuade privilege pronunciation queue recommend restaurant rhythm sacrifice secretary signature soldier stomach sufficient temperature thorough twelfth vegetable vehicle yacht"
+  ].map(s => s.split(" ")),
+  de: [
+    "Hund Haus Maus Ball Mama Papa Auto Baum Sonne Name Oma Opa Kind Hand Tisch rot gut ich und wir Igel Nase Hose Esel Mond Fisch Rose Uhr",
+    "Schule Mutter Vater Kinder Wasser Sommer Winter Straße Fuß kommen spielen fahren gehen sehen lesen Tier Brief Lehrer Zahl Schuh Bett Mädchen Apfel Blume Vogel Fenster Zimmer Katze schnell",
+    "Bäume Häuser Freund Geburtstag Familie Ferien Fahrrad plötzlich Jacke Zucker Stück Spaß Fluss Schiff Wetter schwimmen Sonntag vielleicht Pferd wohnen ziehen Zähne Käse Gesicht Woche Klasse Hexe Fußball Mittwoch",
+    "Zeitung Gesundheit Fahrkarte Bibliothek Maschine Wäsche Gebäude ähnlich ärgern deutlich endlich eigentlich fröhlich Gemüse Gefühl Geschichte Kartoffel Kälte Lärm Nummer Paket Quelle Rätsel schließlich Spiegel Verkehr Vorsicht während zwölf Zeugnis Ergebnis Erlaubnis",
+    "Abenteuer Apotheke Atmosphäre Biologie Diskussion Erlebnis Fotografie Gymnasium Interesse Katastrophe Labyrinth Medizin Mikrofon Physik Reparatur Satellit Rhythmus Symbol Theater Thermometer Vergnügen Verständnis wiederholen Zylinder nämlich Empfehlung Wissenschaft Krankenhaus Gewitter Temperatur Information"
+  ].map(s => s.split(" "))
+};
+// Real words a wrong spelling could turn into. A made-up spelling that is one of these is never shown.
+const REAL = {
+  en: "their there theyre where wear were your youre to too two its then than our are hear here know no knew new night knight write right rite whole hole son sun one won ate eight meat meet see sea blue blew for four buy by bear bare peace piece plane plain weather whether which witch wood would flower flour mail male tail tale week weak road rode sail sale hair hare deer dear made maid lighting quite quiet loose lose accept except affect effect desert dessert principal principle breath breathe herd heard wait weight sum some come comb dew due allowed aloud board bored break brake cell sell hour stair stare steel steal threw through tide tied toe tow cent sent scent bee be fair fare hall haul main mane pair pear pare poor pour pore red read reed real reel role roll sole soul tea tee waist waste way weigh well wheel will knot not knit nit wright wring ring rap wrap rapper wrapper lead led lone loan sad dad did lad lid bell cell tell sell well fell hall wall tall fall pill fill hill will till bull pull full that them she he we me ten tin ton tan pan pen pin pun bad bed bid bud bag beg big bug cat cot cut hat hit hot hut mat met man men pet pit pot put sat set sit hop hope mad cap cape tap tape note kit kite bit bite rat rate fat fate car care plan win wine rid ride rob robe tub tube us use sin same came game home dome done gone bone tone ore art bit but bat bet lock luck lick lack",
+  de: "das dass wieder wider seid seit wahr war viel fiel mann man ist isst hast hasst rad rat lied lid ihm im ihn in mal mahl saite seite wal wahl leeren lehren malen mahlen ende ente weise waise rein rhein mehr meer lehre leere hol hohl stil stiel tod tot fälle felle wände wende lärche lerche bote boote miene mine ihr irr sohle sole moor mohr hand hund mund mond hase hose rat rot mut hut haut laus haus bein bahn bild bald rind wind wand land tor tür teer tanne wanne kanne lese leben nehmen butter kater rinder ehe ohr ofen offen bitte mama oma opa uhr kind mond ach auch euch ende bau mus"
+};
+const VOWELS = "aeiouäöüy";
+// The mistakes children really make, as [pattern, replacement] on the lower-case word. Each place a pattern
+// matches makes one wrong spelling. Patterns carry the letters around them in groups ($1, $2), not lookarounds,
+// so every match can be changed on its own.
+const RULES = {
+  en: [
+    [/ie/g, "ei"], [/ei/g, "ie"], [/ie/g, "e"], [/ea/g, "ee"], [/ee/g, "ea"], [/ai/g, "ay"], [/ay/g, "ai"],
+    [/ou/g, "ow"], [/ow/g, "ou"], [/ou/g, "u"], [/au/g, "aw"], [/aw/g, "au"], [/au/g, "o"], [/oo/g, "u"],
+    [/ph/g, "f"], [/f/g, "ph"], [/ck/g, "k"], [/ck/g, "c"], [/c([aou])/g, "k$1"], [/k/g, "c"], [/c([eiy])/g, "s$1"], [/s([eiy])/g, "c$1"],
+    [/tch/g, "ch"], [/([aeiou])ch/g, "$1tch"], [/tion/g, "sion"], [/tion/g, "shun"], [/sion/g, "tion"], [/ture$/, "cher"],
+    [/gh/g, ""], [/^kn/, "n"], [/^wr/, "r"], [/mb$/, "m"], [/^wh/, "w"], [/^w([aei])/, "wh$1"], [/^gu/, "g"], [/^sc([ei])/, "s$1"],
+    [/([^aeiou])e$/, "$1"], [/y$/, "ey"], [/y$/, "ie"], [/ey$/, "y"], [/er$/, "ur"], [/er$/, "a"], [/or$/, "er"], [/ar$/, "er"], [/ir/g, "ur"], [/ur/g, "er"],
+    [/le$/, "el"], [/el$/, "le"], [/al$/, "le"], [/qu/g, "kw"], [/x/g, "cks"], [/ough/g, "uff"], [/ough/g, "ow"], [/ough/g, "o"], [/ough/g, "oo"],
+    [/ful$/, "full"], [/ly$/, "ley"], [/ous$/, "us"], [/ant$/, "ent"], [/ent$/, "ant"], [/ance$/, "ence"], [/ence$/, "ance"], [/able$/, "ible"], [/ible$/, "able"],
+    [/ss/g, "s"], [/our$/, "or"], [/ue$/, ""], [/ui/g, "u"], [/rh/g, "r"], [/sch/g, "sk"], [/ch$/, "k"], [/s$/, "z"]
+  ],
+  de: [
+    [/ie/g, "i"], [/([^e])i([bdfglmnrst])/g, "$1ie$2"], [/ie/g, "ih"], [/ei/g, "ai"], [/ai/g, "ei"], [/ei/g, "ie"], [/ie/g, "ei"],
+    [/eu/g, "äu"], [/äu/g, "eu"], [/eu/g, "oi"], [/ä/g, "e"], [/^([^aeiouäöü]*)e([^aeiouhäöü])/, "$1ä$2"], [/ö/g, "ü"], [/ü/g, "i"],
+    [/ß/g, "ss"], [/ß/g, "s"], [/ss/g, "ß"], [/([aeiouäöü])s([aeiouäöü])/g, "$1ß$2"], [/([aeiouäöü])s$/, "$1ß"],
+    [/ck/g, "k"], [/ck/g, "kk"], [/([aeiouäöü])k/g, "$1ck"], [/tz/g, "z"], [/([aeiouäöü])z/g, "$1tz"],
+    [/([aeiouäöü])h([lmnr])/g, "$1$2"], [/([aeouäöü])([lmnr])([aeiouäöü])/g, "$1h$2$3"], [/aa/g, "a"], [/ee/g, "e"], [/oo/g, "o"],
+    [/v/g, "f"], [/^f/, "v"], [/w/g, "v"], [/d$/, "t"], [/t$/, "d"], [/b$/, "p"], [/g$/, "k"], [/ig$/, "ich"], [/ich$/, "ig"],
+    [/^st/, "scht"], [/^sp/, "schp"], [/pf/g, "f"], [/qu/g, "kw"], [/chs/g, "x"], [/x/g, "chs"], [/x/g, "ks"], [/ph/g, "f"], [/th/g, "t"],
+    [/y/g, "ü"], [/([aeiouäöü])ch/g, "$1sch"], [/er$/, "a"], [/en$/, "n"], [/äu/g, "oi"], [/rh/g, "r"]
+  ]
+};
+const randInt = (n) => Math.floor(Math.random() * n);
+const shuffle = (arr) => { const a = arr.slice(); for (let i = a.length - 1; i > 0; i--) { const j = randInt(i + 1); [a[i], a[j]] = [a[j], a[i]]; } return a; };
+const lower = (w) => w.toLocaleLowerCase("de");
+// Every built-in word in a language, lower case, plus the look-alikes: a wrong spelling must not be one of them.
+const KNOWN = {};
+["en", "de"].forEach(l => { KNOWN[l] = new Set(WORDS[l].flat().map(lower).concat(REAL[l].split(" "))); });
+
+// One word typed by a grown-up: letters (any language), with ' or - or one space inside, 2 to 24 long. null if not.
+function cleanWord(s) {
+  if (typeof s !== "string") return null;
+  const w = s.normalize("NFC").replace(/[’`]/g, "'").replace(/\s+/g, " ").trim();
+  return w.length >= 2 && w.length <= 24 && /^\p{L}(?:[\p{L}'\- ]*\p{L})?$/u.test(w) ? w : null;
+}
+// A pasted list: commas, semicolons or new lines between words (only spaces when there is none of those).
+// Returns { words, bad, cut }: the good words (no doubles, at most 50), what was left out, and whether some were cut.
+function parseList(text) {
+  const t = String(text || "").slice(0, 3000);
+  const parts = (/[,;\n\r]/.test(t) ? t.split(/[,;\n\r]+/) : t.split(/\s+/)).map(s => s.trim()).filter(Boolean);
+  const words = [], bad = [], seen = new Set();
+  let cut = false;
+  parts.forEach(p => {
+    const w = cleanWord(p);
+    if (!w) { if (bad.length < 5) bad.push(p.slice(0, 24)); return; }
+    if (seen.has(lower(w))) return;
+    if (words.length >= 50) { cut = true; return; }
+    seen.add(lower(w)); words.push(w);
+  });
+  return { words, bad, cut };
+}
+
+// All one-step wrong spellings of a lower-case word, in three groups: [sound mistakes and one-or-two letters,
+// two letters swapped or one missing, a wrong vowel]. The game takes from the first group first.
+function mistakes(w, lang) {
+  const sound = [], slip = [], vowel = [];
+  const isV = (c) => !!c && VOWELS.includes(c), isL = (c) => /\p{L}/u.test(c);
+  RULES[lang].forEach(([re, rep]) => {
+    for (const m of w.matchAll(new RegExp(re.source, "g"))) sound.push(w.slice(0, m.index) + m[0].replace(new RegExp(re.source), rep) + w.slice(m.index + m[0].length));
+  });
+  // A short word may also get its first vowel wrong ("ich", "ech").
+  if (w.length <= 4 && isV(w[0]) && w[0] !== "y") "aeiou".split("").forEach(v => { if (v !== w[0]) vowel.push(v + w.slice(1)); });
+  for (let i = 1; i < w.length; i++) {
+    const c = w[i], p = w[i - 1];
+    if (!isL(c)) continue;
+    // One letter or two: "occasion" and "ocasion", "beginning" and "begining".
+    // Only after one short vowel and before a vowel ("Name", "Namme"), or a last l or s ("until", "untill").
+    if (c === p) sound.push(w.slice(0, i) + w.slice(i + 1));
+    else if (isV(p) && !isV(w[i - 2]) && "bdfglmnprstz".indexOf(c) >= 0 && (isV(w[i + 1]) || (i === w.length - 1 && "ls".indexOf(c) >= 0)))
+      sound.push(w.slice(0, i) + c + w.slice(i));
+    if (isL(p) && c !== p && i > 1) slip.push(w.slice(0, i - 1) + c + p + w.slice(i + 1));
+    if (w.length > 3 && i > 1) slip.push(w.slice(0, i) + w.slice(i + 1));
+    if (isV(c) && c !== "y") "aeiou".split("").forEach(v => { if (v !== c) vowel.push(w.slice(0, i) + v + w.slice(i + 1)); });
+  }
+  return [sound, slip, vowel];
+}
+// n wrong spellings of word, new each time. They keep the word's capital letter. A German noun can also come
+// back without its capital ("hund"), as one of them at most.
+function wrongSpellings(word, lang, n, extra) {
+  const lw = lower(word), cap = word[0] !== lower(word[0]);
+  const fix = (s) => cap ? s[0].toLocaleUpperCase("de") + s.slice(1) : s;
+  const ok = (s) => s.length >= Math.min(3, lw.length - 1) && s !== lw && !/(.)\1\1/.test(s) && !/^(.)\1/.test(s) && !/^ß|ßß|^ck/.test(s) && /\p{L}$/u.test(s) && /[aeiouäöüy]/.test(s)
+    && !KNOWN[lang].has(s) && !(extra && extra.has(s));
+  const out = [], taken = new Set([lw]);
+  const groups = mistakes(lw, lang).map(shuffle);
+  if (lang === "de" && cap && Math.random() < 0.3) { out.push(lw); }
+  for (const g of groups) for (const s of g) {
+    if (out.length >= n) break;
+    if (taken.has(s) || !ok(s)) continue;
+    taken.add(s); out.push(fix(s));
+  }
+  return out.slice(0, n);
+}
+// The part of right that differs from wrong, for underlining: [before, part, after].
+function diff(right, wrong) {
+  const a = lower(right), b = lower(wrong);
+  let p = 0, s = 0;
+  while (p < a.length && p < b.length && a[p] === b[p]) p++;
+  while (s < a.length - p && s < b.length - p && a[a.length - 1 - s] === b[b.length - 1 - s]) s++;
+  let from = p, to = right.length - s;
+  if (from >= to) { from = Math.max(0, p - 1); to = Math.min(right.length, from + 1); }
+  return [right.slice(0, from), right.slice(from, to), right.slice(to)];
+}
+// One question: { word, options, key, lang }. key is the language and the word, so the same word is the same question.
+function makeQuestion(word, lang, n, extra) {
+  const wrong = wrongSpellings(word, lang, n - 1, extra);
+  return { word, lang, options: shuffle([word, ...wrong]), key: lang + ":" + lower(word) };
+}
+// GEN END
+
+(function () {
+  const $ = (id) => document.getElementById(id);
+  const card = $("card"), srcEl = $("src"), choicesEl = $("choices"), feedbackEl = $("feedback"), nextBtn = $("next");
+  const listEl = $("word-list"), statusEl = $("list-status");
+  const wordsBtns = [...document.querySelectorAll("#words-seg button")];
+  const levelBtns = [...document.querySelectorAll("#level-seg button")];
+  const t = Loopy.t;
+  const store = {
+    // ok: the values this setting may have; anything else falls back to the default.
+    get(k, d, ok) { try { const v = JSON.parse(Loopy.store.get(k)); return ok.includes(v) ? v : d; } catch (e) { return d; } },
+    set(k, v) { Loopy.store.set(k, JSON.stringify(v)); }
+  };
+  // The grown-up's list for each word language, saved for this child as the words with ", " between them.
+  // Read back through parseList, so a broken or too long value gives a shorter list or none, never an error.
+  const LIST_KEY = { en: "sq.listEn", de: "sq.listDe" };
+  function readList(l) { try { const v = Loopy.store.get(LIST_KEY[l]); return typeof v === "string" && v.length <= 2000 ? parseList(v).words : []; } catch (e) { return []; } }
+
+  let age = Loopy.getAge();
+  let wordsLang = store.get("sq.words", Loopy.lang === "de" ? "de" : "en", ["en", "de"]);
+  let mine = readList(wordsLang);
+  // Opened from the grown-ups' page to practise (#practise=sq-mine): the game already plays the right words.
+  if (/^sq-/.test(Loopy.log.hint || "")) Loopy.log.hint = "";
+  let level;
+  // The level is remembered per age: grade 1 words up to age 6, then one grade a year, grade 4 to 5 at 9 and 10.
+  const levelForAge = (a) => a <= 6 ? 1 : a === 7 ? 2 : a === 8 ? 3 : a <= 10 ? 4 : 5;
+  const choices = () => level <= 3 ? 3 : 4;
+  function loadForAge() { level = store.get("sq.level.a" + age, levelForAge(age), [1, 2, 3, 4, 5]); }
+  loadForAge();
+  Loopy.levels.init({ names: ["sqL1", "sqL2", "sqL3", "sqL4", "sqL5"],
+    get: () => level - 1, base: () => levelForAge(age) - 1,
+    set: (i) => { level = i + 1; store.set("sq.level.a" + age, level); newRound(); } });
+  let right = 0, tried = 0, streak = 0;
+  let current = null, answered = false, recent = [];
+
+  const pool = () => mine.length ? mine : WORDS[wordsLang][level - 1];
+  // The grown-up's own words are never shown as a wrong spelling either.
+  const extra = () => new Set(mine.map(lower));
+  const make = () => { const p = pool(); return makeQuestion(p[randInt(p.length)], wordsLang, choices(), extra()); };
+
+  function render() {
+    Loopy.levels.render();
+    $("score").textContent = right + " / " + tried;
+    $("streak").textContent = streak;
+    wordsBtns.forEach(b => b.setAttribute("aria-pressed", String(b.dataset.words === wordsLang)));
+    levelBtns.forEach(b => b.setAttribute("aria-pressed", String(+b.dataset.level === level)));
+    srcEl.textContent = mine.length ? t("sqMine", { n: Loopy.num(mine.length) }) : t("sqL" + level);
+    Loopy.nextButton(nextBtn, answered);
+  }
+  // Try again: a missed word comes back later (Loopy.retry). The note is the word language and the word ("en:friend").
+  // It comes back with new wrong spellings, also when it is no longer on the list.
+  function rebuild(r) {
+    const m = /^(en|de):(.{2,24})$/.exec(r || "");
+    if (!m || m[1] !== wordsLang) return null;
+    const w = cleanWord(m[2]);
+    return w ? makeQuestion(w, wordsLang, choices(), extra()) : null;
+  }
+
+  function newRound() {
+    // Nothing back within 10, or, with a shorter list, before all the others have come.
+    const keep = Math.max(1, Math.min(10, pool().length - 1));
+    current = Loopy.retry.fresh("spelling-quiz", recent, make, rebuild, keep);
+    answered = false;
+    choicesEl.textContent = "";
+    choicesEl.classList.toggle("three", current.options.length === 3);
+    current.options.forEach((w, i) => {
+      const b = document.createElement("button");
+      b.type = "button"; b.id = "choice-" + i; b.textContent = w;
+      b.lang = current.lang;
+      b.dataset.correct = String(w === current.word);
+      b.addEventListener("click", () => choose(b));
+      choicesEl.appendChild(b);
+    });
+    card.classList.remove("good", "bad");
+    feedbackEl.className = "feedback";
+    feedbackEl.textContent = "";
+    render();
+    Loopy.speech.read();
+  }
+  // The right word, with the part that differs from the wrong pick underlined.
+  function wordNode(wrong) {
+    const n = document.createElement("span");
+    n.className = "word"; n.lang = current.lang;
+    if (!wrong) { n.textContent = current.word; return n; }
+    const [a, b, c] = diff(current.word, wrong), u = document.createElement("u");
+    u.textContent = b;
+    n.append(a, u, c);
+    return n;
+  }
+  function choose(btn) {
+    if (answered) return;
+    answered = true; tried++;
+    const ok = btn.dataset.correct === "true";
+    [...choicesEl.children].forEach(b => {
+      b.disabled = true;
+      if (b.dataset.correct === "true") b.classList.add("right");
+      else if (b === btn) b.classList.add("wrong");
+      else b.classList.add("faded");
+    });
+    if (ok) { right++; streak++; } else { streak = 0; }
+    if (ok) Loopy.rewards.correct("spelling-quiz", streak);
+    else Loopy.rewards.wrong("spelling-quiz", { q: ("🐝 " + current.word).slice(0, 40), a: current.word, y: btn.textContent, k: mine.length ? "sq-mine" : "sq-loopy", r: current.lang + ":" + current.word });
+    card.classList.remove("good", "bad");
+    card.classList.add(ok ? "good" : "bad");
+    feedbackEl.className = "feedback " + (ok ? "good" : "bad");
+    feedbackEl.innerHTML = "<strong></strong>";
+    feedbackEl.firstChild.textContent = ok ? (streak >= 3 ? t("correctRow", { n: streak }) : t("correct")) : t("notQuite");
+    // "It is spelled fr[ie]nd." after a wrong pick, "friend is spelled right." after a right one.
+    const [pre, post] = t(ok ? "sqWell" : "sqRightIs", { w: "\u0000" }).split("\u0000");
+    feedbackEl.append(pre, wordNode(ok ? "" : btn.textContent), post);
+    render();
+    nextBtn.focus({ preventScroll: true });
+  }
+
+  // The word list in Settings.
+  function showList() { listEl.value = mine.join(", "); listEl.placeholder = t("sqPlaceholder"); listEl.lang = wordsLang; }
+  function saveList() {
+    const r = parseList(listEl.value);
+    mine = r.words;
+    Loopy.store.set(LIST_KEY[wordsLang], mine.join(", "));
+    const msg = [mine.length === 0 ? t("sqEmpty") : mine.length === 1 ? t("sqSaved1") : t("sqSaved", { n: Loopy.num(mine.length) })];
+    if (r.bad.length) msg.push(t("sqLeftOut", { list: r.bad.join(", ") }));
+    if (r.cut) msg.push(t("sqTooMany"));
+    statusEl.textContent = msg.join(" ");
+    showList();
+    recent = [];
+    newRound();
+  }
+  $("list-save").addEventListener("click", saveList);
+  $("list-clear").addEventListener("click", () => { listEl.value = ""; saveList(); });
+
+  nextBtn.addEventListener("click", newRound);
+  wordsBtns.forEach(b => b.addEventListener("click", () => {
+    wordsLang = b.dataset.words; store.set("sq.words", wordsLang); mine = readList(wordsLang); statusEl.textContent = ""; showList(); recent = []; newRound();
+  }));
+  levelBtns.forEach(b => b.addEventListener("click", () => { level = +b.dataset.level; store.set("sq.level.a" + age, level); recent = []; newRound(); }));
+  window.addEventListener("loopy:age", (e) => { age = e.detail; recent = []; loadForAge(); newRound(); });
+  $("reset").addEventListener("click", () => { right = 0; tried = 0; streak = 0; Loopy.recent.clear("spelling-quiz"); newRound(); });
+  document.addEventListener("keydown", (e) => {
+    if (e.target.tagName === "INPUT" || e.target.tagName === "TEXTAREA" || document.querySelector(".loopy-cheer.big")) return;
+    if (e.key === "Enter" && answered && e.target.tagName !== "BUTTON") { newRound(); return; }
+    const n = parseInt(e.key, 10);
+    if (n >= 1 && n <= 4 && !answered) { const b = choicesEl.children[n - 1]; if (b) choose(b); }
+  });
+
+  // Read aloud says the word, in the voice of the word language, like a spelling test at school.
+  Loopy.speech.question({ host: card, text: () => current.word, lang: () => wordsLang });
+
+  // Print worksheet: 20 rows, each with the spellings to circle.
+  Loopy.worksheet({
+    title: () => t("sqName"),
+    level: () => [t("ageLabel", { n: age }), mine.length ? t("sqMine", { n: Loopy.num(mine.length) }) : t("sqL" + level), wordsLang === "de" ? "Deutsch" : "English"].join(" · "),
+    how: () => t("sqHow"),
+    layout: "line",
+    // Every word of the list once before any comes back.
+    make: (n) => {
+      const list = [];
+      let bag = [];
+      while (list.length < n) { if (!bag.length) bag = shuffle(pool()); list.push(makeQuestion(bag.pop(), wordsLang, choices(), extra())); }
+      return list;
+    },
+    cell: (q) => {
+      const box = document.createElement("div");
+      box.className = "ws-sq";
+      const opts = document.createElement("span");
+      opts.className = "ws-opts"; opts.lang = q.lang;
+      q.options.forEach(w => { const s = document.createElement("span"); s.textContent = w; opts.appendChild(s); });
+      box.appendChild(opts);
+      return box;
+    },
+    answer: (q) => q.word
+  });
+
+  showList();
+  newRound();
+})();
+</script>
+</body>
+</html>
