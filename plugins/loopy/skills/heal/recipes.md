@@ -34,6 +34,11 @@ One per failure. Add new ones at the end (the heal skill step 3). Keep each to f
 - Looks like: `Cannot find module 'playwright-core'` or `No Chrome or Chromium found`.
 - Fix: `npm ci --prefix tools/a11y --ignore-scripts`; in the cloud Chromium is in `/opt/pw-browsers`, else `CHROME=/path/to/chrome`.
 
+## Offline copy keeps an old page
+- Looks like: `tools/e2e/offline.mjs` fails, or CI "After an update, phones save the new pages, never an old one"; or a phone still shows an old page (no logo, blank Print) after a fix shipped.
+- Cause: `src/sw.js` saved a file without checking it against its hash in `FILES`, so an old copy from the server stayed saved.
+- Fix: keep the hash check in `src/sw.js` (`matches` and `download`), run `python3 tools/build.py`, then `node tools/e2e/offline.mjs`. Never tell people to clear site data: it loses stars. (21 Oct 2026)
+
 ## review.py "must"
 - Looks like: a `must` row in the `tools/review.py` table.
 - Fix: do what the row says (a missing GAMES entry, README, saved key nothing reads). For a saved key, add a migration from the old key, never just delete it.
