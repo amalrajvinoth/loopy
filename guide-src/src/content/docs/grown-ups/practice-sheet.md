@@ -14,6 +14,8 @@ loopy can make three things for paper or for sharing: a weekly card, a practice 
 2. Tap **Share this week**. The button shows once there are answers this week.
 3. Tap **Share picture** to send the card with your phone's share sheet. Or tap **Print**.
 
+To print without opening the card first, tap **Print** next to **Share this week**.
+
 The card shows the child's picture and name, the week's dates, and four numbers: answers, percent right, days played and stars. Under them are two lines of "Going well" and up to three lines of "To practise".
 
 Some browsers cannot share pictures. Then the button says **Save picture** and saves the picture. If the browser cannot make the picture at all, it says so. Use **Print** then. The card prints black on white.

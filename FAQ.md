@@ -92,7 +92,7 @@ A wrong answer is not lost. When a child gets something wrong, the home page sho
 
 ## Can I share or print how the week went?
 
-Yes. On the grown-ups' page, tap **Share this week**. You get a card with the week's numbers, what went well and what to practise. **Share picture** sends it as a picture with your phone's share sheet (or saves it, on a browser that cannot share pictures), and **Print** prints it. Under Practise next, **Print a practice sheet** prints 20 problems of the kinds your child missed most, with answers on page 2. The picture and the sheet are made on your device. Nothing is sent anywhere unless you share the picture.
+Yes. On the grown-ups' page, tap **Share this week**. You get a card with the week's numbers, what went well and what to practise. **Share picture** sends it as a picture with your phone's share sheet (or saves it, on a browser that cannot share pictures), and **Print** prints it. To print straight away, tap **Print** next to **Share this week**. Under Practise next, **Print a practice sheet** prints 20 problems of the kinds your child missed most, with answers on page 2. The picture and the sheet are made on your device. Nothing is sent anywhere unless you share the picture.
 
 ## How do I send feedback or report a problem?
 
