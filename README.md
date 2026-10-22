@@ -119,11 +119,12 @@ The site is plain HTML, CSS and JavaScript. One small build step makes the share
 | `fonts/` | The Fredoka, Lexend and Atkinson Hyperlegible Next fonts, stored here so no request goes to Google. The `-latin` files are made by the build from `src/fonts/`. Licence: `fonts/OFL.txt` |
 | `.github/` | Forms for problems, ideas and questions, the automatic checks, and Dependabot |
 | `sw.js` | The offline helper (a service worker). Made by the build from `src/sw.js`, with a short hash per saved file, so a new version only downloads the files that changed |
-| `tools/` | Small scripts: `build.py` makes the small files and the offline list, `csp.py` updates each page's security policy, `check_external.py` makes sure nothing loads from other websites, `review.py` checks that all games follow the same rules, that saved data is kept and that pages stay small, `a11y/` checks every page with a keyboard and a screen reader checker ([how](tools/a11y/README.md)), `e2e/` plays every game and checks that no question repeats ([how](tools/e2e/README.md)), `guide_check.py` makes sure every game has a guide page in both languages |
+| `tools/` | Small scripts: `build.py` makes the small files and the offline list, `csp.py` updates each page's security policy, `check_external.py` makes sure nothing loads from other websites, `review.py` checks that all games follow the same rules, that saved data is kept, that pages stay small and that the docs keep up, `a11y/` checks every page with a keyboard and a screen reader checker ([how](tools/a11y/README.md)), `e2e/` plays every game and checks that no question repeats ([how](tools/e2e/README.md)), `guide_check.py` makes sure every game has a guide page in both languages |
 | `RELEASES.md` | What's new: one line per big change, for parents |
 | `guide-src/` | The loopy guide, made with Astro and Starlight: a page for every game and every part of the site, in English and German. It goes live at `/loopy/guide/`. Nothing in it changes the games ([how](guide-src/README.md)) |
 | `.github/workflows/pages.yml` | Puts the site live: the games as they are, plus the built guide |
 | `.claude/skills/loopy-review/` | The review checklist for every change: design, architecture, saved data, speed and size, docs, games alike, and release notes after a merge |
+| `.claude/skills/loopy-docs/` | Which docs a change touches (guide in English and German, FAQ, Help page, READMEs, RELEASES.md) and how to write them in plain English |
 | `plugins/` | Claude Code plugins made from how the owner works: commands for the usual asks, hooks that keep the rules, self-healing checks, and a drift check that keeps them up to date ([how](plugins/README.md)). `python3 plugins/sync.py` copies them into `.claude/`, so every session in this repo has them |
 | `math/<game>/index.html` | One game per folder (also `languages/` and `mix/`) |
 | `math/<game>/README.md` | What that game does |
@@ -167,7 +168,7 @@ Read [DESIGN.md](DESIGN.md) first. It lists the colors, fonts, buttons and layou
 
 The `main` branch is what goes live. Make changes on a new branch and open a pull request. See [CONTRIBUTING.md](CONTRIBUTING.md).
 
-Before a pull request is ready, review it with `.claude/skills/loopy-review/SKILL.md` and run `python3 tools/review.py`. It compares your branch with main. It fails if a saved key is no longer read, so a child would lose stars, levels or settings. If you rename a key or change what it holds, move the old data to the new key on load. It also shows how much each changed file grew. If you changed a page, also run the screen reader and keyboard check and the play test:
+Before a pull request is ready, review it with `.claude/skills/loopy-review/SKILL.md` and run `python3 tools/review.py`. It compares your branch with main. It fails if a saved key is no longer read, so a child would lose stars, levels or settings. If you rename a key or change what it holds, move the old data to the new key on load. It also shows how much each changed file grew. It warns when a change people can see has no docs, or changes the guide in one language only. Write those docs with `.claude/skills/loopy-docs/SKILL.md`. If you changed a page, also run the screen reader and keyboard check and the play test:
 
 ```sh
 npm ci --prefix tools/a11y --ignore-scripts   # once

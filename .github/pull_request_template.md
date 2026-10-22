@@ -23,6 +23,6 @@
 - [ ] English and German
 - [ ] Phone, phone landscape, tablet portrait and landscape: no scrolling
 - [ ] `python3 tools/build.py --check` and `python3 tools/check_external.py` pass
-- [ ] Docs updated (game README, main README)
+- [ ] Docs updated in plain English: guide (EN + DE), FAQ and Help, game README, main README, RELEASES.md (or nothing people see changed)
 
 Closes #
