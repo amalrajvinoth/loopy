@@ -8,6 +8,10 @@ loopy bekommt immer wieder neue Spiele. Das ist zuletzt dazugekommen!
 
 Die großen Änderungen, die neuesten zuerst. Kleine Korrekturen stehen nicht dabei. Die [ganze Liste steht auf GitHub](https://github.com/amalrajvinoth/loopy/blob/main/RELEASES.md) (auf Englisch).
 
+## 22. Oktober 2026
+
+- **Die Woche mit einem Tipp drucken.** Die Seite für Erwachsene hat einen Knopf **Drucken** neben **Diese Woche teilen**. Mehr unter [Wochenkarte und Übungsblätter](/loopy/guide/de/grown-ups/practice-sheet/).
+
 ## 21. Oktober 2026
 
 - **Neues Spiel: [Rechtschreib-Quiz](/loopy/guide/de/games/languages/spelling-quiz/)**, für 6 bis 12 Jahre. Finde das richtig geschriebene Wort unter 3 oder 4. Eltern können die Übungswörter der Woche eintragen, und die falschen Schreibweisen sind jedes Mal neu.

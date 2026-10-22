@@ -58,7 +58,7 @@ Wrong answers come back, until each one is answered right twice. See [Try again]
 
 ## How do I see how my child is doing?
 
-Tap the **Grown-ups** button at the bottom of the home page. See [The grown-ups page](/loopy/guide/grown-ups/grown-ups-page/).
+Tap the **Grown-ups** button at the bottom of the home page. To print the week, tap **Print** next to **Share this week**. See [The grown-ups page](/loopy/guide/grown-ups/grown-ups-page/).
 
 ## A question or answer is wrong. How do I tell you?
 

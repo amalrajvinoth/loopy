@@ -8,6 +8,10 @@ loopy keeps getting new games. Here is what came lately!
 
 The big changes, newest first. Small fixes are not listed. See [the full list on GitHub](https://github.com/amalrajvinoth/loopy/blob/main/RELEASES.md).
 
+## 22 October 2026
+
+- **Print the week in one tap.** The grown-ups page has a **Print** button next to **Share this week**. See [Weekly card and practice sheets](/loopy/guide/grown-ups/practice-sheet/).
+
 ## 21 October 2026
 
 - **New game: [Spelling Quiz](/loopy/guide/games/languages/spelling-quiz/)**, for ages 6 to 12. Pick the right spelling out of 3 or 4. Grown-ups can type in the week's spelling words, and the wrong spellings are new every time.
