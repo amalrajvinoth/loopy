@@ -32,7 +32,7 @@ node tools/e2e/retry.mjs            # Try again in every game: a mistake comes b
 
 The first three, the play test and the Try again test are the GitHub check: any failure must be fixed (the play test needs `npm ci --prefix tools/a11y --ignore-scripts` once, see tools/e2e/README.md). `tools/review.py` prints `must`, `should` and `suggest` findings. A `must` that this change added must be fixed. Findings that were already on main go in the report as "already there", not as part of this change.
 
-`tools/review.py` compares the change with the point where it left `origin/main` (use `--base <ref>` for another branch). It finds saved keys that nothing reads any more, names taken out of the OLD list, direct `localStorage` use in a page, new places that remove saved data, and files that got bigger. It prints a size table for every file that changed size. Run `git fetch origin main` first, so the comparison is with the real main.
+`tools/review.py` compares the change with the point where it left `origin/main` (use `--base <ref>` for another branch). It finds saved keys that nothing reads any more, docs this change may have missed (rows that start with `docs`), names taken out of the OLD list, direct `localStorage` use in a page, new places that remove saved data, and files that got bigger. It prints a size table for every file that changed size. Run `git fetch origin main` first, so the comparison is with the real main.
 
 ## 3. UI against DESIGN.md
 
@@ -98,7 +98,9 @@ Always look for a chance to make loopy faster or smaller, even if the change is 
 
 ## 7. Docs
 
-Check each one that the change affects, and update it in the same pull request:
+Every change people can see or use updates its docs in the same pull request: the guide (English and German), FAQ.md, the Help page, the game's README, the main README and RELEASES.md (owner's rule, 21 Oct 2026). Follow the **loopy-docs** skill (`.claude/skills/loopy-docs/SKILL.md`). It maps each kind of change to the docs and guide pages it touches, and says how to write them in plain English. The `docs` rows from `tools/review.py` are warnings: fix them, or say in the PR why a doc did not need to change.
+
+In short:
 
 | Changed | Update |
 | --- | --- |
@@ -106,9 +108,10 @@ Check each one that the change affects, and update it in the same pull request:
 | A new game | Its README.md (How to play, age levels, Settings, Print a worksheet, example help text), a row in README.md "The games", one line in the home page GAMES list |
 | How something looks | DESIGN.md (component, colors, layout or screens) |
 | Shared code or tools | README.md "For developers" and the comment at the top of the block in `src/loopy.js` |
-| Something a parent would ask about | FAQ.md and the Help page (both languages) |
+| Something a parent would ask about | FAQ.md, the Help page and the guide's FAQ page (all in both languages) |
+| Anything a child or grown-up will notice | The guide pages about it, in English and German, and a RELEASES.md row with the same news in the guide's What's new page |
 
-Docs are plain, short-sentence English.
+Docs are plain, short-sentence English: short sentences, everyday words, no code words, buttons named the way the screen shows them. A doc that is out of date, in one language only, or hard to read is a **Should fix**.
 
 ## 8. Consistency between games
 
@@ -139,7 +142,7 @@ After a pull request merges into main, decide if it is a **major** change:
 - Major: a new game or page, a new feature people can see or use, a change to how a game plays or looks, a change to what is saved.
 - Not major: typo or docs-only fixes, refactors nobody can see, CI and tooling, dependency bumps.
 
-For a major change, add one row at the **top** of the table in `RELEASES.md` and open a small pull request for it (or add it to the next pull request if one is open). Write it for parents, not developers:
+For a major change, add one row at the **top** of the table in `RELEASES.md`, and the same news in the guide's `help/whats-new.md` (English and German), and open a small pull request for it (or add it to the next pull request if one is open). Write it for parents, not developers:
 
 | Date | What's new | Where | PR |
 | --- | --- | --- | --- |

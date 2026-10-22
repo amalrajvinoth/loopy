@@ -4,9 +4,11 @@
     python3 tools/review.py                 # compares with origin/main (or main)
     python3 tools/review.py --base <ref>    # compares with another branch or commit
 
-It also compares this change with main for two more things:
+It also compares this change with main for three more things:
     saved data   every key a child already has is still read, or moved to its new name
     size         what each page sends over the network, the shared files and the offline copy
+    docs         a change people can see also changes its docs, in both languages, in plain English
+                 (rows start with "docs"; warnings only, see the loopy-docs skill)
 
 It prints a table of findings and does not change any file:
     must      breaks a project rule (security, both languages, shared parts)
@@ -248,6 +250,109 @@ def check_size(base):
             add("should", "sw.js", f"the offline copy grew by {grew / 1024:.0f} KB; every visitor's browser keeps it")
 
 
+# ---------- Docs: what people see is described, in both languages, in plain words ----------
+
+GUIDE = "guide-src/src/content/docs/"
+# Files people see or use. Tools, tests, CI and the plugins are not in it.
+SEEN = re.compile(r"^(index\.html|[a-z-]+/index\.html|[a-z-]+/[a-z0-9-]+/index\.html|src/[^/]+\.(js|css)|manifest\.webmanifest|[^/]+\.svg)$")
+HARD = {"utilise": "use", "utilize": "use", "prior to": "before", "commence": "start", "initiate": "start",
+        "facilitate": "help", "approximately": "about", "subsequently": "then", "in order to": "to",
+        "functionality": "what it does", "e.g.": "for example", "i.e.": "that is", "via": "through",
+        "localstorage": "saved in this browser", "service worker": "the offline copy", "toggle": "switch or button",
+        "modal": "box", "persisted": "saved", "configure": "set"}
+LONG = 25  # words in one sentence
+# Docs people read: root docs, game READMEs, the guide and the Help page. Not the plugins or tools.
+DOCS = re.compile(r"^([A-Z]+\.md|[a-z-]+/[a-z0-9-]+/README\.md|mix/[a-z0-9-]+/README\.md|help/index\.html|guide-src/src/content/docs/.+\.mdx?)$")
+
+
+def changed_files(base):
+    """{path: status} for files changed since base, with uncommitted and new files."""
+    out = {}
+    for line in (git("diff", "--name-status", base) or b"").decode().splitlines():
+        parts = line.split("\t")
+        out[parts[-1]] = parts[0][0]
+    for path in (git("ls-files", "--others", "--exclude-standard") or b"").decode().splitlines():
+        out[path] = "A"
+    return out
+
+
+def added_lines(base, path):
+    if not (ROOT / path).exists():
+        return []
+    d = git("diff", "-U0", base, "--", path)
+    if not d:
+        return (ROOT / path).read_text(encoding="utf-8", errors="replace").splitlines()
+    return [l[1:] for l in d.decode("utf-8", "replace").splitlines() if l.startswith("+") and not l.startswith("+++")]
+
+
+def plain_text(lines):
+    """The prose in some markdown lines: no code blocks, front matter, imports or components."""
+    out, code = [], False
+    for l in lines:
+        s = l.strip()
+        if s.startswith("```"):
+            code = not code
+            continue
+        if code or not s or s == "---" or s.startswith(("import ", "<", "title:", "description:", "sidebar:", "order:")):
+            continue
+        if re.fullmatch(r"[|\s:-]+", s):
+            continue
+        s = re.sub(r"`[^`]*`", "x", s)                # code words count as one word
+        s = re.sub(r"\]\([^)]*\)", "]", s)            # keep link text, drop the address
+        out.extend(c for c in s.split("|") if c.strip())
+    return out
+
+
+def check_docs(base):
+    files = changed_files(base)
+    if not files:
+        return
+    seen = [p for p in files if SEEN.match(p) and not p.startswith(("tools/", "guide-src/"))]
+    docs = [p for p in files if DOCS.match(p)]
+    if seen and not docs:
+        add("should", "docs", f"{len(seen)} file{'s' if len(seen) > 1 else ''} people see changed ({', '.join(sorted(seen)[:3])}"
+            f"{'...' if len(seen) > 3 else ''}) but no docs did. Update the docs that describe it (loopy-docs skill), "
+            "or say \"Docs: nothing people see changed\" in the PR")
+    for p in seen:
+        game = re.match(r"^([a-z]+/[a-z0-9-]+)/index\.html$", p)
+        if game and (ROOT / game.group(1) / "README.md").exists() and f"{game.group(1)}/README.md" not in files:
+            add("suggest", "docs", f"`{p}` changed but not its README. Does How to play, Age levels or Settings still match?")
+    if seen and "RELEASES.md" not in files:
+        add("suggest", "docs", "no RELEASES.md row. If people will notice this change, add one at the top")
+    # Each guide page has a German twin with the same name.
+    for p, st in files.items():
+        if not p.startswith(GUIDE) or not p.endswith((".md", ".mdx")) or st == "D":
+            continue
+        tail = p[len(GUIDE):]
+        twin = GUIDE + (tail[3:] if tail.startswith("de/") else "de/" + tail)
+        if twin not in files and twin != p:
+            add("should", "docs", f"`{p}` changed but not `{twin}`. Change the guide in English and German")
+    # The FAQ is in FAQ.md, the Help page and the guide.
+    faq = ["FAQ.md", "help/index.html", GUIDE + "help/faq.md", GUIDE + "de/help/faq.md"]
+    if any(f in files for f in faq):
+        missing = [f for f in faq if f not in files]
+        if missing:
+            add("should", "docs", f"the FAQ changed in {', '.join(f for f in faq if f in files)} but not in "
+                f"{', '.join(missing)}. Keep all of them the same, in both languages (or say why not)")
+    if "RELEASES.md" in files and GUIDE + "help/whats-new.md" not in files:
+        add("should", "docs", "a RELEASES.md row but no news in the guide's What's new page (help/whats-new.md, EN + DE)")
+    # Plain English in what this change wrote (English only).
+    for p in sorted(docs):
+        if "/de/" in p or files[p] == "D" or not p.endswith((".md", ".mdx")):
+            continue
+        text = plain_text(added_lines(base, p))
+        sentences = [s for chunk in text for s in re.split(r"(?<=[.!?])[\"')*]*\s+", chunk)]
+        long = [s for s in sentences if len(s.split()) > LONG]
+        if long:
+            first = " ".join(long[0].split()[:12])
+            add("suggest", p, f"{len(long)} new sentence{'s' if len(long) > 1 else ''} over {LONG} words, like "
+                f"\"{first}...\". Split into short sentences")
+        low = " ".join(text).lower()
+        hard = [w for w in HARD if re.search(rf"(?<![a-z]){re.escape(w)}(?![a-z])", low)]
+        if hard:
+            add("suggest", p, "hard words: " + ", ".join(f"\"{w}\" (say \"{HARD[w]}\")" for w in hard))
+
+
 GAME_PARTS = [
     ('class="home-link"', "back button (`.home-link`)"),
     ('id="star-chip"', "star counter (`#star-chip`)"),
@@ -277,6 +382,8 @@ def main():
     if base:
         check_storage(base, now, code_files(lambda path: base_text(base, path)))
     check_size(base)
+    if base:
+        check_docs(base)
 
     home = (ROOT / "index.html").read_text(encoding="utf-8")
     readme = (ROOT / "README.md").read_text(encoding="utf-8")
@@ -323,7 +430,7 @@ def main():
             print(f"| `{path}` | {kb(b)} | {'gone' if a is None else kb(a)} | {change} |")
         print()
     if not findings:
-        print("No findings. All games follow the same rules, saved data is kept, and sizes are in budget.")
+        print("No findings. All games follow the same rules, saved data is kept, sizes are in budget, and the docs keep up.")
         return 0
     print("| Level | Where | Finding |")
     print("| --- | --- | --- |")

@@ -29,9 +29,10 @@ description: Finish a loopy change and open its pull request with every check, s
    npm run screens --prefix guide-src                             # only when a game looks different
    node guide-src/scripts/check.mjs                               # links, errors, search, accessibility
    ```
-4. **Review** with the loopy-review skill (or the `reviewer` agent). Fix every "must". Note speed and size findings for the PR.
-5. **Screenshots** when anything on screen changed: `node plugins/loopy/scripts/screens.mjs --out <scratch>/after` on the branch, and with `--root <worktree of origin/main> --out <scratch>/before` for main. It fails if a page scrolls; fix that first. Copy the phone-size pair you show into `docs/screenshots/`, commit, and link them by raw.githubusercontent.com URL pinned to the commit.
-6. **Commit** in plain words. No Claude attribution lines (a hook blocks them).
-7. **Pull request** against `main` with `.github/pull_request_template.md`: What changed (a parent could read it), Changes (one line each, what someone will notice), Before and after (or delete it), Checked, a line on speed and size ("nothing found" is fine), "Closes #N". Keep the project's "Requested by" lines at the top when the project asks for them. After creating it, open it again and remove any "Generated with/by Claude Code" line a tool added. Assign the owner and ask them for a review.
-8. Watch it: fix red checks and conflicts yourself (the `heal` and `resolve-conflict` skills).
-9. Reply with the link and anything only a person can check (a real phone, iPhone Safari, print).
+4. **Docs** with the loopy-docs skill: the guide (EN + DE), FAQ.md, the Help page, the game README, the main README and RELEASES.md, in plain English, in this same PR. Fix the `docs` rows from `tools/review.py`, or say why not.
+5. **Review** with the loopy-review skill (or the `reviewer` agent). Fix every "must". Note speed and size findings for the PR.
+6. **Screenshots** when anything on screen changed: `node plugins/loopy/scripts/screens.mjs --out <scratch>/after` on the branch, and with `--root <worktree of origin/main> --out <scratch>/before` for main. It fails if a page scrolls; fix that first. Copy the phone-size pair you show into `docs/screenshots/`, commit, and link them by raw.githubusercontent.com URL pinned to the commit.
+7. **Commit** in plain words. No Claude attribution lines (a hook blocks them).
+8. **Pull request** against `main` with `.github/pull_request_template.md`: What changed (a parent could read it), Changes (one line each, what someone will notice), Before and after (or delete it), Checked, a line on the docs that changed (or "Docs: nothing people see changed"), a line on speed and size ("nothing found" is fine), "Closes #N". Keep the project's "Requested by" lines at the top when the project asks for them. After creating it, open it again and remove any "Generated with/by Claude Code" line a tool added. Assign the owner and ask them for a review.
+9. Watch it: fix red checks and conflicts yourself (the `heal` and `resolve-conflict` skills).
+10. Reply with the link and anything only a person can check (a real phone, iPhone Safari, print).
