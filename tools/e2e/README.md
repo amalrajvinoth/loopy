@@ -72,6 +72,7 @@ It serves the site as if `Loopy.syncHost` were `sync.test`. Requests to that add
 4. With sync on, `loopy-sync.js` loads only after the page has loaded.
 5. Joining with the link from the QR code brings the family's stars, and the link leaves the address bar.
 6. New stars in a game are sent when the game is left, and the other device gets them on its home page.
-7. **Turn off everywhere** removes the copy on the server and the code on this device. Both devices keep their stars, and the other device says the copy was deleted.
+7. After 5 minutes without a tap, a game page left open gets the other device's new stars and reloads once. A tap starts the 5 minutes again, and nothing is read while loopy is hidden. The page runs on a fake clock (Playwright `clock`), so this takes seconds.
+8. **Turn off everywhere** removes the copy on the server and the code on this device. Both devices keep their stars, and the other device says the copy was deleted.
 
 CI runs it with the Try again test.

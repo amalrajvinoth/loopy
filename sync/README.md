@@ -10,6 +10,7 @@ The plan and the options it was picked from: [docs/plans/remote-sync/](../docs/p
 - **One family code.** Turn on makes a 16-letter family code, such as `7K2M-QX9D-4HPT-W3RA`. Another device joins by typing it or by scanning its QR code.
 - **Locked before it leaves.** The device makes three things from the code (PBKDF2-SHA256, 200,000 rounds): the family's id, a write key, and the key that locks the data (AES-GCM). It sends only the locked copy. The server never sees the code and cannot read the copy.
 - **The pages never wait.** Stars are saved in the browser first, as always. The home page reads the family copy after it has loaded, adds what is new (the same merge as a stars code: the bigger number wins, nothing is taken away) and sends this device's copy back. It reloads once if the copy brought something new. A game page sends its new stars 20 seconds after a change, at most every 2 minutes, and when the game is left.
+- **A device left open catches up.** After 5 minutes with no tap, click or key, any page reads the family copy and reloads once if something new came. While nobody touches it, it checks again every 15 minutes, for up to an hour. It never does this while loopy is hidden, or while a box or Settings is open. That is at most 4 reads an idle hour, and a read with nothing new is a few bytes.
 - **Old copies go.** A family copy not saved for 400 days is deleted every night.
 
 ## What the server answers

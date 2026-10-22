@@ -10,6 +10,7 @@ The big changes, newest first. Small fixes are not listed. See [the full list on
 
 ## 22 October 2026
 
+- **Family sync catches up by itself.** A phone or tablet left open gets the new stars from your other devices after 5 minutes without a tap. See [Family sync](/loopy/guide/stars/family-sync/).
 - **Family sync.** Keep the stars the same on all your family's devices, by themselves. Turn it on in ⚙ Settings on the home page and scan the QR code on the other device. Everything is locked before it is sent, and there is no account. See [Family sync](/loopy/guide/stars/family-sync/).
 - **Print the week in one tap.** The grown-ups page has a **Print** button next to **Share this week**. See [Weekly card and practice sheets](/loopy/guide/grown-ups/practice-sheet/).
 
