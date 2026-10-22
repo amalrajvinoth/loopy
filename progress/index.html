@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'sha256-XtFym/f3CTttQETHAF++t2kA2fYQmBGJg4lcG9gyEXY='; style-src 'self' 'sha256-k11lQFueFwQ3YwRbeQvCuYEOOMoUClszpnm1RGYulf4='; img-src 'self' data:; font-src 'self'; connect-src 'self'; worker-src 'self'; object-src 'none'; base-uri 'none'; form-action 'none'; manifest-src 'self'; upgrade-insecure-requests">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'sha256-u/LT2z9Uim2O0MM4J9F6VDB+tIcE3pf8rdrmdn2C26s='; style-src 'self' 'sha256-46Cq+42DLh7NpasKPyxtoBftOWT7c+IqDOGe/PWRVu8='; img-src 'self' data:; font-src 'self'; connect-src 'self'; worker-src 'self'; object-src 'none'; base-uri 'none'; form-action 'none'; manifest-src 'self'; upgrade-insecure-requests">
 <meta name="referrer" content="strict-origin-when-cross-origin">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <link rel="icon" href="../icon.svg" type="image/svg+xml">
@@ -137,8 +137,10 @@ section[hidden] { display: none; }
 .print-head { display: none; }
 .print-head svg { height: 12mm; width: auto; overflow: visible; color: #000; }
 .week-foot { display: flex; gap: 8px; flex-wrap: wrap; align-items: center; margin-top: -8px; }
+.week-foot[hidden] { display: none; }
 .btn.main { background: var(--c1); border-color: var(--c1); color: var(--accent-ink, #fff); }
 .btn:disabled { opacity: 0.6; cursor: wait; }
+.sum-btns { display: flex; gap: 8px; flex-wrap: wrap; }
 .sheet-row { display: flex; gap: 8px 14px; flex-wrap: wrap; align-items: center; }
 /* The card as a picture to print (home screen app on iPhone): black on white, like on paper. */
 .week.paper { --ink: #000; --muted: #444; --chip: #fff; --card: #fff; --c1: #000; --line: #999; box-shadow: none; color: #000; background: #fff; }
@@ -183,7 +185,7 @@ section[hidden] { display: none; }
     <p class="row" id="sum-trend"></p>
     <div class="chips" id="chips"></div>
     <div class="bars" id="bars" role="img"></div>
-    <button type="button" class="btn" id="week-open" data-t="prShare" hidden>Share this week</button>
+    <div class="sum-btns"><button type="button" class="btn" id="week-open" data-t="prShare" hidden>Share this week</button><button type="button" class="btn" id="sum-print" data-t="prPrint" hidden>Print</button></div>
   </section>
 
   <section class="week" id="week" aria-labelledby="week-title" hidden>
@@ -271,7 +273,7 @@ Loopy.addStrings({
     prGoodNone: "Play a bit more this week to fill this line.", prPracNone: "Nothing missed this week.",
     prSharePic: "Share picture", prSavePic: "Save picture", prPrint: "Print", prMaking: "Making the picture…", prNoPic: "This browser cannot make the picture. Print instead.", prPickPrint: "In the menu, pick Print.", prAppPrint: "If no print menu opened: open loopy in Safari to print. The app on the home screen cannot print on iPhone.", prShared: "Shared.", prSaved: "Saved to your pictures or downloads.",
     prBrand: "Learn. Play. Repeat.",
-    prSheet: "Print a practice sheet", prSheetMaking: "Making the sheet…", prSheetFail: "The sheet could not be made. Open a game and print its worksheet from Settings instead.",
+    prSheet: "Print a practice sheet", prSheetMaking: "Making the sheet…", prSheetGo: "Print the sheet", prSheetReady: "The sheet is ready. Tap Print the sheet.", prSheetFail: "The sheet could not be made. Open a game and print its worksheet from Settings instead.",
     prSheetTitle: "Practice sheet", prSheetTitleKid: "Practice sheet for {name}", prSheetHow: "20 problems of the kinds missed most. Answers on page 2.",
     prStars: "⭐ {n} stars", prDays: "🔥 {n} days in a row", prDay: "🔥 1 day in a row", prBadge: "🏅 {name}", prBest: "🏆 Best streak: {n}", prGameBest: "Best streak: {n} in a row", prPlay: "Play →",
     gPlusMinus: "Plus and Minus", gTimesShare: "Times and Share", gTimesSprint: "Times Tables Sprint", gClock: "What Time Is It?", gSoundSpell: "Sound Spell", gDailyMix: "Today's 10", gMake10: "Make 10", gBiggerSmaller: "Bigger or Smaller", gPizza: "Pizza Fractions", gCoinsChange: "Coins and Change", gWordMatch: "Word Match", gSpellIt: "Spell It", gSentence: "Sentence Builder", gQuickFacts: "Quick Facts", gSortIt: "Sort It", gGraphs: "Graphs and Data", gBox: "Box Multiplication", gWhereIsIt: "Where Is It?", gFlags: "Flags and Capitals", gEquation: "Equation Balance", gPercent: "Percent and Ratio", gStep: "Step by Step", gSpellQuiz: "Spelling Quiz",
@@ -380,7 +382,7 @@ Loopy.addStrings({
     prGoodNone: "Spielt diese Woche noch ein bisschen, dann steht hier etwas.", prPracNone: "Diese Woche nichts falsch.",
     prSharePic: "Bild teilen", prSavePic: "Bild speichern", prPrint: "Drucken", prMaking: "Bild wird gemacht…", prNoPic: "Dieser Browser kann das Bild nicht machen. Druckt es stattdessen.", prPickPrint: "Wähle im Menü Drucken.", prAppPrint: "Wenn sich kein Druckmenü geöffnet hat: Öffne loopy in Safari, um zu drucken. Die App auf dem Home-Bildschirm kann auf dem iPhone nicht drucken.", prShared: "Geteilt.", prSaved: "In den Bildern oder Downloads gespeichert.",
     prBrand: "Lernen. Spielen. Wiederholen.",
-    prSheet: "Übungsblatt drucken", prSheetMaking: "Blatt wird gemacht…", prSheetFail: "Das Blatt konnte nicht gemacht werden. Öffnet ein Spiel und druckt dort in den Einstellungen das Arbeitsblatt.",
+    prSheet: "Übungsblatt drucken", prSheetMaking: "Blatt wird gemacht…", prSheetGo: "Blatt drucken", prSheetReady: "Das Blatt ist fertig. Tippe auf Blatt drucken.", prSheetFail: "Das Blatt konnte nicht gemacht werden. Öffnet ein Spiel und druckt dort in den Einstellungen das Arbeitsblatt.",
     prSheetTitle: "Übungsblatt", prSheetTitleKid: "Übungsblatt für {name}", prSheetHow: "20 Aufgaben der Arten, die am häufigsten falsch waren. Lösungen auf Seite 2.",
     prStars: "⭐ {n} Sterne", prDays: "🔥 {n} Tage hintereinander", prDay: "🔥 1 Tag hintereinander", prBadge: "🏅 {name}", prBest: "🏆 Beste Serie: {n}", prGameBest: "Beste Serie: {n} hintereinander", prPlay: "Spielen →",
     gPlusMinus: "Plus und Minus", gTimesShare: "Mal und Teilen", gTimesSprint: "Einmaleins-Sprint", gClock: "Wie spät ist es?", gSoundSpell: "Anlaut und Endlaut", gDailyMix: "Die 10 von heute", gMake10: "Ergänze bis 10", gBiggerSmaller: "Größer oder kleiner", gPizza: "Pizza-Brüche", gCoinsChange: "Münzen und Wechselgeld", gWordMatch: "Bild und Wort", gSpellIt: "Wörter schreiben", gSentence: "Satzbau", gQuickFacts: "Blitzwissen", gSortIt: "Sortieren", gGraphs: "Diagramme und Daten", gBox: "Malkreuz", gWhereIsIt: "Wo liegt das?", gFlags: "Flaggen und Hauptstädte", gEquation: "Waage", gPercent: "Prozent und Verhältnis", gStep: "Schrittweise rechnen", gSpellQuiz: "Rechtschreib-Quiz",
@@ -779,7 +781,7 @@ Loopy.addStrings({
   $("print-head").innerHTML = Loopy.logo("logo", "lph");
   $("week-open").addEventListener("click", () => {
     week();
-    $("week").hidden = false; $("week-foot").hidden = false; $("week-open").hidden = true;
+    $("week").hidden = false; $("week-foot").hidden = false; $("week-open").hidden = $("sum-print").hidden = true;
     $("week").scrollIntoView({ behavior: "smooth", block: "start" });
     $("week-share").textContent = t(navigator.canShare ? "prSharePic" : "prSavePic");
     // Make the pictures now, so Share and Print can open the share menu straight from the tap:
@@ -811,6 +813,7 @@ Loopy.addStrings({
       .then(() => { msg.textContent = after; }, e => { if (e && e.name !== "AbortError") throw e; msg.textContent = ""; });
   }
   $("week-share").addEventListener("click", () => {
+    if ($("week").hidden) $("week-open").click();
     const btn = $("week-share"), msg = $("week-msg"), job = pics.screen || (pics.screen = cardPic(false));
     // Ready: share straight from the tap.
     if (job.done && canShare(job.done)) { share(job.done, msg, t("prShared")).catch(() => { msg.textContent = t("prNoPic"); }); return; }
@@ -822,10 +825,13 @@ Loopy.addStrings({
       msg.textContent = t("prSaved");
     }).catch(() => { msg.textContent = t("prNoPic"); }).then(() => { btn.disabled = false; });
   });
+  // Print right away, without Share this week first: the card opens and prints in the same tap.
+  $("sum-print").addEventListener("click", () => $("week-print").click());
   // Print only the card. The card stays the thing to print until the next tap or key on the page:
   // Safari on iPhone and iPad sends "afterprint" before it draws the page for paper, so undoing it
   // there printed the whole page instead (and in the dark themes that came out blank).
   $("week-print").addEventListener("click", () => {
+    if ($("week").hidden) $("week-open").click();
     const html = document.documentElement, hadSheet = html.classList.contains("loopy-print");
     html.classList.add("week-print"); html.classList.remove("loopy-print");
     const back = () => {
@@ -851,7 +857,7 @@ Loopy.addStrings({
 
   // The practice sheet: 20 problems from the weak spots. Each game is opened in a hidden frame with its
   // practise hint, and its own worksheet maker gives the problems, so they look like the game's worksheet.
-  let sheetItems = [], sheetReady = false;
+  let sheetItems = [], sheetReady = false, sheetMade = false;
   function collect(spot, n) {
     return new Promise(resolve => {
       const f = el("iframe");
@@ -870,9 +876,20 @@ Loopy.addStrings({
       document.body.appendChild(f);
     });
   }
+  // Print straight from a tap: phones may ignore a print that comes seconds later. When making the
+  // sheet took too long for that, the button turns into "Print the sheet" for a second tap.
+  function printSheet() {
+    const html = document.documentElement, btn = $("sheet-btn");
+    html.classList.remove("week-print"); html.classList.add("loopy-print");
+    Loopy.sheet.fill(); window.print();
+    sheetMade = false; btn.dataset.t = "prSheet"; btn.textContent = t("prSheet");
+    $("sheet-msg").textContent = inApp ? t("prAppPrint") : "";
+  }
   $("sheet-btn").addEventListener("click", () => {
     const btn = $("sheet-btn"), msg = $("sheet-msg"), spots = weakSpots();
+    if (sheetMade) return printSheet();
     if (!spots.length) return;
+    const tapped = Date.now();
     btn.disabled = true; msg.textContent = t("prSheetMaking");
     const share = spots.length === 1 ? [20] : spots.length === 2 ? [10, 10] : [7, 7, 6];
     Promise.all(spots.map((s, i) => collect(s, share[i]))).then(parts => {
@@ -890,15 +907,15 @@ Loopy.addStrings({
         });
       }
       return Promise.all([Loopy.load("sheet"), printStyles()]).then(() => {
-        const html = document.documentElement;
-        html.classList.remove("week-print"); html.classList.add("loopy-print");
-        Loopy.sheet.fill(); msg.textContent = ""; window.print();
-        if (inApp) msg.textContent = t("prAppPrint");
+        sheetMade = true;
+        const tap = navigator.userActivation;
+        if (Date.now() - tapped < 4000 && (!tap || tap.isActive)) return printSheet();
+        btn.dataset.t = "prSheetGo"; btn.textContent = t("prSheetGo"); msg.textContent = t("prSheetReady");
       });
     }).catch(() => { msg.textContent = t("prSheetFail"); }).then(() => { btn.disabled = false; });
   });
 
-  function render() { log = Loopy.log.get(); chips(); summary(); next(); games(); misses(); $("week-open").hidden = !totals(thisWeek).n; }
+  function render() { log = Loopy.log.get(); chips(); summary(); next(); games(); misses(); $("week-open").hidden = $("sum-print").hidden = !totals(thisWeek).n; }
 
 
   // Clear needs two taps, so one stray tap does not wipe the answers.

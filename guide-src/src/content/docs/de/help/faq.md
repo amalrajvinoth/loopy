@@ -58,7 +58,7 @@ Falsche Antworten kommen wieder, bis jede zweimal richtig beantwortet wurde. Meh
 
 ## Wie sehe ich, wie es meinem Kind geht?
 
-Tippe unten auf der Startseite auf den Knopf **Erwachsene**. Mehr unter [Die Seite für Erwachsene](/loopy/guide/de/grown-ups/grown-ups-page/).
+Tippe unten auf der Startseite auf den Knopf **Erwachsene**. Um die Woche zu drucken, tippe auf **Drucken** neben **Diese Woche teilen**. Mehr unter [Die Seite für Erwachsene](/loopy/guide/de/grown-ups/grown-ups-page/).
 
 ## Eine Aufgabe oder Lösung ist falsch. Wie sage ich es euch?
 

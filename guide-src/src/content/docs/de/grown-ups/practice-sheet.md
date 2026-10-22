@@ -14,6 +14,8 @@ loopy macht drei Dinge für Papier oder zum Teilen: eine Wochenkarte, ein Übung
 2. Tippe auf **Diese Woche teilen**. Der Knopf erscheint, sobald es diese Woche Antworten gibt.
 3. Tippe auf **Bild teilen**, um die Karte über das Teilen-Menü deines Handys zu schicken. Oder tippe auf **Drucken**.
 
+Um gleich zu drucken, ohne die Karte erst zu öffnen, tippe auf **Drucken** neben **Diese Woche teilen**.
+
 Die Karte zeigt Bild und Namen des Kindes, die Tage der Woche und vier Zahlen: Antworten, Prozent richtig, Tage gespielt und Sterne. Darunter stehen zwei Zeilen "Läuft gut" und bis zu drei Zeilen "Zum Üben".
 
 Manche Browser können keine Bilder teilen. Dann heißt der Knopf **Bild speichern** und speichert das Bild. Kann der Browser das Bild gar nicht machen, steht das dort. Nimm dann **Drucken**. Die Karte wird schwarz auf weiß gedruckt.
