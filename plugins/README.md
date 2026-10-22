@@ -5,7 +5,7 @@ Two plugins, made from how the owner works on loopy. They turn the asks the owne
 | Plugin | For | What is in it |
 | --- | --- | --- |
 | `work-style` | Any repo | How the owner works: plans with numbered options, "go", fix an issue, plan a pull request fix, resolve a conflict, apply all suggestions, add a rule. Blocks Claude attribution. |
-| `loopy` | This repo | Next roadmap task, build an issue, new game, ship a pull request with every check, mark as done, update the roadmap, heal, evolve. Guards built files and pages, rebuilds after a merge, checks before finishing. |
+| `loopy` | This repo | Next roadmap task, build an issue, new game, keep the docs up to date, ship a pull request with every check, mark as done, update the roadmap, heal, evolve. Guards built files and pages, rebuilds after a merge, checks before finishing. |
 
 ## What you type and what runs
 
@@ -22,6 +22,7 @@ Two plugins, made from how the owner works on loopy. They turn the asks the owne
 | "Build #N" | `build-issue` | loopy |
 | "add a game" | `new-game` | loopy |
 | "push", "ship it" | `ship-pr` | loopy |
+| "update the docs", "update the guide", "update the FAQ" (and every change people can see) | `loopy-docs` | loopy |
 | "Mark as done" | `mark-done` | loopy |
 | "Update roadmap ticket" | `update-roadmap` | loopy |
 | "fix CI", "it's broken" | `heal` | loopy |
