@@ -7,14 +7,16 @@
 // Home page: read the copy when it changed, add it here (the stars code merge: it only adds, never takes
 // away), and save the result back. Every page: save after something changed (20 seconds after a change,
 // at most every 2 minutes), and when the page is left. New stars from another device show on the
-// home page, which reloads once; a game page never reloads.
+// home page, which reloads once. A page nobody has touched for 5 minutes (no tap, click or key) also reads
+// the copy, and again every 15 minutes up to an hour; it reloads once if something new came, so a tablet
+// left open catches up. Never while loopy is hidden, and never while a box or Settings is open.
 // Kept in this browser's localStorage "loopy.sync", for the whole device and never in a stars code, as
 // { c: family code, i: id, w: write key, k: lock key, e: hash of the copy last read or saved,
 //   h: hash of the stars code last sent or got, t: time of the last sync, x: 1 when changes wait to be saved }.
 (function () {
   var Loopy = window.Loopy, KEY = "loopy.sync", ABC = "0123456789ABCDEFGHJKMNPQRSTVWXYZ";
-  var WAIT = 20000, GAP = 120000, TIME = 15000;
-  var st = read(), busy = null, timer = null, pushed = st ? st.t : 0, pulled = 0, dirty = false, status = st ? "idle" : "off", tell = [];
+  var WAIT = 20000, GAP = 120000, TIME = 15000, IDLE = 300000, AGAIN = 900000, IDLE_MAX = 3600000;
+  var st = read(), busy = null, timer = null, idleTimer = null, touched = Date.now(), pushed = st ? st.t : 0, pulled = 0, dirty = false, status = st ? "idle" : "off", tell = [];
 
   // ---- saved state ----
   function read() {
@@ -160,17 +162,20 @@
   }
   document.addEventListener("visibilitychange", function () {
     if (!st) return;
-    if (document.visibilityState === "hidden") { if (dirty || st.x) { clearTimeout(timer); round(false); } }
-    else if (Loopy.syncPage === "home" && Date.now() - pulled > 60000) home();
+    if (document.visibilityState === "hidden") { clearTimeout(idleTimer); if (dirty || st.x) { clearTimeout(timer); round(false); } }
+    else { touch(); if (Loopy.syncPage === "home" && Date.now() - pulled > 60000) home(); }
   });
 
-  // The home page reads the copy; a change from another device reloads it once, unless a box is open.
+  // A box (a dialog) or Settings is open: someone is using the page, so it must not reload.
+  function busyHere() {
+    return !!document.querySelector("dialog[open]") || (document.getElementById("settings-panel") || {}).hidden === false;
+  }
+  // Read the copy; a change from another device reloads the page once, unless a box is open.
   function home() {
     return round(true).then(function (r) {
-      var open = document.querySelector("dialog[open]") || (document.getElementById("settings-panel") || {}).hidden === false;
       var again = false;
       try { again = Date.now() - Number(sessionStorage.getItem("loopy.syncReload") || 0) < 30000; } catch (e) {}
-      if (r.changed && !open && !again) {
+      if (r.changed && !busyHere() && !again) {
         try { sessionStorage.setItem("loopy.syncReload", String(Date.now())); } catch (e) {}
         location.reload();
       }
@@ -178,8 +183,25 @@
     });
   }
 
+  // ---- after 5 minutes without a tap, click or key ----
+  // The page's data in memory is replaced by the reload, so new stars are only read when the page may reload.
+  function idle() {
+    idleTimer = null;
+    if (!st || document.visibilityState === "hidden") return;
+    if (busyHere()) round(false); else home();
+    var away = Date.now() - touched;
+    if (away + AGAIN <= IDLE_MAX) idleTimer = setTimeout(idle, AGAIN);
+  }
+  function touch() {
+    touched = Date.now();
+    clearTimeout(idleTimer);
+    idleTimer = st && document.visibilityState !== "hidden" ? setTimeout(idle, IDLE) : null;
+  }
+  ["pointerdown", "keydown"].forEach(function (k) { document.addEventListener(k, touch, { capture: true, passive: true }); });
+
   function start() {
     if (!st) return;
+    touch();
     if (Loopy.syncPage === "home") home();
     else if (st.x) later();
   }
@@ -348,7 +370,7 @@
         s.e = ""; s.h = ""; s.t = 0; s.x = 1;
         st = s;
         return round(false).then(function () {
-          if (st && st.e) return true;
+          if (st && st.e) { touch(); return true; }
           st = null; write(); say("off");
           return false;
         });
@@ -367,6 +389,7 @@
           st = s;
           return round(true).then(function (res) {
             if (!st.e) { st = null; write(); say("off"); return "offline"; }
+            touch();
             return res.changed ? "changed" : "ok";
           });
         });
@@ -375,7 +398,7 @@
     // Turn off on this device. forget: also delete the family's copy on the server (for every device).
     off: function (forget) {
       var s = st;
-      st = null; write(); clearTimeout(timer); say("off");
+      st = null; write(); clearTimeout(timer); clearTimeout(idleTimer); say("off");
       if (!forget || !s) return Promise.resolve(true);
       return call(s, "?del=1", { k: s.w }).then(function (r) { return r.n === 200 || r.n === 404; });
     },

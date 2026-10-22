@@ -160,19 +160,76 @@ const A2 = await A.ctx.newPage();
 await A2.goto(BASE);
 check("The other device gets them on its home page", await until(async () => await stars(A2) === 8), String(await stars(A2).catch(() => "?")));
 
-// 6. A turns off and deletes the family copy. Every device keeps its stars.
+// 6. After 5 minutes without a tap, a page left open reads the family copy and reloads once.
+// A's new page runs on a fake clock, so 5 minutes pass in a moment. B earns new stars in a game each time.
+async function bSends(n) {
+  skew += 11000;
+  const p = await B.ctx.newPage();
+  await p.goto(BASE + "math/plus-minus/");
+  await until(() => p.evaluate(() => !!(window.Loopy && Loopy.sync)));
+  const was = [...env.DB.rows.values()][0].e;
+  await earn(p, n);
+  // Back to the home page, which reads the copy (A saved since), adds B's stars and sends them.
+  await p.goto(BASE);
+  const ok = await until(() => [...env.DB.rows.values()][0].e !== was);
+  await p.close();
+  return ok;
+}
+await A.ctx.clock.install();
+const A3 = await A.ctx.newPage();
+let loads = 0;
+A3.on("load", () => loads++);
+await A3.goto(BASE + "math/plus-minus/");
+await until(() => A3.evaluate(() => !!(window.Loopy && Loopy.sync)));
+check("B earns 2 more stars and sends them", await bSends(2), "");
+skew += 11000;
+let was = loads;
+await A3.clock.fastForward("04:00");
+await wait(1000);
+check("Before 5 minutes without a tap, a game page stays as it is", loads === was && await stars(A3) === 8, String(await stars(A3)));
+await A3.clock.fastForward("01:30");
+check("After 5 minutes without a tap, the game page gets the new stars", await until(async () => loads > was && await stars(A3) === 10), String(await stars(A3).catch(() => "?")));
+check("It reloads only once", loads === was + 1, loads - was + " loads");
+
+check("B sends 1 more star", await bSends(1), "");
+skew += 11000;
+await until(() => A3.evaluate(() => !!(window.Loopy && Loopy.sync)));
+was = loads;
+await A3.clock.fastForward("04:00");
+await A3.mouse.click(5, 5);
+await A3.clock.fastForward("04:00");
+await wait(1000);
+check("A tap starts the 5 minutes again: no reload while someone plays", loads === was && await stars(A3) === 10, String(await stars(A3)));
+await A3.clock.fastForward("01:30");
+check("5 minutes after the last tap, it catches up", await until(async () => loads > was && await stars(A3) === 11), String(await stars(A3).catch(() => "?")));
+
+check("B sends 1 more star again", await bSends(1), "");
+skew += 11000;
+await until(() => A3.evaluate(() => !!(window.Loopy && Loopy.sync)));
+await A3.evaluate(() => {
+  Object.defineProperty(document, "visibilityState", { value: "hidden", configurable: true });
+  document.dispatchEvent(new Event("visibilitychange"));
+});
+const asked = A.seen.server;
+was = loads;
+await A3.clock.fastForward("20:00");
+await wait(1000);
+check("While loopy is hidden, nothing is read", A.seen.server === asked && loads === was, A.seen.server - asked + " requests");
+await A3.close();
+
+// 7. A turns off and deletes the family copy. Every device keeps its stars.
 await openSettings(A2);
 const forget = A2.getByRole("button", { name: "Turn off everywhere" });
 await forget.click();
 await forget.click();
 check("Turn off everywhere removes the copy on the server", await until(() => env.DB.rows.size === 0), env.DB.rows.size + " rows");
 check("Turn off forgets the code on this device", await A2.evaluate(() => localStorage.getItem("loopy.sync")) === null, "");
-check("Turn off keeps the stars", await stars(A2) === 8, String(await stars(A2)));
+check("Turn off keeps the stars", await stars(A2) >= 8, String(await stars(A2)));
 const B2 = await B.ctx.newPage();
 await B2.goto(BASE);
 await openSettings(B2);
 check("The other device says the copy was deleted", await until(async () => /deleted on another device/.test(await syncText(B2))), "");
-check("and keeps its stars", await stars(B2) === 8, String(await stars(B2)));
+check("and keeps its stars", await stars(B2) === 12, String(await stars(B2)));
 
 const others = [...A.seen.other, ...B.seen.other];
 check("Nothing goes anywhere but the site and the sync server", others.length === 0, others.slice(0, 3).join(" "));
