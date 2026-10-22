@@ -6,7 +6,7 @@ sidebar:
 ---
 Deine Sterne wohnen auf diesem Handy oder Computer. Sie bleiben da, wenn du loopy schließt.
 
-loopy hat keine Konten. Nichts wird gesendet. Alles liegt in diesem Browser, auf diesem Gerät.
+loopy hat keine Konten. Alles liegt in diesem Browser, auf diesem Gerät. Nichts wird gesendet, außer ein Erwachsener schaltet den [Familien-Sync](/loopy/guide/de/stars/family-sync/) ein.
 
 ## Zwei Speicher im Browser
 
@@ -41,3 +41,4 @@ Sicher ist sicher. Bewahre eine Kopie woanders auf:
 
 1. Mach mit **Sicherung speichern** eine Sicherungsdatei. Mehr unter [Sicherungsdatei](/loopy/guide/de/stars/backup-file/).
 2. Oder bring die Sterne auf ein zweites Gerät. Mehr unter [Sterne auf ein anderes Gerät bringen](/loopy/guide/de/stars/move-stars/).
+3. Oder schalte den [Familien-Sync](/loopy/guide/de/stars/family-sync/) ein, dann haben alle Geräte der Familie sie.

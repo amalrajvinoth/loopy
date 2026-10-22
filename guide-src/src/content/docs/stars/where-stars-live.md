@@ -6,7 +6,7 @@ sidebar:
 ---
 Your stars live on this phone or computer. They stay here when you close loopy.
 
-loopy has no accounts. Nothing is sent anywhere. Everything is saved in this browser, on this device.
+loopy has no accounts. Everything is saved in this browser, on this device. Nothing is sent anywhere, unless a grown-up turns on [Family sync](/loopy/guide/stars/family-sync/).
 
 ## Two stores in the browser
 
@@ -41,3 +41,4 @@ To be safe, keep a copy somewhere else:
 
 1. Make a backup file with **Save backup**. See [Backup file](/loopy/guide/stars/backup-file/).
 2. Or move the stars to a second device. See [Move my stars](/loopy/guide/stars/move-stars/).
+3. Or turn on [Family sync](/loopy/guide/stars/family-sync/), so every family device has them.

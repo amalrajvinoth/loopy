@@ -45,7 +45,7 @@ Cloudflare's free plan allows 100,000 requests a day, and D1 allows 100,000 save
 4. Copy the **Account ID** from the right side of the Workers & Pages overview.
 5. In GitHub: **Settings**, **Secrets and variables**, **Actions**, **New repository secret**. Add `CLOUDFLARE_API_TOKEN` and `CLOUDFLARE_ACCOUNT_ID`.
 6. Run the **Family sync server** workflow (Actions tab, **Run workflow**), or push a change to `sync/`. It makes the `loopy-sync` database the first time, sets up its table and deploys the server.
-7. Turn it on in the site: set `Loopy.syncHost = "loopy-sync.<name>.workers.dev";` in `src/loopy.js`, then run `python3 tools/build.py` and `python3 tools/csp.py`. The page policy now allows that one address. Until this step, the site shows nothing about Family sync and sends nothing.
+7. Turn it on in the site: set `Loopy.syncHost = "loopy-sync.<name>.workers.dev";` in `src/loopy.js`, then run `python3 tools/build.py` and `python3 tools/csp.py`. The page policy now allows that one address. Until this step, the site shows nothing about Family sync and sends nothing. Done for loopy on 22 Oct 2026: the server is `loopy-sync.loopy-1e2.workers.dev`.
 
 ## Try it on your computer
 

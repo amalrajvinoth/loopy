@@ -10,6 +10,7 @@ Die großen Änderungen, die neuesten zuerst. Kleine Korrekturen stehen nicht da
 
 ## 22. Oktober 2026
 
+- **Familien-Sync.** Die Sterne bleiben auf allen Geräten deiner Familie gleich, ganz von selbst. Schalte ihn in ⚙ Einstellungen auf der Startseite ein und scanne den QR-Code auf dem anderen Gerät. Alles wird verschlossen, bevor es gesendet wird, und es gibt kein Konto. Mehr unter [Familien-Sync](/loopy/guide/de/stars/family-sync/).
 - **Die Woche mit einem Tipp drucken.** Die Seite für Erwachsene hat einen Knopf **Drucken** neben **Diese Woche teilen**. Mehr unter [Wochenkarte und Übungsblätter](/loopy/guide/de/grown-ups/practice-sheet/).
 
 ## 21. Oktober 2026

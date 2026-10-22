@@ -12,7 +12,7 @@ Yes. Loopy is free. There are no ads, no sign-up and nothing to buy.
 
 ## Does Loopy collect data about my child?
 
-No. There are no accounts, no ads, no tracking and no analytics. Stars and settings are saved only in this browser on this device. Even the fonts are stored on the Loopy site, so your browser only talks to Loopy.
+No. There are no accounts, no ads, no tracking and no analytics. Stars and settings are saved only in this browser on this device. Even the fonts are stored on the Loopy site, so your browser only talks to Loopy. The one exception is Family sync, and only if a grown-up turns it on. It sends a copy of the stars. That copy is locked on your device first, so the server can't read it.
 
 ## Which ages is Loopy for?
 
@@ -51,6 +51,12 @@ The link holds the stars itself, after the `#`. That part of a link never reache
 To keep a backup, tap **Save backup**. loopy makes a small file (`loopy-stars-2026-10-19.json`) that lands in Downloads or in Files on an iPhone. Keep it in iCloud Drive or Google Drive and it survives a lost phone or cleared browser data. **Open backup** loads it on any device, and asks first.
 
 The code carries stars, badges, best scores, the day streak, the answers on the grown-ups' page, the Last 5 dots, the age, the game levels and settings, and the last game played (so "Carry on" works on the other device). Loading a code only adds. It never takes stars or answers away, and loading the same code twice counts nothing twice. Codes from before still work: they move stars and best scores.
+
+## Can the stars stay the same on all our devices?
+
+Yes, with Family sync. On the home page, open ⚙ Settings and tap **Turn on** under Family sync. loopy shows a family code and a QR code. On the other device, scan the QR code, or open Settings, tap **Join with a code** and type it. From then on, new stars go to every family device by themselves. Nothing is taken away: for each child the bigger number wins.
+
+Everything is locked on your device before it is sent, with a key made from the family code. The server only keeps the locked copy and can't read it. There is no account. **Turn off** stops it on one device; **Turn off everywhere** deletes the family copy. The stars on each device stay.
 
 ## Can I use Loopy like an app?
 

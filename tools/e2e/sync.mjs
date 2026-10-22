@@ -4,7 +4,7 @@
 //   npm ci --prefix tools/a11y --ignore-scripts   (once: the same two packages as the accessibility check)
 //   node tools/e2e/sync.mjs                       (exit code 1 if anything fails)
 //
-// The site is served at /loopy/ as if Loopy.syncHost were "sync.test" (loopy.js and each page's policy
+// The site is served at /loopy/ with Loopy.syncHost set to "sync.test" (loopy.js and each page's policy
 // are changed on the way out). Requests to https://sync.test go to the real server code (sync/worker.js)
 // with a stand-in database (sync/fake-d1.mjs), inside this test. Nothing leaves the computer.
 import http from "node:http";
@@ -31,14 +31,14 @@ const server = http.createServer((req, res) => {
   if (!fs.existsSync(file)) { res.writeHead(404); return res.end(); }
   const type = TYPES[path.extname(file)] || "application/octet-stream";
   let body = fs.readFileSync(file);
-  if (file === path.join(ROOT, "loopy.js")) body = String(body).replace('Loopy.syncHost=""', `Loopy.syncHost="${HOST}"`);
-  if (type === "text/html") body = String(body).replace("connect-src 'self';", `connect-src 'self' https://${HOST};`);
+  if (file === path.join(ROOT, "loopy.js")) body = String(body).replace(/Loopy\.syncHost="[^"]*"/, `Loopy.syncHost="${HOST}"`);
+  if (type === "text/html") body = String(body).replace(/connect-src 'self'[^;]*;/, `connect-src 'self' https://${HOST};`);
   res.writeHead(200, { "Content-Type": type });
   res.end(body);
 });
 await new Promise(r => server.listen(0, "127.0.0.1", r));
 const ORIGIN = `http://127.0.0.1:${server.address().port}`, BASE = ORIGIN + "/loopy/";
-if (!String(fs.readFileSync(path.join(ROOT, "loopy.js"))).includes('Loopy.syncHost=""')) throw new Error("loopy.js has no Loopy.syncHost to set.");
+if (!/Loopy\.syncHost="[^"]*"/.test(String(fs.readFileSync(path.join(ROOT, "loopy.js"))))) throw new Error("loopy.js has no Loopy.syncHost to set.");
 
 // The server's clock runs in this test, so it can jump past the 10 seconds it wants between saves.
 let skew = 0;

@@ -571,7 +571,7 @@ document.documentElement.classList.add("loopy-building");
 // When sync is on, loopy-sync.js loads after the page has shown and the browser is idle; when it is
 // off, nothing more happens, so pages open exactly as fast as without it.
 (function () {
-  Loopy.syncHost = "";
+  Loopy.syncHost = "loopy-sync.loopy-1e2.workers.dev";
   var on = false;
   try { on = !!Loopy.syncHost && /"i":"[0-9a-f]{32}"/.test(localStorage.getItem("loopy.sync") || ""); } catch (e) {}
   if (!on) return;

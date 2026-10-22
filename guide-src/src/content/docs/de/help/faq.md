@@ -14,7 +14,7 @@ Ja. Es gibt keine Werbung, keine Anmeldung und nichts zu kaufen.
 
 ## Sammelt loopy Daten über mein Kind?
 
-Nein. Es gibt keine Konten, keine Werbung, kein Tracking und keine Analyse. Sterne und Einstellungen bleiben in diesem Browser auf diesem Gerät. Sogar die Schriften kommen von der loopy-Seite. Mehr unter [Ist es sicher?](/loopy/guide/de/start/is-it-safe/).
+Nein. Es gibt keine Konten, keine Werbung, kein Tracking und keine Analyse. Sterne und Einstellungen bleiben in diesem Browser auf diesem Gerät. Sogar die Schriften kommen von der loopy-Seite. Die einzige Ausnahme ist der [Familien-Sync](/loopy/guide/de/stars/family-sync/), wenn ein Erwachsener ihn einschaltet: Seine Kopie wird vorher auf deinem Gerät verschlossen, sodass der Server sie nicht lesen kann. Mehr unter [Ist es sicher?](/loopy/guide/de/start/is-it-safe/).
 
 ## Für welches Alter ist loopy?
 
@@ -35,6 +35,10 @@ In diesem Browser, in zwei Speichern. Gelöschte Browserdaten oder ein privates 
 ## Wie bringe ich Sterne auf ein anderes Gerät?
 
 Öffne auf der Startseite **Sterne auf ein anderes Gerät bringen**. Scanne den QR-Code, schick den Link oder kopiere den Code. Mehr unter [Sterne auf ein anderes Gerät bringen](/loopy/guide/de/stars/move-stars/).
+
+## Können die Sterne auf allen unseren Geräten gleich sein?
+
+Ja, mit dem Familien-Sync. Öffne auf der Startseite ⚙ **Einstellungen** und tippe auf **Einschalten**. Scanne auf dem anderen Gerät den QR-Code. Neue Sterne kommen dann von selbst auf jedes Gerät der Familie. Alles wird verschlossen, bevor es gesendet wird, und es gibt kein Konto. Mehr unter [Familien-Sync](/loopy/guide/de/stars/family-sync/).
 
 ## Kann ich loopy wie eine App nutzen, auch offline?
 
