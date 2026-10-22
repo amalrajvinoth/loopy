@@ -161,7 +161,8 @@
     var kids = d.p.filter(function (c) { return c && typeof c === "object"; });
     return kids.length ? kids : null;
   }
-  function load(d) {
+  // quiet: from Family sync, so the child playing stays the same.
+  function load(d, quiet) {
     var kids = kidsOf(d);
     if (!kids) return false;
     var here = Loopy.kids.list(), now = Loopy.kids.current().id, empty = blank(), last = null;
@@ -173,7 +174,7 @@
       if (id) { merge(c, id); last = id; }
     });
     // A code with one child: that child plays next.
-    if (kids.length === 1 && last) Loopy.kids.pick(last);
+    if (kids.length === 1 && last && !quiet) Loopy.kids.pick(last);
     ["theme", "font", "sound", "lang"].forEach(function (k) { if (get(k) === null && choice(k, d[k])) put(k, d[k]); });
     return true;
   }
@@ -213,9 +214,10 @@
       return pipe(bytes, new CompressionStream("deflate-raw")).then(function (z) { return "LOOPY2-Z" + b64(z); });
     },
     // A promise of true when the code was good and its data is saved. Reload the page to show it.
-    importCode: function (code) {
+    // opts.quiet (Family sync): keep the child who is playing now.
+    importCode: function (code, opts) {
       return decode(code).then(function (got) {
-        var ok = got.v2 ? load(got.v2) : loadOld(got.old);
+        var ok = got.v2 ? load(got.v2, !!(opts && opts.quiet)) : loadOld(got.old);
         if (ok && Loopy.keep) Loopy.keep.soon();
         return ok;
       }).catch(function () { return false; });

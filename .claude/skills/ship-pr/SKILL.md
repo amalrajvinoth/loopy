@@ -23,6 +23,8 @@ description: Finish a loopy change and open its pull request with every check, s
    node tools/e2e/play.mjs        # GAME=<id> for one game while you work; the full run before the PR
    node tools/e2e/retry.mjs       # Try again in every game (GAME=<id> for one): a mistake comes back until it is fixed
    node tools/e2e/offline.mjs     # after an update the offline copy saves the new pages, never an old one (when src/sw.js changed)
+   node sync/test.mjs             # the Family sync server answers right (when sync/ changed)
+   node tools/e2e/sync.mjs        # Family sync keeps two devices in step and sends nothing when off (when src/loopy-sync.js, sync/ or the home page changed)
    ```
    CI runs the a11y check and the play test in two halves at once (`SHARD=1/2`, `SHARD=2/2`). On a pull request it skips them, and the guide job, when `tools/ci_changes.py` says no file they read changed (docs, `.claude/`, `plugins/`). A new file type or folder the pages read must not match its DOCS list. "All checks" fails if any job failed.
    When `guide-src/` changed (or a game looks different), build and check the guide too (the CI "guide" job does the same):

@@ -10,7 +10,7 @@ import pathlib, re, sys
 sys.path.insert(0, str(pathlib.Path(__file__).resolve().parent))
 from common import repo, duplicate, event
 
-BUILT = {"loopy.js", "loopy.css", "sw.js", "loopy-report.js", "loopy-backup.js", "loopy-sheet.js", "loopy-levels.js", "loopy-install.js", "print.css"}
+BUILT = {"loopy.js", "loopy.css", "sw.js", "loopy-report.js", "loopy-backup.js", "loopy-sheet.js", "loopy-levels.js", "loopy-install.js", "loopy-sync.js", "print.css"}
 STYLE = re.compile(r"<[a-zA-Z][^>]*\sstyle\s*=", re.S)
 HANDLER = re.compile(r"<[a-zA-Z][^>]*\son(click|dblclick|load|error|input|change|submit|reset|focus|blur|"
                      r"key(down|up|press)|mouse\w+|touch\w+|pointer\w+|drag\w*|drop|scroll|resize|"

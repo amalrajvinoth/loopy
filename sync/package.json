@@ -1,0 +1,5 @@
+{
+  "private": true,
+  "type": "module",
+  "description": "loopy Family sync server (a Cloudflare Worker). See README.md. Tests: node test.mjs"
+}

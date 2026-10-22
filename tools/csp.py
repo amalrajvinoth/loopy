@@ -12,6 +12,10 @@ PAGES = sorted(p for p in ROOT.rglob("*.html") if ".git" not in p.parts and "nod
 # The guide's pages are made by its build (guide-src/dist). Its source has no pages of its own.
 META = re.compile(r'<meta http-equiv="Content-Security-Policy" content="[^"]*"\s*/?>')
 BLOCK = re.compile(r"<(script|style)(\s[^>]*)?>(.*?)</\1>", re.S)
+# Family sync's server (Loopy.syncHost in src/loopy.js) is the one other address a page may talk to,
+# and only when it is set. Empty means loopy talks to no one but itself.
+SYNC = re.search(r'Loopy\.syncHost = "([a-z0-9.-]*)";', (ROOT / "src" / "loopy.js").read_text(encoding="utf-8"))
+CONNECT = "'self'" + (" https://" + SYNC.group(1) if SYNC and SYNC.group(1) else "")
 INLINE_ATTR = re.compile(r'<[^>]+\sstyle="', re.I)
 HANDLER = re.compile(r'<[^>]+\son[a-z]+="', re.I)
 
@@ -30,7 +34,7 @@ def policy(html, guide=False):
     script = " ".join(["'self'"] + (["'wasm-unsafe-eval'"] if guide else []) + hashes(html, "script"))
     style = " ".join(["'self'"] + hashes(html, "style"))
     return (f"default-src 'self'; script-src {script}; style-src {style}; img-src 'self' data:; font-src 'self'; "
-            "connect-src 'self'; worker-src 'self'; object-src 'none'; base-uri 'none'; form-action 'none'; manifest-src 'self'; "
+            f"connect-src {CONNECT}; worker-src 'self'; object-src 'none'; base-uri 'none'; form-action 'none'; manifest-src 'self'; "
             "upgrade-insecure-requests")
 
 

@@ -13,7 +13,7 @@ Prints what it did; prints nothing when there was nothing to do.
 import pathlib, re, subprocess, sys
 
 ROOT = pathlib.Path.cwd()
-BUILT = ["loopy.js", "loopy.css", "sw.js", "loopy-report.js", "loopy-backup.js", "loopy-sheet.js", "loopy-levels.js", "loopy-install.js", "print.css"]
+BUILT = ["loopy.js", "loopy.css", "sw.js", "loopy-report.js", "loopy-backup.js", "loopy-sheet.js", "loopy-levels.js", "loopy-install.js", "loopy-sync.js", "print.css"]
 META = re.compile(r'^\s*<meta http-equiv="Content-Security-Policy" content="[^"]*">\s*$')
 
 

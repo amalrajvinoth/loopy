@@ -55,3 +55,23 @@ node tools/e2e/offline.mjs
 ```
 
 Right after an update, the site's servers can still hand out an old file for a few minutes. The offline helper (`sw.js`) checks every file against its hash before it saves it, and asks again with `?v=<hash>` when it gets an old one. The test serves the site with a server that lags like that and checks three things: the new grown-ups page is saved, a wrong page saved by an older helper is downloaded again, and a server that never gives the right file does not stop the update. CI runs it with the Try again test.
+
+## Family sync test
+
+`sync.mjs` checks Family sync with two browser profiles, one for each device:
+
+```sh
+node tools/e2e/sync.mjs
+```
+
+It serves the site as if `Loopy.syncHost` were `sync.test`. Requests to that address go to the real server code (`sync/worker.js`) with a stand-in database (`sync/fake-d1.mjs`), inside the test, so nothing leaves the computer. It checks that:
+
+1. With sync off, `loopy-sync.js` is never loaded and nothing is sent, on the home page and in a game. Opening ⚙ Settings on the home page loads it to show the Family sync part, and still sends nothing.
+2. A bad code, or a code no family has, gives a clear message and leaves sync off.
+3. **Turn on** shows a family code and its QR code, and the server's copy is locked (no stars or game names in it).
+4. With sync on, `loopy-sync.js` loads only after the page has loaded.
+5. Joining with the link from the QR code brings the family's stars, and the link leaves the address bar.
+6. New stars in a game are sent when the game is left, and the other device gets them on its home page.
+7. **Turn off everywhere** removes the copy on the server and the code on this device. Both devices keep their stars, and the other device says the copy was deleted.
+
+CI runs it with the Try again test.
