@@ -13,6 +13,7 @@ This page is for grown-ups. It says in plain words what loopy keeps, and where.
 - There are no accounts. Nobody signs up or logs in.
 - There are no ads, no tracking and no analytics.
 - loopy uses no outside services. Even the fonts are stored on the loopy site, so the browser only talks to loopy.
+- The one exception is [Family sync](/loopy/guide/stars/family-sync/), and only if a grown-up turns it on. It sends a copy of the stars, locked on your device first, so the server can't read it.
 
 ## Where the data lives
 

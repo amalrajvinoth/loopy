@@ -82,9 +82,11 @@ In a game, tap **Settings** to change age, language, colors, the reading font, s
 
 ## Your data stays on your device
 
-Stars, settings, children's names and the answers on the grown-ups' page are saved in your browser. Nothing is sent anywhere. There are no ads, no tracking and no outside services. Even the fonts are stored on the site.
+Stars, settings, children's names and the answers on the grown-ups' page are saved in your browser. Nothing is sent anywhere, unless a grown-up turns on Family sync (below). There are no ads, no tracking and no outside services. Even the fonts are stored on the site.
 Everything is saved twice in the browser: in IndexedDB (a bigger store) and in localStorage (quick to read when a page opens). If one is cleared, loopy brings it back from the other. Once a child has stars, loopy asks the browser to keep them (persistent storage). If IndexedDB is blocked, for example in a private window, loopy works from localStorage alone.
 To move stars to another device, open the home page and tap **Move my stars to another device**. Scan the QR code with the other device's camera, tap **Send** to share the link, or copy the code or the link across. **Save backup** writes the code to a small file (`loopy-stars-<date>.json`) that lands in Downloads or Files, so iCloud Drive or Google Drive can keep it; **Open backup** loads such a file. The QR code is drawn on the device and the file is made on the device, so still nothing is sent anywhere. With two or more children, pick everyone or one child. The code also carries the day streak, progress, Last 5, the age, the game levels and settings, and the last game. The link holds the code after the `#`, so it never reaches the web server; opening it asks first. Loading a code only adds, it never takes anything away. Old codes still load.
+
+Family sync keeps the stars the same on all a family's devices, by themselves. Open ⚙ Settings on the home page and tap **Turn on** under **Family sync**. Then scan its QR code on the other device. Everything is locked on the device before it is sent (AES-GCM, with a key made from the 16-letter family code). So the sync server can't read it. There is no account. It is off until a grown-up turns it on; with it off, nothing is sent. See [sync/README.md](sync/README.md).
 
 ## Screen readers and keyboards
 

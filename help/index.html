@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'sha256-k4y/sj8rttLKZ7/lVUJahlGLOqeOjIJ+Q+ogx8Xi6pI='; style-src 'self' 'sha256-UGLdF5wTOfWhhsx5ktCzginRi/7YAPqpjTKBC7Fafi8='; img-src 'self' data:; font-src 'self'; connect-src 'self'; worker-src 'self'; object-src 'none'; base-uri 'none'; form-action 'none'; manifest-src 'self'; upgrade-insecure-requests">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'sha256-xkGfSqkyPI/X2aq7KybW5XvSP3vw8iCm3NRgTBUkkQY='; style-src 'self' 'sha256-UGLdF5wTOfWhhsx5ktCzginRi/7YAPqpjTKBC7Fafi8='; img-src 'self' data:; font-src 'self'; connect-src 'self' https://loopy-sync.loopy-1e2.workers.dev; worker-src 'self'; object-src 'none'; base-uri 'none'; form-action 'none'; manifest-src 'self'; upgrade-insecure-requests">
 <meta name="referrer" content="strict-origin-when-cross-origin">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <link rel="icon" href="../icon.svg" type="image/svg+xml">
@@ -97,7 +97,7 @@ Loopy.addStrings({
     guideTitle: "The loopy guide", guideIntro: "Every game, setup, settings and the grown-ups page, step by step. With a part for kids on every game.",
     guideLink: "Read the guide", guideText: "In English and German",
     q1: "Is loopy free?", a1: "Yes. loopy is free. There are no ads, no sign-up and nothing to buy.",
-    q2: "Does loopy collect data about my child?", a2: "No. There are no accounts, no ads, no tracking and no analytics. Stars and settings are saved only in this browser on this device. Even the fonts are stored on the loopy site, so your browser only talks to loopy.",
+    q2: "Does loopy collect data about my child?", a2: "No. There are no accounts, no ads, no tracking and no analytics. Stars and settings are saved only in this browser on this device. Even the fonts are stored on the loopy site, so your browser only talks to loopy. The one exception is Family sync, and only if a grown-up turns it on: its copy of the stars is locked on your device first, so the server can't read it.",
     q3: "Which ages is loopy for?", a3: "Kids from about age 5 to 16 (grades 1 to 10). Pick an age on the home page. Games that fit that age are shown first.",
     q4: "How do I set my child's age?", a4: "Tap − or + next to Age on the home page or in a game's Settings. The games get easier or harder to match. The age goes up by itself on each birthday.",
     q5: "How do I change the language?", a5: "Tap EN for English or DE for German. You find it on the home page and in each game's Settings. loopy remembers your choice.",
@@ -116,6 +116,7 @@ Loopy.addStrings({
     q18: "What are the badges for?", a18: "Stars: every right answer earns one, and badges come at 10, 25, 50, 100 and so on up to 5,000 stars. Streaks: 10, 20 or 50 right in a row in any game. Explorer: 5, 10 or all games played. Brave: 10 in a row on a level above your child's age. Day badges: 3, 7 or 30 days in a row. A day counts when Today's 10 is finished or 10 answers in any game are right. All badges are in My stars on the home page.",
     q19: "What is Try again on the home page?", a19: "A wrong answer comes back. The home page shows Try again with this week's mistakes, like 3 from this week, 52 − 17, 7 × 8. Tap it and the game starts with those exact problems. Inside any game, every fifth question can be an old mistake too. Once a mistake is answered right twice, it goes off the list. Mistakes from Today's 10 come back in the game they belong to.",
     q20: "Can my child practise their own spelling words from school?", a20: "Yes. Open Spelling Quiz, tap Settings and type or paste the words into Your word list, with commas between them. Tap Save list. Each question shows the word spelled 3 or 4 ways, and the wrong spellings are new every time. Each child has their own list, in English or German. The list stays in this browser and moves with the stars code.",
+    q21: "Can the stars stay the same on all our devices?", a21: "Yes, with Family sync. On the home page, open Settings and tap Turn on under Family sync. On the other device, scan the QR code, or tap Join with a code and type the family code. Then new stars go to every family device by themselves, and nothing is taken away. Everything is locked on your device before it is sent, so the server can't read it. There is no account. Turn off everywhere deletes the family copy; the stars on each device stay.",
     fbTitle: "Tell us what you think", fbIntro: "Found a problem or have an idea for a new game? We read everything.",
     fbBug: "Report a problem", fbBugText: "Something broken or wrong", fbIdea: "Share an idea", fbIdeaText: "A new game, subject or feature",
     fbAsk: "Ask a question", fbAskText: "Not answered above", fbAll: "See all talks", fbAllText: "Read what others said",
@@ -128,7 +129,7 @@ Loopy.addStrings({
     guideTitle: "Die loopy-Anleitung", guideIntro: "Jedes Spiel, Einrichten, Einstellungen und die Seite für Erwachsene, Schritt für Schritt. Mit einem Teil für Kinder bei jedem Spiel.",
     guideLink: "Anleitung lesen", guideText: "Auf Deutsch und Englisch",
     q1: "Ist loopy kostenlos?", a1: "Ja. loopy ist kostenlos. Es gibt keine Werbung, keine Anmeldung und nichts zu kaufen.",
-    q2: "Sammelt loopy Daten über mein Kind?", a2: "Nein. Es gibt keine Konten, keine Werbung, kein Tracking und keine Analyse. Sterne und Einstellungen werden nur in diesem Browser auf diesem Gerät gespeichert. Sogar die Schriften liegen auf der loopy-Seite, also spricht dein Browser nur mit loopy.",
+    q2: "Sammelt loopy Daten über mein Kind?", a2: "Nein. Es gibt keine Konten, keine Werbung, kein Tracking und keine Analyse. Sterne und Einstellungen werden nur in diesem Browser auf diesem Gerät gespeichert. Sogar die Schriften liegen auf der loopy-Seite, also spricht dein Browser nur mit loopy. Die einzige Ausnahme ist der Familien-Sync, und nur, wenn ein Erwachsener ihn einschaltet: Seine Kopie der Sterne wird vorher auf deinem Gerät verschlossen, sodass der Server sie nicht lesen kann.",
     q3: "Für welches Alter ist loopy?", a3: "Für Kinder von etwa 5 bis 16 Jahren (Klasse 1 bis 10). Wähle auf der Startseite ein Alter. Passende Spiele stehen dann oben.",
     q4: "Wie stelle ich das Alter meines Kindes ein?", a4: "Tippe auf − oder + neben Alter, auf der Startseite oder in den Einstellungen eines Spiels. Die Spiele werden leichter oder schwerer. Das Alter steigt an jedem Geburtstag von selbst.",
     q5: "Wie ändere ich die Sprache?", a5: "Tippe auf EN für Englisch oder DE für Deutsch. Du findest das auf der Startseite und in den Einstellungen jedes Spiels. loopy merkt sich deine Wahl.",
@@ -147,6 +148,7 @@ Loopy.addStrings({
     q18: "Wofür sind die Abzeichen?", a18: "Sterne: jede richtige Antwort gibt einen, und Abzeichen gibt es bei 10, 25, 50, 100 und so weiter bis 5.000 Sternen. Serien: 10, 20 oder 50 richtig hintereinander in irgendeinem Spiel. Entdecker: 5, 10 oder alle Spiele gespielt. Mutig: 10 hintereinander auf einer Stufe über dem Alter deines Kindes. Tage-Abzeichen: 3, 7 oder 30 Tage hintereinander. Ein Tag zählt, wenn die 10 von heute geschafft sind oder 10 Antworten in einem Spiel richtig waren. Alle Abzeichen stehen unter Meine Sterne auf der Startseite.",
     q19: "Was ist Nochmal versuchen auf der Startseite?", a19: "Eine falsche Antwort kommt wieder. Die Startseite zeigt Nochmal versuchen mit den Fehlern dieser Woche, etwa 3 von dieser Woche, 52 − 17, 7 × 8. Tippe darauf, und das Spiel beginnt mit genau diesen Aufgaben. In jedem Spiel kann auch jede fünfte Frage ein alter Fehler sein. Sobald ein Fehler zweimal richtig beantwortet wurde, verschwindet er von der Liste. Fehler aus den 10 von heute kommen in dem Spiel wieder, zu dem sie gehören.",
     q20: "Kann mein Kind die Übungswörter aus der Schule üben?", a20: "Ja. Öffne das Rechtschreib-Quiz, tippe auf Einstellungen und schreibe oder kopiere die Wörter in Eure Wortliste, mit Kommas dazwischen. Tippe auf Liste speichern. Jede Frage zeigt das Wort auf 3 oder 4 Arten geschrieben, und die falschen Schreibweisen sind jedes Mal neu. Jedes Kind hat seine eigene Liste, auf Deutsch oder Englisch. Die Liste bleibt in diesem Browser und zieht mit dem Sterne-Code um.",
+    q21: "Können die Sterne auf allen unseren Geräten gleich sein?", a21: "Ja, mit dem Familien-Sync. Öffne auf der Startseite die Einstellungen und tippe unter Familien-Sync auf Einschalten. Scanne auf dem anderen Gerät den QR-Code, oder tippe auf Mit Code beitreten und gib den Familien-Code ein. Dann kommen neue Sterne von selbst auf jedes Gerät der Familie, und nichts geht verloren. Alles wird auf deinem Gerät verschlossen, bevor es gesendet wird, sodass der Server es nicht lesen kann. Es gibt kein Konto. Überall ausschalten löscht die Familien-Kopie; die Sterne auf jedem Gerät bleiben.",
     fbTitle: "Sag uns deine Meinung", fbIntro: "Ein Fehler gefunden oder eine Idee für ein neues Spiel? Wir lesen alles.",
     fbBug: "Fehler melden", fbBugText: "Etwas geht nicht oder ist falsch", fbIdea: "Idee teilen", fbIdeaText: "Ein neues Spiel, Fach oder eine Funktion",
     fbAsk: "Frage stellen", fbAskText: "Oben nicht beantwortet", fbAll: "Alle Beiträge", fbAllText: "Lies, was andere geschrieben haben",
@@ -159,7 +161,7 @@ Loopy.addStrings({
 document.getElementById("guide-link").href = Loopy.lang === "de" ? "../guide/de/" : "../guide/";
 (function () {
   const box = document.getElementById("faq");
-  for (let i = 1; i <= 20; i++) {
+  for (let i = 1; i <= 21; i++) {
     const d = document.createElement("details"), s = document.createElement("summary"), p = document.createElement("p");
     s.textContent = Loopy.t("q" + i); p.textContent = Loopy.t("a" + i);
     d.append(s, p); box.appendChild(d);

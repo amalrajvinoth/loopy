@@ -14,7 +14,7 @@ Yes. There are no ads, no sign-up and nothing to buy.
 
 ## Does loopy collect data about my child?
 
-No. There are no accounts, no ads, no tracking and no analytics. Stars and settings stay in this browser on this device. Even the fonts come from the loopy site. See [Is it safe?](/loopy/guide/start/is-it-safe/).
+No. There are no accounts, no ads, no tracking and no analytics. Stars and settings stay in this browser on this device. Even the fonts come from the loopy site. The one exception is [Family sync](/loopy/guide/stars/family-sync/), if a grown-up turns it on. Its copy is locked on your device first, so the server can't read it. See [Is it safe?](/loopy/guide/start/is-it-safe/).
 
 ## Which ages is loopy for?
 
@@ -35,6 +35,10 @@ In this browser, in two stores. Clearing browser data or a private window can lo
 ## How do I move stars to another device?
 
 Open **Move my stars to another device** on the home page. Scan the QR code, send the link, or copy the code. See [Move my stars](/loopy/guide/stars/move-stars/).
+
+## Can the stars stay the same on all our devices?
+
+Yes, with Family sync. Open ⚙ **Settings** on the home page and tap **Turn on**. On the other device, scan the QR code. New stars then go to every family device by themselves. Everything is locked before it is sent, and there is no account. See [Family sync](/loopy/guide/stars/family-sync/).
 
 ## Can I use loopy like an app, and offline?
 
