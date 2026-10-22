@@ -39,6 +39,11 @@ One per failure. Add new ones at the end (the heal skill step 3). Keep each to f
 - Cause: `src/sw.js` saved a file without checking it against its hash in `FILES`, so an old copy from the server stayed saved.
 - Fix: keep the hash check in `src/sw.js` (`matches` and `download`), run `python3 tools/build.py`, then `node tools/e2e/offline.mjs`. Never tell people to clear site data: it loses stars. (21 Oct 2026)
 
+## Family sync fails
+- Looks like: `node sync/test.mjs` or `node tools/e2e/sync.mjs` fails, or CI "The Family sync server answers right" or "Family sync keeps two devices in step, and sends nothing when it is off". Or the "Family sync server" deploy job fails.
+- Cause: a change to `sync/worker.js` or `src/loopy-sync.js` broke the request format (simple GET and text/plain POST, no custom headers), the merge, or loading only when on. A deploy failure is usually a missing or expired Cloudflare secret.
+- Fix: run both tests and fix what they name. Never make loopy.js load `loopy-sync.js` on a device where sync is off. For a deploy failure, ask the owner to check `CLOUDFLARE_API_TOKEN` and `CLOUDFLARE_ACCOUNT_ID` (sync/README.md). (22 Oct 2026)
+
 ## review.py "must"
 - Looks like: a `must` row in the `tools/review.py` table.
 - Fix: do what the row says (a missing GAMES entry, README, saved key nothing reads). For a saved key, add a migration from the old key, never just delete it.

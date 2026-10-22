@@ -565,6 +565,23 @@ document.documentElement.classList.add("loopy-building");
   else mark();
 })();
 
+// Family sync: off unless a grown-up turns it on in the home page's Settings (see src/loopy-sync.js).
+// Loopy.syncHost is the family sync server (sync/README.md); empty means Family sync is not offered.
+// tools/csp.py reads it from here and allows the pages to talk to that one server.
+// When sync is on, loopy-sync.js loads after the page has shown and the browser is idle; when it is
+// off, nothing more happens, so pages open exactly as fast as without it.
+(function () {
+  Loopy.syncHost = "";
+  var on = false;
+  try { on = !!Loopy.syncHost && /"i":"[0-9a-f]{32}"/.test(localStorage.getItem("loopy.sync") || ""); } catch (e) {}
+  if (!on) return;
+  var go = function () {
+    var load = function () { Loopy.load("sync").catch(function () {}); };
+    if (window.requestIdleCallback) requestIdleCallback(load, { timeout: 3000 }); else setTimeout(load, 500);
+  };
+  if (document.readyState === "complete") go(); else window.addEventListener("load", go);
+})();
+
 // Loopy themes: black is the default, the choice is remembered on this device.
 (function () {
   var THEMES = [

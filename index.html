@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'sha256-4d3CuGF7StO/mVb2iuT/Eg/7zCN+bIzkxvkheRDnqUg='; style-src 'self' 'sha256-DiBQxLEfoYMLusr9ENgJ3eVJJ2puwaq95NPKZkQgZ60='; img-src 'self' data:; font-src 'self'; connect-src 'self'; worker-src 'self'; object-src 'none'; base-uri 'none'; form-action 'none'; manifest-src 'self'; upgrade-insecure-requests">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'sha256-2LREKb24r0FgWJg2Fe1aJSvCGQrvrERUqOElXpR2WpA='; style-src 'self' 'sha256-dJItlcMQd9O+m7VeTwF6qvXLEzV/DncJGRpqHNv0MJg='; img-src 'self' data:; font-src 'self'; connect-src 'self'; worker-src 'self'; object-src 'none'; base-uri 'none'; form-action 'none'; manifest-src 'self'; upgrade-insecure-requests">
 <meta name="referrer" content="strict-origin-when-cross-origin">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <link rel="icon" href="icon.svg" type="image/svg+xml">
@@ -116,6 +116,15 @@ footer p { margin: 0; }
 .foot-btn:active { transform: translateY(1px); }
 .foot-btn:focus-visible { outline: 3px solid var(--mark); outline-offset: 2px; }
 :root[data-theme="contrast"] .foot-btn:not(:focus-visible) { outline: 2px solid var(--line); outline-offset: -2px; }
+/* Family sync: a part of Settings, before Use like an app. */
+.set-sync { display: flex; flex-direction: column; gap: 10px; border-top: 2px dashed var(--line); padding-top: 12px; }
+.set-sync[hidden] { display: none; }
+.set-sync p:not(.set-head) { margin: 0; color: var(--muted); font-size: 0.9rem; line-height: 1.4; }
+.set-sync p.sync-code { font-family: "Fredoka", "Lexend", sans-serif; font-size: 1.35rem; letter-spacing: 0.06em; color: var(--ink); overflow-wrap: anywhere; }
+.sync-qr { display: block; width: min(100%, 200px); height: auto; border-radius: 12px; background: #fff; }
+.sync-join { display: flex; gap: 8px; }
+.sync-join input { flex: 1; min-width: 0; font: inherit; font-size: 1rem; padding: 10px 12px; border-radius: 12px; border: 2px solid var(--line); background: var(--bg); color: var(--ink); text-transform: uppercase; }
+.sync-join input:focus-visible { outline: 3px solid var(--mark); outline-offset: 2px; }
 /* Add to home screen: the last part of Settings, and the box with the steps for this device. */
 .set-app { display: flex; flex-direction: column; gap: 10px; border-top: 2px dashed var(--line); padding-top: 12px; }
 .app-steps { margin: 0; padding: 0; list-style: none; display: flex; flex-direction: column; gap: 12px; }
@@ -593,6 +602,35 @@ window.addEventListener("loopy:age", render);
     d.children[2].textContent = got ? t("earned") : t("nDays", { n: b.days });
     days.appendChild(d);
   }
+})();
+
+// Family sync: a part of ⚙ Settings on the home page, only when loopy has a sync server (Loopy.syncHost).
+// Its buttons and words live in loopy-sync.js (Loopy.sync.settings), loaded when Settings opens or a
+// link loopy/#family=CODE comes in, so the home page stays as small as it was.
+(function familySync() {
+  if (!Loopy.syncHost) return;
+  Loopy.syncPage = "home";
+  const panel = document.getElementById("settings-panel");
+  if (!panel) return;
+  const box = document.createElement("div");
+  box.className = "set-sync";
+  box.hidden = true;
+  let asked = false;
+  const fill = () => {
+    if (asked) return;
+    asked = true;
+    Loopy.load("sync").then(() => Loopy.sync.settings(box), () => { asked = false; });
+  };
+  const link = () => /^#family=/.test(location.hash);
+  const add = () => {
+    panel.appendChild(box);
+    if (!panel.hidden || link()) fill();
+    const gear = document.getElementById("settings-toggle");
+    if (gear) gear.addEventListener("click", fill);
+  };
+  if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", add);
+  else add();
+  window.addEventListener("hashchange", () => { if (link()) fill(); });
 })();
 
 // Add to home screen: the last part of ⚙ Settings on the home page. When the browser has its own

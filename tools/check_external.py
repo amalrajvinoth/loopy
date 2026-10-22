@@ -2,7 +2,9 @@
 """Fail if any page, script or stylesheet points at another website.
 
 Loopy promises that the browser only talks to Loopy. Links to GitHub on the help page are
-the one exception (they are plain links, not files the page loads).
+the one exception (they are plain links, not files the page loads). Family sync's server
+(Loopy.syncHost) is not a file a page loads: it is reached with fetch() only on devices where a
+grown-up turned sync on, and the page policy (tools/csp.py) allows that one address and no other.
 """
 import pathlib, re, sys
 

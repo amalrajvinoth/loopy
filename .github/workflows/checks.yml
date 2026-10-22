@@ -49,6 +49,8 @@ jobs:
         run: python3 tools/check_external.py
       - name: Every game has a page in the guide, in English and German
         run: python3 tools/guide_check.py
+      - name: The Family sync server answers right (sync/, with a stand-in database)
+        run: node sync/test.mjs
       - name: Install the minifiers (exact versions, checked by hash)
         run: |
           python3 -m venv "$RUNNER_TEMP/venv"
@@ -123,6 +125,10 @@ jobs:
           A11Y_DEPS: ${{ runner.temp }}/a11y
       - name: After an update, phones save the new pages, never an old one
         run: node tools/e2e/offline.mjs
+        env:
+          A11Y_DEPS: ${{ runner.temp }}/a11y
+      - name: Family sync keeps two devices in step, and sends nothing when it is off
+        run: node tools/e2e/sync.mjs
         env:
           A11Y_DEPS: ${{ runner.temp }}/a11y
 

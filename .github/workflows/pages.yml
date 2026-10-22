@@ -40,7 +40,8 @@ jobs:
         run: |
           mkdir -p "$RUNNER_TEMP/site"
           # The games: every file in the repo, as Pages served the main branch before.
-          tar --exclude=./.git --exclude=./guide-src -cf - . | tar -xf - -C "$RUNNER_TEMP/site"
+          # sync/ is Family sync's server code (it runs on Cloudflare, see sync/README.md), not part of the site.
+          tar --exclude=./.git --exclude=./guide-src --exclude=./sync -cf - . | tar -xf - -C "$RUNNER_TEMP/site"
           # The guide.
           cp -R guide-src/dist "$RUNNER_TEMP/site/guide"
           tar --dereference --hard-dereference -C "$RUNNER_TEMP/site" -cf "$RUNNER_TEMP/artifact.tar" .

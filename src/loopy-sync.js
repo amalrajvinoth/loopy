@@ -1,0 +1,389 @@
+/* loopy: Family sync (Loopy.sync). loopy.js loads it only on a device where a grown-up turned it on, after
+   the page has shown and the browser is idle. The home page's Settings also load it on a tap. */
+// Every device keeps everything in this browser, as before, and pages never wait for the network.
+// A locked copy of the stars code (all children) is kept on the family sync server (Loopy.syncHost, see
+// sync/README.md). It is locked here with AES-GCM and a key made from the family code, so the server can't
+// read it. The family code never leaves the device: the server only gets an id and a write key made from it.
+// Home page: read the copy when it changed, add it here (the stars code merge: it only adds, never takes
+// away), and save the result back. Every page: save after something changed (20 seconds after a change,
+// at most every 2 minutes), and when the page is left. New stars from another device show on the
+// home page, which reloads once; a game page never reloads.
+// Kept in this browser's localStorage "loopy.sync", for the whole device and never in a stars code, as
+// { c: family code, i: id, w: write key, k: lock key, e: hash of the copy last read or saved,
+//   h: hash of the stars code last sent or got, t: time of the last sync, x: 1 when changes wait to be saved }.
+(function () {
+  var Loopy = window.Loopy, KEY = "loopy.sync", ABC = "0123456789ABCDEFGHJKMNPQRSTVWXYZ";
+  var WAIT = 20000, GAP = 120000, TIME = 15000;
+  var st = read(), busy = null, timer = null, pushed = st ? st.t : 0, pulled = 0, dirty = false, status = st ? "idle" : "off", tell = [];
+
+  // ---- saved state ----
+  function read() {
+    var s;
+    try { s = JSON.parse(localStorage.getItem(KEY)); } catch (e) { return null; }
+    if (!s || typeof s !== "object" || !/^[0-9A-HJKMNP-TV-Z]{4}(-[0-9A-HJKMNP-TV-Z]{4}){3}$/.test(s.c) || !/^[0-9a-f]{32}$/.test(s.i)
+      || !/^[A-Za-z0-9_-]{43}$/.test(s.w) || !/^[A-Za-z0-9+/]{43}=$/.test(s.k)) return null;
+    return { c: s.c, i: s.i, w: s.w, k: s.k, e: /^[0-9a-f]{32}$/.test(s.e) ? s.e : "", h: /^[0-9a-f]{32}$/.test(s.h) ? s.h : "",
+      t: typeof s.t === "number" && isFinite(s.t) ? s.t : 0, x: s.x === 1 ? 1 : 0 };
+  }
+  function write() { try { if (st) localStorage.setItem(KEY, JSON.stringify(st)); else localStorage.removeItem(KEY); } catch (e) {} }
+  function say(s) { status = s; tell.forEach(function (f) { try { f(s); } catch (e) {} }); }
+
+  // ---- the family code and the keys made from it ----
+  // 16 letters and digits (80 bits), shown as 4 groups: "7K2M-QX9D-4HPT-W3RA". O counts as 0, I and L as 1.
+  function clean(code) {
+    var s = String(code || "").toUpperCase().replace(/[O]/g, "0").replace(/[IL]/g, "1").replace(/[^0-9A-Z]/g, "");
+    if (s.length !== 16) return "";
+    for (var i = 0; i < 16; i++) if (ABC.indexOf(s[i]) < 0) return "";
+    return s.match(/.{4}/g).join("-");
+  }
+  function newCode() {
+    var r = crypto.getRandomValues(new Uint8Array(16)), s = "";
+    for (var i = 0; i < 16; i++) s += ABC[r[i] & 31];
+    return clean(s);
+  }
+  var enc = function (s) { return new TextEncoder().encode(s); };
+  function b64(bytes) { var s = ""; for (var i = 0; i < bytes.length; i++) s += String.fromCharCode(bytes[i]); return btoa(s); }
+  function unb64(s) { var b = atob(s), out = new Uint8Array(b.length); for (var i = 0; i < b.length; i++) out[i] = b.charCodeAt(i); return out; }
+  function hex(bytes) { var s = ""; for (var i = 0; i < bytes.length; i++) s += (bytes[i] < 16 ? "0" : "") + bytes[i].toString(16); return s; }
+  function hash(text) { return crypto.subtle.digest("SHA-256", enc(text)).then(function (d) { return hex(new Uint8Array(d)).slice(0, 32); }); }
+  // One slow step (PBKDF2) when a family is made or joined, then saved, so a page never repeats it.
+  function derive(code) {
+    return crypto.subtle.importKey("raw", enc(code), "PBKDF2", false, ["deriveBits"]).then(function (base) {
+      return crypto.subtle.deriveBits({ name: "PBKDF2", hash: "SHA-256", salt: enc("loopy-family-sync-1"), iterations: 200000 }, base, 640);
+    }).then(function (bits) {
+      // Three separate parts: 16 bytes for the id, 32 for the write key, 32 for the lock key. The server gets the
+      // first two and learns nothing about the third.
+      var b = new Uint8Array(bits);
+      return { c: code, i: hex(b.subarray(0, 16)), w: b64(b.subarray(16, 48)).slice(0, 43).replace(/\+/g, "-").replace(/\//g, "_"), k: b64(b.subarray(48, 80)) };
+    });
+  }
+  function aes(s) { return crypto.subtle.importKey("raw", unb64(s.k), "AES-GCM", false, ["encrypt", "decrypt"]); }
+  function lock(s, text) {
+    var iv = crypto.getRandomValues(new Uint8Array(12));
+    return aes(s).then(function (key) { return crypto.subtle.encrypt({ name: "AES-GCM", iv: iv, additionalData: enc(s.i) }, key, enc(text)); })
+      .then(function (d) { return JSON.stringify({ v: 1, iv: b64(iv), d: b64(new Uint8Array(d)) }); });
+  }
+  function unlock(s, body) {
+    var j = JSON.parse(body);
+    if (!j || j.v !== 1) throw new Error("not a copy");
+    return aes(s).then(function (key) { return crypto.subtle.decrypt({ name: "AES-GCM", iv: unb64(j.iv), additionalData: enc(s.i) }, key, unb64(j.d)); })
+      .then(function (d) { return new TextDecoder("utf-8", { fatal: true }).decode(d); });
+  }
+
+  // ---- the server: GET and text/plain POST only, so the browser sends no extra request first ----
+  function call(s, query, body) {
+    var ctl = typeof AbortController === "function" ? new AbortController() : null, stop = setTimeout(function () { if (ctl) ctl.abort(); }, TIME);
+    var opt = { cache: "no-store", credentials: "omit", referrerPolicy: "no-referrer", signal: ctl ? ctl.signal : undefined };
+    if (body) { opt.method = "POST"; opt.headers = { "Content-Type": "text/plain" }; opt.body = JSON.stringify(body); opt.keepalive = opt.body.length < 60000; }
+    return fetch("https://" + Loopy.syncHost + "/f/" + s.i + query, opt).then(function (r) {
+      clearTimeout(stop);
+      if (r.status !== 200 && r.status !== 412) return { n: r.status };
+      return r.json().then(function (j) { return { n: r.status, j: j || {} }; });
+    }, function () { clearTimeout(stop); return { n: 0 }; });
+  }
+  var get = function (s) { return call(s, "?e=" + s.e); };
+  var post = function (s, b) { return call(s, "?e=" + s.e, { k: s.w, b: b }); };
+
+  // ---- one round: maybe read and merge, then save if this device has something new ----
+  // A promise of { changed: true } when the copy brought something new to this device.
+  function round(pull) {
+    if (busy) return busy;
+    var s = st, changed = false;
+    if (!s) return Promise.resolve({});
+    say("busy");
+    busy = (pull ? get(s).then(function (r) {
+      if (r.n === 0) throw new Error("offline");
+      if (r.n === 404 && s.e) throw new Error("gone");
+      if (r.n !== 200) return;
+      pulled = Date.now();
+      return unlock(s, r.j.b).then(function (code) {
+        return Loopy.backup.exportCode().then(function (before) {
+          return Loopy.backup.importCode(code, { quiet: true }).then(function () { return Loopy.backup.exportCode(); }).then(function (after) {
+            changed = after !== before;
+            s.e = r.j.e;
+            return hash(code).then(function (h) { if (!changed) s.h = h; });
+          });
+        });
+      });
+    }) : Promise.resolve()).then(function () {
+      return Loopy.backup.exportCode().then(function (code) {
+        return hash(code).then(function (h) {
+          dirty = false;
+          if (h === s.h && s.e) { s.x = 0; return; }
+          return lock(s, code).then(function (b) { return post(s, b); }).then(function (r) {
+            if (r.n === 200) { s.e = r.j.e; s.h = h; s.x = 0; pushed = Date.now(); return; }
+            s.x = 1;
+            if (r.n === 429) { later(); return; }
+            if (r.n === 412 && !pull) return;          // someone saved first: the home page will merge it
+            if (r.n === 412) { s.e = r.j.e || ""; throw new Error("again"); }
+            if (r.n === 0) throw new Error("offline");
+            if (r.n === 403) throw new Error("gone");
+          });
+        });
+      });
+    }).then(function () {
+      s.t = Date.now();
+      if (st === s) write();
+      say("idle");
+      return { changed: changed };
+    }, function (err) {
+      if (st === s) write();
+      var why = err && err.message;
+      say(why === "offline" ? "offline" : why === "gone" ? "gone" : "error");
+      return { changed: changed, again: why === "again" };
+    }).then(function (res) {
+      busy = null;
+      // Another device saved in between: read once more and try again.
+      if (res.again && pull !== 2) return round(2).then(function (r2) { return { changed: res.changed || r2.changed }; });
+      return res;
+    });
+    return busy;
+  }
+
+  // ---- when to sync ----
+  function later() {
+    if (!st) return;
+    clearTimeout(timer);
+    var wait = Math.max(WAIT, GAP - (Date.now() - pushed));
+    timer = setTimeout(function () { timer = null; round(false); }, wait);
+  }
+  function changedHere() {
+    if (!st || dirty) return;
+    dirty = true;
+    if (!st.x) { st.x = 1; write(); }
+    later();
+  }
+  // Every save in loopy goes through Loopy.keep.soon (the IndexedDB copy), so that is where a change is seen.
+  if (Loopy.keep && typeof Loopy.keep.soon === "function") {
+    var soon = Loopy.keep.soon;
+    Loopy.keep.soon = function () { var r = soon.apply(this, arguments); changedHere(); return r; };
+  }
+  document.addEventListener("visibilitychange", function () {
+    if (!st) return;
+    if (document.visibilityState === "hidden") { if (dirty || st.x) { clearTimeout(timer); round(false); } }
+    else if (Loopy.syncPage === "home" && Date.now() - pulled > 60000) home();
+  });
+
+  // The home page reads the copy; a change from another device reloads it once, unless a box is open.
+  function home() {
+    return round(true).then(function (r) {
+      var open = document.querySelector("dialog[open]") || (document.getElementById("settings-panel") || {}).hidden === false;
+      var again = false;
+      try { again = Date.now() - Number(sessionStorage.getItem("loopy.syncReload") || 0) < 30000; } catch (e) {}
+      if (r.changed && !open && !again) {
+        try { sessionStorage.setItem("loopy.syncReload", String(Date.now())); } catch (e) {}
+        location.reload();
+      }
+      return r;
+    });
+  }
+
+  function start() {
+    if (!st) return;
+    if (Loopy.syncPage === "home") home();
+    else if (st.x) later();
+  }
+
+
+  // ---- the Family sync part of ⚙ Settings on the home page (index.html makes the box) ----
+  // Off: Turn on (a new family code) or Join with a code. On: the code, its QR code (scan it on the other
+  // device to join), Sync now and Turn off. A link loopy/#family=CODE asks before joining.
+  Loopy.addStrings({
+    en: { syHead: "Family sync", syOff: "Keep the stars the same on all your family's devices, by themselves. Everything is locked on this device before it is sent, and the server can't read it. No account.",
+      syOn: "Turn on", syJoin: "Join with a code", syJoinGo: "Join", syCodeLabel: "Family code from your other device",
+      syIs: "On. Your family code:", syScan: "On your other device, scan this or type the code under Family sync, Join with a code.",
+      syNow: "Sync now", syStop: "Turn off", syForget: "Turn off everywhere",
+      syForgetSure: "Tap again to turn off sync on every device and delete the family copy. Stars on each device stay.",
+      syWhen: "In step at {time}.", syBusy: "Syncing…", syOffline: "Waiting for the internet. Stars are safe on this device.",
+      syGone: "The family copy was deleted on another device. Turn off, then turn on or join again.", syError: "Something went wrong. Stars are safe on this device.",
+      syBad: "That is not a family code. It has 16 letters and numbers.", syNone: "No family has this code. Check it on the other device.",
+      syNoNet: "loopy can't reach the sync server. Try again with internet.",
+      syAskTitle: "Join this family?", syAskText: "Stars from the family's other devices are added here, and stars here are added there. Nothing is taken away.",
+      syAskNo: "Not now", syAskYes: "Join" },
+    de: { syHead: "Familien-Sync", syOff: "Halte die Sterne auf allen Geräten deiner Familie gleich, ganz von selbst. Alles wird auf diesem Gerät verschlossen, bevor es gesendet wird, und der Server kann es nicht lesen. Kein Konto.",
+      syOn: "Einschalten", syJoin: "Mit Code beitreten", syJoinGo: "Beitreten", syCodeLabel: "Familien-Code von deinem anderen Gerät",
+      syIs: "An. Euer Familien-Code:", syScan: "Scanne das auf deinem anderen Gerät oder tippe den Code dort unter Familien-Sync, Mit Code beitreten ein.",
+      syNow: "Jetzt abgleichen", syStop: "Ausschalten", syForget: "Überall ausschalten",
+      syForgetSure: "Tippe noch einmal, um den Sync auf allen Geräten auszuschalten und die Familien-Kopie zu löschen. Die Sterne auf jedem Gerät bleiben.",
+      syWhen: "Abgeglichen um {time}.", syBusy: "Wird abgeglichen …", syOffline: "Wartet auf Internet. Die Sterne sind auf diesem Gerät sicher.",
+      syGone: "Die Familien-Kopie wurde auf einem anderen Gerät gelöscht. Schalte aus und dann wieder ein oder tritt neu bei.", syError: "Etwas ist schiefgegangen. Die Sterne sind auf diesem Gerät sicher.",
+      syBad: "Das ist kein Familien-Code. Er hat 16 Buchstaben und Zahlen.", syNone: "Keine Familie hat diesen Code. Prüfe ihn auf dem anderen Gerät.",
+      syNoNet: "loopy erreicht den Sync-Server nicht. Versuche es mit Internet noch einmal.",
+      syAskTitle: "Dieser Familie beitreten?", syAskText: "Sterne von den anderen Geräten der Familie kommen hierher, und Sterne von hier kommen dorthin. Nichts geht verloren.",
+      syAskNo: "Nicht jetzt", syAskYes: "Beitreten" }
+  });
+
+  function settings(box) {
+    var t = Loopy.t, body = el("div"), msg = el("p");
+    function el(tag, cls, text) { var n = document.createElement(tag); if (cls) n.className = cls; if (text !== undefined) n.textContent = text; return n; }
+    function btn(text, cls) { var b = el("button", cls || "kid-btn", text); b.type = "button"; return b; }
+    msg.setAttribute("aria-live", "polite");
+    box.replaceChildren(el("p", "set-head", t("syHead")), body, msg);
+    box.hidden = false;
+    // Waits for the page to load, so a tap or a link never slows the first picture.
+    var loaded = new Promise(function (r) { if (document.readyState === "complete") r(); else window.addEventListener("load", r, { once: true }); });
+    function shown(s) {
+      if (s === "busy") msg.textContent = t("syBusy");
+      else if (s === "offline") msg.textContent = t("syOffline");
+      else if (s === "gone") msg.textContent = t("syGone");
+      else if (s === "error") msg.textContent = t("syError");
+      else if (s === "idle") msg.textContent = st && st.t ? t("syWhen", { time: new Date(st.t).toLocaleTimeString(Loopy.lang, { hour: "2-digit", minute: "2-digit" }) }) : "";
+    }
+    tell.push(shown);
+
+    function draw() {
+      var row = el("div", "kid-foot");
+      body.replaceChildren();
+      if (!st) {
+        msg.textContent = "";
+        var go = btn(t("syOn")), join = btn(t("syJoin"), "kid-btn quiet");
+        var stuck = function () { msg.textContent = t("syNoNet"); go.disabled = join.disabled = false; };
+        row.append(join, go);
+        body.append(el("p", "", t("syOff")), row);
+        go.addEventListener("click", function () {
+          go.disabled = join.disabled = true;
+          msg.textContent = t("syBusy");
+          loaded.then(Loopy.sync.create).then(function (ok) { if (ok) draw(); else stuck(); }, stuck);
+        });
+        join.addEventListener("click", function () {
+          var line = el("div", "sync-join"), input = el("input"), ok = btn(t("syJoinGo"));
+          input.autocomplete = "off"; input.spellcheck = false; input.setAttribute("autocapitalize", "characters");
+          input.placeholder = "XXXX-XXXX-XXXX-XXXX";
+          input.setAttribute("aria-label", t("syCodeLabel"));
+          line.append(input, ok);
+          row.replaceWith(line);
+          input.focus();
+          ok.addEventListener("click", function () { joinWith(input.value, ok); });
+          input.addEventListener("keydown", function (e) { if (e.key === "Enter") joinWith(input.value, ok); });
+        });
+        return;
+      }
+      var code = el("p", "sync-code", st.c), now = btn(t("syNow")), stop = btn(t("syStop"), "kid-btn quiet"), forget = btn(t("syForget"), "kid-btn danger"), sure = false;
+      var end = el("div", "kid-foot");
+      row.append(stop, now);
+      end.append(forget);
+      body.append(el("p", "", t("syIs")), code, row, end);
+      shown(status === "off" ? "idle" : status);
+      Loopy.load("backup").then(function () {
+        var q = Loopy.backup.qr(Loopy.root + "#family=" + st.c.replace(/-/g, ""), 10);
+        if (!q || !code.isConnected) return;
+        var ns = "http://www.w3.org/2000/svg", svg = document.createElementNS(ns, "svg"), back = document.createElementNS(ns, "rect"), path = document.createElementNS(ns, "path"), span = q.n + 8;
+        svg.setAttribute("viewBox", "-4 -4 " + span + " " + span);
+        svg.setAttribute("class", "sync-qr");
+        svg.setAttribute("role", "img");
+        svg.setAttribute("aria-label", t("syScan"));
+        [["x", -4], ["y", -4], ["width", span], ["height", span], ["fill", "#fff"]].forEach(function (a) { back.setAttribute(a[0], a[1]); });
+        path.setAttribute("d", q.path); path.setAttribute("fill", "#000"); path.setAttribute("shape-rendering", "crispEdges");
+        svg.append(back, path);
+        code.after(svg, el("p", "", t("syScan")));
+      }, function () {});
+      now.addEventListener("click", function () { loaded.then(Loopy.sync.now); });
+      stop.addEventListener("click", function () { Loopy.sync.off(false).then(draw); });
+      forget.addEventListener("click", function () {
+        if (!sure) { sure = true; forget.classList.add("sure"); msg.textContent = t("syForgetSure"); return; }
+        Loopy.sync.off(true).then(draw);
+      });
+    }
+
+    // A promise of what join said; the home page reloads when the family's stars came here.
+    function joinWith(text, button) {
+      if (button) button.disabled = true;
+      msg.textContent = t("syBusy");
+      return loaded.then(function () { return Loopy.sync.join(text); }).then(function (r) {
+        if (button) button.disabled = false;
+        if (r === "bad") msg.textContent = t("syBad");
+        else if (r === "none") msg.textContent = t("syNone");
+        else if (r === "offline") msg.textContent = t("syNoNet");
+        else if (r === "changed") location.reload();
+        else draw();
+        return r;
+      });
+    }
+
+    // A link from the QR code (loopy/#family=7K2MQX9D4HPTW3RA): ask first, then join.
+    function fromLink() {
+      var m = /^#family=([0-9A-Za-z-]{16,19})$/.exec(location.hash);
+      if (!m) return;
+      history.replaceState(null, "", location.pathname + location.search);
+      if (st || typeof HTMLDialogElement !== "function") return;
+      var dlg = el("dialog", "kid-dialog"), form = el("form"), h = el("h2", "", t("syAskTitle")), foot = el("div", "kid-foot");
+      var no = btn(t("syAskNo"), "kid-btn quiet"), yes = el("button", "kid-btn", t("syAskYes"));
+      yes.type = "submit";
+      h.id = "sync-ask";
+      dlg.setAttribute("aria-labelledby", "sync-ask");
+      no.addEventListener("click", function () { dlg.close(); });
+      form.addEventListener("submit", function (e) {
+        e.preventDefault();
+        yes.disabled = true;
+        joinWith(m[1]).then(function (r) {
+          if (r === "changed") return;
+          dlg.close();
+          var panel = document.getElementById("settings-panel"), gear = document.getElementById("settings-toggle");
+          if (panel && panel.hidden && gear) gear.click();
+          box.scrollIntoView({ block: "nearest" });
+        });
+      });
+      foot.append(no, yes);
+      form.append(h, el("p", "kid-note", t("syAskText")), foot);
+      dlg.appendChild(form);
+      dlg.addEventListener("close", function () { dlg.remove(); });
+      document.body.appendChild(dlg);
+      dlg.showModal();
+    }
+
+    draw();
+    fromLink();
+    window.addEventListener("hashchange", fromLink);
+  }
+
+  Loopy.sync = {
+    // { on, code, time, status }: status is "off", "idle", "busy", "offline", "gone" (the copy was deleted
+    // on another device) or "error".
+    state: function () { return { on: !!st, code: st ? st.c : "", time: st ? st.t : 0, status: status }; },
+    listen: function (f) { tell.push(f); },
+    clean: clean,
+    // Turn on with a new family code. A promise of true, or false when the server can't be reached.
+    create: function () {
+      return derive(newCode()).then(function (s) {
+        s.e = ""; s.h = ""; s.t = 0; s.x = 1;
+        st = s;
+        return round(false).then(function () {
+          if (st && st.e) return true;
+          st = null; write(); say("off");
+          return false;
+        });
+      });
+    },
+    // Join with a family code from another device. A promise of "ok", "changed" (it brought stars here),
+    // "none" (no family with this code), "bad" (not a code) or "offline".
+    join: function (code) {
+      var c = clean(code);
+      if (!c) return Promise.resolve("bad");
+      return derive(c).then(function (s) {
+        s.e = ""; s.h = ""; s.t = 0; s.x = 0;
+        return get(s).then(function (r) {
+          if (r.n === 0) return "offline";
+          if (r.n !== 200) return "none";
+          st = s;
+          return round(true).then(function (res) {
+            if (!st.e) { st = null; write(); say("off"); return "offline"; }
+            return res.changed ? "changed" : "ok";
+          });
+        });
+      });
+    },
+    // Turn off on this device. forget: also delete the family's copy on the server (for every device).
+    off: function (forget) {
+      var s = st;
+      st = null; write(); clearTimeout(timer); say("off");
+      if (!forget || !s) return Promise.resolve(true);
+      return call(s, "?del=1", { k: s.w }).then(function (r) { return r.n === 200 || r.n === 404; });
+    },
+    // Sync now (the home page's "Sync now"): a promise of { changed }.
+    now: function () { return Loopy.syncPage === "home" ? home() : round(true); },
+    // Fills the Family sync part of ⚙ Settings on the home page (box: an empty element).
+    settings: settings
+  };
+
+  start();
+})();
