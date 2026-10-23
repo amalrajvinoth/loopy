@@ -20,6 +20,7 @@
     "checks.yml: A mistake comes back in every game until it is fixed",
     "checks.yml: After an update, phones save the new pages, never an old one",
     "checks.yml: Family sync keeps two devices in step, and sends nothing when it is off",
+    "checks.yml: \"Levels follow the child: up by itself when ready, kept over the birthday\"",
     "checks.yml: Install Astro and Starlight (exact versions from the lock file)",
     "checks.yml: Build the guide (this also writes each page's security policy)",
     "checks.yml: Every guide page's security policy matches its code",
@@ -45,6 +46,7 @@
     "tools/check_external.py",
     "tools/ci_changes.py",
     "tools/csp.py",
+    "tools/e2e/levels.mjs",
     "tools/e2e/offline.mjs",
     "tools/e2e/play.mjs",
     "tools/e2e/retry.mjs",
@@ -81,5 +83,5 @@
     "844 × 390"
   ],
   "games_lists": 3,
-  "learned_at": "0b49e69"
+  "learned_at": "1dde5c4"
 }
