@@ -12,6 +12,7 @@ The big changes, newest first. Small fixes are not listed. See [the full list on
 
 - **Today's 10 at your child's levels.** Each problem is as hard as the level your child reached in that game. See [Today's 10](/loopy/guide/games/todays-10/).
 - **Levels follow your child.** A game goes up a level by itself after 10 right in a row, or 18 of the last 20 right. A **Back a step** button goes back. A level your child reached stays when the age goes up. See [Levels](/loopy/guide/playing/levels/).
+- **The QR code for moving stars shows again.** After a few days of play it was an empty white square. Now it keeps the stars, badges, day streak, levels and settings when the full code is too long, and the line under it says what it holds. See [Move my stars](/loopy/guide/stars/move-stars/).
 - **Family sync says when it last synced.** In ⚙ Settings it now reads "Last sync at" and the time. See [Family sync](/loopy/guide/stars/family-sync/).
 
 ## 22 October 2026

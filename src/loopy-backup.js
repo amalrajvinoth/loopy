@@ -83,9 +83,11 @@
     return cleanG(raw);
   }
 
-  function lightLog(log, light) { if (light) log.wrong = []; return log; }
+  function lightLog(log, light) { if (light) log.wrong = []; if (light >= 2) log.days = {}; return log; }
   // only: a child's id for a code with just that child; leave it out for every child.
-  // light: leave out the list of wrong answers (the biggest part), for a code short enough for a QR code.
+  // light: for a code short enough for a QR code. 1 (or true) leaves out the list of wrong answers (the biggest
+  // part); 2 also leaves out the answers per day and the Last 5 dots, and keeps stars, badges, the day streak,
+  // the age, the game levels and settings, and the last game.
   function snapshot(only, light) {
     var p = Loopy.kids.list().filter(function (kid) { return !only || kid.id === only; }).map(function (kid) {
       var id = kid.id;
@@ -94,7 +96,7 @@
         rewards: Loopy.rewards.clean(read("rewards", id)),
         daily: Loopy.daily.clean(read("daily", id)),
         log: lightLog(Loopy.log.clean(read("log", id)), light),
-        recent: Loopy.recent.clean(read("recent", id)),
+        recent: Loopy.recent.clean(light >= 2 ? null : read("recent", id)),
         age: get("age", id) === null ? null : cleanAge(parseInt(get("age", id), 10) || 0),
         read: choice("read", get("read", id)),
         g: gOf(id)
@@ -207,7 +209,7 @@
 
   Loopy.backup = {
     // A promise of the code for everything saved in this browser; with a child's id, for just that child.
-    // light: without the list of wrong answers, so the code stays short enough for a QR code.
+    // light (1 or 2, see snapshot): with less in it, so the code stays short enough for a QR code.
     exportCode: function (only, light) {
       var bytes = new TextEncoder().encode(JSON.stringify(snapshot(only, light)));
       if (!can) return Promise.resolve("LOOPY2-J" + b64(bytes));

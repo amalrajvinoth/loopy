@@ -244,6 +244,9 @@
 .transfer button.quiet { background: var(--chip); color: var(--ink); }
 .transfer-qr { display: flex; flex-direction: column; align-items: center; gap: 6px; }
 .transfer-qr svg { display: block; width: min(100%, 260px); height: auto; border-radius: 12px; background: #fff; }
+.transfer-qr.none svg { display: none; }
+/* These boxes are flex, so the hidden attribute needs its own rule (or an empty white square shows). */
+.transfer-who[hidden], .transfer-qr[hidden] { display: none; }
 .transfer-qr p { text-align: center; }
 
 /* Touch screens: no double-tap zoom or grey flash on buttons. */
