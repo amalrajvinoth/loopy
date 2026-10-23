@@ -131,7 +131,7 @@ jobs:
         run: node tools/e2e/sync.mjs
         env:
           A11Y_DEPS: ${{ runner.temp }}/a11y
-      - name: Levels follow the child: up by itself when ready, kept over the birthday
+      - name: "Levels follow the child: up by itself when ready, kept over the birthday"
         run: node tools/e2e/levels.mjs
         env:
           A11Y_DEPS: ${{ runner.temp }}/a11y
