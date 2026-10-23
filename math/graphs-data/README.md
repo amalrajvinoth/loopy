@@ -22,7 +22,7 @@ The wrong answers are close to the right one on purpose: another bar's value, th
 | 12 | Mean and median | 3 to 5 numbers in a bar chart or a table. The mean is always a whole number. The median has 3 or 5 numbers, so the middle one is easy to find. |
 | 13 and up | Two charts compared | Two bar charts side by side, or two rows in a table: which total or mean is bigger, how much bigger, or the mean of one of them. |
 
-The level shows next to the score, like "Level 2 of 4". After 10 right in a row the game offers the next level. After 3 wrong in the last 5 it offers an easier one, once a visit. A level picked by hand in Settings is kept for that age.
+The level shows next to the score, like "Level 2 of 4". After 10 right in a row, or 18 of the last 20 right, the game goes up a level by itself. It says so, with a **Back a step** button. After 3 wrong in the last 5 it offers an easier one, once a visit. A level picked by hand in Settings is kept for that age. When the age goes up, a level the child reached is kept, never lost.
 
 ## The charts
 

@@ -22,7 +22,7 @@ Für Kinder von etwa 5 bis 16 Jahren (Klasse 1 bis 10). Stell das Alter mit − 
 
 ## Was bedeutet "Stufe 2 von 5"?
 
-Jedes Spiel hat Stufen von leicht bis schwer. Das Alter wählt den Start. Nach 10 richtigen hintereinander bietet das Spiel die nächste Stufe an. Nach 3 falschen in den letzten 5 bietet es eine leichtere an. Mehr unter [Stufen](/loopy/guide/de/playing/levels/).
+Jedes Spiel hat Stufen von leicht bis schwer. Das Alter wählt den Start. Nach 10 richtigen hintereinander, oder 18 richtigen von den letzten 20, geht das Spiel von selbst eine Stufe höher. Nach 3 falschen in den letzten 5 bietet es eine leichtere an. Eine erreichte Stufe bleibt, wenn das Alter steigt. Mehr unter [Stufen](/loopy/guide/de/playing/levels/).
 
 ## Können Geschwister ein Gerät teilen?
 

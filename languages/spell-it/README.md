@@ -23,7 +23,7 @@ The pad has every letter the word needs, once, plus a few extra letters. For a d
 | 9 | 6 letters, like "rabbit" or "Banane", 10 keys |
 | 10 and up | 7 to 8 letters, like "giraffe" or "Elefant", 10 keys |
 
-The level shows next to the score, like "Level 2 of 5". After 10 right in a row the game offers the next level. After 3 wrong in the last 5 it offers an easier one, once a visit. A level picked by hand in Settings is kept for that age. The levels: 3, 4, 5, 6 and 7 to 8 letters.
+The level shows next to the score, like "Level 2 of 5". After 10 right in a row, or 18 of the last 20 right, the game goes up a level by itself. It says so, with a **Back a step** button. After 3 wrong in the last 5 it offers an easier one, once a visit. A level picked by hand in Settings is kept for that age. When the age goes up, a level the child reached is kept, never lost. The levels: 3, 4, 5, 6 and 7 to 8 letters.
 
 ## Words
 

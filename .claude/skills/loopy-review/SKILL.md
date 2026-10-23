@@ -28,6 +28,7 @@ python3 tools/check_external.py     # nothing loads from another website
 python3 tools/review.py             # games follow the same rules, saved data is kept, sizes (table of findings)
 node tools/e2e/play.mjs             # plays every game; no errors, stars add up, no repeated questions
 node tools/e2e/retry.mjs            # Try again in every game: a mistake comes back, and goes once it is answered right twice
+node tools/e2e/levels.mjs           # levels follow the child: up by itself when ready, kept over the birthday
 ```
 
 The first three, the play test and the Try again test are the GitHub check: any failure must be fixed (the play test needs `npm ci --prefix tools/a11y --ignore-scripts` once, see tools/e2e/README.md). `tools/review.py` prints `must`, `should` and `suggest` findings. A `must` that this change added must be fixed. Findings that were already on main go in the report as "already there", not as part of this change.

@@ -165,6 +165,9 @@
     var values = {};
     g.keys.forEach(function (k) { k = k.replace("{age}", age); values[k] = Loopy.store.get(k); });
     var at = Math.max(0, Math.min(g.of - 1, g.at(values, age) | 0)), names = g.names[Loopy.lang] || g.names.en;
+    // The age went up since the child reached a higher level: the game will carry it over when opened (Loopy.levels).
+    var rec = Loopy.levels ? Loopy.levels.seen()[game] : null;
+    if (rec && rec.length === 4 && rec[3] < age && rec[0] > at) at = Math.min(g.of - 1, rec[0]);
     return { at: at, of: g.of, base: g.base(age), name: names[at] };
   };
 })();

@@ -25,7 +25,7 @@ Up to age 10, Asia, Africa and the Americas show all their flags, because they h
 
 In World mode a small tag under the question says the part of the world, like "In Africa". The wrong answers come from the same part of the world when they can, so the choice is a real one.
 
-The level shows next to the score, like "Level 2 of 4". After 10 right in a row the game offers the next level. After 3 wrong in the last 5 it offers an easier one, once a visit. A level picked by hand in Settings is kept for that age. The levels: flags of Europe, Europe with capitals, flags of the world, world with capitals.
+The level shows next to the score, like "Level 2 of 4". After 10 right in a row, or 18 of the last 20 right, the game goes up a level by itself. It says so, with a **Back a step** button. After 3 wrong in the last 5 it offers an easier one, once a visit. A level picked by hand in Settings is kept for that age. When the age goes up, a level the child reached is kept, never lost. The levels: flags of Europe, Europe with capitals, flags of the world, world with capitals.
 
 ## Last 5
 

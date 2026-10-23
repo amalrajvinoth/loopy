@@ -35,7 +35,7 @@ On short phones the number line is left out, so the steps and the number pad kee
 
 Ages 6 and under start with adding only. From 7 it is adding and taking away mixed.
 
-The level shows next to the score, like "Level 3 of 6". After 10 right in a row the game offers the next level. After 3 wrong in the last 5 it offers an easier one, once a visit.
+The level shows next to the score, like "Level 3 of 6". After 10 right in a row, or 18 of the last 20 right, the game goes up a level by itself. It says so, with a **Back a step** button. After 3 wrong in the last 5 it offers an easier one, once a visit. When the age goes up, a level the child reached is kept, never lost.
 
 ## Settings
 

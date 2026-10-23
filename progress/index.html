@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'sha256-u/LT2z9Uim2O0MM4J9F6VDB+tIcE3pf8rdrmdn2C26s='; style-src 'self' 'sha256-46Cq+42DLh7NpasKPyxtoBftOWT7c+IqDOGe/PWRVu8='; img-src 'self' data:; font-src 'self'; connect-src 'self' https://loopy-sync.loopy-1e2.workers.dev; worker-src 'self'; object-src 'none'; base-uri 'none'; form-action 'none'; manifest-src 'self'; upgrade-insecure-requests">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'sha256-6yUMJeMQPLD6kdxg2kPSHzyH3528eHRfUtjWJODtNlM='; style-src 'self' 'sha256-46Cq+42DLh7NpasKPyxtoBftOWT7c+IqDOGe/PWRVu8='; img-src 'self' data:; font-src 'self'; connect-src 'self' https://loopy-sync.loopy-1e2.workers.dev; worker-src 'self'; object-src 'none'; base-uri 'none'; form-action 'none'; manifest-src 'self'; upgrade-insecure-requests">
 <meta name="referrer" content="strict-origin-when-cross-origin">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <link rel="icon" href="../icon.svg" type="image/svg+xml">
@@ -541,32 +541,20 @@ Loopy.addStrings({
   }
   // "Better" or "harder" than last week, when both weeks have enough answers to tell.
   // The level of a game for this child's age, from the shared levels list (loaded before the first render).
-  // One small per-child key remembers the level the page last saw per game, as [level, level before, day it
-  // moved], so a card can say the level went up this week. Only what Loopy.levelOf gives is shown, so nothing
-  // here changes a game's own saved settings.
-  const LV_KEY = "loopy.levels", DAY = /^\d{4}-\d{2}-\d{2}$/;
+  // The games keep a small per-child record of where the level went (Loopy.levels.seen), so a card can say
+  // the level went up this week. Nothing here changes a game's own saved settings.
   const levelOf = (id) => (Loopy.levelOf ? Loopy.levelOf(id) : null);
   function nextLevelName(id) {
     const lv = levelOf(id), g = Loopy.levelsTable && Loopy.levelsTable[id];
     if (!lv || !g || lv.at >= lv.of - 1) return "";
     return (g.names[Loopy.lang] || g.names.en)[lv.at + 1];
   }
-  function seenLevels() {
-    try {
-      const v = JSON.parse(Loopy.store.get(LV_KEY)), out = {};
-      if (v && typeof v === "object") Object.keys(v).forEach(k => { if (okRec(v[k]) && Loopy.levelsTable && Loopy.levelsTable[k]) out[k] = v[k]; });
-      return out;
-    } catch (e) { return {}; }
-  }
-  const okRec = (r) => Array.isArray(r) && r.length === 3 && Number.isInteger(r[0]) && (r[1] === null || Number.isInteger(r[1])) && DAY.test(r[2] || "");
   function levelLine(id, seen) {
     const lv = levelOf(id);
     if (!lv) return null;
-    const old = seen[id] || null;
-    const rec = old && old[0] === lv.at ? old : [lv.at, old ? old[0] : null, Loopy.dayKey(0)];
-    if (rec !== old) { seen[id] = rec; try { Loopy.store.set(LV_KEY, JSON.stringify(seen)); } catch (e) {} }
+    const rec = seen[id];
     const p = el("p", "lvl", t("prLevel", { n: num(lv.at + 1), of: num(lv.of), name: lv.name }));
-    if (rec[1] !== null && rec[1] !== rec[0] && rec[2] >= Loopy.dayKey(-6)) p.append(" ", el("b", "", t(rec[0] > rec[1] ? "prLevelWentUp" : "prLevelEasier")));
+    if (rec && rec[0] === lv.at && rec[1] !== null && rec[1] !== rec[0] && rec[2] >= Loopy.dayKey(-6)) p.append(" ", el("b", "", t(rec[0] > rec[1] ? "prLevelWentUp" : "prLevelEasier")));
     return p;
   }
   function trend(now, before) {
@@ -673,7 +661,7 @@ Loopy.addStrings({
   function games() {
     const box = $("games");
     box.textContent = "";
-    const quiet = [], seen = seenLevels();
+    const quiet = [], seen = Loopy.levels ? Loopy.levels.seen() : {};
     GAMES.forEach(g => {
       const now = totals(thisWeek, g.id), before = totals(lastWeek, g.id);
       if (!now.n && !before.n) { quiet.push(g); return; }

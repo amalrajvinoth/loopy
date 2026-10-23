@@ -76,3 +76,13 @@ It serves the site as if `Loopy.syncHost` were `sync.test`. Requests to that add
 8. **Turn off everywhere** removes the copy on the server and the code on this device. Both devices keep their stars, and the other device says the copy was deleted.
 
 CI runs it with the Try again test.
+
+## Levels test
+
+`levels.mjs` checks that levels follow the child, in Make 10 and Times Tables Sprint:
+
+```sh
+node tools/e2e/levels.mjs
+```
+
+It checks: one more right answer moves the game up a level when 18 of the last 20 are right, the card says so, and **Back a step** goes back. 10 right in a row move it up, after any badge cards. A level reached at age 8 is still there at age 9, and the grown-ups' levels list agrees. An old record without an age carries nothing. A younger age picked by hand starts at its own level. The Last 5 pill shows five dots while 20 answers are kept. The Sprint goes up after a clean round. CI runs it with the Try again test.

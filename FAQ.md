@@ -24,7 +24,7 @@ Tap − or + next to Age on the home page or in a game's Settings. The games get
 
 ## What does "Level 2 of 5" mean?
 
-Every game has levels, from easy to hard. The age picks the starting level, and the pill next to the score shows where your child is. After 10 right in a row the game offers the next level. After 3 wrong in the last 5 it offers an easier one. You can also pick a level by hand in the game's Settings. The level is kept for that age, for each child.
+Every game has levels, from easy to hard. The age picks the starting level, and the pill next to the score shows where your child is. After 10 right in a row, or 18 of the last 20 right, the game goes up a level by itself and says so. A Back a step button goes back. After 3 wrong in the last 5 it offers an easier one. You can also pick a level by hand in the game's Settings. The level is kept for each child, and a level your child reached stays when the age goes up.
 
 ## Can brothers and sisters share one device?
 
