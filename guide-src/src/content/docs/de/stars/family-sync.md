@@ -32,7 +32,7 @@ Jedes Kind behält seine eigenen Sterne. Gib jedem Kind auf jedem Gerät denselb
 - **Die Startseite** holt bei jedem Öffnen neue Sterne von den anderen Geräten. Kam etwas Neues, lädt sie einmal neu, um es zu zeigen.
 - **Ein Spiel** schickt seine neuen Sterne kurz nach dem Spielen und wenn du das Spiel verlässt.
 - **Ein Gerät, das offen liegt,** holt von selbst auf. Nach 5 Minuten ohne Tippen holt es die neuen Sterne und lädt die Seite einmal neu. Ein Spiel zeigt dann eine neue Aufgabe, Stufe und Sterne bleiben. Solange niemand es berührt, prüft es alle 15 Minuten noch einmal, höchstens eine Stunde lang.
-- **Jetzt abgleichen** in ⚙ Einstellungen macht es sofort.
+- **Jetzt abgleichen** in ⚙ Einstellungen macht es sofort. Darunter zeigt "Zuletzt abgeglichen um", wann dieses Gerät zuletzt abgeglichen hat.
 
 Es lädt die Seite nie neu, während ein Kind tippt, während ein Feld oder die Einstellungen offen sind oder während loopy im Hintergrund ist. Die Spiele warten nie auf das Internet. Die Sterne werden wie immer zuerst auf dem Gerät gespeichert. Ohne Internet steht in den Einstellungen "Wartet auf Internet", und loopy gleicht ab, sobald es wieder da ist.
 

@@ -8,6 +8,10 @@ loopy keeps getting new games. Here is what came lately!
 
 The big changes, newest first. Small fixes are not listed. See [the full list on GitHub](https://github.com/amalrajvinoth/loopy/blob/main/RELEASES.md).
 
+## 23 October 2026
+
+- **Family sync says when it last synced.** In ⚙ Settings it now reads "Last sync at" and the time. See [Family sync](/loopy/guide/stars/family-sync/).
+
 ## 22 October 2026
 
 - **Family sync catches up by itself.** A phone or tablet left open gets the new stars from your other devices after 5 minutes without a tap. See [Family sync](/loopy/guide/stars/family-sync/).
