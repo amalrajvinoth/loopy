@@ -82,10 +82,16 @@ async function open(game, { age, lang }, fail) {
       localStorage.setItem("loopy.e2e", "1");
       localStorage.setItem("loopy.lang", l); localStorage.setItem("loopy.sound", "off"); localStorage.setItem("loopy.readAloud", "off");
     }
-    // Every question the game shows, in order, even the same one twice.
+    // Every question the game shows, in order, even the same one twice. A level change is a null mark: the game
+    // forgets what it asked when the level changes, so the repeat check starts afresh there.
+    // (The level pill is read when the question arrives, so a question made by the level change itself counts as new-level.)
     window.__questions = [];
-    new MutationObserver(list => list.forEach(m => window.__questions.push(m.target.getAttribute("data-q"))))
-      .observe(document, { subtree: true, attributeFilter: ["data-q"] });
+    let level = "";
+    new MutationObserver(list => list.forEach(m => {
+      const el = document.getElementById("level"), now = el ? el.textContent : "";
+      if (now !== level) { if (level) window.__questions.push(null); level = now; }
+      window.__questions.push(m.target.getAttribute("data-q"));
+    })).observe(document, { subtree: true, attributeFilter: ["data-q"] });
   }, lang);
   ctx.setDefaultTimeout(5000);
   const p = await ctx.newPage();
@@ -153,10 +159,14 @@ async function answer(p) {
   return false;
 }
 
-// Close a big "level up" or badge window with its last button ("Keep going"), so the level stays the same.
+// Close a big window: a badge card with its button, a "Level up! ⬆" card with "Yay!", so the game goes on at
+// the new level, as it would for a child.
 async function closeCheer(p) {
-  const big = p.locator(".loopy-cheer.big button");
-  if (await big.count()) { await big.last().click(); await p.waitForTimeout(300); }
+  const big = p.locator(".loopy-cheer.big");
+  if (!await big.count()) return;
+  const up = (await big.innerText()).includes("\u2b06");
+  await big.locator("button")[up ? "first" : "last"]().click();
+  await p.waitForTimeout(300);
 }
 
 // Go to the next question: Next, or Check that has turned into Next. n is how many questions
@@ -173,8 +183,12 @@ async function next(p, n) {
 
 // The same question may not come back within WINDOW questions, or, for a smaller game, before all the others.
 function repeats(keys, whole) {
-  const w = whole ? keys.length : Math.min(WINDOW, new Set(keys).size - 1), out = [];
-  keys.forEach((k, i) => { const j = i ? keys.lastIndexOf(k, i - 1) : -1; if (j >= 0 && i - j <= w) out.push(`"${k}" again after ${i - j}`); });
+  const out = [], parts = [[]];
+  for (const k of keys) k === "\x00" ? parts.push([]) : parts[parts.length - 1].push(k);
+  for (const part of parts) {
+    const w = whole ? part.length : Math.min(WINDOW, new Set(part).size - 1);
+    part.forEach((k, i) => { const j = i ? part.lastIndexOf(k, i - 1) : -1; if (j >= 0 && i - j <= w) out.push(`"${k}" again after ${i - j}`); });
+  }
   return out;
 }
 
@@ -195,14 +209,15 @@ for (const game of GAMES) {
         if (i < rounds - 1) await next(p, n);
         else await closeCheer(p);
       }
-      const keys = await p.evaluate(() => window.__questions.slice());
+      const keys = await p.evaluate(() => window.__questions.map(k => k === null ? "\x00" : k));
       const sc = await score(p), gained = (await stars(p)) - starsBefore;
       const rightCount = sc ? sc[0] : marked;
       if (sc && sc[1] !== rounds) fail(`the score says ${sc[1]} answered, not ${rounds}`);
       if (gained !== rightCount) fail(`${rightCount} right answers but the star counter went up by ${gained}`);
       const bad = repeats(keys, daily);
       for (const b of bad) fail(`question repeated too soon: ${b}`);
-      rows.push(`| ${game} | ${run.age} | ${run.lang} | ${keys.length} | ${new Set(keys).size} | ${rightCount} | ${bad.length ? "repeats" : "pass"} |`);
+      const qs = keys.filter(k => k !== "\x00");
+      rows.push(`| ${game} | ${run.age} | ${run.lang} | ${qs.length} | ${new Set(qs).size} | ${rightCount} | ${bad.length ? "repeats" : "pass"} |`);
     } catch (e) {
       fail(`could not play: ${e.message.split("\n")[0]}`);
       rows.push(`| ${game} | ${run.age} | ${run.lang} | - | - | - | error |`);

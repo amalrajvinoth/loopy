@@ -17,7 +17,7 @@ A short science quiz with pictures. The child sees a picture and a question abou
 | 9 to 10 | Explorer | Starter and Explorer facts, 4 answers |
 | 11 and up | Expert | All facts, 4 answers |
 
-The level shows next to the score, like "Level 2 of 3". After 10 right in a row the game offers the next level. After 3 wrong in the last 5 it offers an easier one, once a visit. A level picked by hand in Settings is kept for that age. The levels: Starter, Explorer, Expert.
+The level shows next to the score, like "Level 2 of 3". After 10 right in a row, or 18 of the last 20 right, the game goes up a level by itself. It says so, with a **Back a step** button. After 3 wrong in the last 5 it offers an easier one, once a visit. A level picked by hand in Settings is kept for that age. When the age goes up, a level the child reached is kept, never lost. The levels: Starter, Explorer, Expert.
 
 ## Facts
 

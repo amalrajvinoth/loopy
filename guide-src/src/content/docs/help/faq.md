@@ -22,7 +22,7 @@ Kids from about 5 to 16 (grades 1 to 10). Set the age with − and + in ⚙ Sett
 
 ## What does "Level 2 of 5" mean?
 
-Each game has levels from easy to hard. The age picks the start. After 10 right in a row, the game offers the next level. After 3 wrong in the last 5, it offers an easier one. See [Levels](/loopy/guide/playing/levels/).
+Each game has levels from easy to hard. The age picks the start. After 10 right in a row, or 18 of the last 20 right, the game goes up a level by itself. After 3 wrong in the last 5, it offers an easier one. A level your child reached stays when the age goes up. See [Levels](/loopy/guide/playing/levels/).
 
 ## Can brothers and sisters share one device?
 

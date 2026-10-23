@@ -43,7 +43,7 @@ document.documentElement.classList.add("loopy-building");
       s10: "Hot Streak", s20: "On Fire", s50: "Unstoppable", e5: "Explorer", e10: "Adventurer", eAll: "World Traveller", brave: "Brave",
       streakText: "{n} in a row", gamesText: "{n} games played", braveText: "10 in a row above your age's level", bestStreak: "Best streak: {n}",
       newBadge: "New badge: {name}!", badgeText: "You have earned {n} stars. Keep going!",
-      levelUp: "{n} in a row! Ready to level up?", levelUpRound: "A clean round! Ready to level up?", makeHarder: "Make it harder", keepGoing: "Keep going", yay: "Yay!",
+      keepGoing: "Keep going", yay: "Yay!",
       inARow: "{n} in a row!", bestYet: "That's your best streak yet!", amazing: "Amazing work!",
       newBest: "New best streak: {n}!", keepItGoing: "Keep it going!",
       correct: "Correct!", correctRow: "Correct! {n} in a row!", notQuite: "Not quite.",
@@ -66,7 +66,7 @@ document.documentElement.classList.add("loopy-building");
       s10: "Heiße Serie", s20: "Feuer und Flamme", s50: "Nicht zu stoppen", e5: "Entdecker", e10: "Abenteurer", eAll: "Weltenbummler", brave: "Mutig",
       streakText: "{n} hintereinander", gamesText: "{n} Spiele gespielt", braveText: "10 hintereinander über der Stufe deines Alters", bestStreak: "Beste Serie: {n}",
       newBadge: "Neues Abzeichen: {name}!", badgeText: "Du hast {n} Sterne gesammelt. Weiter so!",
-      levelUp: "{n} richtig hintereinander! Bereit für mehr?", levelUpRound: "Alles richtig! Bereit für mehr?", makeHarder: "Schwieriger machen", keepGoing: "Weiter so", yay: "Juhu!",
+      keepGoing: "Weiter so", yay: "Juhu!",
       inARow: "{n} richtig hintereinander!", bestYet: "Das ist deine beste Serie!", amazing: "Super gemacht!",
       newBest: "Neue beste Serie: {n}!", keepItGoing: "Mach weiter so!",
       correct: "Richtig!", correctRow: "Richtig! {n} hintereinander!", notQuite: "Nicht ganz.",
@@ -921,7 +921,7 @@ document.documentElement.classList.add("loopy-building");
   var STREAKS = [5, 10, 15, 20, 30, 50];
   var STAR_PATH = "M12 2.5l2.9 6 6.6.9-4.8 4.6 1.2 6.5L12 17.4l-5.9 3.1 1.2-6.5L2.5 9.4l6.6-.9z";
 
-  var data = { stars: 0, best: {}, played: [], brave: false };
+  var data = { stars: 0, best: {}, played: [], brave: false }, upOwed = false;
   var cheeredBest = {}; // one "new best" cheer per run
   var owed = []; // badges earned on the same answer as another card, cheered on the next right answer
   var last = null; // the last answer on this page, for "Report a problem"
@@ -1121,8 +1121,8 @@ document.documentElement.classList.add("loopy-building");
       if (Loopy.levels) Loopy.levels.stuck(game);
     },
     // Call after each right answer with the current streak.
-    // harder: optional { label, apply } offered after 10 in a row. Left out, the game's ladder
-    // (Loopy.levels) gives the next level; null means no offer, e.g. during a timed round.
+    // harder: leave out, and the game goes up a level by itself when the child is ready (Loopy.levels.up);
+    // null turns that off for this answer, e.g. during a timed round.
     correct: function (game, streak, harder) {
       if (harder === undefined && Loopy.levels) harder = Loopy.levels.harder();
       last = { ok: true, d: null };
@@ -1146,12 +1146,15 @@ document.documentElement.classList.add("loopy-building");
       if (day) owed.push([day.name, Loopy.t("dayStreakBadge", { n: day.days })]);
       if (owed.length) {
         var b = owed.shift();
+        if (harder && (streak % 10 === 0 || Loopy.levels.ripe(game))) upOwed = true;
         Loopy.sound.play("badge");
         celebrate(Loopy.t("newBadge", { name: b[0] }), b[1], true);
-      } else if (streak % 10 === 0 && harder) {
-        Loopy.sound.play("badge");
-        celebrate(Loopy.t("levelUp", { n: streak }), harder.label, true,
-          [{ label: Loopy.t("makeHarder"), fn: harder.apply }, { label: Loopy.t("keepGoing") }]);
+      } else if (harder && (upOwed || streak % 10 === 0 || Loopy.levels.ripe(game))) {
+        // Ready for the next level: 10 in a row, or 18 of the last 20 right across visits. A badge card
+        // that was showing at that moment (upOwed) only puts it off to the next right answer.
+        var r = Loopy.levels.ripe(game);
+        upOwed = false;
+        Loopy.levels.up(streak % 10 === 0 || !r ? Loopy.t("inARow", { n: streak }) : Loopy.t("lastOf", { r: r, n: Loopy.recent.KEEP }));
       } else if (STREAKS.indexOf(streak) !== -1) {
         Loopy.sound.play("cheer");
         celebrate(Loopy.t("inARow", { n: streak }), Loopy.t(newBest ? "bestYet" : "amazing"), false);
@@ -1189,21 +1192,29 @@ document.documentElement.classList.add("loopy-building");
   else build();
 })();
 
-// Levels: each game declares its ladder once, with Loopy.levels.init({ game, names, get, set, base }):
+// Levels: each game declares its ladder once, with Loopy.levels.init({ names, get, set, base }):
 //   names   the levels in order, as string keys for Loopy.t, e.g. ["lvHalf", "lvQuarter", "lvFive", "lvOne"];
 //           a level whose name has a number in it is a function that returns the text
 //   get()   the level the child is on now, 0-based, read from the game's settings
 //   set(i)  go to level i: change the settings, save them for this age, redraw
 //   base()  the level the age picker starts at, 0-based (the grown-ups' page and badges use it)
-// The score row's <div id="level"></div> becomes a "Level 2 of 4" pill. After 10 right in a row the
-// game offers the next level (rewards.correct), after 3 wrong in the last 5 an easier one, once a visit
-// (rewards.wrong). A game calls Loopy.levels.render() after a level is picked by hand in Settings.
+// The score row's <div id="level"></div> becomes a "Level 2 of 4" pill. The game goes up a level by itself
+// after 10 right in a row, or 18 of the last 20 right across visits (rewards.correct), with a "Back a step"
+// button; after 3 wrong in the last 5 it offers an easier one, once a visit (rewards.wrong). A game calls
+// Loopy.levels.render() after a level is picked by hand in Settings.
+// One small per-child record per game, "loopy.levels" = { game: [level, level before, day it moved, age] },
+// says where the child got to. The grown-ups' page reads it for "went up this week". When the age goes up
+// (a birthday, or the age picker), a game opened for the first time at the new age starts from the level
+// the child had reached, never lower. The per-age settings stay as they are.
 (function () {
-  var Loopy = window.Loopy, L = null, asked = false;
+  var Loopy = window.Loopy, L = null, asked = false, carry = null, noted = "";
+  var KEY = "loopy.levels", GOOD = 18, DAY = /^\d{4}-\d{2}-\d{2}$/;
   Loopy.addStrings({
-    en: { levelOf: "Level {n} of {m}", levelShort: "Level {n}/{m}", levelAria: "Level {n} of {m}: {name}", nextLevel: "Next: {name}",
+    en: { levelOf: "Level {n} of {m}", levelShort: "Level {n}/{m}", levelAria: "Level {n} of {m}: {name}", nowLevel: "Now: {name}",
+      levelUpNow: "Level up! ⬆", lastOf: "{r} of the last {n} right.", backStep: "Back a step", cleanRound: "A clean round!",
       tricky: "Tricky ones today?", trickyText: "Want it a bit easier for now?", easier: "A bit easier" },
-    de: { levelOf: "Stufe {n} von {m}", levelShort: "Stufe {n}/{m}", levelAria: "Stufe {n} von {m}: {name}", nextLevel: "Als Nächstes: {name}",
+    de: { levelOf: "Stufe {n} von {m}", levelShort: "Stufe {n}/{m}", levelAria: "Stufe {n} von {m}: {name}", nowLevel: "Jetzt: {name}",
+      levelUpNow: "Stufe hoch! ⬆", lastOf: "{r} der letzten {n} richtig.", backStep: "Eine Stufe zurück", cleanRound: "Alles richtig!",
       tricky: "Heute knifflig?", trickyText: "Soll es erst mal etwas leichter sein?", easier: "Etwas leichter" }
   });
   var clamp = function (i) { return Math.max(0, Math.min(L.names.length - 1, i | 0)); };
@@ -1213,6 +1224,34 @@ document.documentElement.classList.add("loopy-building");
   function at() { return clamp(L.get()); }
   function name(i) { var n = L.names[i]; return typeof n === "function" ? n() : Loopy.t(n); }
   function go(i) { L.set(clamp(i)); render(); }
+  // The game on this page, from the Last 5 pill.
+  function gameId() { var b = document.getElementById("last5"); return b ? b.getAttribute("data-game") : ""; }
+  // The saved records, only the well-formed ones: [level, level before or null, "YYYY-MM-DD", age (since levels follow the child)].
+  function seen() {
+    var out = {};
+    try {
+      var v = JSON.parse(Loopy.store.get(KEY));
+      if (v && typeof v === "object") Object.keys(v).forEach(function (g) {
+        var r = v[g], ok = Array.isArray(r) && (r.length === 3 || r.length === 4) && Number.isInteger(r[0]) && r[0] >= 0 &&
+          (r[1] === null || Number.isInteger(r[1])) && DAY.test(r[2] || "") && (r.length === 3 || (Number.isInteger(r[3]) && r[3] > 0));
+        if (ok && /^[a-z0-9-]{2,20}$/.test(g)) out[g] = r;
+      });
+    } catch (e) {}
+    return out;
+  }
+  // Keeps the record in step with the level on screen. A level change starts the game's Last 5 afresh,
+  // so "18 of the last 20" counts only answers on the new level.
+  function note() {
+    var g = gameId(), i = at(), age = Loopy.getAge();
+    if (!g || noted === i + "/" + age) return;
+    noted = i + "/" + age;
+    var all = seen(), old = all[g];
+    if (old && old[0] === i && old[3] === age) return;
+    var moved = !old || old[0] !== i;
+    all[g] = moved ? [i, old ? old[0] : null, Loopy.dayKey(0), age] : [i, old[1], old[2], age];
+    Loopy.store.set(KEY, JSON.stringify(all));
+    if (moved && old && old.length === 4 && Loopy.recent) Loopy.recent.clear(g);
+  }
   function render() {
     var box = document.getElementById("level");
     if (!L || !box) return;
@@ -1220,12 +1259,22 @@ document.documentElement.classList.add("loopy-building");
     box.className = "pill pill-level";
     box.textContent = Loopy.t(narrow.matches ? "levelShort" : "levelOf", { n: i + 1, m: n });
     box.setAttribute("aria-label", Loopy.t("levelAria", { n: i + 1, m: n, name: name(i) }));
+    if (carry === null) note();
   }
   function harder() {
     if (!L) return null;
     var i = at();
     if (i >= L.names.length - 1) return null;
-    return { label: Loopy.t("nextLevel", { name: name(i + 1) }), apply: function () { go(i + 1); } };
+    return { label: Loopy.t("nowLevel", { name: name(i + 1) }), apply: function () { go(i + 1); }, undo: function () { go(i); } };
+  }
+  // Goes up one level and says so, with a way back. why: the reason, e.g. "10 in a row!". False on the top level.
+  function up(why) {
+    var h = harder();
+    if (!h) return false;
+    h.apply();
+    Loopy.sound.play("badge");
+    Loopy.rewards.celebrate(Loopy.t("levelUpNow"), why + " " + h.label, true, [{ label: Loopy.t("yay") }, { label: Loopy.t("backStep"), fn: h.undo }]);
+    return true;
   }
   function easier() {
     var i = at();
@@ -1233,24 +1282,38 @@ document.documentElement.classList.add("loopy-building");
       [{ label: Loopy.t("easier"), fn: function () { go(i - 1); } }, { label: Loopy.t("keepGoing") }], true);
   }
   Loopy.levels = {
-    init: function (opts) { L = opts; render(); },
+    init: function (opts) {
+      L = opts;
+      // The age went up since the child reached a level above today's start: carry it over, once the
+      // page's own setup is done (the game's set() needs its buttons and first question in place).
+      var g = gameId(), rec = g ? seen()[g] : null;
+      if (rec && rec.length === 4 && rec[3] < Loopy.getAge() && rec[0] > at()) carry = rec[0];
+      render();
+      if (carry !== null) setTimeout(function () { var i = carry; carry = null; go(i); }, 0);
+    },
     render: render,
-    harder: harder,
+    harder: harder, up: up, seen: seen,
+    // The right answers among the game's last 20 when 18 or more are right, else 0: ready for the next level.
+    ripe: function (game) {
+      if (!Loopy.recent) return 0;
+      var r = Loopy.recent.get(game), n = 0;
+      for (var i = 0; i < r.length; i++) n += r[i];
+      return r.length >= Loopy.recent.KEEP && n >= GOOD ? n : 0;
+    },
     // { at, of, base, name } for the level the child is on, or null when the page has no ladder.
     get: function () { return L ? { at: at(), of: L.names.length, base: L.base ? clamp(L.base()) : 0, name: name(at()) } : null; },
     // rewards.wrong calls this: offers an easier level once a visit, after 3 wrong in the last 5.
     stuck: function (game) {
       if (!L || asked || at() < 1 || !Loopy.recent) return;
-      var r = Loopy.recent.get(game);
+      var r = Loopy.recent.get(game).slice(-5);
       if (r.length < 5 || r.filter(function (v) { return v === 0; }).length < 3) return;
       asked = true;
       setTimeout(easier, 700);
     },
-    // A timed game asks at the end of a round: "harder" after a clean round, "easier" after a poor one.
+    // A timed game calls this at the end of a round: "harder" goes up after a clean round, "easier" asks after a poor one.
     offer: function (kind) {
       if (!L) return;
-      var h = harder();
-      if (kind === "harder" && h) Loopy.rewards.celebrate(Loopy.t("levelUpRound"), h.label, true, [{ label: Loopy.t("makeHarder"), fn: h.apply }, { label: Loopy.t("keepGoing") }]);
+      if (kind === "harder") up(Loopy.t("cleanRound"));
       else if (kind === "easier" && at() > 0 && !asked) { asked = true; easier(); }
     }
   };
@@ -1479,18 +1542,19 @@ document.documentElement.classList.add("loopy-building");
 
 // Last 5 answers in a game: <div id="last5" data-game="plus-minus"></div> becomes five dots,
 // green for right and red for wrong, newest on the right. rewards.correct / wrong fill it in.
+// The last 20 are kept, so Loopy.levels can tell when the child is ready for the next level (18 of 20 right).
 // Kept in this browser's localStorage as { "plus-minus": [1, 1, 0, 1, 1], ... }.
 (function () {
-  var KEY = "loopy.recent", N = 5, GAMES = ["plus-minus", "times-share", "clock", "sound-spell", "daily-mix", "make-10", "bigger-smaller", "pizza-fractions", "coins-change", "word-match", "spell-it", "quick-facts", "where-is-it", "equation-balance", "flags-capitals", "times-sprint", "percent-ratio", "sentence-builder", "sort-it", "graphs-data", "box-multiply", "step-by-step", "spelling-quiz"];
+  var KEY = "loopy.recent", N = 5, KEEP = 20, GAMES = ["plus-minus", "times-share", "clock", "sound-spell", "daily-mix", "make-10", "bigger-smaller", "pizza-fractions", "coins-change", "word-match", "spell-it", "quick-facts", "where-is-it", "equation-balance", "flags-capitals", "times-sprint", "percent-ratio", "sentence-builder", "sort-it", "graphs-data", "box-multiply", "step-by-step", "spelling-quiz"];
   var TICK = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 12.5l4 4 8-9"/></svg>';
   var CROSS = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M7 7l10 10M17 7L7 17"/></svg>';
   var Loopy = window.Loopy = window.Loopy || {};
-  // Only known games and lists of up to five 0s and 1s are kept, whatever the stored text says.
+  // Only known games and lists of up to twenty 0s and 1s are kept, whatever the stored text says.
   function clean(raw) {
     var out = {};
     if (!raw || typeof raw !== "object") return out;
     GAMES.forEach(function (g) {
-      if (Array.isArray(raw[g])) out[g] = raw[g].filter(function (v) { return v === 0 || v === 1; }).slice(-N);
+      if (Array.isArray(raw[g])) out[g] = raw[g].filter(function (v) { return v === 0 || v === 1; }).slice(-KEEP);
     });
     return out;
   }
@@ -1501,7 +1565,7 @@ document.documentElement.classList.add("loopy-building");
   function render() {
     var box = document.getElementById("last5");
     if (!box) return;
-    var list = data[box.getAttribute("data-game")] || [], html = "<span>" + Loopy.t("last5") + "</span>", right = 0;
+    var list = (data[box.getAttribute("data-game")] || []).slice(-N), html = "<span>" + Loopy.t("last5") + "</span>", right = 0;
     for (var i = 0; i < N; i++) {
       var v = list[i - (N - list.length)];
       if (v === 1) right++;
@@ -1512,14 +1576,15 @@ document.documentElement.classList.add("loopy-building");
   }
 
   Loopy.recent = {
-    clean: clean, // used by Loopy.backup
+    KEEP: KEEP, clean: clean, // used by Loopy.backup
+    // The last 20 answers, 1 for right and 0 for wrong, oldest first.
     get: function (game) { return (data[game] || []).slice(); },
     add: function (game, ok) {
       if (GAMES.indexOf(game) === -1) return;
-      data[game] = (data[game] || []).concat(ok ? 1 : 0).slice(-N);
+      data[game] = (data[game] || []).concat(ok ? 1 : 0).slice(-KEEP);
       save(); render();
     },
-    // Call from the game's "Reset score" button.
+    // Call from the game's "Reset score" button. Loopy.levels calls it when the level changes.
     clear: function (game) { delete data[game]; save(); render(); }
   };
 

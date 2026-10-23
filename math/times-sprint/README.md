@@ -27,7 +27,7 @@ You can also type on a keyboard. Use the number keys, **Backspace** to erase and
 | 10 to 11 | All tables up to 12 × 12 |
 | 12 and up | All tables up to 12 × 12, with sharing mixed in, like 56 ÷ 8 |
 
-The level shows next to the score, like "Level 2 of 5". After a clean round of 10 or more the game offers the next level. After a round with fewer than half right it offers an easier one. The levels: tables of 1, 2 and 10 up to 5 times, tables of 2, 5 and 10, all tables to 10 × 10, all tables to 12 × 12, with sharing mixed in. Your own pick of tables stays a separate setting.
+The level shows next to the score, like "Level 2 of 5". After a clean round of 10 or more the game goes up a level by itself. It says so, with a **Back a step** button. When the age goes up, a level the child reached is kept, never lost. After a round with fewer than half right it offers an easier one. The levels: tables of 1, 2 and 10 up to 5 times, tables of 2, 5 and 10, all tables to 10 × 10, all tables to 12 × 12, with sharing mixed in. Your own pick of tables stays a separate setting.
 
 ## Best scores
 

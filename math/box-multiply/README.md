@@ -43,7 +43,7 @@ In **Settings**, choose how to play:
 
 No digit is ever 0, so every box is used.
 
-The level shows next to the score, like "Level 4 of 6". After 10 right in a row the game offers the next level. After 3 wrong in the last 5 it offers an easier one, once a visit. A level picked by hand in Settings is kept for that age.
+The level shows next to the score, like "Level 4 of 6". After 10 right in a row, or 18 of the last 20 right, the game goes up a level by itself. It says so, with a **Back a step** button. After 3 wrong in the last 5 it offers an easier one, once a visit. A level picked by hand in Settings is kept for that age. When the age goes up, a level the child reached is kept, never lost.
 
 ## Last 5
 

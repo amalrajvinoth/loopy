@@ -52,7 +52,7 @@ Without a list, loopy picks the words. With a list, the level only sets how many
 | 9 and 10 | 4 | Grade 4 to 5: "separate", "knowledge", "Bibliothek", "während" | 4 |
 | 11 and up | 5 | Grade 6 and up: "necessary", "rhythm", "Rhythmus", "Atmosphäre" | 4 |
 
-The level shows next to the score, like "Level 3 of 5". After 10 right in a row the game offers the next level. After 3 wrong in the last 5 it offers an easier one, once a visit. A level picked by hand in Settings is kept for that age.
+The level shows next to the score, like "Level 3 of 5". After 10 right in a row, or 18 of the last 20 right, the game goes up a level by itself. It says so, with a **Back a step** button. After 3 wrong in the last 5 it offers an easier one, once a visit. A level picked by hand in Settings is kept for that age. When the age goes up, a level the child reached is kept, never lost.
 
 ## Last 5
 

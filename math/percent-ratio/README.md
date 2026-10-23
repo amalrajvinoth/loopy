@@ -26,7 +26,7 @@ You can also type on a keyboard. Use the number keys, **Backspace** to erase and
 | 13 to 14 | Discounts and increases: 20% off €40, a price up 10% from €50, 19% VAT on €200 |
 | 15 to 16 | Ratios and scale: share 20 in the ratio 2 : 3, map scale 1 : 100, "2 of every 5 are red, out of 20 how many" |
 
-The level shows next to the score, like "Level 2 of 4". After 10 right in a row the game offers the next level. After 3 wrong in the last 5 it offers an easier one.
+The level shows next to the score, like "Level 2 of 4". After 10 right in a row, or 18 of the last 20 right, the game goes up a level by itself. It says so, with a **Back a step** button. After 3 wrong in the last 5 it offers an easier one. When the age goes up, a level the child reached is kept, never lost.
 
 ## What the bar shows
 

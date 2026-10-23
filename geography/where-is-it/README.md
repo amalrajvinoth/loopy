@@ -27,7 +27,7 @@ Small countries, like Luxembourg, are hard to hit with a finger. A tap just next
 
 In World mode the map shows one part of the world at a time (Europe, Africa, Asia, North America, South America, Australia and Oceania), so every country is big enough to tap. A small tag under the question says which part, like "In Africa".
 
-The level shows next to the score, like "Level 2 of 5". After 10 right in a row the game offers the next level. After 3 wrong in the last 5 it offers an easier one, once a visit. A level picked by hand in Settings is kept for that age. The levels: continents and oceans, countries of Europe, capitals of Europe, countries of the world, capitals of the world.
+The level shows next to the score, like "Level 2 of 5". After 10 right in a row, or 18 of the last 20 right, the game goes up a level by itself. It says so, with a **Back a step** button. After 3 wrong in the last 5 it offers an easier one, once a visit. A level picked by hand in Settings is kept for that age. When the age goes up, a level the child reached is kept, never lost. The levels: continents and oceans, countries of Europe, capitals of Europe, countries of the world, capitals of the world.
 
 ## Last 5
 

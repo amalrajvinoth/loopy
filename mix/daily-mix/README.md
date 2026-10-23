@@ -24,7 +24,7 @@ Every right answer earns a star, just like in the other games.
 
 ## Age levels
 
-Today's 10 uses the games that fit the age, and each problem is as hard as in that game.
+Today's 10 uses the games that fit the age. Each problem is as hard as the level your child has reached in that game. So a child who went up in Plus and Minus gets bigger sums here too. The chip above the problem says the game and the level, like "Plus and Minus · Level 4/7". Today's 10 never moves a level itself; see the game's own Settings for that. With no play yet, the age's start level is used.
 
 | Age | Games in the mix |
 | --- | --- |
@@ -40,7 +40,7 @@ The ten problems are shared out evenly between these games, in a mixed order.
 Open them with the gear button.
 
 - **Start again.** Starts a new set of ten.
-- Age, colors, sound effects and the language (EN/DE) are shared with the other games. Changing the age starts a new set.
+- Age, colors, sound effects and the language (EN/DE) are shared with the other games. Changing the age starts a new set, at the levels for that age.
 - Sound Spell words use the site language.
 
 ## Example help text

@@ -1,10 +1,10 @@
 ---
 title: Levels
-description: How each game picks a level from the age, offers a harder or easier one, and keeps it for each child.
+description: How each game picks a level from the age, goes up by itself when your child is ready, offers an easier one, and keeps it for each child.
 sidebar:
   order: 3
 ---
-Each game has levels, from easy to hard. Get 10 right in a row to go up!
+Each game has levels, from easy to hard. Get 10 right in a row, or nearly all of the last 20, and you go up!
 
 ## Level 2 of 5
 
@@ -14,12 +14,14 @@ The age picks the starting level. A 6-year-old and a 12-year-old start in differ
 
 ## Going up
 
-After 10 right in a row, the game asks "10 in a row! Ready to level up?". It names the next level.
+The game goes up a level by itself when your child is ready. That is after 10 right in a row, or when 18 of the last 20 answers are right. The last 20 count across days, so a child who plays a little every day goes up too, with no long streak needed.
 
-- Tap **Make it harder** to go up one level.
-- Tap **Keep going** to stay.
+The game says so: "Level up! 10 in a row! Now: Quarter hours".
 
-It can ask again at 20 and 30 in a row. On the top level it does not ask.
+- Tap **Yay!** to carry on at the new level.
+- Tap **Back a step** to go back down.
+
+On the top level it cheers the streak instead. A new level starts the Last 5 dots afresh.
 
 ## Going down
 
@@ -30,7 +32,7 @@ After 3 wrong in the last 5, the game asks "Tricky ones today?".
 
 It asks only once a visit, and never on the first level.
 
-A timed game, like Times Tables Sprint, asks at the end of a round instead: harder after a round of 10 or more with no mistakes, easier when fewer than half were right.
+A timed game, like Times Tables Sprint, waits for the end of a round. It goes up after a round of 10 or more with no mistakes. It asks about easier when fewer than half were right.
 
 ## Pick a level by hand
 
@@ -40,9 +42,11 @@ A timed game, like Times Tables Sprint, asks at the end of a round instead: hard
 
 Each game's page in this guide lists its levels. See [all games](/loopy/guide/games/).
 
-## Kept for each age, for each child
+## Kept for each child
 
-A level is saved for that age and that child. Change the age, and each game starts at the level saved for the new age, or at its starting level. Each child on the device has their own levels.
+A level is saved for that age and that child. Each child on the device has their own levels.
+
+When the age goes up, on a birthday or in the age picker, a level your child reached is kept. A game opened at the new age starts from that level, or from the new age's starting level, whichever is higher. It never drops a step. A younger age picked by hand starts at that age's own level, so you can make a game easier that way.
 
 ## Grown-ups
 

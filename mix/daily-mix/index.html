@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'sha256-Bnxm281yzr/fdr9bX6jAMkGMIY2wkVdoLBzHJtJqbhA='; style-src 'self' 'sha256-z2P7kGW5Z05eCTjTZdYpc0vThTlOE9vmt97pVSvi2I4=' 'sha256-ibtFOuTMIdUHzBb1O1DUg3O6mNXIeZNbOW0riCE9CtE='; img-src 'self' data:; font-src 'self'; connect-src 'self' https://loopy-sync.loopy-1e2.workers.dev; worker-src 'self'; object-src 'none'; base-uri 'none'; form-action 'none'; manifest-src 'self'; upgrade-insecure-requests">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'sha256-Xuto6jFy8uZ3eCSjdwZoCtT1S/e0fgtjEa7LomT/PnI='; style-src 'self' 'sha256-z2P7kGW5Z05eCTjTZdYpc0vThTlOE9vmt97pVSvi2I4=' 'sha256-ibtFOuTMIdUHzBb1O1DUg3O6mNXIeZNbOW0riCE9CtE='; img-src 'self' data:; font-src 'self'; connect-src 'self' https://loopy-sync.loopy-1e2.workers.dev; worker-src 'self'; object-src 'none'; base-uri 'none'; form-action 'none'; manifest-src 'self'; upgrade-insecure-requests">
 <meta name="referrer" content="strict-origin-when-cross-origin">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <style>:root{color-scheme:light;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}body{margin:0}[hidden]{display:none!important}</style>
@@ -250,13 +250,20 @@ Loopy.addStrings({
 });
 
 // GEN START
-// The games Today's 10 draws from, with the ages each one suits (the same as on the home page).
+// The games Today's 10 draws from, with the ages each one suits (the same as on the home page), the game's id
+// in the levels list, and the age's start level there when the list is not loaded (the same rule as the game).
 const KINDS = [
-  { id: "pm", path: "../../math/plus-minus/", ages: [5, 16] },
-  { id: "ts", path: "../../math/times-share/", ages: [6, 16] },
-  { id: "cl", path: "../../math/what-time-is-it/", ages: [5, 10] },
-  { id: "ss", path: "../../languages/sound-spell/", ages: [5, 8] }
+  { id: "pm", path: "../../math/plus-minus/", ages: [5, 16], game: "plus-minus", of: 7, base: (a) => a <= 6 ? 0 : a === 7 ? 1 : a === 8 ? 2 : a === 9 ? 3 : a === 10 ? 4 : a === 11 ? 5 : 6 },
+  { id: "ts", path: "../../math/times-share/", ages: [6, 16], game: "times-share", of: 7, base: (a) => a <= 6 ? 0 : a <= 10 ? a - 6 : a <= 12 ? 5 : 6 },
+  { id: "cl", path: "../../math/what-time-is-it/", ages: [5, 10], game: "clock", of: 5, base: (a) => a <= 6 ? 0 : a === 7 ? 1 : a === 8 ? 2 : a === 9 ? 3 : 4 },
+  { id: "ss", path: "../../languages/sound-spell/", ages: [5, 8], game: "sound-spell", of: 3, base: (a) => a <= 6 ? 0 : 2 }
 ];
+// Each problem is as hard as the level the child has reached in that game (Loopy.levelOf, from the levels
+// list loaded at the start), or the age's start level there.
+function rungOf(k, age) {
+  const lv = Loopy.levelOf ? Loopy.levelOf(k.game, age) : null;
+  return Math.max(0, Math.min(k.of - 1, lv ? lv.at : k.base(age)));
+}
 const randInt = (lo, hi) => lo + Math.floor(Math.random() * (hi - lo + 1));
 const pick = (arr) => arr[Math.floor(Math.random() * arr.length)];
 const shuffle = (arr) => { const a = arr.slice(); for (let i = a.length - 1; i > 0; i--) { const j = randInt(0, i); [a[i], a[j]] = [a[j], a[i]]; } return a; };
@@ -270,33 +277,34 @@ function numberChoices(answer, slips, n) {
   return shuffle([answer, ...out]);
 }
 
-// Plus and Minus: same number sizes as that game for each age.
-function maxForAge(age) { return age <= 6 ? 20 : age <= 8 ? 100 : age <= 10 ? 1000 : 10000; }
-function makePM(age) {
-  const max = maxForAge(age), lo = max >= 1000 ? max / 10 : (max >= 100 ? 10 : 2);
-  const op = age <= 6 || Math.random() < 0.5 ? "add" : "sub";
+// Plus and Minus: the same levels as that game: the biggest number, adding only on the first, and whether
+// a sum may need carrying (the game's "with carrying" levels; the two top levels always may).
+const PM_LADDER = [[20, "add", false], [100, "mix", false], [100, "mix", true], [1000, "mix", false], [1000, "mix", true], [10000, "mix", true], [100000, "mix", true]];
+function makePM(rung) {
+  const [max, ops, carry] = PM_LADDER[rung], lo = max >= 1000 ? max / 10 : (max >= 100 ? 10 : 2);
+  const op = ops === "add" || Math.random() < 0.5 ? "add" : "sub";
   let a, b;
-  if (op === "add") { a = randInt(lo, max - lo); b = randInt(Math.min(lo, max - a), max - a); }
-  else { a = randInt(lo + 1, max); b = randInt(Math.min(lo, a - 1), a - 1); }
+  for (let tries = 0; tries < 30; tries++) {
+    if (op === "add") { a = randInt(lo, max - lo); b = randInt(Math.min(lo, max - a), max - a); }
+    else { a = randInt(lo + 1, max); b = randInt(Math.min(lo, a - 1), a - 1); }
+    if (carry || !/-rg$/.test(Loopy.log.kind(op, a, b))) break;
+  }
   const answer = op === "add" ? a + b : a - b;
   const slips = [answer + 1, answer - 1, answer + 10, answer - 10, answer + 2, answer - 2];
   if (max >= 1000) slips.push(answer + 100, answer - 100);
+  if (max >= 10000) slips.push(answer + 1000, answer - 1000);
   if (op === "sub") slips.push(a + b);
   return { kind: "pm", op, a, b, answer, choices: numberChoices(answer, slips, 3) };
 }
 
-// Times and Share: same tables and number sizes as that game for each age.
-function levelForAge(age) {
-  if (age <= 6) return { kind: "facts", tables: [1, 2, 5, 10], upTo: 5 };
-  if (age === 7) return { kind: "facts", tables: [2, 5, 10], upTo: 10 };
-  if (age === 8) return { kind: "facts", tables: [2, 3, 4, 5, 10], upTo: 10 };
-  if (age === 9) return { kind: "facts", tables: [2, 3, 4, 5, 6, 7, 8, 9, 10], upTo: 10 };
-  if (age === 10) return { kind: "facts", tables: [2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12], upTo: 12 };
-  return { kind: "big", size: age <= 12 ? 2 : 3 };
-}
-function makeTS(age) {
-  const level = levelForAge(age);
-  const op = age <= 6 || Math.random() < 0.5 ? "mul" : "div";
+// Times and Share: the same levels as that game: which tables and how far, then bigger numbers.
+const TS_LADDER = [
+  { kind: "facts", tables: [1, 2, 5, 10], upTo: 5 }, { kind: "facts", tables: [2, 5, 10], upTo: 10 },
+  { kind: "facts", tables: [2, 3, 4, 5, 10], upTo: 10 }, { kind: "facts", tables: [2, 3, 4, 5, 6, 7, 8, 9, 10], upTo: 10 },
+  { kind: "facts", tables: [2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12], upTo: 12 }, { kind: "big", size: 2 }, { kind: "big", size: 3 }];
+function makeTS(rung) {
+  const level = TS_LADDER[rung];
+  const op = rung === 0 || Math.random() < 0.5 ? "mul" : "div";
   let a, b;
   if (level.kind === "facts") {
     const t = pick(level.tables), n = randInt(1, level.upTo);
@@ -313,12 +321,13 @@ function makeTS(age) {
   return { kind: "ts", op, a, b, answer, choices: numberChoices(answer, slips, 3) };
 }
 
-// What Time Is It?: same steps as that game for each age, and wrong times from real mistakes.
-const stepForAge = (a) => a <= 6 ? 30 : a === 7 ? 15 : a === 8 ? 5 : 1;
+// What Time Is It?: the same steps as that game's levels (the 24-hour level asks every minute on a 12-hour
+// face, the only face Today's 10 draws), and wrong times from real mistakes.
+const CL_STEPS = [30, 15, 5, 1, 1];
 const wrapH = (h) => ((h - 1 + 12) % 12) + 1;
 const fmtTime = (h, m) => h + ":" + String(m).padStart(2, "0");
-function makeCL(age) {
-  const step = stepForAge(age);
+function makeCL(rung) {
+  const step = CL_STEPS[rung];
   const rnd = () => ({ h: randInt(1, 12), m: randInt(0, 60 / step - 1) * step });
   const t = rnd(), seen = new Set([fmtTime(t.h, t.m)]), out = [];
   const add = (h, m) => { if (m % step || m < 0 || m > 59 || seen.has(fmtTime(h, m))) return; seen.add(fmtTime(h, m)); out.push({ h, m }); };
@@ -331,7 +340,8 @@ function makeCL(age) {
   return { kind: "cl", h: t.h, m: t.m, answer: fmtTime(t.h, t.m), choices: shuffle([t, ...out]).map(c => fmtTime(c.h, c.m)) };
 }
 
-// Sound Spell: the same words. [picture, word, starting sound, ending sound, level]; level 2 is for age 7 and up.
+// Sound Spell: the same words. [picture, word, starting sound, ending sound, level]; level 2 words (sh, ch...)
+// come from the game's second level on: starting sounds with 3 choices, both sounds with 3, both sounds with 4.
 const WORDS = {
   en: [
     ["🍎","apple","a","",1],["🐜","ant","a","t",1],["⚽","ball","b","",1],["🦇","bat","b","t",1],["🛏️","bed","b","d",1],
@@ -370,24 +380,26 @@ const WORDS = {
 const ALIKE = { en: { start: [["c", "k"]], end: [] }, de: { start: [["V", "F"]], end: [["d", "t"], ["g", "k"], ["b", "p"]] } };
 const unitOf = (w, mode) => mode === "start" ? w[2] : w[3];
 const restOf = (w, mode) => mode === "start" ? w[1].slice(w[2].length) : w[1].slice(0, w[1].length - w[3].length);
-function makeSS(age, lang) {
-  const mode = age <= 6 || Math.random() < 0.5 ? "start" : "end";
-  const word = pick(WORDS[lang].filter(w => (mode === "start" || w[3] !== "") && (age >= 7 || w[4] === 1)));
+function makeSS(rung, lang) {
+  const mode = rung === 0 || Math.random() < 0.5 ? "start" : "end";
+  const word = pick(WORDS[lang].filter(w => (mode === "start" || w[3] !== "") && (rung > 0 || w[4] === 1)));
   const want = unitOf(word, mode), rest = restOf(word, mode);
   const alike = ALIKE[lang][mode].find(g => g.includes(want)) || [];
   const spelled = new Set(WORDS[lang].map(w => w[1].toLowerCase()));
   const pool = [...new Set(WORDS[lang].map(w => unitOf(w, mode)).filter(Boolean))].filter(u =>
     u !== want && !alike.includes(u) && !spelled.has((mode === "start" ? u + rest : rest + u).toLowerCase()));
   const same = pool.filter(u => (u.length > 1) === (want.length > 1));
-  const wrong = shuffle(same.length >= 3 ? same : pool).slice(0, age <= 6 ? 2 : 3);
+  const wrong = shuffle(same.length >= 3 ? same : pool).slice(0, rung === 2 ? 3 : 2);
   return { kind: "ss", word, mode, rest, lang, answer: want, choices: shuffle([want, ...wrong]) };
 }
 
-// Ten problems from the games that fit the age, spread as evenly as possible, in a mixed order.
+// Ten problems from the games that fit the age, each at the child's level there, spread as evenly as
+// possible, in a mixed order. Each problem says its level: { n, m } for "Level n of m".
 function makeSet(age, lang) {
   let fits = KINDS.filter(k => age >= k.ages[0] && age <= k.ages[1]);
   if (!fits.length) fits = KINDS.filter(k => k.id !== "ss");
-  const order = shuffle(fits), kinds = [];
+  const order = shuffle(fits), kinds = [], rung = {}, of = {};
+  fits.forEach(k => { rung[k.id] = rungOf(k, age); of[k.id] = k.of; });
   for (let i = 0; i < 10; i++) kinds.push(order[i % order.length].id);
   const make = { pm: makePM, ts: makeTS, cl: makeCL, ss: makeSS };
   // Mix the order, but never the same game three times in a row.
@@ -397,8 +409,9 @@ function makeSet(age, lang) {
   const keys = new Set();
   return list.map(k => {
     let p;
-    for (let tries = 0; tries < 200 && (!p || keys.has(p.key)); tries++) { p = make[k](age, lang); p.key = keyOf(p); }
+    for (let tries = 0; tries < 200 && (!p || keys.has(p.key)); tries++) { p = make[k](rung[k], lang); p.key = keyOf(p); }
     keys.add(p.key);
+    p.level = { n: rung[k] + 1, m: of[k] };
     return p;
   });
 }
@@ -491,7 +504,7 @@ const keyOf = (p) => p.kind + (p.kind === "ss" ? p.word[1] + p.mode : p.kind ===
     answered = false;
     document.body.setAttribute("data-q", p.key); // for the browser test in tools/e2e
     card.className = "problem-card";
-    kindEl.textContent = t(p.kind + "Name");
+    kindEl.textContent = t(p.kind + "Name") + " · " + t("levelShort", { n: p.level.n, m: p.level.m });
     stage.textContent = "";
     let ask = t("dmWhat");
     if (p.kind === "pm" || p.kind === "ts") {
@@ -635,7 +648,8 @@ const keyOf = (p) => p.kind + (p.kind === "ss" ? p.word[1] + p.mode : p.kind ===
     if (n >= 1 && n <= 4 && !answered) { const b = choicesEl.children[n - 1]; if (b) choose(b); }
   });
 
-  start();
+  // The levels list says where the child is in each game; without it (not yet saved for offline), the age decides.
+  Loopy.load("levels").catch(() => {}).then(start);
 })();
 </script>
 </body>

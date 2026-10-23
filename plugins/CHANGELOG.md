@@ -4,6 +4,7 @@ Newest first. One line per change: date, plugin and version, what it learned, an
 
 | Date | Plugin | What changed | Learned from |
 | --- | --- | --- | --- |
+| 2026-10-23 | loopy 1.3.1 | ship-pr runs the new levels test; heal has a recipe for it. | Levels follow the child (#138), loopy project 23 Oct 2026 |
 | 2026-10-22 | loopy 1.3.0 | New loopy-docs skill: which docs a change touches (guide EN + DE, FAQ, Help, READMEs, RELEASES.md) and how to write them in plain English. ship-pr, build-issue, new-game and loopy-review point at it. `tools/review.py` warns about missed docs. | Owner's ask "docs up to date for every commit" (#127), loopy project 21 Oct 2026 |
 | 2026-10-21 | loopy 1.2.1 | ship-pr runs the new offline copy test; heal has a recipe for phones that keep an old page. | Android blank Print (#123), loopy project 21 Oct 2026 |
 | 2026-10-20 | loopy 1.2.0 | ship-pr and heal know the faster CI: the a11y and play halves, skipped long checks, "All checks", one heal recipe. | Faster checks (#119), loopy project 20 Oct 2026 |

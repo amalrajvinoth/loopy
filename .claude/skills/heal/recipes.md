@@ -68,3 +68,8 @@ One per failure. Add new ones at the end (the heal skill step 3). Keep each to f
 - Looks like: CI "All checks" lists a job as failure or cancelled; or a page change passed without the accessibility, play or guide jobs running.
 - Cause: a job above it failed (fix that job), a newer push stopped this run (cancelled: look at the newer run), or `tools/ci_changes.py` treats a file the pages read as docs.
 - Fix: open the failed job named in the list. For a wrong skip, narrow the DOCS or GUIDE pattern in `tools/ci_changes.py` and test it with `python3 tools/ci_changes.py origin/main HEAD`. (20 Oct 2026)
+
+## Levels test fails
+- Looks like: `node tools/e2e/levels.mjs` fails, or CI "Levels follow the child: up by itself when ready, kept over the birthday".
+- Cause: a change to `Loopy.levels` (`up`, `ripe`, the `loopy.levels` record or the birthday carry), `Loopy.recent` (keeps 20), or a game's level-up card; a badge card comes first at the first 10 in a row, so the level up waits for the next right answer.
+- Fix: run the test with `CHROME=` set to the browser; fix what it names in `src/loopy.js` or `src/loopy-levels.js`, never loosen the counts. Then `python3 tools/build.py` and `node tools/e2e/play.mjs` (it taps "Yay!" on the card). (23 Oct 2026)

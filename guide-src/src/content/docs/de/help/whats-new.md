@@ -10,6 +10,8 @@ Die großen Änderungen, die neuesten zuerst. Kleine Korrekturen stehen nicht da
 
 ## 23. Oktober 2026
 
+- **Die 10 von heute auf den Stufen deines Kindes.** Jede Aufgabe ist so schwer wie die Stufe, die dein Kind in diesem Spiel erreicht hat. Siehe [Die 10 von heute](/loopy/guide/de/games/todays-10/).
+- **Die Stufen folgen deinem Kind.** Ein Spiel geht von selbst eine Stufe höher, nach 10 richtigen hintereinander oder 18 richtigen von den letzten 20, mit einem Knopf **Eine Stufe zurück**. Eine erreichte Stufe bleibt, wenn das Alter steigt. Siehe [Stufen](/loopy/guide/de/playing/levels/).
 - **Der QR-Code zum Sterne-Mitnehmen ist wieder da.** Nach ein paar Tagen Spielen war er ein leeres weißes Feld. Jetzt behält er Sterne, Abzeichen, Tagesserie, Level und Einstellungen, wenn der ganze Code zu lang ist, und die Zeile darunter sagt, was er enthält. Mehr unter [Sterne auf ein anderes Gerät bringen](/loopy/guide/de/stars/move-stars/).
 - **Der Familien-Sync sagt, wann er zuletzt abgeglichen hat.** In ⚙ Einstellungen steht jetzt "Zuletzt abgeglichen um" und die Uhrzeit. Mehr unter [Familien-Sync](/loopy/guide/de/stars/family-sync/).
 

@@ -20,6 +20,7 @@ description: Finish a loopy change and open its pull request with every check, s
    node tools/a11y/check.mjs
    node tools/e2e/play.mjs        # GAME=<id> for one game while you work; the full run before the PR
    node tools/e2e/retry.mjs       # Try again in every game (GAME=<id> for one): a mistake comes back until it is fixed
+   node tools/e2e/levels.mjs      # levels follow the child: up by itself when ready, kept over the birthday
    node tools/e2e/offline.mjs     # after an update the offline copy saves the new pages, never an old one (when src/sw.js changed)
    node sync/test.mjs             # the Family sync server answers right (when sync/ changed)
    node tools/e2e/sync.mjs        # Family sync keeps two devices in step and sends nothing when off (when src/loopy-sync.js, sync/ or the home page changed)
