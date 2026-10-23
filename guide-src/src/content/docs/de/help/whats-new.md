@@ -10,6 +10,7 @@ Die großen Änderungen, die neuesten zuerst. Kleine Korrekturen stehen nicht da
 
 ## 23. Oktober 2026
 
+- **Der QR-Code zum Sterne-Mitnehmen ist wieder da.** Nach ein paar Tagen Spielen war er ein leeres weißes Feld. Jetzt behält er Sterne, Abzeichen, Tagesserie, Level und Einstellungen, wenn der ganze Code zu lang ist, und die Zeile darunter sagt, was er enthält. Mehr unter [Sterne auf ein anderes Gerät bringen](/loopy/guide/de/stars/move-stars/).
 - **Der Familien-Sync sagt, wann er zuletzt abgeglichen hat.** In ⚙ Einstellungen steht jetzt "Zuletzt abgeglichen um" und die Uhrzeit. Mehr unter [Familien-Sync](/loopy/guide/de/stars/family-sync/).
 
 ## 22. Oktober 2026
