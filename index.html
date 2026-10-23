@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'sha256-2LREKb24r0FgWJg2Fe1aJSvCGQrvrERUqOElXpR2WpA='; style-src 'self' 'sha256-dJItlcMQd9O+m7VeTwF6qvXLEzV/DncJGRpqHNv0MJg='; img-src 'self' data:; font-src 'self'; connect-src 'self' https://loopy-sync.loopy-1e2.workers.dev; worker-src 'self'; object-src 'none'; base-uri 'none'; form-action 'none'; manifest-src 'self'; upgrade-insecure-requests">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'sha256-0+irPil+Cw0wPI5PR1hr6Ntod+sB8D+x3glNX9pH+uA='; style-src 'self' 'sha256-dJItlcMQd9O+m7VeTwF6qvXLEzV/DncJGRpqHNv0MJg='; img-src 'self' data:; font-src 'self'; connect-src 'self' https://loopy-sync.loopy-1e2.workers.dev; worker-src 'self'; object-src 'none'; base-uri 'none'; form-action 'none'; manifest-src 'self'; upgrade-insecure-requests">
 <meta name="referrer" content="strict-origin-when-cross-origin">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <link rel="icon" href="icon.svg" type="image/svg+xml">
@@ -209,6 +209,8 @@ Loopy.addStrings({
     moveKidStars: "Move stars to another device", copyLink: "Copy link", linkCopied: "Link copied! Open it on the other device.",
     sendLink: "Send", qrLabel: "QR code with your stars link", qrScan: "Or point the other device's camera at this code.",
     qrLight: "This code carries everything except the list of wrong answers. Send or Copy link carries it all.",
+    qrSmall: "This code carries the stars, badges, day streak, levels and settings, but not the answers for the grown-ups' page. Send or Copy link carries it all.",
+    qrNone: "There is too much here for a picture. Send or Copy link carries it all.",
     saveFile: "Save backup", openFile: "Open backup",
     fileSaved: "Backup file made. Find it in Downloads or Files, and keep it in iCloud Drive or Google Drive.",
     badFile: "That file didn't work. Pick a loopy backup file.",
@@ -256,6 +258,8 @@ Loopy.addStrings({
     moveKidStars: "Sterne auf ein anderes Gerät bringen", copyLink: "Link kopieren", linkCopied: "Link kopiert! Öffne ihn auf dem anderen Gerät.",
     sendLink: "Senden", qrLabel: "QR-Code mit deinem Sterne-Link", qrScan: "Oder richte die Kamera des anderen Geräts auf diesen Code.",
     qrLight: "Dieser Code enthält alles außer der Liste der falschen Antworten. Senden oder Link kopieren bringt alles mit.",
+    qrSmall: "Dieser Code enthält Sterne, Abzeichen, Tagesserie, Level und Einstellungen, aber nicht die Antworten für die Erwachsenen-Seite. Senden oder Link kopieren bringt alles mit.",
+    qrNone: "Für ein Bild ist das zu viel. Senden oder Link kopieren bringt alles mit.",
     saveFile: "Sicherung speichern", openFile: "Sicherung öffnen",
     fileSaved: "Sicherungsdatei erstellt. Du findest sie unter Downloads oder Dateien. Bewahre sie in iCloud Drive oder Google Drive auf.",
     badFile: "Die Datei hat nicht geklappt. Wähle eine loopy-Sicherungsdatei.",
@@ -414,29 +418,30 @@ window.addEventListener("loopy:age", render);
   const kids = Loopy.kids.list();
   let who = 0, made = false, turn = 0;
   // The QR code holds the link, drawn here (nothing is fetched). Past version 25 (117 squares a side) a phone
-  // camera struggles with a screen, so a long code first drops the list of wrong answers, then the picture is left out.
-  const QR_MAX = 25;
+  // camera struggles with a screen, so a long code first drops the list of wrong answers (light 1), then the
+  // answers per day and the Last 5 dots too (light 2). When even that is too long, the line says so instead.
+  const QR_MAX = 25, NOTE = ["qrScan", "qrLight", "qrSmall"];
   const showQr = (q, light) => {
-    const span = q.n + 8;
-    document.getElementById("qr-pic").setAttribute("viewBox", "-4 -4 " + span + " " + span);
-    const back = document.getElementById("qr-back"); back.setAttribute("width", span); back.setAttribute("height", span);
-    qrPath.setAttribute("d", q.path);
-    qrNote.textContent = t(light ? "qrLight" : "qrScan");
+    qrBox.classList.toggle("none", !q);
+    if (q) {
+      const span = q.n + 8;
+      document.getElementById("qr-pic").setAttribute("viewBox", "-4 -4 " + span + " " + span);
+      const back = document.getElementById("qr-back"); back.setAttribute("width", span); back.setAttribute("height", span);
+      qrPath.setAttribute("d", q.path);
+    }
+    qrNote.textContent = t(q ? NOTE[light] : "qrNone");
     qrBox.hidden = false;
   };
-  const drawQr = (code, my) => {
-    const full = Loopy.backup.qr(Loopy.backup.link(code), QR_MAX);
-    if (full) return showQr(full, false);
-    Loopy.backup.exportCode(who || undefined, true).then(light => {
-      const q = my === turn && Loopy.backup.qr(Loopy.backup.link(light), QR_MAX);
-      if (q) showQr(q, true);
-    }, () => {});
+  const drawQr = (code, my, light) => {
+    const q = Loopy.backup.qr(Loopy.backup.link(code), QR_MAX);
+    if (q || light >= 2) return showQr(q, light);
+    Loopy.backup.exportCode(who || undefined, light + 1).then(less => { if (my === turn) drawQr(less, my, light + 1); }, () => {});
   };
   // The code is only made when the box is opened, so the home page opens faster.
   const make = () => {
     const my = ++turn;
     made = true; out.value = ""; msg.textContent = ""; qrBox.hidden = true;
-    Loopy.backup.exportCode(who || undefined).then(code => { if (my !== turn) return; out.value = code; drawQr(code, my); }, () => { out.value = ""; });
+    Loopy.backup.exportCode(who || undefined).then(code => { if (my !== turn) return; out.value = code; drawQr(code, my, 0); }, () => { out.value = ""; });
   };
   document.querySelector(".transfer").addEventListener("toggle", e => { if (e.target.open && !made) make(); });
   // With more than one child, pick everyone or one child.
