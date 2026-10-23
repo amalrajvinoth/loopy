@@ -32,7 +32,7 @@ Each child keeps their own stars. Give each child the same name on every device,
 - **The home page** gets new stars from the other devices each time it opens. If something new came, it loads once more to show it.
 - **A game** sends its new stars soon after you play, and when you leave the game.
 - **A device left open** catches up by itself. After 5 minutes with no tap, it gets the new stars and loads the page once more. A game then shows a new question, and the level and stars stay. While nobody touches it, it checks again every 15 minutes, for up to an hour.
-- **Sync now** in ⚙ Settings does it right away.
+- **Sync now** in ⚙ Settings does it right away. Under it, "Last sync at" shows the time this device last synced.
 
 It never loads the page while a child is tapping, while a box or Settings is open, or while loopy is in the background. The games never wait for the internet. Stars are saved on the device first, as always. Without internet, Settings says "Waiting for the internet", and loopy syncs when it is back.
 

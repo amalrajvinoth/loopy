@@ -4,6 +4,7 @@ The big changes, newest first. Small fixes are not listed.
 
 | Date | What's new | Where | PR |
 | --- | --- | --- | --- |
+| 2026-10-23 | Family sync in Settings now says "Last sync at" and the time (German: "Zuletzt abgeglichen um"), so it is clear when this device last synced. | Home page Settings | |
 | 2026-10-22 | Family sync catches up by itself. A phone or tablet left open gets the new stars from your other devices after 5 minutes without a tap. It checks again every 15 minutes, for up to an hour. It never reloads while a child is playing, while a box is open or while loopy is in the background. | Family sync, every page | |
 | 2026-10-22 | New: Family sync. Keep the stars the same on all your family's devices, by themselves. A grown-up taps Turn on in Settings on the home page, then scans the QR code on the other device. New stars go to every device on their own, and nothing is taken away. Everything is locked on the device before it is sent, so the server can't read it, and there is no account. It is off until you turn it on. | Home page Settings | |
 | 2026-10-22 | Print the week in one tap. The grown-ups page has a new Print button next to Share this week. Before, Print only worked after you opened the card, and otherwise it printed an empty page. The practice sheet now prints straight from your tap on phones too. | Grown-ups page | #130 |

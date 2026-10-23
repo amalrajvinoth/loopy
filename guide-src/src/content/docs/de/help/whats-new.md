@@ -8,6 +8,10 @@ loopy bekommt immer wieder neue Spiele. Das ist zuletzt dazugekommen!
 
 Die großen Änderungen, die neuesten zuerst. Kleine Korrekturen stehen nicht dabei. Die [ganze Liste steht auf GitHub](https://github.com/amalrajvinoth/loopy/blob/main/RELEASES.md) (auf Englisch).
 
+## 23. Oktober 2026
+
+- **Der Familien-Sync sagt, wann er zuletzt abgeglichen hat.** In ⚙ Einstellungen steht jetzt "Zuletzt abgeglichen um" und die Uhrzeit. Mehr unter [Familien-Sync](/loopy/guide/de/stars/family-sync/).
+
 ## 22. Oktober 2026
 
 - **Der Familien-Sync holt von selbst auf.** Ein Handy oder Tablet, das offen liegt, bekommt nach 5 Minuten ohne Tippen die neuen Sterne von deinen anderen Geräten. Mehr unter [Familien-Sync](/loopy/guide/de/stars/family-sync/).
