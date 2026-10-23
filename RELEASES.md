@@ -4,6 +4,7 @@ The big changes, newest first. Small fixes are not listed.
 
 | Date | What's new | Where | PR |
 | --- | --- | --- | --- |
+| 2026-10-23 | Today's 10 asks at your child's levels. Each of its ten problems is as hard as the level your child has reached in that game, not just the age. The chip above the problem says the level. | Today's 10 | #141 |
 | 2026-10-23 | Levels follow your child. A game goes up a level by itself after 10 right in a row, or 18 of the last 20 right. It says so, with a Back a step button. No tap on "Make it harder" is needed any more. A level your child reached stays when the age goes up on a birthday, so nobody drops back a step. | Every game | #140 |
 | 2026-10-23 | Family sync in Settings now says "Last sync at" and the time (German: "Zuletzt abgeglichen um"), so it is clear when this device last synced. | Home page Settings | |
 | 2026-10-22 | Family sync catches up by itself. A phone or tablet left open gets the new stars from your other devices after 5 minutes without a tap. It checks again every 15 minutes, for up to an hour. It never reloads while a child is playing, while a box is open or while loopy is in the background. | Family sync, every page | |

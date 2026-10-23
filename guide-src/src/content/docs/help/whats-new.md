@@ -10,6 +10,7 @@ The big changes, newest first. Small fixes are not listed. See [the full list on
 
 ## 23 October 2026
 
+- **Today's 10 at your child's levels.** Each problem is as hard as the level your child reached in that game. See [Today's 10](/loopy/guide/games/todays-10/).
 - **Levels follow your child.** A game goes up a level by itself after 10 right in a row, or 18 of the last 20 right. A **Back a step** button goes back. A level your child reached stays when the age goes up. See [Levels](/loopy/guide/playing/levels/).
 - **Family sync says when it last synced.** In ⚙ Settings it now reads "Last sync at" and the time. See [Family sync](/loopy/guide/stars/family-sync/).
 

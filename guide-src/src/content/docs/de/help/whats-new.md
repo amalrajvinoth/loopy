@@ -10,6 +10,7 @@ Die großen Änderungen, die neuesten zuerst. Kleine Korrekturen stehen nicht da
 
 ## 23. Oktober 2026
 
+- **Die 10 von heute auf den Stufen deines Kindes.** Jede Aufgabe ist so schwer wie die Stufe, die dein Kind in diesem Spiel erreicht hat. Siehe [Die 10 von heute](/loopy/guide/de/games/todays-10/).
 - **Die Stufen folgen deinem Kind.** Ein Spiel geht von selbst eine Stufe höher, nach 10 richtigen hintereinander oder 18 richtigen von den letzten 20, mit einem Knopf **Eine Stufe zurück**. Eine erreichte Stufe bleibt, wenn das Alter steigt. Siehe [Stufen](/loopy/guide/de/playing/levels/).
 - **Der Familien-Sync sagt, wann er zuletzt abgeglichen hat.** In ⚙ Einstellungen steht jetzt "Zuletzt abgeglichen um" und die Uhrzeit. Mehr unter [Familien-Sync](/loopy/guide/de/stars/family-sync/).
 

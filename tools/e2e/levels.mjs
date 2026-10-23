@@ -1,4 +1,4 @@
-// End-to-end test for levels that follow the child (Make 10 and Times Tables Sprint, age 8, English). See tools/e2e/README.md.
+// End-to-end test for levels that follow the child (Make 10, Times Tables Sprint and Today's 10, age 8, English). See tools/e2e/README.md.
 //
 //   npm ci --prefix tools/a11y --ignore-scripts   (once: the same two packages as the play test)
 //   node tools/e2e/levels.mjs                     (exit code 1 if anything fails)
@@ -9,6 +9,7 @@
 //   3. Birthday: a child who reached level 5 at age 8 opens the game at age 9 and is still on level 5, and the
 //      grown-ups' levels list says so too. A record without an age (from before) carries nothing.
 //   4. The Last 5 pill shows five dots at most, and old 5-long lists still load.
+//   5. Today's 10 asks each game at the level the child reached there, and the chip says the level.
 import http from "node:http";
 import fs from "node:fs";
 import path from "node:path";
@@ -174,6 +175,29 @@ console.log("4. Last 5 pill");
   await s.page.waitForTimeout(300);
   check(await cheer(s.page).count() === 1 && /Level up/.test(await cheer(s.page).innerText()) && (await level(s.page)).startsWith("Level 3"), "Times Tables Sprint goes up after a clean round");
   await s.ctx.close();
+}
+
+console.log("5. Today's 10 at the child's levels");
+{
+  // Plus and Minus on level 5 (to 1,000 with carrying) and Times and Share on level 5 (all tables to 12) at age 8.
+  const { ctx, page, errors } = await open("mix/daily-mix/", { "pm100.max.a8": "1000", "pm100.rg.a8": '"yes"', "ts.lv.a8": "4" });
+  await page.waitForTimeout(500);
+  const chips = [], sums = [];
+  for (let i = 0; i < 10; i++) {
+    chips.push(await page.locator("#kind").innerText());
+    sums.push((await page.locator("#stage").innerText()).replace(/\s+/g, " "));
+    await page.locator("#choices button").first().click(); await page.waitForTimeout(80);
+    const big = page.locator(".loopy-cheer.big button"); if (await big.count()) await big.first().click();
+    if (i < 9) { await page.click("#next"); await page.waitForTimeout(80); }
+  }
+  const pm = chips.map((c, i) => [c, sums[i]]).filter(x => /Plus and Minus/i.test(x[0]));
+  check(pm.length > 0 && pm.every(x => /Level 5\/7/i.test(x[0])), "Plus and Minus problems say Level 5/7: " + pm.map(x => x[0]).join(", "));
+  check(pm.some(x => /\d{3}/.test(x[1])), "the sums have three-digit numbers: " + pm.map(x => x[1]).join(" | "));
+  const ts = chips.filter(c => /Times and Share/i.test(c));
+  check(ts.length > 0 && ts.every(c => /Level 5\/7/i.test(c)), "Times and Share problems say Level 5/7");
+  check(chips.filter(c => /What Time/i.test(c)).every(c => /Level 3\/5/i.test(c)), "What Time Is It? stays at the age's level 3/5");
+  check(errors.length === 0, "no page errors" + (errors.length ? ": " + errors.join("; ") : ""));
+  await ctx.close();
 }
 
 await browser.close();
