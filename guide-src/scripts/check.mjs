@@ -79,8 +79,17 @@ for (const scheme of ["dark", "light"]) {
 where = "search";
 await p.goto(`${origin}/loopy/guide/`);
 await p.click("site-search button");
-await p.keyboard.type("stars");
-await p.waitForSelector(".pagefind-ui__result", { timeout: 5000 }).catch(() => problems.push("search: no results for 'stars'"));
+// Pagefind loads its index and a WebAssembly file on the first search. On a slow runner that can take a
+// while, and typing before its box is ready is lost, so wait for the box, then give it a second go.
+const search = p.locator("site-search .pagefind-ui__search-input").first();
+await search.waitFor({ state: "visible", timeout: 10000 }).catch(() => {});
+let found = false;
+for (let go = 0; go < 2 && !found; go++) {
+  await search.fill("");
+  await search.fill("stars");
+  found = await p.waitForSelector(".pagefind-ui__result", { timeout: 15000 }).then(() => true, () => false);
+}
+if (!found) problems.push("search: no results for 'stars'");
 await browser.close();
 server.close();
 

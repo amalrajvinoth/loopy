@@ -10,6 +10,7 @@ The big changes, newest first. Small fixes are not listed. See [the full list on
 
 ## 23 October 2026
 
+- **The QR code for moving stars shows again.** After a few days of play it was an empty white square. Now it keeps the stars, badges, day streak, levels and settings when the full code is too long, and the line under it says what it holds. See [Move my stars](/loopy/guide/stars/move-stars/).
 - **Family sync says when it last synced.** In ⚙ Settings it now reads "Last sync at" and the time. See [Family sync](/loopy/guide/stars/family-sync/).
 
 ## 22 October 2026
