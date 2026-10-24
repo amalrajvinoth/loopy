@@ -10,6 +10,7 @@ Die großen Änderungen, die neuesten zuerst. Kleine Korrekturen stehen nicht da
 
 ## 24. Oktober 2026
 
+- **So spielst du, direkt im Spiel.** In ⚙ Einstellungen hat jedes Spiel jetzt eine Karte **So spielst du**, die die Seite des Spiels in dieser Anleitung öffnet. Siehe [Einstellungen im Spiel](/loopy/guide/de/settings/game-settings/).
 - **Ergänze bis 10 erklärt die Stufe bis 1.000 jetzt richtig.** Bei 647 + ? = 1.000 steht jetzt "647 braucht 3 bis zur 650. Dann noch 350 bis zur 1.000." Siehe [Ergänze bis 10](/loopy/guide/de/games/math/make-10/).
 
 ## 23. Oktober 2026

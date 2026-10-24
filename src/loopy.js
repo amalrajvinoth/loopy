@@ -42,6 +42,7 @@ document.documentElement.classList.add("loopy-building");
       b300: "Quick Thinker", b400: "Puzzle Pro", b500: "Legend", b750: "Hero", b1000: "loopy Master", b1500: "Grand Master", b2000: "Wizard", b3000: "Superstar", b5000: "Shooting Star",
       s10: "Hot Streak", s20: "On Fire", s50: "Unstoppable", e5: "Explorer", e10: "Adventurer", eAll: "World Traveller", brave: "Brave",
       streakText: "{n} in a row", gamesText: "{n} games played", braveText: "10 in a row above your age's level", bestStreak: "Best streak: {n}",
+      howTo: "How to play {game}", howToText: "Steps for kids, levels and tips for grown-ups, in the loopy guide",
       newBadge: "New badge: {name}!", badgeText: "You have earned {n} stars. Keep going!",
       keepGoing: "Keep going", yay: "Yay!",
       inARow: "{n} in a row!", bestYet: "That's your best streak yet!", amazing: "Amazing work!",
@@ -65,6 +66,7 @@ document.documentElement.classList.add("loopy-building");
       b300: "Schnelldenker", b400: "Rätsel-Profi", b500: "Legende", b750: "Held", b1000: "loopy-Meister", b1500: "Großmeister", b2000: "Zauberer", b3000: "Superstar", b5000: "Sternschnuppe",
       s10: "Heiße Serie", s20: "Feuer und Flamme", s50: "Nicht zu stoppen", e5: "Entdecker", e10: "Abenteurer", eAll: "Weltenbummler", brave: "Mutig",
       streakText: "{n} hintereinander", gamesText: "{n} Spiele gespielt", braveText: "10 hintereinander über der Stufe deines Alters", bestStreak: "Beste Serie: {n}",
+      howTo: "So spielst du {game}", howToText: "Schritte für Kinder, Stufen und Tipps für Erwachsene, in der loopy-Anleitung",
       newBadge: "Neues Abzeichen: {name}!", badgeText: "Du hast {n} Sterne gesammelt. Weiter so!",
       keepGoing: "Weiter so", yay: "Juhu!",
       inARow: "{n} richtig hintereinander!", bestYet: "Das ist deine beste Serie!", amazing: "Super gemacht!",
@@ -1666,6 +1668,28 @@ window.Loopy.fresh = function (recent, make, keep) {
       best.textContent = Loopy.t("bestStreak", { n: Loopy.rewards.get().best[game] || 0 });
       panel.insertBefore(best, panel.children[1]);
     }
+    // "How to play": this game's page in the guide, under Best streak (Today's 10: at the top).
+    var how = guideLink();
+    if (how) panel.insertBefore(how, best ? best.nextSibling : own ? panel.children[1] : panel.firstChild);
+  }
+  // The link to a game's page in the guide (games/<subject>/<game>/, Today's 10: games/todays-10/), in the
+  // page's language. Only on game pages: the folder must sit two deep under the site root.
+  function guideLink() {
+    var h1 = document.getElementById("title");
+    if (!h1 || !document.querySelector(".game-bar")) return null;
+    var root = new URL(Loopy.root).pathname, path = location.pathname.replace(/index\.html$/, "");
+    if (path.indexOf(root) !== 0) return null;
+    var rel = path.slice(root.length);
+    if (!/^[a-z]+\/[a-z0-9-]+\/$/.test(rel)) return null;
+    var a = document.createElement("a");
+    a.className = "set-guide"; a.id = "set-guide";
+    a.href = Loopy.root + "guide/" + (Loopy.lang === "de" ? "de/" : "") + "games/" + (rel === "mix/daily-mix/" ? "todays-10/" : rel);
+    a.innerHTML = '<span class="set-guide-ic" aria-hidden="true">📖</span><span><b></b><small data-t="howToText"></small></span><span class="set-guide-go" aria-hidden="true">→</span>';
+    a.querySelector("small").textContent = Loopy.t("howToText");
+    // The title can change while playing ("Make 100" becomes "Make 1,000"), so the name is read when Settings opens.
+    a.refresh = function () { a.querySelector("b").textContent = Loopy.t("howTo", { game: h1.textContent.trim() }); };
+    a.refresh();
+    return a;
   }
   var GEAR = '<svg viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.7 1.7 0 0 0 .3 1.8l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.7 1.7 0 0 0-1.8-.3 1.7 1.7 0 0 0-1 1.5V21a2 2 0 1 1-4 0v-.1a1.7 1.7 0 0 0-1.1-1.5 1.7 1.7 0 0 0-1.8.3l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1a1.7 1.7 0 0 0 .3-1.8 1.7 1.7 0 0 0-1.5-1H3a2 2 0 1 1 0-4h.1a1.7 1.7 0 0 0 1.5-1.1 1.7 1.7 0 0 0-.3-1.8l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1a1.7 1.7 0 0 0 1.8.3H9a1.7 1.7 0 0 0 1-1.5V3a2 2 0 1 1 4 0v.1a1.7 1.7 0 0 0 1 1.5 1.7 1.7 0 0 0 1.8-.3l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1a1.7 1.7 0 0 0-.3 1.8V9a1.7 1.7 0 0 0 1.5 1H21a2 2 0 1 1 0 4h-.1a1.7 1.7 0 0 0-1.5 1z"/></svg>';
   function build() {
@@ -1678,7 +1702,11 @@ window.Loopy.fresh = function (recent, make, keep) {
     btn.setAttribute("aria-label", Loopy.t("settings"));
     group(panel);
     var sync = function () { btn.setAttribute("aria-expanded", String(!panel.hidden)); };
-    btn.addEventListener("click", function () { panel.hidden = !panel.hidden; sync(); });
+    btn.addEventListener("click", function () {
+      panel.hidden = !panel.hidden; sync();
+      var how = document.getElementById("set-guide");
+      if (how && !panel.hidden) how.refresh();
+    });
     // "Level up" on the grown-ups' page opens the game with its levels showing.
     if (Loopy.log && Loopy.log.hint === "harder") panel.hidden = false;
     sync();
