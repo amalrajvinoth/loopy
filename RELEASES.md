@@ -4,6 +4,7 @@ The big changes, newest first. Small fixes are not listed.
 
 | Date | What's new | Where | PR |
 | --- | --- | --- | --- |
+| 2026-10-24 | Fix: Make 10 explains the Make 1,000 level the right way. For 647 + ? = 1,000 it now says "647 needs 3 more to make 650. Then 350 more makes 1,000." Before, the hint talked about 100 and showed minus numbers. English and German. | Make 10 | #148 |
 | 2026-10-23 | Today's 10 asks at your child's levels. Each of its ten problems is as hard as the level your child has reached in that game, not just the age. The chip above the problem says the level. | Today's 10 | #143 |
 | 2026-10-23 | Levels follow your child. A game goes up a level by itself after 10 right in a row, or 18 of the last 20 right. It says so, with a Back a step button. No tap on "Make it harder" is needed any more. A level your child reached stays when the age goes up on a birthday, so nobody drops back a step. | Every game | #142 |
 | 2026-10-23 | Fix: the QR code under "Move my stars to another device" shows again after a few days of play. Before, a child with lots of progress saw an empty white square. The QR code now keeps the stars, badges, day streak, levels and settings when the full code is too long for a picture, and the line under it says what it holds. Send and Copy link still carry everything. | Home page | |

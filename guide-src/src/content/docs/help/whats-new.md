@@ -8,6 +8,10 @@ loopy keeps getting new games. Here is what came lately!
 
 The big changes, newest first. Small fixes are not listed. See [the full list on GitHub](https://github.com/amalrajvinoth/loopy/blob/main/RELEASES.md).
 
+## 24 October 2026
+
+- **Make 10 explains Make 1,000 the right way.** For 647 + ? = 1,000 it now says "647 needs 3 more to make 650. Then 350 more makes 1,000." See [Make 10](/loopy/guide/games/math/make-10/).
+
 ## 23 October 2026
 
 - **Today's 10 at your child's levels.** Each problem is as hard as the level your child reached in that game. See [Today's 10](/loopy/guide/games/todays-10/).

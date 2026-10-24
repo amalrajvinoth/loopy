@@ -69,3 +69,6 @@ The game shows a simple way to get the answer. For example:
 - "13 is 10 and 3. 3 needs 7 more to make 10, and 10 + 10 = 20."
 - "3 tens and 7 tens make 10 tens, and 10 tens are 100."
 - "64 needs 6 more to make 70. Then 30 more makes 100. 6 + 30 = 36."
+- "6 hundreds and 4 hundreds make 10 hundreds, and 10 hundreds are 1,000."
+- "640 needs 60 more to make 700. Then 300 more makes 1,000. 60 + 300 = 360."
+- "647 needs 3 more to make 650. Then 350 more makes 1,000. 3 + 350 = 353."

@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'sha256-Hgm5urauBbYnglqW/yOxPEVYl/73O/RDgVSiEisahs8='; style-src 'self' 'sha256-z2P7kGW5Z05eCTjTZdYpc0vThTlOE9vmt97pVSvi2I4=' 'sha256-ER4UVxOAHVG2PpFuwsi/fNYnlP9iTYLytTr9Qx7YKqY=' 'sha256-RT1053JU5UiKvjrCUFx1rlhdFLMmgtuFJ9T8jnMeawQ=' 'sha256-TBTfdtRIrzqNgPvedoteRMbfc3qXICx6Lq/BTtZjO6I='; img-src 'self' data:; font-src 'self'; connect-src 'self' https://loopy-sync.loopy-1e2.workers.dev; worker-src 'self'; object-src 'none'; base-uri 'none'; form-action 'none'; manifest-src 'self'; upgrade-insecure-requests">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'sha256-w6vC12uyAC7DJYZrHiBji2N6i1w+Le2af7XT9RCzvqE='; style-src 'self' 'sha256-z2P7kGW5Z05eCTjTZdYpc0vThTlOE9vmt97pVSvi2I4=' 'sha256-ER4UVxOAHVG2PpFuwsi/fNYnlP9iTYLytTr9Qx7YKqY=' 'sha256-RT1053JU5UiKvjrCUFx1rlhdFLMmgtuFJ9T8jnMeawQ=' 'sha256-TBTfdtRIrzqNgPvedoteRMbfc3qXICx6Lq/BTtZjO6I='; img-src 'self' data:; font-src 'self'; connect-src 'self' https://loopy-sync.loopy-1e2.workers.dev; worker-src 'self'; object-src 'none'; base-uri 'none'; form-action 'none'; manifest-src 'self'; upgrade-insecure-requests">
 <meta name="referrer" content="strict-origin-when-cross-origin">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <style>:root{color-scheme:light;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}body{margin:0}[hidden]{display:none!important}</style>
@@ -292,7 +292,8 @@ Loopy.addStrings({
     mkVia10: "{a} needs {c} more to make 10. Then 10 more makes 20. {c} + 10 = {b}.",
     mkTeen: "{a} is 10 and {o}. {o} needs {b} more to make 10, and 10 + 10 = 20.",
     mkTensWhy: "{x} tens and {y} tens make 10 tens, and 10 tens are 100.",
-    mkVia: "{a} needs {o} more to make {next}. Then {r} more makes 100. {o} + {r} = {b}.",
+    mkHundredsWhy: "{x} hundreds and {y} hundreds make 10 hundreds, and 10 hundreds are 1,000.",
+    mkVia: "{a} needs {o} more to make {next}. Then {r} more makes {n}. {o} + {r} = {b}.",
     mkEmpty: "The boxes that filled in show {b}.",
    
     mkHow: "Write the missing number."
@@ -306,7 +307,8 @@ Loopy.addStrings({
     mkVia10: "{a} braucht {c} bis zur 10. Dann noch 10 bis zur 20. {c} + 10 = {b}.",
     mkTeen: "{a} ist 10 und {o}. {o} braucht {b} bis zur 10, und 10 + 10 = 20.",
     mkTensWhy: "{x} Zehner und {y} Zehner sind 10 Zehner, und 10 Zehner sind 100.",
-    mkVia: "{a} braucht {o} bis zur {next}. Dann noch {r} bis zur 100. {o} + {r} = {b}.",
+    mkHundredsWhy: "{x} Hunderter und {y} Hunderter sind 10 Hunderter, und 10 Hunderter sind 1.000.",
+    mkVia: "{a} braucht {o} bis zur {next}. Dann noch {r} bis zur {n}. {o} + {r} = {b}.",
     mkEmpty: "Die neu gefüllten Kästchen zeigen {b}.",
    
     mkHow: "Schreibe die Zahl, die fehlt."
@@ -350,7 +352,7 @@ function makeProblem(lv, avoid) {
   return { lv, n, a: 7, key: lv + ":7", answer: n - 7 };
 }
 
-// A short, friendly reason: pairs to 10 first, then the next ten, then the rest.
+// A short, friendly reason: pairs to 10 first, then the next ten (or hundred), then the rest.
 function explain(p) {
   const a = p.a, b = p.answer;
   if (p.n === 10) return t("mkPair", { a, b, n: 10 });
@@ -359,10 +361,17 @@ function explain(p) {
     if (a < 10) return t("mkVia10", { a, b, c: 10 - a });
     return t("mkTeen", { a, b, o: a - 10 });
   }
+  if (p.n === 1000) {
+    // 600 + 400: whole hundreds. 640: up to 700, then 300 more. 647: up to 650, then 350 more.
+    if (a % 100 === 0) return t("mkHundredsWhy", { x: a / 100, y: b / 100 });
+    const step = a % 10 === 0 ? 100 : 10, next = Math.ceil(a / step) * step;
+    if (next === 1000) return t("mkPair", { a: fmt(a), b: fmt(b), n: fmt(1000) });
+    return t("mkVia", { a: fmt(a), b: fmt(b), o: next - a, next: fmt(next), r: fmt(1000 - next), n: fmt(1000) });
+  }
   if (a % 10 === 0) return t("mkTensWhy", { x: a / 10, y: b / 10 });
   const next = Math.ceil(a / 10) * 10;
   if (next === 100) return t("mkPair", { a, b, n: 100 });
-  return t("mkVia", { a, b, o: next - a, next, r: 100 - next });
+  return t("mkVia", { a, b, o: next - a, next, r: 100 - next, n: 100 });
 }
 // GEN END
 

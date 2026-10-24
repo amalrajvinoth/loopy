@@ -8,6 +8,10 @@ loopy bekommt immer wieder neue Spiele. Das ist zuletzt dazugekommen!
 
 Die großen Änderungen, die neuesten zuerst. Kleine Korrekturen stehen nicht dabei. Die [ganze Liste steht auf GitHub](https://github.com/amalrajvinoth/loopy/blob/main/RELEASES.md) (auf Englisch).
 
+## 24. Oktober 2026
+
+- **Ergänze bis 10 erklärt die Stufe bis 1.000 jetzt richtig.** Bei 647 + ? = 1.000 steht jetzt "647 braucht 3 bis zur 650. Dann noch 350 bis zur 1.000." Siehe [Ergänze bis 10](/loopy/guide/de/games/math/make-10/).
+
 ## 23. Oktober 2026
 
 - **Die 10 von heute auf den Stufen deines Kindes.** Jede Aufgabe ist so schwer wie die Stufe, die dein Kind in diesem Spiel erreicht hat. Siehe [Die 10 von heute](/loopy/guide/de/games/todays-10/).
