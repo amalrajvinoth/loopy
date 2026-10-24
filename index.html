@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'sha256-0+irPil+Cw0wPI5PR1hr6Ntod+sB8D+x3glNX9pH+uA='; style-src 'self' 'sha256-dJItlcMQd9O+m7VeTwF6qvXLEzV/DncJGRpqHNv0MJg='; img-src 'self' data:; font-src 'self'; connect-src 'self' https://loopy-sync.loopy-1e2.workers.dev; worker-src 'self'; object-src 'none'; base-uri 'none'; form-action 'none'; manifest-src 'self'; upgrade-insecure-requests">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'sha256-bZyecQrSfaISnipDnsV87wQgtcSlxgeFFYuale8cVs4='; style-src 'self' 'sha256-dJItlcMQd9O+m7VeTwF6qvXLEzV/DncJGRpqHNv0MJg='; img-src 'self' data:; font-src 'self'; connect-src 'self' https://loopy-sync.loopy-1e2.workers.dev; worker-src 'self'; object-src 'none'; base-uri 'none'; form-action 'none'; manifest-src 'self'; upgrade-insecure-requests">
 <meta name="referrer" content="strict-origin-when-cross-origin">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <link rel="icon" href="icon.svg" type="image/svg+xml">
@@ -231,6 +231,7 @@ Loopy.addStrings({
     gdTitle: "Graphs and Data", gdTag: "Read charts and tables", gdText: "Bar charts, pictograms, line charts and tables: how many more, the total, the mean and the median.",
     bmTitle: "Box Multiplication", bmTag: "The grid method", bmText: "Split 23 × 14 into tens and ones, fill each box, then add them up. Bigger numbers as you grow.",
     stTitle: "Step by Step", stTag: "Adding and taking away in steps", stText: "Split a number into tens and ones and work it out one step at a time: 47 + 20 = 67, then 67 + 5 = 72.",
+    shTitle: "Shapes and Angles", shTag: "Shapes, symmetry, area and angles", shText: "Name shapes and count their corners, spot right angles and lines of symmetry, work out perimeter and area, judge angles and sort triangles, with one line of why.",
     tsTitle: "Times and Share", tsTag: "Times and division", tsText: "Times tables with dots to count, and sharing into equal groups. Bigger numbers as you grow.",
     clTitle: "What Time Is It?", clTag: "Telling time", clText: "Read the hands on the clock and pick the right time, from half hours down to the minute.",
     bsTitle: "Bigger or Smaller", bsTag: "Comparing numbers", bsText: "Pick <, = or >, put numbers in order and round them, with a number line to show why.",
@@ -280,6 +281,7 @@ Loopy.addStrings({
     gdTitle: "Diagramme und Daten", gdTag: "Diagramme und Tabellen lesen", gdText: "Balkendiagramme, Piktogramme, Liniendiagramme und Tabellen: wie viel mehr, die Summe, der Mittelwert und der Median.",
     bmTitle: "Malkreuz", bmTag: "Malnehmen im Kreuz", bmText: "Zerlege 23 × 14 in Zehner und Einer, fülle jedes Kästchen und zähle dann zusammen. Größere Zahlen, wenn du wächst.",
     stTitle: "Schrittweise rechnen", stTag: "Plus und Minus in Schritten", stText: "Zerlege eine Zahl in Zehner und Einer und rechne Schritt für Schritt: 47 + 20 = 67, dann 67 + 5 = 72.",
+    shTitle: "Formen und Winkel", shTag: "Formen, Symmetrie, Fläche und Winkel", shText: "Formen benennen und Ecken zählen, rechte Winkel und Symmetrieachsen finden, Umfang und Fläche berechnen, Winkel schätzen und Dreiecke sortieren, mit einem Satz zum Warum.",
     tsTitle: "Mal und Teilen", tsTag: "Malnehmen und Teilen", tsText: "Einmaleins mit Punkten zum Zählen und Teilen in gleiche Gruppen. Größere Zahlen, wenn du wächst.",
     clTitle: "Wie spät ist es?", clTag: "Uhr lesen", clText: "Lies die Zeiger der Uhr und wähle die richtige Zeit, von halben Stunden bis zur Minute.",
     bsTitle: "Größer oder kleiner", bsTag: "Zahlen vergleichen", bsText: "Wähle <, = oder >, ordne Zahlen und runde sie, mit einem Zahlenstrahl, der zeigt warum.",
@@ -320,6 +322,7 @@ const GAMES = [
   { subject: "math", path: "math/graphs-data/", id: "gd", pic: "📊", ages: [8, 14] },
   { subject: "math", path: "math/box-multiply/", id: "bm", pic: "🔲", ages: [7, 12] },
   { subject: "math", path: "math/step-by-step/", id: "st", pic: "🪜", ages: [6, 12] },
+  { subject: "math", path: "math/shapes-angles/", id: "sh", pic: "📐", ages: [7, 14] },
   { subject: "languages", path: "languages/sound-spell/", id: "ss", pic: "👂", ages: [5, 8] },
   { subject: "languages", path: "languages/word-match/", id: "wm", pic: "🖼️", ages: [5, 10] },
   { subject: "languages", path: "languages/spell-it/", id: "si", pic: "✏️", ages: [6, 10] },

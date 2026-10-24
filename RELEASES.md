@@ -4,6 +4,7 @@ The big changes, newest first. Small fixes are not listed.
 
 | Date | What's new | Where | PR |
 | --- | --- | --- | --- |
+| 2026-10-24 | New maths game for ages 7 to 14: Shapes and Angles (German: Formen und Winkel). Name shapes and count their corners and sides, find right angles, parallel lines and lines of symmetry, work out perimeter and area on squared paper, say what kind of angle it is and how big, and sort triangles. Five levels, one line of why after every answer, read aloud and a worksheet with drawings. | Shapes and Angles, home page, How it's going | #151 |
 | 2026-10-24 | The grown-ups page counts right answers by topic too. Practise next says "7 of 10 right this week" under each topic. Each group under Answers to practise shows how the week went, with a green bar. A topic that goes well (10 answers or more, 85% right) is no longer listed to practise. Counting starts with this update; older days show only the misses, as before. | Grown-ups page | #150 |
 | 2026-10-24 | How to play, right in the game: ⚙ Settings in every game and in Today's 10 now has a "How to play" card. It opens that game's page in the loopy guide, in your language, with the steps for kids, the levels and tips for grown-ups. | Every game, Today's 10 | #149 |
 | 2026-10-24 | Fix: Make 10 explains the Make 1,000 level the right way. For 647 + ? = 1,000 it now says "647 needs 3 more to make 650. Then 350 more makes 1,000." Before, the hint talked about 100 and showed minus numbers. English and German. | Make 10 | #148 |
