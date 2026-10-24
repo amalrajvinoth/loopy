@@ -42,6 +42,7 @@ document.documentElement.classList.add("loopy-building");
       b300: "Quick Thinker", b400: "Puzzle Pro", b500: "Legend", b750: "Hero", b1000: "loopy Master", b1500: "Grand Master", b2000: "Wizard", b3000: "Superstar", b5000: "Shooting Star",
       s10: "Hot Streak", s20: "On Fire", s50: "Unstoppable", e5: "Explorer", e10: "Adventurer", eAll: "World Traveller", brave: "Brave",
       streakText: "{n} in a row", gamesText: "{n} games played", braveText: "10 in a row above your age's level", bestStreak: "Best streak: {n}",
+      howTo: "How to play {game}", howToText: "Steps for kids, levels and tips for grown-ups, in the loopy guide",
       newBadge: "New badge: {name}!", badgeText: "You have earned {n} stars. Keep going!",
       keepGoing: "Keep going", yay: "Yay!",
       inARow: "{n} in a row!", bestYet: "That's your best streak yet!", amazing: "Amazing work!",
@@ -65,6 +66,7 @@ document.documentElement.classList.add("loopy-building");
       b300: "Schnelldenker", b400: "Rätsel-Profi", b500: "Legende", b750: "Held", b1000: "loopy-Meister", b1500: "Großmeister", b2000: "Zauberer", b3000: "Superstar", b5000: "Sternschnuppe",
       s10: "Heiße Serie", s20: "Feuer und Flamme", s50: "Nicht zu stoppen", e5: "Entdecker", e10: "Abenteurer", eAll: "Weltenbummler", brave: "Mutig",
       streakText: "{n} hintereinander", gamesText: "{n} Spiele gespielt", braveText: "10 hintereinander über der Stufe deines Alters", bestStreak: "Beste Serie: {n}",
+      howTo: "So spielst du {game}", howToText: "Schritte für Kinder, Stufen und Tipps für Erwachsene, in der loopy-Anleitung",
       newBadge: "Neues Abzeichen: {name}!", badgeText: "Du hast {n} Sterne gesammelt. Weiter so!",
       keepGoing: "Weiter so", yay: "Juhu!",
       inARow: "{n} richtig hintereinander!", bestYet: "Das ist deine beste Serie!", amazing: "Super gemacht!",
@@ -925,7 +927,7 @@ document.documentElement.classList.add("loopy-building");
   var cheeredBest = {}; // one "new best" cheer per run
   var owed = []; // badges earned on the same answer as another card, cheered on the next right answer
   var last = null; // the last answer on this page, for "Report a problem"
-  var MAX_STARS = 1000000, GAMES = ["plus-minus", "times-share", "clock", "sound-spell", "daily-mix", "make-10", "bigger-smaller", "pizza-fractions", "coins-change", "word-match", "spell-it", "quick-facts", "where-is-it", "equation-balance", "flags-capitals", "times-sprint", "percent-ratio", "sentence-builder", "sort-it", "graphs-data", "box-multiply", "step-by-step", "spelling-quiz"];
+  var MAX_STARS = 1000000, GAMES = ["plus-minus", "times-share", "clock", "sound-spell", "daily-mix", "make-10", "bigger-smaller", "pizza-fractions", "coins-change", "word-match", "spell-it", "quick-facts", "where-is-it", "equation-balance", "flags-capitals", "times-sprint", "percent-ratio", "sentence-builder", "sort-it", "graphs-data", "box-multiply", "step-by-step", "spelling-quiz", "shapes-angles"];
   var num = function (n) { return typeof n === "number" && isFinite(n) && n >= 0 ? Math.min(Math.floor(n), MAX_STARS) : 0; };
   // Only known games and sane numbers are kept, whatever the stored text says.
   function clean(raw) {
@@ -1121,14 +1123,17 @@ document.documentElement.classList.add("loopy-building");
       if (Loopy.levels) Loopy.levels.stuck(game);
     },
     // Call after each right answer with the current streak.
+    // kind: what kind of problem it was ("sub-rg"), the same as k in a wrong detail, so the grown-ups' page
+    // can count right answers per kind too. It may come third: correct("make-10", streak, "mk-100").
     // harder: leave out, and the game goes up a level by itself when the child is ready (Loopy.levels.up);
     // null turns that off for this answer, e.g. during a timed round.
-    correct: function (game, streak, harder) {
+    correct: function (game, streak, harder, kind) {
+      if (typeof harder === "string") { kind = harder; harder = undefined; }
       if (harder === undefined && Loopy.levels) harder = Loopy.levels.harder();
       last = { ok: true, d: null };
       if (Loopy.retry) Loopy.retry.fixed(game);
       if (Loopy.recent) Loopy.recent.add(game, true);
-      if (Loopy.log) Loopy.log.add(game, true);
+      if (Loopy.log) Loopy.log.add(game, true, kind ? { k: kind } : null);
       var before = badgeFor(data.stars), had = EXTRA.map(hasExtra);
       data.stars++;
       if (streak <= 1) cheeredBest[game] = false;
@@ -1382,16 +1387,16 @@ document.documentElement.classList.add("loopy-building");
   };
 })();
 
-// Answer log for the grown-ups' progress page: right and wrong answers per game per day, and each
-// wrong answer with the right one, for the last 30 days. It goes in the stars code (Loopy.backup) and is never sent anywhere.
+// Answer log for the grown-ups' progress page: right and wrong answers per game per day (and, since 24 Oct 2026,
+// per kind of problem too), and each wrong answer with the right one, for the last 30 days. It goes in the stars code (Loopy.backup) and is never sent anywhere.
 // Kept in this browser's localStorage as
 // { days: { "2026-10-15": { "plus-minus": [right, wrong] } }, wrong: [{ d: day, g: game, q, a: right answer, y: their answer, k: kind, r, f }] }.
 // r (optional, since Try again) is the game's note of how to rebuild the problem; f counts the times it was answered right since.
 (function () {
   var KEY = "loopy.log", DAYS = 30, MAX_WRONG = 300, MAX_N = 100000, LEN = 40, NOTE = 80;
-  var GAMES = ["plus-minus", "times-share", "clock", "sound-spell", "daily-mix", "make-10", "bigger-smaller", "pizza-fractions", "coins-change", "word-match", "spell-it", "quick-facts", "where-is-it", "equation-balance", "flags-capitals", "times-sprint", "percent-ratio", "sentence-builder", "sort-it", "graphs-data", "box-multiply", "step-by-step", "spelling-quiz"];
+  var GAMES = ["plus-minus", "times-share", "clock", "sound-spell", "daily-mix", "make-10", "bigger-smaller", "pizza-fractions", "coins-change", "word-match", "spell-it", "quick-facts", "where-is-it", "equation-balance", "flags-capitals", "times-sprint", "percent-ratio", "sentence-builder", "sort-it", "graphs-data", "box-multiply", "step-by-step", "spelling-quiz", "shapes-angles"];
   // What kind of problem it was, so the page can say what to practise. See Loopy.log.kind.
-  var KIND = /^(?:(?:add|sub)(?:-rg)?|(?:mul|div)-(?:big|\d{1,2})|cl-(?:0|30|15|5|1|24)|ss-(?:start|end)|mk-(?:10|20|100|1000)|bs-(?:cmp|ord|rnd|dec|neg)|pz-(?:name|cmp|add)|cc-(?:small|count|ch10|ch)|wm-(?:animals|food|home|school)|si-[3-7]|qf-(?:space|animals|body)|wi-(?:cont|eu|euc|wd|wdc)|eb-(?:box|add|mul|two|both)|fc-(?:flag|cap)|pr-(?:frac|any|disc|ratio)|sb-(?:3|5|6|8)|so-(?:animal|living|matter|food|space|material|sense)|gd-(?:read|total|diff|mean|median|cmp)|bm-(?:small|one|three|two|big|dec)|st-(?:add|sub)|sq-(?:mine|loopy))$/;
+  var KIND = /^(?:(?:add|sub)(?:-rg)?|(?:mul|div)-(?:big|\d{1,2})|cl-(?:0|30|15|5|1|24)|ss-(?:start|end)|mk-(?:10|20|100|1000)|bs-(?:cmp|ord|rnd|dec|neg)|pz-(?:name|cmp|add)|cc-(?:small|count|ch10|ch)|wm-(?:animals|food|home|school)|si-[3-7]|qf-(?:space|animals|body)|wi-(?:cont|eu|euc|wd|wdc)|eb-(?:box|add|mul|two|both)|fc-(?:flag|cap)|pr-(?:frac|any|disc|ratio)|sb-(?:3|5|6|8)|so-(?:animal|living|matter|food|space|material|sense)|gd-(?:read|total|diff|mean|median|cmp)|bm-(?:small|one|three|two|big|dec)|st-(?:add|sub)|sq-(?:mine|loopy)|sh-(?:name|lines|area|angle|tri))$/;
   var DAY = /^\d{4}-\d{2}-\d{2}$/;
   var Loopy = window.Loopy = window.Loopy || {};
   var whole = function (n) { return typeof n === "number" && isFinite(n) && n >= 0 ? Math.min(Math.floor(n), MAX_N) : 0; };
@@ -1407,7 +1412,16 @@ document.documentElement.classList.add("loopy-building");
       if (!DAY.test(d) || d < oldest || !row || typeof row !== "object") return;
       GAMES.forEach(function (g) {
         var v = row[g];
-        if (Array.isArray(v) && v.length === 2) { keep[g] = [whole(v[0]), whole(v[1])]; any = true; }
+        if (!Array.isArray(v) || v.length < 2 || v.length > 3) return;
+        keep[g] = [whole(v[0]), whole(v[1])]; any = true;
+        // Since 24 Oct 2026 a row may carry a third item: right and wrong counts per kind, { "add-rg": [7, 3] }.
+        // Rows without it (older days) still count as before.
+        var by = v[2], kinds = {}, got = false;
+        if (by && typeof by === "object" && !Array.isArray(by)) Object.keys(by).forEach(function (k) {
+          var c = by[k];
+          if (KIND.test(k) && Array.isArray(c) && c.length === 2) { kinds[k] = [whole(c[0]), whole(c[1])]; got = true; }
+        });
+        if (got) keep[g].push(kinds);
       });
       if (any) out.days[d] = keep;
     });
@@ -1428,12 +1442,18 @@ document.documentElement.classList.add("loopy-building");
   Loopy.log = {
     MAX_WRONG: MAX_WRONG, clean: clean, // used by Loopy.backup
     get: function () { return clean(data); },
-    // rewards.correct / wrong call this. detail: { q, a, y, k } for a wrong answer, see rewards.wrong.
+    // rewards.correct / wrong call this. detail: { q, a, y, k } for a wrong answer, see rewards.wrong;
+    // { k } for a right one, so the grown-ups' page can say "7 of 10 right" per kind.
     add: function (game, ok, detail) {
       if (GAMES.indexOf(game) === -1) return;
       var today = Loopy.dayKey(0), row = data.days[today] = data.days[today] || {};
       var c = row[game] = row[game] || [0, 0];
       c[ok ? 0 : 1] = whole(c[ok ? 0 : 1] + 1);
+      var k = detail && typeof detail === "object" && typeof detail.k === "string" && KIND.test(detail.k) ? detail.k : "";
+      if (k) {
+        var by = c[2] = c[2] || {}, kc = by[k] = by[k] || [0, 0];
+        kc[ok ? 0 : 1] = whole(kc[ok ? 0 : 1] + 1);
+      }
       if (!ok && detail && typeof detail === "object") {
         data.wrong.push({ d: today, g: game, q: detail.q, a: detail.a, y: detail.y, k: detail.k, r: detail.r });
       }
@@ -1441,6 +1461,25 @@ document.documentElement.classList.add("loopy-building");
       save();
     },
     clear: function () { data = clean(null); Loopy.store.remove(KEY); },
+    // Right and wrong per kind over these days (keys like "2026-10-24"), for one game or all:
+    // { "add-rg": { r: 7, w: 3, games: { "plus-minus": 10 } } }. Days before 24 Oct 2026 have no counts.
+    byKind: function (days, game) {
+      var out = {};
+      days.forEach(function (d) {
+        var row = data.days[d];
+        if (!row) return;
+        Object.keys(row).forEach(function (g) {
+          var by = row[g][2];
+          if (!by || (game && g !== game)) return;
+          Object.keys(by).forEach(function (k) {
+            var e = out[k] = out[k] || { k: k, r: 0, w: 0, games: {} };
+            e.r += by[k][0]; e.w += by[k][1];
+            e.games[g] = (e.games[g] || 0) + by[k][0] + by[k][1];
+          });
+        });
+      });
+      return out;
+    },
     // Right answers today in every game together, for the day streak.
     rightToday: function () { var row = data.days[Loopy.dayKey(0)] || {}, n = 0; Object.keys(row).forEach(function (g) { n += row[g][0]; }); return n; },
     // The kind of a sum: "add" or "sub" with "-rg" when it needs carrying or regrouping,
@@ -1545,7 +1584,7 @@ document.documentElement.classList.add("loopy-building");
 // The last 20 are kept, so Loopy.levels can tell when the child is ready for the next level (18 of 20 right).
 // Kept in this browser's localStorage as { "plus-minus": [1, 1, 0, 1, 1], ... }.
 (function () {
-  var KEY = "loopy.recent", N = 5, KEEP = 20, GAMES = ["plus-minus", "times-share", "clock", "sound-spell", "daily-mix", "make-10", "bigger-smaller", "pizza-fractions", "coins-change", "word-match", "spell-it", "quick-facts", "where-is-it", "equation-balance", "flags-capitals", "times-sprint", "percent-ratio", "sentence-builder", "sort-it", "graphs-data", "box-multiply", "step-by-step", "spelling-quiz"];
+  var KEY = "loopy.recent", N = 5, KEEP = 20, GAMES = ["plus-minus", "times-share", "clock", "sound-spell", "daily-mix", "make-10", "bigger-smaller", "pizza-fractions", "coins-change", "word-match", "spell-it", "quick-facts", "where-is-it", "equation-balance", "flags-capitals", "times-sprint", "percent-ratio", "sentence-builder", "sort-it", "graphs-data", "box-multiply", "step-by-step", "spelling-quiz", "shapes-angles"];
   var TICK = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 12.5l4 4 8-9"/></svg>';
   var CROSS = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M7 7l10 10M17 7L7 17"/></svg>';
   var Loopy = window.Loopy = window.Loopy || {};
@@ -1666,6 +1705,28 @@ window.Loopy.fresh = function (recent, make, keep) {
       best.textContent = Loopy.t("bestStreak", { n: Loopy.rewards.get().best[game] || 0 });
       panel.insertBefore(best, panel.children[1]);
     }
+    // "How to play": this game's page in the guide, under Best streak (Today's 10: at the top).
+    var how = guideLink();
+    if (how) panel.insertBefore(how, best ? best.nextSibling : own ? panel.children[1] : panel.firstChild);
+  }
+  // The link to a game's page in the guide (games/<subject>/<game>/, Today's 10: games/todays-10/), in the
+  // page's language. Only on game pages: the folder must sit two deep under the site root.
+  function guideLink() {
+    var h1 = document.getElementById("title");
+    if (!h1 || !document.querySelector(".game-bar")) return null;
+    var root = new URL(Loopy.root).pathname, path = location.pathname.replace(/index\.html$/, "");
+    if (path.indexOf(root) !== 0) return null;
+    var rel = path.slice(root.length);
+    if (!/^[a-z]+\/[a-z0-9-]+\/$/.test(rel)) return null;
+    var a = document.createElement("a");
+    a.className = "set-guide"; a.id = "set-guide";
+    a.href = Loopy.root + "guide/" + (Loopy.lang === "de" ? "de/" : "") + "games/" + (rel === "mix/daily-mix/" ? "todays-10/" : rel);
+    a.innerHTML = '<span class="set-guide-ic" aria-hidden="true">📖</span><span><b></b><small data-t="howToText"></small></span><span class="set-guide-go" aria-hidden="true">→</span>';
+    a.querySelector("small").textContent = Loopy.t("howToText");
+    // The title can change while playing ("Make 100" becomes "Make 1,000"), so the name is read when Settings opens.
+    a.refresh = function () { a.querySelector("b").textContent = Loopy.t("howTo", { game: h1.textContent.trim() }); };
+    a.refresh();
+    return a;
   }
   var GEAR = '<svg viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.7 1.7 0 0 0 .3 1.8l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.7 1.7 0 0 0-1.8-.3 1.7 1.7 0 0 0-1 1.5V21a2 2 0 1 1-4 0v-.1a1.7 1.7 0 0 0-1.1-1.5 1.7 1.7 0 0 0-1.8.3l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1a1.7 1.7 0 0 0 .3-1.8 1.7 1.7 0 0 0-1.5-1H3a2 2 0 1 1 0-4h.1a1.7 1.7 0 0 0 1.5-1.1 1.7 1.7 0 0 0-.3-1.8l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1a1.7 1.7 0 0 0 1.8.3H9a1.7 1.7 0 0 0 1-1.5V3a2 2 0 1 1 4 0v.1a1.7 1.7 0 0 0 1 1.5 1.7 1.7 0 0 0 1.8-.3l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1a1.7 1.7 0 0 0-.3 1.8V9a1.7 1.7 0 0 0 1.5 1H21a2 2 0 1 1 0 4h-.1a1.7 1.7 0 0 0-1.5 1z"/></svg>';
   function build() {
@@ -1678,7 +1739,11 @@ window.Loopy.fresh = function (recent, make, keep) {
     btn.setAttribute("aria-label", Loopy.t("settings"));
     group(panel);
     var sync = function () { btn.setAttribute("aria-expanded", String(!panel.hidden)); };
-    btn.addEventListener("click", function () { panel.hidden = !panel.hidden; sync(); });
+    btn.addEventListener("click", function () {
+      panel.hidden = !panel.hidden; sync();
+      var how = document.getElementById("set-guide");
+      if (how && !panel.hidden) how.refresh();
+    });
     // "Level up" on the grown-ups' page opens the game with its levels showing.
     if (Loopy.log && Loopy.log.hint === "harder") panel.hidden = false;
     sync();

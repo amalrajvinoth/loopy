@@ -41,6 +41,7 @@ Von der ersten bis zur letzten Stufe. Die 10 von heute hat keine Stufen.
 | Diagramme und Daten | 4 | Balkendiagramme und Piktogramme → Tabellen und Liniendiagramme → Mittelwert und Median → Zwei Diagramme vergleichen |
 | Malkreuz | 6 | Zweistellig × 2 bis 5 → Zweistellig × einstellig → Dreistellig × einstellig → Zweistellig × zweistellig → Dreistellig × zweistellig → Kommazahlen |
 | Schrittweise rechnen | 6 | Über den Zehner, bis 20 → Bis 100 → Bis 100 mit Übertrag → Bis 1.000 → Bis 1.000 mit Übertrag → Bis 10.000 |
+| Formen und Winkel | 5 | Formen, Ecken und Seiten → Linien und Symmetrie → Umfang und Fläche → Winkel → Dreiecke und Formeln |
 | Anlaut und Endlaut | 3 | Anlaute, 3 Antworten → Beide Laute, 3 Antworten → Beide Laute, 4 Antworten |
 | Bild und Wort | 3 | 3 Wörter → 4 Wörter → 4, knifflig |
 | Wörter schreiben | 5 | 3 Buchstaben → 4 Buchstaben → 5 Buchstaben → 6 Buchstaben → 7 bis 8 Buchstaben |

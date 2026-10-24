@@ -378,6 +378,12 @@ a.home-link.loopy-back:focus-visible { outline: 3px solid var(--mark); outline-o
 /* Settings panel: "This game" first, then "Age, look and sound", then Reset score. */
 .set-head { margin: 0; font-size: 0.8rem; font-weight: 700; letter-spacing: 0.06em; text-transform: uppercase; color: var(--c1); }
 .set-best { margin: -4px 0 10px; color: var(--muted); font-weight: 600; }
+/* "How to play": the link to the game's guide page, a chip-colored card with a book and an arrow. */
+.set-guide { display: flex; align-items: center; gap: 12px; margin: 0 0 12px; padding: 10px 14px; border: 2px solid var(--line); border-radius: 16px; background: var(--chip); color: var(--ink); text-decoration: none; }
+.set-guide-ic { font-size: 1.5rem; line-height: 1; }
+.set-guide b { display: block; }
+.set-guide small { display: block; color: var(--muted); line-height: 1.25; }
+.set-guide-go { margin-left: auto; font-weight: 700; font-size: 1.3rem; }
 .set-shared { display: flex; flex-direction: column; gap: 10px; border-top: 2px dashed var(--line); padding-top: 12px; }
 .set-shared:first-child { border-top: 0; padding-top: 0; }
 

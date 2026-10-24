@@ -8,6 +8,13 @@ loopy bekommt immer wieder neue Spiele. Das ist zuletzt dazugekommen!
 
 Die großen Änderungen, die neuesten zuerst. Kleine Korrekturen stehen nicht dabei. Die [ganze Liste steht auf GitHub](https://github.com/amalrajvinoth/loopy/blob/main/RELEASES.md) (auf Englisch).
 
+## 24. Oktober 2026
+
+- **Neues Spiel für 7 bis 14 Jahre: Formen und Winkel.** Formen benennen und Ecken zählen, rechte Winkel und Symmetrieachsen finden, Umfang und Fläche auf Kästchenpapier berechnen, Winkel schätzen und Dreiecke sortieren. Fünf Stufen, nach jeder Antwort ein Satz zum Warum. Siehe [Formen und Winkel](/loopy/guide/de/games/math/shapes-angles/).
+- **Richtige Antworten zählen nach Art.** Die Seite für Erwachsene sagt unter Als Nächstes üben "7 von 10 diese Woche richtig" und zeigt neben jeder Gruppe einen grünen Balken. Siehe [Die Seite für Erwachsene](/loopy/guide/de/grown-ups/grown-ups-page/).
+- **So spielst du, direkt im Spiel.** In ⚙ Einstellungen hat jedes Spiel jetzt eine Karte **So spielst du**, die die Seite des Spiels in dieser Anleitung öffnet. Siehe [Einstellungen im Spiel](/loopy/guide/de/settings/game-settings/).
+- **Ergänze bis 10 erklärt die Stufe bis 1.000 jetzt richtig.** Bei 647 + ? = 1.000 steht jetzt "647 braucht 3 bis zur 650. Dann noch 350 bis zur 1.000." Siehe [Ergänze bis 10](/loopy/guide/de/games/math/make-10/).
+
 ## 23. Oktober 2026
 
 - **Die 10 von heute auf den Stufen deines Kindes.** Jede Aufgabe ist so schwer wie die Stufe, die dein Kind in diesem Spiel erreicht hat. Siehe [Die 10 von heute](/loopy/guide/de/games/todays-10/).

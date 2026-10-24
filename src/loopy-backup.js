@@ -19,7 +19,7 @@
   var MAX_CODE = 40000, MAX_JSON = 200000, MAX_P = 10, MAX_G = 300, MAX_GV = 2000;
   // The keys a child's g may hold: game settings ("ss.mode.a7"), the last game, the games already seen, and the levels the grown-ups page last saw.
   // Each game checks its own values again when it reads them (only known choices are used).
-  var GKEY = /^(?:(?:bm|bs|cc|clockquiz|eb|fc|gd|mk|pm100|pr|pz|qf|sb|si|so|sq|ss|st|ts|tt|wi|wm)\.[A-Za-z]{1,16}(?:\.a\d{1,2})?|loopy\.(?:last|seen|levels))$/;
+  var GKEY = /^(?:(?:bm|bs|cc|clockquiz|eb|fc|gd|mk|pm100|pr|pz|qf|sb|sh|si|so|sq|ss|st|ts|tt|wi|wm)\.[A-Za-z]{1,16}(?:\.a\d{1,2})?|loopy\.(?:last|seen|levels))$/;
   var KEYS = { rewards: "loopy.rewards", daily: "loopy.daily", log: "loopy.log", recent: "loopy.recent",
     age: "loopy.ageOffset", read: "loopy.readAloud", theme: "loopy.theme", font: "loopy.font", sound: "loopy.sound", lang: "loopy.lang" };
   var CHOICES = { read: ["on", "off"], theme: ["black", "sunny", "ocean", "candy", "forest", "contrast"], font: ["easy", "normal"], sound: ["on", "off"], lang: ["en", "de"] };
@@ -124,8 +124,17 @@
     Object.keys(l.days).forEach(function (day) {
       var row = L.days[day] = L.days[day] || {};
       Object.keys(l.days[day]).forEach(function (g) {
-        var a = row[g] || [0, 0], b = l.days[day][g];
-        row[g] = [Math.max(a[0], b[0]), Math.max(a[1], b[1])];
+        var a = row[g] || [0, 0], b = l.days[day][g], m = [Math.max(a[0], b[0]), Math.max(a[1], b[1])];
+        // The counts per kind (since 24 Oct 2026) merge the same way, kind by kind.
+        if (a[2] || b[2]) {
+          var by = {}, ka = a[2] || {}, kb = b[2] || {};
+          Object.keys(ka).concat(Object.keys(kb)).forEach(function (k) {
+            var x = ka[k] || [0, 0], y = kb[k] || [0, 0];
+            by[k] = [Math.max(x[0], y[0]), Math.max(x[1], y[1])];
+          });
+          m.push(by);
+        }
+        row[g] = m;
       });
     });
     // The same wrong answer from both sides is one row; the bigger "answered right since" count (Try again) wins.

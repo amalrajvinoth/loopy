@@ -21,7 +21,7 @@ Sobald ein Kind Sterne hat, bittet loopy den Browser, sie dauerhaft zu behalten.
 
 ## Was gespeichert wird, und für wen
 
-Jedes Kind hat eigene Sterne, Abzeichen, Serien, ein eigenes Alter, eigene Stufen und Einstellungen in den Spielen, die falschen Antworten für die Seite für Erwachsene und sein letztes Spiel. Mehr unter [Kinder und Alter](/loopy/guide/de/setup/kids-and-ages/).
+Jedes Kind hat eigene Sterne, Abzeichen, Serien, ein eigenes Alter, eigene Stufen und Einstellungen in den Spielen, die Antworten je Art und die falschen Antworten für die Seite für Erwachsene und sein letztes Spiel. Mehr unter [Kinder und Alter](/loopy/guide/de/setup/kids-and-ages/).
 
 Farbthema, **Leichter lesen**, Ton und Sprache gelten für alle auf dem Gerät.
 

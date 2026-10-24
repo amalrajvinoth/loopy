@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'sha256-Xuto6jFy8uZ3eCSjdwZoCtT1S/e0fgtjEa7LomT/PnI='; style-src 'self' 'sha256-z2P7kGW5Z05eCTjTZdYpc0vThTlOE9vmt97pVSvi2I4=' 'sha256-ibtFOuTMIdUHzBb1O1DUg3O6mNXIeZNbOW0riCE9CtE='; img-src 'self' data:; font-src 'self'; connect-src 'self' https://loopy-sync.loopy-1e2.workers.dev; worker-src 'self'; object-src 'none'; base-uri 'none'; form-action 'none'; manifest-src 'self'; upgrade-insecure-requests">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'sha256-tdR38PjDRpr/e82evSUSUJrmfnjt1aF6HvAOVgs76Vs='; style-src 'self' 'sha256-z2P7kGW5Z05eCTjTZdYpc0vThTlOE9vmt97pVSvi2I4=' 'sha256-ibtFOuTMIdUHzBb1O1DUg3O6mNXIeZNbOW0riCE9CtE='; img-src 'self' data:; font-src 'self'; connect-src 'self' https://loopy-sync.loopy-1e2.workers.dev; worker-src 'self'; object-src 'none'; base-uri 'none'; form-action 'none'; manifest-src 'self'; upgrade-insecure-requests">
 <meta name="referrer" content="strict-origin-when-cross-origin">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <style>:root{color-scheme:light;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}body{margin:0}[hidden]{display:none!important}</style>
@@ -576,7 +576,7 @@ const keyOf = (p) => p.kind + (p.kind === "ss" ? p.word[1] + p.mode : p.kind ===
     });
     streak = ok ? streak + 1 : 0;
     results.push({ kind: p.kind, ok });
-    ok ? Loopy.rewards.correct("daily-mix", streak) : Loopy.rewards.wrong("daily-mix", missed(p, btn.textContent));
+    ok ? Loopy.rewards.correct("daily-mix", streak, missed(p, "").k) : Loopy.rewards.wrong("daily-mix", missed(p, btn.textContent));
     card.className = "problem-card " + (ok ? "good" : "bad");
     feedbackEl.className = "feedback " + (ok ? "good" : "bad");
     let why;

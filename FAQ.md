@@ -4,7 +4,7 @@ Answers to common questions about Loopy. The same answers are on the site at htt
 
 ## Is there a guide that explains everything?
 
-Yes. The loopy guide at https://amalrajvinoth.github.io/loopy/guide/ explains every game, setup, settings, the grown-ups page, backups and how to report a problem. It is in English and German. Each game page starts with three short steps for kids, with a **Read this to me** button. Tap the **Guide** button at the bottom of the home page, or find it on the Help page.
+Yes. The loopy guide at https://amalrajvinoth.github.io/loopy/guide/ explains every game, setup, settings, the grown-ups page, backups and how to report a problem. It is in English and German. Each game page starts with three short steps for kids, with a **Read this to me** button. Tap the **Guide** button at the bottom of the home page, or find it on the Help page. Inside a game, ⚙ **Settings** has a **How to play** link that opens that game's page.
 
 ## Is Loopy free?
 
@@ -66,7 +66,7 @@ On an iPhone, iPad or Mac, the loopy on the home screen keeps its own stars, apa
 
 ## Can Loopy read the questions out loud?
 
-Yes, in Plus and Minus, Times and Share, What Time Is It?, Make 10, Bigger or Smaller, Pizza Fractions, Coins and Change, Equation Balance, Times Tables Sprint, Percent and Ratio, Sentence Builder, Spelling Quiz, Graphs and Data, Box Multiplication, Step by Step, Quick Facts, Sort It, Where Is It? and Flags and Capitals. Open Settings and turn on **Read aloud**. A speaker button shows next to the question. It uses the device's own voice, in English or German, and nothing is downloaded. It is on by itself for ages 5 to 7.
+Yes, in Plus and Minus, Times and Share, What Time Is It?, Make 10, Bigger or Smaller, Pizza Fractions, Coins and Change, Equation Balance, Times Tables Sprint, Percent and Ratio, Sentence Builder, Spelling Quiz, Graphs and Data, Box Multiplication, Step by Step, Shapes and Angles, Quick Facts, Sort It, Where Is It? and Flags and Capitals. Open Settings and turn on **Read aloud**. A speaker button shows next to the question. It uses the device's own voice, in English or German, and nothing is downloaded. It is on by itself for ages 5 to 7.
 
 ## Can my child practise their own spelling words from school?
 

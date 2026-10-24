@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'sha256-Edf7UAup1Y8PU9tPcGuCnNb3GsON7AS6Oa0yGH3W1Jo='; style-src 'self' 'sha256-z2P7kGW5Z05eCTjTZdYpc0vThTlOE9vmt97pVSvi2I4=' 'sha256-B1/34nWPbkOgQvjShds4VMrIOiMhFRoP1nBsay1oDds='; img-src 'self' data:; font-src 'self'; connect-src 'self' https://loopy-sync.loopy-1e2.workers.dev; worker-src 'self'; object-src 'none'; base-uri 'none'; form-action 'none'; manifest-src 'self'; upgrade-insecure-requests">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'sha256-sSvVmJ6+SDhoJR2ZeLb4T5OvY3Ssg0w7Rgi52FXR8xw='; style-src 'self' 'sha256-z2P7kGW5Z05eCTjTZdYpc0vThTlOE9vmt97pVSvi2I4=' 'sha256-B1/34nWPbkOgQvjShds4VMrIOiMhFRoP1nBsay1oDds='; img-src 'self' data:; font-src 'self'; connect-src 'self' https://loopy-sync.loopy-1e2.workers.dev; worker-src 'self'; object-src 'none'; base-uri 'none'; form-action 'none'; manifest-src 'self'; upgrade-insecure-requests">
 <meta name="referrer" content="strict-origin-when-cross-origin">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <style>:root{color-scheme:light;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}body{margin:0}[hidden]{display:none!important}</style>
@@ -917,7 +917,7 @@ function makeProblem(map, find, age, avoid) {
     if (!ok) shapes(hit).forEach(s => s.classList.add("wrong"));
     if (ok) { right++; streak++; } else { streak = 0; }
     const capital = current.type === "land" ? current.place[lang === "de" ? 4 : 3] : "";
-    if (ok) Loopy.rewards.correct("where-is-it", streak);
+    if (ok) Loopy.rewards.correct("where-is-it", streak, kind());
     else Loopy.rewards.wrong("where-is-it", { q: current.cap ? capital : nameOfHit(want, false), a: nameOfHit(want, false), y: nameOfHit(hit, false), k: kind(), r: note(current) });
     // Name the right place on the map (and the one tapped, if it was wrong). Capitals get a dot.
     marks = [Object.assign({ text: nameOfHit(want, false), below: current.cap }, labelAt(want))];

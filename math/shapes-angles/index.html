@@ -1,0 +1,918 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'sha256-cHpK+saCoi3aBZLp7ff26NYkkB8WTqA08qQNXVaYTvs='; style-src 'self' 'sha256-z2P7kGW5Z05eCTjTZdYpc0vThTlOE9vmt97pVSvi2I4=' 'sha256-J8ODEJQ62g7fuwAD5R4yNzrZhFYCBcQEatoEmrC8eAA=' 'sha256-RT1053JU5UiKvjrCUFx1rlhdFLMmgtuFJ9T8jnMeawQ=' 'sha256-sKtkhkvW/J0txrg+v8ZXTPcFKUHG5wXAtmSzJjbS2c0='; img-src 'self' data:; font-src 'self'; connect-src 'self' https://loopy-sync.loopy-1e2.workers.dev; worker-src 'self'; object-src 'none'; base-uri 'none'; form-action 'none'; manifest-src 'self'; upgrade-insecure-requests">
+<meta name="referrer" content="strict-origin-when-cross-origin">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<style>:root{color-scheme:light;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}body{margin:0}[hidden]{display:none!important}</style>
+<link rel="icon" href="../../icon.svg" type="image/svg+xml">
+<link rel="manifest" href="../../manifest.webmanifest">
+<link rel="apple-touch-icon" href="../../apple-touch-icon.png">
+<meta name="theme-color" content="#0a0a0c">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="loopy">
+<title data-t="shName">Shapes and Angles</title>
+<meta name="description" content="Shapes and Angles on loopy: name shapes and count their corners, spot right angles, parallel lines and lines of symmetry, work out perimeter and area on a grid, judge angles, and sort triangles. Five levels for ages 7 to 14, with one line of why after every answer. Free, English and German.">
+<link rel="preload" href="../../fonts/lexend-latin.woff2" as="font" type="font/woff2" crossorigin>
+<style>
+/* Layout: a picture and a question, answer buttons below. Shared look with the other games. */
+:root {
+  --bg: #f3f6fb;
+  --card: #ffffff;
+  --ink: #1d2a3f;
+  --muted: #5d6b82;
+  --line: #d5dde9;
+  --accent: #2457c5;
+  --accent-ink: #ffffff;
+  --mark: #e2622b;
+  --good: #1f8a4c;
+  --good-bg: #e3f5ea;
+  --bad: #c23a3a;
+  --bad-bg: #fbe6e6;
+  --chip: #e6ecf6;
+  --key: #ffffff;
+  --font: "Lexend", "Segoe UI", "Helvetica Neue", Arial, sans-serif;
+}
+
+* { box-sizing: border-box; }
+body {
+  background: var(--bg); color: var(--ink); font-family: var(--font); font-size: 16px;
+  padding-left: max(16px, env(safe-area-inset-left, 0px));
+  padding-right: max(16px, env(safe-area-inset-right, 0px));
+  padding-block: 20px 32px;
+}
+.wrap { max-width: 520px; margin: 0 auto; display: flex; flex-direction: column; gap: 16px; }
+
+.top { display: flex; flex-wrap: wrap; gap: 12px; align-items: center; justify-content: space-between; }
+h1 { margin: 0; font-size: 1.6rem; font-weight: 700; text-wrap: balance; }
+.score { display: flex; flex-wrap: wrap; gap: 8px; font-variant-numeric: tabular-nums; }
+.pill { background: var(--card); border: 1px solid var(--line); border-radius: 999px; padding: 6px 14px; font-weight: 600; font-size: 1rem; white-space: nowrap; }
+.pill span { color: var(--muted); font-weight: 400; margin-right: 4px; }
+
+.settings { display: flex; flex-direction: column; gap: 8px; }
+.seg-label { font-size: 0.8rem; font-weight: 600; letter-spacing: 0.06em; text-transform: uppercase; color: var(--muted); margin: 0 0 4px 4px; }
+.seg { display: grid; grid-template-columns: repeat(3, 1fr); gap: 6px; background: var(--chip); padding: 5px; border-radius: 14px; }
+.seg.two { grid-template-columns: repeat(2, 1fr); }
+.seg button {
+  font: inherit; font-size: 0.95rem; font-weight: 600; color: var(--muted);
+  background: transparent; border: 0; border-radius: 10px; padding: 8px 6px; min-height: 44px; cursor: pointer;
+}
+.seg button[aria-pressed="true"] { background: var(--card); color: var(--ink); box-shadow: 0 1px 3px rgb(0 0 0 / 0.12); }
+
+.problem-card {
+  background: var(--card); border: 1px solid var(--line); border-radius: 24px;
+  padding: 20px 18px 18px; display: flex; flex-direction: column; align-items: center; gap: 14px;
+}
+.problem-card.good { border-color: var(--good); box-shadow: 0 0 0 2px var(--good) inset; }
+.problem-card.bad { border-color: var(--bad); box-shadow: 0 0 0 2px var(--bad) inset; }
+
+.feedback { min-height: 3.1em; text-align: center; font-size: 1.1rem; line-height: 1.45; margin: 0; max-width: 34ch; }
+.feedback strong { display: block; font-size: 1.45rem; }
+.feedback.good strong { color: var(--good); }
+.feedback.bad strong { color: var(--bad); }
+.feedback .hint { color: var(--muted); }
+
+.foot { display: flex; justify-content: space-between; align-items: center; gap: 12px; flex-wrap: wrap; }
+.foot p { margin: 0; color: var(--muted); font-size: 0.9rem; }
+.reset { font: inherit; font-size: 0.95rem; color: var(--muted); background: transparent; border: 2px solid var(--line); border-radius: 14px; padding: 0 16px; min-height: 44px; cursor: pointer; }
+button:focus-visible { outline: 3px solid var(--mark); outline-offset: 3px; }
+
+@media (max-width: 420px) {
+  h1 { font-size: 1.35rem; }
+  .seg button { font-size: 0.85rem; }
+}
+@media (prefers-reduced-motion: reduce) {
+  * { transition: none !important; }
+}
+</style>
+<style>.home-link{display:inline-flex;align-items:center;min-height:40px;color:var(--muted);font-weight:600;text-decoration:none;font-size:0.95rem}.home-link:hover{color:var(--ink)}</style>
+<style>
+/* Phones and tablets: the game fills one screen; settings sit behind a button. */
+body { min-height: 100vh; min-height: 100dvh; padding-block: 12px 16px; }
+.wrap { gap: 12px; }
+.game-bar { display: flex; align-items: center; justify-content: space-between; gap: 8px; }
+.bar-right { display: flex; align-items: center; gap: 8px; }
+.top { gap: 8px 12px; }
+.play { display: flex; flex-direction: column; gap: 12px; -webkit-user-select: none; user-select: none; }
+@media (min-width: 600px) and (orientation: portrait) { .wrap { max-width: 640px; } }
+@media (orientation: landscape) and (min-width: 640px) {
+  .wrap { max-width: 1100px; }
+  .play { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; align-items: center; }
+}
+
+.problem-card { padding: 14px 14px 12px; gap: 8px; }
+.feedback { min-height: 2.9em; font-size: 1.05rem; }
+.feedback strong { font-size: 1.3rem; }
+/* Short phones: keep long explanations from pushing the answers off screen. */
+@media (max-height: 760px) and (orientation: portrait) {
+  .feedback { font-size: 0.95rem; line-height: 1.35; }
+  .feedback strong { font-size: 1.15rem; }
+}
+
+/* Portrait: the page is exactly one screen tall; the answers stay at the bottom
+   and the top part shrinks to fit. With settings open, the page scrolls normally. */
+@media (orientation: portrait) {
+  body { height: calc(100dvh - env(safe-area-inset-top, 0px) - env(safe-area-inset-bottom, 0px)); min-height: 0; display: flex; flex-direction: column; overflow: hidden; }
+  body:has(#settings-panel:not([hidden])) { height: auto; overflow: visible; }
+  .wrap { flex: 1 1 auto; min-height: 0; width: 100%; }
+  .play { flex: 1 1 auto; min-height: 0; }
+}
+@media (orientation: portrait) {
+  .problem-card { flex: 1 1 auto; min-height: 0; justify-content: center; overflow: hidden; }
+  .feedback { flex: 0 1 auto; min-height: 0; overflow-y: auto; }
+}
+@media (orientation: landscape) and (min-width: 640px) {
+  body { height: calc(100dvh - env(safe-area-inset-top, 0px) - env(safe-area-inset-bottom, 0px)); min-height: 0; display: flex; flex-direction: column; overflow: hidden; }
+  body:has(#settings-panel:not([hidden])) { height: auto; overflow: visible; }
+  .wrap { flex: 1 1 auto; min-height: 0; width: 100%; }
+  .play { flex: 1 1 auto; min-height: 0; grid-template-rows: minmax(0, 1fr); }
+  .problem-card { min-height: 0; overflow: hidden; }
+  .feedback { flex: 0 1 auto; min-height: 0; overflow-y: auto; }
+}
+@media (max-height: 500px) {
+  .feedback { font-size: 0.9rem; line-height: 1.3; }
+  .feedback strong { font-size: 1.05rem; }
+}
+
+/* Shapes and Angles: a drawing, a question, and the answers to pick from. */
+.pic { display: block; width: 100%; max-width: 420px; height: auto; max-height: clamp(120px, 34dvh, 300px); flex: 0 1 auto; }
+.pic .sh-fill { fill: var(--chip); stroke: var(--ink); stroke-width: 3; stroke-linejoin: round; }
+.pic .sh-area { fill: var(--accent); fill-opacity: 0.3; stroke: var(--accent); stroke-width: 3; stroke-linejoin: round; }
+.pic .sh-grid { stroke: var(--line); stroke-width: 1.2; fill: none; }
+.pic .sh-line { stroke: var(--ink); stroke-width: 3.5; stroke-linecap: round; fill: none; }
+.pic .sh-dash { stroke: var(--mark); stroke-width: 3; stroke-dasharray: 8 6; stroke-linecap: round; fill: none; }
+.pic .sh-arc { stroke: var(--accent); stroke-width: 3.5; fill: none; }
+.pic .sh-mark { stroke: var(--accent); stroke-width: 2.5; fill: none; }
+.pic .sh-dot { fill: var(--ink); }
+.pic .sh-text { fill: var(--ink); font-family: var(--font); font-size: 15px; font-weight: 600; text-anchor: middle; }
+.pic .sh-text.hi { fill: var(--accent); }
+.question { margin: 0; font-size: clamp(1rem, min(4.6vw, 2.8dvh), 1.4rem); font-weight: 700; line-height: 1.25;
+  text-align: center; max-width: 32ch; text-wrap: balance; }
+.side { display: flex; flex-direction: column; gap: 10px; }
+.choices { display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; }
+/* Two or three answers: one column, so no answer looks bigger than the others. */
+.choices.one { grid-template-columns: 1fr; }
+.choices.one button { min-height: clamp(48px, 7dvh, 80px); }
+.choices button {
+  font: inherit; font-size: clamp(1.1rem, min(5.2vw, 3.4dvh), 1.8rem); font-weight: 700; color: var(--ink); line-height: 1.2;
+  background: var(--key); border: 2px solid var(--line); border-radius: 18px; min-height: clamp(56px, 9dvh, 96px); padding: 6px 10px; cursor: pointer;
+  overflow-wrap: anywhere; hyphens: auto; font-variant-numeric: tabular-nums;
+  transition: transform .08s ease, border-color .15s ease; touch-action: manipulation; -webkit-tap-highlight-color: transparent;
+}
+.choices button:hover:not(:disabled) { border-color: var(--accent); }
+.choices button:active:not(:disabled) { transform: scale(0.96); }
+.choices button:disabled { cursor: default; }
+.choices button.right { border-color: var(--good); background: var(--good-bg); color: var(--good); }
+.choices button.wrong { border-color: var(--bad); background: var(--bad-bg); color: var(--bad); }
+.choices button.faded { opacity: 0.45; }
+.next { font: inherit; font-size: 1.25rem; font-weight: 700; color: var(--accent-ink); background: var(--accent); border: 0; border-radius: 16px; min-height: clamp(52px, 7dvh, 72px); cursor: pointer; width: 100%; }
+.seg button { padding-inline: 4px; line-height: 1.2; }
+@media (min-width: 600px) and (orientation: portrait) {
+  .choices button { min-height: clamp(64px, 10dvh, 120px); }
+  .pic { max-height: clamp(160px, 36dvh, 360px); }
+}
+@media (orientation: landscape) and (min-width: 640px) {
+  .problem-card { height: 100%; justify-content: center; }
+  .side { height: 100%; justify-content: center; }
+  .choices button { min-height: clamp(52px, 14dvh, 130px); }
+  .pic { max-height: clamp(120px, 44dvh, 360px); }
+}
+/* After the answer the drawing gets smaller, so the question and the reason have room. */
+@media (max-height: 900px), (max-width: 599px) {
+  .problem-card.good .pic, .problem-card.bad .pic { max-height: clamp(80px, 20dvh, 180px); }
+}
+@media (max-height: 700px) {
+  .pic { max-height: clamp(100px, 28dvh, 220px); }
+  .question { font-size: clamp(0.95rem, min(4.2vw, 2.6dvh), 1.2rem); }
+  .problem-card.good .pic, .problem-card.bad .pic { display: none; }
+}
+@media (max-height: 500px) {
+  .question { font-size: 0.95rem; }
+}
+
+/* Worksheet cells (only printed): the drawing, then the answers to circle. Black on white, whatever the theme. */
+@media print {
+  .sheet-grid li > div.ws-sh { align-items: center; gap: 0.8mm; padding: 1.5mm 2mm 0; width: 100%; }
+  .ws-sh svg { width: 30mm; height: 20mm; display: block; }
+  .ws-sh .sh-fill { fill: #fff; stroke: #000; stroke-width: 3; stroke-linejoin: round; }
+  .ws-sh .sh-area { fill: #ddd; stroke: #000; stroke-width: 3; }
+  .ws-sh .sh-grid { stroke: #999; stroke-width: 1.2; fill: none; }
+  .ws-sh .sh-line { stroke: #000; stroke-width: 3.5; stroke-linecap: round; fill: none; }
+  .ws-sh .sh-dash { stroke: #000; stroke-width: 3; stroke-dasharray: 8 6; fill: none; }
+  .ws-sh .sh-arc, .ws-sh .sh-mark { stroke: #000; stroke-width: 3; fill: none; }
+  .ws-sh .sh-dot { fill: #000; }
+  .ws-sh .sh-text { fill: #000; font-family: "Lexend", Arial, sans-serif; font-size: 15px; font-weight: 600; text-anchor: middle; }
+  .ws-sh .ws-q { font-size: 8pt; font-weight: 600; line-height: 1.15; text-align: center; }
+  .ws-sh .ws-opts { display: flex; flex-wrap: wrap; justify-content: center; gap: 0.2mm 2.5mm; font-size: 8pt; line-height: 1.2; color: #333; }
+  .ws-sh .ws-opts span::before { content: "○ "; }
+}
+</style>
+<link rel="stylesheet" href="../../loopy.css">
+<script src="../../loopy.js"></script>
+</head>
+<body>
+
+<div class="wrap">
+  <header class="game-bar">
+    <a class="home-link" href="../../">&larr; loopy</a>
+    <div class="bar-right">
+      <span id="star-chip"></span>
+      <button type="button" id="settings-toggle" aria-controls="settings-panel"></button>
+    </div>
+  </header>
+  <section class="top" aria-labelledby="title">
+    <h1 id="title" data-t="shName">Shapes and Angles</h1>
+    <div class="score" aria-live="polite">
+      <div class="pill pill-score"><span data-t="score">Score</span><b id="score">0 / 0</b></div>
+      <div id="level"></div>
+      <div class="pill pill-streak"><span data-t="streak">Streak</span><b id="streak">0</b></div>
+      <div id="last5" data-game="shapes-angles"></div>
+    </div>
+  </section>
+  <div class="settings-panel" id="settings-panel" hidden>
+    <div class="controls"><div id="age-picker"></div><div id="theme-picker"></div><button id="sound-toggle"></button><div id="lang-picker"></div></div>
+    <div>
+      <p class="seg-label" id="level-label" data-t="shLevel">Level</p>
+      <div class="seg" role="group" aria-labelledby="level-label" id="level-seg">
+        <button type="button" data-level="1" data-t="shL1">Shapes, corners and sides</button>
+        <button type="button" data-level="2" data-t="shL2">Lines and symmetry</button>
+        <button type="button" data-level="3" data-t="shL3">Perimeter and area</button>
+        <button type="button" data-level="4" data-t="shL4">Angles</button>
+        <button type="button" data-level="5" data-t="shL5">Triangles and formulas</button>
+      </div>
+    </div>
+    <div class="panel-foot">
+      <p data-t="shKbd">Keyboard works too: 1 to 4 picks an answer, Enter goes on.</p>
+      <button type="button" class="reset" id="reset" data-t="resetScore">Reset score</button>
+    </div>
+  </div>
+
+  <main class="play">
+    <div class="problem-card" id="card">
+      <svg class="pic" id="pic" viewBox="0 0 240 160" role="img" aria-label="Drawing" data-t-aria="shPicAria"></svg>
+      <p class="question" id="question"></p>
+      <p class="feedback" id="feedback"></p>
+    </div>
+    <div class="side">
+      <div class="choices" id="choices"></div>
+      <button type="button" class="next skip" id="next" data-t="skip">Skip</button>
+    </div>
+  </main>
+</div>
+
+<script>
+Loopy.addStrings({
+  en: {
+    shName: "Shapes and Angles", shLevel: "Level",
+    shL1: "Shapes, corners and sides", shL2: "Lines and symmetry", shL3: "Perimeter and area", shL4: "Angles", shL5: "Triangles and formulas",
+    shKbd: "Keyboard works too: 1 to 4 picks an answer, Enter goes on.",
+    shAnswerIs: "The answer is: {a}.", shPicAria: "Drawing of the shape",
+    shHow: "Look at each drawing. Circle the right answer.",
+    shYes: "Yes", shNo: "No",
+    shQ_nm: "Which shape is this?", shQ_co: "How many corners does it have?", shQ_si: "How many straight sides does it have?",
+    shQ_ra: "How many right angles does it have?", shQ_ln: "How do these two lines go?",
+    shQ_sy: "Is the dashed line a line of symmetry?", shQ_sc: "How many lines of symmetry does it have?",
+    shQ_ar: "What is the area? Each square is 1 cm².", shQ_pe: "What is the perimeter? Each square is 1 cm wide.",
+    shQ_at: "What kind of angle is this?", shQ_ae: "About how big is this angle?", shQ_ac: "What is the missing angle?",
+    shQ_tk: "What kind of triangle is this?", shQ_tr: "What is the area of the triangle?", shQ_ba: "What is the area?", shQ_bp: "What is the perimeter?",
+    sh_triangle: "Triangle", sh_square: "Square", sh_rectangle: "Rectangle", sh_circle: "Circle", sh_oval: "Oval", sh_pentagon: "Pentagon",
+    sh_hexagon: "Hexagon", sh_octagon: "Octagon", sh_rhombus: "Rhombus", sh_trapezium: "Trapezium", sh_parallelogram: "Parallelogram", sh_kite: "Kite",
+    shW_triangle: "A triangle has 3 straight sides and 3 corners.",
+    shW_square: "A square has 4 equal sides and 4 right angles.",
+    shW_rectangle: "A rectangle has 4 right angles. Opposite sides are equal, but not all 4.",
+    shW_circle: "A circle is round all the way. It has no corners and no straight sides.",
+    shW_oval: "An oval is round like a stretched circle. It has no corners.",
+    shW_pentagon: "A pentagon has 5 sides and 5 corners. Penta means five.",
+    shW_hexagon: "A hexagon has 6 sides and 6 corners, like a honeycomb cell.",
+    shW_octagon: "An octagon has 8 sides and 8 corners, like a stop sign.",
+    shW_rhombus: "A rhombus has 4 equal sides, but its corners are not right angles.",
+    shW_trapezium: "A trapezium has 4 sides. Only one pair of sides is parallel.",
+    shW_parallelogram: "A parallelogram has 2 pairs of parallel sides, like a pushed-over rectangle.",
+    shW_kite: "A kite has 4 sides: 2 short ones that are equal and 2 long ones that are equal.",
+    shW_ra0: "None of its corners is a square corner of 90°, so it has no right angle.",
+    shW_ra1: "One corner is a square corner, 90°. That is a right angle.",
+    shW_ra2: "Two corners are square corners of 90°: two right angles.",
+    shW_ra4: "All 4 corners are square corners of 90°: 4 right angles.",
+    sh_par: "Parallel", sh_perp: "Perpendicular", sh_cross: "Crossing at a slant",
+    shW_par: "Parallel lines never meet. They stay the same distance apart, like train tracks.",
+    shW_perp: "Perpendicular lines meet at a right angle, 90°, like a plus sign.",
+    shW_cross: "These lines cross, but not at a right angle, so they are not perpendicular. They meet, so they are not parallel either.",
+    shW_syYes: "Fold along the dashed line and the two halves match exactly. So it is a line of symmetry.",
+    shW_syNo: "Fold along the dashed line and the two halves do not match. So it is not a line of symmetry.",
+    shW_syRectD: "Fold a rectangle along its diagonal and the corners stick out. The halves do not match, so the diagonal is not a line of symmetry.",
+    shW_sc0: "It has no line of symmetry: whichever way you fold it, the halves do not match.",
+    shW_sc1: "It has 1 line of symmetry: only one fold makes the two halves match.",
+    shW_scN: "It has {n} lines of symmetry: {n} ways to fold it so the two halves match.",
+    shW_ar: "{h} rows of {w} squares: {w} × {h} = {a} cm².",
+    shW_pe: "Go all the way round: {w} + {h} + {w} + {h} = {p} cm.",
+    shW_al: "The big rectangle is {w} × {h} = {A} squares. The missing corner is {cw} × {ch} = {c}. {A} − {c} = {a} cm².",
+    shW_pl: "Add every side all the way round: {p} cm. The cut-out corner does not change it, so it is the same as the {w} by {h} rectangle.",
+    sh_acute: "Acute", sh_right: "Right angle", sh_obtuse: "Obtuse", sh_straight: "Straight", sh_reflex: "Reflex",
+    shW_acute: "This angle is {d}°. Smaller than 90° is acute.",
+    shW_right: "This angle is exactly 90°, a square corner. That is a right angle.",
+    shW_obtuse: "This angle is {d}°. Between 90° and 180° is obtuse.",
+    shW_straight: "This angle is 180°: the two arms make a straight line.",
+    shW_reflex: "This angle is {d}°. More than 180° is reflex.",
+    shW_aeLess: "It is {d}°. That is less than a right angle, 90°.",
+    shW_aeRight: "It is 90°, a right angle: a square corner.",
+    shW_aeMore: "It is {d}°. That is more than a right angle, 90°, but less than a straight line, 180°.",
+    shW_aeReflex: "It is {d}°. That is more than a straight line, 180°.",
+    shW_ac: "Angles on a straight line add up to 180°. 180 − {a} = {b}.",
+    shW_aq: "The corner is a right angle, 90°. 90 − {a} = {b}.",
+    sh_equi: "Equilateral", sh_iso: "Isosceles", sh_scal: "Scalene", sh_rtri: "Right-angled",
+    shW_equi: "All 3 sides are the same length (the little marks show it), so it is equilateral.",
+    shW_iso: "2 sides are the same length (the little marks show it), so it is isosceles.",
+    shW_scal: "All 3 sides are different, and no corner is a right angle, so it is scalene.",
+    shW_rtri: "One corner is a right angle, 90°, so it is a right-angled triangle.",
+    shW_ta: "The 3 angles of a triangle add up to 180°. 180 − {a} − {b} = {c}.",
+    shW_tq: "The 4 angles of a quadrilateral add up to 360°. 360 − {a} − {b} − {c} = {d}.",
+    shW_tr: "Area of a triangle = base × height ÷ 2. {b} × {h} ÷ 2 = {a} cm².",
+    shW_ba: "Area of a rectangle = length × width. {w} × {h} = {a} cm².",
+    shW_bp: "Perimeter = all the way round. 2 × ({w} + {h}) = {p} cm.",
+    shCm: "{n} cm", shCm2: "{n} cm²", shDeg: "{n}°", shReadQ: "{q} {list}?"
+  },
+  de: {
+    shName: "Formen und Winkel", shLevel: "Stufe",
+    shL1: "Formen, Ecken und Seiten", shL2: "Linien und Symmetrie", shL3: "Umfang und Fläche", shL4: "Winkel", shL5: "Dreiecke und Formeln",
+    shKbd: "Die Tastatur geht auch: 1 bis 4 wählt eine Antwort, Enter geht weiter.",
+    shAnswerIs: "Die Antwort ist: {a}.", shPicAria: "Zeichnung der Form",
+    shHow: "Schau dir jede Zeichnung an. Kreise die richtige Antwort ein.",
+    shYes: "Ja", shNo: "Nein",
+    shQ_nm: "Welche Form ist das?", shQ_co: "Wie viele Ecken hat sie?", shQ_si: "Wie viele gerade Seiten hat sie?",
+    shQ_ra: "Wie viele rechte Winkel hat sie?", shQ_ln: "Wie verlaufen diese zwei Linien?",
+    shQ_sy: "Ist die gestrichelte Linie eine Symmetrieachse?", shQ_sc: "Wie viele Symmetrieachsen hat sie?",
+    shQ_ar: "Wie groß ist die Fläche? Jedes Kästchen ist 1 cm².", shQ_pe: "Wie groß ist der Umfang? Jedes Kästchen ist 1 cm breit.",
+    shQ_at: "Welche Art Winkel ist das?", shQ_ae: "Wie groß ist dieser Winkel ungefähr?", shQ_ac: "Wie groß ist der fehlende Winkel?",
+    shQ_tk: "Welche Art Dreieck ist das?", shQ_tr: "Wie groß ist die Fläche des Dreiecks?", shQ_ba: "Wie groß ist die Fläche?", shQ_bp: "Wie groß ist der Umfang?",
+    sh_triangle: "Dreieck", sh_square: "Quadrat", sh_rectangle: "Rechteck", sh_circle: "Kreis", sh_oval: "Oval", sh_pentagon: "Fünfeck",
+    sh_hexagon: "Sechseck", sh_octagon: "Achteck", sh_rhombus: "Raute", sh_trapezium: "Trapez", sh_parallelogram: "Parallelogramm", sh_kite: "Drachen",
+    shW_triangle: "Ein Dreieck hat 3 gerade Seiten und 3 Ecken.",
+    shW_square: "Ein Quadrat hat 4 gleich lange Seiten und 4 rechte Winkel.",
+    shW_rectangle: "Ein Rechteck hat 4 rechte Winkel. Gegenüberliegende Seiten sind gleich lang, aber nicht alle 4.",
+    shW_circle: "Ein Kreis ist rundherum rund. Er hat keine Ecken und keine geraden Seiten.",
+    shW_oval: "Ein Oval ist rund wie ein lang gezogener Kreis. Es hat keine Ecken.",
+    shW_pentagon: "Ein Fünfeck hat 5 Seiten und 5 Ecken.",
+    shW_hexagon: "Ein Sechseck hat 6 Seiten und 6 Ecken, wie eine Bienenwabe.",
+    shW_octagon: "Ein Achteck hat 8 Seiten und 8 Ecken, wie ein Stoppschild.",
+    shW_rhombus: "Eine Raute hat 4 gleich lange Seiten, aber ihre Ecken sind keine rechten Winkel.",
+    shW_trapezium: "Ein Trapez hat 4 Seiten. Nur ein Paar Seiten ist parallel.",
+    shW_parallelogram: "Ein Parallelogramm hat 2 Paar parallele Seiten, wie ein schief gedrücktes Rechteck.",
+    shW_kite: "Ein Drachen hat 4 Seiten: 2 gleich lange kurze und 2 gleich lange lange.",
+    shW_ra0: "Keine Ecke ist eine rechte Ecke mit 90°, also hat die Form keinen rechten Winkel.",
+    shW_ra1: "Eine Ecke ist eine rechte Ecke mit 90°. Das ist ein rechter Winkel.",
+    shW_ra2: "Zwei Ecken sind rechte Ecken mit 90°: zwei rechte Winkel.",
+    shW_ra4: "Alle 4 Ecken sind rechte Ecken mit 90°: 4 rechte Winkel.",
+    sh_par: "Parallel", sh_perp: "Senkrecht zueinander", sh_cross: "Schräg gekreuzt",
+    shW_par: "Parallele Linien treffen sich nie. Sie haben überall denselben Abstand, wie Eisenbahnschienen.",
+    shW_perp: "Senkrechte Linien treffen sich im rechten Winkel, 90°, wie ein Pluszeichen.",
+    shW_cross: "Diese Linien kreuzen sich, aber nicht im rechten Winkel, also sind sie nicht senkrecht zueinander. Sie treffen sich, also sind sie auch nicht parallel.",
+    shW_syYes: "Falte an der gestrichelten Linie, und die zwei Hälften passen genau aufeinander. Also ist sie eine Symmetrieachse.",
+    shW_syNo: "Falte an der gestrichelten Linie, und die zwei Hälften passen nicht aufeinander. Also ist sie keine Symmetrieachse.",
+    shW_syRectD: "Faltet man ein Rechteck an der Diagonale, stehen die Ecken über. Die Hälften passen nicht aufeinander, also ist die Diagonale keine Symmetrieachse.",
+    shW_sc0: "Die Form hat keine Symmetrieachse: egal, wie du faltest, die Hälften passen nicht aufeinander.",
+    shW_sc1: "Die Form hat 1 Symmetrieachse: nur eine Faltung bringt die Hälften aufeinander.",
+    shW_scN: "Die Form hat {n} Symmetrieachsen: {n} Arten zu falten, bei denen die Hälften aufeinanderpassen.",
+    shW_ar: "{h} Reihen mit je {w} Kästchen: {w} × {h} = {a} cm².",
+    shW_pe: "Einmal ganz herum: {w} + {h} + {w} + {h} = {p} cm.",
+    shW_al: "Das große Rechteck hat {w} × {h} = {A} Kästchen. Die fehlende Ecke hat {cw} × {ch} = {c}. {A} − {c} = {a} cm².",
+    shW_pl: "Zähle alle Seiten einmal herum zusammen: {p} cm. Die ausgeschnittene Ecke ändert nichts daran, es ist so viel wie beim Rechteck {w} mal {h}.",
+    sh_acute: "Spitz", sh_right: "Rechter Winkel", sh_obtuse: "Stumpf", sh_straight: "Gestreckt", sh_reflex: "Überstumpf",
+    shW_acute: "Dieser Winkel hat {d}°. Kleiner als 90° heißt spitz.",
+    shW_right: "Dieser Winkel hat genau 90°, eine rechte Ecke. Das ist ein rechter Winkel.",
+    shW_obtuse: "Dieser Winkel hat {d}°. Zwischen 90° und 180° heißt stumpf.",
+    shW_straight: "Dieser Winkel hat 180°: die zwei Schenkel bilden eine gerade Linie.",
+    shW_reflex: "Dieser Winkel hat {d}°. Mehr als 180° heißt überstumpf.",
+    shW_aeLess: "Es sind {d}°. Das ist weniger als ein rechter Winkel, 90°.",
+    shW_aeRight: "Es sind 90°, ein rechter Winkel: eine rechte Ecke.",
+    shW_aeMore: "Es sind {d}°. Das ist mehr als ein rechter Winkel, 90°, aber weniger als eine gerade Linie, 180°.",
+    shW_aeReflex: "Es sind {d}°. Das ist mehr als eine gerade Linie, 180°.",
+    shW_ac: "Winkel an einer geraden Linie ergeben zusammen 180°. 180 − {a} = {b}.",
+    shW_aq: "Die Ecke ist ein rechter Winkel, 90°. 90 − {a} = {b}.",
+    sh_equi: "Gleichseitig", sh_iso: "Gleichschenklig", sh_scal: "Ungleichseitig", sh_rtri: "Rechtwinklig",
+    shW_equi: "Alle 3 Seiten sind gleich lang (die kleinen Striche zeigen es), also ist es gleichseitig.",
+    shW_iso: "2 Seiten sind gleich lang (die kleinen Striche zeigen es), also ist es gleichschenklig.",
+    shW_scal: "Alle 3 Seiten sind verschieden lang, und keine Ecke ist ein rechter Winkel, also ist es ungleichseitig.",
+    shW_rtri: "Eine Ecke ist ein rechter Winkel, 90°, also ist es ein rechtwinkliges Dreieck.",
+    shW_ta: "Die 3 Winkel eines Dreiecks ergeben zusammen 180°. 180 − {a} − {b} = {c}.",
+    shW_tq: "Die 4 Winkel eines Vierecks ergeben zusammen 360°. 360 − {a} − {b} − {c} = {d}.",
+    shW_tr: "Fläche eines Dreiecks = Grundseite × Höhe ÷ 2. {b} × {h} ÷ 2 = {a} cm².",
+    shW_ba: "Fläche eines Rechtecks = Länge × Breite. {w} × {h} = {a} cm².",
+    shW_bp: "Umfang = einmal ganz herum. 2 × ({w} + {h}) = {p} cm.",
+    shCm: "{n} cm", shCm2: "{n} cm²", shDeg: "{n}°", shReadQ: "{q} {list}?"
+  }
+});
+
+// GEN START
+// Every problem is one short text, its spec, like "nm.pentagon" or "ar.4x3": the kind of question and its numbers.
+// build(spec) makes the whole problem from it, so a missed problem comes back the same way (Try again).
+// Level 1 names shapes and counts corners and sides. Level 2: right angles, two lines, symmetry. Level 3: perimeter
+// and area on a grid. Level 4: angles. Level 5: kinds of triangles, missing angles, area and perimeter with numbers.
+const randInt = (n) => Math.floor(Math.random() * n);
+const pick = (arr) => arr[randInt(arr.length)];
+const shuffle = (arr) => arr.slice().sort(() => Math.random() - 0.5);
+const range = (a, b, step) => { const out = []; for (let i = a; i <= b; i += step || 1) out.push(i); return out; };
+
+// The shapes: n corners (and straight sides), ra right angles, sym lines of symmetry, and how to draw each one
+// (points in a 240 × 160 box, or a circle / ellipse). For symmetry questions: which of the lines v (upright),
+// h (across) and d (slanted, corner to corner) are lines of symmetry.
+const P = {
+  triangle: { n: 3, ra: 0, sym: 3, pts: [[120, 20], [55, 133], [185, 133]], sy: { v: 1, h: 0 } },
+  itri: { n: 3, ra: 0, sym: 1, pts: [[120, 22], [70, 135], [170, 135]], sy: { v: 1, h: 0 } },
+  rtri: { n: 3, ra: 1, sym: 0, pts: [[60, 25], [60, 135], [200, 135]] },
+  square: { n: 4, ra: 4, sym: 4, pts: [[65, 25], [175, 25], [175, 135], [65, 135]], sy: { v: 1, h: 1, d: 1 } },
+  rectangle: { n: 4, ra: 4, sym: 2, pts: [[35, 30], [205, 30], [205, 130], [35, 130]], sy: { v: 1, h: 1, d: 0 } },
+  rhombus: { n: 4, ra: 0, sym: 2, pts: [[120, 20], [195, 80], [120, 140], [45, 80]], sy: { v: 1, h: 1, d: 0 } },
+  parallelogram: { n: 4, ra: 0, sym: 0, pts: [[70, 30], [215, 30], [170, 130], [25, 130]], sy: { v: 0, h: 0, d: 0 } },
+  trapezium: { n: 4, ra: 0, sym: 1, pts: [[75, 30], [165, 30], [205, 130], [35, 130]], sy: { v: 1, h: 0 } },
+  rtrap: { n: 4, ra: 2, sym: 0, pts: [[40, 30], [150, 30], [200, 130], [40, 130]] },
+  kite: { n: 4, ra: 0, sym: 1, pts: [[120, 15], [172, 65], [120, 148], [68, 65]], sy: { v: 1, h: 0 } },
+  pentagon: { n: 5, ra: 0, sym: 5, reg: [5, 120, 84, 62, -90], sy: { v: 1, h: 0 } },
+  hexagon: { n: 6, ra: 0, sym: 6, reg: [6, 120, 80, 62, 0], sy: { v: 1, h: 1 } },
+  octagon: { n: 8, ra: 0, sym: 8, reg: [8, 120, 80, 60, 22.5], sy: { v: 1, h: 1, d: 1 } },
+  circle: { n: 0, ra: 0, sym: 0, circle: [120, 80, 58], sy: { v: 1, h: 1, d: 1 } },
+  oval: { n: 0, ra: 0, sym: 2, ellipse: [120, 80, 90, 52], sy: { v: 1, h: 1, d: 0 } }
+};
+// The shapes a child names, and the ones with corners to count, by level.
+const NAMED = { 1: ["triangle", "square", "rectangle", "circle", "oval", "pentagon", "hexagon"],
+  2: ["triangle", "square", "rectangle", "circle", "oval", "pentagon", "hexagon", "octagon", "rhombus", "trapezium", "parallelogram", "kite"] };
+const WITH_RA = ["square", "rectangle", "rtri", "rtrap", "triangle", "pentagon", "rhombus", "parallelogram", "hexagon"];
+const WITH_SYM = ["square", "rectangle", "triangle", "itri", "pentagon", "hexagon", "rhombus", "parallelogram", "kite", "trapezium", "oval"];
+const LINES = ["par", "perp", "cross"];
+const ANGLES = { acute: [20, 30, 40, 50, 60, 70, 75], right: [90], obtuse: [100, 110, 120, 135, 150, 160], straight: [180], reflex: [200, 225, 240, 270, 300, 315, 330] };
+const ANGLE_KINDS = Object.keys(ANGLES);
+const TRI_KINDS = ["equi", "iso", "scal", "rtri"];
+// The question kinds at each level, and the log kind each one counts under on the grown-ups page.
+const TYPES = { nm: "name", co: "name", si: "name", ra: "lines", ln: "lines", sy: "lines", sc: "lines",
+  ar: "area", pe: "area", al: "area", pl: "area", at: "angle", ae: "angle", ac: "angle", aq: "angle",
+  tk: "tri", ta: "tri", tq: "tri", tr: "tri", ba: "tri", bp: "tri" };
+const LEVELS = { 1: ["nm", "co", "si"], 2: ["ra", "ln", "sy", "sc", "nm"], 3: ["ar", "pe", "al", "pl"], 4: ["at", "ae", "ac", "aq"], 5: ["tk", "ta", "tq", "tr", "ba", "bp"] };
+const SPEC = /^[a-z]{2}(?:\.[a-z0-9]{1,14}){0,4}$/;
+
+// Regular polygon points (n corners, center, radius, angle of the first corner in degrees).
+function regular(n, cx, cy, r, rot) {
+  return range(0, n - 1).map(i => { const a = (rot + i * 360 / n) * Math.PI / 180; return [cx + r * Math.cos(a), cy + r * Math.sin(a)]; });
+}
+const shapePts = (s) => P[s].pts || (P[s].reg ? regular(...P[s].reg) : null);
+// A quadrilateral from three of its angles (degrees), made by walking round: fails (null) when it would not close.
+function quadPts(a, b, c) {
+  const rad = (x) => x * Math.PI / 180;
+  for (const s2 of [0.6, 0.8, 0.45, 1]) {
+    const p0 = [0, 0], p1 = [1, 0];
+    const d1 = rad(180 - b), p2 = [p1[0] + s2 * Math.cos(d1), p1[1] + s2 * Math.sin(d1)];
+    const d2 = d1 + rad(180 - c), u = [Math.cos(d2), Math.sin(d2)];
+    const v = [Math.cos(rad(a)), Math.sin(rad(a))];
+    const den = u[0] * v[1] - u[1] * v[0];
+    if (Math.abs(den) < 1e-6) continue;
+    const t = ((p0[0] - p2[0]) * v[1] - (p0[1] - p2[1]) * v[0]) / den;
+    const s = ((p0[0] - p2[0]) * u[1] - (p0[1] - p2[1]) * u[0]) / den;
+    if (t <= 0.15 || s <= 0.15) continue;
+    const p3 = [p2[0] + t * u[0], p2[1] + t * u[1]];
+    return fit([p0, p1, p2, p3].map(p => [p[0], -p[1]]));
+  }
+  return null;
+}
+// A triangle from two of its angles: base left to right, the third corner above.
+function triPts(a, b) {
+  const rad = (x) => x * Math.PI / 180, c = 180 - a - b;
+  const side = Math.sin(rad(b)) / Math.sin(rad(c));
+  return fit([[0, 0], [1, 0], [side * Math.cos(rad(a)), -side * Math.sin(rad(a))]]);
+}
+// Scale and move points so they fill the drawing, with room for labels.
+function fit(pts) {
+  const xs = pts.map(p => p[0]), ys = pts.map(p => p[1]);
+  const minX = Math.min(...xs), maxX = Math.max(...xs), minY = Math.min(...ys), maxY = Math.max(...ys);
+  const k = Math.min(140 / (maxX - minX), 88 / (maxY - minY));
+  const ox = 120 - k * (minX + maxX) / 2, oy = 82 - k * (minY + maxY) / 2;
+  return pts.map(p => [ox + k * p[0], oy + k * p[1]]);
+}
+const fmt = (x) => (Math.round(x * 10) / 10).toString();
+
+// Three (or fewer) other numbers near the answer, so the choices look alike. Prefers the given decoys.
+function numOptions(answer, decoys, count) {
+  const out = [answer], ok = (x) => Number.isInteger(x) && x >= 0 && !out.includes(x);
+  shuffle(decoys.filter(ok)).forEach(x => { if (out.length < count && ok(x)) out.push(x); });
+  for (let d = 1; out.length < count && d < 50; d++) { const c = shuffle([answer + d, answer - d]); c.forEach(x => { if (out.length < count && ok(x)) out.push(x); }); }
+  return shuffle(out);
+}
+
+// A random spec for one kind of question.
+function randomSpec(type, level) {
+  switch (type) {
+    case "nm": return "nm." + pick(NAMED[level >= 2 ? 2 : 1]);
+    case "co": return "co." + pick(NAMED[1]);
+    case "si": return "si." + pick(NAMED[1].filter(s => P[s].n));
+    case "ra": return "ra." + pick(WITH_RA);
+    case "ln": return "ln." + pick(LINES);
+    case "sy": { const s = pick(WITH_SYM.concat(["circle"])); return "sy." + s + "." + pick(Object.keys(P[s].sy)); }
+    case "sc": return "sc." + pick(WITH_SYM);
+    case "ar": case "pe": { const w = 2 + randInt(8), h = 2 + randInt(5); return type + "." + w + "x" + (h === w ? h + 1 : h); }
+    case "al": case "pl": { const w = 4 + randInt(6), h = 3 + randInt(4); return type + "." + w + "x" + h + "." + (1 + randInt(w - 2)) + "x" + (1 + randInt(h - 2)); }
+    case "at": { const k = pick(ANGLE_KINDS); return "at." + pick(ANGLES[k]); }
+    case "ae": return "ae." + pick(range(20, 340, 10));
+    case "ac": return "ac." + pick(range(20, 160, 5).filter(x => x !== 90));
+    case "aq": return "aq." + pick(range(10, 80, 5).filter(x => x !== 45));
+    case "tk": return "tk." + pick(TRI_KINDS);
+    case "ta": { for (;;) { const a = pick(range(30, 110, 5)), b = pick(range(30, 110, 5)), c = 180 - a - b; if (c >= 20 && c <= 120 && a !== b && b !== c && a !== c) return "ta." + a + "." + b; } }
+    case "tq": { for (;;) { const a = pick(range(50, 140, 10)), b = pick(range(50, 140, 10)), c = pick(range(50, 140, 10)), d = 360 - a - b - c; if (d >= 40 && d <= 150 && new Set([a, b, c, d]).size === 4 && quadPts(a, b, c)) return "tq." + a + "." + b + "." + c; } }
+    case "tr": { for (;;) { const b = 4 + randInt(9), h = 3 + randInt(8); if ((b * h) % 2 === 0) return "tr." + b + "." + h; } }
+    case "ba": case "bp": { const w = 5 + randInt(16), h = 3 + randInt(13); return type + "." + w + "." + (h === w ? h + 1 : h); }
+  }
+  return "nm.square";
+}
+
+// The problem from its spec: question, choices, the answer, one line of why, and how to draw it (draw(svg)).
+// Returns null for a spec that makes no sense. t: Loopy.t. nOpts: how many choices (yes/no and lines have fewer).
+function build(spec, t, nOpts) {
+  if (!SPEC.test(spec)) return null;
+  const parts = spec.split("."), type = parts[0], k = TYPES[type];
+  if (!k) return null;
+  const num = Loopy.num, cm = (n) => t("shCm", { n: num(n) }), cm2 = (n) => t("shCm2", { n: num(n) }), deg = (n) => t("shDeg", { n: num(n) });
+  const grid = (a, b) => { const m = /^(\d+)x(\d+)$/.exec(a || ""); if (!m) return null; const w = +m[1], h = +m[2]; return w >= 1 && w <= 10 && h >= 1 && h <= 6 && (!b || (w >= 3 && h >= 3)) ? [w, h] : null; };
+  const names = (list) => list.map(s => t("sh_" + s));
+  const out = { spec, k: "sh-" + k, type, q: t("shQ_" + ({ al: "ar", pl: "pe", aq: "ac", ta: "ac", tq: "ac" }[type] || type)) };
+  const shape = parts[1];
+  const sh = P[shape];
+  const numQ = (answer, decoys, show) => { out.options = numOptions(answer, decoys, nOpts).map(show); out.answer = show(answer); };
+  switch (type) {
+    case "nm": {
+      if (!sh || !NAMED[2].includes(shape)) return null;
+      // A level 1 shape gets level 1 shapes as the other choices, so a 7-year-old never sees "parallelogram".
+      const others = shuffle(NAMED[NAMED[1].includes(shape) ? 1 : 2].filter(s => s !== shape)).slice(0, nOpts - 1);
+      out.options = shuffle(names([shape, ...others])); out.answer = t("sh_" + shape); out.why = t("shW_" + shape);
+      out.draw = (svg) => drawShape(svg, shape); break;
+    }
+    case "co": case "si": {
+      if (!sh || !NAMED[2].includes(shape) || (type === "si" && !sh.n)) return null;
+      numQ(sh.n, [0, 3, 4, 5, 6, 8].filter(x => x !== sh.n), num);
+      out.why = t("shW_" + shape); out.draw = (svg) => drawShape(svg, shape); break;
+    }
+    case "ra": {
+      if (!sh || !WITH_RA.includes(shape)) return null;
+      numQ(sh.ra, [0, 1, 2, 3, 4], num);
+      out.why = t("shW_ra" + sh.ra); out.draw = (svg) => drawShape(svg, shape); break;
+    }
+    case "ln": {
+      if (!LINES.includes(shape)) return null;
+      out.options = shuffle(names(LINES)); out.answer = t("sh_" + shape); out.why = t("shW_" + shape);
+      out.draw = (svg) => drawLines(svg, shape); break;
+    }
+    case "sy": {
+      const line = parts[2];
+      if (!sh || !sh.sy || !(line in sh.sy)) return null;
+      const yes = !!sh.sy[line];
+      out.options = [t("shYes"), t("shNo")]; out.answer = yes ? t("shYes") : t("shNo");
+      out.why = shape === "rectangle" && line === "d" ? t("shW_syRectD") : t(yes ? "shW_syYes" : "shW_syNo");
+      out.draw = (svg) => { drawShape(svg, shape); drawAxis(svg, shape, line); }; break;
+    }
+    case "sc": {
+      if (!sh || !WITH_SYM.includes(shape)) return null;
+      numQ(sh.sym, [0, 1, 2, 3, 4, 5, 6, 8].filter(x => x !== sh.sym), num);
+      out.why = sh.sym === 0 ? t("shW_sc0") : sh.sym === 1 ? t("shW_sc1") : t("shW_scN", { n: num(sh.sym) });
+      out.draw = (svg) => drawShape(svg, shape); break;
+    }
+    case "ar": case "pe": {
+      const g = grid(shape); if (!g) return null;
+      const [w, h] = g, a = w * h, p = 2 * (w + h);
+      if (type === "ar") { numQ(a, [p, w + h, (w + 1) * h, w * (h + 1), a - h, a + w], cm2); out.why = t("shW_ar", { w: num(w), h: num(h), a: num(a) }); }
+      else { numQ(p, [a, w + h, 2 * w + h, w + 2 * h, p - 2, p + 2], cm); out.why = t("shW_pe", { w: num(w), h: num(h), p: num(p) }); }
+      out.draw = (svg) => drawGrid(svg, w, h); break;
+    }
+    case "al": case "pl": {
+      const g = grid(shape, true), c = grid(parts[2]); if (!g || !c || c[0] > g[0] - 2 || c[1] > g[1] - 2) return null;
+      const [w, h] = g, [cw, ch] = c, A = w * h, cut = cw * ch, a = A - cut, p = 2 * (w + h);
+      if (type === "al") { numQ(a, [A, a + cut, a - cw, a + ch, p, a - 1, a + 1], cm2); out.why = t("shW_al", { w: num(w), h: num(h), A: num(A), cw: num(cw), ch: num(ch), c: num(cut), a: num(a) }); }
+      else { numQ(p, [p - 2 * Math.min(cw, ch), p - 2, p + 2, a, A, w + h], cm); out.why = t("shW_pl", { w: num(w), h: num(h), p: num(p) }); }
+      out.draw = (svg) => drawGrid(svg, w, h, cw, ch); break;
+    }
+    case "at": {
+      const d = +shape, kind = ANGLE_KINDS.find(x => ANGLES[x].includes(d)); if (!kind) return null;
+      const others = shuffle(ANGLE_KINDS.filter(x => x !== kind)).slice(0, nOpts - 1);
+      out.options = shuffle(names([kind, ...others])); out.answer = t("sh_" + kind); out.why = t("shW_" + kind, { d: num(d) });
+      out.draw = (svg) => drawAngle(svg, d); break;
+    }
+    case "ae": {
+      const d = +shape; if (!(d >= 10 && d <= 350 && d % 10 === 0)) return null;
+      numQ(d, [d - 20, d + 20, d - 30, d + 30, d - 40, d + 40, d - 60, d + 60].filter(x => x >= 10 && x <= 350), deg);
+      out.why = t(d < 90 ? "shW_aeLess" : d === 90 ? "shW_aeRight" : d <= 180 ? "shW_aeMore" : "shW_aeReflex", { d: num(d) });
+      out.draw = (svg) => drawAngle(svg, d); break;
+    }
+    case "ac": case "aq": {
+      const a = +shape, whole = type === "ac" ? 180 : 90, b = whole - a;
+      if (!(a >= 5 && b >= 5 && a % 5 === 0)) return null;
+      numQ(b, [a, b - 10, b + 10, b - 20, b + 20, 360 - whole - a, whole - a / 2].filter(x => x > 0 && x < 360), deg);
+      out.why = t(type === "ac" ? "shW_ac" : "shW_aq", { a: num(a), b: num(b) });
+      out.draw = (svg) => drawSplit(svg, whole, a, deg(a)); break;
+    }
+    case "tk": {
+      if (!TRI_KINDS.includes(shape)) return null;
+      out.options = shuffle(names(TRI_KINDS)); out.answer = t("sh_" + shape); out.why = t("shW_" + shape);
+      out.draw = (svg) => drawTriKind(svg, shape); break;
+    }
+    case "ta": {
+      const a = +parts[1], b = +parts[2], c = 180 - a - b;
+      if (!(a >= 20 && b >= 20 && c >= 20 && a % 5 === 0 && b % 5 === 0)) return null;
+      numQ(c, [c - 10, c + 10, c - 20, c + 20, a, b, 180 - a, 180 - b, 360 - a - b].filter(x => x > 0 && x < 180), deg);
+      out.why = t("shW_ta", { a: num(a), b: num(b), c: num(c) });
+      out.draw = (svg) => drawCorners(svg, triPts(a, b), [deg(a), deg(b), "?"]); break;
+    }
+    case "tq": {
+      const a = +parts[1], b = +parts[2], c = +parts[3], d = 360 - a - b - c, pts = a && b && c ? quadPts(a, b, c) : null;
+      if (!pts || d < 20 || d > 170) return null;
+      numQ(d, [d - 10, d + 10, d - 20, d + 20, 180 - a, 180 - c, 360 - a - b].filter(x => x > 0 && x < 360), deg);
+      out.why = t("shW_tq", { a: num(a), b: num(b), c: num(c), d: num(d) });
+      out.draw = (svg) => drawCorners(svg, pts, [deg(a), deg(b), deg(c), "?"]); break;
+    }
+    case "tr": {
+      const b = +parts[1], h = +parts[2]; if (!(b >= 2 && b <= 20 && h >= 2 && h <= 20 && (b * h) % 2 === 0)) return null;
+      const a = b * h / 2;
+      numQ(a, [b * h, a + b, a - h, b + h, a + 2, a - 2, 2 * (b + h)], cm2);
+      out.why = t("shW_tr", { b: num(b), h: num(h), a: num(a) }); out.draw = (svg) => drawTriArea(svg, b, h, cm(b), cm(h)); break;
+    }
+    case "ba": case "bp": {
+      const w = +parts[1], h = +parts[2]; if (!(w >= 1 && w <= 30 && h >= 1 && h <= 30)) return null;
+      const a = w * h, p = 2 * (w + h);
+      if (type === "ba") { numQ(a, [p, w + h, a + w, a - h, a + h, (w + 1) * h], cm2); out.why = t("shW_ba", { w: num(w), h: num(h), a: num(a) }); }
+      else { numQ(p, [a, w + h, 2 * w + h, w + 2 * h, p - 2, p + 2], cm); out.why = t("shW_bp", { w: num(w), h: num(h), p: num(p) }); }
+      out.draw = (svg) => drawBox(svg, w, h, cm(w), cm(h)); break;
+    }
+    default: return null;
+  }
+  out.key = spec;
+  return out;
+}
+
+// Drawing helpers. Colors come from CSS classes, so the themes and the printed sheet look right.
+const NS = "http://www.w3.org/2000/svg";
+function el(svg, tag, attrs, text) {
+  const n = document.createElementNS(NS, tag);
+  Object.keys(attrs).forEach(k => n.setAttribute(k, attrs[k]));
+  if (text !== undefined) n.textContent = text;
+  svg.appendChild(n);
+  return n;
+}
+const ptsAttr = (pts) => pts.map(p => fmt(p[0]) + "," + fmt(p[1])).join(" ");
+function drawShape(svg, shape, cls) {
+  const s = P[shape];
+  if (s.circle) el(svg, "circle", { cx: s.circle[0], cy: s.circle[1], r: s.circle[2], class: cls || "sh-fill" });
+  else if (s.ellipse) el(svg, "ellipse", { cx: s.ellipse[0], cy: s.ellipse[1], rx: s.ellipse[2], ry: s.ellipse[3], class: cls || "sh-fill" });
+  else el(svg, "polygon", { points: ptsAttr(shapePts(shape)), class: cls || "sh-fill" });
+}
+// The dashed line for a symmetry question: upright, across, or corner to corner through the middle.
+function drawAxis(svg, shape, line) {
+  const s = P[shape], pts = shapePts(shape);
+  let cx = 120, cy = 80, w = 180, h = 130;
+  if (pts) { const xs = pts.map(p => p[0]), ys = pts.map(p => p[1]); cx = (Math.min(...xs) + Math.max(...xs)) / 2; cy = (Math.min(...ys) + Math.max(...ys)) / 2; w = Math.max(...xs) - Math.min(...xs); h = Math.max(...ys) - Math.min(...ys); }
+  else if (s.circle) { cx = s.circle[0]; cy = s.circle[1]; w = h = s.circle[2] * 2; }
+  else if (s.ellipse) { cx = s.ellipse[0]; cy = s.ellipse[1]; w = s.ellipse[2] * 2; h = s.ellipse[3] * 2; }
+  let x1, y1, x2, y2;
+  if (line === "v") { x1 = x2 = cx; y1 = 6; y2 = 154; }
+  else if (line === "h") { y1 = y2 = cy; x1 = cx - w / 2 - 18; x2 = cx + w / 2 + 18; }
+  else { const k = 1.12; x1 = cx - k * w / 2; y1 = cy - k * h / 2; x2 = cx + k * w / 2; y2 = cy + k * h / 2; }
+  el(svg, "line", { x1: fmt(x1), y1: fmt(y1), x2: fmt(x2), y2: fmt(y2), class: "sh-dash" });
+}
+// Two lines: parallel, perpendicular, or crossing at a slant.
+function drawLines(svg, kind) {
+  if (kind === "par") { el(svg, "line", { x1: 30, y1: 40, x2: 210, y2: 65, class: "sh-line" }); el(svg, "line", { x1: 30, y1: 100, x2: 210, y2: 125, class: "sh-line" }); }
+  else if (kind === "perp") { el(svg, "line", { x1: 40, y1: 100, x2: 200, y2: 60, class: "sh-line" }); el(svg, "line", { x1: 100, y1: 20, x2: 140, y2: 180, class: "sh-line" }); }
+  else { el(svg, "line", { x1: 30, y1: 110, x2: 210, y2: 50, class: "sh-line" }); el(svg, "line", { x1: 70, y1: 20, x2: 170, y2: 150, class: "sh-line" }); }
+}
+// Squared paper with a rectangle, or a rectangle with its top right corner cut out (cw × ch squares).
+function drawGrid(svg, w, h, cw, ch) {
+  const c = 20, ox = 120 - w * c / 2, oy = 80 - h * c / 2;
+  for (let x = 0; x <= 12; x++) el(svg, "line", { x1: x * c, y1: 0, x2: x * c, y2: 160, class: "sh-grid" });
+  for (let y = 0; y <= 8; y++) el(svg, "line", { x1: 0, y1: y * c, x2: 240, y2: y * c, class: "sh-grid" });
+  const pts = cw ? [[0, 0], [w - cw, 0], [w - cw, ch], [w, ch], [w, h], [0, h]] : [[0, 0], [w, 0], [w, h], [0, h]];
+  el(svg, "polygon", { points: ptsAttr(pts.map(p => [ox + p[0] * c, oy + p[1] * c])), class: "sh-area" });
+}
+// One angle: an arm to the right, the other turned d degrees anticlockwise, with an arc between them.
+function angleArm(cx, cy, r, d) { const a = d * Math.PI / 180; return [cx + r * Math.cos(a), cy - r * Math.sin(a)]; }
+function drawAngle(svg, d) {
+  const cx = 120, cy = d > 180 ? 82 : 118, r = d > 180 ? 70 : 100, ra = 30;
+  const p2 = angleArm(cx, cy, r, d), a1 = angleArm(cx, cy, ra, 0), a2 = angleArm(cx, cy, ra, d);
+  el(svg, "line", { x1: cx, y1: cy, x2: cx + r, y2: cy, class: "sh-line" });
+  el(svg, "line", { x1: cx, y1: cy, x2: fmt(p2[0]), y2: fmt(p2[1]), class: "sh-line" });
+  if (d === 90) el(svg, "polyline", { points: ptsAttr([[cx + 22, cy], [cx + 22, cy - 22], [cx, cy - 22]]), class: "sh-mark" });
+  else el(svg, "path", { d: "M" + fmt(a1[0]) + " " + fmt(a1[1]) + " A" + ra + " " + ra + " 0 " + (d > 180 ? 1 : 0) + " 0 " + fmt(a2[0]) + " " + fmt(a2[1]), class: "sh-arc" });
+  el(svg, "circle", { cx, cy, r: 4, class: "sh-dot" });
+}
+// A straight line (180) or a right-angle corner (90) split by one more arm: the known part is labelled, the other is "?".
+function drawSplit(svg, whole, a, label) {
+  const cx = 120, cy = 120, r = 100;
+  const p = angleArm(cx, cy, r, a);
+  el(svg, "line", { x1: cx + r, y1: cy, x2: whole === 180 ? cx - r : cx, y2: cy, class: "sh-line" });
+  if (whole === 90) { el(svg, "line", { x1: cx, y1: cy, x2: cx, y2: cy - r, class: "sh-line" }); el(svg, "polyline", { points: ptsAttr([[cx + 16, cy], [cx + 16, cy - 16], [cx, cy - 16]]), class: "sh-mark" }); }
+  el(svg, "line", { x1: cx, y1: cy, x2: fmt(p[0]), y2: fmt(p[1]), class: "sh-line" });
+  const arc = (from, to, rr) => { const s = angleArm(cx, cy, rr, from), e = angleArm(cx, cy, rr, to); el(svg, "path", { d: "M" + fmt(s[0]) + " " + fmt(s[1]) + " A" + rr + " " + rr + " 0 0 0 " + fmt(e[0]) + " " + fmt(e[1]), class: "sh-arc" }); };
+  arc(0, a, 34); if (whole === 180) arc(a, 180, 44);
+  const l1 = angleArm(cx, cy, 58, a / 2), l2 = angleArm(cx, cy, 66, (a + whole) / 2);
+  el(svg, "text", { x: fmt(l1[0]), y: fmt(l1[1] + 5), class: "sh-text" }, label);
+  el(svg, "text", { x: fmt(l2[0]), y: fmt(l2[1] + 5), class: "sh-text hi" }, "?");
+  el(svg, "circle", { cx, cy, r: 4, class: "sh-dot" });
+}
+// A short mark across the middle of a side: the sides with the same mark are the same length.
+function tick(svg, a, b) {
+  const mx = (a[0] + b[0]) / 2, my = (a[1] + b[1]) / 2, dx = b[0] - a[0], dy = b[1] - a[1], len = Math.hypot(dx, dy), nx = -dy / len * 7, ny = dx / len * 7;
+  el(svg, "line", { x1: fmt(mx - nx), y1: fmt(my - ny), x2: fmt(mx + nx), y2: fmt(my + ny), class: "sh-mark" });
+}
+// The little square in a right-angled corner at point c, between the arms towards a and b.
+function squareMark(svg, c, a, b, size) {
+  const u = [a[0] - c[0], a[1] - c[1]], v = [b[0] - c[0], b[1] - c[1]], lu = Math.hypot(...u), lv = Math.hypot(...v), s = size || 16;
+  const p1 = [c[0] + u[0] / lu * s, c[1] + u[1] / lu * s], p2 = [c[0] + v[0] / lv * s, c[1] + v[1] / lv * s];
+  el(svg, "polyline", { points: ptsAttr([p1, [p1[0] + p2[0] - c[0], p1[1] + p2[1] - c[1]], p2]), class: "sh-mark" });
+}
+function drawTriKind(svg, kind) {
+  const pts = kind === "equi" ? P.triangle.pts : kind === "iso" ? P.itri.pts : kind === "rtri" ? P.rtri.pts : [[40, 135], [205, 135], [95, 28]];
+  el(svg, "polygon", { points: ptsAttr(pts), class: "sh-fill" });
+  if (kind === "equi") { tick(svg, pts[0], pts[1]); tick(svg, pts[1], pts[2]); tick(svg, pts[2], pts[0]); }
+  if (kind === "iso") { tick(svg, pts[0], pts[1]); tick(svg, pts[0], pts[2]); }
+  if (kind === "rtri") squareMark(svg, pts[1], pts[0], pts[2]);
+}
+// A triangle or quadrilateral with an arc in each corner and its label just outside the corner (the last one is
+// the missing angle). Outside, so a label never sits on a side, even in a sharp corner.
+function drawCorners(svg, pts, labels) {
+  el(svg, "polygon", { points: ptsAttr(pts), class: "sh-fill" });
+  const cx = pts.reduce((s, p) => s + p[0], 0) / pts.length, cy = pts.reduce((s, p) => s + p[1], 0) / pts.length, n = pts.length;
+  pts.forEach((p, i) => {
+    const a = pts[(i + n - 1) % n], b = pts[(i + 1) % n], miss = labels[i] === "?";
+    const u = [a[0] - p[0], a[1] - p[1]], v = [b[0] - p[0], b[1] - p[1]], lu = Math.hypot(...u), lv = Math.hypot(...v), r = 14;
+    const s = [p[0] + u[0] / lu * r, p[1] + u[1] / lu * r], e = [p[0] + v[0] / lv * r, p[1] + v[1] / lv * r];
+    const sweep = u[0] * v[1] - u[1] * v[0] > 0 ? 1 : 0;
+    el(svg, "path", { d: "M" + fmt(s[0]) + " " + fmt(s[1]) + " A" + r + " " + r + " 0 0 " + sweep + " " + fmt(e[0]) + " " + fmt(e[1]), class: miss ? "sh-arc" : "sh-mark" });
+    const dx = p[0] - cx, dy = p[1] - cy, len = Math.hypot(dx, dy), k = 19;
+    el(svg, "text", { x: fmt(p[0] + dx / len * k), y: fmt(p[1] + dy / len * k + 5), class: "sh-text" + (miss ? " hi" : "") }, labels[i]);
+  });
+}
+// A triangle with its base and height marked, for the area formula.
+function drawTriArea(svg, b, h, bLabel, hLabel) {
+  const W = 170, H = Math.max(50, Math.min(100, W * h / b)), x0 = 120 - W / 2, y0 = 128, ax = x0 + W * 0.38;
+  const pts = [[x0, y0], [x0 + W, y0], [ax, y0 - H]];
+  el(svg, "polygon", { points: ptsAttr(pts), class: "sh-fill" });
+  el(svg, "line", { x1: fmt(ax), y1: fmt(y0 - H), x2: fmt(ax), y2: y0, class: "sh-dash" });
+  squareMark(svg, [ax, y0], [ax + 1, y0], [ax, y0 - 1], 11);
+  el(svg, "text", { x: 120, y: y0 + 22, class: "sh-text" }, bLabel);
+  el(svg, "text", { x: fmt(ax + 30), y: fmt(y0 - H / 2 + 5), class: "sh-text hi" }, hLabel);
+}
+// A rectangle with its two sides labelled, for area and perimeter with numbers.
+function drawBox(svg, w, h, wLabel, hLabel) {
+  const W = 160, H = Math.max(50, Math.min(100, W * h / w)), x0 = 100 - W / 2, y0 = 82 - H / 2;
+  el(svg, "rect", { x: x0, y: fmt(y0), width: W, height: fmt(H), class: "sh-fill" });
+  el(svg, "text", { x: 100, y: fmt(y0 + H + 22), class: "sh-text" }, wLabel);
+  el(svg, "text", { x: fmt(x0 + W + 36), y: fmt(y0 + H / 2 + 5), class: "sh-text" }, hLabel);
+}
+
+// A new problem at this level. Mostly the level's own questions; 1 in 5 comes from the level below, so what the
+// child learned before stays fresh. Not the same kind of question 3 times in a row while another kind is possible.
+function makeProblem(level, t, nOpts, lastTypes) {
+  const from = level > 1 && randInt(5) === 0 ? level - 1 : level;
+  let types = LEVELS[from];
+  const n = lastTypes.length;
+  if (n > 1 && lastTypes[n - 1] === lastTypes[n - 2] && types.length > 1) types = types.filter(x => x !== lastTypes[n - 1]);
+  for (let i = 0; i < 20; i++) {
+    const type = pick(types), p = build(randomSpec(type, from), t, type === "sy" ? 2 : type === "ln" ? 3 : nOpts);
+    if (p) return p;
+  }
+  return build("nm.square", t, nOpts);
+}
+// GEN END
+
+(function () {
+  const $ = (id) => document.getElementById(id);
+  const card = $("card"), pic = $("pic"), qEl = $("question"), choicesEl = $("choices"), feedbackEl = $("feedback"), nextBtn = $("next");
+  const levelBtns = [...document.querySelectorAll("#level-seg button")];
+  const t = Loopy.t;
+  const store = {
+    // ok: the values this setting may have; anything else falls back to the default.
+    get(k, d, ok) { try { const v = JSON.parse(Loopy.store.get(k)); return ok.includes(v) ? v : d; } catch (e) { return d; } },
+    set(k, v) { Loopy.store.set(k, JSON.stringify(v)); }
+  };
+
+  let age = Loopy.getAge();
+  let level;
+  // The level is remembered per age, so each age starts at the right level.
+  const levelForAge = (a) => a <= 8 ? 1 : a === 9 ? 2 : a === 10 ? 3 : a <= 12 ? 4 : 5;
+  // Level 1 (ages 7 to 8) picks from 3 answers, the other levels from 4.
+  const choicesFor = (lv) => lv === 1 ? 3 : 4;
+  function loadForAge() { level = store.get("sh.level.a" + age, levelForAge(age), [1, 2, 3, 4, 5]); }
+  loadForAge();
+  // Opened from the grown-ups' page to practise one topic (#practise=sh-area): that level for this visit, without saving.
+  { const m = /^sh-(name|lines|area|angle|tri)$/.exec(Loopy.log.hint || ""); if (m) { level = ["name", "lines", "area", "angle", "tri"].indexOf(m[1]) + 1; Loopy.log.hint = ""; } }
+  Loopy.levels.init({ names: ["shL1", "shL2", "shL3", "shL4", "shL5"],
+    get: () => level - 1, base: () => levelForAge(age) - 1,
+    set: (i) => { level = i + 1; store.set("sh.level.a" + age, level); render(); } });
+  let right = 0, tried = 0, streak = 0;
+  let current = null, answered = false, recent = [], lastTypes = [];
+
+  function render() {
+    Loopy.levels.render();
+    $("score").textContent = right + " / " + tried;
+    $("streak").textContent = streak;
+    levelBtns.forEach(b => b.setAttribute("aria-pressed", String(+b.dataset.level === level)));
+    Loopy.nextButton(nextBtn, answered);
+  }
+  // Try again: a missed problem comes back later (Loopy.retry). The note is the spec; a problem from another level
+  // than the one set now waits until the child is back on that level (or one above it).
+  const note = (p) => p.spec;
+  function rebuild(r) {
+    if (!SPEC.test(r)) return null;
+    const type = r.split(".")[0], from = +Object.keys(LEVELS).find(lv => LEVELS[lv].includes(type));
+    if (!from || from > level || from < level - 1) return null;
+    return build(r, t, type === "sy" ? 2 : type === "ln" ? 3 : choicesFor(level));
+  }
+
+  function newRound() {
+    current = Loopy.retry.fresh("shapes-angles", recent, () => makeProblem(level, t, choicesFor(level), lastTypes), rebuild, 20);
+    lastTypes.push(current.type); if (lastTypes.length > 3) lastTypes.shift();
+    answered = false;
+    pic.textContent = "";
+    current.draw(pic);
+    qEl.textContent = current.q;
+    choicesEl.textContent = "";
+    choicesEl.classList.toggle("one", current.options.length < 4);
+    current.options.forEach((o, i) => {
+      const b = document.createElement("button");
+      b.type = "button"; b.id = "choice-" + i; b.textContent = o;
+      b.dataset.correct = String(o === current.answer);
+      b.addEventListener("click", () => choose(b));
+      choicesEl.appendChild(b);
+    });
+    card.classList.remove("good", "bad");
+    feedbackEl.className = "feedback";
+    feedbackEl.textContent = "";
+    render();
+    Loopy.speech.read();
+  }
+  function choose(btn) {
+    if (answered) return;
+    answered = true; tried++;
+    const ok = btn.dataset.correct === "true";
+    [...choicesEl.children].forEach(b => {
+      b.disabled = true;
+      if (b.dataset.correct === "true") b.classList.add("right");
+      else if (b === btn) b.classList.add("wrong");
+      else b.classList.add("faded");
+    });
+    if (ok) { right++; streak++; } else { streak = 0; }
+    // The progress page keeps 40 letters of the question.
+    const q = current.q.slice(0, 40);
+    if (ok) Loopy.rewards.correct("shapes-angles", streak, current.k);
+    else Loopy.rewards.wrong("shapes-angles", { q, a: current.answer, y: btn.textContent, k: current.k, r: note(current) });
+    card.classList.remove("good", "bad");
+    card.classList.add(ok ? "good" : "bad");
+    feedbackEl.className = "feedback " + (ok ? "good" : "bad");
+    feedbackEl.innerHTML = "<strong></strong>";
+    feedbackEl.firstChild.textContent = ok ? (streak >= 3 ? t("correctRow", { n: streak }) : t("correct")) : t("notQuite");
+    // One line of why after every answer; after a wrong one, the right answer first.
+    feedbackEl.appendChild(document.createTextNode((ok ? "" : t("shAnswerIs", { a: current.answer }) + " ") + current.why));
+    render();
+    nextBtn.focus({ preventScroll: true });
+  }
+
+  nextBtn.addEventListener("click", newRound);
+  levelBtns.forEach(b => b.addEventListener("click", () => { level = +b.dataset.level; store.set("sh.level.a" + age, level); recent = []; newRound(); }));
+  window.addEventListener("loopy:age", (e) => { age = e.detail; recent = []; loadForAge(); newRound(); });
+  $("reset").addEventListener("click", () => { right = 0; tried = 0; streak = 0; Loopy.recent.clear("shapes-angles"); newRound(); });
+  document.addEventListener("keydown", (e) => {
+    if (e.target.tagName === "INPUT" || document.querySelector(".loopy-cheer.big")) return;
+    if (e.key === "Enter" && answered && e.target.tagName !== "BUTTON") { newRound(); return; }
+    const n = parseInt(e.key, 10);
+    if (n >= 1 && n <= 4 && !answered) { const b = choicesEl.children[n - 1]; if (b) choose(b); }
+  });
+
+  // Read aloud: "Which shape is this? Triangle, square or pentagon?"
+  Loopy.speech.question({ host: card, text: () => {
+    const o = current.options;
+    return t("shReadQ", { q: current.q, list: o.slice(0, -1).join(", ") + " " + t("orWord") + " " + o[o.length - 1] });
+  } });
+
+  // Print worksheet: 20 drawings at the game's level, each with the answers to circle.
+  const part = (cls, text) => { const n = document.createElement("span"); if (cls) n.className = cls; if (text) n.textContent = text; return n; };
+  Loopy.worksheet({
+    title: () => t("shName"),
+    level: () => [t("ageLabel", { n: age }), t("shLevel") + ": " + t("shL" + level)].join(" · "),
+    how: () => t("shHow"),
+    layout: "clock",
+    make: (n) => { const list = [], keys = [], types = []; let tries = 0; while (list.length < n) { const p = makeProblem(level, t, choicesFor(level), types); if (keys.includes(p.spec) && tries++ < 200) continue; keys.push(p.spec); types.push(p.type); list.push(p); } return list; },
+    cell: (p) => {
+      const box = document.createElement("div");
+      box.className = "ws-sh";
+      const svg = document.createElementNS(NS, "svg");
+      svg.setAttribute("viewBox", "0 0 240 160");
+      p.draw(svg);
+      box.appendChild(svg);
+      box.appendChild(part("ws-q", p.q));
+      const opts = part("ws-opts");
+      p.options.forEach(o => opts.appendChild(part("", o)));
+      box.appendChild(opts);
+      return box;
+    },
+    answer: (p) => p.q + " " + p.answer
+  });
+
+  newRound();
+})();
+</script>
+</body>
+</html>

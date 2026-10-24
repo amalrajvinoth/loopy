@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'sha256-EV9qFdmHxYSn+epXM5fVUqQrf5mw2ootR5BOG2xyGwI='; style-src 'self' 'sha256-z2P7kGW5Z05eCTjTZdYpc0vThTlOE9vmt97pVSvi2I4=' 'sha256-5/L3e/BVPjm2GPi51M3FkQuzTeZ4bCdHn3SxvjZFuAk=' 'sha256-RT1053JU5UiKvjrCUFx1rlhdFLMmgtuFJ9T8jnMeawQ=' 'sha256-nnHT/yp9/bcQWezNOoiKHtvXRiJS9w/rrwbtn2h3e9o='; img-src 'self' data:; font-src 'self'; connect-src 'self' https://loopy-sync.loopy-1e2.workers.dev; worker-src 'self'; object-src 'none'; base-uri 'none'; form-action 'none'; manifest-src 'self'; upgrade-insecure-requests">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'sha256-FvARCbJjPQcaIOq/KYpU5YzyqBh92FZ0AO968H8L2Vs='; style-src 'self' 'sha256-z2P7kGW5Z05eCTjTZdYpc0vThTlOE9vmt97pVSvi2I4=' 'sha256-5/L3e/BVPjm2GPi51M3FkQuzTeZ4bCdHn3SxvjZFuAk=' 'sha256-RT1053JU5UiKvjrCUFx1rlhdFLMmgtuFJ9T8jnMeawQ=' 'sha256-nnHT/yp9/bcQWezNOoiKHtvXRiJS9w/rrwbtn2h3e9o='; img-src 'self' data:; font-src 'self'; connect-src 'self' https://loopy-sync.loopy-1e2.workers.dev; worker-src 'self'; object-src 'none'; base-uri 'none'; form-action 'none'; manifest-src 'self'; upgrade-insecure-requests">
 <meta name="referrer" content="strict-origin-when-cross-origin">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <style>:root{color-scheme:light;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}body{margin:0}[hidden]{display:none!important}</style>
@@ -552,7 +552,7 @@ function makeProblem(lang, len, avoid) {
     const ok = typed.join("") === current.letters.join("");
     const yours = typed.map(shown).join("");
     if (ok) { right++; streak++; } else { streak = 0; }
-    if (ok) Loopy.rewards.correct("spell-it", streak);
+    if (ok) Loopy.rewards.correct("spell-it", streak, "si-" + current.len);
     else Loopy.rewards.wrong("spell-it", { q: current.pic, a: current.word, y: yours, k: "si-" + current.len, r: note(current) });
     card.classList.remove("good", "bad");
     card.classList.add(ok ? "good" : "bad");
