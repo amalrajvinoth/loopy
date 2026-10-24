@@ -21,7 +21,7 @@ Once a child has stars, loopy asks the browser to keep them for good. Then the b
 
 ## What is saved, and for whom
 
-Each child has their own stars, badges, streaks, age, game levels and settings, the wrong answers for the grown-ups page, and their last game. See [Kids and ages](/loopy/guide/setup/kids-and-ages/).
+Each child has their own stars, badges, streaks, age, game levels and settings, the answers per topic and the wrong answers for the grown-ups page, and their last game. See [Kids and ages](/loopy/guide/setup/kids-and-ages/).
 
 The color theme, **Easier to read**, sound and language are the same for everyone on the device.
 

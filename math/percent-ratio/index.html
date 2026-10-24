@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'sha256-69nqUiMLHmSCm4sfXl7HAtKl31TpgMaZiHPp2jnJo8I='; style-src 'self' 'sha256-z2P7kGW5Z05eCTjTZdYpc0vThTlOE9vmt97pVSvi2I4=' 'sha256-nzWO/Zp5fHoEAG1TKhQVCMxRphuWD3Glc7tgamR53K4=' 'sha256-RT1053JU5UiKvjrCUFx1rlhdFLMmgtuFJ9T8jnMeawQ=' 'sha256-8mi1cXgKL22AU/PExt3JtyI4gqzbS66XfuUx8kmgVRM='; img-src 'self' data:; font-src 'self'; connect-src 'self' https://loopy-sync.loopy-1e2.workers.dev; worker-src 'self'; object-src 'none'; base-uri 'none'; form-action 'none'; manifest-src 'self'; upgrade-insecure-requests">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'sha256-bfEIDThmOLpVr+69TKqDVR5qpKKBvACJb4RylcjWU/M='; style-src 'self' 'sha256-z2P7kGW5Z05eCTjTZdYpc0vThTlOE9vmt97pVSvi2I4=' 'sha256-nzWO/Zp5fHoEAG1TKhQVCMxRphuWD3Glc7tgamR53K4=' 'sha256-RT1053JU5UiKvjrCUFx1rlhdFLMmgtuFJ9T8jnMeawQ=' 'sha256-8mi1cXgKL22AU/PExt3JtyI4gqzbS66XfuUx8kmgVRM='; img-src 'self' data:; font-src 'self'; connect-src 'self' https://loopy-sync.loopy-1e2.workers.dev; worker-src 'self'; object-src 'none'; base-uri 'none'; form-action 'none'; manifest-src 'self'; upgrade-insecure-requests">
 <meta name="referrer" content="strict-origin-when-cross-origin">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <style>:root{color-scheme:light;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}body{margin:0}[hidden]{display:none!important}</style>
@@ -613,7 +613,7 @@ function explain(p) {
     answered = true; tried++;
     const ok = parseInt(typed, 10) === current.answer;
     if (ok) { right++; streak++; } else { streak = 0; }
-    if (window.Loopy && Loopy.rewards) ok ? Loopy.rewards.correct("percent-ratio", streak) : Loopy.rewards.wrong("percent-ratio", { q: shortQ(current), a: num(current.answer), y: num(parseInt(typed, 10)), k: "pr-" + current.lv, r: note(current) });
+    if (window.Loopy && Loopy.rewards) ok ? Loopy.rewards.correct("percent-ratio", streak, "pr-" + current.lv) : Loopy.rewards.wrong("percent-ratio", { q: shortQ(current), a: num(current.answer), y: num(parseInt(typed, 10)), k: "pr-" + current.lv, r: note(current) });
     card.classList.add(ok ? "good" : "bad");
     feedbackEl.className = "feedback " + (ok ? "good" : "bad");
     const head = ok

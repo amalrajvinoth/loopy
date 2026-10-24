@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'sha256-QMSO3WQ9RAnrviYN4JPadVEkeSG33J+ASXGI+yD487c='; style-src 'self' 'sha256-z2P7kGW5Z05eCTjTZdYpc0vThTlOE9vmt97pVSvi2I4=' 'sha256-oLQF3jnCxf/mhP8dw8TD8Q631n/SdgEZHa5Z9K9C5do=' 'sha256-RT1053JU5UiKvjrCUFx1rlhdFLMmgtuFJ9T8jnMeawQ=' 'sha256-85jc8QafFRQ/AgP2TO/VDSGWQrc0SF2GVDkf3taMmK0='; img-src 'self' data:; font-src 'self'; connect-src 'self' https://loopy-sync.loopy-1e2.workers.dev; worker-src 'self'; object-src 'none'; base-uri 'none'; form-action 'none'; manifest-src 'self'; upgrade-insecure-requests">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'sha256-ZLrCOgfe7z7a73vekpSyjMvL3FQHvx2mKNT2ySYtpBk='; style-src 'self' 'sha256-z2P7kGW5Z05eCTjTZdYpc0vThTlOE9vmt97pVSvi2I4=' 'sha256-oLQF3jnCxf/mhP8dw8TD8Q631n/SdgEZHa5Z9K9C5do=' 'sha256-RT1053JU5UiKvjrCUFx1rlhdFLMmgtuFJ9T8jnMeawQ=' 'sha256-85jc8QafFRQ/AgP2TO/VDSGWQrc0SF2GVDkf3taMmK0='; img-src 'self' data:; font-src 'self'; connect-src 'self' https://loopy-sync.loopy-1e2.workers.dev; worker-src 'self'; object-src 'none'; base-uri 'none'; form-action 'none'; manifest-src 'self'; upgrade-insecure-requests">
 <meta name="referrer" content="strict-origin-when-cross-origin">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <style>:root{color-scheme:light;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}body{margin:0}[hidden]{display:none!important}</style>
@@ -740,7 +740,7 @@ function makeProblem(lang, topic, level, nChoices, only, seen) {
     if (ok) { right++; streak++; } else { streak = 0; }
     // The progress page keeps 40 letters of the question.
     const q = (current.thing.pic + " " + current.text.name).slice(0, 40);
-    if (ok) Loopy.rewards.correct("sort-it", streak);
+    if (ok) Loopy.rewards.correct("sort-it", streak, "so-" + current.thing.set);
     else Loopy.rewards.wrong("sort-it", { q, a: groupName(current.answer), y: btn.textContent, k: "so-" + current.thing.set, r: note(current) });
     card.classList.remove("good", "bad");
     card.classList.add(ok ? "good" : "bad");

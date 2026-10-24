@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'sha256-bkUVc6lLeWhrp9k6m9t1jEBlTb8pYfdSZL/X5f0ArxI='; style-src 'self' 'sha256-z2P7kGW5Z05eCTjTZdYpc0vThTlOE9vmt97pVSvi2I4=' 'sha256-4KeXVk7w7LjYemdYWRLdakk0uAlZg26cpfiBqMAOD24=' 'sha256-RT1053JU5UiKvjrCUFx1rlhdFLMmgtuFJ9T8jnMeawQ=' 'sha256-3KG381CUtjqBA89CGSEeePMjJDH4mtBX1ixxVdZ02kE='; img-src 'self' data:; font-src 'self'; connect-src 'self' https://loopy-sync.loopy-1e2.workers.dev; worker-src 'self'; object-src 'none'; base-uri 'none'; form-action 'none'; manifest-src 'self'; upgrade-insecure-requests">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'sha256-Brp1iICHz4oTJTfAG43I9j6t9s/4QeST7DyHEy5TzpQ='; style-src 'self' 'sha256-z2P7kGW5Z05eCTjTZdYpc0vThTlOE9vmt97pVSvi2I4=' 'sha256-4KeXVk7w7LjYemdYWRLdakk0uAlZg26cpfiBqMAOD24=' 'sha256-RT1053JU5UiKvjrCUFx1rlhdFLMmgtuFJ9T8jnMeawQ=' 'sha256-3KG381CUtjqBA89CGSEeePMjJDH4mtBX1ixxVdZ02kE='; img-src 'self' data:; font-src 'self'; connect-src 'self' https://loopy-sync.loopy-1e2.workers.dev; worker-src 'self'; object-src 'none'; base-uri 'none'; form-action 'none'; manifest-src 'self'; upgrade-insecure-requests">
 <meta name="referrer" content="strict-origin-when-cross-origin">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <style>:root{color-scheme:light;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}body{margin:0}[hidden]{display:none!important}</style>
@@ -736,7 +736,7 @@ Loopy.addStrings({
   function finish(ok, yours, pickedFrac) {
     answered = true; tried++;
     if (ok) { right++; streak++; } else { streak = 0; }
-    if (ok) Loopy.rewards.correct("pizza-fractions", streak);
+    if (ok) Loopy.rewards.correct("pizza-fractions", streak, cur.kind);
     else Loopy.rewards.wrong("pizza-fractions", {
       q: cur.type === "name" ? t(cur.look === "bar" ? "pzBar" : "pzPizza") + " " + txt(cur.x) : cur.type === "cmp" ? txt(cur.a) + " ? " + txt(cur.b) : txt(cur.a) + " + " + txt(cur.b),
       a: answerText(cur), y: yours, k: cur.kind, r: note(cur)

@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'sha256-6yUMJeMQPLD6kdxg2kPSHzyH3528eHRfUtjWJODtNlM='; style-src 'self' 'sha256-46Cq+42DLh7NpasKPyxtoBftOWT7c+IqDOGe/PWRVu8='; img-src 'self' data:; font-src 'self'; connect-src 'self' https://loopy-sync.loopy-1e2.workers.dev; worker-src 'self'; object-src 'none'; base-uri 'none'; form-action 'none'; manifest-src 'self'; upgrade-insecure-requests">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'sha256-RQYzeUgdrvQs+gqRS4V1hs8NQLV3AdYaLHQ+FV64pVg='; style-src 'self' 'sha256-GbThM+eKi1EIFGjr+9TLxiv1qkZ9EA3Qts06vHcq28U='; img-src 'self' data:; font-src 'self'; connect-src 'self' https://loopy-sync.loopy-1e2.workers.dev; worker-src 'self'; object-src 'none'; base-uri 'none'; form-action 'none'; manifest-src 'self'; upgrade-insecure-requests">
 <meta name="referrer" content="strict-origin-when-cross-origin">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <link rel="icon" href="../icon.svg" type="image/svg+xml">
@@ -115,6 +115,10 @@ section[hidden] { display: none; }
 .topic[open] summary::before { content: "▾"; }
 .topic summary b { flex: 1; }
 .topic summary span { color: var(--muted); font-weight: 400; font-size: 0.9rem; text-align: right; }
+.topic summary span b { display: block; color: var(--ink); font-weight: 700; }
+.topic summary span small { display: block; font-size: 0.8rem; }
+.topic summary .bar { display: block; width: 96px; height: 8px; margin: 4px 0 0 auto; border-radius: 999px; background: var(--line); overflow: hidden; }
+.topic summary .bar i { display: block; height: 100%; width: var(--w); background: var(--good); }
 .topic .miss { border-top: 0; padding: 4px 0; grid-template-columns: minmax(0, 1fr) auto auto; }
 .topic .btn { min-height: 40px; margin-top: 6px; }
 
@@ -217,7 +221,7 @@ section[hidden] { display: none; }
 
   <section aria-labelledby="miss-title">
     <h2 id="miss-title" data-t="prMisses">Answers to practise</h2>
-    <p class="muted" data-t="prMissesText">Wrong answers from the last 30 days, grouped by what they practise. Tap a group to see them, newest first.</p>
+    <p class="muted" data-t="prMissesText">Wrong answers from the last 30 days, grouped by what they practise. Next to each group: how this week went. Tap a group to see them, newest first.</p>
     <ul class="misses" id="misses"></ul>
   </section>
 
@@ -234,7 +238,7 @@ Loopy.addStrings({
     prTitle: "How it's going · loopy", prHeading: "How it's going", prHeadingKid: "How it's going for {name}", prLead: "For grown-ups. Answers from this device in the last 30 days.",
     prWeeks: "Game by game", prThis: "This week", prLast: "Last week", prRight: "✓ {n}", prWrong: "✗ {n}",
     prRightAria: "{r} right, {w} wrong", prNone: "Not played", prQuiet: "Not played in the last two weeks ({n})",
-    prMisses: "Answers to practise", prMissesText: "Wrong answers from the last 30 days, grouped by what they practise. Tap a group to see them, newest first.",
+    prMisses: "Answers to practise", prMissesText: "Wrong answers from the last 30 days, grouped by what they practise. Next to each group: how this week went. Tap a group to see them, newest first.",
     prRightAns: "Right answer", prTheirs: "Answer given", prNoMisses: "No wrong answers in the last 30 days.",
     prMore: "Show {n} more", prToday: "Today", prYesterday: "Yesterday",
     prClearTitle: "Your data", prClear: "Clear answers", prSure: "Tap again to clear all answers", prCleared: "Cleared. Stars and badges are kept.",
@@ -248,6 +252,7 @@ Loopy.addStrings({
     prLevel: "Level {n} of {of} · {name}", prLevelWentUp: "▲ went up this week", prLevelEasier: "▼ a bit easier this week",
     prBetter: "▲ Better than last week.", prWorse: "▼ Harder than last week.",
     prThisN: "{n} this week", prMonthN: "{n} in 30 days", prClockQ: "Read the clock",
+    prKindRight: "{r} of {n} right this week.", prKindOf: "{r} of {n} right", prKindAria: "{r} of {n} right this week",
     "nm-add": "Adding", "nm-add-rg": "Adding with carrying", "nm-sub": "Taking away", "nm-sub-rg": "Taking away with regrouping",
     "nm-st-add": "Adding in steps", "nm-st-sub": "Taking away in steps",
     "nm-sq-mine": "Words from your list", "nm-sq-loopy": "Tricky spellings",
@@ -343,7 +348,7 @@ Loopy.addStrings({
     prTitle: "So läuft es · loopy", prHeading: "So läuft es", prHeadingKid: "So läuft es bei {name}", prLead: "Für Erwachsene. Antworten auf diesem Gerät aus den letzten 30 Tagen.",
     prWeeks: "Spiel für Spiel", prThis: "Diese Woche", prLast: "Letzte Woche", prRight: "✓ {n}", prWrong: "✗ {n}",
     prRightAria: "{r} richtig, {w} falsch", prNone: "Nicht gespielt", prQuiet: "In den letzten zwei Wochen nicht gespielt ({n})",
-    prMisses: "Das üben wir noch", prMissesText: "Falsche Antworten aus den letzten 30 Tagen, geordnet nach dem, was sie üben. Tippe auf eine Gruppe, die neuesten zuerst.",
+    prMisses: "Das üben wir noch", prMissesText: "Falsche Antworten aus den letzten 30 Tagen, geordnet nach dem, was sie üben. Neben jeder Gruppe steht, wie es diese Woche lief. Tippe auf eine Gruppe, die neuesten zuerst.",
     prRightAns: "Richtig", prTheirs: "Gegeben", prNoMisses: "Keine falschen Antworten in den letzten 30 Tagen.",
     prMore: "{n} weitere zeigen", prToday: "Heute", prYesterday: "Gestern",
     prClearTitle: "Deine Daten", prClear: "Antworten löschen", prSure: "Nochmal tippen, um alle Antworten zu löschen", prCleared: "Gelöscht. Sterne und Abzeichen bleiben.",
@@ -357,6 +362,7 @@ Loopy.addStrings({
     prLevel: "Stufe {n} von {of} · {name}", prLevelWentUp: "▲ diese Woche aufgestiegen", prLevelEasier: "▼ diese Woche etwas leichter",
     prBetter: "▲ Besser als letzte Woche.", prWorse: "▼ Schwerer als letzte Woche.",
     prThisN: "{n} diese Woche", prMonthN: "{n} in 30 Tagen", prClockQ: "Uhr ablesen",
+    prKindRight: "{r} von {n} diese Woche richtig.", prKindOf: "{r} von {n} richtig", prKindAria: "{r} von {n} diese Woche richtig",
     "nm-add": "Plusrechnen", "nm-add-rg": "Plus mit Übertrag", "nm-sub": "Minusrechnen", "nm-sub-rg": "Minus mit Zehnerübergang",
     "nm-st-add": "Schrittweise plus", "nm-st-sub": "Schrittweise minus",
     "nm-sq-mine": "Wörter aus eurer Liste", "nm-sq-loopy": "Knifflige Schreibweisen",
@@ -609,8 +615,15 @@ Loopy.addStrings({
   // each with a button that opens the game that practises it, and one "ready for more" game.
   // The three kinds missed most this week (last week fills in when this week is short), each with the
   // game to practise it in: the game it was missed in most; a Today's 10 miss points to the game that owns the kind.
+  // A kind with 10 or more answers this week and 85% or more right is not a weak spot, even with a few misses.
+  const GOOD = 0.85, ENOUGH = 10;
+  const goesWell = (c) => c && c.r + c.w >= ENOUGH && c.r / (c.r + c.w) >= GOOD;
+  // The counts per kind started on 24 Oct 2026. Until every day of the week has them, a kind's count can miss
+  // some of the week's wrong answers; then the count is left out rather than shown wrong.
+  const counted = (c, misses) => (c && c.w >= misses ? c : null);
   function weakSpots() {
-    const items = missedBy(thisWeek).map(e => ({ ...e, when: "prMissed" }));
+    const week = Loopy.log.byKind(thisWeek);
+    const items = missedBy(thisWeek).map(e => ({ ...e, when: "prMissed", c: counted(week[e.k], e.n) })).filter(e => !goesWell(e.c));
     const seen = new Set(items.map(e => e.k));
     missedBy(lastWeek).forEach(e => { if (items.length < 3 && !seen.has(e.k)) items.push({ ...e, when: "prMissedLast" }); });
     return items.slice(0, 3).map(e => {
@@ -625,7 +638,8 @@ Loopy.addStrings({
       const row = el("div", "pn"), go = el("a", "go", t("prPractise"));
       go.href = e.game.path + "#practise=" + e.k;
       go.setAttribute("aria-label", t("prPractise") + " " + kindName(e.k) + ": " + nameOf(e.game.id));
-      row.append(el("b", "", kindName(e.k)), el("small", "", t(e.when, { n: num(e.n), games: e.by.map(nameOf).reduce((a, b, i, all) => a + (i === all.length - 1 ? t("prAnd") : ", ") + b) })), el("span", "how", kindTip(e.k)), go);
+      const how = (e.c ? t("prKindRight", { r: num(e.c.r), n: num(e.c.r + e.c.w) }) + " " : "") + kindTip(e.k);
+      row.append(el("b", "", kindName(e.k)), el("small", "", t(e.when, { n: num(e.n), games: e.by.map(nameOf).reduce((a, b, i, all) => a + (i === all.length - 1 ? t("prAnd") : ", ") + b) })), el("span", "how", how), go);
       box.appendChild(row);
     });
     $("sheet-btn").hidden = !items.length;
@@ -706,10 +720,21 @@ Loopy.addStrings({
     });
     const all = Object.values(groups).sort((a, b) => b.week - a.week || b.items.length - a.items.length);
     if (!all.length) { list.appendChild(el("li", "muted", t("prNoMisses"))); return; }
+    const week = Loopy.log.byKind(thisWeek);
     all.forEach((g, i) => {
-      const li = el("li"), d = el("details", "topic"), s = el("summary"), span = el("span");
+      const li = el("li"), d = el("details", "topic"), s = el("summary"), span = el("span"), c = counted(week[g.k], g.week);
       s.appendChild(el("b", "", kindName(g.k)));
-      span.textContent = [g.week ? t("prThisN", { n: num(g.week) }) : "", g.items.length > g.week ? t("prMonthN", { n: num(g.items.length) }) : ""].filter(Boolean).join(" · ");
+      if (c) {
+        // Since 24 Oct 2026 the games count right answers per kind too: "7 of 10 right" and a bar.
+        const n = c.r + c.w, bar = el("i", "bar"), fill = el("i");
+        fill.style.setProperty("--w", Math.round(c.r / n * 100) + "%");
+        bar.appendChild(fill);
+        span.append(el("b", "", t("prKindOf", { r: num(c.r), n: num(n) })), bar);
+        span.setAttribute("aria-label", t("prKindAria", { r: num(c.r), n: num(n) }) + (g.items.length > g.week ? ", " + t("prMonthN", { n: num(g.items.length) }) : ""));
+        if (g.items.length > g.week) span.appendChild(el("small", "", t("prMonthN", { n: num(g.items.length) })));
+      } else {
+        span.textContent = [g.week ? t("prThisN", { n: num(g.week) }) : "", g.items.length > g.week ? t("prMonthN", { n: num(g.items.length) }) : ""].filter(Boolean).join(" · ");
+      }
       s.appendChild(span);
       d.appendChild(s);
       d.open = i === 0;

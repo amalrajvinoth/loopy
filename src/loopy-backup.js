@@ -124,8 +124,17 @@
     Object.keys(l.days).forEach(function (day) {
       var row = L.days[day] = L.days[day] || {};
       Object.keys(l.days[day]).forEach(function (g) {
-        var a = row[g] || [0, 0], b = l.days[day][g];
-        row[g] = [Math.max(a[0], b[0]), Math.max(a[1], b[1])];
+        var a = row[g] || [0, 0], b = l.days[day][g], m = [Math.max(a[0], b[0]), Math.max(a[1], b[1])];
+        // The counts per kind (since 24 Oct 2026) merge the same way, kind by kind.
+        if (a[2] || b[2]) {
+          var by = {}, ka = a[2] || {}, kb = b[2] || {};
+          Object.keys(ka).concat(Object.keys(kb)).forEach(function (k) {
+            var x = ka[k] || [0, 0], y = kb[k] || [0, 0];
+            by[k] = [Math.max(x[0], y[0]), Math.max(x[1], y[1])];
+          });
+          m.push(by);
+        }
+        row[g] = m;
       });
     });
     // The same wrong answer from both sides is one row; the bigger "answered right since" count (Try again) wins.

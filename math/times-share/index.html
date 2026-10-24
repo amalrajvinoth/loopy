@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'sha256-9TFb8cFZpqIhUNQ4+RtALz1GXc7NA8XafKa9yej4JP8='; style-src 'self' 'sha256-z2P7kGW5Z05eCTjTZdYpc0vThTlOE9vmt97pVSvi2I4=' 'sha256-ER4UVxOAHVG2PpFuwsi/fNYnlP9iTYLytTr9Qx7YKqY=' 'sha256-RT1053JU5UiKvjrCUFx1rlhdFLMmgtuFJ9T8jnMeawQ=' 'sha256-fDcdKt0NOAY6n9Nok4/ouw7wfZ36jlKcoxXKNjj6K0U='; img-src 'self' data:; font-src 'self'; connect-src 'self' https://loopy-sync.loopy-1e2.workers.dev; worker-src 'self'; object-src 'none'; base-uri 'none'; form-action 'none'; manifest-src 'self'; upgrade-insecure-requests">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'sha256-jTIASy4s8VGcUGdQ5+cLvfTHwiZZ2amOS76Ys0n/EsE='; style-src 'self' 'sha256-z2P7kGW5Z05eCTjTZdYpc0vThTlOE9vmt97pVSvi2I4=' 'sha256-ER4UVxOAHVG2PpFuwsi/fNYnlP9iTYLytTr9Qx7YKqY=' 'sha256-RT1053JU5UiKvjrCUFx1rlhdFLMmgtuFJ9T8jnMeawQ=' 'sha256-fDcdKt0NOAY6n9Nok4/ouw7wfZ36jlKcoxXKNjj6K0U='; img-src 'self' data:; font-src 'self'; connect-src 'self' https://loopy-sync.loopy-1e2.workers.dev; worker-src 'self'; object-src 'none'; base-uri 'none'; form-action 'none'; manifest-src 'self'; upgrade-insecure-requests">
 <meta name="referrer" content="strict-origin-when-cross-origin">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <style>:root{color-scheme:light;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}body{margin:0}[hidden]{display:none!important}</style>
@@ -517,7 +517,7 @@ function explain(p) {
     answered = true; tried++;
     const ok = parseInt(typed, 10) === current.answer;
     if (ok) { right++; streak++; } else { streak = 0; }
-    if (window.Loopy && Loopy.rewards) ok ? Loopy.rewards.correct("times-share", streak) : Loopy.rewards.wrong("times-share", { q: fmt(current.a) + (current.op === "mul" ? " × " : " ÷ ") + fmt(current.b), a: fmt(current.answer), y: fmt(parseInt(typed, 10)), k: Loopy.log.kind(current.op, current.a, current.b), r: note(current) });
+    if (window.Loopy && Loopy.rewards) ok ? Loopy.rewards.correct("times-share", streak, Loopy.log.kind(current.op, current.a, current.b)) : Loopy.rewards.wrong("times-share", { q: fmt(current.a) + (current.op === "mul" ? " × " : " ÷ ") + fmt(current.b), a: fmt(current.answer), y: fmt(parseInt(typed, 10)), k: Loopy.log.kind(current.op, current.a, current.b), r: note(current) });
     card.className = "problem-card " + (ok ? "good" : "bad");
     feedbackEl.className = "feedback " + (ok ? "good" : "bad");
     const sign = current.op === "mul" ? " × " : " ÷ ";

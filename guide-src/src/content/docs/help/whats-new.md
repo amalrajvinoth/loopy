@@ -10,6 +10,7 @@ The big changes, newest first. Small fixes are not listed. See [the full list on
 
 ## 24 October 2026
 
+- **Right answers count by topic.** The grown-ups page says "7 of 10 right this week" under each topic in Practise next. A green bar next to each group of answers shows the week. See [The grown-ups page](/loopy/guide/grown-ups/grown-ups-page/).
 - **How to play, right in the game.** ⚙ Settings in every game now has a **How to play** card that opens that game's page in this guide. See [Settings in a game](/loopy/guide/settings/game-settings/).
 - **Make 10 explains Make 1,000 the right way.** For 647 + ? = 1,000 it now says "647 needs 3 more to make 650. Then 350 more makes 1,000." See [Make 10](/loopy/guide/games/math/make-10/).
 

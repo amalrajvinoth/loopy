@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'sha256-TFNoRcrrE5cy57TDG+Q4YARo9XtT42ma9w9U1SdbhfE='; style-src 'self' 'sha256-z2P7kGW5Z05eCTjTZdYpc0vThTlOE9vmt97pVSvi2I4=' 'sha256-0X+W/Xc6cVdheyH9D1zLVaD+jBRekL1aj7dPgq8HXXY=' 'sha256-RT1053JU5UiKvjrCUFx1rlhdFLMmgtuFJ9T8jnMeawQ=' 'sha256-AbJixgGjrguOw5a9iDl7GMczBsuMXNeP8i3ZkjOlh9U='; img-src 'self' data:; font-src 'self'; connect-src 'self' https://loopy-sync.loopy-1e2.workers.dev; worker-src 'self'; object-src 'none'; base-uri 'none'; form-action 'none'; manifest-src 'self'; upgrade-insecure-requests">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'sha256-IhyKhl8RbrlJj9EW9CatR9wYy6Ml475dw/PDL0WJ3CE='; style-src 'self' 'sha256-z2P7kGW5Z05eCTjTZdYpc0vThTlOE9vmt97pVSvi2I4=' 'sha256-0X+W/Xc6cVdheyH9D1zLVaD+jBRekL1aj7dPgq8HXXY=' 'sha256-RT1053JU5UiKvjrCUFx1rlhdFLMmgtuFJ9T8jnMeawQ=' 'sha256-AbJixgGjrguOw5a9iDl7GMczBsuMXNeP8i3ZkjOlh9U='; img-src 'self' data:; font-src 'self'; connect-src 'self' https://loopy-sync.loopy-1e2.workers.dev; worker-src 'self'; object-src 'none'; base-uri 'none'; form-action 'none'; manifest-src 'self'; upgrade-insecure-requests">
 <meta name="referrer" content="strict-origin-when-cross-origin">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <style>:root{color-scheme:light;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}body{margin:0}[hidden]{display:none!important}</style>
@@ -617,7 +617,7 @@ function drawFlag(svg, f) {
     });
     if (ok) { right++; streak++; } else { streak = 0; }
     const of = nameOf(f, lang);
-    if (ok) Loopy.rewards.correct("flags-capitals", streak);
+    if (ok) Loopy.rewards.correct("flags-capitals", streak, step === "flag" ? "fc-flag" : "fc-cap");
     else Loopy.rewards.wrong("flags-capitals", step === "flag"
       ? { q: t("fcLogFlag", { c: of }), a: f[lang].name, y: btn.textContent, k: "fc-flag", r: note(current) }
       : { q: t("fcLogCap", { c: of }), a: f[lang].cap, y: btn.textContent, k: "fc-cap", r: note(current) });

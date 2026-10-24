@@ -1123,14 +1123,17 @@ document.documentElement.classList.add("loopy-building");
       if (Loopy.levels) Loopy.levels.stuck(game);
     },
     // Call after each right answer with the current streak.
+    // kind: what kind of problem it was ("sub-rg"), the same as k in a wrong detail, so the grown-ups' page
+    // can count right answers per kind too. It may come third: correct("make-10", streak, "mk-100").
     // harder: leave out, and the game goes up a level by itself when the child is ready (Loopy.levels.up);
     // null turns that off for this answer, e.g. during a timed round.
-    correct: function (game, streak, harder) {
+    correct: function (game, streak, harder, kind) {
+      if (typeof harder === "string") { kind = harder; harder = undefined; }
       if (harder === undefined && Loopy.levels) harder = Loopy.levels.harder();
       last = { ok: true, d: null };
       if (Loopy.retry) Loopy.retry.fixed(game);
       if (Loopy.recent) Loopy.recent.add(game, true);
-      if (Loopy.log) Loopy.log.add(game, true);
+      if (Loopy.log) Loopy.log.add(game, true, kind ? { k: kind } : null);
       var before = badgeFor(data.stars), had = EXTRA.map(hasExtra);
       data.stars++;
       if (streak <= 1) cheeredBest[game] = false;
@@ -1384,8 +1387,8 @@ document.documentElement.classList.add("loopy-building");
   };
 })();
 
-// Answer log for the grown-ups' progress page: right and wrong answers per game per day, and each
-// wrong answer with the right one, for the last 30 days. It goes in the stars code (Loopy.backup) and is never sent anywhere.
+// Answer log for the grown-ups' progress page: right and wrong answers per game per day (and, since 24 Oct 2026,
+// per kind of problem too), and each wrong answer with the right one, for the last 30 days. It goes in the stars code (Loopy.backup) and is never sent anywhere.
 // Kept in this browser's localStorage as
 // { days: { "2026-10-15": { "plus-minus": [right, wrong] } }, wrong: [{ d: day, g: game, q, a: right answer, y: their answer, k: kind, r, f }] }.
 // r (optional, since Try again) is the game's note of how to rebuild the problem; f counts the times it was answered right since.
@@ -1409,7 +1412,16 @@ document.documentElement.classList.add("loopy-building");
       if (!DAY.test(d) || d < oldest || !row || typeof row !== "object") return;
       GAMES.forEach(function (g) {
         var v = row[g];
-        if (Array.isArray(v) && v.length === 2) { keep[g] = [whole(v[0]), whole(v[1])]; any = true; }
+        if (!Array.isArray(v) || v.length < 2 || v.length > 3) return;
+        keep[g] = [whole(v[0]), whole(v[1])]; any = true;
+        // Since 24 Oct 2026 a row may carry a third item: right and wrong counts per kind, { "add-rg": [7, 3] }.
+        // Rows without it (older days) still count as before.
+        var by = v[2], kinds = {}, got = false;
+        if (by && typeof by === "object" && !Array.isArray(by)) Object.keys(by).forEach(function (k) {
+          var c = by[k];
+          if (KIND.test(k) && Array.isArray(c) && c.length === 2) { kinds[k] = [whole(c[0]), whole(c[1])]; got = true; }
+        });
+        if (got) keep[g].push(kinds);
       });
       if (any) out.days[d] = keep;
     });
@@ -1430,12 +1442,18 @@ document.documentElement.classList.add("loopy-building");
   Loopy.log = {
     MAX_WRONG: MAX_WRONG, clean: clean, // used by Loopy.backup
     get: function () { return clean(data); },
-    // rewards.correct / wrong call this. detail: { q, a, y, k } for a wrong answer, see rewards.wrong.
+    // rewards.correct / wrong call this. detail: { q, a, y, k } for a wrong answer, see rewards.wrong;
+    // { k } for a right one, so the grown-ups' page can say "7 of 10 right" per kind.
     add: function (game, ok, detail) {
       if (GAMES.indexOf(game) === -1) return;
       var today = Loopy.dayKey(0), row = data.days[today] = data.days[today] || {};
       var c = row[game] = row[game] || [0, 0];
       c[ok ? 0 : 1] = whole(c[ok ? 0 : 1] + 1);
+      var k = detail && typeof detail === "object" && typeof detail.k === "string" && KIND.test(detail.k) ? detail.k : "";
+      if (k) {
+        var by = c[2] = c[2] || {}, kc = by[k] = by[k] || [0, 0];
+        kc[ok ? 0 : 1] = whole(kc[ok ? 0 : 1] + 1);
+      }
       if (!ok && detail && typeof detail === "object") {
         data.wrong.push({ d: today, g: game, q: detail.q, a: detail.a, y: detail.y, k: detail.k, r: detail.r });
       }
@@ -1443,6 +1461,25 @@ document.documentElement.classList.add("loopy-building");
       save();
     },
     clear: function () { data = clean(null); Loopy.store.remove(KEY); },
+    // Right and wrong per kind over these days (keys like "2026-10-24"), for one game or all:
+    // { "add-rg": { r: 7, w: 3, games: { "plus-minus": 10 } } }. Days before 24 Oct 2026 have no counts.
+    byKind: function (days, game) {
+      var out = {};
+      days.forEach(function (d) {
+        var row = data.days[d];
+        if (!row) return;
+        Object.keys(row).forEach(function (g) {
+          var by = row[g][2];
+          if (!by || (game && g !== game)) return;
+          Object.keys(by).forEach(function (k) {
+            var e = out[k] = out[k] || { k: k, r: 0, w: 0, games: {} };
+            e.r += by[k][0]; e.w += by[k][1];
+            e.games[g] = (e.games[g] || 0) + by[k][0] + by[k][1];
+          });
+        });
+      });
+      return out;
+    },
     // Right answers today in every game together, for the day streak.
     rightToday: function () { var row = data.days[Loopy.dayKey(0)] || {}, n = 0; Object.keys(row).forEach(function (g) { n += row[g][0]; }); return n; },
     // The kind of a sum: "add" or "sub" with "-rg" when it needs carrying or regrouping,
