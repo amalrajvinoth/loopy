@@ -12,7 +12,14 @@ tools/ralph/ralph.sh --issue 147          # the task is a GitHub issue, with its
 tools/ralph/ralph.sh --task my-task.md    # the task is a file you wrote (see TASK.example.md)
 ```
 
-Options: `--name <slug>` (the branch and folder name), `--max 8` (iterations), `--sleep 30` (seconds between runs), `--budget 5` (dollars, as Claude counts them), `--model <name>`, `--max-turns 40` (per run), `--resume` (carry on a loop you stopped).
+Options:
+
+- `--name <slug>`: the branch and folder name.
+- `--max 8`: how many iterations at most.
+- `--sleep 30`: seconds between runs.
+- `--budget 5`: dollars, as Claude counts them.
+- `--model <name>` and `--max-turns 40`: per run.
+- `--resume`: carry on a loop you stopped.
 
 ## What happens
 
@@ -37,7 +44,7 @@ cd - && git worktree remove ../loopy-ralph-<name>
 - Caps on iterations, turns per run and cost. Logs for every run in `.ralph/outputs/`.
 - Verification is a script, not Claude's word.
 
-Start with small, clear tasks that have a "Done when" list. A task with no stop condition runs until the cap. The weekly check, the live site check and the pull request checks are the better loop for anything that should run without you; this one is for a task you want done while you are away from the keyboard for an hour.
+Start with small, clear tasks that have a "Done when" list. A task with no stop condition runs until the cap. For anything that should run without you, the weekly check, the live site check and the pull request checks are the better loop. This one is for a task you want done while you are away from the keyboard for an hour.
 
 ## Files
 
