@@ -29,12 +29,20 @@
     "checks.yml: Links work, no errors, search works, no accessibility problems",
     "checks.yml: All checks",
     "checks.yml: Every needed check passed",
+    "dependabot-merge.yml: Dependabot merge",
+    "dependabot-merge.yml: Merge the green Dependabot pull request, then put the site live",
+    "lighthouse.yml: Lighthouse",
+    "lighthouse.yml: Score the home page, a game and the guide on a phone",
+    "lighthouse.yml: Every score is 90 or more",
+    "lighthouse.yml: lighthouse-reports",
     "pages.yml: Pages",
     "pages.yml: Build the guide",
     "pages.yml: The same safety checks as on every pull request",
     "pages.yml: Put the site together",
     "pages.yml: github-pages",
     "pages.yml: github-pages",
+    "pages.yml: Live site check",
+    "pages.yml: The live site serves what was just deployed",
     "sync.yml: Family sync server",
     "sync.yml: Not set up yet",
     "sync.yml: The server answers right",
@@ -83,5 +91,5 @@
     "844 × 390"
   ],
   "games_lists": 3,
-  "learned_at": "1dde5c4"
+  "learned_at": "6674ee4"
 }

@@ -3,6 +3,9 @@
 #
 # One-time setup by the repo owner: Settings → Pages → Build and deployment → Source: GitHub Actions.
 # Until then Pages keeps serving the main branch as before, and this workflow's deploy step fails.
+#
+# The last job opens the live site and checks that it serves this very version. If it does not within
+# ten minutes, the run goes red, so nobody has to open the site by hand after a merge.
 name: Pages
 
 on:
@@ -64,3 +67,31 @@ jobs:
     steps:
       - id: deployment
         uses: actions/deploy-pages@368f82528645a54fb793d4d04e342629a3f51346 # v5.0.1
+
+  check:
+    name: Live site check
+    needs: deploy
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - name: The live site serves what was just deployed
+        env:
+          SITE: https://amalrajvinoth.github.io/loopy
+        run: |
+          # Pages hands out the new version a little after the deploy says done, so this tries for up to
+          # ten minutes. The ?v= part makes every fetch skip any older copy a cache still holds.
+          # sw.js is the one file that changes with every release (it lists a hash per page), so when it
+          # matches, the whole site is this version. The home page and the guide must answer too.
+          for try in $(seq 1 20); do
+            if curl -fsS "$SITE/sw.js?v=$GITHUB_SHA" -o "$RUNNER_TEMP/sw.js" \
+               && cmp -s "$RUNNER_TEMP/sw.js" sw.js \
+               && curl -fsS -o /dev/null "$SITE/?v=$GITHUB_SHA" \
+               && curl -fsS -o /dev/null "$SITE/guide/?v=$GITHUB_SHA"; then
+              echo "The live site has this version: sw.js matches, the home page and the guide answer."
+              exit 0
+            fi
+            echo "Not live yet (try $try of 20). Waiting 30 seconds."
+            sleep 30
+          done
+          echo "::error::Ten minutes after the deploy the live site still serves an older version, or a page does not answer. Compare $SITE/sw.js with sw.js in this commit, and look at Settings → Pages for the last deploy."
+          exit 1

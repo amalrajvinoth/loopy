@@ -73,3 +73,18 @@ One per failure. Add new ones at the end (the heal skill step 3). Keep each to f
 - Looks like: `node tools/e2e/levels.mjs` fails, or CI "Levels follow the child: up by itself when ready, kept over the birthday".
 - Cause: a change to `Loopy.levels` (`up`, `ripe`, the `loopy.levels` record or the birthday carry), `Loopy.recent` (keeps 20), or a game's level-up card; a badge card comes first at the first 10 in a row, so the level up waits for the next right answer.
 - Fix: run the test with `CHROME=` set to the browser; fix what it names in `src/loopy.js` or `src/loopy-levels.js`, never loosen the counts. Then `python3 tools/build.py` and `node tools/e2e/play.mjs` (it taps "Yay!" on the card). (23 Oct 2026)
+
+## Live site check fails after a deploy
+- Looks like: CI "Pages" run, job "Live site check": "the live site still serves an older version, or a page does not answer".
+- Cause: Pages took longer than ten minutes (rare), the deploy job failed before it, or the guide folder is missing from the site.
+- Fix: open the Pages run; if the deploy job is green, run the workflow again (Actions → Pages → Run workflow) and the check passes once the new version is out. If it is red on the second run, compare `sw.js` on the live site with `sw.js` on `main`. (25 Oct 2026)
+
+## A Dependabot pull request did not merge by itself
+- Looks like: a green Dependabot pull request stays open; or the "Dependabot merge" run says "nothing to merge".
+- Cause: the merge job only runs for a "Checks" run that passed on a pull request from a `dependabot/` branch against `main`; a push to the branch after the run (a rebase) changes the commit, so the run no longer matches.
+- Fix: nothing to do when a newer "Checks" run is still going; it merges after that one. For a red one, fix the pull request like any other (it is not merged on purpose). After a merge by the token, the Pages deploy and the checks on `main` are started by the workflow itself. (25 Oct 2026)
+
+## Lighthouse run is red
+- Looks like: the monthly "Lighthouse" run: "N score(s) under 90", with the page and the category in the step log.
+- Cause: a page got heavier or slower (new pictures, more script before the first paint), or an accessibility rule the a11y check does not cover.
+- Fix: download the reports kept with the run and open the page's HTML report; it lists what cost the points. Size: `python3 tools/review.py` (100 KB per page). Fix in `src/`, rebuild, and run the workflow again (Actions → Lighthouse → Run workflow) after the merge. (25 Oct 2026)

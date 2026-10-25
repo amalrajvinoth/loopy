@@ -9,6 +9,8 @@ on:
   push:
     branches: [main]
   pull_request:
+  # After a Dependabot merge (dependabot-merge.yml), which GitHub does not start workflows for by itself.
+  workflow_dispatch:
 
 permissions:
   contents: read

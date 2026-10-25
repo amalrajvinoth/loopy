@@ -5,7 +5,7 @@ Two plugins, made from how the owner works on loopy. They turn the asks the owne
 | Plugin | For | What is in it |
 | --- | --- | --- |
 | `work-style` | Any repo | How the owner works: plans with numbered options, "go", fix an issue, plan a pull request fix, resolve a conflict, apply all suggestions, add a rule. Blocks Claude attribution. |
-| `loopy` | This repo | Next roadmap task, build an issue, new game, keep the docs up to date, ship a pull request with every check, mark as done, update the roadmap, heal, evolve. Guards built files and pages, rebuilds after a merge, checks before finishing. |
+| `loopy` | This repo | Next roadmap task, build an issue, new game, keep the docs up to date, ship a pull request with every check, mark as done, update the roadmap, heal, evolve, the weekly check. Guards built files and pages, rebuilds after a merge, checks before finishing. |
 
 ## What you type and what runs
 
@@ -27,6 +27,7 @@ Two plugins, made from how the owner works on loopy. They turn the asks the owne
 | "Update roadmap ticket" | `update-roadmap` | loopy |
 | "fix CI", "it's broken" | `heal` | loopy |
 | "evolve the plugin" | `evolve` | loopy |
+| "weekly check", "what needs me" (and every Monday by itself, from the project's scheduled task) | `weekly-check` | loopy |
 
 You can keep typing the way you do now. Claude picks the skill from what you write. You can also call one by name: `/next-task` in this repo, or `/loopy:next-task` where the plugin is installed.
 
