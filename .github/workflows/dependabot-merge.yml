@@ -1,0 +1,47 @@
+# Merges a Dependabot pull request by itself once every check is green, then puts the site live.
+#
+# GitHub runs this from the main branch each time a "Checks" run finishes. It merges only when that run
+# passed, was for a pull request against main, and came from Dependabot's own branch in this repo. Nothing
+# else is ever merged here. A red Dependabot pull request stays open for a person to look at.
+#
+# The merge uses the Actions token. GitHub starts no workflows for pushes made with that token, so the
+# last step starts the Pages deploy and the checks on main itself (starting a workflow is the one exception).
+name: Dependabot merge
+
+on:
+  workflow_run:
+    workflows: [Checks]
+    types: [completed]
+
+permissions:
+  contents: write
+  pull-requests: write
+  actions: write
+
+jobs:
+  merge:
+    if: >-
+      github.event.workflow_run.conclusion == 'success' &&
+      github.event.workflow_run.event == 'pull_request' &&
+      github.event.workflow_run.actor.login == 'dependabot[bot]' &&
+      github.event.workflow_run.head_repository.full_name == github.repository &&
+      startsWith(github.event.workflow_run.head_branch, 'dependabot/')
+    runs-on: ubuntu-latest
+    steps:
+      - name: Merge the green Dependabot pull request, then put the site live
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          BRANCH: ${{ github.event.workflow_run.head_branch }}
+          SHA: ${{ github.event.workflow_run.head_sha }}
+        run: |
+          # The open pull request from this branch, at the very commit the checks passed on.
+          pr=$(gh api "repos/$GITHUB_REPOSITORY/pulls?state=open&base=main&head=${GITHUB_REPOSITORY%%/*}:$BRANCH" \
+                 --jq ".[] | select(.head.sha == \"$SHA\" and .user.login == \"dependabot[bot]\") | .number")
+          if [ -z "$pr" ]; then
+            echo "No open Dependabot pull request at this commit on $BRANCH, so there is nothing to merge."
+            exit 0
+          fi
+          gh pr merge "$pr" --repo "$GITHUB_REPOSITORY" --merge --delete-branch
+          echo "Merged #$pr. Starting the Pages deploy and the checks on main."
+          gh workflow run pages.yml --repo "$GITHUB_REPOSITORY" --ref main
+          gh workflow run checks.yml --repo "$GITHUB_REPOSITORY" --ref main
