@@ -131,6 +131,7 @@ The site is plain HTML, CSS and JavaScript. One small build step makes the share
 | `.github/workflows/lighthouse.yml` | Once a month, scores the live site on a phone (home page, a game, the guide) and goes red under 90. The reports are kept with the run |
 | `.github/workflows/sync.yml` | Puts the Family sync server live on Cloudflare, once the owner has added the Cloudflare secrets ([how](sync/README.md)) |
 | `.claude/skills/loopy-review/` | The review checklist for every change: design, architecture, saved data, speed and size, docs, games alike, and release notes after a merge |
+| `tools/ralph/` | The Ralph loop: a script for your Mac that runs Claude Code again and again on one task, on its own branch, with caps and checks, until it is done ([how](tools/ralph/README.md)) |
 | `.claude/loop.md` | What a bare `/loop` does at a terminal. It tends the current pull request: merge main, run the checks, fix red CI and review comments. It stops when all is green |
 | `.claude/skills/loopy-docs/` | Which docs a change touches (guide in English and German, FAQ, Help page, READMEs, RELEASES.md) and how to write them in plain English |
 | `plugins/` | Claude Code plugins made from how the owner works: commands for the usual asks, hooks that keep the rules, self-healing checks, and a drift check that keeps them up to date ([how](plugins/README.md)). `python3 plugins/sync.py` copies them into `.claude/`, so every session in this repo has them |

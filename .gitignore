@@ -4,3 +4,5 @@ tools/a11y/node_modules/
 guide-src/node_modules/
 guide-src/dist/
 guide-src/.astro/
+# The Ralph loop keeps its task, progress and logs here (see tools/ralph/README.md).
+.ralph/

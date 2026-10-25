@@ -60,6 +60,7 @@ Evolve never loosens a rule, check or hook by itself. That needs your word.
 ## Where it runs
 
 - **Cloud threads and anyone working in this repo:** nothing to install. Claude Code on the web does not install plugins from a repo's settings, so `python3 plugins/sync.py` copies the skills and agents into `.claude/skills` and `.claude/agents`, and the hooks into `.claude/settings.json`. These load in every session in this repo.
+- **A task while you are away from the keyboard:** `tools/ralph/ralph.sh "<task>"` runs Claude Code on it again and again on its own branch, with these skills and hooks, until it is done ([how](../tools/ralph/README.md)).
 - **Your own computer, or another repo:** in Claude Code run
   ```
   /plugin marketplace add amalrajvinoth/loopy
