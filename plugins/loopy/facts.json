@@ -60,6 +60,8 @@
     "tools/e2e/retry.mjs",
     "tools/e2e/sync.mjs",
     "tools/guide_check.py",
+    "tools/ralph/issue.py",
+    "tools/ralph/status.py",
     "tools/review.py"
   ],
   "repo_skills": [
@@ -91,5 +93,5 @@
     "844 × 390"
   ],
   "games_lists": 3,
-  "learned_at": "6674ee4"
+  "learned_at": "85a89f7"
 }
