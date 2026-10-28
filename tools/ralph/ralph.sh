@@ -46,6 +46,9 @@ command -v python3 >/dev/null || { echo "python3 is needed (the loopy tools use 
 if [ -n "$ISSUE" ]; then
   : "${NAME:=issue-$ISSUE}"
 elif [ -n "$TASK_FILE" ]; then
+  [ -f "$TASK_FILE" ] || { echo "No task file at $TASK_FILE."; exit 1; }
+  # Absolute, because the loop changes into the worktree before it copies the file.
+  TASK_FILE="$(cd "$(dirname "$TASK_FILE")" && pwd)/$(basename "$TASK_FILE")"
   : "${NAME:=$(basename "$TASK_FILE" .md)}"
 elif [ -n "$TASK_TEXT" ]; then
   : "${NAME:=$(printf '%s' "$TASK_TEXT" | tr -cs 'A-Za-z0-9' '-' | tr 'A-Z' 'a-z' | cut -c1-40 | sed 's/^-//; s/-$//')}"
