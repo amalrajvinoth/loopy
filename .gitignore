@@ -6,3 +6,6 @@ guide-src/dist/
 guide-src/.astro/
 # The Ralph loop keeps its task, progress and logs here (see tools/ralph/README.md).
 .ralph/
+# Python leaves compiled files next to the tools and hooks when they run.
+__pycache__/
+*.pyc
