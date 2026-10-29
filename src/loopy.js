@@ -194,6 +194,13 @@ document.documentElement.classList.add("loopy-building");
   function copy(k) { return { id: k.id, name: k.name, pic: k.pic }; }
   // Switching child reloads the page, so every part reads the new child's things from the start.
   function use(id) { if (!find(id)) return; data.on = id; save(); location.reload(); }
+  function create(name, pic) {
+    if (data.list.length >= MAX) return null;
+    var id = data.next++;
+    data.list.push({ id: id, name: cleanName(name), pic: PICS.indexOf(pic) !== -1 ? pic : PICS[0] });
+    save();
+    return id;
+  }
 
   Loopy.kids = {
     PICS: PICS, MAX: MAX, cleanName: cleanName,
@@ -210,18 +217,12 @@ document.documentElement.classList.add("loopy-building");
     // The localStorage key that holds key for child id (used by Loopy.backup).
     key: function (id, k) { return pre(id) + k; },
     // Adds a child without switching to them, and returns their id, or null when there are 6 already.
-    create: function (name, pic) {
-      if (data.list.length >= MAX) return null;
-      var id = data.next++;
-      data.list.push({ id: id, name: cleanName(name), pic: PICS.indexOf(pic) !== -1 ? pic : PICS[0] });
-      save();
-      return id;
-    },
-    // age: the new child's age; saved as years from the default age, like the age picker does.
+    create: create,
+    // Adds a child and switches to them. age: the new child's age; saved as years from the default age,
+    // like the age picker does.
     add: function (name, pic, age) {
-      if (data.list.length >= MAX) return;
-      var id = data.next++;
-      data.list.push({ id: id, name: cleanName(name), pic: PICS.indexOf(pic) !== -1 ? pic : PICS[0] });
+      var id = create(name, pic);
+      if (id === null) return;
       if (typeof age === "number" && Loopy.defaultAge) {
         try { localStorage.setItem(pre(id) + "loopy.ageOffset", String(Math.round(age) - Loopy.defaultAge())); } catch (e) {}
       }
@@ -550,10 +551,12 @@ document.documentElement.classList.add("loopy-building");
     });
     return parts[name];
   };
+  // A saved folder when v is one (like "math/make-10"), else "".
+  function cleanLast(v) { return typeof v === "string" && PATH.test(v) ? v : ""; }
   Loopy.last = {
     // The folder of the child's last game, or "" when there is none (or the saved text is not a folder).
-    get: function () { var v = Loopy.store.get(KEY); return typeof v === "string" && PATH.test(v) ? v : ""; },
-    clean: function (v) { return typeof v === "string" && PATH.test(v) ? v : ""; }
+    get: function () { return cleanLast(Loopy.store.get(KEY)); },
+    clean: cleanLast
   };
   function mark() {
     // A game opened in a hidden frame (the grown-ups' practice sheet) is not where the child left off.
@@ -689,8 +692,7 @@ document.documentElement.classList.add("loopy-building");
     return clamp(a);
   }
   // A changed age is saved as years above or below the default, so it still goes up each birthday.
-  var offset = 0;
-  offset = parseInt(window.Loopy.store.get(KEY), 10) || 0;
+  var offset = parseInt(window.Loopy.store.get(KEY), 10) || 0;
   var age = clamp(defaultAge() + offset);
 
   var Loopy = window.Loopy = window.Loopy || {};
