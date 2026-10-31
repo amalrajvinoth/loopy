@@ -60,6 +60,10 @@ Tap the speaker button. In a game, it is inside ⚙ Settings.
 
 Wrong answers come back, until each one is answered right twice. See [Try again](/loopy/guide/playing/try-again/).
 
+## Does Word Detective accept made-up words?
+
+Yes. Any letters count as a try, so a child can try sounds. The tiles show which letters are in the word, and three clues help. See [Word Detective](/loopy/guide/games/languages/word-detective/).
+
 ## How do I see how my child is doing?
 
 Tap the **Grown-ups** button at the bottom of the home page. To print the week, tap **Print** next to **Share this week**. See [The grown-ups page](/loopy/guide/grown-ups/grown-ups-page/).

@@ -1,0 +1,70 @@
+---
+title: Wortdetektiv
+description: Rate das Rätselwort in sechs Versuchen, wie ein Wortdetektiv. Grüne und gelbe Kästchen, lustige Hinweise und eine Akte mit fünf Wörtern. Für 6 bis 14 Jahre.
+sidebar:
+  order: 6
+---
+import KidsBox from "~/components/KidsBox.astro";
+
+<KidsBox game="languages/word-detective" steps={[
+  "Tippe ein Wort und dann auf Prüfen.",
+  "Grün ist richtig. Gelb ist im Wort.",
+  "Kommst du nicht weiter? Tippe auf Hinweis.",
+]} />
+
+Ein Wortdetektiv-Spiel für 6 bis 14 Jahre, wie Wordle für Kinder. Du tippst ein Wort und dann auf **Prüfen**. Die Kästchen zeigen, welche Buchstaben passen. Sechs Versuche pro Wort. Lustige Hinweise helfen bei schweren Wörtern. Nach fünf Wörtern wird die Akte geschlossen und du bekommst einen Rang. Die Wörter gibt es auf Deutsch oder Englisch.
+
+## So wird gespielt
+
+1. Tippe die Buchstaben für ein Wort. Es braucht die richtige Anzahl Buchstaben. Tippe auf **Prüfen**.
+2. Schau dir die Kästchen an. **Grün**: richtiger Buchstabe, richtige Stelle. **Gelb**: der Buchstabe ist im Wort, aber woanders. **Grau**: nicht im Wort. Die Tasten färben sich genauso.
+3. Probiere es nochmal mit dem, was du gelernt hast. Du hast sechs Versuche. Jede Buchstabenfolge zählt als Versuch.
+4. Kommst du nicht weiter? Tippe auf **🔎 Hinweis**. Es gibt drei: ein Bild mit der Bedeutung, einen lustigen Satz mit Lücke und den ersten Buchstaben.
+5. Gefunden? **Fall gelöst!** Die Karte zeigt das Wort, die Bedeutung und den lustigen Satz. Du bekommst einen Stern.
+6. Tippe auf **Nächster Fall**. Nach fünf Fällen wird die Akte geschlossen: deine Wörter, deine Sterne und dein Rang. **Neue Akte** startet die nächsten fünf.
+
+Ränge: **Superdetektiv** für alle 5 in höchstens 3 Versuchen, **Detektiv** für alle 5 gelöst, **Neuling** für den Rest. Die Ränge sind zum Spaß und werden nicht gespeichert.
+
+Auf einer Tastatur tippst du die Buchstaben, **Rücktaste** löscht und **Enter** prüft und geht weiter.
+
+## Wenn ein Wort nicht gefunden wird
+
+Nach sechs Versuchen zeigt die Karte das Wort trotzdem, mit Bedeutung und Satz. Kein Stern. Das Wort kommt später bei **Nochmal versuchen** zurück.
+
+## Altersstufen
+
+| Stufe | Alter | Wörter |
+| --- | --- | --- |
+| 1 | bis 6 | 3 Buchstaben, wie „Hut“. Der erste Hinweis ist von Anfang an offen |
+| 2 | 7 bis 8 | 4 Buchstaben, wie „Hund“. Der erste Hinweis ist von Anfang an offen |
+| 3 | 9 bis 10 | 5 Buchstaben, wie „Katze“. Kein Hinweis, bis du fragst |
+| 4 | 11 bis 12 | 5 schwerere Buchstaben, wie „Sturm“ |
+| 5 | ab 13 | 6 Buchstaben, wie „Kobold“ |
+
+Nach 10 richtigen hintereinander oder 18 von den letzten 20 geht das Spiel von selbst eine Stufe hoch. Nach 3 falschen von den letzten 5 bietet es eine leichtere an. Siehe [Stufen](/loopy/guide/de/playing/levels/).
+
+## Einstellungen
+
+Tippe im Spiel auf ⚙ **Einstellungen** und wähle:
+
+- **Wörter auf:** Deutsch oder Englisch. Die Tastatur passt sich an: QWERTZ mit ä, ö und ü für Deutsch, QWERTY für Englisch.
+- **Stufe:** **3 Buchstaben**, **4 Buchstaben**, **5 Buchstaben**, **5, knifflig** oder **6 Buchstaben**.
+- **Vorlesen:** ein Lautsprecher-Knopf auf der Karte liest die offenen Hinweise vor, und nach dem Fall das Wort mit seinem Satz. Bis 7 Jahre ist es von selbst an.
+- **Arbeitsblatt drucken:** 20 Hinweise mit einem Kästchen für jeden Buchstaben. Die Lösungen stehen auf Seite 2.
+
+## Tipps für Erwachsene
+
+- Fangt mit einem Wort voller häufiger Buchstaben an, wie „Reise“ oder „Laden“. Dann nutzt die grünen und gelben Kästchen.
+- Lest den lustigen Satz zusammen laut vor. Das fehlende Wort hört man oft schon.
+- Ein Kind, das „zzzz“ rät, spielt trotzdem. Sagt, welche Buchstaben noch übrig sind, und probiert zuerst einen Vokal.
+- 120 Wörter pro Sprache, 24 auf jeder Stufe. Die deutsche Liste hat ihre eigenen Witze.
+
+## Beispiele für die Hilfetexte
+
+- „Rate das Wort mit 5 Buchstaben in 6 Versuchen.“
+- „Fall gelöst. Pizza. Rund und flach, mit Käse obendrauf. Gelöst in 2 Versuchen.“
+- „Diesmal nicht. Das Wort war „Kobold“.“
+
+## Etwas stimmt nicht?
+
+Tippe oben im Spiel auf die 🚩 Flagge und sag es uns. Siehe [Ein Problem melden](/loopy/guide/de/help/report-a-problem/).

@@ -8,6 +8,10 @@ loopy bekommt immer wieder neue Spiele. Das ist zuletzt dazugekommen!
 
 Die großen Änderungen, die neuesten zuerst. Kleine Korrekturen stehen nicht dabei. Die [ganze Liste steht auf GitHub](https://github.com/amalrajvinoth/loopy/blob/main/RELEASES.md) (auf Englisch).
 
+## 31. Oktober 2026
+
+- **Neues Spiel für 6 bis 14 Jahre: Wortdetektiv.** Rate das Rätselwort in sechs Versuchen, wie ein Wortdetektiv. Grüne und gelbe Kästchen zeigen, welche Buchstaben passen, lustige Hinweise helfen, und nach fünf Wörtern wird die Akte mit einem Rang geschlossen. Von 3 Buchstaben bis 6, auf Deutsch oder Englisch. Siehe [Wortdetektiv](/loopy/guide/de/games/languages/word-detective/).
+
 ## 24. Oktober 2026
 
 - **Neues Spiel für 7 bis 14 Jahre: Formen und Winkel.** Formen benennen und Ecken zählen, rechte Winkel und Symmetrieachsen finden, Umfang und Fläche auf Kästchenpapier berechnen, Winkel schätzen und Dreiecke sortieren. Fünf Stufen, nach jeder Antwort ein Satz zum Warum. Siehe [Formen und Winkel](/loopy/guide/de/games/math/shapes-angles/).

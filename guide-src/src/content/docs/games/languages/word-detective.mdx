@@ -1,0 +1,70 @@
+---
+title: Word Detective
+description: Guess the mystery word in six tries, like a word detective. Green and yellow tiles, funny clues and a case file of five words. For ages 6 to 14.
+sidebar:
+  order: 6
+---
+import KidsBox from "~/components/KidsBox.astro";
+
+<KidsBox game="languages/word-detective" steps={[
+  "Type a word and tap Check.",
+  "Green is right. Yellow is in the word.",
+  "Stuck? Tap Clue. Then try again.",
+]} />
+
+A word detective game for ages 6 to 14, like Wordle for kids. The child types a word and taps **Check**. The tiles show which letters fit. Six tries per word. Funny clues help when a word is hard. Every five words close a case file with a rank. The words can be English or German.
+
+## How to play
+
+1. Tap the letters to type a word. It needs the right number of letters. Tap **Check**.
+2. Look at the tiles. **Green**: right letter, right place. **Yellow**: the letter is in the word, somewhere else. **Grey**: not in the word. The keyboard keys turn the same colours.
+3. Try again with what you learned. You have six tries. Any letters count as a try.
+4. Stuck? Tap **🔎 Clue**. There are three: a picture with what the word means, a silly sentence with the word missing, and the first letter.
+5. Found it? **Case closed!** The card shows the word, what it means and the silly sentence. You earn a star.
+6. Tap **Next case**. After five cases the case file closes with your words, your stars and a rank. **New case file** starts the next five.
+
+Ranks: **Super Sleuth** for all 5 solved in 3 tries or fewer, **Detective** for all 5 solved, **Rookie** for the rest. They are for fun and are not saved.
+
+On a keyboard, type the letters, **Backspace** erases and **Enter** checks and goes on.
+
+## When a word is not found
+
+After six tries the card shows the word anyway, with its meaning and sentence. No star. The word comes back later in **Try again**.
+
+## Age levels
+
+| Level | Age | Words |
+| --- | --- | --- |
+| 1 | 6 and under | 3 letters, like "cat". The first clue is open from the start |
+| 2 | 7 to 8 | 4 letters, like "frog". The first clue is open from the start |
+| 3 | 9 to 10 | 5 letters, like "pizza". No clue until you ask |
+| 4 | 11 to 12 | 5 harder letters, like "timid" |
+| 5 | 13 and up | 6 letters, like "giggle" |
+
+After 10 right in a row, or 18 of the last 20 right, the game goes up a level by itself. After 3 wrong in the last 5 it offers an easier one. See [Levels](/loopy/guide/playing/levels/).
+
+## Settings
+
+Tap ⚙ **Settings** in the game to choose:
+
+- **Words in:** English or German. The keyboard follows: QWERTY for English, QWERTZ with ä, ö and ü for German.
+- **Level:** **3 letters**, **4 letters**, **5 letters**, **5, tricky** or **6 letters**.
+- **Read aloud:** a speaker button on the card reads the open clues, and the word with its sentence once the case is closed. It is on by itself for ages 7 and under.
+- **Print worksheet:** 20 clues with a box for every letter. The answers are on page 2.
+
+## Tips for grown-ups
+
+- Start with a word full of common letters, like "stone" or "raise". Then use the green and yellow tiles.
+- Read the silly sentence out loud together. The missing word is often easy to hear.
+- A child who guesses "zzzz" is still playing. Say which letters are left and try a vowel first.
+- 120 words per language, 24 at each level. The German list has its own jokes.
+
+## Example help text
+
+- "Guess the 5-letter word in 6 tries."
+- "Case closed. pizza. A round, flat food with cheese on top. Solved in 2 tries."
+- "Not this time. The word was “giggle”."
+
+## Something wrong?
+
+Tap the 🚩 flag at the top of the game to tell us. See [Report a problem](/loopy/guide/help/report-a-problem/).

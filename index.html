@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'sha256-bZyecQrSfaISnipDnsV87wQgtcSlxgeFFYuale8cVs4='; style-src 'self' 'sha256-dJItlcMQd9O+m7VeTwF6qvXLEzV/DncJGRpqHNv0MJg='; img-src 'self' data:; font-src 'self'; connect-src 'self' https://loopy-sync.loopy-1e2.workers.dev; worker-src 'self'; object-src 'none'; base-uri 'none'; form-action 'none'; manifest-src 'self'; upgrade-insecure-requests">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'sha256-ZcLh8uXqff6eB897F2rBYh6B8Xj9A/BDdrv0dU1/hOw='; style-src 'self' 'sha256-dJItlcMQd9O+m7VeTwF6qvXLEzV/DncJGRpqHNv0MJg='; img-src 'self' data:; font-src 'self'; connect-src 'self' https://loopy-sync.loopy-1e2.workers.dev; worker-src 'self'; object-src 'none'; base-uri 'none'; form-action 'none'; manifest-src 'self'; upgrade-insecure-requests">
 <meta name="referrer" content="strict-origin-when-cross-origin">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <link rel="icon" href="icon.svg" type="image/svg+xml">
@@ -247,6 +247,7 @@ Loopy.addStrings({
     siTitle: "Spell It", siTag: "Spelling", siText: "Hear a word and spell it with a letter pad. Starts with 3-letter words and grows to long ones. English or German.",
     sbTitle: "Sentence Builder", sbTag: "Word order", sbText: "Tap the words in the right order to build a sentence. From 3 words up to 8, with questions and commas. English or German.",
     sqTitle: "Spelling Quiz", sqTag: "Pick the right spelling", sqText: "Which one is spelled right? Grown-ups can add the week's spelling words. English or German.",
+    wdTitle: "Word Detective", wdTag: "Guess the mystery word", wdText: "Be a word detective: guess the word in six tries. Green and yellow tiles show which letters fit, funny clues help. Five words close a case file. English or German.",
     qfTitle: "Quick Facts", qfTag: "Science quiz", qfText: "Short picture quizzes about space, animals and your body, with one line of why after each answer.",
     soTitle: "Sort It", soTag: "Sorting things", soText: "See a thing and pick its group: mammal or bird, solid or liquid, fruit or vegetable, planet or star, with one line of why.",
     ebTitle: "Equation Balance", ebTag: "First steps in algebra", ebText: "Find x so the see-saw is level. Starts with a missing number and grows to x on both sides.",
@@ -296,6 +297,7 @@ Loopy.addStrings({
     wmTitle: "Bild und Wort", wmTag: "Wörter und Bilder", wmText: "Sieh ein Bild und wähle das passende Wort. 100 Wörter zu Tieren, Essen, Zuhause und Schule, auf Deutsch oder Englisch.",
     sbTitle: "Satzbau", sbTag: "Wortstellung", sbText: "Tippe die Wörter in der richtigen Reihenfolge an und baue einen Satz. Von 3 Wörtern bis 8, mit Fragen und Kommas. Deutsch oder Englisch.",
     sqTitle: "Rechtschreib-Quiz", sqTag: "Richtig geschrieben?", sqText: "Welches Wort ist richtig geschrieben? Eltern können die Übungswörter der Woche eintragen. Deutsch oder Englisch.",
+    wdTitle: "Wortdetektiv", wdTag: "Rate das Rätselwort", wdText: "Sei Wortdetektiv: Rate das Wort in sechs Versuchen. Grüne und gelbe Kästchen zeigen, welche Buchstaben passen, lustige Hinweise helfen. Fünf Wörter schließen eine Akte. Deutsch oder Englisch.",
     siTitle: "Wörter schreiben", siTag: "Rechtschreibung", siText: "Hör ein Wort und schreibe es mit den Buchstaben. Erst Wörter mit 3 Buchstaben, dann längere. Deutsch oder Englisch.",
     qfTitle: "Blitzwissen", qfTag: "Wissens-Quiz", qfText: "Kurze Bilder-Quizze über das Weltall, Tiere und deinen Körper, mit einem Satz zum Warum nach jeder Antwort.",
     soTitle: "Sortieren", soTag: "Dinge sortieren", soText: "Sieh ein Ding und wähle seine Gruppe: Säugetier oder Vogel, fest oder flüssig, Obst oder Gemüse, Planet oder Stern, mit einem Satz zum Warum.",
@@ -328,6 +330,7 @@ const GAMES = [
   { subject: "languages", path: "languages/spell-it/", id: "si", pic: "✏️", ages: [6, 10] },
   { subject: "languages", path: "languages/sentence-builder/", id: "sb", pic: "🧩", ages: [6, 12] },
   { subject: "languages", path: "languages/spelling-quiz/", id: "sq", pic: "🐝", ages: [6, 12] },
+  { subject: "languages", path: "languages/word-detective/", id: "wd", pic: "🕵️", ages: [6, 14] },
   { subject: "science", path: "science/quick-facts/", id: "qf", pic: "🔬", ages: [7, 12] },
   { subject: "science", path: "science/sort-it/", id: "so", pic: "🗂️", ages: [6, 12] },
   { subject: "geography", path: "geography/where-is-it/", id: "wi", pic: "🗺️", ages: [7, 14] },

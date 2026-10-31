@@ -60,6 +60,10 @@ Tippe auf den Lautsprecher-Knopf. In einem Spiel ist er in den ⚙ Einstellungen
 
 Falsche Antworten kommen wieder, bis jede zweimal richtig beantwortet wurde. Mehr unter [Nochmal versuchen](/loopy/guide/de/playing/try-again/).
 
+## Nimmt der Wortdetektiv auch erfundene Wörter an?
+
+Ja. Jede Buchstabenfolge zählt als Versuch, damit ein Kind Laute ausprobieren kann. Die Kästchen zeigen, welche Buchstaben im Wort sind, und drei Hinweise helfen. Siehe [Wortdetektiv](/loopy/guide/de/games/languages/word-detective/).
+
 ## Wie sehe ich, wie es meinem Kind geht?
 
 Tippe unten auf der Startseite auf den Knopf **Erwachsene**. Um die Woche zu drucken, tippe auf **Drucken** neben **Diese Woche teilen**. Mehr unter [Die Seite für Erwachsene](/loopy/guide/de/grown-ups/grown-ups-page/).

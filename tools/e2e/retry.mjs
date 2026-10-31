@@ -113,6 +113,9 @@ async function next(p, n) {
     const b = p.locator(id);
     if (await b.count() && await b.isVisible() && await b.isEnabled()) { await b.click(); break; }
   }
+  // A round of several questions ends with a summary (Word Detective's case file): Next once more goes on.
+  try { await p.waitForFunction(k => window.__questions.length > k, n, { timeout: 1500 }); }
+  catch (e) { const b = p.locator("#next"); if (await b.count() && await b.isVisible() && await b.isEnabled()) await b.click(); }
   await p.waitForFunction(k => window.__questions.length > k, n, { timeout: 5000 });
 }
 
@@ -126,6 +129,17 @@ async function answerWrong(p) {
       const any = p.locator("#words button:enabled");
       for (let i = 0; i < 12 && await go.isDisabled() && await any.count(); i++) await any.first().click();
       if (await go.isEnabled()) await go.click();
+    }
+    return;
+  }
+  // A word guessed in several tries: a letter that is not in the word, in every box, until the tries run out.
+  if (await p.locator('[data-tries="on"]').count()) {
+    for (let i = 0; i < 6 && await p.locator('[data-tries="on"]').count(); i++) {
+      const a = await p.locator('[data-tries="on"]').first().getAttribute("data-a");
+      const keys = await p.locator("button[data-k]").evaluateAll(list => list.map(b => b.dataset.k));
+      const k = keys.find(c => !a.includes(c));
+      for (let j = 0; j < a.length; j++) await p.click(`[data-k="${k}"]`);
+      await p.click("#k-go");
     }
     return;
   }
@@ -167,6 +181,11 @@ async function answerRight(p, row) {
       for (let i = 0; i < 12 && await go.isDisabled() && await right.count(); i++) await right.first().click();
       await go.click();
     }
+    return true;
+  }
+  if (await p.locator('[data-tries="on"]').count()) {
+    for (const ch of row.a.toLowerCase()) await p.click(`[data-k="${ch}"]`);
+    await p.click("#k-go");
     return true;
   }
   if (await p.locator("#pad").count()) {
