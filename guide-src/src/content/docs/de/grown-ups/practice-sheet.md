@@ -28,7 +28,7 @@ Manche Browser können keine Bilder teilen. Dann heißt der Knopf **Bild speiche
 2. Warte kurz, solange "Blatt wird gemacht…" steht.
 3. Das Drucken-Fenster öffnet sich. Druck es aus oder speichere es als PDF.
 
-Das Blatt hat 20 Aufgaben der Arten, die am häufigsten falsch waren: 7 + 7 + 6 bei drei Arten, 10 + 10 bei zwei oder 20 bei einer. Die Lösungen stehen auf Seite 2. Die Aufgaben kommen aus den Spielen selbst. Eine Einmaleins-Reihe kommt aus dem Einmaleins-Sprint. Klappt das Blatt nicht, druck stattdessen das Arbeitsblatt eines Spiels.
+Das Blatt hat 20 Aufgaben der Arten, die am häufigsten falsch waren. Das sind 7 + 7 + 6 bei drei Arten, 10 + 10 bei zwei oder 20 bei einer. Die Kästchen stehen in drei Spalten, so hat jede Art Platz. Arten, die mehr Platz brauchen, wie Uhren oder Zeichnungen, gehen auf eine zweite Seite weiter. Die Lösungen stehen auf der letzten Seite. Die Aufgaben kommen aus den Spielen selbst. Eine Einmaleins-Reihe kommt aus dem Einmaleins-Sprint. Klappt das Blatt nicht, druck stattdessen das Arbeitsblatt eines Spiels.
 
 ## Das Arbeitsblatt eines Spiels
 

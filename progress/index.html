@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'sha256-ptGXl5lYemSJig3hpNZcodDoLhMYXgo6z/djaWqGwOo='; style-src 'self' 'sha256-GbThM+eKi1EIFGjr+9TLxiv1qkZ9EA3Qts06vHcq28U='; img-src 'self' data:; font-src 'self'; connect-src 'self' https://loopy-sync.loopy-1e2.workers.dev; worker-src 'self'; object-src 'none'; base-uri 'none'; form-action 'none'; manifest-src 'self'; upgrade-insecure-requests">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'sha256-0NTkwk5dBW6Cgamsv3QIxPokbnK56/p22zivmKSF7oM='; style-src 'self' 'sha256-nWqdGrMdpRcORNSlGKR3C0sTK54B8rLI3QYhmNyxjvU='; img-src 'self' data:; font-src 'self'; connect-src 'self' https://loopy-sync.loopy-1e2.workers.dev; worker-src 'self'; object-src 'none'; base-uri 'none'; form-action 'none'; manifest-src 'self'; upgrade-insecure-requests">
 <meta name="referrer" content="strict-origin-when-cross-origin">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <link rel="icon" href="../icon.svg" type="image/svg+xml">
@@ -156,7 +156,8 @@ section[hidden] { display: none; }
   html:root, html:root[data-theme] { --bg: #fff; --card: #fff; --ink: #000; --muted: #444; --line: #999; --chip: #fff; }
   html, body { background: #fff !important; color: #000; }
   .print-head { display: block; }
-  .bar, .settings-panel, #kid-picker, .week-foot, .sheet-row, .wrap .btn, .wrap button { display: none !important; }
+  /* .wrap .bar, not .bar: a chart's bars on the practice sheet carry that class too (Graphs and Data). */
+  .wrap .bar, .settings-panel, #kid-picker, .week-foot, .sheet-row, .wrap .btn, .wrap button { display: none !important; }
   section, .game { box-shadow: none; break-inside: avoid; }
   html.week-print body > :not(main), html.week-print .wrap > :not(.week) { display: none !important; }
   html.week-print, html.week-print body { background: #fff !important; }
@@ -274,6 +275,9 @@ Loopy.addStrings({
     "nm-wi-cont": "Continents and oceans", "nm-wi-eu": "Countries of Europe", "nm-wi-euc": "Capitals of Europe", "nm-wi-wd": "Countries of the world", "nm-wi-wdc": "Capitals of the world",
     "nm-eb-box": "Missing numbers", "nm-eb-add": "x + a = b", "nm-eb-mul": "3x = 12", "nm-eb-two": "3x + 4 = 19", "nm-eb-both": "x on both sides",
     "nm-fc-flag": "Flags", "nm-fc-cap": "Capitals",
+    "nm-pr-frac": "Half, quarter and tenth percents", "nm-pr-any": "Any percent", "nm-pr-disc": "Discounts and price rises", "nm-pr-ratio": "Ratios",
+    "nm-gd-read": "Reading charts", "nm-gd-total": "Chart totals", "nm-gd-diff": "How many more", "nm-gd-mean": "The mean", "nm-gd-median": "The median", "nm-gd-cmp": "Comparing charts",
+    "nm-bm-small": "Splitting a number", "nm-bm-one": "Tens times ones", "nm-bm-three": "Three-digit times one-digit", "nm-bm-two": "Two-digit times two-digit", "nm-bm-big": "Big box grids", "nm-bm-dec": "Decimals in boxes",
     prShare: "Share this week", prWeekTitle: "{name}'s week at loopy", prWeekTitleNo: "This week at loopy", prWeekDates: "{a} to {b}",
     prStatAnswers: "answers", prStatRight: "right", prStatRightUp: "right, up from {p}%", prStatRightDown: "right, down from {p}%", prStatDays: "days played", prStatStars: "stars",
     prGoingWell: "Going well", prToPractise: "To practise", prAllRight: "{game}: every answer right.", prMostRight: "{game}: {r} of {n} right.",
@@ -281,7 +285,7 @@ Loopy.addStrings({
     prSharePic: "Share picture", prSavePic: "Save picture", prPrint: "Print", prMaking: "Making the picture…", prNoPic: "This browser cannot make the picture. Print instead.", prPickPrint: "In the menu, pick Print.", prAppPrint: "If no print menu opened: open loopy in Safari to print. The app on the home screen cannot print on iPhone.", prShared: "Shared.", prSaved: "Saved to your pictures or downloads.",
     prBrand: "Learn. Play. Repeat.",
     prSheet: "Print a practice sheet", prSheetMaking: "Making the sheet…", prSheetGo: "Print the sheet", prSheetReady: "The sheet is ready. Tap Print the sheet.", prSheetFail: "The sheet could not be made. Open a game and print its worksheet from Settings instead.",
-    prSheetTitle: "Practice sheet", prSheetTitleKid: "Practice sheet for {name}", prSheetHow: "20 problems of the kinds missed most. Answers on page 2.",
+    prSheetTitle: "Practice sheet", prSheetTitleKid: "Practice sheet for {name}", prSheetHow: "20 problems of the kinds missed most. Answers on the last page.",
     prStars: "⭐ {n} stars", prDays: "🔥 {n} days in a row", prDay: "🔥 1 day in a row", prBadge: "🏅 {name}", prBest: "🏆 Best streak: {n}", prGameBest: "Best streak: {n} in a row", prPlay: "Play →",
     gPlusMinus: "Plus and Minus", gTimesShare: "Times and Share", gTimesSprint: "Times Tables Sprint", gClock: "What Time Is It?", gSoundSpell: "Sound Spell", gDailyMix: "Today's 10", gMake10: "Make 10", gBiggerSmaller: "Bigger or Smaller", gPizza: "Pizza Fractions", gCoinsChange: "Coins and Change", gWordMatch: "Word Match", gSpellIt: "Spell It", gSentence: "Sentence Builder", gQuickFacts: "Quick Facts", gSortIt: "Sort It", gGraphs: "Graphs and Data", gBox: "Box Multiplication", gWhereIsIt: "Where Is It?", gFlags: "Flags and Capitals", gEquation: "Equation Balance", gPercent: "Percent and Ratio", gStep: "Step by Step", gShapes: "Shapes and Angles", gSpellQuiz: "Spelling Quiz", gWordDetective: "Word Detective",
     tipNone: "Not played this week. A few minutes a day helps.", tipAll: "All right this week. Try a harder level in Settings.",
@@ -395,6 +399,9 @@ Loopy.addStrings({
     "nm-wi-cont": "Kontinente und Ozeane", "nm-wi-eu": "Länder Europas", "nm-wi-euc": "Hauptstädte Europas", "nm-wi-wd": "Länder der Welt", "nm-wi-wdc": "Hauptstädte der Welt",
     "nm-eb-box": "Fehlende Zahlen", "nm-eb-add": "x + a = b", "nm-eb-mul": "3x = 12", "nm-eb-two": "3x + 4 = 19", "nm-eb-both": "x auf beiden Seiten",
     "nm-fc-flag": "Flaggen", "nm-fc-cap": "Hauptstädte",
+    "nm-pr-frac": "Hälfte, Viertel und Zehntel in Prozent", "nm-pr-any": "Beliebige Prozente", "nm-pr-disc": "Rabatte und Preiserhöhungen", "nm-pr-ratio": "Verhältnisse",
+    "nm-gd-read": "Diagramme lesen", "nm-gd-total": "Summen im Diagramm", "nm-gd-diff": "Wie viel mehr", "nm-gd-mean": "Der Mittelwert", "nm-gd-median": "Der Median", "nm-gd-cmp": "Diagramme vergleichen",
+    "nm-bm-small": "Eine Zahl zerlegen", "nm-bm-one": "Zehner mal Einer", "nm-bm-three": "Dreistellig mal einstellig", "nm-bm-two": "Zweistellig mal zweistellig", "nm-bm-big": "Große Malkreuze", "nm-bm-dec": "Kommazahlen im Malkreuz",
     prShare: "Diese Woche teilen", prWeekTitle: "{name}s Woche bei loopy", prWeekTitleNo: "Diese Woche bei loopy", prWeekDates: "{a} bis {b}",
     prStatAnswers: "Antworten", prStatRight: "richtig", prStatRightUp: "richtig, vorher {p}%", prStatRightDown: "richtig, vorher {p}%", prStatDays: "Tage gespielt", prStatStars: "Sterne",
     prGoingWell: "Läuft gut", prToPractise: "Zum Üben", prAllRight: "{game}: alles richtig.", prMostRight: "{game}: {r} von {n} richtig.",
@@ -402,7 +409,7 @@ Loopy.addStrings({
     prSharePic: "Bild teilen", prSavePic: "Bild speichern", prPrint: "Drucken", prMaking: "Bild wird gemacht…", prNoPic: "Dieser Browser kann das Bild nicht machen. Druckt es stattdessen.", prPickPrint: "Wähle im Menü Drucken.", prAppPrint: "Wenn sich kein Druckmenü geöffnet hat: Öffne loopy in Safari, um zu drucken. Die App auf dem Home-Bildschirm kann auf dem iPhone nicht drucken.", prShared: "Geteilt.", prSaved: "In den Bildern oder Downloads gespeichert.",
     prBrand: "Lernen. Spielen. Wiederholen.",
     prSheet: "Übungsblatt drucken", prSheetMaking: "Blatt wird gemacht…", prSheetGo: "Blatt drucken", prSheetReady: "Das Blatt ist fertig. Tippe auf Blatt drucken.", prSheetFail: "Das Blatt konnte nicht gemacht werden. Öffnet ein Spiel und druckt dort in den Einstellungen das Arbeitsblatt.",
-    prSheetTitle: "Übungsblatt", prSheetTitleKid: "Übungsblatt für {name}", prSheetHow: "20 Aufgaben der Arten, die am häufigsten falsch waren. Lösungen auf Seite 2.",
+    prSheetTitle: "Übungsblatt", prSheetTitleKid: "Übungsblatt für {name}", prSheetHow: "20 Aufgaben der Arten, die am häufigsten falsch waren. Lösungen auf der letzten Seite.",
     prStars: "⭐ {n} Sterne", prDays: "🔥 {n} Tage hintereinander", prDay: "🔥 1 Tag hintereinander", prBadge: "🏅 {name}", prBest: "🏆 Beste Serie: {n}", prGameBest: "Beste Serie: {n} hintereinander", prPlay: "Spielen →",
     gPlusMinus: "Plus und Minus", gTimesShare: "Mal und Teilen", gTimesSprint: "Einmaleins-Sprint", gClock: "Wie spät ist es?", gSoundSpell: "Anlaut und Endlaut", gDailyMix: "Die 10 von heute", gMake10: "Ergänze bis 10", gBiggerSmaller: "Größer oder kleiner", gPizza: "Pizza-Brüche", gCoinsChange: "Münzen und Wechselgeld", gWordMatch: "Bild und Wort", gSpellIt: "Wörter schreiben", gSentence: "Satzbau", gQuickFacts: "Blitzwissen", gSortIt: "Sortieren", gGraphs: "Diagramme und Daten", gBox: "Malkreuz", gWhereIsIt: "Wo liegt das?", gFlags: "Flaggen und Hauptstädte", gEquation: "Waage", gPercent: "Prozent und Verhältnis", gStep: "Schrittweise rechnen", gShapes: "Formen und Winkel", gSpellQuiz: "Rechtschreib-Quiz", gWordDetective: "Wortdetektiv",
     tipNone: "Diese Woche nicht gespielt. Ein paar Minuten am Tag helfen.", tipAll: "Diese Woche alles richtig. Probiert in den Einstellungen eine schwerere Stufe.",
@@ -886,10 +893,34 @@ Loopy.addStrings({
     if (inApp) msg.textContent = t("prAppPrint");
   });
   // The practice sheet's print styles (print.css) are added when the sheet is first made. Wait for them,
-  // so the browser does not print before they are there.
+  // so the browser does not print before they are there. Then the games' own print rules (gathered
+  // below) go into that stylesheet, so each box looks as on the game's own worksheet.
   function printStyles() {
     const l = document.querySelector('link[href$="print.css"]');
-    return l && !l.sheet ? new Promise(r => { l.addEventListener("load", r); l.addEventListener("error", r); setTimeout(r, 3000); }) : Promise.resolve();
+    const loaded = l && !l.sheet ? new Promise(r => { l.addEventListener("load", r); l.addEventListener("error", r); setTimeout(r, 3000); }) : Promise.resolve();
+    return loaded.then(() => {
+      const sheet = l && l.sheet;
+      if (!sheet) return;
+      gameRules.splice(0).forEach(r => { try { sheet.insertRule(r, sheet.cssRules.length); } catch (e) { /* a rule this browser does not know */ } });
+    });
+  }
+  // A game keeps the print look of its boxes (drawings, tables, word lists) in its own page. Those rules
+  // are read from the hidden frame, once per game, and added to print.css (above): its print rules, and
+  // the rules for any class its cells use (a flag's edge, a map). Changing the stylesheet this way is
+  // allowed by the page's security policy; a copied <style> tag would not be.
+  const gameRules = [], rulesOf = new Set();
+  function gatherRules(w, id, cells) {
+    if (rulesOf.has(id)) return;
+    rulesOf.add(id);
+    const classes = new Set();
+    cells.forEach(c => [c, ...c.querySelectorAll("*")].forEach(n => { for (const k of n.classList) classes.add(k); }));
+    const used = new RegExp("\\.(" + [...classes].join("|").replace(/[^\w|-]/g, "") + ")(?![\\w-])");
+    for (const s of w.document.styleSheets) {
+      if (!s.ownerNode || s.ownerNode.tagName !== "STYLE") continue;
+      for (const r of s.cssRules) {
+        if (r.media ? /print/.test(r.media.mediaText) : classes.size && used.test(r.selectorText || "")) gameRules.push(r.cssText);
+      }
+    }
   }
 
   // The practice sheet: 20 problems from the weak spots. Each game is opened in a hidden frame with its
@@ -904,7 +935,11 @@ Loopy.addStrings({
       f.addEventListener("load", () => {
         try {
           const w = f.contentWindow, o = w.Loopy && w.Loopy.worksheet && w.Loopy.worksheet.state.opts;
-          done(o ? o.make(n).slice(0, n).map(p => ({ cell: document.adoptNode(o.cell(p)), answer: o.answer(p) })) : []);
+          // Each cell names its game's layout, so its box on the mixed sheet gets that layout's styles (loopy-sheet.js).
+          const cell = p => { const c = document.adoptNode(o.cell(p)); c.dataset.layout = o.layout || "line"; return c; };
+          const items = o ? o.make(n).slice(0, n).map(p => ({ cell: cell(p), answer: o.answer(p) })) : [];
+          if (o) gatherRules(w, game.id, items.map(x => x.cell));
+          done(items);
         } catch (e) { done([]); }
       });
       // One times table on paper comes from Times Tables Sprint, the game that can pick a single table.

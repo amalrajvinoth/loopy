@@ -48,9 +48,11 @@
     work.appendChild(head(false));
     var grid = el("ol", "sheet-grid sheet-" + layout);
     items.forEach(function (p, i) {
-      var li = el("li");
+      var li = el("li"), cell = state.opts.cell(p), own = cell.dataset ? cell.dataset.layout : "";
+      // On the grown-ups' mixed sheet each cell names its game's layout, so that layout's styles apply to its box.
+      if (own && own !== layout && LAYOUTS.indexOf(own) !== -1) li.className = "sheet-" + own;
       li.appendChild(el("span", "sheet-n", String(i + 1)));
-      li.appendChild(state.opts.cell(p));
+      li.appendChild(cell);
       grid.appendChild(li);
     });
     work.appendChild(grid);
