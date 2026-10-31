@@ -10,6 +10,7 @@ Die großen Änderungen, die neuesten zuerst. Kleine Korrekturen stehen nicht da
 
 ## 31. Oktober 2026
 
+- **Das Übungsblatt zeigt jede Aufgabe ganz.** Die Kästchen stehen jetzt in drei Spalten, breiter als vorher, und jede Art sieht aus wie auf dem Arbeitsblatt ihres Spiels: Zeichnungen, Malkreuze, Flaggen und Wortlisten waren abgeschnitten oder schwarze Kästen. Arten, die mehr Platz brauchen, gehen auf eine zweite Seite weiter. Siehe [Wochenkarte und Übungsblätter](/loopy/guide/de/grown-ups/practice-sheet/).
 - **Neues Spiel für 6 bis 14 Jahre: Wortdetektiv.** Rate das Rätselwort in sechs Versuchen, wie ein Wortdetektiv. Grüne und gelbe Kästchen zeigen, welche Buchstaben passen, lustige Hinweise helfen, und nach fünf Wörtern wird die Akte mit einem Rang geschlossen. Von 3 Buchstaben bis 6, auf Deutsch oder Englisch. Siehe [Wortdetektiv](/loopy/guide/de/games/languages/word-detective/).
 
 ## 24. Oktober 2026

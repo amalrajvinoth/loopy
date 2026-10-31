@@ -55,7 +55,38 @@
   .sheet-word .ws-gap { display: inline-block; min-width: 9mm; border-bottom: 0.4mm solid #000; margin: 0 0.5mm; }
   .sheet-word .ws-opts { display: flex; gap: 3mm; margin-top: 1.5mm; font-size: 12pt; color: #333; }
 
-  /* The grown-ups' practice sheet mixes kinds in the 4 × 5 grid. Line problems and words look as on their own sheets. */
+  /* The grown-ups' practice sheet mixes kinds. Its boxes are in 3 columns, wider than a game's own 4,
+     and a row grows when a kind needs more room (a clock, a box table), so nothing is cut off; the
+     sheet then runs on to a second page.
+     Each box carries its game's layout class (sheet-vert, sheet-clock, ...) and the game's own print
+     rules are copied in (progress/index.html), so every kind looks as on its own sheet. */
+  .sheet-grid.sheet-mixed { grid-template-columns: repeat(3, 1fr); grid-template-rows: none; grid-auto-rows: minmax(28mm, auto); gap: 2.5mm 3mm; }
+  .sheet-mixed li { padding: 3mm 2mm 1.5mm; }
+  .sheet-mixed .sheet-n { top: 1.2mm; left: 2mm; transform: none; }
+  /* The wide boxes put a picture beside its question or line, at the size of the game's own sheet.
+     These come before the games' own rules, so they carry the extra .sheet-grid to win. */
+  .sheet-grid.sheet-mixed li > div:has(> .ws-clock) { flex-direction: row; flex-wrap: wrap; justify-content: center; gap: 1mm 3mm; }
+  .sheet-grid.sheet-mixed .ws-clock { width: 28mm; height: 28mm; }
+  .sheet-grid.sheet-mixed .ws-time { margin-top: 0; font-size: 11pt; letter-spacing: 0.02em; }
+  .sheet-grid.sheet-mixed li > div:has(> .ws-clock) > .ws-blank { flex: 1 1 8mm; min-width: 8mm; max-width: 24mm; margin: 0; }
+  .sheet-grid.sheet-mixed .ws-sh { display: grid; grid-template-columns: auto 1fr; align-items: center; column-gap: 2.5mm; padding: 0; }
+  .sheet-grid.sheet-mixed .ws-sh svg { grid-row: 1 / 3; }
+  .sheet-grid.sheet-mixed .ws-sh .ws-q { text-align: left; }
+  .sheet-grid.sheet-mixed .ws-sh .ws-opts { justify-content: flex-start; }
+  .sheet-grid.sheet-mixed .ws-bm { display: grid; grid-template-columns: auto auto; align-items: center; column-gap: 3mm; row-gap: 1.2mm; }
+  .sheet-grid.sheet-mixed .ws-bm b { grid-column: 1 / -1; justify-self: center; }
+  .sheet-grid.sheet-mixed .ws-pz { flex-direction: row; gap: 3mm; }
+  .sheet-grid.sheet-mixed .ws-gd .ws-chart { width: 46mm; height: 20mm; }
+  .sheet-grid.sheet-mixed .ws-fc .ws-opts { grid-template-columns: 1fr 1fr; }
+  .sheet-grid.sheet-mixed .sheet-word .ws-q { font-size: 10pt; font-weight: 600; line-height: 1.2; text-align: left; }
+  /* Word Detective: picture beside the clue, the letter gaps under both. */
+  .sheet-grid.sheet-mixed .sheet-word .ws-pic + .ws-q { flex: 1 1 30mm; min-width: 0; }
+  .sheet-grid.sheet-mixed .sheet-word > div:has(> .ws-pic + .ws-q) { flex-direction: row; flex-wrap: wrap; justify-content: center; gap: 1mm 2.5mm; }
+  .sheet-grid.sheet-mixed .sheet-word .ws-q + .ws-word { flex-basis: 100%; text-align: center; }
+  /* Word Match: the picture, then the words two to a line instead of one under the other. */
+  .sheet-grid.sheet-mixed .sheet-word > div:has(> .ws-opts + .ws-opts) { flex-direction: row; flex-wrap: wrap; justify-content: center; align-items: center; gap: 1.5mm 6mm; }
+  .sheet-grid.sheet-mixed .sheet-word > div:has(> .ws-opts + .ws-opts) > .ws-pic { flex-basis: 100%; text-align: center; }
+  .sheet-grid.sheet-mixed .sheet-word > div:has(> .ws-opts + .ws-opts) > .ws-opts { margin: 0; }
   .sheet-mixed .ws-sl { font-size: 15pt; font-weight: 600; white-space: nowrap; }
   .sheet-mixed .ws-blank { display: inline-block; width: 12mm; border-bottom: 0.4mm solid #000; margin-left: 1.5mm; }
   .sheet-mixed .ws-pic { font-size: 28pt; line-height: 1.1; }

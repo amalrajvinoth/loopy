@@ -10,6 +10,7 @@ The big changes, newest first. Small fixes are not listed. See [the full list on
 
 ## 31 October 2026
 
+- **The practice sheet shows every problem whole.** Its boxes are now in three columns, wider than before. Each kind looks as on its game's own worksheet. Before, drawings, box grids, flags and word lists were cut off or printed as black boxes. Kinds that need more room run on to a second page. See [Weekly card and practice sheets](/loopy/guide/grown-ups/practice-sheet/).
 - **New game for ages 6 to 14: Word Detective.** Guess the mystery word in six tries, like a word detective. Green and yellow tiles show which letters fit, funny clues help, and every five words close a case file with a rank. From 3-letter words to 6, in English or German. See [Word Detective](/loopy/guide/games/languages/word-detective/).
 
 ## 24 October 2026

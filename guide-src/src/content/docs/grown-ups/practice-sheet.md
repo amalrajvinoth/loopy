@@ -28,7 +28,7 @@ Some browsers cannot share pictures. Then the button says **Save picture** and s
 2. Wait a moment while it says "Making the sheet…".
 3. The print box opens. Print it, or save it as a PDF.
 
-The sheet has 20 problems from the kinds missed most: 7 + 7 + 6 for three kinds, 10 + 10 for two, or 20 for one. The answers are on page 2. The problems come from the games themselves. A times table comes from Times Tables Sprint. If the sheet cannot be made, print a game's worksheet instead.
+The sheet has 20 problems from the kinds missed most. That is 7 + 7 + 6 for three kinds, 10 + 10 for two, or 20 for one. The boxes are in three columns, so every kind of problem has room. Kinds that need more space, like clocks or drawings, run on to a second page. The answers are on the last page. The problems come from the games themselves. A times table comes from Times Tables Sprint. If the sheet cannot be made, print a game's worksheet instead.
 
 ## A game's worksheet
 
