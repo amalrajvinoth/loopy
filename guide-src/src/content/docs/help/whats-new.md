@@ -8,6 +8,10 @@ loopy keeps getting new games. Here is what came lately!
 
 The big changes, newest first. Small fixes are not listed. See [the full list on GitHub](https://github.com/amalrajvinoth/loopy/blob/main/RELEASES.md).
 
+## 31 October 2026
+
+- **New game for ages 6 to 14: Word Detective.** Guess the mystery word in six tries, like a word detective. Green and yellow tiles show which letters fit, funny clues help, and every five words close a case file with a rank. From 3-letter words to 6, in English or German. See [Word Detective](/loopy/guide/games/languages/word-detective/).
+
 ## 24 October 2026
 
 - **New game for ages 7 to 14: Shapes and Angles.** Name shapes and count corners, find right angles and lines of symmetry, work out perimeter and area on squared paper, judge angles and sort triangles. Five levels, with one line of why after every answer. See [Shapes and Angles](/loopy/guide/games/math/shapes-angles/).

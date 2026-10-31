@@ -122,10 +122,19 @@ async function steps(p) {
   }
 }
 
+// A word guessed in several tries (Word Detective): the card says data-tries="on" until the word is found or
+// the tries run out, and carries the word in data-a. The keys carry their letter in data-k.
+async function tries(p) {
+  const a = await p.locator('[data-tries="on"]').first().getAttribute("data-a");
+  for (const ch of a) await p.click(`[data-k="${ch}"]`);
+  await p.click("#k-go");
+}
+
 // Answer the question on screen: the right answer when the page marks it, otherwise the first one.
 // Returns true when the answer was the marked right one.
 async function answer(p) {
   if (await p.locator('[data-steps="on"]').count()) { await steps(p); return true; }
+  if (await p.locator('[data-tries="on"]').count()) { await tries(p); return true; }
   const right = p.locator('[data-correct="true"]:enabled');
   if (await right.count()) {
     await right.first().click();
@@ -178,6 +187,9 @@ async function next(p, n) {
     const b = p.locator(id);
     if (await b.count() && await b.isVisible() && await b.isEnabled()) { await b.click(); break; }
   }
+  // A round of several questions ends with a summary (Word Detective's case file): Next once more goes on.
+  try { await p.waitForFunction(k => window.__questions.length > k, n, { timeout: 1500 }); }
+  catch (e) { const b = p.locator("#next"); if (await b.count() && await b.isVisible() && await b.isEnabled()) await b.click(); }
   await p.waitForFunction(k => window.__questions.length > k, n, { timeout: 5000 });
 }
 
