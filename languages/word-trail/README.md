@@ -7,7 +7,7 @@ A word search for kids. The child finds the words hidden in a grid of letters by
 1. Look at the word list under the grid. The word with the blue ring is the one to find now. Any word on the list counts, though.
 2. Tap the letters one after the other, or drag a finger over them. The letters so far show under the grid. Letters that touch make a word, sideways, up and down or diagonally. From level 2 the trail can bend.
 3. The word counts as soon as its last letter is tapped. The trail keeps its colour and the word in the list is crossed out. You earn a star.
-4. Not a word on the list? Tap **Check** (or lift your finger) and the word you were looking for shows in red where it was hidden. No star, and the word comes back later in Try again. Tap **Next word** to go on.
+4. Not a word on the list? The word you were looking for shows in red where it was hidden. That happens as soon as the trail is as long as that word, or when you lift your finger. No star, and the word comes back later in Try again. Tap **Next word** to go on.
 5. Stuck? Tap **🔎 Clue**. The first clue opens the picture and first letter in the list, at the levels that hide them. The next clue makes the word's first box pulse. The last clue shows the whole trail. The word then counts as a miss.
 6. When every word in the grid is found, the card says **All 4 words found!** and shows the stars. Tap **Next grid**.
 
@@ -50,7 +50,7 @@ Open them with the gear button.
 - **Read aloud.** A speaker button on the card reads the words to find. At levels 4 and 5, where the list hides the words, it reads the topic and how many letters the next word has. It is on by itself for ages 7 and under.
 - Age, colors, sound effects and the display language (EN/DE) are shared with the other games.
 - **Print worksheet.** See below.
-- The keyboard works too. Arrows move between the boxes. Space or Enter picks a letter. Enter checks. Backspace takes the last letter off. Escape clears the trail.
+- The keyboard works too. Arrows move between the boxes. Space or Enter picks a letter. Enter checks a trail early. Backspace takes the last letter off. Escape clears the trail.
 
 ## Print a worksheet
 
