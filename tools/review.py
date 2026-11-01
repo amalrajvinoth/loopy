@@ -221,9 +221,26 @@ def served(base):
     return now, before
 
 
+SCRIPT_SRC = re.compile(r'<script src="((?![^"]*loopy)[^"]+\.js)"></script>')  # not loopy.js: the shared files are counted once
+
+
+def own_scripts(path, data):
+    """The data files a page loads besides loopy.js (words.js, data.js, ../words.js), as site paths."""
+    if data is None or not path.endswith(".html"):
+        return []
+    out = []
+    for src in SCRIPT_SRC.findall(data.decode("utf-8", "replace")):
+        parts = list(pathlib.PurePosixPath(path).parent.parts)
+        for q in src.split("/"):
+            parts.pop() if q == ".." else parts.append(q)
+        out.append("/".join(parts))
+    return out
+
+
 def check_size(base):
     now, before = served(base)
     shared = lambda files: sum(sent(files.get(f), f) or 0 for f in ["loopy.js", "loopy.css"] + FONTS_ON_PAGE)
+    own = lambda files, path: sum(sent(files.get(f), f) or 0 for f in own_scripts(path, files.get(path)))
     for path in sorted(set(now) | set(before)):
         a, b = sent(now.get(path), path), sent(before.get(path), path)
         if a != b and base:
@@ -232,17 +249,17 @@ def check_size(base):
         if path in ("loopy.js", "loopy.css") and grew > SHARED_GROWTH:
             add("should", path, f"grew by {grew / 1024:.1f} KB sent; every page pays for this. Move code only one "
                 "page uses into that page, or make it smaller")
-        elif path.endswith(".html") and grew > PAGE_GROWTH:
+        elif path.endswith((".html", "/words.js", "/data.js")) and grew > PAGE_GROWTH:
             add("suggest", path, f"grew by {grew / 1024:.1f} KB sent. Look for repeated data or code to share")
         elif path.endswith((".woff2", ".png", ".svg")) and (b is None and before and a > BIG_FILE or grew > BIG_FILE):
             add("should", path, f"{a / 1024:.0f} KB file is new or much bigger, and goes into every offline copy")
         if path.startswith("fonts/") and b is None and before:
             add("should", path, "a new font file; the design allows only Fredoka, Lexend and Atkinson")
         if path.endswith(".html"):
-            total = (a or 0) + shared(now)
-            was = (b or 0) + shared(before) if b is not None else None
+            total = (a or 0) + own(now, path) + shared(now)
+            was = (b or 0) + own(before, path) + shared(before) if b is not None else None
             if total > PAGE_BUDGET and (was is None or was <= PAGE_BUDGET or total > was):
-                add("should", path, f"page is {total / 1024:.0f} KB sent with loopy.js, loopy.css and fonts "
+                add("should", path, f"page is {total / 1024:.0f} KB sent with its data files, loopy.js, loopy.css and fonts "
                     f"(budget {PAGE_BUDGET // 1024} KB)")
     if before:
         grew = sum(map(len, now.values())) - sum(map(len, before.values()))
@@ -254,7 +271,7 @@ def check_size(base):
 
 GUIDE = "guide-src/src/content/docs/"
 # Files people see or use. Tools, tests, CI and the plugins are not in it.
-SEEN = re.compile(r"^(index\.html|[a-z-]+/index\.html|[a-z-]+/[a-z0-9-]+/index\.html|src/[^/]+\.(js|css)|manifest\.webmanifest|[^/]+\.svg)$")
+SEEN = re.compile(r"^(index\.html|[a-z-]+/index\.html|[a-z-]+/[a-z0-9-]+/(index\.html|words\.js|data\.js)|languages/words\.js|src/[^/]+\.(js|css)|manifest\.webmanifest|[^/]+\.svg)$")
 HARD = {"utilise": "use", "utilize": "use", "prior to": "before", "commence": "start", "initiate": "start",
         "facilitate": "help", "approximately": "about", "subsequently": "then", "in order to": "to",
         "functionality": "what it does", "e.g.": "for example", "i.e.": "that is", "via": "through",
@@ -314,7 +331,7 @@ def check_docs(base):
             f"{'...' if len(seen) > 3 else ''}) but no docs did. Update the docs that describe it (loopy-docs skill), "
             "or say \"Docs: nothing people see changed\" in the PR")
     for p in seen:
-        game = re.match(r"^([a-z]+/[a-z0-9-]+)/index\.html$", p)
+        game = re.match(r"^([a-z]+/[a-z0-9-]+)/(index\.html|words\.js|data\.js)$", p)
         if game and (ROOT / game.group(1) / "README.md").exists() and f"{game.group(1)}/README.md" not in files:
             add("suggest", "docs", f"`{p}` changed but not its README. Does How to play, Age levels or Settings still match?")
     if seen and "RELEASES.md" not in files:

@@ -9,7 +9,7 @@ description: Set up a new loopy game in all the places it must be listed. Use wh
 
 A game id has to be in several lists. Missing one breaks stars, the progress page or the home page quietly. `tools/review.py` catches most of them; do them all up front.
 
-1. **Folder:** `<subject>/<game>/index.html` (subjects today: math, languages, science, geography, mix). Copy the shape of the closest existing game: shared header (`Loopy` back button, star counter, Last 5, ⚙ Settings, report flag), the problem card, answers at the bottom in portrait, two columns in landscape.
+1. **Folder:** `<subject>/<game>/index.html` (subjects today: math, languages, science, geography, mix). Word lists, facts and other content go in `words.js` or `data.js` next to the page, loaded with `<script src="words.js"></script>` right after `loopy.js`; the build puts the file in the offline list by itself. Copy the shape of the closest existing game: shared header (`Loopy` back button, star counter, Last 5, ⚙ Settings, report flag), the problem card, answers at the bottom in portrait, two columns in landscape.
 2. **Game id** (short, kebab-case) in:
    - the `Loopy.GAMES = [` list in `src/loopy.js` (stars, the progress log, the last answers and backups all read it; `drift.py` tracks how many lists there are);
    - the `GAMES` list in `progress/index.html`, with a name string;

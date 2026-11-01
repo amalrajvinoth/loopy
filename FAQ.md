@@ -76,6 +76,10 @@ Yes, in Plus and Minus, Times and Share, What Time Is It?, Make 10, Bigger or Sm
 
 Yes. Open **Spelling Quiz**, tap **Settings** and type or paste the words into **Your word list**, with commas between them: `friend, because, said`. Tap **Save list**. Each question shows the word spelled 3 or 4 ways, and the wrong spellings are new every time. Each child has their own list, in English or German. The list stays in this browser and moves with the stars code.
 
+## Can I change the words in a game?
+
+In **Spelling Quiz**, yes: grown-ups paste their own list in Settings. In the other games the words, facts and countries are part of loopy. On GitHub, each of those games has a file called `words.js` or `data.js` next to it. Word Match and Word Trail share one word bank. A grown-up who knows a little code can add a word there and send it in. The game's README says what goes on a line.
+
 ## Can Loopy be easier to see or read?
 
 Yes. Open **Settings**. The last color, **High contrast**, uses black, white and bright colors with clear white edges. **Easier to read** switches every text to Atkinson Hyperlegible, a font with letters that are easy to tell apart, like b and d or I, l and 1. Both are remembered on this device and work on every page.

@@ -65,6 +65,6 @@ Tap **Settings**, then **Print worksheet**. The print window opens. Print it, or
 ## For grown-ups
 
 - The pictures are emoji, so nothing is loaded from other websites. They look a little different on each device.
-- To add words, edit the `WORDS` list at the top of `index.html`: picture, word, meaning, then a silly sentence that contains the word. Keep each level to one word length.
+- To add words, edit the `WORDS` list in `words.js`, next to the game page. Each line: picture, word, meaning, then a silly sentence that contains the word. Run `python3 tools/build.py` after a change. Keep each level to one word length.
 - The progress page groups missed words by length, like "Mystery words with 5 letters", with a tip for playing word detective together.
 - Word Detective is not part of Today's 10, because one word takes several tries.

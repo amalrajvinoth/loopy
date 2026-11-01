@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'sha256-HuUHicTD2qt5katr9DSBBPS4/+1jsUVyA0wjbeKzhFY='; style-src 'self' 'sha256-z2P7kGW5Z05eCTjTZdYpc0vThTlOE9vmt97pVSvi2I4=' 'sha256-W+M0+NGBKbL1fCGEKkbWgDUCO62JWeFSLj5trGkqXRE=' 'sha256-RT1053JU5UiKvjrCUFx1rlhdFLMmgtuFJ9T8jnMeawQ=' 'sha256-P1MDhcKmqezI9QybenGh0E+R8cO0qEAt89ytypSkdro='; img-src 'self' data:; font-src 'self'; connect-src 'self' https://loopy-sync.loopy-1e2.workers.dev; worker-src 'self'; object-src 'none'; base-uri 'none'; form-action 'none'; manifest-src 'self'; upgrade-insecure-requests">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'sha256-OFA0byYMrQpnZ0mT8ksnW6T7hZuhpHM+wxxGKXk9bBU='; style-src 'self' 'sha256-z2P7kGW5Z05eCTjTZdYpc0vThTlOE9vmt97pVSvi2I4=' 'sha256-W+M0+NGBKbL1fCGEKkbWgDUCO62JWeFSLj5trGkqXRE=' 'sha256-RT1053JU5UiKvjrCUFx1rlhdFLMmgtuFJ9T8jnMeawQ=' 'sha256-P1MDhcKmqezI9QybenGh0E+R8cO0qEAt89ytypSkdro='; img-src 'self' data:; font-src 'self'; connect-src 'self' https://loopy-sync.loopy-1e2.workers.dev; worker-src 'self'; object-src 'none'; base-uri 'none'; form-action 'none'; manifest-src 'self'; upgrade-insecure-requests">
 <meta name="referrer" content="strict-origin-when-cross-origin">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <style>:root{color-scheme:light;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}body{margin:0}[hidden]{display:none!important}</style>
@@ -239,6 +239,7 @@ body { min-height: 100vh; min-height: 100dvh; padding-block: 12px 16px; }
 </style>
 <link rel="stylesheet" href="../../loopy.css">
 <script src="../../loopy.js"></script>
+<script src="../words.js"></script>
 </head>
 <body>
 
@@ -328,39 +329,12 @@ Loopy.addStrings({
   }
 });
 
-// GEN START
-// Each word: [picture, English, German with its article, level]. Level 2 words are longer or less common,
-// so they come at age 7 and up. 25 words in each of the four topics.
-const WORDS = {
-  animals: [
-    ["🐶","dog","der Hund",1],["🐱","cat","die Katze",1],["🐟","fish","der Fisch",1],["🐦","bird","der Vogel",1],["🐄","cow","die Kuh",1],
-    ["🐷","pig","das Schwein",1],["🐴","horse","das Pferd",1],["🐑","sheep","das Schaf",1],["🐭","mouse","die Maus",1],["🐰","rabbit","der Hase",1],
-    ["🦆","duck","die Ente",1],["🐸","frog","der Frosch",1],["🐻","bear","der Bär",1],["🦁","lion","der Löwe",1],["🐵","monkey","der Affe",1],
-    ["🐝","bee","die Biene",1],["🐔","hen","das Huhn",1],["🦊","fox","der Fuchs",1],["🐘","elephant","der Elefant",2],["🦒","giraffe","die Giraffe",2],
-    ["🐍","snake","die Schlange",2],["🐢","turtle","die Schildkröte",2],["🦋","butterfly","der Schmetterling",2],["🦉","owl","die Eule",2],["🐧","penguin","der Pinguin",2]
-  ],
-  food: [
-    ["🍎","apple","der Apfel",1],["🍌","banana","die Banane",1],["🍞","bread","das Brot",1],["🧀","cheese","der Käse",1],["🥚","egg","das Ei",1],
-    ["🥛","milk","die Milch",1],["🍐","pear","die Birne",1],["🥕","carrot","die Karotte",1],["🍅","tomato","die Tomate",1],["🍕","pizza","die Pizza",1],
-    ["🍰","cake","der Kuchen",1],["🍦","ice cream","das Eis",1],["🍊","orange","die Orange",1],["🍪","cookie","der Keks",1],["🧈","butter","die Butter",1],
-    ["🍓","strawberry","die Erdbeere",2],["🍇","grapes","die Trauben",2],["🥔","potato","die Kartoffel",2],["🍋","lemon","die Zitrone",2],["🥒","cucumber","die Gurke",2],
-    ["🍯","honey","der Honig",2],["🍫","chocolate","die Schokolade",2],["🍒","cherries","die Kirschen",2],["🍚","rice","der Reis",2],["🍝","noodles","die Nudeln",2]
-  ],
-  home: [
-    ["🏠","house","das Haus",1],["🚪","door","die Tür",1],["🪟","window","das Fenster",1],["🛏️","bed","das Bett",1],["🪑","chair","der Stuhl",1],
-    ["🛋️","sofa","das Sofa",1],["🔑","key","der Schlüssel",1],["💡","lamp","die Lampe",1],["🕰️","clock","die Uhr",1],["🧸","teddy bear","der Teddy",1],
-    ["🥄","spoon","der Löffel",1],["☕","cup","die Tasse",1],["🧼","soap","die Seife",1],["🕯️","candle","die Kerze",1],["🧦","sock","die Socke",1],
-    ["👕","T-shirt","das T-Shirt",1],["🛁","bathtub","die Badewanne",2],["🚿","shower","die Dusche",2],["🚽","toilet","die Toilette",2],["🍽️","plate","der Teller",2],
-    ["🧹","broom","der Besen",2],["🧺","basket","der Korb",2],["🪞","mirror","der Spiegel",2],["📺","TV","der Fernseher",2],["☂️","umbrella","der Regenschirm",2]
-  ],
-  school: [
-    ["📖","book","das Buch",1],["✂️","scissors","die Schere",1],["🎒","backpack","der Rucksack",1],["🖊️","pen","der Stift",1],["💻","computer","der Computer",1],
-    ["🔔","bell","die Glocke",1],["⚽","ball","der Ball",1],["🧩","puzzle","das Puzzle",1],["📓","notebook","das Heft",1],["🏫","school","die Schule",1],
-    ["🚌","bus","der Bus",1],["🥁","drum","die Trommel",1],["✏️","pencil","der Bleistift",2],["📏","ruler","das Lineal",2],["🗺️","map","die Landkarte",2],
-    ["🌍","globe","der Globus",2],["📎","paper clip","die Büroklammer",2],["🖌️","paintbrush","der Pinsel",2],["🎨","paints","die Farben",2],["🔢","numbers","die Zahlen",2],
-    ["🎈","balloon","der Luftballon",2],["📅","calendar","der Kalender",2],["🎹","piano","das Klavier",2],["🎺","trumpet","die Trompete",2],["🔬","microscope","das Mikroskop",2]
-  ]
-};
+// The words come from the shared bank in languages/words.js: the four topics below, each word as
+// [picture, English, German with its article, level]. Level 2 words are longer or less common, so they come at age 7 and up.
+const WORDS = {};
+for (const th of LOOPY_WORDS) {
+  if (["animals", "food", "home", "school"].includes(th[0])) WORDS[th[0]] = th[2].filter(w => w.length > 3).map(w => w.slice(0, 4));
+}
 const TOPICS = Object.keys(WORDS);
 const randInt = (n) => Math.floor(Math.random() * n);
 const pick = (arr) => arr[randInt(arr.length)];
@@ -388,7 +362,6 @@ function makeProblem(lang, topic, age, level, avoid) {
   const options = shuffle([word, ...distractors(word, lang, age, level, level === 3 ? 2 : 3)]);
   return { word, options, key: word.en, answer: say(word, lang) };
 }
-// GEN END
 
 (function () {
   const $ = (id) => document.getElementById(id);

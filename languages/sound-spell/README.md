@@ -54,4 +54,4 @@ Reading out loud uses the voice built into the browser or device. Nothing is dow
 
 - Wrong choices are real sounds from the same word list and never spell another word in the list.
 - Letters that sound the same in that place (like c and k at the start of English words, or d and t at the end of German words) are never offered against each other.
-- To add words, edit the `WORDS` list at the top of `index.html`: picture, word, starting sound, ending sound, level. Leave the ending sound empty if the word should only be used for starting sounds.
+- To add words, edit the `WORDS` list in `words.js`, next to the game page, then run `python3 tools/build.py`: picture, word, starting sound, ending sound, level. Leave the ending sound empty if the word should only be used for starting sounds.

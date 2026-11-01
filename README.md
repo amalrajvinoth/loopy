@@ -142,6 +142,8 @@ The site is plain HTML, CSS and JavaScript. One small build step makes the share
 | `plugins/` | Claude Code plugins made from how the owner works: commands for the usual asks, hooks that keep the rules, self-healing checks, and a drift check that keeps them up to date ([how](plugins/README.md)). `python3 plugins/sync.py` copies them into `.claude/`, so every session in this repo has them |
 | `math/<game>/index.html` | One game per folder (also `languages/` and `mix/`) |
 | `math/<game>/README.md` | What that game does |
+| `<subject>/<game>/words.js` or `data.js` | The game's own content: word lists, sentences, flags, map outlines, facts or things to sort. Only games with a list have one. The page loads it next to `loopy.js`. The offline copy keeps it as its own file, so a changed list downloads alone |
+| `languages/words.js` | The shared word bank: 15 topics of picture, English and German. Word Match and Word Trail both read it |
 
 ### Try it on your computer
 
@@ -177,6 +179,7 @@ Read [DESIGN.md](DESIGN.md) first. It lists the colors, fonts, buttons and layou
 6. Add one line to the `GAMES` list in the home page `index.html`, with the ages the game fits and a picture (one emoji) for its tile.
 7. Add a `README.md` in the game folder, and a row to the table above.
 8. Run `python3 tools/build.py`. It updates the page's security policy and adds the page to the offline list. Do this again after any edit to a page.
+9. Keep a word list or other content in its own `words.js` or `data.js` next to the page. Load it with `<script src="words.js"></script>` after `loopy.js`. The build adds the file to the offline list by itself. `review.py` counts it in the page's size.
 
 ### Changing the site
 
@@ -209,40 +212,40 @@ The build also runs `tools/csp.py`, then writes `sw.js`, the offline helper. `sw
 
 The "Easier to read" font (Atkinson Hyperlegible Next, 13 KB) is only loaded by a page when that setting is on, so the sizes below do not change. The offline helper saves it with the other fonts, so it also works offline. The fonts keep only the letters loopy uses (English and German). To rebuild them, for example after adding a letter to the list in `tools/build.py`, install `fonttools` and `brotli` and run `python3 tools/build.py --fonts`.
 
-Page sizes, sent over the network with `loopy.js`, `loopy.css` and the two fonts (63 KB of that is shared, and the browser keeps it after the first page):
+Page sizes, sent over the network with `loopy.js`, `loopy.css` and the two fonts. 61 KB of that is shared, and the browser keeps it after the first page. A game's own `words.js` or `data.js` is counted in:
 
 | Page | Sent |
 | --- | --- |
-| Home | 74 KB |
-| Help | 70 KB |
-| How it's going | 79 KB |
-| Today's 10 | 76 KB |
-| What Time Is It? | 72 KB |
-| Plus and Minus | 72 KB |
-| Times and Share | 73 KB |
-| Make 10 | 72 KB |
-| Bigger or Smaller | 77 KB |
-| Pizza Fractions | 77 KB |
-| Coins and Change | 77 KB |
-| Equation Balance | 74 KB |
-| Times Tables Sprint | 73 KB |
-| Percent and Ratio | 75 KB |
-| Graphs and Data | 72 KB |
-| Box Multiplication | 75 KB |
-| Step by Step | 73 KB |
+| Home | 80 KB |
+| Help | 73 KB |
+| How it's going | 86 KB |
+| Today's 10 | 75 KB |
+| What Time Is It? | 71 KB |
+| Plus and Minus | 71 KB |
+| Times and Share | 72 KB |
+| Make 10 | 71 KB |
+| Bigger or Smaller | 76 KB |
+| Pizza Fractions | 76 KB |
+| Coins and Change | 76 KB |
+| Equation Balance | 73 KB |
+| Times Tables Sprint | 72 KB |
+| Percent and Ratio | 74 KB |
+| Graphs and Data | 76 KB |
+| Box Multiplication | 74 KB |
+| Step by Step | 75 KB |
 | Shapes and Angles | 80 KB |
-| Sound Spell | 74 KB |
-| Word Match | 74 KB |
-| Spell It | 75 KB |
-| Sentence Builder | 71 KB |
-| Spelling Quiz | 74 KB |
-| Word Detective | 66 KB |
-| Word Trail | 61 KB |
-| Where Is It? | 99 KB |
-| Flags and Capitals | 78 KB |
-| Quick Facts | 84 KB |
-| Sort It | 81 KB |
+| Sound Spell | 73 KB |
+| Word Match | 78 KB |
+| Spell It | 73 KB |
+| Sentence Builder | 74 KB |
+| Spelling Quiz | 77 KB |
+| Word Detective | 85 KB |
+| Word Trail | 83 KB |
+| Where Is It? | 98 KB |
+| Flags and Capitals | 77 KB |
+| Quick Facts | 83 KB |
+| Sort It | 84 KB |
 
-Measured on 16 October 2026 the way `tools/review.py` counts it (text compressed like GitHub Pages does, fonts as they are). The review fails a page over 100 KB. When the faster loading work landed (PR #23), the first pages went from about 60 to 87 KB down to 33 to 51 KB, and Lighthouse scored 100 on a phone on slow 4G. Pages have grown since with more children, offline mode, reading aloud and the report button.
+Measured on 1 November 2026 the way `tools/review.py` counts it (text compressed like GitHub Pages does, fonts as they are). The review fails a page over 100 KB. When the faster loading work landed (PR #23), the first pages went from about 60 to 87 KB down to 33 to 51 KB, and Lighthouse scored 100 on a phone on slow 4G. Pages have grown since with more children, offline mode, reading aloud and the report button.
 
 Do not add outside scripts, fonts, trackers or analytics. The security rules on each page block them, and they would break the promise that nothing leaves the device.

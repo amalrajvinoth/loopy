@@ -73,5 +73,5 @@ Tap **Settings**, then **Print worksheet**. The print window opens. Print it, or
 - The maps are simple outlines drawn in the page itself. Nothing is loaded from other websites.
 - The outlines come from [Natural Earth](https://www.naturalearthdata.com/) (public domain), at the 1:110 million scale. Borders are simplified, so they are close but not exact.
 - The map uses the Mercator projection, like most wall maps and map apps. Places far north and south, like Greenland and Russia, look bigger than they are.
-- The places, names and capitals are in the `PLACES` list in `index.html`. Each one has a map view and a level: 1 for well-known, 2 for the rest.
+- The places, names and capitals are in the `PLACES` list in `data.js`, next to the game page, with the map outlines. Run `python3 tools/build.py` after a change. Each one has a map view and a level: 1 for well-known, 2 for the rest.
 - The progress page groups missed places by mode, like "Practise the countries of Europe on a map."

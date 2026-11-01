@@ -68,6 +68,6 @@ Reading out loud uses the voice built into the browser or device, in the languag
 ## For grown-ups
 
 - The pictures are emoji, so nothing is loaded from other websites. They look a little different on each device.
-- To add words, edit the `WORDS` list at the top of `index.html`: picture, then the word. The game sorts words by length by itself. Keep words to 8 letters or fewer.
+- To add words, edit the `WORDS` list in `words.js`, next to the game page, then run `python3 tools/build.py`: picture, then the word. The game sorts words by length by itself. Keep words to 8 letters or fewer.
 - The progress page groups missed words by length, like "Practise spelling 4-letter words: say each sound slowly."
 - Spell It is not part of Today's 10, because Today's 10 uses answers to pick from.

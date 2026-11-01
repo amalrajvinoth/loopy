@@ -72,6 +72,10 @@ Each word is a trail of letters that touch, sideways, up and down or diagonally.
 
 Yes. Any letters count as a try, so a child can try sounds. The tiles show which letters are in the word, and three clues help. See [Word Detective](/loopy/guide/games/languages/word-detective/).
 
+## Can I change the words in a game?
+
+In [Spelling Quiz](/loopy/guide/games/languages/spelling-quiz/), yes: grown-ups paste their own list in Settings. In the other games the words, facts and countries are part of loopy. On GitHub, each of those games has a file called `words.js` or `data.js` next to it. Word Match and Word Trail share one word bank. A grown-up who knows a little code can add a word there and send it in. The game's README says what goes on a line.
+
 ## How do I see how my child is doing?
 
 Tap the **Grown-ups** button at the bottom of the home page. To print the week, tap **Print** next to **Share this week**. See [The grown-ups page](/loopy/guide/grown-ups/grown-ups-page/).

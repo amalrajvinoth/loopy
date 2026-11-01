@@ -71,6 +71,6 @@ Tap **Settings**, then **Print worksheet**. The print window opens. Print it, or
 ## For grown-ups
 
 - The pictures are emoji, so nothing is loaded from other websites. They look a little different on each device.
-- To add words, edit the `THEMES` list at the top of `index.html`: picture, English word, German word. The game checks the length and letters itself.
+- The words come from the shared word bank `languages/words.js`, which Word Match uses too. To add a word, add `[picture, English word, German word]` to a topic, then run `python3 tools/build.py`. The game checks the length and letters itself, and leaves out words marked Word Match only (a fifth value of `0`).
 - The progress page groups missed words by length, like "Hidden words with 5 to 6 letters", with a tip for playing together.
 - Word Trail is not part of Today's 10, because a grid takes a few minutes.
