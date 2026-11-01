@@ -266,7 +266,7 @@ button, a, label, summary { touch-action: manipulation; -webkit-tap-highlight-co
 }
 .report-toggle svg { width: 20px; height: 20px; }
 .game-bar.rp-tight .settings-toggle span { display: none; }
-.game-bar.rp-tight .settings-toggle { padding: 0 11px; }
+.game-bar.rp-tight .settings-toggle { padding: 0 12px; }
 .game-bar.rp-tight .bar-right { gap: 4px; }
 .game-bar.rp-hide .report-toggle { display: none; }
 .report-toggle:focus-visible, .report-dialog a:focus-visible { outline: 3px solid var(--mark); outline-offset: 2px; }
@@ -297,9 +297,9 @@ button, a, label, summary { touch-action: manipulation; -webkit-tap-highlight-co
 .settings-panel { display: flex; flex-direction: column; gap: 12px; background: var(--card); border: 2px solid var(--line); border-radius: 20px; padding: 14px; }
 .panel-foot { display: flex; flex-wrap: wrap; gap: 10px; align-items: center; justify-content: space-between; }
 .panel-foot p { margin: 0; color: var(--muted); font-size: 0.9rem; }
-@media (max-width: 380px) { .settings-toggle span { display: none; } .settings-toggle { padding: 0 11px; } }
+@media (max-width: 380px) { .settings-toggle span { display: none; } .settings-toggle { padding: 0 12px; } }
 /* "Einstellungen" is long: with the child's name chip it no longer fits next to the back button on phones. */
-@media (max-width: 420px) { :root[lang="de"] .settings-toggle span { display: none; } :root[lang="de"] .settings-toggle { padding: 0 11px; } }
+@media (max-width: 420px) { :root[lang="de"] .settings-toggle span { display: none; } :root[lang="de"] .settings-toggle { padding: 0 12px; } }
 
 .lang-picker { display: inline-flex; gap: 4px; background: var(--chip); border-radius: 999px; padding: 4px; }
 .lang-picker button { min-width: 44px; height: 36px; border: 0; border-radius: 999px; background: transparent; color: var(--muted); font: inherit; font-weight: 700; cursor: pointer; }
