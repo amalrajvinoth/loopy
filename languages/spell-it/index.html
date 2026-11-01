@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'sha256-qnxzjmAQYdQIojbdhVYwM84pROWeB96jmZ4AtqE9tqM='; style-src 'self' 'sha256-z2P7kGW5Z05eCTjTZdYpc0vThTlOE9vmt97pVSvi2I4=' 'sha256-5/L3e/BVPjm2GPi51M3FkQuzTeZ4bCdHn3SxvjZFuAk=' 'sha256-RT1053JU5UiKvjrCUFx1rlhdFLMmgtuFJ9T8jnMeawQ=' 'sha256-etMRtbwhqk/iqgDKcGHxb1kuTe/5fVhZfdG5015bMSA='; img-src 'self' data:; font-src 'self'; connect-src 'self' https://loopy-sync.loopy-1e2.workers.dev; worker-src 'self'; object-src 'none'; base-uri 'none'; form-action 'none'; manifest-src 'self'; upgrade-insecure-requests">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'sha256-3hvY5R502X3wt+JF3SLiM7t24ze7QRBs1XoVCTAEsiU='; style-src 'self' 'sha256-z2P7kGW5Z05eCTjTZdYpc0vThTlOE9vmt97pVSvi2I4=' 'sha256-5/L3e/BVPjm2GPi51M3FkQuzTeZ4bCdHn3SxvjZFuAk=' 'sha256-RT1053JU5UiKvjrCUFx1rlhdFLMmgtuFJ9T8jnMeawQ=' 'sha256-WhxJ2OKu/OtommpaJyYsnbvIUCyF57+rLCTwtHS+3+0='; img-src 'self' data:; font-src 'self'; connect-src 'self' https://loopy-sync.loopy-1e2.workers.dev; worker-src 'self'; object-src 'none'; base-uri 'none'; form-action 'none'; manifest-src 'self'; upgrade-insecure-requests">
 <meta name="referrer" content="strict-origin-when-cross-origin">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <style>:root{color-scheme:light;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}body{margin:0}[hidden]{display:none!important}</style>
@@ -222,8 +222,6 @@ body { min-height: 100vh; min-height: 100dvh; padding-block: 12px 16px; }
 .actions .erase { font-size: 1.1rem; color: var(--muted); }
 .actions .go { background: var(--accent); border-color: var(--accent); color: var(--accent-ink); font-size: 1.3rem; }
 .actions .go:hover:not(:disabled) { border-color: var(--accent); filter: brightness(1.08); }
-.helper { display: flex; align-items: center; gap: 8px; min-height: 40px; cursor: pointer; }
-.helper input { width: 22px; height: 22px; accent-color: var(--c2); }
 .seg.five { grid-template-columns: repeat(auto-fit, minmax(96px, 1fr)); }
 .seg button { padding-inline: 4px; }
 @media (min-width: 600px) and (orientation: portrait) {
@@ -293,7 +291,6 @@ body { min-height: 100vh; min-height: 100dvh; padding-block: 12px 16px; }
         <button type="button" data-len="7" data-t="siL7">7 to 8</button>
       </div>
     </div>
-    <label class="helper"><input type="checkbox" id="auto-read"> <span data-t="siAutoRead">Read each new word out loud</span></label>
     <div class="panel-foot">
       <p data-t="siKbd">Keyboard works too: type the letters, Backspace erases, Enter checks.</p>
       <button type="button" class="reset" id="reset" data-t="resetScore">Reset score</button>
@@ -322,7 +319,7 @@ body { min-height: 100vh; min-height: 100dvh; padding-block: 12px 16px; }
 Loopy.addStrings({
   en: {
     siName: "Spell It", siWords: "Words in", siLen: "Word length", siL3: "3 letters", siL4: "4 letters", siL5: "5 letters", siL6: "6 letters", siL7: "7 to 8",
-    siAutoRead: "Read each new word out loud", siHear: "Hear the word", siEraseAria: "Erase the last letter",
+    siHear: "Hear the word", siEraseAria: "Erase the last letter",
     siKbd: "Keyboard works too: type the letters, Backspace erases, Enter checks.",
     siAsk: "Listen, then spell the word.", siAskPic: "Look at the picture, then spell the word.",
     siPic: "Picture", siBoxes: "{n} letters", siYes: "You spelled “{w}”.", siSpelled: "It is spelled {s}.",
@@ -330,7 +327,7 @@ Loopy.addStrings({
   },
   de: {
     siName: "Wörter schreiben", siWords: "Wörter auf", siLen: "Wortlänge", siL3: "3 Buchstaben", siL4: "4 Buchstaben", siL5: "5 Buchstaben", siL6: "6 Buchstaben", siL7: "7 bis 8",
-    siAutoRead: "Jedes neue Wort vorlesen", siHear: "Wort anhören", siEraseAria: "Letzten Buchstaben löschen",
+    siHear: "Wort anhören", siEraseAria: "Letzten Buchstaben löschen",
     siKbd: "Die Tastatur geht auch: Buchstaben tippen, Rücktaste löscht, Enter prüft.",
     siAsk: "Hör zu und schreibe das Wort.", siAskPic: "Schau dir das Bild an und schreibe das Wort.",
     siPic: "Bild", siBoxes: "{n} Buchstaben", siYes: "Du hast „{w}“ geschrieben.", siSpelled: "Man schreibt es so: {s}.",
@@ -362,7 +359,7 @@ function makeProblem(lang, len, avoid) {
 (function () {
   const $ = (id) => document.getElementById(id);
   const card = $("card"), picEl = $("pic"), slotsEl = $("slots"), revealEl = $("reveal"), lettersEl = $("letters"),
-    feedbackEl = $("feedback"), goBtn = $("k-go"), eraseBtn = $("k-erase"), speakBtn = $("speak"), autoBox = $("auto-read");
+    feedbackEl = $("feedback"), goBtn = $("k-go"), eraseBtn = $("k-erase"), speakBtn = $("speak");
   const wordsBtns = [...document.querySelectorAll("#words-seg button")];
   const lenBtns = [...document.querySelectorAll("#len-seg button")];
   const t = Loopy.t;
@@ -439,7 +436,7 @@ function makeProblem(lang, len, avoid) {
     $("streak").textContent = streak;
     wordsBtns.forEach(b => b.setAttribute("aria-pressed", String(b.dataset.words === wordsLang)));
     lenBtns.forEach(b => b.setAttribute("aria-pressed", String(+b.dataset.len === len)));
-    autoBox.checked = autoRead;
+    readPill();
     speakBtn.hidden = !voiceOk();
     goBtn.textContent = t(answered ? "next" : "check");
     goBtn.disabled = !answered && typed.length < current.letters.length;
@@ -537,7 +534,8 @@ function makeProblem(lang, len, avoid) {
   goBtn.addEventListener("click", () => { answered ? newRound() : check(); });
   wordsBtns.forEach(b => b.addEventListener("click", () => { wordsLang = b.dataset.words; store.set("si.words", wordsLang); recent = []; newRound(); }));
   lenBtns.forEach(b => b.addEventListener("click", () => { len = +b.dataset.len; store.set("si.len.a" + age, len); recent = []; newRound(); }));
-  autoBox.addEventListener("change", () => { autoRead = autoBox.checked; store.set("si.autoRead", autoRead); });
+  // The Read aloud pill in Settings. The setting stays this game's own: it reads words, not a question.
+  const readPill = Loopy.speech.toggle({ isOn: () => autoRead, set: (on) => { autoRead = on; store.set("si.autoRead", on); } });
   window.addEventListener("loopy:age", (e) => { age = e.detail; recent = []; loadForAge(); newRound(); });
   $("reset").addEventListener("click", () => { right = 0; tried = 0; streak = 0; Loopy.recent.clear("spell-it"); newRound(); });
   document.addEventListener("keydown", (e) => {

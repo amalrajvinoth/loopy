@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'sha256-OFA0byYMrQpnZ0mT8ksnW6T7hZuhpHM+wxxGKXk9bBU='; style-src 'self' 'sha256-z2P7kGW5Z05eCTjTZdYpc0vThTlOE9vmt97pVSvi2I4=' 'sha256-W+M0+NGBKbL1fCGEKkbWgDUCO62JWeFSLj5trGkqXRE=' 'sha256-RT1053JU5UiKvjrCUFx1rlhdFLMmgtuFJ9T8jnMeawQ=' 'sha256-P1MDhcKmqezI9QybenGh0E+R8cO0qEAt89ytypSkdro='; img-src 'self' data:; font-src 'self'; connect-src 'self' https://loopy-sync.loopy-1e2.workers.dev; worker-src 'self'; object-src 'none'; base-uri 'none'; form-action 'none'; manifest-src 'self'; upgrade-insecure-requests">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'sha256-Exv1p2X3tyvjtpO9Louostkbc/nKGVdgF7Y+1rnAOTo='; style-src 'self' 'sha256-z2P7kGW5Z05eCTjTZdYpc0vThTlOE9vmt97pVSvi2I4=' 'sha256-W+M0+NGBKbL1fCGEKkbWgDUCO62JWeFSLj5trGkqXRE=' 'sha256-RT1053JU5UiKvjrCUFx1rlhdFLMmgtuFJ9T8jnMeawQ=' 'sha256-s3JSUtvmNdT3XMAqKWur04L9xyczerYxvOKBoEeKlRQ='; img-src 'self' data:; font-src 'self'; connect-src 'self' https://loopy-sync.loopy-1e2.workers.dev; worker-src 'self'; object-src 'none'; base-uri 'none'; form-action 'none'; manifest-src 'self'; upgrade-insecure-requests">
 <meta name="referrer" content="strict-origin-when-cross-origin">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <style>:root{color-scheme:light;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}body{margin:0}[hidden]{display:none!important}</style>
@@ -216,8 +216,6 @@ body { min-height: 100vh; min-height: 100dvh; padding-block: 12px 16px; }
 .choices button.wrong { border-color: var(--bad); background: var(--bad-bg); color: var(--bad); }
 .choices button.faded { opacity: 0.45; }
 .next { font: inherit; font-size: 1.25rem; font-weight: 700; color: var(--accent-ink); background: var(--accent); border: 0; border-radius: 16px; min-height: clamp(52px, 7dvh, 72px); cursor: pointer; width: 100%; }
-.helper { display: flex; align-items: center; gap: 8px; min-height: 40px; cursor: pointer; }
-.helper input { width: 22px; height: 22px; accent-color: var(--c2); }
 .seg button { padding-inline: 4px; }
 @media (min-width: 600px) and (orientation: portrait) {
   .choices button { min-height: clamp(64px, 10dvh, 120px); }
@@ -287,7 +285,6 @@ body { min-height: 100vh; min-height: 100dvh; padding-block: 12px 16px; }
         <button type="button" data-level="5" data-t="wmTricky">4, tricky</button>
       </div>
     </div>
-    <label class="helper"><input type="checkbox" id="auto-read"> <span data-t="wmAutoRead">Read the word out loud after each answer</span></label>
     <div class="panel-foot">
       <p data-t="wmKbd">Keyboard works too: 1 to 4 picks a word, Enter goes on.</p>
       <button type="button" class="reset" id="reset" data-t="resetScore">Reset score</button>
@@ -312,7 +309,7 @@ Loopy.addStrings({
   en: {
     wmName: "Word Match", wmWords: "Words in", wmTopic: "Topic", wmAll: "All", wmAnimals: "Animals", wmFood: "Food", wmHome: "Home", wmSchool: "School",
     wmChoices: "Choices", wmThree: "3 words", wmFour: "4 words", wmTricky: "4, tricky",
-    wmAutoRead: "Read the word out loud after each answer", wmHear: "Hear the word",
+    wmHear: "Hear the word",
     wmKbd: "Keyboard works too: 1 to 4 picks a word, Enter goes on.",
     wmAsk: "Which word goes with the picture?", wmPic: "Picture",
     wmIs: "It is “{w}”.", wmInEn: "In English:\u00a0{w}", wmInDe: "In German:\u00a0{w}",
@@ -321,7 +318,7 @@ Loopy.addStrings({
   de: {
     wmName: "Bild und Wort", wmWords: "Wörter auf", wmTopic: "Thema", wmAll: "Alle", wmAnimals: "Tiere", wmFood: "Essen", wmHome: "Zuhause", wmSchool: "Schule",
     wmChoices: "Auswahl", wmThree: "3 Wörter", wmFour: "4 Wörter", wmTricky: "4, knifflig",
-    wmAutoRead: "Nach jeder Antwort das Wort vorlesen", wmHear: "Wort anhören",
+    wmHear: "Wort anhören",
     wmKbd: "Die Tastatur geht auch: 1 bis 4 wählt ein Wort, Enter geht weiter.",
     wmAsk: "Welches Wort passt zum Bild?", wmPic: "Bild",
     wmIs: "Das ist „{w}“.", wmInEn: "Auf Englisch:\u00a0{w}", wmInDe: "Auf Deutsch:\u00a0{w}",
@@ -365,7 +362,7 @@ function makeProblem(lang, topic, age, level, avoid) {
 
 (function () {
   const $ = (id) => document.getElementById(id);
-  const card = $("card"), picEl = $("pic"), choicesEl = $("choices"), feedbackEl = $("feedback"), nextBtn = $("next"), speakBtn = $("speak"), autoBox = $("auto-read");
+  const card = $("card"), picEl = $("pic"), choicesEl = $("choices"), feedbackEl = $("feedback"), nextBtn = $("next"), speakBtn = $("speak");
   const wordsBtns = [...document.querySelectorAll("#words-seg button")];
   const topicBtns = [...document.querySelectorAll("#topic-seg button")];
   const levelBtns = [...document.querySelectorAll("#level-seg button")];
@@ -426,7 +423,7 @@ function makeProblem(lang, topic, age, level, avoid) {
     wordsBtns.forEach(b => b.setAttribute("aria-pressed", String(b.dataset.words === wordsLang)));
     topicBtns.forEach(b => b.setAttribute("aria-pressed", String(b.dataset.topic === topic)));
     levelBtns.forEach(b => b.setAttribute("aria-pressed", String(+b.dataset.level === level)));
-    autoBox.checked = autoRead;
+    readPill();
     speakBtn.hidden = !voiceOk();
     Loopy.nextButton(nextBtn, answered);
   }
@@ -496,7 +493,8 @@ function makeProblem(lang, topic, age, level, avoid) {
   wordsBtns.forEach(b => b.addEventListener("click", () => { wordsLang = b.dataset.words; store.set("wm.words", wordsLang); newRound(); }));
   topicBtns.forEach(b => b.addEventListener("click", () => { topic = b.dataset.topic; store.set("wm.topic", topic); recent = []; newRound(); }));
   levelBtns.forEach(b => b.addEventListener("click", () => { level = +b.dataset.level; store.set("wm.level.a" + age, level); newRound(); }));
-  autoBox.addEventListener("change", () => { autoRead = autoBox.checked; store.set("wm.autoRead", autoRead); });
+  // The Read aloud pill in Settings. The setting stays this game's own: it reads words, not a question.
+  const readPill = Loopy.speech.toggle({ isOn: () => autoRead, set: (on) => { autoRead = on; store.set("wm.autoRead", on); } });
   window.addEventListener("loopy:age", (e) => { age = e.detail; recent = []; loadForAge(); newRound(); });
   $("reset").addEventListener("click", () => { right = 0; tried = 0; streak = 0; Loopy.recent.clear("word-match"); newRound(); });
   document.addEventListener("keydown", (e) => {

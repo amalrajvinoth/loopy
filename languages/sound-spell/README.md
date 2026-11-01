@@ -29,7 +29,7 @@ Open them with the gear button.
 
 - **Sounds.** Starting, Ending or Both.
 - **Words in.** English or German. The game starts with the site language, and you can switch at any time.
-- **Read each word out loud.** On by default. Turn it off for quiet play. The speaker button still works.
+- **Read aloud.** The same pill as in every game, next to the sound button. Here it reads each new word. On by default. Turn it off for quiet play. The **Hear the word** button still works.
 - Age, colors, sound effects and the display language (EN/DE) are shared with the other games.
 - **Print worksheet.** See below.
 

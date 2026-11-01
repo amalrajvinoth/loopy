@@ -42,7 +42,7 @@ Open them with the gear button.
 
 - **Words in.** English or German. The game starts with the site language. Switch it to practise spelling in the other language.
 - **Word length.** 3 letters, 4 letters, 5 letters, or 6 to 8. Remembered for each age.
-- **Read each new word out loud.** On by default. Turn it off to spell from the picture only. The speaker button still works, and a wrong answer is always read out.
+- **Read aloud.** The same pill as in every game, next to the sound button. Here it reads each new word. On by default. Turn it off to spell from the picture only. The **Hear the word** button still works, and a wrong answer is always read out.
 - Age, colors, sound effects and the display language (EN/DE) are shared with the other games.
 - **Print worksheet.** See below.
 - The keyboard works too: type the letters, Backspace erases, Enter checks and goes on.

@@ -858,6 +858,26 @@ document.documentElement.classList.add("loopy-building");
       toggle.lastChild.textContent = Loopy.t(isOn() ? "readOn" : "readOff");
     }
   }
+  // The Read aloud pill in Settings, right after the sound toggle: a speaker, "Read aloud" and an On or Off tag.
+  function pill(onTap) {
+    var sound = document.getElementById("sound-toggle");
+    if (!sound) return null;
+    var b = document.createElement("button");
+    b.type = "button";
+    b.id = "read-toggle";
+    b.className = "read-toggle";
+    b.setAttribute("aria-label", Loopy.t("readAloud"));
+    b.innerHTML = SPEAKER;
+    var label = document.createElement("span");
+    label.textContent = Loopy.t("readAloud");
+    b.appendChild(label);
+    var state = document.createElement("b");
+    state.setAttribute("aria-hidden", "true");
+    b.appendChild(state);
+    b.addEventListener("click", onTap);
+    sound.parentNode.insertBefore(b, sound.nextSibling);
+    return b;
+  }
   function build() {
     if (!opts || !can) return;
     // Browsers only let a page speak after a tap or key press.
@@ -872,28 +892,12 @@ document.documentElement.classList.add("loopy-building");
     if (!opts.inline) opts.host.classList.add("read-host");
     opts.host.appendChild(btn);
 
-    var sound = document.getElementById("sound-toggle");
-    if (sound) {
-      toggle = document.createElement("button");
-      toggle.type = "button";
-      toggle.id = "read-toggle";
-      toggle.className = "read-toggle";
-      toggle.setAttribute("aria-label", Loopy.t("readAloud"));
-      toggle.innerHTML = SPEAKER;
-      var label = document.createElement("span");
-      label.textContent = Loopy.t("readAloud");
-      toggle.appendChild(label);
-      var state = document.createElement("b");
-      state.setAttribute("aria-hidden", "true");
-      toggle.appendChild(state);
-      toggle.addEventListener("click", function () {
-        choice = isOn() ? "off" : "on";
-        Loopy.store.set(KEY, choice);
-        sync();
-        if (isOn()) say(opts.text()); else speechSynthesis.cancel();
-      });
-      sound.parentNode.insertBefore(toggle, sound.nextSibling);
-    }
+    toggle = pill(function () {
+      choice = isOn() ? "off" : "on";
+      Loopy.store.set(KEY, choice);
+      sync();
+      if (isOn()) say(opts.text()); else speechSynthesis.cancel();
+    });
     // Some browsers load their voices a moment after the page.
     try { speechSynthesis.addEventListener("voiceschanged", sync); } catch (e) {}
     window.addEventListener("loopy:age", sync);
@@ -906,6 +910,20 @@ document.documentElement.classList.add("loopy-building");
       opts = o;
       if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", build);
       else build();
+    },
+    // The same pill for a game that keeps its own read-aloud setting (Sound Spell, Spell It, Word Match):
+    // o.isOn() says whether it is on, o.set(on) saves a change. Returns a function that refreshes the pill.
+    toggle: function (o) {
+      var b = can && pill(function () { o.set(!o.isOn()); refresh(); });
+      function refresh() {
+        if (!b) return;
+        b.hidden = !hasVoice();
+        b.setAttribute("aria-pressed", String(o.isOn()));
+        b.lastChild.textContent = Loopy.t(o.isOn() ? "readOn" : "readOff");
+      }
+      try { speechSynthesis.addEventListener("voiceschanged", refresh); } catch (e) {}
+      refresh();
+      return refresh;
     },
     // Reads the new question by itself when Read aloud and the sound are on.
     read: function () {
