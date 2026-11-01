@@ -236,8 +236,7 @@
   });
 
   function settings(box) {
-    var t = Loopy.t, body = el("div"), msg = el("p");
-    function el(tag, cls, text) { var n = document.createElement(tag); if (cls) n.className = cls; if (text !== undefined) n.textContent = text; return n; }
+    var t = Loopy.t, el = Loopy.el, body = el("div"), msg = el("p");
     function btn(text, cls) { var b = el("button", cls || "kid-btn", text); b.type = "button"; return b; }
     msg.setAttribute("aria-live", "polite");
     box.replaceChildren(el("p", "set-head", t("syHead")), body, msg);

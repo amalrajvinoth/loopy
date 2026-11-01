@@ -31,12 +31,7 @@
   });
   var LABELS = { question: "rpQuestion", answer: "rpAnswer", looks: "rpLooks" };
 
-  function el(tag, cls, text) {
-    var n = document.createElement(tag);
-    if (cls) n.className = cls;
-    if (text !== undefined) n.textContent = text;
-    return n;
-  }
+  var el = Loopy.el;
   var flat = function (s, max) { s = String(s || "").replace(/\s+/g, " ").trim(); return s.length > max ? s.slice(0, max - 1) + "…" : s; };
 
   // loopy's version: the VERSION in sw.js, which changes whenever any file of the site changes.
