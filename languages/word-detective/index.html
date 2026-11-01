@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'sha256-z6FiY07MfwZcVQCZ+3Fxu81HxKSkcXWJDI4QE/HoYKU='; style-src 'self' 'sha256-z2P7kGW5Z05eCTjTZdYpc0vThTlOE9vmt97pVSvi2I4=' 'sha256-c04HO5zldUyCrxD+coiQii+8zm9HQ+JE9ejkd0HkNUY=' 'sha256-RT1053JU5UiKvjrCUFx1rlhdFLMmgtuFJ9T8jnMeawQ=' 'sha256-1LwNeXK8WbPIWbGRx/fKU0BTwQE0xdQlA23XKOeZkZM='; img-src 'self' data:; font-src 'self'; connect-src 'self' https://loopy-sync.loopy-1e2.workers.dev; worker-src 'self'; object-src 'none'; base-uri 'none'; form-action 'none'; manifest-src 'self'; upgrade-insecure-requests">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'sha256-QiUYRUQbx9HI8uzj8JXBj95/L7ONvSXFvM4B5bmVnDg='; style-src 'self' 'sha256-z2P7kGW5Z05eCTjTZdYpc0vThTlOE9vmt97pVSvi2I4=' 'sha256-c04HO5zldUyCrxD+coiQii+8zm9HQ+JE9ejkd0HkNUY=' 'sha256-RT1053JU5UiKvjrCUFx1rlhdFLMmgtuFJ9T8jnMeawQ=' 'sha256-J3xApAWms0WcAfe5vEeGBvDjEuP7ZFHtVpkvW91wUQU='; img-src 'self' data:; font-src 'self'; connect-src 'self' https://loopy-sync.loopy-1e2.workers.dev; worker-src 'self'; object-src 'none'; base-uri 'none'; form-action 'none'; manifest-src 'self'; upgrade-insecure-requests">
 <meta name="referrer" content="strict-origin-when-cross-origin">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <style>:root{color-scheme:light;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}body{margin:0}[hidden]{display:none!important}</style>
@@ -128,20 +128,23 @@ body { min-height: 100vh; min-height: 100dvh; padding-block: 12px 16px; }
 }
 
 /* Word Detective: the case strip, a clue, the letter grid, then the keyboard. */
-.case-row { display: flex; align-items: center; justify-content: space-between; gap: 8px; width: 100%; }
+.case-row { display: flex; align-items: center; justify-content: center; gap: 8px; width: 100%; }
 .case { display: inline-flex; align-items: center; gap: 5px; font-weight: 600; font-size: 0.95rem; white-space: nowrap; }
 .case span { color: var(--muted); font-weight: 400; }
 .case i { display: inline-block; width: 12px; height: 12px; border-radius: 50%; border: 2px solid var(--line); background: var(--chip); }
 .case i.ok { background: var(--good); border-color: var(--good); }
 .case i.no { background: var(--bad); border-color: var(--bad); }
 .case i.now { border-color: var(--accent); box-shadow: 0 0 0 2px var(--accent) inset; }
+/* The Clue button: the same outline pill as in Word Trail, under the keyboard, where Next appears later. */
 .more {
-  font: inherit; font-weight: 700; font-size: 0.9rem; color: var(--ink); background: transparent;
-  border: 2px solid var(--accent); border-radius: 999px; min-height: 36px; padding: 0 12px; cursor: pointer; white-space: nowrap;
+  width: 100%; font: inherit; font-weight: 700; font-size: 0.95rem; color: var(--ink); background: transparent;
+  border: 2px solid var(--accent); border-radius: 999px; min-height: 44px; padding: 0 12px; cursor: pointer; white-space: nowrap;
 }
 .more:disabled { opacity: 0.45; cursor: default; }
+.more[hidden] { display: none; }
 .case-row .case { min-width: 0; }
-@media (max-width: 380px) { .case { font-size: 0.85rem; } .more { font-size: 0.8rem; padding: 0 8px; } }
+@media (max-width: 380px) { .case { font-size: 0.85rem; } }
+@media (min-width: 600px) and (orientation: portrait) { .more { min-height: 54px; font-size: 1.1rem; } }
 .clues { display: flex; flex-direction: column; gap: 6px; width: 100%; }
 .clue { display: flex; gap: 8px; align-items: flex-start; border: 2px solid var(--line); border-radius: 14px; padding: 6px 10px; background: var(--chip); text-align: left; font-size: 0.95rem; line-height: 1.3; }
 .clue .ic { font-size: 1.25rem; line-height: 1.1; flex: 0 0 auto; }
@@ -149,7 +152,11 @@ body { min-height: 100vh; min-height: 100dvh; padding-block: 12px 16px; }
 .clue .gap { display: inline-block; min-width: 3ch; border-bottom: 3px solid var(--accent); vertical-align: -2px; }
 .prompt { margin: 0; color: var(--muted); font-size: 0.95rem; text-align: center; }
 
-.grid { display: grid; gap: 5px; --cell: clamp(26px, 5.2dvh, 48px); }
+.grid { display: grid; gap: 5px; --cell: clamp(26px, 5.2dvh, 48px); --cell-min: 24px; }
+.play.tight .clue b { display: none; }
+.play.tight .clue { padding: 4px 8px; line-height: 1.25; font-size: 0.9rem; }
+.play.tight .clues { gap: 4px; }
+.problem-card.scrolls { overflow-y: auto; justify-content: flex-start; }
 .grid .row { display: grid; grid-template-columns: repeat(var(--n, 5), var(--cell)); gap: 5px; }
 .grid .cell {
   width: var(--cell); height: var(--cell); display: grid; place-items: center;
@@ -199,18 +206,23 @@ body { min-height: 100vh; min-height: 100dvh; padding-block: 12px 16px; }
 .pad button.g { background: var(--good); border-color: var(--good); color: var(--on-accent, #fff); }
 .pad button.y { background: #e0ad00; border-color: #e0ad00; color: #111; }
 .pad button.x { background: var(--chip); border-color: var(--chip); color: var(--muted); }
-.pad .wide { flex: 1.6 1 0; font-size: 0.9rem; text-transform: none; }
+.pad .wide { flex: 1.4 1 0; font-size: 0.9rem; text-transform: none; }
+.pad .erase { font-size: 1.25rem; color: var(--muted); }
+.pad .go { flex: 2.6 1 0; font-size: 1rem; }
 .pad .go { background: var(--accent); border-color: var(--accent); color: var(--accent-ink); }
 .next { font: inherit; font-size: 1.25rem; font-weight: 700; color: var(--accent-ink); background: var(--accent); border: 0; border-radius: 16px; min-height: clamp(52px, 7dvh, 72px); cursor: pointer; width: 100%; }
 
 /* Short phones: smaller cells and keys, a one-line clue. */
 @media (max-height: 700px) and (orientation: portrait) {
-  .grid { --cell: clamp(22px, 3.4dvh, 48px); gap: 4px; }
-  .more { min-height: 32px; }
+  .grid { --cell: clamp(22px, 3.4dvh, 48px); --cell-min: 20px; gap: 4px; }
+  .more { min-height: 40px; }
+  .side { gap: 6px; }
+  .play.tight .problem-card { gap: 4px; padding: 8px 10px; }
+  .play.tight .clue { font-size: 0.8rem; padding: 3px 6px; }
   .grid .row { gap: 4px; }
   .clue { font-size: 0.85rem; padding: 4px 8px; }
   .clue b { display: none; }
-  .pad button { min-height: 34px; font-size: 0.95rem; }
+  .pad button { min-height: 40px; font-size: 0.95rem; }
   .pad { gap: 4px; }
   .pad .krow { gap: 4px; }
   .word { font-size: 1.6rem; }
@@ -220,7 +232,10 @@ body { min-height: 100vh; min-height: 100dvh; padding-block: 12px 16px; }
 /* Landscape: the clue sits above the keyboard, the grid keeps the card. */
 @media (orientation: landscape) and (min-width: 640px) {
   .grid { --cell: clamp(22px, 6.4dvh, 48px); }
-  .pad button { min-height: clamp(34px, 9dvh, 54px); }
+  .pad button { min-height: clamp(44px, 9dvh, 54px); }
+  .play.tight .pad button { min-height: 36px; }
+  .play.tight .more { min-height: 40px; }
+  .play.tight .side { gap: 6px; }
 }
 </style>
 <link rel="stylesheet" href="../../loopy.css">
@@ -273,10 +288,7 @@ body { min-height: 100vh; min-height: 100dvh; padding-block: 12px 16px; }
 
   <main class="play">
     <div class="problem-card" id="card">
-      <div class="case-row">
-        <div class="case" id="case"></div>
-        <button type="button" class="more" id="more"></button>
-      </div>
+      <div class="case-row"><div class="case" id="case"></div></div>
       <div class="clues" id="clues"></div>
       <p class="prompt" id="prompt"></p>
       <div class="grid" id="grid" role="list"></div>
@@ -285,6 +297,7 @@ body { min-height: 100vh; min-height: 100dvh; padding-block: 12px 16px; }
     </div>
     <div class="side">
       <div class="pad" id="letters"></div>
+      <button type="button" class="more" id="more"></button>
       <button type="button" class="next" id="next" hidden></button>
     </div>
   </main>
@@ -309,7 +322,7 @@ Loopy.addStrings({
     wdFileDone: "Case file closed!", wdSolved: "{n} of 5 cases solved.", wdStars: "+{n} stars",
     wdRank: "Rank: {r}", wdRookie: "Rookie", wdDetective: "Detective", wdSuper: "Super Sleuth",
     wdHowSuper: "Solve all 5 in 3 tries or fewer for Super Sleuth.", wdHowDet: "Solve all 5 for Detective.", wdHowTop: "The top rank. Can you do it again?",
-    wdErase: "Erase", wdEraseAria: "Erase the last letter", wdCheck: "Check",
+    wdEraseAria: "Erase the last letter", wdCheck: "Check",
     wdReadClue: "Clue: {c}", wdReadWord: "The word is {w}. {m}. {s}",
     wdHow: "Read the clue. Write the word in the boxes, one letter in each."
   },
@@ -330,7 +343,7 @@ Loopy.addStrings({
     wdFileDone: "Akte geschlossen!", wdSolved: "{n} von 5 Fällen gelöst.", wdStars: "+{n} Sterne",
     wdRank: "Rang: {r}", wdRookie: "Neuling", wdDetective: "Detektiv", wdSuper: "Superdetektiv",
     wdHowSuper: "Löse alle 5 in höchstens 3 Versuchen für Superdetektiv.", wdHowDet: "Löse alle 5 Fälle für Detektiv.", wdHowTop: "Der höchste Rang. Schaffst du es nochmal?",
-    wdErase: "Löschen", wdEraseAria: "Letzten Buchstaben löschen", wdCheck: "Prüfen",
+    wdEraseAria: "Letzten Buchstaben löschen", wdCheck: "Prüfen",
     wdReadClue: "Hinweis: {c}", wdReadWord: "Das Wort ist {w}. {m}. {s}",
     wdHow: "Lies den Hinweis. Schreibe das Wort in die Kästchen, einen Buchstaben pro Kästchen."
   }
@@ -359,7 +372,8 @@ function marks(guess, answer) {
 (function () {
   const $ = (id) => document.getElementById(id);
   const card = $("card"), caseEl = $("case"), moreBtn = $("more"), cluesEl = $("clues"), promptEl = $("prompt"), gridEl = $("grid"),
-    resultEl = $("result"), feedbackEl = $("feedback"), padEl = $("letters"), nextBtn = $("next"), sideEl = document.querySelector(".side");
+    resultEl = $("result"), feedbackEl = $("feedback"), padEl = $("letters"), nextBtn = $("next"), sideEl = document.querySelector(".side"),
+    playEl = document.querySelector(".play");
   const wordsBtns = [...document.querySelectorAll("#words-seg button")];
   const levelBtns = [...document.querySelectorAll("#level-seg button")];
   const t = Loopy.t;
@@ -466,7 +480,7 @@ function marks(guess, answer) {
     padEl.textContent = "";
     KEYS[wordsLang].forEach((line, li) => {
       const row = document.createElement("div"); row.className = "krow";
-      if (li === KEYS[wordsLang].length - 1) row.appendChild(key("k-erase", "wide", t("wdErase"), t("wdEraseAria"), erase));
+      if (li === KEYS[wordsLang].length - 1) row.appendChild(key("k-erase", "wide erase", "\u232B", t("wdEraseAria"), erase));
       [...line].forEach(c => {
         const b = key("", best[c] || "", c, "", () => add(c));
         b.dataset.k = c; b.lang = wordsLang;
@@ -490,6 +504,26 @@ function marks(guess, answer) {
     const want = wide.matches ? sideEl : card, at = wide.matches ? padEl : promptEl;
     if (cluesEl.parentNode !== want) want.insertBefore(cluesEl, at);
   }
+  // Clues, grid and keyboard share one screen. When open clues need the room, the clue labels go and the
+  // grid's cells shrink, down to --cell-min. If it still does not fit, the card scrolls instead of cutting rows off.
+  function fitGrid() {
+    gridEl.style.removeProperty("--cell");
+    playEl.classList.remove("tight"); card.classList.remove("scrolls");
+    if (summary || !gridEl.firstChild) return;
+    // How far a column's content runs past its box (the clues sit in the side column in landscape).
+    const over = (el) => {
+      const kids = [...el.children].filter(e => !e.hidden && e.getBoundingClientRect().height);
+      const cs = getComputedStyle(el);
+      return kids.length ? kids[kids.length - 1].getBoundingClientRect().bottom - kids[0].getBoundingClientRect().top -
+        (el.clientHeight - parseFloat(cs.paddingTop) - parseFloat(cs.paddingBottom)) : 0;
+    };
+    if (over(card) <= 0 && over(sideEl) <= 0) return;
+    playEl.classList.add("tight");
+    const min = parseFloat(getComputedStyle(gridEl).getPropertyValue("--cell-min")) || 22;
+    let cell = gridEl.firstChild.firstChild.getBoundingClientRect().height;
+    while (over(card) > 0 && cell > min) { cell = Math.max(min, cell - 2); gridEl.style.setProperty("--cell", cell + "px"); }
+    if (over(card) > 0) card.classList.add("scrolls");
+  }
   function render() {
     place();
     Loopy.levels.render();
@@ -507,6 +541,7 @@ function marks(guess, answer) {
     else { card.setAttribute("data-tries", "on"); card.setAttribute("data-a", current.letters.join("")); }
     padEl.hidden = answered;
     nextBtn.hidden = !answered;
+    fitGrid();
     nextBtn.textContent = t(file.length >= CASES ? "wdFile" : "wdNext");
   }
   // Try again: a missed word comes back later (Loopy.retry). The note is "en:giggle"; a word in the other
@@ -614,7 +649,8 @@ function marks(guess, answer) {
 
   nextBtn.addEventListener("click", next);
   wide.addEventListener("change", place);
-  moreBtn.addEventListener("click", () => { if (clues < CLUES && !answered) { clues++; drawClues(); Loopy.speech.read(); } });
+  moreBtn.addEventListener("click", () => { if (clues < CLUES && !answered) { clues++; drawClues(); fitGrid(); Loopy.speech.read(); } });
+  window.addEventListener("resize", () => requestAnimationFrame(fitGrid));
   wordsBtns.forEach(b => b.addEventListener("click", () => { wordsLang = b.dataset.words; store.set("wd.words", wordsLang); recent = []; file = []; summary = false; newCase(); }));
   levelBtns.forEach(b => b.addEventListener("click", () => { level = +b.dataset.level; store.set("wd.level.a" + age, level); recent = []; newCase(); }));
   window.addEventListener("loopy:age", (e) => { age = e.detail; recent = []; loadForAge(); newCase(); });
