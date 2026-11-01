@@ -58,8 +58,11 @@ th { color: var(--ink); }
 <main class="wrap">
   <header class="bar">
     <a class="home-link" href="../">&larr; loopy</a>
-    <div class="controls"><div id="theme-picker"></div><div id="lang-picker"></div></div>
+    <button type="button" id="settings-toggle" aria-controls="settings-panel"></button>
   </header>
+  <div class="settings-panel" id="settings-panel" hidden>
+    <div class="controls"><div id="theme-picker"></div><div id="lang-picker"></div></div>
+  </div>
   <h1 data-t="pvTitleShort">Privacy note</h1>
   <p class="muted" data-t="pvLead">This page is for grown-ups. It says in plain words what loopy keeps, where, for how long, and how to delete it. Last changed: 1 November 2026.</p>
 
