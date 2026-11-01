@@ -43,7 +43,7 @@ Open them with the gear button.
 - **Words in.** English or German. The game starts with the site language. Switch it to learn the other language: with the site in German and the words in English, a German-speaking child learns English words.
 - **Topic.** All, Animals, Food, Home or School.
 - **Choices.** 3 words, 4 words, or 4 tricky words from the same topic.
-- **Read the word out loud after each answer.** On by default. Turn it off for quiet play. The speaker button still works.
+- **Read aloud.** The same pill as in every game, next to the sound button. Here it reads the word after each answer. On by default. Turn it off for quiet play. The **Hear the word** button still works.
 - Age, colors, sound effects and the display language (EN/DE) are shared with the other games.
 - **Print worksheet.** See below.
 
