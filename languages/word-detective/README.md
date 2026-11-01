@@ -7,7 +7,7 @@ A word detective game, like Wordle for kids. The child guesses a mystery word in
 1. Tap the letters to type a word with the right number of letters. Tap **Check**.
 2. Look at the tiles. **Green** means the letter is in the right place. **Yellow** means the letter is in the word, but somewhere else. **Grey** means the letter is not in the word. The keyboard keys turn the same colours.
 3. Try again with what you learned. You have six tries. Any letters count as a try, so you can try sounds.
-4. Stuck? Tap **🔎 Clue**. The first clue shows a picture and what the word means. The second is a silly sentence with the word missing. The third is the first letter. At the two easiest levels the first clue is open from the start.
+4. Stuck? Tap **🔎 Clue** under the keyboard. The first clue shows a picture and what the word means. The second is a silly sentence with the word missing. The third is the first letter. At the two easiest levels the first clue is open from the start.
 5. Found it? **Case closed!** The card shows the word, what it means and the silly sentence with the word in it. Tap **Hear the word** to hear it. You earn a star.
 6. Not found in six tries? The card shows the word anyway. No star, and the word comes back later in Try again.
 7. Tap **Next case** to go on. After five cases the case file closes: you see the five words with ✅ or ❌, the stars you earned and your rank. **New case file** starts the next five.
@@ -46,7 +46,8 @@ Open them with the gear button.
 - **Read aloud.** A speaker button on the card reads the open clues out loud, and the word with its sentence once the case is closed. It is on by itself for ages 7 and under.
 - Age, colors, sound effects and the display language (EN/DE) are shared with the other games.
 - **Print worksheet.** See below.
-- The keyboard works too: type the letters, Backspace erases, Enter checks and goes on.
+- The keyboard works too: type the letters, Backspace erases, Enter checks and goes on. On the screen, the ⌫ key erases and the wide blue key checks.
+- Clues, grid and keyboard share one screen. When open clues need the room, the grid's tiles get a little smaller. On the smallest phones with all three clues open, the card scrolls instead of cutting rows off.
 
 ## Print a worksheet
 

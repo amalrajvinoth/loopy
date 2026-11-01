@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'sha256-qaffA4PKJhS17WK677SlP+pD8TYfKIJkA4g3R63ShN8='; style-src 'self' 'sha256-z2P7kGW5Z05eCTjTZdYpc0vThTlOE9vmt97pVSvi2I4=' 'sha256-X/6TgBlwR/r0pxAaWlbvoxARMjftgwBhtW4mnRo1lys=' 'sha256-RT1053JU5UiKvjrCUFx1rlhdFLMmgtuFJ9T8jnMeawQ=' 'sha256-nZ5SAifs7yg0KHXGahfWDo+SQzH7bM6dB53haqDY1io='; img-src 'self' data:; font-src 'self'; connect-src 'self' https://loopy-sync.loopy-1e2.workers.dev; worker-src 'self'; object-src 'none'; base-uri 'none'; form-action 'none'; manifest-src 'self'; upgrade-insecure-requests">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'sha256-1rfQO1nwNKbNlGe4OTuHSmYMv2zo8dEDvuP98BNuZ80='; style-src 'self' 'sha256-z2P7kGW5Z05eCTjTZdYpc0vThTlOE9vmt97pVSvi2I4=' 'sha256-X/6TgBlwR/r0pxAaWlbvoxARMjftgwBhtW4mnRo1lys=' 'sha256-RT1053JU5UiKvjrCUFx1rlhdFLMmgtuFJ9T8jnMeawQ=' 'sha256-bq9E3uL2kocmNB0vd4/n2ZnUkdqPzzt/I9DcR0+6wRw='; img-src 'self' data:; font-src 'self'; connect-src 'self' https://loopy-sync.loopy-1e2.workers.dev; worker-src 'self'; object-src 'none'; base-uri 'none'; form-action 'none'; manifest-src 'self'; upgrade-insecure-requests">
 <meta name="referrer" content="strict-origin-when-cross-origin">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <style>:root{color-scheme:light;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}body{margin:0}[hidden]{display:none!important}</style>
@@ -217,8 +217,6 @@ body { min-height: 100vh; min-height: 100dvh; padding-block: 12px 16px; }
 .choices button.wrong { border-color: var(--bad); background: var(--bad-bg); color: var(--bad); }
 .choices button.faded { opacity: 0.45; }
 .next { font: inherit; font-size: 1.25rem; font-weight: 700; color: var(--accent-ink); background: var(--accent); border: 0; border-radius: 16px; min-height: clamp(52px, 7dvh, 72px); cursor: pointer; width: 100%; }
-.helper { display: flex; align-items: center; gap: 8px; min-height: 40px; cursor: pointer; }
-.helper input { width: 22px; height: 22px; accent-color: var(--c2); }
 @media (orientation: landscape) and (min-width: 640px) {
   .side { height: 100%; justify-content: center; }
   .choices button { min-height: clamp(52px, 14dvh, 130px); }
@@ -273,7 +271,6 @@ body { min-height: 100vh; min-height: 100dvh; padding-block: 12px 16px; }
         <button type="button" id="words-de" data-words="de">Deutsch</button>
       </div>
     </div>
-    <label class="helper"><input type="checkbox" id="auto-read"> <span data-t="ssAutoRead">Read each word out loud</span></label>
     <div class="panel-foot">
       <p data-t="ssKbd">Keyboard works too: 1 to 4 picks an answer, Enter goes on.</p>
       <button type="button" class="reset" id="reset" data-t="resetScore">Reset score</button>
@@ -299,7 +296,7 @@ Loopy.addStrings({
   en: {
     ssName: "Sound Spell", ssMode: "Sounds", ssStart: "Starting", ssEnd: "Ending",
     ssLv1: "Starting sounds, 3 choices", ssLv2: "Both sounds, 3 choices", ssLv3: "Both sounds, 4 choices", ssWords: "Words in",
-    ssAutoRead: "Read each word out loud", ssHear: "Hear the word",
+    ssHear: "Hear the word",
     ssKbd: "Keyboard works too: 1 to 4 picks an answer, Enter goes on.",
     ssHow: "Look at the picture. Write the missing sound, or circle it.",
     ssAskStart: "Which sound does it start with?", ssAskEnd: "Which sound does it end with?",
@@ -310,7 +307,7 @@ Loopy.addStrings({
   de: {
     ssName: "Anlaut und Endlaut", ssMode: "Laute", ssStart: "Anlaut", ssEnd: "Endlaut",
     ssLv1: "Anlaute, 3 Antworten", ssLv2: "Beide Laute, 3 Antworten", ssLv3: "Beide Laute, 4 Antworten", ssWords: "Wörter auf",
-    ssAutoRead: "Jedes Wort vorlesen", ssHear: "Wort anhören",
+    ssHear: "Wort anhören",
     ssKbd: "Die Tastatur geht auch: 1 bis 4 wählt eine Antwort, Enter geht weiter.",
     ssHow: "Schau dir das Bild an. Schreibe den fehlenden Laut oder kreise ihn ein.",
     ssAskStart: "Mit welchem Laut beginnt das Wort?", ssAskEnd: "Mit welchem Laut endet das Wort?",
@@ -360,7 +357,7 @@ function makeProblem(lang, modeSetting, age, choices, avoid) {
 
 (function () {
   const $ = (id) => document.getElementById(id);
-  const card = $("card"), picEl = $("pic"), wordEl = $("word"), choicesEl = $("choices"), feedbackEl = $("feedback"), nextBtn = $("next"), speakBtn = $("speak"), autoBox = $("auto-read");
+  const card = $("card"), picEl = $("pic"), wordEl = $("word"), choicesEl = $("choices"), feedbackEl = $("feedback"), nextBtn = $("next"), speakBtn = $("speak");
   const modeBtns = [...document.querySelectorAll("#mode-seg button")];
   const wordsBtns = [...document.querySelectorAll("#words-seg button")];
   const t = Loopy.t;
@@ -418,7 +415,7 @@ function makeProblem(lang, modeSetting, age, choices, avoid) {
     $("streak").textContent = streak;
     modeBtns.forEach(b => b.setAttribute("aria-pressed", String(b.dataset.mode === modeSetting)));
     wordsBtns.forEach(b => b.setAttribute("aria-pressed", String(b.dataset.words === wordsLang)));
-    autoBox.checked = autoRead;
+    readPill();
     Loopy.nextButton(nextBtn, answered);
   }
   function showWord(fill) {
@@ -490,7 +487,8 @@ function makeProblem(lang, modeSetting, age, choices, avoid) {
   nextBtn.addEventListener("click", newRound);
   modeBtns.forEach(b => b.addEventListener("click", () => { modeSetting = b.dataset.mode; store.set("ss.mode.a" + age, modeSetting); newRound(); }));
   wordsBtns.forEach(b => b.addEventListener("click", () => { wordsLang = b.dataset.words; store.set("ss.words", wordsLang); recent = []; newRound(); }));
-  autoBox.addEventListener("change", () => { autoRead = autoBox.checked; store.set("ss.autoRead", autoRead); });
+  // The Read aloud pill in Settings. The setting stays this game's own: it reads words, not a question.
+  const readPill = Loopy.speech.toggle({ isOn: () => autoRead, set: (on) => { autoRead = on; store.set("ss.autoRead", on); } });
   window.addEventListener("loopy:age", (e) => { age = e.detail; recent = []; loadForAge(); newRound(); });
   $("reset").addEventListener("click", () => { right = 0; tried = 0; streak = 0; if (window.Loopy && Loopy.recent) Loopy.recent.clear("sound-spell"); newRound(); });
   document.addEventListener("keydown", (e) => {
