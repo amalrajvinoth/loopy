@@ -4,6 +4,7 @@ Newest first. One line per change: date, plugin and version, what it learned, an
 
 | Date | Plugin | What changed | Learned from |
 | --- | --- | --- | --- |
+| 2026-11-01 | loopy 1.4.2 | ship-pr knows the hand-run Family sync usage job (counts only); heal has a recipe for it. | Owner's ask "add usage workflow", loopy project 1 Nov 2026 |
 | 2026-10-25 | loopy 1.4.1 | Knows `tools/ralph/` (the Ralph loop's helpers `issue.py` and `status.py`); the loop runs the same checks as ship-pr. | Owner's ask "implement ralph loop", loopy project 25 Oct 2026 |
 | 2026-10-25 | loopy 1.4.0 | New weekly-check skill: the Monday loop that says nothing unless something needs the owner, run by the project's scheduled task. heal has recipes for the three new workflows (Live site check, Dependabot merge, Lighthouse). ship-pr knows `.claude/loop.md`. | Loops plan, loopy project 25 Oct 2026 |
 | 2026-10-23 | loopy 1.3.1 | ship-pr runs the new levels test; heal has a recipe for it. | Levels follow the child (#138), loopy project 23 Oct 2026 |
