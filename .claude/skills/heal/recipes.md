@@ -88,3 +88,8 @@ One per failure. Add new ones at the end (the heal skill step 3). Keep each to f
 - Looks like: the monthly "Lighthouse" run: "N score(s) under 90", with the page and the category in the step log.
 - Cause: a page got heavier or slower (new pictures, more script before the first paint), or an accessibility rule the a11y check does not cover.
 - Fix: download the reports kept with the run and open the page's HTML report; it lists what cost the points. Size: `python3 tools/review.py` (100 KB per page). Fix in `src/`, rebuild, and run the workflow again (Actions → Lighthouse → Run workflow) after the merge. (25 Oct 2026)
+
+## Family sync usage job is red
+- Looks like: the hand-run "Family sync usage" job fails in "Count families and grown-ups": `test -n "$id"` fails, wrangler says "Authentication error", or `tools/sync-usage.mjs` throws on JSON.
+- Cause: a missing or expired Cloudflare secret, the `loopy-sync` database renamed, or wrangler's `--json` output changed shape.
+- Fix: ask the owner to check `CLOUDFLARE_API_TOKEN` and `CLOUDFLARE_ACCOUNT_ID` (sync/README.md). For a shape change, run `npx wrangler d1 execute loopy-sync --remote --json --command "SELECT 1"` and fit `query()` in `tools/sync-usage.mjs` to it. It must keep printing counts only: the log is public. (1 Nov 2026)

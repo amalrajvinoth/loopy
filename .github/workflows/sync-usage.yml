@@ -1,0 +1,42 @@
+# How many families use Family sync? Run this by hand: Actions tab, "Family sync usage", "Run workflow".
+# It reads the two D1 databases (sync/README.md) and prints counts only: no family ids, no names, no emails.
+# The job log is public, like the rest of this repo, so it must stay that way.
+name: Family sync usage
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  count:
+    runs-on: ubuntu-latest
+    env:
+      CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+      CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+      # The same exact version as the deploy job (sync.yml).
+      WRANGLER: wrangler@4.149.0
+    steps:
+      - name: Not set up yet
+        if: env.CLOUDFLARE_API_TOKEN == '' || env.CLOUDFLARE_ACCOUNT_ID == ''
+        run: echo "No Cloudflare secrets, so nothing to count. See sync/README.md."
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        if: env.CLOUDFLARE_API_TOKEN != '' && env.CLOUDFLARE_ACCOUNT_ID != ''
+      - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
+        if: env.CLOUDFLARE_API_TOKEN != '' && env.CLOUDFLARE_ACCOUNT_ID != ''
+        with:
+          node-version: 22
+          package-manager-cache: false
+      - name: Count families and grown-ups
+        if: env.CLOUDFLARE_API_TOKEN != '' && env.CLOUDFLARE_ACCOUNT_ID != ''
+        working-directory: sync
+        run: |
+          w() { npx --yes "$WRANGLER" "$@"; }
+          find_id() { w d1 list --json | node -e 'let s="";process.stdin.on("data",d=>s+=d).on("end",()=>{const d=JSON.parse(s).find(x=>x.name===process.argv[1]);process.stdout.write(d?d.uuid:"")})' "$1"; }
+          id=$(find_id loopy-sync)
+          test -n "$id"
+          sed -i "s/DATABASE_ID/$id/" wrangler.toml
+          gid=$(find_id loopy-grownups)
+          if [ -n "$gid" ]; then sed -i "s/GROWNUPS_ID/$gid/" wrangler.toml; export HAS_GROWNUPS=1; fi
+          node ../tools/sync-usage.mjs | tee -a "$GITHUB_STEP_SUMMARY"
