@@ -61,8 +61,11 @@ details p { padding: 0 0 14px; color: var(--muted); }
 <main class="wrap">
   <header class="bar">
     <a class="home-link" href="../">&larr; loopy</a>
-    <div class="controls"><div id="theme-picker"></div><div id="lang-picker"></div></div>
+    <button type="button" id="settings-toggle" aria-controls="settings-panel"></button>
   </header>
+  <div class="settings-panel" id="settings-panel" hidden>
+    <div class="controls"><div id="theme-picker"></div><div id="lang-picker"></div></div>
+  </div>
   <h1 data-t="helpTitleShort">Help and feedback</h1>
 
   <section aria-labelledby="guide-title">
