@@ -1,0 +1,841 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'sha256-MHfipVoy7fQw2KnBapj5+Hr/nEf7rs8KUJwC8R7OaZU='; style-src 'self' 'sha256-z2P7kGW5Z05eCTjTZdYpc0vThTlOE9vmt97pVSvi2I4=' 'sha256-qxqld09sBl9KP7HcyMVqISsx5anYdMyEAaUoAncFj3Q=' 'sha256-RT1053JU5UiKvjrCUFx1rlhdFLMmgtuFJ9T8jnMeawQ=' 'sha256-cOcmV1JLS2mJzp0BUNncjJnKGY7FMlwGOypC59znXZE='; img-src 'self' data:; font-src 'self'; connect-src 'self' https://loopy-sync.loopy-1e2.workers.dev; worker-src 'self'; object-src 'none'; base-uri 'none'; form-action 'none'; manifest-src 'self'; upgrade-insecure-requests">
+<meta name="referrer" content="strict-origin-when-cross-origin">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<style>:root{color-scheme:light;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}body{margin:0}[hidden]{display:none!important}</style>
+<link rel="icon" href="../../icon.svg" type="image/svg+xml">
+<link rel="manifest" href="../../manifest.webmanifest">
+<link rel="apple-touch-icon" href="../../apple-touch-icon.png">
+<meta name="theme-color" content="#0a0a0c">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="loopy">
+<title data-t="wtName">Word Trail</title>
+<meta name="description" content="Word Trail on loopy: find the words hidden in a grid of letters. Connect letters that touch to spell the words on the list, with pictures to help. From 4 × 4 grids with short straight words to 6 × 6 grids with long bending ones, in English or German. Free, no ads.">
+<link rel="preload" href="../../fonts/lexend-latin.woff2" as="font" type="font/woff2" crossorigin>
+<style>
+/* Layout: the letter grid on a card, the word list and buttons below. Shared look with the other games. */
+:root {
+  --bg: #f3f6fb;
+  --card: #ffffff;
+  --ink: #1d2a3f;
+  --muted: #5d6b82;
+  --line: #d5dde9;
+  --accent: #2457c5;
+  --accent-ink: #ffffff;
+  --mark: #e2622b;
+  --good: #1f8a4c;
+  --good-bg: #e3f5ea;
+  --bad: #c23a3a;
+  --bad-bg: #fbe6e6;
+  --chip: #e6ecf6;
+  --key: #ffffff;
+  --font: "Lexend", "Segoe UI", "Helvetica Neue", Arial, sans-serif;
+}
+
+* { box-sizing: border-box; }
+body {
+  background: var(--bg); color: var(--ink); font-family: var(--font); font-size: 16px;
+  padding-left: max(16px, env(safe-area-inset-left, 0px));
+  padding-right: max(16px, env(safe-area-inset-right, 0px));
+  padding-block: 20px 32px;
+}
+.wrap { max-width: 520px; margin: 0 auto; display: flex; flex-direction: column; gap: 16px; }
+
+.top { display: flex; flex-wrap: wrap; gap: 12px; align-items: center; justify-content: space-between; }
+h1 { margin: 0; font-size: 1.6rem; font-weight: 700; text-wrap: balance; }
+.score { display: flex; flex-wrap: wrap; gap: 8px; font-variant-numeric: tabular-nums; }
+.pill { background: var(--card); border: 1px solid var(--line); border-radius: 999px; padding: 6px 14px; font-weight: 600; font-size: 1rem; white-space: nowrap; }
+.pill span { color: var(--muted); font-weight: 400; margin-right: 4px; }
+
+.settings { display: flex; flex-direction: column; gap: 8px; }
+.seg-label { font-size: 0.8rem; font-weight: 600; letter-spacing: 0.06em; text-transform: uppercase; color: var(--muted); margin: 0 0 4px 4px; }
+.seg { display: grid; grid-template-columns: repeat(3, 1fr); gap: 6px; background: var(--chip); padding: 5px; border-radius: 14px; }
+.seg.two { grid-template-columns: repeat(2, 1fr); }
+.seg.five { grid-template-columns: repeat(5, 1fr); }
+.seg button {
+  font: inherit; font-size: 0.95rem; font-weight: 600; color: var(--muted);
+  background: transparent; border: 0; border-radius: 10px; padding: 8px 6px; min-height: 44px; cursor: pointer;
+}
+.seg button[aria-pressed="true"] { background: var(--card); color: var(--ink); box-shadow: 0 1px 3px rgb(0 0 0 / 0.12); }
+
+.problem-card {
+  background: var(--card); border: 1px solid var(--line); border-radius: 24px;
+  padding: 20px 18px 18px; display: flex; flex-direction: column; align-items: center; gap: 14px;
+}
+.problem-card.good { border-color: var(--good); box-shadow: 0 0 0 2px var(--good) inset; }
+.problem-card.bad { border-color: var(--bad); box-shadow: 0 0 0 2px var(--bad) inset; }
+
+.feedback { min-height: 3.1em; text-align: center; font-size: 1.1rem; line-height: 1.45; margin: 0; max-width: 34ch; }
+.feedback strong { display: block; font-size: 1.45rem; }
+.feedback.good strong { color: var(--good); }
+.feedback.bad strong { color: var(--bad); }
+.feedback .hint { color: var(--muted); }
+
+.foot { display: flex; justify-content: space-between; align-items: center; gap: 12px; flex-wrap: wrap; }
+.foot p { margin: 0; color: var(--muted); font-size: 0.9rem; }
+.reset { font: inherit; font-size: 0.95rem; color: var(--muted); background: transparent; border: 2px solid var(--line); border-radius: 14px; padding: 0 16px; min-height: 44px; cursor: pointer; }
+button:focus-visible { outline: 3px solid var(--mark); outline-offset: 3px; }
+
+@media (max-width: 420px) {
+  h1 { font-size: 1.35rem; }
+  .seg button { font-size: 0.85rem; }
+  .seg.five button { font-size: 0.72rem; padding-inline: 2px; }
+}
+@media (prefers-reduced-motion: reduce) {
+  * { transition: none !important; }
+}
+</style>
+<style>.home-link{display:inline-flex;align-items:center;min-height:40px;color:var(--muted);font-weight:600;text-decoration:none;font-size:0.95rem}.home-link:hover{color:var(--ink)}</style>
+<style>
+/* Phones and tablets: the game fills one screen; settings sit behind a button. */
+body { min-height: 100vh; min-height: 100dvh; padding-block: 12px 16px; }
+.wrap { gap: 12px; }
+.game-bar { display: flex; align-items: center; justify-content: space-between; gap: 8px; }
+.bar-right { display: flex; align-items: center; gap: 8px; }
+.top { gap: 8px 12px; }
+.play { display: flex; flex-direction: column; gap: 12px; -webkit-user-select: none; user-select: none; }
+@media (min-width: 600px) and (orientation: portrait) { .wrap { max-width: 640px; } }
+@media (orientation: landscape) and (min-width: 640px) {
+  .wrap { max-width: 1100px; }
+  .play { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; align-items: center; }
+}
+
+.problem-card { padding: 12px 14px 12px; gap: 8px; }
+.feedback { min-height: 0; font-size: 1.05rem; }
+.feedback strong { font-size: 1.3rem; }
+
+/* Portrait: the page is exactly one screen tall; the keyboard stays at the bottom
+   and the card shrinks to fit. With settings open, the page scrolls normally. */
+@media (orientation: portrait) {
+  body { height: calc(100dvh - env(safe-area-inset-top, 0px) - env(safe-area-inset-bottom, 0px)); min-height: 0; display: flex; flex-direction: column; overflow: hidden; }
+  body:has(#settings-panel:not([hidden])) { height: auto; overflow: visible; }
+  .wrap { flex: 1 1 auto; min-height: 0; width: 100%; }
+  .play { flex: 1 1 auto; min-height: 0; }
+  .problem-card { flex: 1 1 auto; min-height: 0; justify-content: center; overflow: hidden; }
+}
+@media (orientation: landscape) and (min-width: 640px) {
+  body { height: calc(100dvh - env(safe-area-inset-top, 0px) - env(safe-area-inset-bottom, 0px)); min-height: 0; display: flex; flex-direction: column; overflow: hidden; }
+  body:has(#settings-panel:not([hidden])) { height: auto; overflow: visible; }
+  .wrap { flex: 1 1 auto; min-height: 0; width: 100%; }
+  .play { flex: 1 1 auto; min-height: 0; grid-template-rows: minmax(0, 1fr); }
+  .problem-card { min-height: 0; overflow: hidden; height: 100%; justify-content: center; }
+  .side { height: 100%; display: flex; flex-direction: column; justify-content: center; gap: 10px; }
+}
+
+/* Word Trail: the topic row, the letter grid with its trail lines, the spelled letters, then the word list. */
+.topic-row { display: flex; align-items: center; justify-content: space-between; gap: 8px; width: 100%; }
+.topic { font-weight: 700; font-size: 1.05rem; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.found { color: var(--muted); font-weight: 600; font-size: 0.9rem; white-space: nowrap; }
+.gridwrap { position: relative; width: min(100%, 400px, 38dvh); }
+.grid { display: grid; grid-template-columns: repeat(var(--n, 5), 1fr); gap: 5px; touch-action: none; }
+.cell {
+  aspect-ratio: 1; min-width: 0; padding: 0; display: grid; place-items: center; cursor: pointer;
+  border: 2px solid var(--line); border-radius: 22%; background: var(--key); color: var(--ink);
+  font-family: "Fredoka", var(--font); font-weight: 700; font-size: clamp(1rem, 4.6dvh, 1.7rem); text-transform: uppercase; line-height: 1;
+  -webkit-tap-highlight-color: transparent; -webkit-user-select: none; user-select: none;
+}
+.grid.n6 .cell { font-size: clamp(0.95rem, 4dvh, 1.45rem); }
+.cell.on { background: var(--accent); border-color: var(--accent); color: var(--on-accent, #fff); transform: scale(1.06); z-index: 1; }
+.cell.w { background: var(--chip); border-width: 3px; }
+.cell.w1 { border-color: var(--c3); } .cell.w2 { border-color: var(--c4); } .cell.w3 { border-color: var(--c2); } .cell.w4 { border-color: var(--c1); } .cell.w5 { border-color: var(--c5); }
+.cell.no { background: var(--bad-bg); border-color: var(--bad); border-width: 3px; }
+.cell.hint { animation: wt-pulse 1s ease-in-out infinite; border-color: var(--mark); }
+@keyframes wt-pulse { 50% { transform: scale(0.88); } }
+.cell:focus-visible { outline: 3px solid var(--mark); outline-offset: 1px; }
+.cell:disabled { cursor: default; }
+.trail { position: absolute; inset: 0; width: 100%; height: 100%; pointer-events: none; overflow: visible; }
+.trail polyline { fill: none; stroke-linecap: round; stroke-linejoin: round; opacity: 0.35; }
+.trail .now { stroke: var(--accent); }
+.trail .w1 { stroke: var(--c3); } .trail .w2 { stroke: var(--c4); } .trail .w3 { stroke: var(--c2); } .trail .w4 { stroke: var(--c1); } .trail .w5 { stroke: var(--c5); } .trail .no { stroke: var(--bad); }
+.spell-row { display: flex; align-items: center; justify-content: center; gap: 8px; width: 100%; }
+.spell { flex: 1 1 auto; margin: 0; text-align: center; font-family: "Fredoka", var(--font); font-size: 1.5rem; letter-spacing: 0.18em; color: var(--accent); min-height: 1.2em; text-transform: uppercase; line-height: 1.2; }
+.spell-row button {
+  font: inherit; font-weight: 700; font-size: 0.95rem; min-height: 40px; min-width: 44px; padding: 0 12px; border-radius: 12px; cursor: pointer;
+  border: 2px solid var(--line); background: var(--key); color: var(--ink); touch-action: manipulation;
+}
+.spell-row .go { background: var(--accent); border-color: var(--accent); color: var(--on-accent, #fff); }
+.result { display: flex; flex-direction: column; align-items: center; gap: 6px; width: 100%; text-align: center; }
+.big { font-family: "Fredoka", var(--font); font-size: 1.6rem; margin: 0; line-height: 1.1; text-align: center; }
+.stars { display: flex; align-items: center; justify-content: center; gap: 6px; font-weight: 700; font-size: 1.1rem; }
+.stars svg { width: 22px; height: 22px; fill: var(--mark); }
+.words { display: flex; flex-wrap: wrap; gap: 6px; justify-content: center; width: 100%; }
+.wd {
+  display: inline-flex; align-items: center; gap: 5px; border: 2px solid var(--line); border-radius: 999px; padding: 4px 10px 4px 7px;
+  font-weight: 700; font-size: 1rem; background: var(--key); color: var(--ink); letter-spacing: 0.03em; line-height: 1.2;
+}
+.wd .e { font-size: 1.15rem; line-height: 1; }
+.wd .dash { font-family: ui-monospace, Menlo, monospace; letter-spacing: 0.12em; }
+.wd.now { border-color: var(--accent); box-shadow: 0 0 0 2px var(--accent) inset; }
+.wd.ok { color: var(--muted); text-decoration: line-through; text-decoration-thickness: 2px; }
+.wd.w1 { border-color: var(--c3); } .wd.w2 { border-color: var(--c4); } .wd.w3 { border-color: var(--c2); } .wd.w4 { border-color: var(--c1); } .wd.w5 { border-color: var(--c5); }
+.wd.no { border-color: var(--bad); color: var(--bad); }
+.sr { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
+.row2 { display: flex; gap: 8px; width: 100%; }
+.more {
+  flex: 1 1 0; font: inherit; font-weight: 700; font-size: 0.95rem; color: var(--ink); background: transparent;
+  border: 2px solid var(--accent); border-radius: 999px; min-height: 44px; padding: 0 12px; cursor: pointer; white-space: nowrap;
+}
+.more:disabled { opacity: 0.45; cursor: default; }
+.next { font: inherit; font-size: 1.2rem; font-weight: 700; color: var(--accent-ink); background: var(--accent); border: 0; border-radius: 16px; min-height: clamp(48px, 7dvh, 64px); cursor: pointer; width: 100%; }
+.seg.topics { grid-template-columns: repeat(3, 1fr); }
+.seg.topics button { font-size: 0.85rem; padding: 6px 4px; }
+
+/* Short phones: a smaller grid and tighter rows. */
+@media (max-height: 700px) and (orientation: portrait) {
+  .gridwrap { width: min(100%, 36dvh); }
+  .grid { gap: 4px; }
+  .spell { font-size: 1.2rem; }
+  .spell-row button { min-height: 36px; }
+  .wd { font-size: 0.9rem; padding: 3px 8px 3px 6px; }
+  .more, .next { min-height: 40px; }
+  .problem-card { gap: 6px; padding: 10px 12px; }
+}
+/* Landscape: the grid keeps the card, the word list and buttons sit on the right. */
+@media (orientation: landscape) and (min-width: 640px) {
+  .gridwrap { width: min(100%, 46dvh); }
+  .grid { gap: 4px; }
+  .spell { font-size: 1.2rem; }
+  .spell-row button { min-height: 36px; }
+  .problem-card { gap: 6px; }
+  .words { justify-content: flex-start; }
+}
+@media print {
+  .loopy-sheet .ws-tg { border-collapse: collapse; margin-top: 1mm; }
+  .loopy-sheet .ws-tg td { width: 5.6mm; height: 5.6mm; padding: 0; border: 0.3mm solid #000; text-align: center; font-size: 10pt; font-weight: 600; line-height: 1; }
+  .loopy-sheet .ws-tg.n4 td { width: 6.5mm; height: 6.5mm; font-size: 11pt; }
+  .loopy-sheet .ws-find { font-size: 11pt; font-weight: 600; margin-top: 0.5mm; letter-spacing: 0.05em; }
+  .loopy-sheet .ws-find .ws-pic { font-size: 14pt; margin-right: 1mm; }
+}
+</style>
+<link rel="stylesheet" href="../../loopy.css">
+<script src="../../loopy.js"></script>
+</head>
+<body>
+
+<div class="wrap">
+  <header class="game-bar">
+    <a class="home-link" href="../../">&larr; loopy</a>
+    <div class="bar-right">
+      <span id="star-chip"></span>
+      <button type="button" id="settings-toggle" aria-controls="settings-panel"></button>
+    </div>
+  </header>
+  <section class="top" aria-labelledby="title">
+    <h1 id="title" data-t="wtName">Word Trail</h1>
+    <div class="score" aria-live="polite">
+      <div class="pill pill-score"><span data-t="score">Score</span><b id="score">0 / 0</b></div>
+      <div id="level"></div>
+      <div class="pill pill-streak"><span data-t="streak">Streak</span><b id="streak">0</b></div>
+      <div id="last5" data-game="word-trail"></div>
+    </div>
+  </section>
+  <div class="settings-panel" id="settings-panel" hidden>
+    <div class="controls"><div id="age-picker"></div><div id="theme-picker"></div><button id="sound-toggle"></button><div id="lang-picker"></div></div>
+    <div>
+      <p class="seg-label" id="words-label" data-t="wtWords">Words in</p>
+      <div class="seg two" role="group" aria-labelledby="words-label" id="words-seg">
+        <button type="button" data-words="en">English</button>
+        <button type="button" data-words="de">Deutsch</button>
+      </div>
+    </div>
+    <div>
+      <p class="seg-label" id="topic-label" data-t="wtTopic">Topic</p>
+      <div class="seg topics" role="group" aria-labelledby="topic-label" id="topic-seg"></div>
+    </div>
+    <div>
+      <p class="seg-label" id="level-label" data-t="wtLevel">Level</p>
+      <div class="seg five" role="group" aria-labelledby="level-label" id="level-seg">
+        <button type="button" data-level="1" data-t="wtL1">4 × 4, straight</button>
+        <button type="button" data-level="2" data-t="wtL2">5 × 5, one bend</button>
+        <button type="button" data-level="3" data-t="wtL3">6 × 6, bends</button>
+        <button type="button" data-level="4" data-t="wtL4">6 × 6, 5 words</button>
+        <button type="button" data-level="5" data-t="wtL5">6 × 6, long words</button>
+      </div>
+    </div>
+    <div class="panel-foot">
+      <p data-t="wtKbd">Keyboard works too: arrows move, Space or Enter picks a letter, Enter checks, Backspace goes back.</p>
+      <button type="button" class="reset" id="reset" data-t="resetScore">Reset score</button>
+    </div>
+  </div>
+
+  <main class="play">
+    <div class="problem-card" id="card">
+      <div class="topic-row"><div class="topic" id="topic"></div><span class="found" id="found"></span></div>
+      <div class="gridwrap" id="letters">
+        <div class="grid" id="grid" role="group" aria-labelledby="topic"></div>
+        <svg class="trail" id="trail" aria-hidden="true"></svg>
+      </div>
+      <div class="spell-row" id="spell-row">
+        <button type="button" id="k-erase" data-t="wtClear" data-t-aria="wtClearAria">Clear</button>
+        <p class="spell" id="spell"></p>
+        <button type="button" class="go" id="k-go" data-t="wtCheck" data-t-aria="wtCheckAria">Check</button>
+      </div>
+      <div class="result" id="result" hidden></div>
+      <p class="feedback" id="feedback" aria-live="polite"></p>
+    </div>
+    <div class="side">
+      <div class="words" id="wordlist"></div>
+      <div class="row2"><button type="button" class="more" id="more"></button></div>
+      <button type="button" class="next" id="next" hidden></button>
+    </div>
+  </main>
+</div>
+
+<script>
+Loopy.addStrings({
+  en: {
+    wtName: "Word Trail", wtWords: "Words in", wtTopic: "Topic", wtMix: "Mix", wtLevel: "Level",
+    wtL1: "4 × 4, straight", wtL2: "5 × 5, one bend", wtL3: "6 × 6, bends", wtL4: "6 × 6, 5 words", wtL5: "6 × 6, long words",
+    wtKbd: "Keyboard works too: arrows move, Space or Enter picks a letter, Enter checks, Backspace goes back.",
+    wtFound: "{n} of {m} found", wtClue: "🔎 Clue", wtLeft: "{n} left", wtNoClues: "No clues left",
+    wtShort: "A word needs 3 letters or more.", wtAlready: "You found “{w}” already.", wtNotList: "Not on the list. “{w}” was here.",
+    wtGot: "“{w}”! ⭐", wtAllDone: "All {n} words found!", wtSomeDone: "{r} of {n} words found.", wtStars: "+{n} stars",
+    wtNext: "Next grid →", wtGo: "Next word →", wtCheck: "Check", wtCheckAria: "Check the word", wtClear: "Clear", wtClearAria: "Clear the trail",
+    wtCell: "{l}, row {r}, box {c}", wtFind: "Find this one", wtLetters: "{n} letters",
+    wtRead: "Find these words: {w}.", wtReadHidden: "Topic: {t}. {n} words to find. The next one has {l} letters.",
+    wtHow: "Find the words hidden in the grid. Letters that touch make a word. Draw a line through each one.", wtAnsAt: "row {r}, box {c}",
+    "wtT-animals": "Animals", "wtT-food": "Food", "wtT-home": "At home", "wtT-school": "At school", "wtT-body": "Body",
+    "wtT-nature": "Nature", "wtT-clothes": "Clothes", "wtT-colours": "Colours", "wtT-sport": "Sport", "wtT-space": "Space",
+    "wtT-jobs": "Jobs", "wtT-town": "In town", "wtT-feelings": "Feelings", "wtT-science": "Science", "wtT-verbs": "Doing words"
+  },
+  de: {
+    wtName: "Wortpfad", wtWords: "Wörter auf", wtTopic: "Thema", wtMix: "Gemischt", wtLevel: "Stufe",
+    wtL1: "4 × 4, gerade", wtL2: "5 × 5, ein Knick", wtL3: "6 × 6, mit Knicken", wtL4: "6 × 6, 5 Wörter", wtL5: "6 × 6, lange Wörter",
+    wtKbd: "Die Tastatur geht auch: Pfeile bewegen, Leertaste oder Enter wählt einen Buchstaben, Enter prüft, Rücktaste geht zurück.",
+    wtFound: "{n} von {m} gefunden", wtClue: "🔎 Hinweis", wtLeft: "{n} übrig", wtNoClues: "Keine Hinweise mehr",
+    wtShort: "Ein Wort braucht mindestens 3 Buchstaben.", wtAlready: "„{w}“ hast du schon gefunden.", wtNotList: "Steht nicht auf der Liste. „{w}“ war hier.",
+    wtGot: "„{w}“! ⭐", wtAllDone: "Alle {n} Wörter gefunden!", wtSomeDone: "{r} von {n} Wörtern gefunden.", wtStars: "+{n} Sterne",
+    wtNext: "Nächstes Gitter →", wtGo: "Nächstes Wort →", wtCheck: "Prüfen", wtCheckAria: "Wort prüfen", wtClear: "Löschen", wtClearAria: "Pfad löschen",
+    wtCell: "{l}, Zeile {r}, Feld {c}", wtFind: "Dieses Wort suchen", wtLetters: "{n} Buchstaben",
+    wtRead: "Finde diese Wörter: {w}.", wtReadHidden: "Thema: {t}. {n} Wörter zu finden. Das nächste hat {l} Buchstaben.",
+    wtHow: "Finde die versteckten Wörter im Gitter. Buchstaben, die sich berühren, bilden ein Wort. Zieh eine Linie durch jedes Wort.", wtAnsAt: "Zeile {r}, Feld {c}",
+    "wtT-animals": "Tiere", "wtT-food": "Essen", "wtT-home": "Zu Hause", "wtT-school": "In der Schule", "wtT-body": "Körper",
+    "wtT-nature": "Natur", "wtT-clothes": "Kleidung", "wtT-colours": "Farben", "wtT-sport": "Sport", "wtT-space": "Weltraum",
+    "wtT-jobs": "Berufe", "wtT-town": "In der Stadt", "wtT-feelings": "Gefühle", "wtT-science": "Wissenschaft", "wtT-verbs": "Tunwörter"
+  }
+});
+// GEN START
+// The words to hide, by topic: [picture, English, German]. A word is used only when it is 3 to 8 letters of a to z
+// (German also ä, ö, ü), so "ice cream", "Ei" or "Fuß" stay out of the grid in that language.
+const THEMES = [
+  ["animals", "🐾", [["🐶", "dog", "Hund"], ["🐱", "cat", "Katze"], ["🐟", "fish", "Fisch"], ["🐦", "bird", "Vogel"], ["🐄", "cow", "Kuh"], ["🐷", "pig", "Schwein"], ["🐴", "horse", "Pferd"], ["🐑", "sheep", "Schaf"], ["🐭", "mouse", "Maus"], ["🐰", "rabbit", "Hase"], ["🦆", "duck", "Ente"], ["🐸", "frog", "Frosch"], ["🐻", "bear", "Bär"], ["🦁", "lion", "Löwe"], ["🐵", "monkey", "Affe"], ["🐝", "bee", "Biene"], ["🐔", "hen", "Huhn"], ["🦊", "fox", "Fuchs"], ["🐘", "elephant", "Elefant"], ["🦒", "giraffe", "Giraffe"], ["🐍", "snake", "Schlange"], ["🦉", "owl", "Eule"], ["🐧", "penguin", "Pinguin"], ["🐺", "wolf", "Wolf"], ["🐯", "tiger", "Tiger"], ["🐐", "goat", "Ziege"], ["🦌", "deer", "Reh"], ["🐜", "ant", "Ameise"], ["🐪", "camel", "Kamel"], ["🦓", "zebra", "Zebra"], ["🐳", "whale", "Wal"], ["🦈", "shark", "Hai"], ["🦀", "crab", "Krebs"], ["🦭", "seal", "Robbe"], ["🦢", "swan", "Schwan"], ["🦔", "hedgehog", "Igel"], ["🫏", "donkey", "Esel"]]],
+  ["food", "🍎", [["🍎", "apple", "Apfel"], ["🍌", "banana", "Banane"], ["🍞", "bread", "Brot"], ["🧀", "cheese", "Käse"], ["🥚", "egg", "Ei"], ["🥛", "milk", "Milch"], ["🍐", "pear", "Birne"], ["🥕", "carrot", "Karotte"], ["🍅", "tomato", "Tomate"], ["🍕", "pizza", "Pizza"], ["🍰", "cake", "Kuchen"], ["🍊", "orange", "Orange"], ["🍪", "cookie", "Keks"], ["🧈", "butter", "Butter"], ["🍋", "lemon", "Zitrone"], ["🍯", "honey", "Honig"], ["🍚", "rice", "Reis"], ["🍲", "soup", "Suppe"], ["🥜", "nut", "Nuss"], ["🧂", "salt", "Salz"], ["🧃", "juice", "Saft"], ["🍵", "tea", "Tee"], ["🌽", "corn", "Mais"], ["🍑", "plum", "Pflaume"], ["🍇", "grape", "Traube"], ["🍈", "melon", "Melone"], ["🧅", "onion", "Zwiebel"], ["🫑", "pepper", "Paprika"], ["🍝", "noodle", "Nudel"], ["🍦", "ice", "Eis"], ["🥐", "roll", "Brötchen"], ["🍓", "berry", "Beere"], ["🥗", "salad", "Salat"], ["🍫", "candy", "Bonbon"]]],
+  ["home", "🏠", [["🏠", "house", "Haus"], ["🚪", "door", "Tür"], ["🪟", "window", "Fenster"], ["🛏️", "bed", "Bett"], ["🪑", "chair", "Stuhl"], ["🛋️", "sofa", "Sofa"], ["💡", "lamp", "Lampe"], ["🕰️", "clock", "Uhr"], ["🥄", "spoon", "Löffel"], ["☕", "cup", "Tasse"], ["🧼", "soap", "Seife"], ["🕯️", "candle", "Kerze"], ["🛁", "bath", "Bad"], ["🚿", "shower", "Dusche"], ["🍽️", "plate", "Teller"], ["🧹", "broom", "Besen"], ["🧺", "basket", "Korb"], ["🪞", "mirror", "Spiegel"], ["🏚️", "roof", "Dach"], ["🪵", "table", "Tisch"], ["🍴", "fork", "Gabel"], ["🔪", "knife", "Messer"], ["🍳", "pot", "Topf"], ["♨️", "oven", "Ofen"], ["🛌", "pillow", "Kissen"], ["🧣", "blanket", "Decke"], ["🌷", "garden", "Garten"], ["🧱", "wall", "Wand"], ["🪜", "stairs", "Treppe"], ["🧻", "towel", "Handtuch"], ["📦", "box", "Kiste"], ["🔑", "key", "Schlüssel"]]],
+  ["school", "🏫", [["📖", "book", "Buch"], ["✂️", "scissors", "Schere"], ["🖊️", "pen", "Stift"], ["🔔", "bell", "Glocke"], ["🧩", "puzzle", "Puzzle"], ["📓", "notebook", "Heft"], ["🏫", "school", "Schule"], ["🚌", "bus", "Bus"], ["🥁", "drum", "Trommel"], ["📏", "ruler", "Lineal"], ["🗺️", "map", "Karte"], ["🌍", "globe", "Globus"], ["🖌️", "brush", "Pinsel"], ["🎨", "paint", "Farbe"], ["🔢", "number", "Zahl"], ["🎈", "balloon", "Ballon"], ["🎹", "piano", "Klavier"], ["🧴", "glue", "Kleber"], ["🖍️", "chalk", "Kreide"], ["📋", "board", "Tafel"], ["🪑", "desk", "Pult"], ["🧑‍🤝‍🧑", "class", "Klasse"], ["⏰", "break", "Pause"], ["🔤", "word", "Wort"], ["✉️", "letter", "Brief"], ["📝", "test", "Test"], ["🧽", "eraser", "Radierer"], ["🎒", "backpack", "Ranzen"], ["🍱", "lunch", "Brotdose"], ["🤝", "friend", "Freund"], ["🎵", "music", "Musik"], ["🏃", "gym", "Sport"]]],
+  ["body", "🧍", [["🙂", "head", "Kopf"], ["✋", "hand", "Hand"], ["🦶", "foot", "Fuß"], ["💪", "arm", "Arm"], ["🦵", "leg", "Bein"], ["👁️", "eye", "Auge"], ["👂", "ear", "Ohr"], ["👃", "nose", "Nase"], ["👄", "mouth", "Mund"], ["💇", "hair", "Haar"], ["🦷", "tooth", "Zahn"], ["🦵", "knee", "Knie"], ["☝️", "finger", "Finger"], ["🦶", "toe", "Zeh"], ["🔙", "back", "Rücken"], ["🫃", "belly", "Bauch"], ["🧣", "neck", "Hals"], ["❤️", "heart", "Herz"], ["🦴", "bone", "Knochen"], ["🧴", "skin", "Haut"], ["💋", "lip", "Lippe"], ["🧔", "chin", "Kinn"], ["💪", "elbow", "Ellbogen"], ["🧠", "brain", "Gehirn"], ["🩸", "blood", "Blut"], ["👍", "thumb", "Daumen"], ["😊", "cheek", "Wange"], ["👅", "tongue", "Zunge"], ["🫁", "lung", "Lunge"], ["💪", "muscle", "Muskel"]]],
+  ["nature", "🌳", [["🌳", "tree", "Baum"], ["🌸", "flower", "Blume"], ["🏞️", "river", "Fluss"], ["⛰️", "mountain", "Berg"], ["🌲", "forest", "Wald"], ["🏞️", "lake", "See"], ["🌊", "sea", "Meer"], ["🪨", "stone", "Stein"], ["🌧️", "rain", "Regen"], ["❄️", "snow", "Schnee"], ["💨", "wind", "Wind"], ["☁️", "cloud", "Wolke"], ["🍃", "leaf", "Blatt"], ["🌿", "grass", "Gras"], ["⛰️", "hill", "Hügel"], ["🏖️", "beach", "Strand"], ["🏝️", "island", "Insel"], ["⏳", "sand", "Sand"], ["⛈️", "storm", "Sturm"], ["🧊", "ice", "Eis"], ["🔥", "fire", "Feuer"], ["🌫️", "fog", "Nebel"], ["🌱", "root", "Wurzel"], ["🌰", "seed", "Samen"], ["🌊", "wave", "Welle"], ["🏜️", "desert", "Wüste"], ["🕳️", "cave", "Höhle"], ["🏞️", "valley", "Tal"], ["🌋", "volcano", "Vulkan"], ["🌈", "rainbow", "Regenbogen"], ["🍂", "autumn", "Herbst"], ["🌷", "spring", "Frühling"], ["☀️", "summer", "Sommer"], ["⛄", "winter", "Winter"]]],
+  ["clothes", "👕", [["👕", "shirt", "Hemd"], ["👗", "dress", "Kleid"], ["🎩", "hat", "Hut"], ["👟", "shoe", "Schuh"], ["🧦", "sock", "Socke"], ["🧥", "coat", "Mantel"], ["🧣", "scarf", "Schal"], ["🧤", "glove", "Handschuh"], ["👖", "belt", "Gürtel"], ["🥾", "boot", "Stiefel"], ["👚", "skirt", "Rock"], ["👖", "jeans", "Jeans"], ["🧢", "cap", "Mütze"], ["🧥", "jacket", "Jacke"], ["🔘", "button", "Knopf"], ["👜", "pocket", "Tasche"], ["🧶", "sweater", "Pullover"], ["👔", "tie", "Krawatte"], ["💍", "ring", "Ring"], ["⌚", "watch", "Armbanduhr"], ["👓", "glasses", "Brille"], ["👒", "bonnet", "Haube"], ["🩳", "shorts", "Shorts"], ["🩱", "swimsuit", "Badeanzug"], ["👠", "heel", "Absatz"], ["🧵", "thread", "Faden"], ["🪡", "needle", "Nadel"], ["🎽", "vest", "Weste"], ["🥻", "silk", "Seide"], ["🧶", "wool", "Wolle"]]],
+  ["colours", "🎨", [["🔴", "red", "rot"], ["🔵", "blue", "blau"], ["🟢", "green", "grün"], ["🟡", "yellow", "gelb"], ["⚫", "black", "schwarz"], ["⚪", "white", "weiß"], ["🩷", "pink", "rosa"], ["🟤", "brown", "braun"], ["🩶", "grey", "grau"], ["🟠", "orange", "orange"], ["🟣", "purple", "lila"], ["🥇", "gold", "gold"], ["🥈", "silver", "silber"], ["🌑", "dark", "dunkel"], ["🌕", "light", "hell"], ["🌈", "bright", "bunt"], ["🩵", "pale", "blass"], ["🖤", "shade", "Schatten"], ["🖍️", "crayon", "Wachsmaler"], ["🎨", "colour", "Farbe"], ["🌈", "rainbow", "Regenbogen"], ["🟩", "lime", "limette"], ["🟦", "navy", "marine"], ["🟧", "amber", "bernstein"], ["🌸", "rose", "rosé"], ["🍑", "peach", "pfirsich"], ["🫒", "olive", "oliv"], ["🧡", "warm", "warm"], ["💙", "cold", "kalt"], ["🤍", "clean", "sauber"]]],
+  ["sport", "🏀", [["⚽", "ball", "Ball"], ["🥅", "goal", "Tor"], ["🏃", "run", "Lauf"], ["🤸", "jump", "Sprung"], ["👥", "team", "Team"], ["🚲", "bike", "Rad"], ["🏁", "race", "Rennen"], ["🎾", "tennis", "Tennis"], ["🏅", "medal", "Medaille"], ["🏆", "win", "Sieg"], ["🥅", "net", "Netz"], ["🧑‍🏫", "coach", "Trainer"], ["🎿", "ski", "Ski"], ["🧗", "climb", "klettern"], ["💃", "dance", "Tanz"], ["🥋", "judo", "Judo"], ["⛳", "golf", "Golf"], ["🥊", "boxing", "Boxen"], ["🏒", "hockey", "Hockey"], ["🏄", "surf", "surfen"], ["🪢", "rope", "Seil"], ["🏆", "trophy", "Pokal"], ["⏱️", "sprint", "Sprint"], ["⛑️", "helmet", "Helm"], ["🏟️", "field", "Feld"], ["🔢", "points", "Punkte"], ["🚦", "start", "Start"], ["🏁", "finish", "Ziel"], ["🏊", "swim", "Schwimmen"], ["🏀", "basket", "Korb"], ["🛹", "skate", "Skaten"], ["🧘", "yoga", "Yoga"]]],
+  ["space", "🚀", [["☀️", "sun", "Sonne"], ["🌙", "moon", "Mond"], ["⭐", "star", "Stern"], ["🪐", "planet", "Planet"], ["🚀", "rocket", "Rakete"], ["☄️", "comet", "Komet"], ["🌍", "earth", "Erde"], ["🔴", "mars", "Mars"], ["🔄", "orbit", "Bahn"], ["🌌", "galaxy", "Galaxie"], ["👽", "alien", "Alien"], ["🪐", "saturn", "Saturn"], ["🟠", "venus", "Venus"], ["🟤", "jupiter", "Jupiter"], ["🕳️", "crater", "Krater"], ["💡", "light", "Licht"], ["🌌", "space", "Weltall"], ["☄️", "meteor", "Meteor"], ["🌫️", "dust", "Staub"], ["💍", "ring", "Ring"], ["🛰️", "probe", "Sonde"], ["🧑‍🚀", "crew", "Crew"], ["🌑", "shadow", "Schatten"], ["🔭", "lens", "Linse"], ["🌠", "shooting", "Sternschnuppe"], ["🌞", "solar", "solar"], ["🌗", "phase", "Phase"], ["🛸", "ufo", "Ufo"], ["🌍", "globe", "Kugel"], ["🧭", "north", "Norden"], ["🌡️", "heat", "Hitze"], ["🧊", "cold", "Kälte"]]],
+  ["jobs", "👩‍🚒", [["🧑‍⚕️", "doctor", "Arzt"], ["🧑‍🍳", "baker", "Bäcker"], ["🧑‍✈️", "pilot", "Pilot"], ["🧑‍🌾", "farmer", "Bauer"], ["🧑‍🏫", "teacher", "Lehrer"], ["🧑‍⚕️", "nurse", "Pfleger"], ["🧑‍🍳", "cook", "Koch"], ["🧑‍🎨", "artist", "Maler"], ["🧑‍⚖️", "judge", "Richter"], ["👮", "police", "Polizei"], ["🐾", "vet", "Tierarzt"], ["🦷", "dentist", "Zahnarzt"], ["🚗", "driver", "Fahrer"], ["🎤", "singer", "Sänger"], ["✍️", "writer", "Autor"], ["🤡", "clown", "Clown"], ["👑", "king", "König"], ["👸", "queen", "Königin"], ["🛡️", "knight", "Ritter"], ["⚓", "captain", "Kapitän"], ["🧱", "builder", "Maurer"], ["⛏️", "miner", "Bergmann"], ["⛵", "sailor", "Matrose"], ["💂", "guard", "Wächter"], ["🧑‍🚒", "fireman", "Feuerwehr"], ["💇", "barber", "Friseur"], ["🧑‍🔬", "chemist", "Chemiker"], ["🧑‍💻", "coder", "Coder"], ["🧑‍🔧", "mechanic", "Mechaniker"], ["📸", "photo", "Fotograf"], ["🧑‍🎤", "dancer", "Tänzer"], ["🧑‍🚀", "pilot", "Astronaut"], ["🧑‍🌾", "gardener", "Gärtner"], ["🏪", "seller", "Verkäufer"]]],
+  ["town", "🏙️", [["🛣️", "street", "Straße"], ["🏪", "shop", "Laden"], ["🌳", "park", "Park"], ["🌉", "bridge", "Brücke"], ["🚉", "station", "Bahnhof"], ["🧺", "market", "Markt"], ["⛪", "church", "Kirche"], ["🗼", "tower", "Turm"], ["🏛️", "museum", "Museum"], ["🏦", "bank", "Bank"], ["🥖", "bakery", "Bäckerei"], ["🏨", "hotel", "Hotel"], ["🎬", "cinema", "Kino"], ["📚", "library", "Bücherei"], ["⚓", "harbour", "Hafen"], ["🏰", "castle", "Burg"], ["🦁", "zoo", "Zoo"], ["🏥", "hospital", "Klinik"], ["🚦", "traffic", "Verkehr"], ["🚋", "tram", "Tram"], ["🚕", "taxi", "Taxi"], ["🏙️", "square", "Platz"], ["⛲", "fountain", "Brunnen"], ["↪️", "corner", "Ecke"], ["🪧", "sign", "Schild"], ["🚗", "garage", "Garage"], ["🚇", "tunnel", "Tunnel"], ["🏙️", "city", "Stadt"], ["🏘️", "village", "Dorf"], ["🛤️", "road", "Weg"], ["📮", "mail", "Post"], ["🏊", "pool", "Freibad"], ["🚏", "stop", "Halt"], ["🛒", "cart", "Wagen"]]],
+  ["feelings", "😀", [["😀", "happy", "froh"], ["😢", "sad", "traurig"], ["😠", "angry", "wütend"], ["😌", "proud", "stolz"], ["🦁", "brave", "mutig"], ["😳", "shy", "scheu"], ["😇", "calm", "ruhig"], ["🥱", "tired", "müde"], ["😱", "scared", "bang"], ["🤪", "silly", "albern"], ["🤗", "kind", "nett"], ["😂", "funny", "lustig"], ["😔", "lonely", "einsam"], ["😊", "glad", "heiter"], ["😤", "grumpy", "mürrisch"], ["😬", "nervous", "nervös"], ["😁", "cheerful", "fröhlich"], ["🤤", "hungry", "hungrig"], ["🥤", "thirsty", "durstig"], ["🥰", "nice", "lieb"], ["😎", "cool", "cool"], ["😮", "amazed", "staunend"], ["🤒", "sick", "krank"], ["😴", "sleepy", "dösig"], ["🤩", "wow", "toll"], ["🙃", "upset", "sauer"], ["💪", "strong", "stark"], ["🥺", "sorry", "leid"], ["😌", "relaxed", "entspannt"], ["🥳", "merry", "munter"]]],
+  ["science", "🔬", [["⚡", "energy", "Energie"], ["🧲", "magnet", "Magnet"], ["⚛️", "atom", "Atom"], ["🦠", "cell", "Zelle"], ["🌡️", "climate", "Klima"], ["🦴", "fossil", "Fossil"], ["🔋", "battery", "Batterie"], ["🔌", "current", "Strom"], ["🔩", "metal", "Metall"], ["♨️", "steam", "Dampf"], ["🔊", "sound", "Schall"], ["🔥", "heat", "Hitze"], ["💪", "force", "Kraft"], ["⚙️", "motor", "Motor"], ["🧪", "molecule", "Molekül"], ["🧪", "acid", "Säure"], ["🌱", "plant", "Pflanze"], ["🐞", "insect", "Insekt"], ["💎", "mineral", "Mineral"], ["💎", "crystal", "Kristall"], ["⚫", "carbon", "Kohle"], ["🔦", "laser", "Laser"], ["🤖", "robot", "Roboter"], ["🦠", "microbe", "Keim"], ["🦠", "virus", "Virus"], ["💨", "gas", "Gas"], ["🧊", "solid", "fest"], ["💧", "liquid", "Wasser"], ["🧠", "nerve", "Nerv"], ["🔬", "lens", "Linse"], ["🌍", "gravity", "Schwerkraft"], ["🧬", "gene", "Gen"], ["🪨", "rock", "Gestein"], ["🧫", "sample", "Probe"]]],
+  ["verbs", "🏃", [["🏃", "run", "laufen"], ["🤸", "jump", "springen"], ["🏊", "swim", "schwimmen"], ["🎤", "sing", "singen"], ["📖", "read", "lesen"], ["✍️", "write", "schreiben"], ["🍽️", "eat", "essen"], ["🥤", "drink", "trinken"], ["😴", "sleep", "schlafen"], ["🎲", "play", "spielen"], ["💃", "dance", "tanzen"], ["🧗", "climb", "klettern"], ["🎨", "paint", "malen"], ["🍳", "cook", "kochen"], ["😂", "laugh", "lachen"], ["😢", "cry", "weinen"], ["🪁", "fly", "fliegen"], ["🪑", "sit", "sitzen"], ["🎁", "give", "geben"], ["🤔", "think", "denken"], ["👂", "hear", "hören"], ["👀", "see", "sehen"], ["🚪", "open", "öffnen"], ["🏗️", "build", "bauen"], ["🎓", "learn", "lernen"], ["🤝", "help", "helfen"], ["🚶", "walk", "gehen"], ["🥎", "throw", "werfen"], ["🧤", "catch", "fangen"], ["👉", "push", "drücken"], ["👈", "pull", "ziehen"], ["🧹", "clean", "putzen"], ["🛒", "buy", "kaufen"], ["🔍", "find", "finden"]]]
+];
+// Letters for the empty boxes, about as often as they are in each language.
+const FREQ = { en: "eeeeeaaaarrrriiioooottttnnnsssllcuudpmhgbfywkvxzjq", de: "eeeeeeennnnnniiiisssrrraaaatttdhhuulccggmmoobwfkzpvüäöjyxq" };
+// The five levels: grid size, words per grid, word length, how the trails may run.
+//   bend 0: straight across or down. 1: straight (also diagonal) or with one bend. 2: any trail, bending as it likes.
+const LEVELS = [
+  { n: 4, words: 3, min: 3, max: 4, bend: 0 },
+  { n: 5, words: 4, min: 3, max: 5, bend: 1 },
+  { n: 6, words: 4, min: 4, max: 6, bend: 2 },
+  { n: 6, words: 5, min: 4, max: 7, bend: 2 },
+  { n: 6, words: 5, min: 5, max: 8, bend: 2 }
+];
+const randInt = (n) => Math.floor(Math.random() * n);
+const pick = (arr) => arr[randInt(arr.length)];
+const shuffle = (arr) => { const a = arr.slice(); for (let i = a.length - 1; i > 0; i--) { const j = randInt(i + 1); [a[i], a[j]] = [a[j], a[i]]; } return a; };
+const lower = (w) => w.toLowerCase();
+// A word goes into a grid when it is 3 to 8 plain letters and not the same backwards (so a backwards trail is wrong).
+const usable = (w) => { const l = lower(w); return /^[a-zäöü]{3,8}$/.test(l) && l !== [...l].reverse().join(""); };
+// Every usable word of one language: { pic, word, theme, letters, key }. The key is "en:cat".
+const ALL = { en: [], de: [] };
+THEMES.forEach(([theme, , list]) => list.forEach(([pic, en, de]) => {
+  if (usable(en)) ALL.en.push({ pic, word: en, theme, letters: [...lower(en)], key: "en:" + lower(en) });
+  if (usable(de)) ALL.de.push({ pic, word: de, theme, letters: [...lower(de)], key: "de:" + lower(de) });
+}));
+const inLevel = (e, lv) => e.letters.length >= lv.min && e.letters.length <= lv.max;
+const isPrefix = (a, b) => a !== b && (a.startsWith(b) || b.startsWith(a));
+
+// The words for one grid: `count` words from one topic (a random topic when "mix"), none of them in `avoid`
+// (keys asked lately), none a start of another, together not more than three quarters of the boxes.
+// `must` (a Try again word) goes first. Falls back to fewer words rather than giving up.
+function chooseWords(lang, lv, topic, avoid, must) {
+  const pool = ALL[lang].filter(e => inLevel(e, lv) && !avoid.includes(e.key) && (!must || e.key !== must.key));
+  const themes = shuffle([...new Set(pool.map(e => e.theme))]).filter(th => pool.filter(e => e.theme === th).length >= lv.words);
+  let theme = topic !== "mix" ? topic : must && themes.includes(must.theme) && Math.random() < 0.7 ? must.theme : themes.length ? themes[0] : "mix";
+  let list = theme === "mix" ? pool : pool.filter(e => e.theme === theme);
+  if (list.length < lv.words - (must ? 1 : 0)) { theme = "mix"; list = pool; }
+  list = shuffle(list);
+  const out = must ? [must] : [], seen = new Set(out.map(e => lower(e.word)));
+  let total = must ? must.letters.length : 0;
+  for (const e of list) {
+    if (out.length >= lv.words) break;
+    const w = lower(e.word);
+    if (seen.has(w) || out.some(o => isPrefix(lower(o.word), w)) || total + e.letters.length > lv.n * lv.n * 0.75) continue;
+    seen.add(w); out.push(e); total += e.letters.length;
+  }
+  return { theme, list: out };
+}
+// Lay one word into the boxes as a trail. Returns the boxes used (row * n + col), or null when it did not fit.
+function placeWord(cells, n, letters, bend) {
+  const L = letters.length, free = (i) => cells[i] === "";
+  const DIRS = [[0, 1], [1, 0], [1, 1], [-1, 1], [0, -1], [-1, 0], [-1, -1], [1, -1]];
+  for (let tries = 0; tries < 60; tries++) {
+    const r0 = randInt(n), c0 = randInt(n);
+    if (!free(r0 * n + c0)) continue;
+    if (bend < 2) {
+      // Straight, or two straight parts with one bend between them.
+      const d1 = pick(DIRS.slice(0, bend ? 4 : 2)), split = bend && Math.random() < 0.6 ? 1 + randInt(L - 1) : L;
+      const d2 = split < L ? pick(DIRS.filter(d => d !== d1 && !(d[0] === -d1[0] && d[1] === -d1[1]))) : d1;
+      const path = []; let r = r0, c = c0;
+      for (let i = 0; i < L; i++) {
+        if (r < 0 || c < 0 || r >= n || c >= n || !free(r * n + c) || path.includes(r * n + c)) { path.length = 0; break; }
+        path.push(r * n + c);
+        const d = i + 1 < split ? d1 : d2; r += d[0]; c += d[1];
+      }
+      if (path.length === L) return path;
+      continue;
+    }
+    // Any trail: a walk that never steps on a used box, trying to keep going straight for a while.
+    const path = [r0 * n + c0];
+    let steps = 0;
+    const walk = (r, c, dr, dc) => {
+      if (path.length === L) return true;
+      if (++steps > 300) return false;
+      const dirs = shuffle(DIRS);
+      if (dr !== undefined && Math.random() < 0.5) dirs.unshift([dr, dc]);
+      for (const [a, b] of dirs) {
+        const rr = r + a, cc = c + b, i = rr * n + cc;
+        if (rr < 0 || cc < 0 || rr >= n || cc >= n || !free(i) || path.includes(i)) continue;
+        path.push(i);
+        if (walk(rr, cc, a, b)) return true;
+        path.pop();
+      }
+      return false;
+    };
+    if (walk(r0, c0)) return path;
+  }
+  return null;
+}
+// A whole grid: { n, cells, theme, words: [{ e, path, done, ok, shown, i }] }. Longest words go in first.
+function makeGrid(lang, lv, topic, avoid, must) {
+  for (let attempt = 0; attempt < 30; attempt++) {
+    const { theme, list } = chooseWords(lang, lv, topic, avoid, must);
+    if (!list.length) break;
+    const cells = new Array(lv.n * lv.n).fill(""), words = [];
+    let ok = true;
+    for (const e of list.slice().sort((a, b) => b.letters.length - a.letters.length)) {
+      const path = placeWord(cells, lv.n, e.letters, lv.bend);
+      if (!path) { ok = false; break; }
+      path.forEach((i, k) => { cells[i] = e.letters[k]; });
+      words.push({ e, path });
+    }
+    if (!ok) continue;
+    for (let i = 0; i < cells.length; i++) if (cells[i] === "") cells[i] = pick(FREQ[lang]);
+    // Back in the picked order, with the Try again word first; each word keeps its own colour number.
+    const order = words.sort((a, b) => list.indexOf(a.e) - list.indexOf(b.e)).map((w, i) => Object.assign(w, { i: i + 1, done: false, ok: false, shown: null }));
+    return { n: lv.n, cells, theme, words: order };
+  }
+  // Could not lay the words out: one short word in a plain grid, so the game always goes on.
+  const e = pick(ALL[lang].filter(x => x.letters.length <= 4)) || ALL[lang][0];
+  const cells = new Array(lv.n * lv.n).fill("").map(() => pick(FREQ[lang]));
+  e.letters.forEach((ch, k) => { cells[k] = ch; });
+  return { n: lv.n, cells, theme: e.theme, words: [{ e, path: e.letters.map((_, k) => k), i: 1, done: false, ok: false, shown: null }] };
+}
+// GEN END
+
+(function () {
+  const GAME = "word-trail";
+  const $ = (id) => document.getElementById(id);
+  const card = $("card"), topicEl = $("topic"), foundEl = $("found"), gridEl = $("grid"), wrapEl = $("letters"), trailEl = $("trail"),
+    spellEl = $("spell"), resultEl = $("result"), feedbackEl = $("feedback"), wordsEl = $("wordlist"),
+    moreBtn = $("more"), nextBtn = $("next"), goBtn = $("k-go"), eraseBtn = $("k-erase"), topicSeg = $("topic-seg");
+  const wordsBtns = [...document.querySelectorAll("#words-seg button")];
+  const levelBtns = [...document.querySelectorAll("#level-seg button")];
+  const t = Loopy.t;
+  const store = {
+    // ok: the values this setting may have; anything else falls back to the default.
+    get(k, d, ok) { try { const v = JSON.parse(Loopy.store.get(k)); return ok.includes(v) ? v : d; } catch (e) { return d; } },
+    set(k, v) { Loopy.store.set(k, JSON.stringify(v)); }
+  };
+  const TOPICS = ["mix", ...THEMES.map(th => th[0])];
+  const themePic = (id) => (THEMES.find(th => th[0] === id) || [, "🔤"])[1];
+  const themeName = (id) => id === "mix" ? t("wtMix") : t("wtT-" + id);
+
+  let age = Loopy.getAge();
+  let wordsLang = store.get("wt.words", Loopy.lang === "de" ? "de" : "en", ["en", "de"]);
+  let topic = store.get("wt.topic", "mix", TOPICS);
+  let level;
+  // The level is remembered per age: 4 × 4 up to 7, 5 × 5 at 8 to 9, 6 × 6 at 10 to 11, five words at 12 to 13, then long words.
+  const levelForAge = (a) => a <= 7 ? 1 : a <= 9 ? 2 : a <= 11 ? 3 : a <= 13 ? 4 : 5;
+  function loadForAge() {
+    level = store.get("wt.level.a" + age, levelForAge(age), [1, 2, 3, 4, 5]);
+    // Opened from the grown-ups' page to practise one word length (#practise=wt-5): that level for this visit, without saving.
+    const m = /^wt-([357])$/.exec(Loopy.log.hint || "");
+    if (m) { level = { 3: 1, 5: 3, 7: 5 }[m[1]]; Loopy.log.hint = ""; }
+  }
+  loadForAge();
+  Loopy.levels.init({ names: ["wtL1", "wtL2", "wtL3", "wtL4", "wtL5"],
+    get: () => level - 1, base: () => levelForAge(age) - 1,
+    set: (i) => { level = i + 1; store.set("wt.level.a" + age, level); recent = []; grid = null; newQuestion(); } });
+  let right = 0, tried = 0, streak = 0;
+  // grid: the letters on screen and its words. current: the word to find now (the question). trail: the boxes tapped so far.
+  let grid = null, current = null, target = null, trail = [], answered = false, recent = [], clues = 0, drag = null;
+  const lv = () => LEVELS[level - 1];
+  // What kind of question, for the grown-ups' page: by the length of the word.
+  const kind = (w) => "wt-" + (w.e.letters.length <= 4 ? 3 : w.e.letters.length <= 6 ? 5 : 7);
+  const remaining = () => grid ? grid.words.filter(w => !w.done) : [];
+  // Clues: levels 1 to 3 already show the picture and first letter, so they have two clues (first box, then the trail).
+  // Levels 4 and 5 have three: picture and first letter, first box, trail.
+  const maxClues = () => level <= 3 ? 2 : 3;
+  const pulseAt = () => maxClues() - 1;
+
+  // Topic buttons: Mix first, then every theme with its picture.
+  TOPICS.forEach(id => {
+    const b = document.createElement("button"); b.type = "button"; b.dataset.topic = id;
+    b.addEventListener("click", () => { topic = id; store.set("wt.topic", id); grid = null; newQuestion(); });
+    topicSeg.appendChild(b);
+  });
+  const topicBtns = [...topicSeg.children];
+
+  // The next word to find. A new grid is made when the old one is used up; a Try again word gets its own grid then.
+  function make() {
+    if (!grid) grid = makeGrid(wordsLang, lv(), topic, recent, null);
+    const w = remaining()[0];
+    return { key: w.e.key, word: w };
+  }
+  function rebuild(note) {
+    const m = /^(en|de):([a-zäöü]{3,8})$/.exec(note);
+    if (!m || m[1] !== wordsLang || (grid && remaining().length) || recent.includes(note)) return null;
+    const e = ALL[wordsLang].find(x => x.key === note);
+    if (!e || e.letters.length > lv().max) return null;
+    grid = makeGrid(wordsLang, lv(), topic, recent, e);
+    const w = grid.words.find(x => x.e === e) || grid.words[0];
+    return { key: w.e.key, word: w };
+  }
+  function newQuestion() {
+    if (grid && !remaining().length) grid = null;
+    current = Loopy.retry.fresh(GAME, recent, make, rebuild, 10);
+    target = current.word;
+    trail = []; answered = false; clues = 0; drag = null;
+    card.classList.remove("good", "bad");
+    resultEl.hidden = true; resultEl.textContent = "";
+    feedbackEl.className = "feedback"; feedbackEl.textContent = "";
+    render();
+    Loopy.speech.read();
+  }
+
+  // Drawing. Each box is a button; the trail lines are one SVG over the grid.
+  function drawGrid() {
+    const n = grid.n;
+    gridEl.style.setProperty("--n", n);
+    gridEl.className = "grid n" + n;
+    if (gridEl.children.length !== n * n || gridEl.dataset.n !== String(n)) {
+      gridEl.textContent = "";
+      gridEl.dataset.n = n;
+      for (let i = 0; i < n * n; i++) {
+        const b = document.createElement("button"); b.type = "button"; b.className = "cell"; b.dataset.i = i;
+        b.dataset.rc = Math.floor(i / n) + "-" + (i % n);
+        b.tabIndex = i ? -1 : 0;
+        gridEl.appendChild(b);
+      }
+    }
+    const owner = new Array(n * n).fill(null);
+    grid.words.forEach(w => { if (w.shown) w.shown.forEach(i => { owner[i] = w; }); });
+    [...gridEl.children].forEach((b, i) => {
+      const ch = grid.cells[i], w = owner[i], on = trail.includes(i);
+      b.textContent = ch;
+      b.lang = wordsLang;
+      b.setAttribute("aria-label", t("wtCell", { l: ch.toUpperCase(), r: Math.floor(i / n) + 1, c: (i % n) + 1 }));
+      b.className = "cell" + (on ? " on" : w ? (w.ok ? " w w" + w.i : " no") : "") + (clues >= pulseAt() && !answered && i === target.path[0] && !on && !w ? " hint" : "");
+      b.setAttribute("aria-pressed", String(on));
+      b.disabled = answered && !remaining().length;
+    });
+    drawTrail();
+  }
+  function drawTrail() {
+    const W = wrapEl.clientWidth, H = wrapEl.clientHeight;
+    trailEl.setAttribute("viewBox", "0 0 " + W + " " + H);
+    const cells = gridEl.children;
+    if (!cells.length) { trailEl.textContent = ""; return; }
+    const size = cells[0].offsetWidth || 1;
+    const pt = (i) => (cells[i].offsetLeft + size / 2) + "," + (cells[i].offsetTop + size / 2);
+    const line = (path, cls) => `<polyline class="${cls}" stroke-width="${Math.round(size * 0.55)}" points="${path.map(pt).join(" ")}"/>`;
+    let s = "";
+    grid.words.forEach(w => { if (w.shown) s += line(w.shown, w.ok ? "w" + w.i : "no"); });
+    if (trail.length > 1) s += line(trail, "now");
+    trailEl.innerHTML = s;
+  }
+  // The word list: at level 1 and 2 the word, at 3 the first letter, at 4 the picture only, at 5 only dashes.
+  // The word being looked for gets a ring; a clue opens its picture and first letter.
+  function chipText(w) {
+    const word = w.e.word, L = w.e.letters.length, isNow = w === target && !answered;
+    const show = w.done ? 3 : level <= 2 ? 3 : level === 3 || (isNow && clues >= 1) ? 2 : level === 4 ? 1 : 0;
+    const pic = show >= 1 ? w.e.pic : "";
+    const text = show === 3 ? word : show === 2 ? word[0] + " " + "_ ".repeat(L - 1).trim() : "_ ".repeat(L).trim();
+    return { pic, text, dash: show < 3 };
+  }
+  function drawWords() {
+    wordsEl.textContent = "";
+    grid.words.forEach(w => {
+      const c = chipText(w);
+      const s = document.createElement("span");
+      s.className = "wd" + (w.done ? (w.ok ? " ok w" + w.i : " no") : w === target && !answered ? " now" : "");
+      if (c.pic) { const e = document.createElement("span"); e.className = "e"; e.setAttribute("aria-hidden", "true"); e.textContent = c.pic; s.appendChild(e); }
+      const txt = document.createElement("span"); if (c.dash) txt.className = "dash"; txt.textContent = c.text; txt.lang = wordsLang;
+      if (c.dash) txt.setAttribute("aria-hidden", "true");
+      s.appendChild(txt);
+      const sr = document.createElement("span"); sr.className = "sr";
+      sr.textContent = (w === target && !answered ? t("wtFind") + " " : "") + (c.dash ? t("wtLetters", { n: Loopy.num(w.e.letters.length) }) : "");
+      if (sr.textContent.trim()) s.appendChild(sr);
+      wordsEl.appendChild(s);
+    });
+  }
+  function render() {
+    Loopy.levels.render();
+    $("score").textContent = right + " / " + tried;
+    $("streak").textContent = streak;
+    wordsBtns.forEach(b => b.setAttribute("aria-pressed", String(b.dataset.words === wordsLang)));
+    levelBtns.forEach(b => b.setAttribute("aria-pressed", String(+b.dataset.level === level)));
+    topicBtns.forEach(b => { b.textContent = (b.dataset.topic === "mix" ? "🔀 " : themePic(b.dataset.topic) + " ") + themeName(b.dataset.topic); b.setAttribute("aria-pressed", String(b.dataset.topic === topic)); });
+    topicEl.textContent = themePic(grid.theme) + " " + themeName(grid.theme);
+    const found = grid.words.filter(w => w.done).length;
+    foundEl.textContent = t("wtFound", { n: Loopy.num(found), m: Loopy.num(grid.words.length) });
+    drawGrid();
+    drawWords();
+    spellEl.textContent = trail.map(i => grid.cells[i]).join("");
+    const left = maxClues() - clues;
+    moreBtn.textContent = t("wtClue") + " · " + (left ? t("wtLeft", { n: Loopy.num(left) }) : t("wtNoClues"));
+    moreBtn.disabled = answered || !left;
+    nextBtn.hidden = !answered;
+    nextBtn.textContent = t(remaining().length ? "wtGo" : "wtNext");
+    // The browser test traces the word while the question is open: data-trail says so, data-a lists its boxes as row-col.
+    if (answered) { card.removeAttribute("data-trail"); card.removeAttribute("data-a"); }
+    else { card.setAttribute("data-trail", "on"); card.setAttribute("data-a", target.path.map(i => Math.floor(i / grid.n) + "-" + (i % grid.n)).join(",")); }
+  }
+
+  // Tapping and dragging. Two boxes touch when they are next to each other in any direction.
+  const touching = (a, b) => Math.abs(Math.floor(a / grid.n) - Math.floor(b / grid.n)) <= 1 && Math.abs(a % grid.n - b % grid.n) <= 1 && a !== b;
+  function cellAt(x, y) {
+    const el = document.elementFromPoint(x, y);
+    const b = el && el.closest ? el.closest("#grid .cell") : null;
+    return b ? +b.dataset.i : -1;
+  }
+  // Add a box to the trail. When the letters now spell a word on the list, it is found straight away.
+  function add(i) {
+    trail.push(i);
+    const s = trail.map(k => grid.cells[k]).join("");
+    const hit = grid.words.find(w => !w.done && lower(w.e.word) === s);
+    if (hit) { success(hit, trail.slice()); return true; }
+    render();
+    return false;
+  }
+  function tap(i) {
+    if (answered) return;
+    feedbackEl.textContent = "";
+    const last = trail[trail.length - 1];
+    if (trail.length && i === last) { check(); return; }
+    const at = trail.indexOf(i);
+    if (at !== -1) { trail = trail.slice(0, at + 1); render(); return; }
+    if (trail.length && !touching(last, i)) trail = [];
+    add(i);
+  }
+  gridEl.addEventListener("pointerdown", (e) => {
+    const b = e.target.closest(".cell");
+    if (!b || answered || e.button) return;
+    const i = +b.dataset.i;
+    drag = { moved: false, wasLast: false };
+    try { gridEl.setPointerCapture(e.pointerId); } catch (err) {}
+    const last = trail[trail.length - 1];
+    const wasLast = trail.length && i === last;
+    if (!wasLast) {
+      const at = trail.indexOf(i);
+      if (at !== -1) trail = trail.slice(0, at + 1);
+      else { if (trail.length && !touching(last, i)) trail = []; if (add(i)) { drag = null; return; } }
+    }
+    drag.wasLast = wasLast;
+    render();
+  });
+  gridEl.addEventListener("pointermove", (e) => {
+    if (!drag || drag.done || answered) return;
+    const i = cellAt(e.clientX, e.clientY);
+    if (i < 0 || i === trail[trail.length - 1]) return;
+    drag.moved = true;
+    if (trail.length > 1 && i === trail[trail.length - 2]) { trail.pop(); render(); return; }
+    if (trail.includes(i) || (trail.length && !touching(trail[trail.length - 1], i))) return;
+    if (add(i)) drag = null;
+  });
+  const up = () => {
+    if (!drag) return;
+    const d = drag; drag = null;
+    if (answered) return;
+    if (d.moved) { if (trail.length >= 2) check(); }
+    else if (d.wasLast) check();
+  };
+  gridEl.addEventListener("pointerup", up);
+  gridEl.addEventListener("pointercancel", () => { drag = null; });
+  // A plain click (keyboard Enter or Space on a box) when no pointer drag ran.
+  gridEl.addEventListener("click", (e) => {
+    const b = e.target.closest(".cell");
+    if (!b || e.detail !== 0) return;
+    tap(+b.dataset.i);
+  });
+
+  function clear() { trail = []; render(); }
+  function check() {
+    if (answered) return;
+    const s = trail.map(i => grid.cells[i]).join("");
+    if (trail.length < 3) { if (trail.length) feedbackEl.textContent = t("wtShort"); clear(); return; }
+    const hit = grid.words.find(w => !w.done && lower(w.e.word) === s);
+    if (hit) { success(hit, trail.slice()); return; }
+    const old = grid.words.find(w => w.done && lower(w.e.word) === s);
+    if (old) { feedbackEl.textContent = t("wtAlready", { w: old.e.word }); clear(); return; }
+    miss(s);
+  }
+  // A word on the list, found: it keeps its colour. Any word on the list counts, not only the one with the ring.
+  function success(w, path) {
+    w.done = true; w.ok = true; w.shown = path;
+    tried++; right++; streak++;
+    trail = [];
+    const g = grid;
+    Loopy.rewards.correct(GAME, streak, kind(w));
+    // A level up by itself (Loopy.levels) has started a new grid already.
+    if (grid !== g) return;
+    feedbackEl.className = "feedback good";
+    feedbackEl.textContent = t("wtGot", { w: w.e.word });
+    if (w !== target) { render(); return; }
+    if (remaining().length) { const fb = feedbackEl.textContent; newQuestion(); feedbackEl.className = "feedback good"; feedbackEl.textContent = fb; }
+    else summary();
+  }
+  // Not a word on the list: the word being looked for shows where it was, in red, and counts as a miss.
+  function miss(s) {
+    const w = target;
+    w.done = true; w.ok = false; w.shown = w.path;
+    tried++; streak = 0; answered = true; trail = [];
+    Loopy.rewards.wrong(GAME, { q: themeName(grid.theme) + " " + w.e.pic, a: w.e.word, y: s, k: kind(w), r: w.e.key });
+    card.classList.add("bad");
+    feedbackEl.className = "feedback bad";
+    feedbackEl.textContent = t("wtNotList", { w: w.e.word });
+    render();
+    nextBtn.focus({ preventScroll: true });
+  }
+  const el = (tag, cls, text) => { const n = document.createElement(tag); if (cls) n.className = cls; if (text) n.textContent = text; return n; };
+  // Every word in the grid is done: a line with the count and the stars, and Next grid.
+  function summary() {
+    answered = true;
+    const ok = grid.words.filter(w => w.ok).length, n = grid.words.length;
+    if (ok === n) card.classList.add("good");
+    resultEl.textContent = "";
+    resultEl.appendChild(el("h2", "big", ok === n ? t("wtAllDone", { n: Loopy.num(n) }) : t("wtSomeDone", { r: Loopy.num(ok), n: Loopy.num(n) })));
+    const stars = el("div", "stars");
+    stars.innerHTML = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2.5l2.9 6 6.6.9-4.8 4.6 1.2 6.5L12 17.4l-5.9 3.1 1.2-6.5L2.5 9.4l6.6-.9z"/></svg>';
+    stars.appendChild(document.createTextNode(t("wtStars", { n: Loopy.num(ok) })));
+    resultEl.appendChild(stars);
+    resultEl.hidden = false;
+    feedbackEl.textContent = "";
+    render();
+    nextBtn.focus({ preventScroll: true });
+    Loopy.speech.read();
+  }
+  function next() {
+    if (!answered) return;
+    if (remaining().length) newQuestion();
+    else { grid = null; newQuestion(); }
+  }
+  // A clue: the picture and first letter in the list (when hidden), then the first box pulses, then the whole trail
+  // shows and the word counts as a miss.
+  function clue() {
+    if (answered) return;
+    clues++;
+    if (clues >= maxClues()) { miss("💡"); return; }
+    render();
+    Loopy.speech.read();
+  }
+
+  nextBtn.addEventListener("click", next);
+  moreBtn.addEventListener("click", clue);
+  goBtn.addEventListener("click", check);
+  eraseBtn.addEventListener("click", () => { if (trail.length) { trail.pop(); render(); } });
+  wordsBtns.forEach(b => b.addEventListener("click", () => { wordsLang = b.dataset.words; store.set("wt.words", wordsLang); recent = []; grid = null; newQuestion(); }));
+  levelBtns.forEach(b => b.addEventListener("click", () => { level = +b.dataset.level; store.set("wt.level.a" + age, level); recent = []; grid = null; newQuestion(); }));
+  window.addEventListener("loopy:age", (e) => { age = e.detail; recent = []; grid = null; loadForAge(); newQuestion(); });
+  window.addEventListener("resize", () => { if (grid) drawTrail(); });
+  $("reset").addEventListener("click", () => { right = 0; tried = 0; streak = 0; grid = null; Loopy.recent.clear(GAME); newQuestion(); });
+  document.addEventListener("keydown", (e) => {
+    if (e.target.tagName === "INPUT" || e.ctrlKey || e.metaKey || e.altKey || document.querySelector(".loopy-cheer.big")) return;
+    const b = e.target.closest("button"), cell = b && b.classList.contains("cell") ? b : null;
+    // Arrows move between the boxes; the box in focus is the only one in the Tab order.
+    if (cell && /^Arrow/.test(e.key)) {
+      const n = grid.n, i = +cell.dataset.i, r = Math.floor(i / n), c = i % n;
+      const to = e.key === "ArrowRight" ? [r, c + 1] : e.key === "ArrowLeft" ? [r, c - 1] : e.key === "ArrowDown" ? [r + 1, c] : [r - 1, c];
+      if (to[0] >= 0 && to[1] >= 0 && to[0] < n && to[1] < n) { cell.tabIndex = -1; const nb = gridEl.children[to[0] * n + to[1]]; nb.tabIndex = 0; nb.focus(); }
+      e.preventDefault();
+      return;
+    }
+    if (e.key === "Enter") {
+      // Buttons act on their own (Check, Next, Clue, Settings, a box); Enter elsewhere checks the trail or goes on.
+      if (b || e.target.closest("#settings-panel")) return;
+      answered ? next() : check();
+      e.preventDefault();
+      return;
+    }
+    if (e.key === "Backspace" && !answered) { if (trail.length) { trail.pop(); render(); } e.preventDefault(); }
+    if (e.key === "Escape" && !answered) clear();
+  });
+
+  // Read aloud: the words to find while they are shown, otherwise the topic and the length of the next word.
+  Loopy.speech.question({ host: card, lang: () => wordsLang, text: () => {
+    if (!grid) return "";
+    if (answered && !remaining().length) return t(grid.words.every(w => w.ok) ? "wtAllDone" : "wtSomeDone", { n: Loopy.num(grid.words.length), r: Loopy.num(grid.words.filter(w => w.ok).length) });
+    const left = remaining();
+    if (level <= 2 || (level === 3 && left.length)) return t("wtRead", { w: left.map(w => w.e.word).join(", ") });
+    return t("wtReadHidden", { t: themeName(grid.theme), n: Loopy.num(left.length), l: Loopy.num(target.e.letters.length) });
+  } });
+
+  // Print worksheet: 20 small grids, one word hidden in each, with the picture (and the word at the easy levels) under it.
+  Loopy.worksheet({
+    title: () => t("wtName"),
+    level: () => [t("ageLabel", { n: age }), t("wtLevel") + ": " + t("wtL" + level), t("wtWords") + ": " + (wordsLang === "de" ? "Deutsch" : "English")].join(" · "),
+    how: () => t("wtHow"),
+    layout: "word",
+    make: (n) => {
+      const list = [], used = [], L = lv();
+      const one = { n: L.n, words: 1, min: L.min, max: L.max, bend: L.bend };
+      for (let i = 0; i < n; i++) {
+        const g = makeGrid(wordsLang, one, topic, used, null);
+        used.push(g.words[0].e.key);
+        list.push(g);
+      }
+      return list;
+    },
+    cell: (g) => {
+      const box = document.createElement("div"), tbl = el("table", "ws-tg n" + g.n), w = g.words[0];
+      for (let r = 0; r < g.n; r++) {
+        const tr = document.createElement("tr");
+        for (let c = 0; c < g.n; c++) tr.appendChild(el("td", "", g.cells[r * g.n + c].toUpperCase()));
+        tbl.appendChild(tr);
+      }
+      box.appendChild(tbl);
+      const find = el("div", "ws-find");
+      find.appendChild(el("span", "ws-pic", w.e.pic));
+      find.appendChild(document.createTextNode(level <= 2 ? w.e.word : w.e.word[0].toUpperCase() + " _".repeat(w.e.letters.length - 1)));
+      box.appendChild(find);
+      return box;
+    },
+    answer: (g) => { const w = g.words[0], i = w.path[0]; return w.e.pic + " " + w.e.word + " (" + t("wtAnsAt", { r: Loopy.num(Math.floor(i / g.n) + 1), c: Loopy.num(i % g.n + 1) }) + ")"; }
+  });
+
+  newQuestion();
+})();
+</script>
+</body>
+</html>

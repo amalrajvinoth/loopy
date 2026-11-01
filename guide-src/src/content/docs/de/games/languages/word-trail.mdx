@@ -1,0 +1,77 @@
+---
+title: Wortpfad
+description: Finde die Wörter, die in einem Buchstabengitter versteckt sind. Verbinde Buchstaben, die sich berühren, mit Bildern als Hilfe. Fünf Stufen von kurzen geraden Wörtern bis zu langen mit Knicken. Für 6 bis 14 Jahre.
+sidebar:
+  order: 7
+---
+import KidsBox from "~/components/KidsBox.astro";
+
+<KidsBox game="languages/word-trail" steps={[
+  "Schau auf das Wort mit dem blauen Ring.",
+  "Tippe seine Buchstaben nacheinander an, oder zieh darüber.",
+  "Kommst du nicht weiter? Tippe auf Hinweis.",
+]} />
+
+Eine Wortsuche für 6 bis 14 Jahre. Die Wörter verstecken sich in einem Buchstabengitter. Das Kind verbindet Buchstaben, die sich berühren, zu den Wörtern auf der Liste. Jedes gefundene Wort behält seine Farbe. Die Wörter gibt es auf Deutsch oder Englisch.
+
+## So wird gespielt
+
+1. Schau auf die Wortliste unter dem Gitter. Das Wort mit dem blauen Ring ist jetzt dran. Jedes Wort auf der Liste zählt aber.
+2. Tippe die Buchstaben nacheinander an, oder zieh mit dem Finger darüber. Die Buchstaben bis jetzt stehen unter dem Gitter. Buchstaben, die sich berühren, bilden ein Wort: seitwärts, nach oben und unten oder schräg. Ab Stufe 2 darf der Pfad knicken.
+3. Das Wort zählt, sobald der letzte Buchstabe angetippt ist. Der Pfad behält seine Farbe, das Wort wird in der Liste durchgestrichen, und du bekommst einen Stern.
+4. Kein Wort von der Liste? Tippe auf **Prüfen**, oder heb den Finger. Das gesuchte Wort zeigt in Rot, wo es versteckt war. Kein Stern. Es kommt später bei Nochmal versuchen zurück. Tippe auf **Nächstes Wort**.
+5. Sind alle Wörter gefunden, sagt die Karte **Alle 4 Wörter gefunden!** und zeigt deine Sterne. Tippe auf **Nächstes Gitter**.
+
+**Löschen** nimmt den letzten Buchstaben weg. Tippst du einen Buchstaben an, der den letzten nicht berührt, fängt ein neuer Pfad an. Das ist kein Fehler.
+
+## Hinweise
+
+Tippe auf **🔎 Hinweis**, wenn du nicht weiterkommst.
+
+- Der erste Hinweis öffnet das Bild und den ersten Buchstaben in der Liste, auf den Stufen, die sie verstecken.
+- Der nächste Hinweis lässt das erste Feld des Wortes pulsieren.
+- Der letzte Hinweis zeigt den ganzen Pfad. Das Wort zählt dann als Fehler.
+
+## Altersstufen
+
+| Stufe | Alter | Gitter und Wörter | Pfade | Die Liste zeigt |
+| --- | --- | --- | --- | --- |
+| 1 | bis 7 | 4 × 4, 3 Wörter mit 3 bis 4 Buchstaben | gerade, quer oder nach unten | Bild und Wort |
+| 2 | 8 bis 9 | 5 × 5, 4 Wörter mit 3 bis 5 Buchstaben | gerade, auch schräg, oder ein Knick | Bild und Wort |
+| 3 | 10 bis 11 | 6 × 6, 4 Wörter mit 4 bis 6 Buchstaben | beliebige Knicke | Bild und ersten Buchstaben |
+| 4 | 12 bis 13 | 6 × 6, 5 Wörter mit 4 bis 7 Buchstaben | beliebige Knicke, auch rückwärts | nur das Bild |
+| 5 | ab 14 | 6 × 6, 5 Wörter mit 5 bis 8 Buchstaben | beliebige Knicke, auch rückwärts | nur Striche, und das Thema über dem Gitter |
+
+Nach 10 richtigen hintereinander oder 18 von den letzten 20 geht das Spiel von selbst eine Stufe hoch. Nach 3 falschen von den letzten 5 bietet es eine leichtere an. Siehe [Stufen](/loopy/guide/de/playing/levels/).
+
+Jedes gefundene Wort ist eine richtige Antwort. Ein falscher Pfad mit 3 oder mehr Buchstaben ist eine falsche Antwort.
+
+## Einstellungen
+
+Tippe im Spiel auf ⚙ **Einstellungen** und wähle:
+
+- **Wörter auf:** Deutsch oder Englisch. Auf Deutsch behalten ä, ö und ü ihr eigenes Feld.
+- **Thema:** Gemischt, oder eins von 15 Themen. Das sind Tiere, Essen, zu Hause, in der Schule, Körper, Natur, Kleidung und Farben. Dazu Sport, Weltraum, Berufe, in der Stadt, Gefühle, Wissenschaft und Tunwörter.
+- **Stufe:** **4 × 4, gerade**, **5 × 5, ein Knick**, **6 × 6, mit Knicken**, **6 × 6, 5 Wörter** oder **6 × 6, lange Wörter**.
+- **Vorlesen:** ein Lautsprecher-Knopf auf der Karte liest die gesuchten Wörter vor. Auf Stufe 4 und 5 liest er das Thema und wie viele Buchstaben das nächste Wort hat. Bis 7 Jahre ist es von selbst an.
+- **Arbeitsblatt drucken:** 20 kleine Gitter mit je einem versteckten Wort und seinem Bild. Die Lösungen stehen auf Seite 2.
+
+Auf einer Tastatur bewegen die Pfeile zwischen den Feldern. **Leertaste** oder **Enter** wählt einen Buchstaben. **Enter** prüft. **Rücktaste** nimmt den letzten Buchstaben weg und **Escape** löscht den Pfad.
+
+## Tipps für Erwachsene
+
+- Sagt das Wort laut und sucht seinen ersten Buchstaben. Dann schaut auf die acht Felder drum herum.
+- Auf den höheren Stufen sucht zuerst einen seltenen Buchstaben des Wortes, wie k, w oder z.
+- Etwa 480 Wörter in 15 Themen, jedes mit Bild. Die deutschen Wörter sind eine eigene Liste.
+- Ein Kind, das ein Wort zieht, das nicht auf der Liste steht, sieht, wo das Wort war. Der Fehler kommt bei Nochmal versuchen zurück, nichts geht verloren.
+
+## Beispiele für den Hilfetext
+
+- „Dieses Wort suchen: Katze.“
+- „„Katze“! ⭐“
+- „Steht nicht auf der Liste. „Katze“ war hier.“
+- „Alle 4 Wörter gefunden! +4 Sterne“
+
+## Stimmt etwas nicht?
+
+Tippe oben im Spiel auf die 🚩 Flagge und sag es uns. Siehe [Ein Problem melden](/loopy/guide/de/help/report-a-problem/).

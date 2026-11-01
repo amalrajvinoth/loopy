@@ -60,6 +60,10 @@ Tippe auf den Lautsprecher-Knopf. In einem Spiel ist er in den ⚙ Einstellungen
 
 Falsche Antworten kommen wieder, bis jede zweimal richtig beantwortet wurde. Mehr unter [Nochmal versuchen](/loopy/guide/de/playing/try-again/).
 
+## Wie verstecken sich die Wörter im Wortpfad?
+
+Jedes Wort ist ein Pfad aus Buchstaben, die sich berühren: seitwärts, nach oben und unten oder schräg. Auf Stufe 1 sind die Pfade gerade. Ab Stufe 2 dürfen sie knicken, ab Stufe 4 auch rückwärts laufen. Tippe die Buchstaben nacheinander an, oder zieh mit dem Finger darüber. Das Wort zählt, sobald der letzte Buchstabe angetippt ist. Kommst du nicht weiter? Tippe auf **Hinweis**: Er zeigt das Bild und den ersten Buchstaben, dann das erste Feld, dann den ganzen Pfad.
+
 ## Nimmt der Wortdetektiv auch erfundene Wörter an?
 
 Ja. Jede Buchstabenfolge zählt als Versuch, damit ein Kind Laute ausprobieren kann. Die Kästchen zeigen, welche Buchstaben im Wort sind, und drei Hinweise helfen. Siehe [Wortdetektiv](/loopy/guide/de/games/languages/word-detective/).

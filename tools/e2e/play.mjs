@@ -130,11 +130,21 @@ async function tries(p) {
   await p.click("#k-go");
 }
 
+// A word traced through a letter grid (Word Trail): the card says data-trail="on" while a word is wanted and carries
+// its boxes in data-a as "row-col" pairs. The boxes carry data-rc. The word counts as soon as its last box is tapped.
+async function trail(p) {
+  const a = await p.locator('[data-trail="on"]').first().getAttribute("data-a");
+  for (const rc of a.split(",")) await p.click(`#grid [data-rc="${rc}"]`);
+  const go = p.locator("#k-go");
+  if (await go.count() && await go.isVisible()) await go.click();
+}
+
 // Answer the question on screen: the right answer when the page marks it, otherwise the first one.
 // Returns true when the answer was the marked right one.
 async function answer(p) {
   if (await p.locator('[data-steps="on"]').count()) { await steps(p); return true; }
   if (await p.locator('[data-tries="on"]').count()) { await tries(p); return true; }
+  if (await p.locator('[data-trail="on"]').count()) { await trail(p); return true; }
   const right = p.locator('[data-correct="true"]:enabled');
   if (await right.count()) {
     await right.first().click();

@@ -48,6 +48,7 @@ From the first step to the last. Today's 10 has no levels.
 | Sentence Builder | 4 | 3 words → 4 to 5 words → 6 words, with questions → 7 to 8 words, with a comma |
 | Spelling Quiz | 5 | Grade 1 words → Grade 2 words → Grade 3 words → Grade 4 to 5 words, 4 to pick from → Grade 6 words and up |
 | Word Detective | 5 | 3 letters → 4 letters → 5 letters → 5 letters, tricky → 6 letters |
+| Word Trail | 5 | 4 × 4, straight → 5 × 5, one bend → 6 × 6, bends → 6 × 6, 5 words → 6 × 6, long words |
 | Quick Facts | 3 | Starter → Explorer → Expert |
 | Sort It | 4 | Animals and living things → Materials and matter → Food, space and senses → All mixed, with tricky ones |
 | Where Is It? | 5 | Continents and oceans → Countries of Europe → Capitals of Europe → Countries of the world → Capitals of the world |

@@ -132,6 +132,13 @@ async function answerWrong(p) {
     }
     return;
   }
+  // A word traced through a letter grid: its boxes backwards spell no word on the list.
+  if (await p.locator('[data-trail="on"]').count()) {
+    const a = await p.locator('[data-trail="on"]').first().getAttribute("data-a");
+    for (const rc of a.split(",").reverse()) await p.click(`#grid [data-rc="${rc}"]`);
+    await p.click("#k-go");
+    return;
+  }
   // A word guessed in several tries: a letter that is not in the word, in every box, until the tries run out.
   if (await p.locator('[data-tries="on"]').count()) {
     for (let i = 0; i < 6 && await p.locator('[data-tries="on"]').count(); i++) {
@@ -186,6 +193,13 @@ async function answerRight(p, row) {
   if (await p.locator('[data-tries="on"]').count()) {
     for (const ch of row.a.toLowerCase()) await p.click(`[data-k="${ch}"]`);
     await p.click("#k-go");
+    return true;
+  }
+  if (await p.locator('[data-trail="on"]').count()) {
+    const a = await p.locator('[data-trail="on"]').first().getAttribute("data-a");
+    for (const rc of a.split(",")) await p.click(`#grid [data-rc="${rc}"]`);
+    const go = p.locator("#k-go");
+    if (await go.count() && await go.isVisible()) await go.click();
     return true;
   }
   if (await p.locator("#pad").count()) {
