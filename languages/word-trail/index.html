@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'sha256-MHfipVoy7fQw2KnBapj5+Hr/nEf7rs8KUJwC8R7OaZU='; style-src 'self' 'sha256-z2P7kGW5Z05eCTjTZdYpc0vThTlOE9vmt97pVSvi2I4=' 'sha256-qxqld09sBl9KP7HcyMVqISsx5anYdMyEAaUoAncFj3Q=' 'sha256-RT1053JU5UiKvjrCUFx1rlhdFLMmgtuFJ9T8jnMeawQ=' 'sha256-cOcmV1JLS2mJzp0BUNncjJnKGY7FMlwGOypC59znXZE='; img-src 'self' data:; font-src 'self'; connect-src 'self' https://loopy-sync.loopy-1e2.workers.dev; worker-src 'self'; object-src 'none'; base-uri 'none'; form-action 'none'; manifest-src 'self'; upgrade-insecure-requests">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'sha256-liPlabN9mwES/huuapPb+mP64hxCwqa5jsJn5QI+2EE='; style-src 'self' 'sha256-z2P7kGW5Z05eCTjTZdYpc0vThTlOE9vmt97pVSvi2I4=' 'sha256-qxqld09sBl9KP7HcyMVqISsx5anYdMyEAaUoAncFj3Q=' 'sha256-RT1053JU5UiKvjrCUFx1rlhdFLMmgtuFJ9T8jnMeawQ=' 'sha256-cOcmV1JLS2mJzp0BUNncjJnKGY7FMlwGOypC59znXZE='; img-src 'self' data:; font-src 'self'; connect-src 'self' https://loopy-sync.loopy-1e2.workers.dev; worker-src 'self'; object-src 'none'; base-uri 'none'; form-action 'none'; manifest-src 'self'; upgrade-insecure-requests">
 <meta name="referrer" content="strict-origin-when-cross-origin">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <style>:root{color-scheme:light;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}body{margin:0}[hidden]{display:none!important}</style>
@@ -691,14 +691,23 @@ function makeGrid(lang, lv, topic, avoid, must) {
   });
 
   function clear() { trail = []; render(); }
+  // A note on the feedback line. Cleared first, so a screen reader also reads it when it is the same note again.
+  function say(text) { feedbackEl.textContent = ""; requestAnimationFrame(() => { feedbackEl.textContent = text; }); }
+  // Check or Erase came from the keyboard: focus goes back to the letters, so the child can carry on.
+  function backToLetters() {
+    const a = document.activeElement;
+    if (!a || !/^k-(go|erase)$/.test(a.id)) return;
+    const c = gridEl.querySelector('.cell[tabindex="0"]') || gridEl.firstElementChild;
+    if (c) c.focus({ preventScroll: true });
+  }
   function check() {
     if (answered) return;
     const s = trail.map(i => grid.cells[i]).join("");
-    if (trail.length < 3) { if (trail.length) feedbackEl.textContent = t("wtShort"); clear(); return; }
+    if (trail.length < 3) { say(t("wtShort")); clear(); backToLetters(); return; }
     const hit = grid.words.find(w => !w.done && lower(w.e.word) === s);
     if (hit) { success(hit, trail.slice()); return; }
     const old = grid.words.find(w => w.done && lower(w.e.word) === s);
-    if (old) { feedbackEl.textContent = t("wtAlready", { w: old.e.word }); clear(); return; }
+    if (old) { say(t("wtAlready", { w: old.e.word })); clear(); backToLetters(); return; }
     miss(s);
   }
   // A word on the list, found: it keeps its colour. Any word on the list counts, not only the one with the ring.
