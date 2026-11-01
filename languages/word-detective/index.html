@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'sha256-z6FiY07MfwZcVQCZ+3Fxu81HxKSkcXWJDI4QE/HoYKU='; style-src 'self' 'sha256-z2P7kGW5Z05eCTjTZdYpc0vThTlOE9vmt97pVSvi2I4=' 'sha256-c04HO5zldUyCrxD+coiQii+8zm9HQ+JE9ejkd0HkNUY=' 'sha256-RT1053JU5UiKvjrCUFx1rlhdFLMmgtuFJ9T8jnMeawQ=' 'sha256-1LwNeXK8WbPIWbGRx/fKU0BTwQE0xdQlA23XKOeZkZM='; img-src 'self' data:; font-src 'self'; connect-src 'self' https://loopy-sync.loopy-1e2.workers.dev; worker-src 'self'; object-src 'none'; base-uri 'none'; form-action 'none'; manifest-src 'self'; upgrade-insecure-requests">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'sha256-z6FiY07MfwZcVQCZ+3Fxu81HxKSkcXWJDI4QE/HoYKU='; style-src 'self' 'sha256-z2P7kGW5Z05eCTjTZdYpc0vThTlOE9vmt97pVSvi2I4=' 'sha256-k5QkOjyLnYdcdR4QvAQsCPeMXOxIyGfxDDwXAIaeL3M=' 'sha256-RT1053JU5UiKvjrCUFx1rlhdFLMmgtuFJ9T8jnMeawQ=' 'sha256-eA2foUusNY/ffou87m2MNwxRjcEOw6jqNjtor6dYp8k='; img-src 'self' data:; font-src 'self'; connect-src 'self' https://loopy-sync.loopy-1e2.workers.dev; worker-src 'self'; object-src 'none'; base-uri 'none'; form-action 'none'; manifest-src 'self'; upgrade-insecure-requests">
 <meta name="referrer" content="strict-origin-when-cross-origin">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <style>:root{color-scheme:light;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}body{margin:0}[hidden]{display:none!important}</style>
@@ -36,6 +36,10 @@
   --key: #ffffff;
   --font: "Lexend", "Segoe UI", "Helvetica Neue", Arial, sans-serif;
 }
+/* The detective yellow ("in the word, somewhere else") keeps its colour in every theme, like coins and flags,
+   because the guide and the kids' box call it yellow. Dark text on it; brighter in High contrast. */
+:root { --wd-y: #e0ad00; --wd-y-ink: #111; }
+:root[data-theme="contrast"] { --wd-y: var(--c5); --wd-y-ink: var(--on-accent); }
 
 * { box-sizing: border-box; }
 body {
@@ -158,7 +162,7 @@ body { min-height: 100vh; min-height: 100dvh; padding-block: 12px 16px; }
 }
 .grid .row.cur .cell { border-color: var(--accent); }
 .grid .cell.g { background: var(--good); border-color: var(--good); color: var(--on-accent, #fff); }
-.grid .cell.y { background: #e0ad00; border-color: #e0ad00; color: #111; }
+.grid .cell.y { background: var(--wd-y); border-color: var(--wd-y); color: var(--wd-y-ink); }
 .grid .cell.x { background: var(--chip); border-color: var(--chip); color: var(--muted); }
 .grid.done .row:not(.last) { display: none; }
 
@@ -197,7 +201,7 @@ body { min-height: 100vh; min-height: 100dvh; padding-block: 12px 16px; }
 .pad button:active:not(:disabled) { transform: scale(0.95); }
 .pad button:disabled { opacity: 0.4; cursor: default; }
 .pad button.g { background: var(--good); border-color: var(--good); color: var(--on-accent, #fff); }
-.pad button.y { background: #e0ad00; border-color: #e0ad00; color: #111; }
+.pad button.y { background: var(--wd-y); border-color: var(--wd-y); color: var(--wd-y-ink); }
 .pad button.x { background: var(--chip); border-color: var(--chip); color: var(--muted); }
 .pad .wide { flex: 1.6 1 0; font-size: 0.9rem; text-transform: none; }
 .pad .go { background: var(--accent); border-color: var(--accent); color: var(--accent-ink); }
