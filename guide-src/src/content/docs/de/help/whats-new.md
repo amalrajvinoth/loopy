@@ -10,6 +10,7 @@ Die großen Änderungen, die neuesten zuerst. Kleine Korrekturen stehen nicht da
 
 ## 1. November 2026
 
+- **Leichter zu tippen.** Drei kleine Knöpfe sind jetzt mindestens 44px groß. Das sind die Spielen-Links in der eingeklappten Liste auf der Erwachsenen-Seite, die Löschen-Taste im Wortpfad und der Zahnrad-Knopf für die Einstellungen auf kleinen Handys.
 - **Größere Bilder auf dem Tablet und eine Stufen-Zeile in den Einstellungen.** Auf dem Tablet wächst das Bild in Blitzwissen, Sortieren, Rechtschreib-Quiz, Satzbau, Wörter schreiben und Anlaut und Endlaut mit dem Platz. In den Einstellungen jedes Spiels sagt eine Zeile unter Beste Serie, auf welcher Stufe das Kind spielt, in den Worten der Stufen-Anzeige. Antwort-Knöpfe haben in jedem Spiel dieselbe dünne Linie.
 - **Die Wortspiele passen zueinander.** Anlaut und Endlaut, Wörter schreiben und Bild und Wort zeigen dieselbe **Vorlesen**-Schaltfläche wie jedes andere Spiel, neben dem Ton-Knopf. Der **Hinweis**-Knopf im Wortdetektiv ist ein breiter Knopf unter der Tastatur, wie im Wortpfad, und die **Prüfen**-Taste ist breit und blau. Brauchen offene Hinweise den Platz, wird das Buchstabengitter etwas kleiner, damit nichts abgeschnitten wird.
 - **Einstellungen auf jeder Seite hinter ⚙.** Die Hilfe-Seite und der Datenschutzhinweis halten das Farbthema, Leichter lesen und die Sprache jetzt hinter dem Knopf ⚙ **Einstellungen**, wie die Startseite. Der Zeitbalken im Einmaleins-Sprint ist blau, damit Grün immer nur „richtig“ heißt. Die gelben Kästchen im Wortdetektiv sind bei hohem Kontrast heller.

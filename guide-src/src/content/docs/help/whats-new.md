@@ -10,6 +10,7 @@ The big changes, newest first. Small fixes are not listed. See [the full list on
 
 ## 1 November 2026
 
+- **Easier to tap.** Three small buttons grew to at least 44px. They are the Play links in the folded list on the grown-ups page, the Clear key in Word Trail and the gear-only Settings button on small phones.
 - **Bigger pictures on tablets, and a level line in Settings.** On a tablet the picture in Quick Facts, Sort It, Spelling Quiz, Sentence Builder, Spell It and Sound Spell grows with the room. In every game's Settings a line under Best streak says which level the child is on, in the words of the level pill. Answer buttons have the same thin line in every game.
 - **The word games match each other.** Sound Spell, Spell It and Word Match show the same **Read aloud** pill as every other game, next to the sound button. Word Detective's **Clue** button is a full-width pill under the keyboard, like in Word Trail, and its **Check** key is wide and blue. When open clues need the room, the letter grid gets a little smaller so nothing is cut off.
 - **Settings behind ⚙ on every page.** The Help page and the privacy note now keep the colour theme, Easier to read and the language behind the ⚙ **Settings** button. The home page already did. The Times Tables Sprint timer bar is blue, so green only ever means a right answer. Word Detective's yellow tiles are brighter in High contrast.

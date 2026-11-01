@@ -162,8 +162,8 @@ Each theme sets the same names. Use the name, not the hex.
 
 ### Logo colors
 
-The logo has fixed colors and does not follow the theme. The one exception is the small logo in the game back button: its outlines and letters use the theme's text color, so it shows on every theme.
-Ink #1d2a3f (white in `logo-white.svg`), ears #3ddc84, eyes white. The app icon is the bunny face on a #0a0a0c tile.
+The logo files (`logo.svg`, `logo-white.svg`, the app icon) have fixed colors and do not follow the theme. Ink #1d2a3f (white in `logo-white.svg`), ears #3ddc84, eyes white. The app icon is the bunny face on a #0a0a0c tile.
+The wordmark drawn on the home page and the small logo in the game back button are different. Their letters and outlines use the theme's text color (`currentColor`), so they show on every theme. Their ears stay green and the googly eyes stay white.
 
 ## 3. Typography
 
@@ -212,10 +212,10 @@ The "loopy" bunny logo sits at the top of the home page. Its letters hop one aft
 
 ### Buttons
 
-- **Pill buttons** (radius 999px): the "go" pill, the settings toggle, the language picker, the cheer buttons. At least 44px tall.
+- **Pill buttons** (radius 999px): the "go" pill, the settings toggle, the language picker, the cheer buttons. At least 44px tall, and at least 44px wide when only an icon shows (the gear-only settings toggle).
 - **Footer buttons** (home page): chip pills like the settings toggle, each with a 20px line icon and one word (Grown-ups, Help, Guide; German Erwachsene, Hilfe, Anleitung), centered in one row that wraps on small phones. Their names for screen readers are the full ones, like "For grown-ups: how it's going". In High contrast they get the white edge.
 - **Number pad keys:** key color, 2px line border, radius 18px. They shrink a little (`scale(0.96)`) when pressed. The "check" key is filled with `c1`. The erase key is muted.
-- **Answer buttons** (the clock and multiple-choice games): card color, 2px line border like the pad keys, radius 18px, big bold text. Word answers are at least 1.1rem and grow to about 2rem; letters, times and fractions are bigger. Four answers sit in a 2 × 2 grid; three answers sit in one column, so none looks bigger than the others. Right turns green, wrong turns red, the rest fade to 45%.
+- **Answer buttons** (the clock and multiple-choice games): card color, 2px line border like the pad keys, radius 18px, big bold text. Word answers are at least 1.1rem and grow to about 2rem; letters, times and fractions are bigger. Four answers sit in a 2 × 2 grid; three answers sit in one column, so none looks bigger than the others. The one exception is the three signs in Bigger or Smaller and Pizza Fractions (compare). `<`, `=` and `>` sit in one row of equal widths, read left to right, the way the signs are used. Right turns green, wrong turns red, the rest fade to 45%.
 - **Skip and Next** (the button under the answers, `Loopy.nextButton()`): before an answer it is a small quiet pill, "Skip", in the middle (muted text, 2px line border, no fill). After an answer it is the full-width `c1` button "Next". Every game uses these two words.
 - **Round icon buttons:** the sound toggle (40px), the age picker plus and minus (38px), and the Read aloud speaker (44px).
 - **Quiet buttons:** transparent with a 2px line border. Used for Reset and "Not now".
