@@ -4,6 +4,7 @@ Newest first. One line per change: date, plugin and version, what it learned, an
 
 | Date | Plugin | What changed | Learned from |
 | --- | --- | --- | --- |
+| 2026-11-01 | loopy 1.6.1 | RULES.md and ship-pr say to use the repo's own improve-ui copy, not a global skill of the same name, and that `/impeccable critique <page>` is a second opinion where impeccable is installed. | Owner's ask to install ui-skills and impeccable globally on the Mac, loopy project 1 Nov 2026 |
 | 2026-11-01 | loopy 1.6.0 | New rule: every PR that changes how a page looks first runs improve-ui on that page and fixes the findings. ship-pr has it as a step. | Owner's ask "always use this skill to all UI related PRs", loopy project 1 Nov 2026 |
 | 2026-11-01 | loopy 1.5.0 | New improve-ui skill, copied from ibelick's ui-skills (MIT) with an "In loopy" section: audits one page against DESIGN.md and writes a plan under `design-plans/` (gitignored) for another agent to build. | Owner's ask "install and setup improve-ui", loopy project 1 Nov 2026 |
 | 2026-11-01 | loopy 1.4.2 | ship-pr knows the hand-run Family sync usage job (counts only); heal has a recipe for it. | Owner's ask "add usage workflow", loopy project 1 Nov 2026 |
