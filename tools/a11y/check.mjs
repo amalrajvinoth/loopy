@@ -189,7 +189,15 @@ for (const page of GAMES) {
   for (let round = 0; round < 2; round++) {
     // Answer: choices and the map are picked with Enter; the number and letter pads are typed into, then Check.
     const pad = await p.evaluate(() => !!document.activeElement.closest("#pad, #letters, #words"));
-    if (pad) {
+    const go = pad && await p.$("#k-go");
+    if (pad && !go) {
+      // A letter grid with no Check button (Word Trail): Escape clears the trail, then Enter on each box of the
+      // word in turn (the card lists them in data-a as row-col). The word counts on its last box.
+      const card = await p.$('[data-trail="on"]');
+      const a = card ? await card.getAttribute("data-a") : "";
+      await p.keyboard.press("Escape");
+      for (const rc of (a || "").split(",")) { await p.focus(`#grid [data-rc="${rc}"]`); await p.keyboard.press("Enter"); }
+    } else if (pad) {
       // Type with the focused key until Check turns on, then Tab to Check and press Enter.
       for (let i = 0; i < 10 && await p.evaluate(() => document.getElementById("k-go").disabled); i++) await p.keyboard.press("Enter");
       await p.focus("#k-go"); await p.keyboard.press("Enter");

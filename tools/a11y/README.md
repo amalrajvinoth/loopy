@@ -28,7 +28,7 @@ It prints a table and every problem it finds, and fails if there is one.
 
 ## Add a new game
 
-Nothing to add: the check finds every `<subject>/<game>/index.html` by itself. Give the game's answer area one of these ids so the keyboard test can find it: `choices`, `answers`, `pad`, `letters` or `map`. Keep `id="feedback"` on the feedback line and `id="next"` on the Next button.
+Nothing to add: the check finds every `<subject>/<game>/index.html` by itself. Give the game's answer area one of these ids so the keyboard test can find it: `choices`, `answers`, `pad`, `letters` or `map`. Keep `id="feedback"` on the feedback line and `id="next"` on the Next button. A pad or letter area normally has a Check button, `id="k-go"`. A letter grid without one (Word Trail) marks its card `data-trail="on"` and lists the boxes of the word in `data-a`, and the test presses Enter on each.
 
 ## What a computer cannot check
 
