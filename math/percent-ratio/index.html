@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'sha256-bfEIDThmOLpVr+69TKqDVR5qpKKBvACJb4RylcjWU/M='; style-src 'self' 'sha256-z2P7kGW5Z05eCTjTZdYpc0vThTlOE9vmt97pVSvi2I4=' 'sha256-nzWO/Zp5fHoEAG1TKhQVCMxRphuWD3Glc7tgamR53K4=' 'sha256-RT1053JU5UiKvjrCUFx1rlhdFLMmgtuFJ9T8jnMeawQ=' 'sha256-8mi1cXgKL22AU/PExt3JtyI4gqzbS66XfuUx8kmgVRM='; img-src 'self' data:; font-src 'self'; connect-src 'self' https://loopy-sync.loopy-1e2.workers.dev; worker-src 'self'; object-src 'none'; base-uri 'none'; form-action 'none'; manifest-src 'self'; upgrade-insecure-requests">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'sha256-/F0CxYqt4PszUut0fFMKaL/pI9kgA+F3v32bV3xOl/Y='; style-src 'self' 'sha256-z2P7kGW5Z05eCTjTZdYpc0vThTlOE9vmt97pVSvi2I4=' 'sha256-nzWO/Zp5fHoEAG1TKhQVCMxRphuWD3Glc7tgamR53K4=' 'sha256-RT1053JU5UiKvjrCUFx1rlhdFLMmgtuFJ9T8jnMeawQ=' 'sha256-8mi1cXgKL22AU/PExt3JtyI4gqzbS66XfuUx8kmgVRM='; img-src 'self' data:; font-src 'self'; connect-src 'self' https://loopy-sync.loopy-1e2.workers.dev; worker-src 'self'; object-src 'none'; base-uri 'none'; form-action 'none'; manifest-src 'self'; upgrade-insecure-requests">
 <meta name="referrer" content="strict-origin-when-cross-origin">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <style>:root{color-scheme:light;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}body{margin:0}[hidden]{display:none!important}</style>
@@ -241,7 +241,7 @@ body { min-height: 100vh; min-height: 100dvh; padding-block: 12px 16px; }
       <div class="eq" id="eq" aria-live="polite">
         <span id="eq-pre">25% of 80 =</span><span class="ans empty" id="ans" role="textbox" aria-readonly="true" aria-label="Your answer" data-t-aria="yourAnswer"></span><span id="eq-post"></span>
       </div>
-      <p class="feedback" id="feedback"><span class="hint" data-t="tapHint">Tap the numbers to write your answer.</span></p>
+      <p class="feedback" id="feedback"></p>
     </div>
 
     <div class="pad" id="pad">
@@ -584,7 +584,7 @@ function explain(p) {
     card.classList.remove("good", "bad");
     feedbackEl.className = "feedback";
     feedbackEl.innerHTML = '<span class="hint"></span>';
-    feedbackEl.firstChild.textContent = t("tapHint");
+    feedbackEl.firstChild.textContent = "";
     render();
     drawBar();
     Loopy.speech.read();
