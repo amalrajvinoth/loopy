@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'sha256-0NTkwk5dBW6Cgamsv3QIxPokbnK56/p22zivmKSF7oM='; style-src 'self' 'sha256-nWqdGrMdpRcORNSlGKR3C0sTK54B8rLI3QYhmNyxjvU='; img-src 'self' data:; font-src 'self'; connect-src 'self' https://loopy-sync.loopy-1e2.workers.dev; worker-src 'self'; object-src 'none'; base-uri 'none'; form-action 'none'; manifest-src 'self'; upgrade-insecure-requests">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'sha256-586UwosySNkljZaUQabQJcfh7fUcXyQ1t0gULyBjsA0='; style-src 'self' 'sha256-nWqdGrMdpRcORNSlGKR3C0sTK54B8rLI3QYhmNyxjvU='; img-src 'self' data:; font-src 'self'; connect-src 'self' https://loopy-sync.loopy-1e2.workers.dev; worker-src 'self'; object-src 'none'; base-uri 'none'; form-action 'none'; manifest-src 'self'; upgrade-insecure-requests">
 <meta name="referrer" content="strict-origin-when-cross-origin">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <link rel="icon" href="../icon.svg" type="image/svg+xml">
@@ -259,6 +259,7 @@ Loopy.addStrings({
     "nm-sh-name": "Shapes, corners and sides", "nm-sh-lines": "Right angles, lines and symmetry", "nm-sh-area": "Perimeter and area", "nm-sh-angle": "Angles", "nm-sh-tri": "Triangles and formulas",
     "nm-sq-mine": "Words from your list", "nm-sq-loopy": "Tricky spellings",
     "nm-wd-3": "Mystery words with 3 letters", "nm-wd-4": "Mystery words with 4 letters", "nm-wd-5": "Mystery words with 5 letters", "nm-wd-6": "Mystery words with 6 letters",
+    "nm-wt-3": "Hidden words with 3 to 4 letters", "nm-wt-5": "Hidden words with 5 to 6 letters", "nm-wt-7": "Hidden words with 7 to 8 letters",
     "nm-mul": "{n} times table", "nm-mul-big": "Times with bigger numbers", "nm-div": "Sharing by {n}", "nm-div-big": "Sharing bigger numbers",
     "nm-cl-0": "Clock: o'clock", "nm-cl-30": "Clock: half past", "nm-cl-15": "Clock: quarter past and quarter to", "nm-cl-5": "Clock: minutes in fives", "nm-cl-1": "Clock: single minutes", "nm-cl-24": "Clock: 24-hour time",
     "nm-ss-start": "Sound at the start of a word", "nm-ss-end": "Sound at the end of a word",
@@ -287,7 +288,7 @@ Loopy.addStrings({
     prSheet: "Print a practice sheet", prSheetMaking: "Making the sheet…", prSheetGo: "Print the sheet", prSheetReady: "The sheet is ready. Tap Print the sheet.", prSheetFail: "The sheet could not be made. Open a game and print its worksheet from Settings instead.",
     prSheetTitle: "Practice sheet", prSheetTitleKid: "Practice sheet for {name}", prSheetHow: "20 problems of the kinds missed most. Answers on the last page.",
     prStars: "⭐ {n} stars", prDays: "🔥 {n} days in a row", prDay: "🔥 1 day in a row", prBadge: "🏅 {name}", prBest: "🏆 Best streak: {n}", prGameBest: "Best streak: {n} in a row", prPlay: "Play →",
-    gPlusMinus: "Plus and Minus", gTimesShare: "Times and Share", gTimesSprint: "Times Tables Sprint", gClock: "What Time Is It?", gSoundSpell: "Sound Spell", gDailyMix: "Today's 10", gMake10: "Make 10", gBiggerSmaller: "Bigger or Smaller", gPizza: "Pizza Fractions", gCoinsChange: "Coins and Change", gWordMatch: "Word Match", gSpellIt: "Spell It", gSentence: "Sentence Builder", gQuickFacts: "Quick Facts", gSortIt: "Sort It", gGraphs: "Graphs and Data", gBox: "Box Multiplication", gWhereIsIt: "Where Is It?", gFlags: "Flags and Capitals", gEquation: "Equation Balance", gPercent: "Percent and Ratio", gStep: "Step by Step", gShapes: "Shapes and Angles", gSpellQuiz: "Spelling Quiz", gWordDetective: "Word Detective",
+    gPlusMinus: "Plus and Minus", gTimesShare: "Times and Share", gTimesSprint: "Times Tables Sprint", gClock: "What Time Is It?", gSoundSpell: "Sound Spell", gDailyMix: "Today's 10", gMake10: "Make 10", gBiggerSmaller: "Bigger or Smaller", gPizza: "Pizza Fractions", gCoinsChange: "Coins and Change", gWordMatch: "Word Match", gSpellIt: "Spell It", gSentence: "Sentence Builder", gQuickFacts: "Quick Facts", gSortIt: "Sort It", gGraphs: "Graphs and Data", gBox: "Box Multiplication", gWhereIsIt: "Where Is It?", gFlags: "Flags and Capitals", gEquation: "Equation Balance", gPercent: "Percent and Ratio", gStep: "Step by Step", gShapes: "Shapes and Angles", gSpellQuiz: "Spelling Quiz", gWordTrail: "Word Trail", gWordDetective: "Word Detective",
     tipNone: "Not played this week. A few minutes a day helps.", tipAll: "All right this week. Try a harder level in Settings.",
     tipLast: "Mostly right. Keep going.",
     "tip-add": "Practise adding.", "tip-add-rg": "Practise adding with carrying, like 38 + 25.",
@@ -357,7 +358,10 @@ Loopy.addStrings({
     "tip-wd-3": "Play word detective: read the clue out loud, then try a vowel first. Say each sound of the word.",
     "tip-wd-4": "Play word detective: open a clue, then try a word with common letters like e, a, s and t first.",
     "tip-wd-5": "Play word detective: start with a word full of common letters, then use the green and yellow tiles.",
-    "tip-wd-6": "Play word detective: read the meaning and the silly sentence together, then guess the word."
+    "tip-wd-6": "Play word detective: read the meaning and the silly sentence together, then guess the word.",
+    "tip-wt-3": "Play Word Trail: say the word, find its first letter in the grid, then look at the boxes around it.",
+    "tip-wt-5": "Play Word Trail: find the first letter, then follow the word one letter at a time. Trails can bend.",
+    "tip-wt-7": "Play Word Trail: long words bend and can run backwards. Find a rare letter of the word first, like k or z."
   },
   de: {
     prTitle: "So läuft es · loopy", prHeading: "So läuft es", prHeadingKid: "So läuft es bei {name}", prLead: "Für Erwachsene. Antworten auf diesem Gerät aus den letzten 30 Tagen.",
@@ -383,6 +387,7 @@ Loopy.addStrings({
     "nm-sh-name": "Formen, Ecken und Seiten", "nm-sh-lines": "Rechte Winkel, Linien und Symmetrie", "nm-sh-area": "Umfang und Fläche", "nm-sh-angle": "Winkel", "nm-sh-tri": "Dreiecke und Formeln",
     "nm-sq-mine": "Wörter aus eurer Liste", "nm-sq-loopy": "Knifflige Schreibweisen",
     "nm-wd-3": "Rätselwörter mit 3 Buchstaben", "nm-wd-4": "Rätselwörter mit 4 Buchstaben", "nm-wd-5": "Rätselwörter mit 5 Buchstaben", "nm-wd-6": "Rätselwörter mit 6 Buchstaben",
+    "nm-wt-3": "Versteckte Wörter mit 3 bis 4 Buchstaben", "nm-wt-5": "Versteckte Wörter mit 5 bis 6 Buchstaben", "nm-wt-7": "Versteckte Wörter mit 7 bis 8 Buchstaben",
     "nm-mul": "{n}er-Reihe", "nm-mul-big": "Mal mit größeren Zahlen", "nm-div": "Teilen durch {n}", "nm-div-big": "Teilen mit größeren Zahlen",
     "nm-cl-0": "Uhr: volle Stunden", "nm-cl-30": "Uhr: halbe Stunden", "nm-cl-15": "Uhr: Viertel nach und Viertel vor", "nm-cl-5": "Uhr: Minuten in Fünferschritten", "nm-cl-1": "Uhr: einzelne Minuten", "nm-cl-24": "Uhr: 24-Stunden-Zeit",
     "nm-ss-start": "Laut am Wortanfang", "nm-ss-end": "Laut am Wortende",
@@ -411,7 +416,7 @@ Loopy.addStrings({
     prSheet: "Übungsblatt drucken", prSheetMaking: "Blatt wird gemacht…", prSheetGo: "Blatt drucken", prSheetReady: "Das Blatt ist fertig. Tippe auf Blatt drucken.", prSheetFail: "Das Blatt konnte nicht gemacht werden. Öffnet ein Spiel und druckt dort in den Einstellungen das Arbeitsblatt.",
     prSheetTitle: "Übungsblatt", prSheetTitleKid: "Übungsblatt für {name}", prSheetHow: "20 Aufgaben der Arten, die am häufigsten falsch waren. Lösungen auf der letzten Seite.",
     prStars: "⭐ {n} Sterne", prDays: "🔥 {n} Tage hintereinander", prDay: "🔥 1 Tag hintereinander", prBadge: "🏅 {name}", prBest: "🏆 Beste Serie: {n}", prGameBest: "Beste Serie: {n} hintereinander", prPlay: "Spielen →",
-    gPlusMinus: "Plus und Minus", gTimesShare: "Mal und Teilen", gTimesSprint: "Einmaleins-Sprint", gClock: "Wie spät ist es?", gSoundSpell: "Anlaut und Endlaut", gDailyMix: "Die 10 von heute", gMake10: "Ergänze bis 10", gBiggerSmaller: "Größer oder kleiner", gPizza: "Pizza-Brüche", gCoinsChange: "Münzen und Wechselgeld", gWordMatch: "Bild und Wort", gSpellIt: "Wörter schreiben", gSentence: "Satzbau", gQuickFacts: "Blitzwissen", gSortIt: "Sortieren", gGraphs: "Diagramme und Daten", gBox: "Malkreuz", gWhereIsIt: "Wo liegt das?", gFlags: "Flaggen und Hauptstädte", gEquation: "Waage", gPercent: "Prozent und Verhältnis", gStep: "Schrittweise rechnen", gShapes: "Formen und Winkel", gSpellQuiz: "Rechtschreib-Quiz", gWordDetective: "Wortdetektiv",
+    gPlusMinus: "Plus und Minus", gTimesShare: "Mal und Teilen", gTimesSprint: "Einmaleins-Sprint", gClock: "Wie spät ist es?", gSoundSpell: "Anlaut und Endlaut", gDailyMix: "Die 10 von heute", gMake10: "Ergänze bis 10", gBiggerSmaller: "Größer oder kleiner", gPizza: "Pizza-Brüche", gCoinsChange: "Münzen und Wechselgeld", gWordMatch: "Bild und Wort", gSpellIt: "Wörter schreiben", gSentence: "Satzbau", gQuickFacts: "Blitzwissen", gSortIt: "Sortieren", gGraphs: "Diagramme und Daten", gBox: "Malkreuz", gWhereIsIt: "Wo liegt das?", gFlags: "Flaggen und Hauptstädte", gEquation: "Waage", gPercent: "Prozent und Verhältnis", gStep: "Schrittweise rechnen", gShapes: "Formen und Winkel", gSpellQuiz: "Rechtschreib-Quiz", gWordTrail: "Wortpfad", gWordDetective: "Wortdetektiv",
     tipNone: "Diese Woche nicht gespielt. Ein paar Minuten am Tag helfen.", tipAll: "Diese Woche alles richtig. Probiert in den Einstellungen eine schwerere Stufe.",
     tipLast: "Fast alles richtig. Weiter so.",
     "tip-add": "Übt Plusrechnen.", "tip-add-rg": "Übt Plusrechnen mit Übertrag, wie 38 + 25.",
@@ -481,7 +486,10 @@ Loopy.addStrings({
     "tip-wd-3": "Spielt Wortdetektiv: lest den Hinweis laut vor, dann probiert zuerst einen Vokal. Sprecht jeden Laut.",
     "tip-wd-4": "Spielt Wortdetektiv: öffnet einen Hinweis, dann probiert zuerst ein Wort mit häufigen Buchstaben wie e, n, s und r.",
     "tip-wd-5": "Spielt Wortdetektiv: fangt mit einem Wort voller häufiger Buchstaben an, dann nutzt die grünen und gelben Kästchen.",
-    "tip-wd-6": "Spielt Wortdetektiv: lest Bedeutung und lustigen Satz zusammen, dann ratet das Wort."
+    "tip-wd-6": "Spielt Wortdetektiv: lest Bedeutung und lustigen Satz zusammen, dann ratet das Wort.",
+    "tip-wt-3": "Spielt Wortpfad: sagt das Wort, sucht seinen ersten Buchstaben im Gitter, dann schaut auf die Felder drum herum.",
+    "tip-wt-5": "Spielt Wortpfad: sucht den ersten Buchstaben, dann folgt dem Wort Buchstabe für Buchstabe. Pfade dürfen knicken.",
+    "tip-wt-7": "Spielt Wortpfad: lange Wörter knicken und laufen auch rückwärts. Sucht zuerst einen seltenen Buchstaben des Wortes, wie k oder z."
   }
 });
 (function () {
@@ -508,6 +516,7 @@ Loopy.addStrings({
     { id: "sentence-builder", name: "gSentence", path: "../languages/sentence-builder/" },
     { id: "spelling-quiz", name: "gSpellQuiz", path: "../languages/spelling-quiz/" },
     { id: "word-detective", name: "gWordDetective", path: "../languages/word-detective/" },
+    { id: "word-trail", name: "gWordTrail", path: "../languages/word-trail/" },
     { id: "quick-facts", name: "gQuickFacts", path: "../science/quick-facts/" },
     { id: "sort-it", name: "gSortIt", path: "../science/sort-it/" },
     { id: "where-is-it", name: "gWhereIsIt", path: "../geography/where-is-it/" },
@@ -516,7 +525,7 @@ Loopy.addStrings({
   ];
   // Which game practises a kind of question. Today's 10 mixes three games, so its misses point to those.
   const OWNER = { add: "plus-minus", sub: "plus-minus", mul: "times-share", div: "times-share", cl: "clock", ss: "sound-spell", mk: "make-10",
-    bs: "bigger-smaller", pz: "pizza-fractions", cc: "coins-change", wm: "word-match", si: "spell-it", sb: "sentence-builder", qf: "quick-facts", so: "sort-it", wi: "where-is-it", eb: "equation-balance", fc: "flags-capitals", pr: "percent-ratio", gd: "graphs-data", bm: "box-multiply", st: "step-by-step", sq: "spelling-quiz", sh: "shapes-angles", wd: "word-detective" };
+    bs: "bigger-smaller", pz: "pizza-fractions", cc: "coins-change", wm: "word-match", si: "spell-it", sb: "sentence-builder", qf: "quick-facts", so: "sort-it", wi: "where-is-it", eb: "equation-balance", fc: "flags-capitals", pr: "percent-ratio", gd: "graphs-data", bm: "box-multiply", st: "step-by-step", sq: "spelling-quiz", sh: "shapes-angles", wd: "word-detective", wt: "word-trail" };
   const gameOf = (id) => GAMES.find(g => g.id === id);
   const nameOf = (id) => t(gameOf(id).name);
   // Weeks start on Monday. Week 0: Monday to today. Week 1: the 7 days before, and so on, back four weeks.

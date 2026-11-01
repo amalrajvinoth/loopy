@@ -8,6 +8,10 @@ loopy bekommt immer wieder neue Spiele. Das ist zuletzt dazugekommen!
 
 Die großen Änderungen, die neuesten zuerst. Kleine Korrekturen stehen nicht dabei. Die [ganze Liste steht auf GitHub](https://github.com/amalrajvinoth/loopy/blob/main/RELEASES.md) (auf Englisch).
 
+## 1. November 2026
+
+- **Neues Spiel für 6 bis 14 Jahre: Wortpfad.** Finde die Wörter, die in einem Buchstabengitter versteckt sind. Tippe oder zieh über Buchstaben, die sich berühren. Jedes gefundene Wort behält seine Farbe. Fünf Stufen. Stufe 1 ist ein 4 × 4-Gitter mit kurzen geraden Wörtern. Stufe 5 ist ein 6 × 6-Gitter mit langen Wörtern, die knicken und rückwärts laufen. Drei Hinweise, wenn du nicht weiterkommst. 15 Themen, auf Deutsch oder Englisch. Siehe [Wortpfad](/loopy/guide/de/games/languages/word-trail/).
+
 ## 31. Oktober 2026
 
 - **Das Übungsblatt zeigt jede Aufgabe ganz.** Die Kästchen stehen jetzt in drei Spalten, breiter als vorher, und jede Art sieht aus wie auf dem Arbeitsblatt ihres Spiels: Zeichnungen, Malkreuze, Flaggen und Wortlisten waren abgeschnitten oder schwarze Kästen. Arten, die mehr Platz brauchen, gehen auf eine zweite Seite weiter. Siehe [Wochenkarte und Übungsblätter](/loopy/guide/de/grown-ups/practice-sheet/).

@@ -66,7 +66,7 @@ On an iPhone, iPad or Mac, the loopy on the home screen keeps its own stars, apa
 
 ## Can Loopy read the questions out loud?
 
-Yes, in Plus and Minus, Times and Share, What Time Is It?, Make 10, Bigger or Smaller, Pizza Fractions, Coins and Change, Equation Balance, Times Tables Sprint, Percent and Ratio, Sentence Builder, Spelling Quiz, Graphs and Data, Box Multiplication, Step by Step, Shapes and Angles, Word Detective, Quick Facts, Sort It, Where Is It? and Flags and Capitals. Open Settings and turn on **Read aloud**. A speaker button shows next to the question. It uses the device's own voice, in English or German, and nothing is downloaded. It is on by itself for ages 5 to 7.
+Yes, in Plus and Minus, Times and Share, What Time Is It?, Make 10, Bigger or Smaller, Pizza Fractions, Coins and Change, Equation Balance, Times Tables Sprint, Percent and Ratio, Sentence Builder, Spelling Quiz, Graphs and Data, Box Multiplication, Step by Step, Shapes and Angles, Word Detective, Word Trail, Quick Facts, Sort It, Where Is It? and Flags and Capitals. Open Settings and turn on **Read aloud**. A speaker button shows next to the question. It uses the device's own voice, in English or German, and nothing is downloaded. It is on by itself for ages 5 to 7.
 
 ## Can my child practise their own spelling words from school?
 
@@ -95,6 +95,10 @@ Tap the **Grown-ups** button at the bottom of the home page. The first card says
 ## What is "Try again" on the home page?
 
 A wrong answer is not lost. When a child gets something wrong, the home page shows a **Try again** card with this week's mistakes, like "3 from this week · 52 − 17 · 7 × 8". Tap it and the game starts with those exact problems. Inside any game, every fifth question can be an old mistake too. Once a mistake is answered right twice, it goes off the list. Mistakes from Today's 10 come back in the game they belong to. Nothing is sent anywhere; the list lives on your device, and the stars code carries it to another device.
+
+## How do the words hide in Word Trail?
+
+Each word is a trail of letters that touch, sideways, up and down or diagonally. At level 1 the trails are straight. From level 2 they can bend, and from level 4 they can run backwards too. Tap the letters one by one, or drag a finger over them. The word counts as soon as its last letter is tapped. Stuck? Tap **Clue**: it shows the picture and first letter, then the first box, then the whole trail.
 
 ## Does Word Detective accept made-up words?
 

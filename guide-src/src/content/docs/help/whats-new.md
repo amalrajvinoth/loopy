@@ -8,6 +8,10 @@ loopy keeps getting new games. Here is what came lately!
 
 The big changes, newest first. Small fixes are not listed. See [the full list on GitHub](https://github.com/amalrajvinoth/loopy/blob/main/RELEASES.md).
 
+## 1 November 2026
+
+- **New game for ages 6 to 14: Word Trail.** Find the words hidden in a grid of letters. Tap or drag through letters that touch, and each found word keeps its colour. Five levels. Level 1 is a 4 × 4 grid with short straight words. Level 5 is a 6 × 6 grid with long words that bend and run backwards. Three clues when you are stuck. 15 topics, in English or German. See [Word Trail](/loopy/guide/games/languages/word-trail/).
+
 ## 31 October 2026
 
 - **The practice sheet shows every problem whole.** Its boxes are now in three columns, wider than before. Each kind looks as on its game's own worksheet. Before, drawings, box grids, flags and word lists were cut off or printed as black boxes. Kinds that need more room run on to a second page. See [Weekly card and practice sheets](/loopy/guide/grown-ups/practice-sheet/).

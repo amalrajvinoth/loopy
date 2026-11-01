@@ -60,6 +60,10 @@ Tap the speaker button. In a game, it is inside ⚙ Settings.
 
 Wrong answers come back, until each one is answered right twice. See [Try again](/loopy/guide/playing/try-again/).
 
+## How do the words hide in Word Trail?
+
+Each word is a trail of letters that touch, sideways, up and down or diagonally. At level 1 the trails are straight. From level 2 they can bend, and from level 4 they can run backwards too. Tap the letters one by one, or drag a finger over them. The word counts as soon as its last letter is tapped. Stuck? Tap **Clue**: it shows the picture and first letter, then the first box, then the whole trail.
+
 ## Does Word Detective accept made-up words?
 
 Yes. Any letters count as a try, so a child can try sounds. The tiles show which letters are in the word, and three clues help. See [Word Detective](/loopy/guide/games/languages/word-detective/).
