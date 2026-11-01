@@ -136,7 +136,6 @@ async function answerWrong(p) {
   if (await p.locator('[data-trail="on"]').count()) {
     const a = await p.locator('[data-trail="on"]').first().getAttribute("data-a");
     for (const rc of a.split(",").reverse()) await p.click(`#grid [data-rc="${rc}"]`);
-    await p.click("#k-go");
     return;
   }
   // A word guessed in several tries: a letter that is not in the word, in every box, until the tries run out.
@@ -198,8 +197,6 @@ async function answerRight(p, row) {
   if (await p.locator('[data-trail="on"]').count()) {
     const a = await p.locator('[data-trail="on"]').first().getAttribute("data-a");
     for (const rc of a.split(",")) await p.click(`#grid [data-rc="${rc}"]`);
-    const go = p.locator("#k-go");
-    if (await go.count() && await go.isVisible()) await go.click();
     return true;
   }
   if (await p.locator("#pad").count()) {

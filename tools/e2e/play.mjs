@@ -135,8 +135,6 @@ async function tries(p) {
 async function trail(p) {
   const a = await p.locator('[data-trail="on"]').first().getAttribute("data-a");
   for (const rc of a.split(",")) await p.click(`#grid [data-rc="${rc}"]`);
-  const go = p.locator("#k-go");
-  if (await go.count() && await go.isVisible()) await go.click();
 }
 
 // Answer the question on screen: the right answer when the page marks it, otherwise the first one.

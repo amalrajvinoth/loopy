@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'sha256-3/vfuPTWYdPm5rPnxfEDNLvVnI9CecmEN6ldwK3s6Lg='; style-src 'self' 'sha256-z2P7kGW5Z05eCTjTZdYpc0vThTlOE9vmt97pVSvi2I4=' 'sha256-qxqld09sBl9KP7HcyMVqISsx5anYdMyEAaUoAncFj3Q=' 'sha256-RT1053JU5UiKvjrCUFx1rlhdFLMmgtuFJ9T8jnMeawQ=' 'sha256-cOcmV1JLS2mJzp0BUNncjJnKGY7FMlwGOypC59znXZE='; img-src 'self' data:; font-src 'self'; connect-src 'self' https://loopy-sync.loopy-1e2.workers.dev; worker-src 'self'; object-src 'none'; base-uri 'none'; form-action 'none'; manifest-src 'self'; upgrade-insecure-requests">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'sha256-lAx0mTM6xN1UceBe24lCt9oUzZXwg/Sj3TcZuJAvhcE='; style-src 'self' 'sha256-z2P7kGW5Z05eCTjTZdYpc0vThTlOE9vmt97pVSvi2I4=' 'sha256-qxqld09sBl9KP7HcyMVqISsx5anYdMyEAaUoAncFj3Q=' 'sha256-RT1053JU5UiKvjrCUFx1rlhdFLMmgtuFJ9T8jnMeawQ=' 'sha256-JLCGGHAfRX9x+80gQLgpmM9Oo+2y4pigyml2DfJWIa0='; img-src 'self' data:; font-src 'self'; connect-src 'self' https://loopy-sync.loopy-1e2.workers.dev; worker-src 'self'; object-src 'none'; base-uri 'none'; form-action 'none'; manifest-src 'self'; upgrade-insecure-requests">
 <meta name="referrer" content="strict-origin-when-cross-origin">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <style>:root{color-scheme:light;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}body{margin:0}[hidden]{display:none!important}</style>
@@ -99,13 +99,13 @@ body { min-height: 100vh; min-height: 100dvh; padding-block: 12px 16px; }
 .bar-right { display: flex; align-items: center; gap: 8px; }
 .top { gap: 8px 12px; }
 .play { display: flex; flex-direction: column; gap: 12px; -webkit-user-select: none; user-select: none; }
-@media (min-width: 600px) and (orientation: portrait) { .wrap { max-width: 640px; } }
+@media (min-width: 600px) and (orientation: portrait) { .wrap { max-width: none; } } /* the whole width, unlike the other games: the grid is the whole game */
 @media (orientation: landscape) and (min-width: 640px) {
   .wrap { max-width: 1100px; }
   .play { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; align-items: center; }
 }
 
-.problem-card { padding: 12px 14px 12px; gap: 8px; }
+.problem-card { padding: 10px 12px; gap: 6px; }
 .feedback { min-height: 0; font-size: 1.05rem; }
 .feedback strong { font-size: 1.3rem; }
 
@@ -117,6 +117,34 @@ body { min-height: 100vh; min-height: 100dvh; padding-block: 12px 16px; }
   .wrap { flex: 1 1 auto; min-height: 0; width: 100%; }
   .play { flex: 1 1 auto; min-height: 0; }
   .problem-card { flex: 1 1 auto; min-height: 0; justify-content: center; overflow: hidden; }
+  .gridbox { flex: 1 1 auto; }
+  body:not(:has(#settings-panel:not([hidden]))) .gridbox { container-type: size; }
+  /* The card hugs the grid when the grid is as wide as the card: the word list sits right under it,
+     Clue and Next stay at the bottom, and the spare room is between them, not inside the card. */
+  .play { container-type: inline-size; }
+  .problem-card { flex-grow: 999; max-height: calc(100cqw + 104px); }
+  .problem-card:has(#result:not([hidden])) { max-height: calc(100cqw + 170px); }
+  .feedback { min-height: 1.5em; }
+  .side { flex: 1 0 auto; min-height: 0; display: flex; flex-direction: column; justify-content: space-between; gap: 10px; }
+  .side .words { flex: 0 0 auto; }
+}
+/* Tablets: bigger word chips and buttons. Upright, the word list sits under the card and Clue at the bottom.
+   Sideways, the card column is as wide as the grid can be tall, so the grid takes the height and the list the rest. */
+@media (orientation: portrait) and (min-width: 600px), (orientation: landscape) and (min-width: 900px) and (min-height: 600px) {
+  .side { gap: 16px; }
+  .words { gap: 10px; }
+  .wd { font-size: 1.2rem; padding: 7px 14px 7px 10px; }
+  .wd .e { font-size: 1.4rem; }
+  .more { min-height: 54px; font-size: 1.1rem; }
+  .next { font-size: 1.35rem; }
+}
+@media (orientation: landscape) and (min-width: 900px) and (min-height: 600px) {
+  .play { grid-template-columns: minmax(0, calc(100dvh - 210px)) minmax(0, 1fr); }
+  .words { flex-direction: column; align-items: stretch; gap: 10px; }
+  .wd { font-size: 1.4rem; padding: 10px 18px 10px 14px; justify-content: flex-start; }
+  .wd .e { font-size: 1.8rem; }
+  .more { min-height: 60px; }
+  .next { min-height: 64px; }
 }
 @media (orientation: landscape) and (min-width: 640px) {
   body { height: calc(100dvh - env(safe-area-inset-top, 0px) - env(safe-area-inset-bottom, 0px)); min-height: 0; display: flex; flex-direction: column; overflow: hidden; }
@@ -125,21 +153,25 @@ body { min-height: 100vh; min-height: 100dvh; padding-block: 12px 16px; }
   .play { flex: 1 1 auto; min-height: 0; grid-template-rows: minmax(0, 1fr); }
   .problem-card { min-height: 0; overflow: hidden; height: 100%; justify-content: center; }
   .side { height: 100%; display: flex; flex-direction: column; justify-content: center; gap: 10px; }
+  .gridbox { flex: 1 1 auto; }
+  body:not(:has(#settings-panel:not([hidden]))) .gridbox { container-type: size; }
 }
 
 /* Word Trail: the topic row, the letter grid with its trail lines, the spelled letters, then the word list. */
 .topic-row { display: flex; align-items: center; justify-content: space-between; gap: 8px; width: 100%; }
 .topic { font-weight: 700; font-size: 1.05rem; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .found { color: var(--muted); font-weight: 600; font-size: 0.9rem; white-space: nowrap; }
-.gridwrap { position: relative; width: min(100%, 400px, 38dvh); }
+.gridbox { width: 100%; display: flex; justify-content: center; align-items: center; min-height: 0; }
+.gridwrap { position: relative; width: min(100%, 400px, 38dvh); width: min(100%, 100cqh); container-type: inline-size; }
 .grid { display: grid; grid-template-columns: repeat(var(--n, 5), 1fr); gap: 5px; touch-action: none; }
 .cell {
   aspect-ratio: 1; min-width: 0; padding: 0; display: grid; place-items: center; cursor: pointer;
   border: 2px solid var(--line); border-radius: 22%; background: var(--key); color: var(--ink);
-  font-family: "Fredoka", var(--font); font-weight: 700; font-size: clamp(1rem, 4.6dvh, 1.7rem); text-transform: uppercase; line-height: 1;
+  font-family: "Fredoka", var(--font); font-weight: 700; font-size: clamp(1rem, 4.6dvh, 1.7rem); font-size: clamp(1rem, 9cqw, 3rem); text-transform: uppercase; line-height: 1;
   -webkit-tap-highlight-color: transparent; -webkit-user-select: none; user-select: none;
 }
-.grid.n6 .cell { font-size: clamp(0.95rem, 4dvh, 1.45rem); }
+.grid.n4 .cell { font-size: clamp(1rem, 11cqw, 3.4rem); }
+.grid.n6 .cell { font-size: clamp(0.95rem, 4dvh, 1.45rem); font-size: clamp(0.95rem, 7.5cqw, 2.4rem); }
 .cell.on { background: var(--accent); border-color: var(--accent); color: var(--on-accent, #fff); transform: scale(1.06); z-index: 1; }
 .cell.w { background: var(--chip); border-width: 3px; }
 .cell.w1 { border-color: var(--c3); } .cell.w2 { border-color: var(--c4); } .cell.w3 { border-color: var(--c2); } .cell.w4 { border-color: var(--c1); } .cell.w5 { border-color: var(--c5); }
@@ -158,7 +190,6 @@ body { min-height: 100vh; min-height: 100dvh; padding-block: 12px 16px; }
   font: inherit; font-weight: 700; font-size: 0.95rem; min-height: 40px; min-width: 44px; padding: 0 12px; border-radius: 12px; cursor: pointer;
   border: 2px solid var(--line); background: var(--key); color: var(--ink); touch-action: manipulation;
 }
-.spell-row .go { background: var(--accent); border-color: var(--accent); color: var(--on-accent, #fff); }
 .result { display: flex; flex-direction: column; align-items: center; gap: 6px; width: 100%; text-align: center; }
 .big { font-family: "Fredoka", var(--font); font-size: 1.6rem; margin: 0; line-height: 1.1; text-align: center; }
 .stars { display: flex; align-items: center; justify-content: center; gap: 6px; font-weight: 700; font-size: 1.1rem; }
@@ -187,7 +218,7 @@ body { min-height: 100vh; min-height: 100dvh; padding-block: 12px 16px; }
 
 /* Short phones: a smaller grid and tighter rows. */
 @media (max-height: 700px) and (orientation: portrait) {
-  .gridwrap { width: min(100%, 36dvh); }
+  .gridwrap { width: min(100%, 36dvh); width: min(100%, 100cqh); }
   .grid { gap: 4px; }
   .spell { font-size: 1.2rem; }
   .spell-row button { min-height: 36px; }
@@ -197,12 +228,16 @@ body { min-height: 100vh; min-height: 100dvh; padding-block: 12px 16px; }
 }
 /* Landscape: the grid keeps the card, the word list and buttons sit on the right. */
 @media (orientation: landscape) and (min-width: 640px) {
-  .gridwrap { width: min(100%, 46dvh); }
+  .gridwrap { width: min(100%, 46dvh); width: min(100%, 100cqh); }
   .grid { gap: 4px; }
   .spell { font-size: 1.2rem; }
   .spell-row button { min-height: 36px; }
   .problem-card { gap: 6px; }
   .words { justify-content: flex-start; }
+}
+/* Phone landscape: a tighter card so the grid gets the height. */
+@media (orientation: landscape) and (min-width: 640px) and (max-height: 500px) {
+  .problem-card { padding: 8px 12px; gap: 4px; }
 }
 @media print {
   .loopy-sheet .ws-tg { border-collapse: collapse; margin-top: 1mm; }
@@ -267,14 +302,13 @@ body { min-height: 100vh; min-height: 100dvh; padding-block: 12px 16px; }
   <main class="play">
     <div class="problem-card" id="card">
       <div class="topic-row"><div class="topic" id="topic"></div><span class="found" id="found"></span></div>
-      <div class="gridwrap" id="letters">
+      <div class="gridbox"><div class="gridwrap" id="letters">
         <div class="grid" id="grid" role="group" aria-labelledby="topic"></div>
         <svg class="trail" id="trail" aria-hidden="true"></svg>
-      </div>
+      </div></div>
       <div class="spell-row" id="spell-row">
         <button type="button" id="k-erase" data-t="wtClear" data-t-aria="wtClearAria">Clear</button>
         <p class="spell" id="spell"></p>
-        <button type="button" class="go" id="k-go" data-t="wtCheck" data-t-aria="wtCheckAria">Check</button>
       </div>
       <div class="result" id="result" hidden></div>
       <p class="feedback" id="feedback" aria-live="polite"></p>
@@ -296,7 +330,7 @@ Loopy.addStrings({
     wtFound: "{n} of {m} found", wtClue: "🔎 Clue", wtLeft: "{n} left", wtNoClues: "No clues left",
     wtShort: "A word needs 3 letters or more.", wtAlready: "You found “{w}” already.", wtNotList: "Not on the list. “{w}” was here.",
     wtGot: "“{w}”! ⭐", wtAllDone: "All {n} words found!", wtSomeDone: "{r} of {n} words found.", wtStars: "+{n} stars",
-    wtNext: "Next grid →", wtGo: "Next word →", wtCheck: "Check", wtCheckAria: "Check the word", wtClear: "Clear", wtClearAria: "Clear the trail",
+    wtNext: "Next grid →", wtGo: "Next word →", wtClear: "Clear", wtClearAria: "Clear the trail",
     wtCell: "{l}, row {r}, box {c}", wtFind: "Find this one", wtLetters: "{n} letters",
     wtRead: "Find these words: {w}.", wtReadHidden: "Topic: {t}. {n} words to find. The next one has {l} letters.",
     wtHow: "Find the words hidden in the grid. Letters that touch make a word. Draw a line through each one.", wtAnsAt: "row {r}, box {c}",
@@ -311,7 +345,7 @@ Loopy.addStrings({
     wtFound: "{n} von {m} gefunden", wtClue: "🔎 Hinweis", wtLeft: "{n} übrig", wtNoClues: "Keine Hinweise mehr",
     wtShort: "Ein Wort braucht mindestens 3 Buchstaben.", wtAlready: "„{w}“ hast du schon gefunden.", wtNotList: "Steht nicht auf der Liste. „{w}“ war hier.",
     wtGot: "„{w}“! ⭐", wtAllDone: "Alle {n} Wörter gefunden!", wtSomeDone: "{r} von {n} Wörtern gefunden.", wtStars: "+{n} Sterne",
-    wtNext: "Nächstes Gitter →", wtGo: "Nächstes Wort →", wtCheck: "Prüfen", wtCheckAria: "Wort prüfen", wtClear: "Löschen", wtClearAria: "Pfad löschen",
+    wtNext: "Nächstes Gitter →", wtGo: "Nächstes Wort →", wtClear: "Löschen", wtClearAria: "Pfad löschen",
     wtCell: "{l}, Zeile {r}, Feld {c}", wtFind: "Dieses Wort suchen", wtLetters: "{n} Buchstaben",
     wtRead: "Finde diese Wörter: {w}.", wtReadHidden: "Thema: {t}. {n} Wörter zu finden. Das nächste hat {l} Buchstaben.",
     wtHow: "Finde die versteckten Wörter im Gitter. Buchstaben, die sich berühren, bilden ein Wort. Zieh eine Linie durch jedes Wort.", wtAnsAt: "Zeile {r}, Feld {c}",
@@ -442,7 +476,7 @@ function makeGrid(lang, lv, topic, avoid, must) {
   const $ = (id) => document.getElementById(id);
   const card = $("card"), topicEl = $("topic"), foundEl = $("found"), gridEl = $("grid"), wrapEl = $("letters"), trailEl = $("trail"),
     spellEl = $("spell"), resultEl = $("result"), feedbackEl = $("feedback"), wordsEl = $("wordlist"),
-    moreBtn = $("more"), nextBtn = $("next"), goBtn = $("k-go"), eraseBtn = $("k-erase"), topicSeg = $("topic-seg");
+    moreBtn = $("more"), nextBtn = $("next"), eraseBtn = $("k-erase"), topicSeg = $("topic-seg");
   const wordsBtns = [...document.querySelectorAll("#words-seg button")];
   const levelBtns = [...document.querySelectorAll("#level-seg button")];
   const t = Loopy.t;
@@ -614,12 +648,15 @@ function makeGrid(lang, lv, topic, avoid, must) {
     const b = el && el.closest ? el.closest("#grid .cell") : null;
     return b ? +b.dataset.i : -1;
   }
-  // Add a box to the trail. When the letters now spell a word on the list, it is found straight away.
+  // Add a box to the trail. When the letters now spell a word on the list, it is found straight away. When the
+  // trail is as long as the word being looked for and no word left starts this way, it is a miss straight away.
+  // Returns true when the trail is over, found or missed.
   function add(i) {
     trail.push(i);
     const s = trail.map(k => grid.cells[k]).join("");
     const hit = grid.words.find(w => !w.done && lower(w.e.word) === s);
     if (hit) { success(hit, trail.slice()); return true; }
+    if (trail.length >= target.e.letters.length && !remaining().some(w => lower(w.e.word).startsWith(s))) { miss(s); return true; }
     render();
     return false;
   }
@@ -677,10 +714,10 @@ function makeGrid(lang, lv, topic, avoid, must) {
   function clear() { trail = []; render(); }
   // A note on the feedback line. Cleared first, so a screen reader also reads it when it is the same note again.
   function say(text) { feedbackEl.textContent = ""; requestAnimationFrame(() => { feedbackEl.textContent = text; }); }
-  // Check or Erase came from the keyboard: focus goes back to the letters, so the child can carry on.
+  // Clear came from the keyboard: focus goes back to the letters, so the child can carry on.
   function backToLetters() {
     const a = document.activeElement;
-    if (!a || !/^k-(go|erase)$/.test(a.id)) return;
+    if (!a || a.id !== "k-erase") return;
     const c = gridEl.querySelector('.cell[tabindex="0"]') || gridEl.firstElementChild;
     if (c) c.focus({ preventScroll: true });
   }
@@ -756,7 +793,6 @@ function makeGrid(lang, lv, topic, avoid, must) {
 
   nextBtn.addEventListener("click", next);
   moreBtn.addEventListener("click", clue);
-  goBtn.addEventListener("click", check);
   eraseBtn.addEventListener("click", () => { if (trail.length) { trail.pop(); render(); } });
   wordsBtns.forEach(b => b.addEventListener("click", () => { wordsLang = b.dataset.words; store.set("wt.words", wordsLang); recent = []; grid = null; newQuestion(); }));
   levelBtns.forEach(b => b.addEventListener("click", () => { level = +b.dataset.level; store.set("wt.level.a" + age, level); recent = []; grid = null; newQuestion(); }));
@@ -775,7 +811,7 @@ function makeGrid(lang, lv, topic, avoid, must) {
       return;
     }
     if (e.key === "Enter") {
-      // Buttons act on their own (Check, Next, Clue, Settings, a box); Enter elsewhere checks the trail or goes on.
+      // Buttons act on their own (Next, Clue, Clear, Settings, a box); Enter elsewhere checks the trail or goes on.
       if (b || e.target.closest("#settings-panel")) return;
       answered ? next() : check();
       e.preventDefault();
