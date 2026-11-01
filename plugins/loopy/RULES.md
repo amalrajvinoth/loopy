@@ -18,6 +18,7 @@ Every session in the loopy repo starts with these. Add one with the add-rule ski
 
 ## Every change
 - Look for speed and size wins (loopy.js size, work on load, what is saved, page size, fonts, sw.js cache, Lighthouse) and say in the PR what was found, or that nothing was. (16 Oct 2026.)
+- Every pull request that changes what a page looks like first runs the improve-ui skill on that page (`/improve-ui <page>`): it checks the page against DESIGN.md and reports proven design problems. Fix the findings in the same PR or say in the PR why not. (Owner's rule, 1 Nov 2026.)
 - Review with the loopy-review skill, run `tools/review.py`, the play test `node tools/e2e/play.mjs`, the Try again test `node tools/e2e/retry.mjs`, the levels test `node tools/e2e/levels.mjs` and the accessibility check `node tools/a11y/check.mjs`.
 - Every game logs a short rebuild note with each wrong answer and asks for its questions through `Loopy.retry.fresh`, so a mistake comes back (Try again). `tools/e2e/retry.mjs` checks it.
 - Docs keep up: every change people can see or use also updates the docs that describe it, in the same PR. That is the guide (EN + DE), FAQ.md, the Help page, game READMEs, the main README and RELEASES.md. Plain English: short sentences, simple words, child and parent friendly. Use the loopy-docs skill; `tools/review.py` warns about missed docs. (Owner's rule, 21 Oct 2026.)
