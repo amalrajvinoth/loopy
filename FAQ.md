@@ -56,7 +56,7 @@ The code carries stars, badges, best scores, the day streak, the answers on the 
 
 Yes, with Family sync. On the home page, open ⚙ Settings and tap **Turn on** under Family sync. loopy shows a family code and a QR code. On the other device, scan the QR code, or open Settings, tap **Join with a code** and type it. From then on, new stars go to every family device by themselves. Nothing is taken away: for each child the bigger number wins.
 
-Everything is locked on your device before it is sent, with a key made from the family code. The server only keeps the locked copy and can't read it. There is no account. **Turn off** stops it on one device; **Turn off everywhere** deletes the family copy. The stars on each device stay.
+It carries what a stars code carries: every child's name, stars, badges, streaks, answers, age, levels and game choices. The color theme, sound, language and your email stay on each device. The family code is 16 letters and numbers; see it again in Settings on any device where sync is on. Everything is locked on your device before it is sent, with a key made from the family code. The server only keeps the locked copy and can't read it. There is no account. **Turn off** stops it on one device; **Turn off everywhere** deletes the family copy. The stars on each device stay.
 
 ## Can I hear about new games?
 

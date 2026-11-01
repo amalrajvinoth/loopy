@@ -43,6 +43,9 @@
     "pages.yml: github-pages",
     "pages.yml: Live site check",
     "pages.yml: The live site serves what was just deployed",
+    "sync-usage.yml: Family sync usage",
+    "sync-usage.yml: Not set up yet",
+    "sync-usage.yml: Count families and grown-ups",
     "sync.yml: Family sync server",
     "sync.yml: Not set up yet",
     "sync.yml: The server answers right",
@@ -93,5 +96,5 @@
     "844 × 390"
   ],
   "games_lists": 1,
-  "learned_at": "5e488e2"
+  "learned_at": "47e2fc7"
 }

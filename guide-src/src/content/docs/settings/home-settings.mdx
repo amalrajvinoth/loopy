@@ -1,16 +1,16 @@
 ---
 title: Settings on the home page
-description: Everything in the ⚙ Settings box on the home page, from top to bottom.
+description: Everything in the ⚙ Settings box on the home page, from top to bottom, with the family code.
 sidebar:
   order: 1
 ---
 import Shot from "~/components/Shot.astro";
 
-Tap ⚙ **Settings** on the home page. Here you can add a child, set the age, and pick colors and sound.
+Tap ⚙ **Settings** on the home page. Here you can add a child, set the age, pick colors and sound, leave an email, and turn on Family sync.
 
 <Shot name="home-settings" alt="The Settings box on the home page, with Kids, Age, colors, sound and language" />
 
-The ⚙ **Settings** button sits under the loopy name. Tap it to open the box. Tap it again to close it. The box has five parts, in this order.
+The ⚙ **Settings** button sits under the loopy name. Tap it to open the box. Tap it again, or press **Escape**, to close it. The box has five parts, in this order: **Kids**, **Age, look and sound**, **Grown-ups: stay in touch**, **Family sync** and **Use like an app**.
 
 ## Kids
 
@@ -38,15 +38,65 @@ Colors, Easier to read, sound and language are the same for everyone on this dev
 
 ## Grown-ups: stay in touch
 
-For grown-ups who want to hear about new games, a few times a year. Type your email, tick **I am a grown-up and I agree to the privacy note**, and tap **Save**. Nothing is sent until you tap Save. loopy keeps the email, your language and the time on its own server in the EU, and nothing else: nothing about your child. **Remove** deletes it again. The [privacy note](/loopy/privacy/) has the details.
+For grown-ups who want to hear about new games, a few times a year. It is the only place in loopy that asks for anything about you.
+
+1. Type your email in **Your email**.
+2. Tick **I am a grown-up and I agree to the privacy note**. The words "privacy note" are a link to the [privacy note](/loopy/privacy/).
+3. Tap **Save**.
+
+Nothing is sent until you tap **Save**. loopy then keeps the email, your language and the time on its own server in the EU. Nothing else goes with it: nothing about your child, no stars, no names. The box then shows "Saved" with your email and a **Remove** button. **Remove** deletes it from the server and from this device. After 2 years it is deleted by itself.
+
+If you type something that is not an email, loopy says "That does not look like an email." If you forgot the tick, it says "Please tick the box first." Without internet, it says "loopy can't reach the sync server." Then try again later.
+
+The same privacy note is linked at the bottom of the home page, under the Grown-ups, Help and Guide buttons.
 
 ## Family sync
 
-**Turn on** keeps the stars the same on all your family's devices, by themselves. **Join with a code** adds this device to a family that already has it on. When it is on, this part shows the family code and its QR code, **Sync now**, **Turn off** and **Turn off everywhere**. See [Family sync](/loopy/guide/stars/family-sync/).
+Family sync keeps the stars the same on all your family's devices, by themselves. It is off until a grown-up turns it on. What this part shows depends on whether it is on.
+
+**When it is off**, there are two buttons:
+
+- **Turn on** starts a new family. loopy makes a family code and shows it.
+- **Join with a code** opens a box for the code from your other device. Type it and tap **Join**.
+
+**When it is on**, it shows:
+
+- "On. Your family code:" and the code, in big letters.
+- A QR code. On the other device, scan it with the camera to join.
+- **Sync now**: syncs right away.
+- **Turn off**: stops sync on this device only. The other devices go on.
+- **Turn off everywhere**: tap it twice. It deletes the family copy on the server, so every device stops syncing. The stars on each device stay.
+- A line under the buttons that says what is going on: "Last sync at 16:20", "Syncing…" or "Waiting for the internet".
+
+### Your family code
+
+The family code is the key to your family's stars. It looks like `7K2M-QX9D-4HPT-W3RA`: 16 letters and numbers in 4 groups.
+
+- **See it again:** open ⚙ **Settings** on any device where Family sync is on. It is under Family sync, with its QR code.
+- **Type it:** small or capital letters both work, and you can leave out the dashes. The code never has the letters O, I, L or U. If you type an O, loopy reads a 0. An I or an L counts as a 1.
+- **Keep it private**, like a house key. Anyone with the code can join your family and see the stars.
+- **It stays on the device.** The code is not in a stars code, a backup file or the QR code under My stars. Each device joins by itself, with the code or the Family sync QR code.
+- **Lost it?** If one device still has sync on, read the code there. If no device has it, tap **Turn on** again. That makes a new family with a new code. Then join the other devices with the new code. The old family copy is deleted on the server after 400 days without a save.
+
+For what syncs, when it syncs and what the messages mean, see [Family sync](/loopy/guide/stars/family-sync/).
 
 ## Use like an app
 
 The last part has one button: **Add loopy to the home screen**. On a computer it says **Install loopy on this computer**. It opens the browser's own install box, or shows the steps for your device. Then loopy opens full screen and works offline. This part hides when loopy already runs from the home screen. See [Add to the home screen](/loopy/guide/setup/home-screen/).
+
+## Where each setting is kept
+
+| Setting | Who it is for | Goes to the other family devices? |
+| --- | --- | --- |
+| Name and picture of a child | That child | Yes |
+| Stars, badges, streaks, answers for the grown-ups page | That child | Yes. The bigger number wins, nothing is taken away |
+| Age, levels, game choices, Read aloud, last game | That child | Only to a device that has none for that child yet |
+| Color theme, Easier to read, sound, language | Everyone on this device | Only to a device that has not picked any yet |
+| Your email (Stay in touch) | You, on loopy's server | No. Each device has its own |
+| The family code | This device | No. Each device joins by itself |
+| Add to the home screen | This device | No |
+
+Everything except the email stays in this browser on this device. See [Where stars are saved](/loopy/guide/stars/where-stars-live/).
 
 ## Not in this box
 

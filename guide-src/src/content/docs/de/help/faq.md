@@ -38,7 +38,7 @@ In diesem Browser, in zwei Speichern. Gelöschte Browserdaten oder ein privates 
 
 ## Können die Sterne auf allen unseren Geräten gleich sein?
 
-Ja, mit dem Familien-Sync. Öffne auf der Startseite ⚙ **Einstellungen** und tippe auf **Einschalten**. Scanne auf dem anderen Gerät den QR-Code. Neue Sterne kommen dann von selbst auf jedes Gerät der Familie. Alles wird verschlossen, bevor es gesendet wird, und es gibt kein Konto. Mehr unter [Familien-Sync](/loopy/guide/de/stars/family-sync/).
+Ja, mit dem Familien-Sync. Öffne auf der Startseite ⚙ **Einstellungen** und tippe auf **Einschalten**. Scanne auf dem anderen Gerät den QR-Code. Neue Sterne kommen dann von selbst auf jedes Gerät der Familie: die Sterne, Abzeichen, Antworten, Stufen und Spiel-Einstellungen jedes Kindes. Farben, Ton, Sprache und deine E-Mail bleiben auf jedem Gerät. Alles wird verschlossen, bevor es gesendet wird, und es gibt kein Konto. Mehr unter [Familien-Sync](/loopy/guide/de/stars/family-sync/).
 
 ## Kann ich von neuen Spielen erfahren?
 

@@ -31,6 +31,14 @@ And the counts, in **loopy-sync**:
 SELECT * FROM stats ORDER BY day DESC;
 ```
 
+## See how many families use it
+
+Three ways, all counts only. Nobody can see who: the server has no names, no family codes and no IP addresses.
+
+1. **One click on GitHub.** Actions tab, **Family sync usage**, **Run workflow**, then open the run. The **Summary** shows families with sync on, how many saved in the last day, week and month, the size of all copies, how many grown-ups are on the Stay in touch list, and the last 14 nightly rows. The job is `.github/workflows/sync-usage.yml` and the report is `tools/sync-usage.mjs`. It uses the same two secrets as the deploy job. The log is public, so it prints no emails and no ids.
+2. **In a browser.** `https://loopy-sync.loopy-1e2.workers.dev/stats` lists the nightly rows.
+3. **In the Cloudflare dashboard.** The two SQL queries above, in the D1 Console.
+
 ## What the server answers
 
 | Request | Answer |
@@ -53,6 +61,7 @@ Requests are plain `GET` and `POST` with `text/plain`, so the browser sends them
 | `grownups.sql` | The table `grownups` in `loopy-grownups` (EU) |
 | `wrangler.toml` | Cloudflare settings. `DATABASE_ID` and `GROWNUPS_ID` are filled in by the deploy job |
 | `test.mjs`, `fake-d1.mjs` | Tests with a stand-in database: `node sync/test.mjs` (CI runs it on every change) |
+| `../tools/sync-usage.mjs` | The usage report the **Family sync usage** job prints (counts only) |
 
 The browser side is `src/loopy-sync.js` and the Family sync part of ⚙ Settings in `index.html`. `tools/e2e/sync.mjs` tests both with this server and two browser profiles.
 
