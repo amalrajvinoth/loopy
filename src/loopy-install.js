@@ -66,12 +66,7 @@
     pc: [["install", "pcIcon"], ["menu", "pcMenu"], ["ok", "pcOk"]],
     firefox: [["info", "fdNo"], ["star", "fdMark"], ["ok", "fdOther"]]
   };
-  function el(tag, cls, text) {
-    var n = document.createElement(tag);
-    if (cls) n.className = cls;
-    if (text !== undefined) n.textContent = text;
-    return n;
-  }
+  var el = Loopy.el;
   function open(kind, computer, btn) {
     if (typeof HTMLDialogElement !== "function" || !STEPS[kind]) return;
     var t = Loopy.t;
