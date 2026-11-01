@@ -11,7 +11,7 @@ A game id has to be in several lists. Missing one breaks stars, the progress pag
 
 1. **Folder:** `<subject>/<game>/index.html` (subjects today: math, languages, science, geography, mix). Copy the shape of the closest existing game: shared header (`Loopy` back button, star counter, Last 5, ⚙ Settings, report flag), the problem card, answers at the bottom in portrait, two columns in landscape.
 2. **Game id** (short, kebab-case) in:
-   - all the `GAMES = [` lists in `src/loopy.js` (rewards, log, recent; `drift.py` tracks how many there are);
+   - the `Loopy.GAMES = [` list in `src/loopy.js` (stars, the progress log, the last answers and backups all read it; `drift.py` tracks how many lists there are);
    - the `GAMES` list in `progress/index.html`, with a name string;
    - the home page `GAMES` list in `index.html`, added **last in its subject** so other card colors do not shift.
 3. **Words:** `Loopy.addStrings({en: {...}, de: {...}})` for every word, `data-t` / `data-t-aria` in the markup, numbers through `Loopy.num()`. German name agreed in the issue or chosen and said in the PR.

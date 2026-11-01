@@ -35,16 +35,22 @@ function key(url) {
 }
 
 // The old saved copy and its file list, or null when there is none (a first visit, or an older helper
-// that kept no list). Then every file is downloaded.
+// that kept no list). Then every file is downloaded. More than one old copy is rare (an update that was
+// cut off before the old copy was dropped); then the one that shares the most files with this version
+// is used, whatever order the browser lists them in.
 function oldCopy() {
   return caches.keys().then(function (names) {
-    var old = names.filter(function (n) { return n.indexOf("loopy-") === 0 && n !== CACHE; });
-    if (!old.length) return null;
-    return caches.open(old[old.length - 1]).then(function (cache) {
-      return cache.match(LIST).then(function (r) { return r ? r.json() : null; }).then(function (list) {
-        return list && typeof list === "object" ? { cache: cache, list: list } : null;
-      });
-    });
+    return Promise.all(names.filter(function (n) { return n.indexOf("loopy-") === 0 && n !== CACHE; }).map(function (n) {
+      return caches.open(n).then(function (cache) {
+        return cache.match(LIST).then(function (r) { return r ? r.json() : null; }).then(function (list) {
+          if (!list || typeof list !== "object") return null;
+          var same = Object.keys(SAVED).filter(function (url) { return list[url] === SAVED[url]; }).length;
+          return { cache: cache, list: list, same: same };
+        });
+      }).catch(function () { return null; });
+    }));
+  }).then(function (copies) {
+    return copies.reduce(function (best, c) { return c && (!best || c.same > best.same) ? c : best; }, null);
   }).catch(function () { return null; });
 }
 

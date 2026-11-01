@@ -172,7 +172,7 @@ Read [DESIGN.md](DESIGN.md) first. It lists the colors, fonts, buttons and layou
    - Give the button under the answers `id="next"` and call `Loopy.nextButton(button, answered)` when a problem shows (`false`, a small "Skip") and after each answer (`true`, a big "Next").
    - Put the answers in `#choices`, `#answers`, `#pad`, `#letters` or `#map`. The first time a child opens the game, a hint bubble points at them.
    - Save the game's own settings with `Loopy.store.get(key)` and `Loopy.store.set(key, text)`, never `localStorage` directly. They keep each child's settings apart. Name keys `<prefix>.<setting>` or `<prefix>.<setting>.a<age>`, and add a new game's prefix to `GKEY` in the stars code block of `src/loopy.js`, so its settings move to another device too.
-   - In the **Reset score** button, call `Loopy.recent.clear("game-id")`. Add the game id to the `GAMES` lists in `src/loopy.js`, and to the list in `progress/index.html`.
+   - In the **Reset score** button, call `Loopy.recent.clear("game-id")`. Add the game id to the `Loopy.GAMES` list in `src/loopy.js`, and to the list in `progress/index.html`.
 5. Add words in both languages with `Loopy.addStrings({ en: {...}, de: {...} })`. Put `data-t="key"` on fixed text, and use `Loopy.t("key")` in code. Use `Loopy.num(n)` to show numbers.
 6. Add one line to the `GAMES` list in the home page `index.html`, with the ages the game fits and a picture (one emoji) for its tile.
 7. Add a `README.md` in the game folder, and a row to the table above.

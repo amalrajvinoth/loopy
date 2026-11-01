@@ -8,12 +8,7 @@
     de: { sheetName: "Name", sheetDate: "Datum", sheetAnswers: "Lösungen" }
   });
   var state = Loopy.worksheet.state;
-  function el(tag, cls, text) {
-    var n = document.createElement(tag);
-    if (cls) n.className = cls;
-    if (text !== undefined) n.textContent = text;
-    return n;
-  }
+  var el = Loopy.el;
   function field(label, cls) {
     var f = el("span", "sheet-field " + cls);
     f.appendChild(el("b", "", label));

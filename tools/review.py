@@ -406,7 +406,7 @@ def main():
                 add("should", rel(page), f"missing the {name}, which the other games have")
         gid = re.search(r'id="last5"\s+data-game="([^"]+)"', text)
         if gid and f'"{gid.group(1)}"' not in (ROOT / "src/loopy.js").read_text(encoding="utf-8"):
-            add("must", rel(page), f"game id `{gid.group(1)}` is not in the GAMES lists in src/loopy.js")
+            add("must", rel(page), f"game id `{gid.group(1)}` is not in the Loopy.GAMES list in src/loopy.js")
         if f"]({g})" not in readme:
             add("should", "README.md", f"no row in \"The games\" table for `{g}`")
         rd = ROOT / g / "README.md"
