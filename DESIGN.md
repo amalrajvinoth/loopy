@@ -299,7 +299,7 @@ Age, language, color theme, sound and levels go behind the ⚙ button, on the ho
 
 ### First-time hint
 
-The first time a child opens a game, a `c1` bubble with `on-accent` Fredoka text sits just above the answers with a small arrow pointing down: "👆 Tap the right answer!", "Tap the numbers, then Check!", "Tap the letters to spell the word!" or, on the map, inside the map's bottom edge. It bobs gently (not with reduced motion), cannot be tapped, and hides at the first tap or key press. Once the child has answered in that game it never comes back. It is saved per child (`loopy.seen`).
+The first time a child opens a game, a `c1` bubble with `on-accent` Fredoka text sits just above the answers with a small arrow pointing down: "👆 Tap the right answer!", "Tap the numbers, then Check!", "Tap the letters to spell the word!" or, on the map, inside the map's bottom edge. When there is no room above the answers without covering words (a long question, the hand legend, the score row in landscape), it sits over the first row of keys or answers instead; a key under it still works. It bobs gently (not with reduced motion), cannot be tapped, and hides at the first tap or key press. Once the child has answered in that game it never comes back. It is saved per child (`loopy.seen`).
 
 ### Focus and screen readers
 

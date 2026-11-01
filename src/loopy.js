@@ -63,7 +63,7 @@ document.documentElement.classList.add("loopy-building");
       correct: "Correct!", correctRow: "Correct! {n} in a row!", notQuite: "Not quite.",
       score: "Score", streak: "Streak", home: "← loopy", resetScore: "Reset score",
       backHome: "Back to all games", last5: "Last 5", last5Aria: "Last 5 answers: {n} right", last5None: "Last 5 answers: none yet",
-      tapHint: "Tap the numbers to write your answer.", kbdHint: "Keyboard works too: numbers, Backspace, Enter.",
+      kbdHint: "Keyboard works too: numbers, Backspace, Enter.",
       erase: "Erase", eraseAria: "Erase last digit", check: "Check", next: "Next", yourAnswer: "Your answer", both: "Both",
       skip: "Skip", setGame: "This game", setShared: "Age, look and sound",
       hintChoices: "Tap the right answer!", hintPad: "Tap the numbers, then Check!",
@@ -87,7 +87,7 @@ document.documentElement.classList.add("loopy-building");
       correct: "Richtig!", correctRow: "Richtig! {n} hintereinander!", notQuite: "Nicht ganz.",
       score: "Punkte", streak: "Serie", home: "← loopy", resetScore: "Punkte zurücksetzen",
       backHome: "Zurück zu allen Spielen", last5: "Letzte 5", last5Aria: "Letzte 5 Antworten: {n} richtig", last5None: "Letzte 5 Antworten: noch keine",
-      tapHint: "Tippe auf die Zahlen, um deine Antwort zu schreiben.", kbdHint: "Die Tastatur geht auch: Zahlen, Rücktaste, Enter.",
+      kbdHint: "Die Tastatur geht auch: Zahlen, Rücktaste, Enter.",
       erase: "Löschen", eraseAria: "Letzte Ziffer löschen", check: "Prüfen", next: "Weiter", yourAnswer: "Deine Antwort", both: "Beides",
       skip: "Überspringen", setGame: "Dieses Spiel", setShared: "Alter, Aussehen und Ton",
       hintChoices: "Tippe auf die richtige Antwort!", hintPad: "Tippe die Zahlen, dann Prüfen!",
@@ -1935,6 +1935,27 @@ Loopy.nextButton = function (btn, answered) {
     bubble.style.left = (r.left + r.width / 2) + "px";
     // Above the answers; on the map it sits inside the map's bottom edge, so it does not hide the question.
     bubble.style.top = (target.id === "map" ? r.bottom - 12 : Math.max(r.top - 14, 70)) + "px";
+    // When that would cover words (a long question, the hand legend, the score row in landscape), it moves
+    // down over the first row of keys instead. A key under it still works, and the bubble goes at the first tap.
+    if (target.id !== "map" && overWords()) bubble.style.top = (r.top + 10 + bubble.offsetHeight) + "px";
+  }
+  // True when the bubble, where it is now, lies over any words: the question, the explanation line,
+  // the hand legend, the Last 5 and level pills. Every element with text of its own is checked once.
+  function overWords() {
+    var b = bubble.getBoundingClientRect(), all = document.body.getElementsByTagName("*");
+    for (var i = 0; i < all.length; i++) {
+      var el = all[i], text = false;
+      if (el === bubble || target.contains(el)) continue;
+      for (var n = el.firstChild; n && !text; n = n.nextSibling) text = n.nodeType === 3 && /\S/.test(n.data);
+      if (!text) continue;
+      var rs = el.getClientRects();
+      for (var j = 0; j < rs.length; j++) {
+        var r = rs[j];
+        if (r.width > 2 && r.height > 2 && r.bottom > b.top && r.top < b.bottom && r.right > b.left && r.left < b.right &&
+            getComputedStyle(el).visibility !== "hidden") return true;
+      }
+    }
+    return false;
   }
   function show() {
     if (!NAME.test(game) || seen.indexOf(game) !== -1) return;
