@@ -1292,6 +1292,8 @@ document.documentElement.classList.add("loopy-building");
     box.className = "pill pill-level";
     box.textContent = Loopy.t(narrow.matches ? "levelShort" : "levelOf", { n: i + 1, m: n });
     box.setAttribute("aria-label", Loopy.t("levelAria", { n: i + 1, m: n, name: name(i) }));
+    var line = document.getElementById("set-level");
+    if (line && line.refresh) line.refresh();
     if (carry === null) note();
   }
   function harder() {
@@ -1736,6 +1738,17 @@ window.Loopy.fresh = function (recent, make, keep) {
       best.className = "set-best"; best.id = "set-best";
       best.textContent = Loopy.t("bestStreak", { n: Loopy.rewards.get().best[game] || 0 });
       panel.insertBefore(best, panel.children[1]);
+      // The level the child is on, in the words of the level pill ("Level 3 of 6: Up to 1,000"), so the pill and
+      // the rows below it match whatever the rows are called. Loopy.levels fills it and keeps it fresh.
+      var lvl = document.createElement("p");
+      lvl.className = "set-best"; lvl.id = "set-level"; lvl.hidden = true;
+      lvl.refresh = function () {
+        var c = Loopy.levels && Loopy.levels.get();
+        if (c) { lvl.textContent = Loopy.t("levelAria", { n: c.at + 1, m: c.of, name: c.name }); lvl.hidden = false; }
+      };
+      lvl.refresh();
+      best.parentNode.insertBefore(lvl, best.nextSibling);
+      best = lvl;
     }
     // "How to play": this game's page in the guide, under Best streak (Today's 10: at the top).
     var how = guideLink();
@@ -1773,8 +1786,9 @@ window.Loopy.fresh = function (recent, make, keep) {
     var sync = function () { btn.setAttribute("aria-expanded", String(!panel.hidden)); };
     btn.addEventListener("click", function () {
       panel.hidden = !panel.hidden; sync();
-      var how = document.getElementById("set-guide");
+      var how = document.getElementById("set-guide"), lv = document.getElementById("set-level");
       if (how && !panel.hidden) how.refresh();
+      if (lv && !panel.hidden) lv.refresh();
     });
     // "Level up" on the grown-ups' page opens the game with its levels showing.
     if (Loopy.log && Loopy.log.hint === "harder") panel.hidden = false;

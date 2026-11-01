@@ -77,7 +77,7 @@ components:
   go-pill:        { background: "{tone}", text: "{colors.card}", font: Fredoka 700, rounded: "{rounded.pill}", padding: 6px 16px }
   pad-key:        { background: "{colors.key}", border: "2px solid {colors.line}", rounded: "{rounded.key}", minHeight: "clamp(50px, 8dvh, 92px)" }
   pad-go:         { background: "{colors.c1}", text: "{colors.on-accent}", rounded: "{rounded.key}" }
-  answer-button:  { background: "{colors.card}", border: "3px solid {colors.line}", rounded: "{rounded.key}", font: Lexend 700 2.1rem }
+  answer-button:  { background: "{colors.card}", border: "2px solid {colors.line}", rounded: "{rounded.key}", font: Lexend 700 2.1rem }
   problem-card:   { background: "{colors.card}", border: "1px solid {colors.line}", rounded: "{rounded.card}" }
   chip-pill:      { background: "{colors.chip}", rounded: "{rounded.pill}" }
   settings-toggle: { background: "{colors.chip}", rounded: "{rounded.pill}", minHeight: 44px, open: "{colors.c1}" }
@@ -215,7 +215,7 @@ The "loopy" bunny logo sits at the top of the home page. Its letters hop one aft
 - **Pill buttons** (radius 999px): the "go" pill, the settings toggle, the language picker, the cheer buttons. At least 44px tall.
 - **Footer buttons** (home page): chip pills like the settings toggle, each with a 20px line icon and one word (Grown-ups, Help, Guide; German Erwachsene, Hilfe, Anleitung), centered in one row that wraps on small phones. Their names for screen readers are the full ones, like "For grown-ups: how it's going". In High contrast they get the white edge.
 - **Number pad keys:** key color, 2px line border, radius 18px. They shrink a little (`scale(0.96)`) when pressed. The "check" key is filled with `c1`. The erase key is muted.
-- **Answer buttons** (the clock and multiple-choice games): card color, 3px line border, radius 18px, big bold text. Word answers are at least 1.1rem and grow to about 2rem; letters, times and fractions are bigger. Four answers sit in a 2 × 2 grid; three answers sit in one column, so none looks bigger than the others. Right turns green, wrong turns red, the rest fade to 45%.
+- **Answer buttons** (the clock and multiple-choice games): card color, 2px line border like the pad keys, radius 18px, big bold text. Word answers are at least 1.1rem and grow to about 2rem; letters, times and fractions are bigger. Four answers sit in a 2 × 2 grid; three answers sit in one column, so none looks bigger than the others. Right turns green, wrong turns red, the rest fade to 45%.
 - **Skip and Next** (the button under the answers, `Loopy.nextButton()`): before an answer it is a small quiet pill, "Skip", in the middle (muted text, 2px line border, no fill). After an answer it is the full-width `c1` button "Next". Every game uses these two words.
 - **Round icon buttons:** the sound toggle (40px), the age picker plus and minus (38px), and the Read aloud speaker (44px).
 - **Quiet buttons:** transparent with a 2px line border. Used for Reset and "Not now".
@@ -248,6 +248,10 @@ Inside the problem card, under the problem: a short bold word: "Correct!" in gre
 Bigger or Smaller explains each answer with a number line drawn in SVG. It stays hidden (but keeps its room) until the answer is in, so it never gives the answer away. The line and ticks are `muted`. Each number is a dot in `c1`, `c2` or `c4` with its value above it in the same color. For rounding, a dashed `ink` tick marks halfway, the number is a `c2` dot, and a `c1` arrow runs along the line to where it rounds. Labels near an end lean inwards so they are never cut off.
 
 Step by Step draws a number line under the steps for sums up to 100: a `line` rail, a dot for the start in `ink`, and one arc per step with its jump ("+20", "−1") above it. The arc for a filled step and its dot are `good`, the step being worked on is a dashed `accent` arc, steps still to come are dotted `muted`. A dot whose box is not filled yet is labelled "?". Labels of two dots close together push apart. It is left out on short phones (under 700px tall in portrait, 420px in landscape) and for sums above 100.
+
+### Picture games
+
+Quick Facts, Sort It, Spelling Quiz, Sentence Builder, Spell It, Sound Spell and Word Match show one big emoji on the card. On a phone it grows with the screen height up to 6.5rem (Spell It and Sound Spell 8rem, Word Match 10rem). On a tablet it follows the room, up to 11rem, so the card is not left mostly empty. After an answer it shrinks or hides, so the explanation has room.
 
 ### Fraction pictures
 
@@ -291,7 +295,7 @@ Each game has a top bar with the back button on the left, and the star counter, 
 
 ### Settings
 
-Age, language, color theme, sound and levels go behind the ⚙ button, on the home page, the grown-ups page, the Help page and the privacy note too. The panel is the same in every game: **This game** first (Best streak, the **How to play** card, the game's own levels and switches, then Print worksheet), then **Age, look and sound** (the shared row, after a dashed line), then the keyboard line and Reset score at the bottom. The two headings are small uppercase `c1` labels; `loopy.js` adds them. The **How to play** card links to the game's guide page. It is a `chip` card with a 2px `line` border and radius 16px: a book, the game's name in bold, one muted line and an arrow. Today's 10 has no game settings, so it shows only the How to play card and the second part. The home page shows only the second part. The home page starts with **Kids** and ends with **Use like an app** (see Screens). The toggle is a chip pill. It turns `c1` when open. The panel is a card with a 2px border and radius 20px. On very small phones (under 380px, or under 420px in German, where "Einstellungen" is long) the toggle shows only the gear.
+Age, language, color theme, sound and levels go behind the ⚙ button, on the home page, the grown-ups page, the Help page and the privacy note too. The panel is the same in every game: **This game** first (Best streak, the level line, the **How to play** card, the game's own levels and switches, then Print worksheet), then **Age, look and sound** (the shared row, after a dashed line), then the keyboard line and Reset score at the bottom. The two headings are small uppercase `c1` labels; `loopy.js` adds them. The level line is muted, like Best streak. It names the child's level in the words of the level pill, like "Level 3 of 6: Up to 1,000". So the pill and the rows below it match, whatever the rows are called. The **How to play** card links to the game's guide page. It is a `chip` card with a 2px `line` border and radius 16px: a book, the game's name in bold, one muted line and an arrow. Today's 10 has no game settings, so it shows only the How to play card and the second part. The home page shows only the second part. The home page starts with **Kids** and ends with **Use like an app** (see Screens). The toggle is a chip pill. It turns `c1` when open. The panel is a card with a 2px border and radius 20px. On very small phones (under 380px, or under 420px in German, where "Einstellungen" is long) the toggle shows only the gear.
 
 - **Age picker:** a chip pill with round minus and plus buttons and the age in the middle.
 - **Language picker:** EN and DE in a chip pill. The chosen one gets the card color.
