@@ -139,6 +139,7 @@ The site is plain HTML, CSS and JavaScript. One small build step makes the share
 | `tools/ralph/` | The Ralph loop: a script for your Mac. It runs Claude Code on one task again and again, on its own branch, until the task is done. Caps and checks keep it safe ([how](tools/ralph/README.md)) |
 | `.claude/loop.md` | What a bare `/loop` does at a terminal. It tends the current pull request: merge main, run the checks, fix red CI and review comments. It stops when all is green |
 | `.claude/skills/loopy-docs/` | Which docs a change touches (guide in English and German, FAQ, Help page, READMEs, RELEASES.md) and how to write them in plain English |
+| `.claude/skills/improve-ui/` | Looks at one page against `DESIGN.md`, reports up to three proven design problems, and writes a plan under `design-plans/` for the fix. Changes nothing itself. From [ui-skills](https://github.com/ibelick/ui-skills) (MIT), with a loopy section |
 | `plugins/` | Claude Code plugins made from how the owner works: commands for the usual asks, hooks that keep the rules, self-healing checks, and a drift check that keeps them up to date ([how](plugins/README.md)). `python3 plugins/sync.py` copies them into `.claude/`, so every session in this repo has them |
 | `math/<game>/index.html` | One game per folder (also `languages/` and `mix/`) |
 | `math/<game>/README.md` | What that game does |

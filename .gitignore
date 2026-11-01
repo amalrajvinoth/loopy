@@ -9,3 +9,5 @@ guide-src/.astro/
 # Python leaves compiled files next to the tools and hooks when they run.
 __pycache__/
 *.pyc
+# The improve-ui skill writes its design plans here. Every file in the repo goes live on the site, so they stay out.
+design-plans/
