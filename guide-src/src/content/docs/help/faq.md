@@ -14,7 +14,7 @@ Yes. There are no ads, no sign-up and nothing to buy.
 
 ## Does loopy collect data about my child?
 
-No. There are no accounts, no ads, no tracking and no analytics. Stars and settings stay in this browser on this device. Even the fonts come from the loopy site. The one exception is [Family sync](/loopy/guide/stars/family-sync/), if a grown-up turns it on. Its copy is locked on your device first, so the server can't read it. See [Is it safe?](/loopy/guide/start/is-it-safe/).
+No. There are no accounts, no ads, no tracking and no analytics. Stars and settings stay in this browser on this device. Even the fonts come from the loopy site. The one exception is [Family sync](/loopy/guide/stars/family-sync/), if a grown-up turns it on. Its copy is locked on your device first, so the server can't read it. A grown-up can also leave their own email under **Stay in touch**; nothing about the child is in it. See [Is it safe?](/loopy/guide/start/is-it-safe/) and the [privacy note](/loopy/privacy/).
 
 ## Which ages is loopy for?
 
@@ -39,6 +39,10 @@ Open **Move my stars to another device** on the home page. Scan the QR code, sen
 ## Can the stars stay the same on all our devices?
 
 Yes, with Family sync. Open ⚙ **Settings** on the home page and tap **Turn on**. On the other device, scan the QR code. New stars then go to every family device by themselves. Everything is locked before it is sent, and there is no account. See [Family sync](/loopy/guide/stars/family-sync/).
+
+## Can I hear about new games?
+
+Yes. In ⚙ Settings on the home page, under **Stay in touch**, type your email, tick the box and tap **Save**. Only grown-ups. loopy keeps the email, your language and the time, nothing else, and **Remove** deletes it. See [Settings on the home page](/loopy/guide/settings/home-settings/).
 
 ## Can I use loopy like an app, and offline?
 

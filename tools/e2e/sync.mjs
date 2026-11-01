@@ -44,7 +44,8 @@ if (!/Loopy\.syncHost="[^"]*"/.test(String(fs.readFileSync(path.join(ROOT, "loop
 let skew = 0;
 const realNow = Date.now;
 Date.now = () => realNow() + skew;
-const env = { DB: fakeD1(), ORIGINS: ORIGIN };
+const db = fakeD1();
+const env = { DB: db, GROWNUPS: db, ORIGINS: ORIGIN };
 
 async function launch() {
   const tries = [];
@@ -113,6 +114,24 @@ await off.page.getByLabel("Family code from your other device").fill("2345-6789-
 await off.page.getByRole("button", { name: "Join", exact: true }).click();
 check("A code no family has says so", await until(async () => /No family has this code/.test(await syncText(off.page))), "");
 check("Sync stays off after a wrong code", await off.page.evaluate(() => localStorage.getItem("loopy.sync")) === null, "");
+
+// 2b. Stay in touch: a grown-up's email goes to the server only on Save, and Remove deletes it. Sync stays off.
+const touchText = page => page.locator(".set-touch").innerText();
+const sent = off.seen.server;
+await off.page.getByLabel("Your email").fill("Parent@Example.com");
+await off.page.getByRole("button", { name: "Save", exact: true }).click();
+check("Save without the tick box asks for it", await until(async () => /tick the box/.test(await touchText(off.page))), "");
+check("Nothing is sent before the box is ticked", off.seen.server === sent, off.seen.server - sent + " requests");
+await off.page.locator(".touch-agree input").check();
+await off.page.getByRole("button", { name: "Save", exact: true }).click();
+check("Save sends the email, and the server keeps it in lower case with the language", await until(() => env.DB.grownups.has("parent@example.com") && env.DB.grownups.get("parent@example.com").l === "en"), [...env.DB.grownups.keys()].join());
+check("Settings says it is saved", await until(async () => /Saved: parent@example.com/.test(await touchText(off.page))), "");
+check("The server has no remove key, only its hash", !JSON.stringify([...env.DB.grownups]).includes(JSON.parse(await off.page.evaluate(() => localStorage.getItem("loopy.touch"))).k), "");
+check("The email is only in loopy.touch, never in the family sync state", await off.page.evaluate(() => localStorage.getItem("loopy.sync") === null && Object.keys(localStorage).every(k => k === "loopy.touch" || !/example\.com/.test(localStorage.getItem(k)))), "");
+await off.page.getByRole("button", { name: "Remove", exact: true }).click();
+check("Remove deletes it on the server", await until(() => env.DB.grownups.size === 0), env.DB.grownups.size + " rows");
+check("Remove forgets it on the device", await until(() => off.page.evaluate(() => localStorage.getItem("loopy.touch") === null)), "");
+check("Settings has the email box again", await until(async () => !/Saved:/.test(await touchText(off.page))), "");
 await off.ctx.close();
 
 // 3. Device A: 5 stars, then Turn on. The home page shows before loopy-sync.js loads.

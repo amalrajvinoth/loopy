@@ -1,0 +1,178 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'sha256-0D6NTux2122dxMPiURCGvCzSvzFUqn5lMrciYj/LRGM='; style-src 'self' 'sha256-P5ydVIAQuRNfKr/crXJtAM0mjTfodJdPTed3CCV9qnM='; img-src 'self' data:; font-src 'self'; connect-src 'self' https://loopy-sync.loopy-1e2.workers.dev; worker-src 'self'; object-src 'none'; base-uri 'none'; form-action 'none'; manifest-src 'self'; upgrade-insecure-requests">
+<meta name="referrer" content="strict-origin-when-cross-origin">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<link rel="icon" href="../icon.svg" type="image/svg+xml">
+<link rel="manifest" href="../manifest.webmanifest">
+<link rel="apple-touch-icon" href="../apple-touch-icon.png">
+<meta name="theme-color" content="#0a0a0c">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="loopy">
+<title data-t="pvTitle">Privacy note · loopy</title>
+<meta name="description" content="loopy privacy note: what loopy keeps on your device, what the Family sync server keeps, and what happens to an email a grown-up leaves under Stay in touch.">
+<link rel="preload" href="../fonts/lexend-latin.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="../fonts/fredoka-latin.woff2" as="font" type="font/woff2" crossorigin>
+<style>
+:root {
+  --bg: #fff8ec; --card: #ffffff; --ink: #1d2a3f; --muted: #5d6b82; --line: #f0e2c8;
+  --c1: #2457c5; --c2: #e2622b; --c3: #1f8a4c; --c4: #b0359c; --c5: #d9a400; --chip: #fdeccc;
+  --display: "Fredoka", "Lexend", "Segoe UI", Arial, sans-serif;
+  --font: "Lexend", "Segoe UI", "Helvetica Neue", Arial, sans-serif;
+}
+* { box-sizing: border-box; }
+body {
+  margin: 0; background: var(--bg); color: var(--ink); font-family: var(--font); font-size: 16px; line-height: 1.5;
+  padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px));
+  padding-block: max(16px, env(safe-area-inset-top, 0px)) 40px;
+}
+.wrap { max-width: 760px; margin: 0 auto; display: flex; flex-direction: column; gap: 24px; }
+.bar { display: flex; align-items: center; justify-content: space-between; gap: 8px; flex-wrap: wrap; }
+.home-link { display: inline-flex; align-items: center; min-height: 40px; color: var(--muted); font-weight: 600; text-decoration: none; }
+.home-link:hover { color: var(--ink); }
+h1 { margin: 0; font-family: var(--display); font-size: clamp(2rem, 8vw, 2.8rem); line-height: 1.1; }
+h2 { margin: 0 0 12px; font-family: var(--display); font-size: 1.5rem; }
+p { margin: 0; }
+.muted { color: var(--muted); }
+section { background: var(--card); border: 2px solid var(--line); border-radius: 20px; padding: 18px; }
+section p, section li { color: var(--muted); }
+section p + p, section ul { margin-top: 10px; }
+ul { margin: 0; padding-left: 22px; }
+li + li { margin-top: 6px; }
+b { color: var(--ink); }
+a { color: var(--c1); }
+a:focus-visible { outline: 3px solid var(--ink); outline-offset: 3px; }
+table { border-collapse: collapse; width: 100%; margin-top: 10px; font-size: 0.95rem; }
+th, td { text-align: left; padding: 8px 10px; border-bottom: 2px solid var(--line); vertical-align: top; color: var(--muted); }
+th { color: var(--ink); }
+.note { margin-top: 14px; padding: 10px 14px; border-radius: 12px; background: var(--chip); font-size: 0.95rem; }
+</style>
+<link rel="stylesheet" href="../loopy.css">
+<script src="../loopy.js"></script>
+</head>
+<body>
+<main class="wrap">
+  <header class="bar">
+    <a class="home-link" href="../">&larr; loopy</a>
+    <div class="controls"><div id="theme-picker"></div><div id="lang-picker"></div></div>
+  </header>
+  <h1 data-t="pvTitleShort">Privacy note</h1>
+  <p class="muted" data-t="pvLead">This page is for grown-ups. It says in plain words what loopy keeps, where, for how long, and how to delete it. Last changed: 1 November 2026.</p>
+
+  <section aria-labelledby="who-title">
+    <h2 id="who-title" data-t="whoTitle">Who makes loopy</h2>
+    <p data-t="whoText">loopy is made by one parent in Germany, for their own child and for any child. It is free, open source and has no company behind it. To ask anything about your data, open the Help page and use Ask a question. It opens a form on GitHub; you do not need to give your child's name there.</p>
+  </section>
+
+  <section aria-labelledby="device-title">
+    <h2 id="device-title" data-t="deviceTitle">On your device: nothing is sent</h2>
+    <p data-t="deviceText1">Stars, badges, streaks, levels, settings, children's names and the answers on the grown-ups' page are saved in your browser, on your device. They never leave it unless a grown-up turns on one of the two things below.</p>
+    <p data-t="deviceText2">There are no accounts, no ads, no tracking and no analytics. loopy uses no outside services. Even the fonts are stored on the loopy site, so your browser only talks to loopy. A child's name is plain text, at most 12 letters, and is never sent anywhere.</p>
+  </section>
+
+  <section aria-labelledby="sync-title">
+    <h2 id="sync-title" data-t="syncTitle">Family sync</h2>
+    <p data-t="syncText1">Off until a grown-up taps Turn on in ⚙ Settings on the home page. Then a copy of the stars goes to loopy's sync server, so your other devices can get it.</p>
+    <p data-t="syncText2">The copy is locked on your device first, with a key made from your family code. The server keeps only the locked copy, a random family id, the time of the last save and two fingerprints. It cannot read names, stars or anything else, and it never gets the family code. It keeps no addresses and no logs. A copy nobody has saved for 400 days is deleted. Turn off everywhere deletes it right away.</p>
+  </section>
+
+  <section aria-labelledby="touch-title">
+    <h2 id="touch-title" data-t="touchTitle">Stay in touch: your email</h2>
+    <p data-t="touchText1">In ⚙ Settings on the home page, a grown-up can leave an email under Stay in touch. Nothing is sent until you tap Save. It is for grown-ups only. loopy never asks a child for anything.</p>
+    <table>
+      <tr><th data-t="thWhat">What is kept</th><td data-t="tdWhat">Your email, the language you use loopy in (English or German) and the time you saved it. Nothing else: no name, no family id, no address, nothing about your child.</td></tr>
+      <tr><th data-t="thWhy">Why</th><td data-t="tdWhy">So that the person who makes loopy knows who uses it and can tell you about new games, a few times a year. It is never given or sold to anyone else.</td></tr>
+      <tr><th data-t="thWhere">Where</th><td data-t="tdWhere">In a small database on Cloudflare, in the European Union. Cloudflare is the company that runs loopy's sync server.</td></tr>
+      <tr><th data-t="thLong">How long</th><td data-t="tdLong">Until you remove it, or 2 years after you saved it. Then it is deleted by itself.</td></tr>
+      <tr><th data-t="thDelete">How to delete it</th><td data-t="tdDelete">Tap Remove in the same place in Settings. If you no longer have that device, ask on the Help page under Ask a question, and it is deleted by hand.</td></tr>
+      <tr><th data-t="thBasis">Why loopy may keep it</th><td data-t="tdBasis">Because you agreed, by ticking the box and tapping Save. You can take that back at any time with Remove.</td></tr>
+    </table>
+  </section>
+
+  <section aria-labelledby="counts-title">
+    <h2 id="counts-title" data-t="countsTitle">Counting, without names</h2>
+    <p data-t="countsText">Once a night the sync server writes down how many families have Family sync on, how many of them saved in the last 7 and 30 days, and how big the database is. That is all: no ids, no names, no emails. It is how loopy's maker sees whether loopy is used, without knowing who uses it.</p>
+  </section>
+
+  <section aria-labelledby="rights-title">
+    <h2 id="rights-title" data-t="rightsTitle">Your rights</h2>
+    <p data-t="rightsText1">You can ask what loopy keeps about you, have it corrected or deleted, and take back your agreement, at any time. For the email, Remove in Settings does it at once. For anything else, ask on the Help page. You can also complain to a data protection authority; in Germany that is the one in your state.</p>
+    <p data-t="rightsText2">Contact: open the Help page and use Ask a question. GitHub is public, so do not write your email there; say that you want to be contacted and loopy's maker will reach you through GitHub.</p>
+    <p class="note" data-t="changesNote">When this page changes, the date at the top changes too, and the change is listed under What's new in the guide.</p>
+  </section>
+
+  <p class="muted"><a href="../help/" data-t="backHelp">Help and feedback</a> · <a id="guide-link" href="../guide/start/is-it-safe/" data-t="guideSafe">Is it safe? (the guide)</a></p>
+</main>
+<script>
+Loopy.addStrings({
+  en: {
+    pvTitle: "Privacy note · loopy",
+    pvTitleShort: "Privacy note",
+    backHelp: "Help and feedback",
+    guideSafe: "Is it safe? (the guide)",
+    pvLead: "This page is for grown-ups. It says in plain words what loopy keeps, where, for how long, and how to delete it. Last changed: 1 November 2026.",
+    whoTitle: "Who makes loopy",
+    whoText: "loopy is made by one parent in Germany, for their own child and for any child. It is free, open source and has no company behind it. To ask anything about your data, open the Help page and use Ask a question. It opens a form on GitHub; you do not need to give your child's name there.",
+    deviceTitle: "On your device: nothing is sent",
+    deviceText1: "Stars, badges, streaks, levels, settings, children's names and the answers on the grown-ups' page are saved in your browser, on your device. They never leave it unless a grown-up turns on one of the two things below.",
+    deviceText2: "There are no accounts, no ads, no tracking and no analytics. loopy uses no outside services. Even the fonts are stored on the loopy site, so your browser only talks to loopy. A child's name is plain text, at most 12 letters, and is never sent anywhere.",
+    syncTitle: "Family sync",
+    syncText1: "Off until a grown-up taps Turn on in ⚙ Settings on the home page. Then a copy of the stars goes to loopy's sync server, so your other devices can get it.",
+    syncText2: "The copy is locked on your device first, with a key made from your family code. The server keeps only the locked copy, a random family id, the time of the last save and two fingerprints. It cannot read names, stars or anything else, and it never gets the family code. It keeps no addresses and no logs. A copy nobody has saved for 400 days is deleted. Turn off everywhere deletes it right away.",
+    touchTitle: "Stay in touch: your email",
+    touchText1: "In ⚙ Settings on the home page, a grown-up can leave an email under Stay in touch. Nothing is sent until you tap Save. It is for grown-ups only. loopy never asks a child for anything.",
+    thWhat: "What is kept",
+    tdWhat: "Your email, the language you use loopy in (English or German) and the time you saved it. Nothing else: no name, no family id, no address, nothing about your child.",
+    thWhy: "Why",
+    tdWhy: "So that the person who makes loopy knows who uses it and can tell you about new games, a few times a year. It is never given or sold to anyone else.",
+    thWhere: "Where",
+    tdWhere: "In a small database on Cloudflare, in the European Union. Cloudflare is the company that runs loopy's sync server.",
+    thLong: "How long",
+    tdLong: "Until you remove it, or 2 years after you saved it. Then it is deleted by itself.",
+    thDelete: "How to delete it",
+    tdDelete: "Tap Remove in the same place in Settings. If you no longer have that device, ask on the Help page under Ask a question, and it is deleted by hand.",
+    thBasis: "Why loopy may keep it",
+    tdBasis: "Because you agreed, by ticking the box and tapping Save. You can take that back at any time with Remove.",
+    countsTitle: "Counting, without names",
+    countsText: "Once a night the sync server writes down how many families have Family sync on, how many of them saved in the last 7 and 30 days, and how big the database is. That is all: no ids, no names, no emails. It is how loopy's maker sees whether loopy is used, without knowing who uses it.",
+    rightsTitle: "Your rights",
+    rightsText1: "You can ask what loopy keeps about you, have it corrected or deleted, and take back your agreement, at any time. For the email, Remove in Settings does it at once. For anything else, ask on the Help page. You can also complain to a data protection authority; in Germany that is the one in your state.",
+    rightsText2: "Contact: open the Help page and use Ask a question. GitHub is public, so do not write your email there; say that you want to be contacted and loopy's maker will reach you through GitHub.",
+    changesNote: "When this page changes, the date at the top changes too, and the change is listed under What's new in the guide."
+  },
+  de: {
+    pvTitle: "Datenschutzhinweis · loopy", pvTitleShort: "Datenschutzhinweis", backHelp: "Hilfe und Feedback", guideSafe: "Ist es sicher? (die Anleitung)",
+    pvLead: "Diese Seite ist für Erwachsene. Sie sagt in einfachen Worten, was loopy speichert, wo, wie lange, und wie du es löschst. Zuletzt geändert: 1. November 2026.",
+    whoTitle: "Wer loopy macht",
+    whoText: "loopy macht ein Elternteil in Deutschland, für das eigene Kind und für jedes Kind. Es ist kostenlos, Open Source, und keine Firma steht dahinter. Fragen zu deinen Daten stellst du auf der Hilfe-Seite unter Frage stellen. Das öffnet ein Formular auf GitHub; den Namen deines Kindes musst du dort nicht nennen.",
+    deviceTitle: "Auf deinem Gerät: nichts wird gesendet",
+    deviceText1: "Sterne, Abzeichen, Serien, Stufen, Einstellungen, die Namen der Kinder und die Antworten auf der Seite für Erwachsene werden in deinem Browser auf deinem Gerät gespeichert. Sie verlassen es nie, außer ein Erwachsener schaltet eines der zwei Dinge unten ein.",
+    deviceText2: "Es gibt keine Konten, keine Werbung, kein Tracking und keine Analyse. loopy nutzt keine fremden Dienste. Sogar die Schriften liegen auf der loopy-Seite, dein Browser spricht also nur mit loopy. Der Name eines Kindes ist reiner Text, höchstens 12 Zeichen, und wird nie gesendet.",
+    syncTitle: "Familien-Sync",
+    syncText1: "Aus, bis ein Erwachsener in ⚙ Einstellungen auf der Startseite auf Einschalten tippt. Dann geht eine Kopie der Sterne an loopys Sync-Server, damit eure anderen Geräte sie holen können.",
+    syncText2: "Die Kopie wird vorher auf deinem Gerät verschlossen, mit einem Schlüssel aus eurem Familien-Code. Der Server behält nur die verschlossene Kopie, eine zufällige Familien-Nummer, die Zeit der letzten Speicherung und zwei Prüfsummen. Er kann weder Namen noch Sterne noch sonst etwas lesen, und er bekommt den Familien-Code nie. Er speichert keine Adressen und keine Protokolle. Eine Kopie, die 400 Tage lang niemand gespeichert hat, wird gelöscht. Überall ausschalten löscht sie sofort.",
+    touchTitle: "In Kontakt bleiben: deine E-Mail",
+    touchText1: "In ⚙ Einstellungen auf der Startseite kann ein Erwachsener unter In Kontakt bleiben eine E-Mail hinterlassen. Nichts wird gesendet, bis du auf Speichern tippst. Das ist nur für Erwachsene. loopy fragt ein Kind nie nach irgendetwas.",
+    thWhat: "Was gespeichert wird", tdWhat: "Deine E-Mail, die Sprache, in der du loopy nutzt (Deutsch oder Englisch), und die Zeit, zu der du gespeichert hast. Sonst nichts: kein Name, keine Familien-Nummer, keine Adresse, nichts über dein Kind.",
+    thWhy: "Wozu", tdWhy: "Damit die Person, die loopy macht, weiß, wer es nutzt, und dir ein paar Mal im Jahr von neuen Spielen erzählen kann. Sie wird nie an andere weitergegeben oder verkauft.",
+    thWhere: "Wo", tdWhere: "In einer kleinen Datenbank bei Cloudflare, in der Europäischen Union. Cloudflare ist die Firma, die loopys Sync-Server betreibt.",
+    thLong: "Wie lange", tdLong: "Bis du sie löschst, oder 2 Jahre nach dem Speichern. Dann wird sie von selbst gelöscht.",
+    thDelete: "So löschst du sie", tdDelete: "Tippe an derselben Stelle in den Einstellungen auf Löschen. Hast du das Gerät nicht mehr, frag auf der Hilfe-Seite unter Frage stellen, dann wird sie von Hand gelöscht.",
+    thBasis: "Warum loopy sie behalten darf", tdBasis: "Weil du zugestimmt hast, mit dem Kästchen und Speichern. Du kannst das jederzeit mit Löschen zurücknehmen.",
+    countsTitle: "Zählen, ohne Namen",
+    countsText: "Einmal pro Nacht schreibt der Sync-Server auf, wie viele Familien den Familien-Sync an haben, wie viele davon in den letzten 7 und 30 Tagen gespeichert haben, und wie groß die Datenbank ist. Das ist alles: keine Nummern, keine Namen, keine E-Mails. So sieht der Macher von loopy, ob loopy genutzt wird, ohne zu wissen, von wem.",
+    rightsTitle: "Deine Rechte",
+    rightsText1: "Du kannst jederzeit fragen, was loopy über dich gespeichert hat, es berichtigen oder löschen lassen und deine Zustimmung zurücknehmen. Für die E-Mail macht das Löschen in den Einstellungen sofort. Für alles andere frag auf der Hilfe-Seite. Du kannst dich auch bei einer Datenschutzbehörde beschweren; in Deutschland ist das die deines Bundeslandes.",
+    rightsText2: "Kontakt: Öffne die Hilfe-Seite und nutze Frage stellen. GitHub ist öffentlich, schreib deine E-Mail also nicht dorthin; sag, dass du kontaktiert werden möchtest, und der Macher von loopy meldet sich über GitHub.",
+    changesNote: "Ändert sich diese Seite, ändert sich auch das Datum oben, und die Änderung steht in der Anleitung unter Was ist neu."
+  }
+});
+// The guide has its own page for each language.
+document.getElementById("guide-link").href = Loopy.lang === "de" ? "../guide/de/start/is-it-safe/" : "../guide/start/is-it-safe/";
+</script>
+</body>
+</html>

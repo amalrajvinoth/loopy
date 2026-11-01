@@ -73,16 +73,18 @@
   }
 
   // ---- the server: GET and text/plain POST only, so the browser sends no extra request first ----
-  function call(s, query, body) {
+  // send(path, body): a promise of { n: status (0 when the server can't be reached), j: the answer }.
+  function send(path, body) {
     var ctl = typeof AbortController === "function" ? new AbortController() : null, stop = setTimeout(function () { if (ctl) ctl.abort(); }, TIME);
     var opt = { cache: "no-store", credentials: "omit", referrerPolicy: "no-referrer", signal: ctl ? ctl.signal : undefined };
     if (body) { opt.method = "POST"; opt.headers = { "Content-Type": "text/plain" }; opt.body = JSON.stringify(body); opt.keepalive = opt.body.length < 60000; }
-    return fetch("https://" + Loopy.syncHost + "/f/" + s.i + query, opt).then(function (r) {
+    return fetch("https://" + Loopy.syncHost + path, opt).then(function (r) {
       clearTimeout(stop);
       if (r.status !== 200 && r.status !== 412) return { n: r.status };
       return r.json().then(function (j) { return { n: r.status, j: j || {} }; });
     }, function () { clearTimeout(stop); return { n: 0 }; });
   }
+  function call(s, query, body) { return send("/f/" + s.i + query, body); }
   var get = function (s) { return call(s, "?e=" + s.e); };
   var post = function (s, b) { return call(s, "?e=" + s.e, { k: s.w, b: b }); };
 
@@ -357,6 +359,94 @@
     window.addEventListener("hashchange", fromLink);
   }
 
+  // ---- "Stay in touch": a grown-up's email, a part of ⚙ Settings on the home page above Family sync ----
+  // Nothing is sent until a grown-up taps Save. The email, the language and the time go to the same server
+  // (POST /g), which keeps them apart from the family copies. This browser keeps "loopy.touch" as
+  // { m: email, k: remove key, t: time saved }: Remove sends the key, and the server deletes the row.
+  // Never in a stars code, never per child, never shown in a game.
+  var TOUCH = "loopy.touch";
+  Loopy.addStrings({
+    en: { stHead: "Grown-ups: stay in touch",
+      stText: "Leave your email if you would like to hear about new games, a few times a year. Only grown-ups, please. It is never shown to your child and never shared. It is kept on loopy's own server in the EU. You can remove it here at any time.",
+      stLabel: "Your email", stAgree: "I am a grown-up and I agree to the ", stNote: "privacy note", stSave: "Save", stRemove: "Remove",
+      stSaved: "Saved: {mail}. Thank you!", stDone: "Saved. Thank you!", stGone: "Removed.", stBad: "That does not look like an email.",
+      stTick: "Please tick the box first.", stWait: "Please wait a moment, then try again.", stElse: "Removed from this device. If you saved it on another device too, remove it there as well." },
+    de: { stHead: "Für Erwachsene: in Kontakt bleiben",
+      stText: "Hinterlasse deine E-Mail, wenn du von neuen Spielen hören möchtest, ein paar Mal im Jahr. Nur für Erwachsene. Sie wird deinem Kind nie gezeigt und nie weitergegeben. Sie liegt auf loopys eigenem Server in der EU. Du kannst sie hier jederzeit löschen.",
+      stLabel: "Deine E-Mail", stAgree: "Ich bin erwachsen und stimme dem ", stNote: "Datenschutzhinweis", stSave: "Speichern", stRemove: "Löschen",
+      stSaved: "Gespeichert: {mail}. Danke!", stDone: "Gespeichert. Danke!", stGone: "Gelöscht.", stBad: "Das sieht nicht wie eine E-Mail aus.",
+      stTick: "Bitte zuerst das Kästchen ankreuzen.", stWait: "Bitte warte kurz und versuche es noch einmal.", stElse: "Auf diesem Gerät gelöscht. Hast du sie auch auf einem anderen Gerät gespeichert, lösche sie dort ebenfalls." }
+  });
+  function readTouch() {
+    var s;
+    try { s = JSON.parse(localStorage.getItem(TOUCH)); } catch (e) { return null; }
+    if (!s || typeof s !== "object" || typeof s.m !== "string" || s.m.length > 254 || !/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(s.m) || !/^[A-Za-z0-9_-]{43}$/.test(s.k)) return null;
+    return { m: s.m, k: s.k, t: typeof s.t === "number" && isFinite(s.t) ? s.t : 0 };
+  }
+  function writeTouch(s) { try { if (s) localStorage.setItem(TOUCH, JSON.stringify(s)); else localStorage.removeItem(TOUCH); } catch (e) {} }
+  function newKey() {
+    var r = crypto.getRandomValues(new Uint8Array(32));
+    return b64(r).slice(0, 43).replace(/\+/g, "-").replace(/\//g, "_");
+  }
+  function touchPart(box) {
+    var t = Loopy.t, saved = readTouch(), body = document.createElement("div"), msg = document.createElement("p");
+    function el(tag, cls, text) { var n = document.createElement(tag); if (cls) n.className = cls; if (text !== undefined) n.textContent = text; return n; }
+    function btn(text, cls) { var b = el("button", cls || "kid-btn", text); b.type = "button"; return b; }
+    msg.setAttribute("aria-live", "polite");
+    box.replaceChildren(el("p", "set-head", t("stHead")), el("p", "", t("stText")), body, msg);
+    box.hidden = false;
+    function draw() {
+      var row = el("div", "kid-foot");
+      body.replaceChildren();
+      if (saved) {
+        var remove = btn(t("stRemove"), "kid-btn quiet");
+        remove.addEventListener("click", function () {
+          remove.disabled = true;
+          send("/g?del=1", { m: saved.m, k: saved.k }).then(function (r) {
+            remove.disabled = false;
+            if (r.n === 0) { msg.textContent = t("syNoNet"); return; }
+            // 404: no row with this email and this device's key. Either it is gone already, or the same
+            // email was saved first on another device, which is the one that can delete it.
+            var elsewhere = r.n !== 200;
+            saved = null; writeTouch(null); draw();
+            msg.textContent = elsewhere ? t("stElse") : t("stGone");
+          });
+        });
+        row.appendChild(remove);
+        body.append(el("p", "touch-saved", t("stSaved", { mail: saved.m })), row);
+        return;
+      }
+      var line = el("div", "sync-join"), input = el("input"), lab = el("label", "touch-agree"), tick = el("input"), save = btn(t("stSave")), link = el("a", "", t("stNote"));
+      input.type = "email"; input.className = "touch-mail"; input.autocomplete = "email"; input.spellcheck = false;
+      input.setAttribute("autocapitalize", "off"); input.placeholder = "name@example.com"; input.setAttribute("aria-label", t("stLabel"));
+      tick.type = "checkbox"; link.href = "privacy/"; link.target = "_blank"; link.rel = "noopener";
+      var words = el("span");
+      words.append(t("stAgree"), link, ".");
+      lab.append(tick, words);
+      line.appendChild(input);
+      row.appendChild(save);
+      body.append(line, lab, row);
+      function go() {
+        var m = input.value.trim().toLowerCase();
+        if (m.length > 254 || !/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(m)) { msg.textContent = t("stBad"); input.focus(); return; }
+        if (!tick.checked) { msg.textContent = t("stTick"); tick.focus(); return; }
+        var k = newKey();
+        save.disabled = true; msg.textContent = t("syBusy");
+        send("/g", { m: m, l: Loopy.lang === "de" ? "de" : "en", k: k }).then(function (r) {
+          save.disabled = false;
+          if (r.n === 200) { saved = { m: m, k: k, t: Date.now() }; writeTouch(saved); draw(); msg.textContent = t("stDone"); }
+          else if (r.n === 0) msg.textContent = t("syNoNet");
+          else if (r.n === 429) msg.textContent = t("stWait");
+          else if (r.n === 400) msg.textContent = t("stBad");
+          else msg.textContent = t("syError");
+        });
+      }
+      save.addEventListener("click", go);
+      input.addEventListener("keydown", function (e) { if (e.key === "Enter") go(); });
+    }
+    draw();
+  }
+
   Loopy.sync = {
     // { on, code, time, status }: status is "off", "idle", "busy", "offline", "gone" (the copy was deleted
     // on another device) or "error".
@@ -404,7 +494,9 @@
     // Sync now (the home page's "Sync now"): a promise of { changed }.
     now: function () { return Loopy.syncPage === "home" ? home() : round(true); },
     // Fills the Family sync part of ⚙ Settings on the home page (box: an empty element).
-    settings: settings
+    settings: settings,
+    // Fills the "Stay in touch" part of ⚙ Settings on the home page (box: an empty element).
+    touch: touchPart
   };
 
   start();

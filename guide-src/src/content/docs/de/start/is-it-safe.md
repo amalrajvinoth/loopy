@@ -14,6 +14,8 @@ Diese Seite ist für Erwachsene. Sie sagt in einfachen Worten, was loopy speiche
 - Es gibt keine Werbung, kein Tracking und keine Analyse.
 - loopy nutzt keine fremden Dienste. Sogar die Schriften liegen auf der loopy-Seite. Der Browser spricht also nur mit loopy.
 - Die einzige Ausnahme ist der [Familien-Sync](/loopy/guide/de/stars/family-sync/), und nur, wenn ein Erwachsener ihn einschaltet. Er sendet eine Kopie der Sterne, vorher auf deinem Gerät verschlossen, sodass der Server sie nicht lesen kann.
+- Ein Erwachsener kann unter **In Kontakt bleiben** in ⚙ Einstellungen die eigene E-Mail hinterlassen, um von neuen Spielen zu hören. Nur, wenn er auf **Speichern** tippt. Sie enthält nichts über das Kind, und **Löschen** entfernt sie. Der [Datenschutzhinweis](/loopy/privacy/) sagt, was gespeichert wird, wo und wie lange.
+- Einmal pro Nacht zählt der Sync-Server, wie viele Familien den Familien-Sync an haben. Nur Zahlen, keine Namen, keine Nummern.
 
 ## Wo die Daten liegen
 
