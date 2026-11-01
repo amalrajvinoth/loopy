@@ -1,16 +1,16 @@
 ---
 title: Einstellungen auf der Startseite
-description: Alles im Feld ⚙ Einstellungen auf der Startseite, von oben nach unten.
+description: Alles im Feld ⚙ Einstellungen auf der Startseite, von oben nach unten, mit dem Familien-Code.
 sidebar:
   order: 1
 ---
 import Shot from "~/components/Shot.astro";
 
-Tippe auf der Startseite auf ⚙ **Einstellungen**. Hier fügst du ein Kind hinzu, stellst das Alter ein und wählst Farben und Ton.
+Tippe auf der Startseite auf ⚙ **Einstellungen**. Hier fügst du ein Kind hinzu, stellst das Alter ein, wählst Farben und Ton, hinterlässt eine E-Mail und schaltest den Familien-Sync ein.
 
 <Shot name="home-settings" alt="Die Einstellungen auf der Startseite, mit Kinder, Alter, Farben, Ton und Sprache" />
 
-Der Knopf ⚙ **Einstellungen** steht unter dem loopy-Namen. Tippe darauf, um das Feld zu öffnen. Tippe noch einmal, um es zu schließen. Das Feld hat fünf Teile, in dieser Reihenfolge.
+Der Knopf ⚙ **Einstellungen** steht unter dem loopy-Namen. Tippe darauf, um das Feld zu öffnen. Tippe noch einmal, oder drücke **Escape**, um es zu schließen. Das Feld hat fünf Teile, in dieser Reihenfolge: **Kinder**, **Alter, Aussehen und Ton**, **Für Erwachsene: in Kontakt bleiben**, **Familien-Sync** und **Wie eine App nutzen**.
 
 ## Kinder
 
@@ -38,15 +38,65 @@ Farben, Leichter lesen, Ton und Sprache gelten für alle auf diesem Gerät. Mehr
 
 ## Für Erwachsene: in Kontakt bleiben
 
-Für Erwachsene, die ein paar Mal im Jahr von neuen Spielen hören möchten. Tippe deine E-Mail ein, kreuze **Ich bin erwachsen und stimme dem Datenschutzhinweis zu** an und tippe auf **Speichern**. Nichts wird gesendet, bis du auf Speichern tippst. loopy behält die E-Mail, deine Sprache und die Zeit auf seinem eigenen Server in der EU, sonst nichts: nichts über dein Kind. **Löschen** entfernt sie wieder. Die Einzelheiten stehen im [Datenschutzhinweis](/loopy/privacy/).
+Für Erwachsene, die ein paar Mal im Jahr von neuen Spielen hören möchten. Es ist die einzige Stelle in loopy, die etwas über dich fragt.
+
+1. Tippe deine E-Mail in **Deine E-Mail** ein.
+2. Kreuze **Ich bin erwachsen und stimme dem Datenschutzhinweis zu** an. Das Wort "Datenschutzhinweis" ist ein Link zum [Datenschutzhinweis](/loopy/privacy/).
+3. Tippe auf **Speichern**.
+
+Nichts wird gesendet, bis du auf **Speichern** tippst. Dann behält loopy die E-Mail, deine Sprache und die Zeit auf seinem eigenen Server in der EU. Sonst geht nichts mit: nichts über dein Kind, keine Sterne, keine Namen. Das Feld zeigt dann "Gespeichert" mit deiner E-Mail und einen Knopf **Löschen**. **Löschen** entfernt sie vom Server und von diesem Gerät. Nach 2 Jahren wird sie von selbst gelöscht.
+
+Tippst du etwas ein, das keine E-Mail ist, sagt loopy "Das sieht nicht wie eine E-Mail aus." Fehlt das Kreuz, sagt es "Bitte zuerst das Kästchen ankreuzen." Ohne Internet sagt es "loopy erreicht den Sync-Server nicht." Dann versuche es später noch einmal.
+
+Derselbe Datenschutzhinweis ist ganz unten auf der Startseite verlinkt, unter den Knöpfen Erwachsene, Hilfe und Anleitung.
 
 ## Familien-Sync
 
-**Einschalten** hält die Sterne auf allen Geräten deiner Familie gleich, ganz von selbst. **Mit Code beitreten** nimmt dieses Gerät in eine Familie auf, die ihn schon eingeschaltet hat. Ist er an, zeigt dieser Teil den Familien-Code und seinen QR-Code, **Jetzt abgleichen**, **Ausschalten** und **Überall ausschalten**. Siehe [Familien-Sync](/loopy/guide/de/stars/family-sync/).
+Der Familien-Sync hält die Sterne auf allen Geräten deiner Familie gleich, ganz von selbst. Er ist aus, bis ein Erwachsener ihn einschaltet. Was dieser Teil zeigt, hängt davon ab, ob er an ist.
+
+**Wenn er aus ist**, gibt es zwei Knöpfe:
+
+- **Einschalten** startet eine neue Familie. loopy macht einen Familien-Code und zeigt ihn.
+- **Mit Code beitreten** öffnet ein Feld für den Code von deinem anderen Gerät. Tippe ihn ein und dann auf **Beitreten**.
+
+**Wenn er an ist**, zeigt er:
+
+- "An. Euer Familien-Code:" und den Code, in großen Buchstaben.
+- Einen QR-Code. Scanne ihn auf dem anderen Gerät mit der Kamera, um beizutreten.
+- **Jetzt abgleichen**: gleicht sofort ab.
+- **Ausschalten**: beendet den Sync nur auf diesem Gerät. Die anderen Geräte machen weiter.
+- **Überall ausschalten**: zweimal tippen. Es löscht die Familien-Kopie auf dem Server, und alle Geräte hören auf abzugleichen. Die Sterne auf jedem Gerät bleiben.
+- Eine Zeile unter den Knöpfen, die sagt, was gerade los ist: "Zuletzt abgeglichen um 16:20", "Wird abgeglichen …" oder "Wartet auf Internet".
+
+### Euer Familien-Code
+
+Der Familien-Code ist der Schlüssel zu den Sternen eurer Familie. Er sieht so aus: `7K2M-QX9D-4HPT-W3RA`, 16 Buchstaben und Zahlen in 4 Gruppen.
+
+- **Noch einmal ansehen:** Öffne ⚙ **Einstellungen** auf einem Gerät, auf dem der Familien-Sync an ist. Er steht unter Familien-Sync, mit seinem QR-Code.
+- **Eintippen:** Kleine und große Buchstaben gehen beide, und die Striche kannst du weglassen. Der Code hat nie die Buchstaben O, I, L oder U. Tippst du ein O, liest loopy eine 0. Ein I oder ein L zählt als 1.
+- **Halte ihn geheim**, wie einen Hausschlüssel. Wer den Code hat, kann eurer Familie beitreten und die Sterne sehen.
+- **Er bleibt auf dem Gerät.** Der Code steckt nicht im Sterne-Code, nicht in der Sicherungsdatei und nicht im QR-Code unter Meine Sterne. Jedes Gerät tritt selbst bei, mit dem Code oder dem QR-Code vom Familien-Sync.
+- **Verloren?** Hat ein Gerät den Sync noch an, lies den Code dort ab. Hat ihn kein Gerät mehr, tippe noch einmal auf **Einschalten**. Das macht eine neue Familie mit einem neuen Code. Dann tritt mit den anderen Geräten der neuen Familie bei. Die alte Familien-Kopie wird auf dem Server nach 400 Tagen ohne Speichern gelöscht.
+
+Was abgeglichen wird, wann und was die Meldungen bedeuten, steht unter [Familien-Sync](/loopy/guide/de/stars/family-sync/).
 
 ## Wie eine App nutzen
 
 Der letzte Teil hat einen Knopf: **loopy zum Home-Bildschirm hinzufügen**. Am Computer heißt er **loopy auf diesem Computer installieren**. Er öffnet das Installieren-Fenster des Browsers oder zeigt die Schritte für dein Gerät. Dann öffnet sich loopy im Vollbild und geht auch offline. Dieser Teil fehlt, wenn loopy schon vom Home-Bildschirm läuft. Mehr unter [Zum Home-Bildschirm](/loopy/guide/de/setup/home-screen/).
+
+## Wo jede Einstellung liegt
+
+| Einstellung | Für wen | Kommt sie auf die anderen Familien-Geräte? |
+| --- | --- | --- |
+| Name und Bild eines Kindes | Dieses Kind | Ja |
+| Sterne, Abzeichen, Serien, Antworten für die Seite für Erwachsene | Dieses Kind | Ja. Die größere Zahl gewinnt, nichts geht verloren |
+| Alter, Stufen, Spiel-Einstellungen, Vorlesen, letztes Spiel | Dieses Kind | Nur auf ein Gerät, das für dieses Kind noch nichts hat |
+| Farbthema, Leichter lesen, Ton, Sprache | Alle auf diesem Gerät | Nur auf ein Gerät, das noch nichts gewählt hat |
+| Deine E-Mail (in Kontakt bleiben) | Du, auf loopys Server | Nein. Jedes Gerät hat seine eigene |
+| Der Familien-Code | Dieses Gerät | Nein. Jedes Gerät tritt selbst bei |
+| Zum Home-Bildschirm | Dieses Gerät | Nein |
+
+Alles außer der E-Mail bleibt in diesem Browser auf diesem Gerät. Mehr unter [Wo die Sterne gespeichert sind](/loopy/guide/de/stars/where-stars-live/).
 
 ## Nicht in diesem Feld
 
