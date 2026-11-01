@@ -27,7 +27,7 @@ The level shows next to the score, like "Level 2 of 5". After 10 right in a row,
 
 ## Words
 
-122 English and 106 German words, all with pictures: animals, food, things at home, numbers and more.
+356 English and 238 German words, all with pictures: animals, food, things at home, numbers and more.
 
 German words are nouns, so they start with a capital letter. The child does not need to type the capital: the first box shows it by itself. German words can have ä, ö, ü and ß; those keys only show up when the word needs them.
 

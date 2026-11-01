@@ -11,7 +11,13 @@ const LOOPY_WORDS = [
     ["🐘", "elephant", "der Elefant", 2], ["🦒", "giraffe", "die Giraffe", 2], ["🐍", "snake", "die Schlange", 2], ["🦉", "owl", "die Eule", 2], ["🐧", "penguin", "der Pinguin", 2], ["🐺", "wolf", "Wolf"],
     ["🐯", "tiger", "Tiger"], ["🐐", "goat", "Ziege"], ["🦌", "deer", "Reh"], ["🐜", "ant", "Ameise"], ["🐪", "camel", "Kamel"], ["🦓", "zebra", "Zebra"],
     ["🐳", "whale", "Wal"], ["🦈", "shark", "Hai"], ["🦀", "crab", "Krebs"], ["🦭", "seal", "Robbe"], ["🦢", "swan", "Schwan"], ["🦔", "hedgehog", "Igel"],
-    ["🫏", "donkey", "Esel"], ["🐢", "turtle", "die Schildkröte", 2, 0], ["🦋", "butterfly", "der Schmetterling", 2, 0]
+    ["🫏", "donkey", "Esel"], ["🐢", "turtle", "die Schildkröte", 2, 0], ["🦋", "butterfly", "der Schmetterling", 2, 0], ["🐨", "koala", "der Koala", 2], ["🐼", "panda", "der Panda", 1], ["🦛", "hippo", "das Nilpferd", 2],
+    ["🦏", "rhino", "das Nashorn", 2], ["🐊", "crocodile", "das Krokodil", 2], ["🦜", "parrot", "der Papagei", 2], ["🦅", "eagle", "der Adler", 2], ["🐌", "snail", "die Schnecke", 2], ["🐞", "ladybird", "der Marienkäfer", 2],
+    ["🕷️", "spider", "die Spinne", 2], ["🐙", "octopus", "der Krake", 2], ["🦑", "squid", "der Tintenfisch", 2], ["🐬", "dolphin", "der Delfin", 2], ["🦐", "shrimp", "die Garnele", 2], ["🦗", "cricket", "die Grille", 2],
+    ["🪲", "beetle", "der Käfer", 2], ["🐛", "caterpillar", "die Raupe", 2], ["🪱", "worm", "der Wurm", 1], ["🦎", "lizard", "die Eidechse", 2], ["🦇", "bat", "die Fledermaus", 2], ["🐿️", "squirrel", "das Eichhörnchen", 2],
+    ["🦫", "beaver", "der Biber", 2], ["🐀", "rat", "die Ratte", 1], ["🐹", "hamster", "der Hamster", 1], ["🐓", "rooster", "der Hahn", 1], ["🦃", "turkey", "der Truthahn", 2], ["🦩", "flamingo", "der Flamingo", 2],
+    ["🦚", "peacock", "der Pfau", 2], ["🦄", "unicorn", "das Einhorn", 2], ["🐉", "dragon", "der Drache", 2], ["🦖", "dinosaur", "der Dinosaurier", 2], ["🐏", "ram", "der Widder", 2], ["🦙", "llama", "das Lama", 2],
+    ["🐗", "boar", "das Wildschwein", 2], ["🦨", "skunk", "das Stinktier", 2], ["🦝", "raccoon", "der Waschbär", 2], ["🦥", "sloth", "das Faultier", 2], ["🦍", "gorilla", "der Gorilla", 2], ["🐆", "leopard", "der Leopard", 2]
   ]],
   ["food", "🍎", [
     ["🍎", "apple", "der Apfel", 1], ["🍌", "banana", "die Banane", 1], ["🍞", "bread", "das Brot", 1], ["🧀", "cheese", "der Käse", 1], ["🥚", "egg", "das Ei", 1], ["🥛", "milk", "die Milch", 1],
@@ -20,7 +26,14 @@ const LOOPY_WORDS = [
     ["🥜", "nut", "Nuss"], ["🧂", "salt", "Salz"], ["🧃", "juice", "Saft"], ["🍵", "tea", "Tee"], ["🌽", "corn", "Mais"], ["🍑", "plum", "Pflaume"],
     ["🍇", "grape", "Traube"], ["🍈", "melon", "Melone"], ["🧅", "onion", "Zwiebel"], ["🫑", "pepper", "Paprika"], ["🍝", "noodle", "Nudel"], ["🍦", "ice", "Eis"],
     ["🥐", "roll", "Brötchen"], ["🍓", "berry", "Beere"], ["🥗", "salad", "Salat"], ["🍫", "candy", "Bonbon"], ["🍦", "ice cream", "das Eis", 1, 0], ["🍓", "strawberry", "die Erdbeere", 2, 0],
-    ["🍇", "grapes", "die Trauben", 2, 0], ["🥔", "potato", "die Kartoffel", 2, 0], ["🥒", "cucumber", "die Gurke", 2, 0], ["🍫", "chocolate", "die Schokolade", 2, 0], ["🍒", "cherries", "die Kirschen", 2, 0], ["🍝", "noodles", "die Nudeln", 2, 0]
+    ["🍇", "grapes", "die Trauben", 2, 0], ["🥔", "potato", "die Kartoffel", 2, 0], ["🥒", "cucumber", "die Gurke", 2, 0], ["🍫", "chocolate", "die Schokolade", 2, 0], ["🍒", "cherries", "die Kirschen", 2, 0], ["🍝", "noodles", "die Nudeln", 2, 0],
+    ["🥨", "pretzel", "die Brezel", 2], ["🥞", "pancake", "der Pfannkuchen", 2], ["🧇", "waffle", "die Waffel", 2], ["🍩", "donut", "der Donut", 2], ["🧁", "muffin", "der Muffin", 2], ["🍭", "lollipop", "der Lutscher", 2],
+    ["🍿", "popcorn", "das Popcorn", 2], ["🥜", "peanut", "die Erdnuss", 2], ["🌰", "chestnut", "die Kastanie", 2], ["🥥", "coconut", "die Kokosnuss", 2], ["🍍", "pineapple", "die Ananas", 2], ["🥝", "kiwi", "die Kiwi", 1],
+    ["🍑", "peach", "der Pfirsich", 2], ["🫐", "blueberry", "die Blaubeere", 2], ["🥭", "mango", "die Mango", 2], ["🥑", "avocado", "die Avocado", 2], ["🥦", "broccoli", "der Brokkoli", 2], ["🥬", "cabbage", "der Kohl", 2],
+    ["🧄", "garlic", "der Knoblauch", 2], ["🍄", "mushroom", "der Pilz", 2], ["🫛", "peas", "die Erbsen", 2], ["🫘", "beans", "die Bohnen", 2], ["🥖", "baguette", "das Baguette", 2], ["🥣", "porridge", "der Brei", 2],
+    ["🍔", "burger", "der Burger", 2], ["🌭", "sausage", "die Wurst", 1], ["🍟", "chips", "die Pommes", 1], ["🥓", "bacon", "der Speck", 2], ["🍗", "chicken", "das Hähnchen", 2], ["🥩", "steak", "das Steak", 2],
+    ["🍣", "sushi", "das Sushi", 2], ["🍮", "pudding", "der Pudding", 2], ["☕", "coffee", "der Kaffee", 2], ["🥤", "lemonade", "die Limonade", 2], ["💧", "water", "das Wasser", 1], ["🌶️", "chili", "die Chili", 2],
+    ["🥪", "sandwich", "das Sandwich", 2], ["🌮", "taco", "der Taco", 2], ["🫙", "jam", "die Marmelade", 2], ["🍽️", "dinner", "das Abendessen", 2], ["🥘", "stew", "der Eintopf", 2], ["🍖", "meat", "das Fleisch", 1]
   ]],
   ["home", "🏠", [
     ["🏠", "house", "das Haus", 1], ["🚪", "door", "die Tür", 1], ["🪟", "window", "das Fenster", 1], ["🛏️", "bed", "das Bett", 1], ["🪑", "chair", "der Stuhl", 1], ["🛋️", "sofa", "das Sofa", 1],
@@ -29,7 +42,14 @@ const LOOPY_WORDS = [
     ["🏚️", "roof", "Dach"], ["🪵", "table", "Tisch"], ["🍴", "fork", "Gabel"], ["🔪", "knife", "Messer"], ["🍳", "pot", "Topf"], ["♨️", "oven", "Ofen"],
     ["🛌", "pillow", "Kissen"], ["🧣", "blanket", "Decke"], ["🌷", "garden", "Garten"], ["🧱", "wall", "Wand"], ["🪜", "stairs", "Treppe"], ["🧻", "towel", "Handtuch"],
     ["📦", "box", "Kiste"], ["🔑", "key", "der Schlüssel", 1], ["🧸", "teddy bear", "der Teddy", 1, 0], ["🧦", "sock", "die Socke", 1, 0], ["👕", "T-shirt", "das T-Shirt", 1, 0], ["🛁", "bathtub", "die Badewanne", 2, 0],
-    ["🚽", "toilet", "die Toilette", 2, 0], ["📺", "TV", "der Fernseher", 2, 0], ["☂️", "umbrella", "der Regenschirm", 2, 0]
+    ["🚽", "toilet", "die Toilette", 2, 0], ["📺", "TV", "der Fernseher", 2, 0], ["☂️", "umbrella", "der Regenschirm", 2, 0], ["🧽", "sponge", "der Schwamm", 2], ["🪣", "bucket", "der Eimer", 2], ["🧴", "bottle", "die Flasche", 1],
+    ["🪥", "toothbrush", "die Zahnbürste", 2], ["🚰", "tap", "der Wasserhahn", 2], ["🔥", "fireplace", "der Kamin", 2], ["📻", "radio", "das Radio", 1], ["📱", "phone", "das Handy", 1], ["☎️", "telephone", "das Telefon", 2],
+    ["💻", "laptop", "der Laptop", 2], ["🔌", "plug", "der Stecker", 2], ["🔦", "torch", "die Taschenlampe", 2], ["🪜", "ladder", "die Leiter", 2], ["🔨", "hammer", "der Hammer", 1], ["🪴", "plant", "die Pflanze", 1],
+    ["🖼️", "picture", "das Bild", 1], ["⏰", "alarm", "der Wecker", 2], ["🪆", "doll", "die Puppe", 1], ["🎁", "gift", "das Geschenk", 1], ["🗑️", "bin", "der Mülleimer", 2], ["🔒", "lock", "das Schloss", 1],
+    ["🛗", "lift", "der Aufzug", 2], ["🧱", "brick", "der Ziegel", 2], ["🍽️", "dishes", "das Geschirr", 2], ["🥢", "chopsticks", "die Stäbchen", 2], ["🫖", "teapot", "die Teekanne", 2], ["🥛", "glass", "das Glas", 1],
+    ["🗄️", "cupboard", "der Schrank", 1], ["🗃️", "drawer", "die Schublade", 2], ["📬", "mailbox", "der Briefkasten", 2], ["🛎️", "doorbell", "die Klingel", 2], ["🏺", "vase", "die Vase", 1], ["🪵", "wood", "das Holz", 1],
+    ["🪑", "stool", "der Hocker", 2], ["🪟", "curtain", "der Vorhang", 2], ["🟫", "carpet", "der Teppich", 1], ["🚪", "gate", "das Tor", 1], ["🧺", "laundry", "die Wäsche", 2], ["🏠", "attic", "der Dachboden", 2],
+    ["🕳️", "cellar", "der Keller", 1]
   ]],
   ["school", "🏫", [
     ["📖", "book", "das Buch", 1], ["✂️", "scissors", "die Schere", 1], ["🖊️", "pen", "der Stift", 1], ["🔔", "bell", "die Glocke", 1], ["🧩", "puzzle", "das Puzzle", 1], ["📓", "notebook", "das Heft", 1],
@@ -39,14 +59,26 @@ const LOOPY_WORDS = [
     ["✉️", "letter", "Brief"], ["📝", "test", "Test"], ["🧽", "eraser", "Radierer"], ["🎒", "backpack", "Ranzen"], ["🍱", "lunch", "Brotdose"], ["🤝", "friend", "Freund"],
     ["🎵", "music", "Musik"], ["🏃", "gym", "Sport"], ["🎒", "backpack", "der Rucksack", 1, 0], ["💻", "computer", "der Computer", 1, 0], ["⚽", "ball", "der Ball", 1, 0], ["✏️", "pencil", "der Bleistift", 2, 0],
     ["🗺️", "map", "die Landkarte", 2, 0], ["📎", "paper clip", "die Büroklammer", 2, 0], ["🖌️", "paintbrush", "der Pinsel", 2, 0], ["🎨", "paints", "die Farben", 2, 0], ["🔢", "numbers", "die Zahlen", 2, 0], ["🎈", "balloon", "der Luftballon", 2, 0],
-    ["📅", "calendar", "der Kalender", 2, 0], ["🎺", "trumpet", "die Trompete", 2, 0], ["🔬", "microscope", "das Mikroskop", 2, 0]
+    ["📅", "calendar", "der Kalender", 2, 0], ["🎺", "trumpet", "die Trompete", 2, 0], ["🔬", "microscope", "das Mikroskop", 2, 0], ["📝", "homework", "die Hausaufgabe", 2], ["📄", "paper", "das Papier", 1], ["📒", "folder", "der Ordner", 2],
+    ["🖋️", "ink", "die Tinte", 2], ["📐", "triangle", "das Dreieck", 2], ["⭕", "circle", "der Kreis", 1], ["⬛", "square", "das Quadrat", 2], ["🧮", "abacus", "der Abakus", 2], ["➕", "sum", "die Summe", 2],
+    ["🔤", "alphabet", "das Alphabet", 2], ["📰", "story", "die Geschichte", 2], ["📜", "poem", "das Gedicht", 2], ["🖼️", "painting", "das Gemälde", 2], ["🧪", "chemistry", "die Chemie", 2], ["🎓", "exam", "die Prüfung", 2],
+    ["🏆", "prize", "der Preis", 2], ["🌟", "sticker", "der Sticker", 1], ["🥪", "snack", "der Snack", 1], ["🪑", "seat", "der Platz", 1], ["🚪", "room", "der Raum", 1], ["🛝", "yard", "der Hof", 1],
+    ["⏰", "lesson", "die Stunde", 1], ["📆", "week", "die Woche", 1], ["🗓️", "year", "das Jahr", 1], ["🖥️", "screen", "der Bildschirm", 2], ["⌨️", "keyboard", "die Tastatur", 2], ["🖨️", "printer", "der Drucker", 2],
+    ["🧠", "idea", "die Idee", 1], ["❓", "question", "die Frage", 2], ["❗", "answer", "die Antwort", 2], ["🎲", "game", "das Spiel", 1], ["🎉", "party", "die Party", 1], ["🎤", "choir", "der Chor", 2],
+    ["🎻", "violin", "die Geige", 2], ["🎸", "guitar", "die Gitarre", 2], ["🪈", "flute", "die Flöte", 2], ["🧒", "child", "das Kind", 1], ["👦", "boy", "der Junge", 1], ["👧", "girl", "das Mädchen", 1],
+    ["📝", "note", "die Notiz", 2], ["🔖", "bookmark", "das Lesezeichen", 2], ["🗂️", "file", "die Mappe", 2], ["📋", "list", "die Liste", 1], ["📖", "page", "die Seite", 1], ["🗣️", "language", "die Sprache", 2]
   ]],
   ["body", "🧍", [
     ["🙂", "head", "Kopf"], ["✋", "hand", "Hand"], ["🦶", "foot", "Fuß"], ["💪", "arm", "Arm"], ["🦵", "leg", "Bein"], ["👁️", "eye", "Auge"],
     ["👂", "ear", "Ohr"], ["👃", "nose", "Nase"], ["👄", "mouth", "Mund"], ["💇", "hair", "Haar"], ["🦷", "tooth", "Zahn"], ["🦵", "knee", "Knie"],
     ["☝️", "finger", "Finger"], ["🦶", "toe", "Zeh"], ["🔙", "back", "Rücken"], ["🫃", "belly", "Bauch"], ["🧣", "neck", "Hals"], ["❤️", "heart", "Herz"],
     ["🦴", "bone", "Knochen"], ["🧴", "skin", "Haut"], ["💋", "lip", "Lippe"], ["🧔", "chin", "Kinn"], ["💪", "elbow", "Ellbogen"], ["🧠", "brain", "Gehirn"],
-    ["🩸", "blood", "Blut"], ["👍", "thumb", "Daumen"], ["😊", "cheek", "Wange"], ["👅", "tongue", "Zunge"], ["🫁", "lung", "Lunge"], ["💪", "muscle", "Muskel"]
+    ["🩸", "blood", "Blut"], ["👍", "thumb", "Daumen"], ["😊", "cheek", "Wange"], ["👅", "tongue", "Zunge"], ["🫁", "lung", "Lunge"], ["💪", "muscle", "Muskel"],
+    ["👁️", "eyebrow", "Braue"], ["🦴", "rib", "Rippe"], ["💀", "skull", "Schädel"], ["🦴", "skeleton", "Skelett"], ["🫀", "pulse", "Puls"], ["🫁", "breath", "Atem"],
+    ["👄", "smile", "Lächeln"], ["😮", "yawn", "Gähnen"], ["🤧", "sneeze", "Niesen"], ["😴", "sleep", "Schlaf"], ["🏃", "step", "Schritt"], ["🦵", "hip", "Hüfte"],
+    ["🦵", "thigh", "Schenkel"], ["🦶", "heel", "Ferse"], ["🦶", "ankle", "Knöchel"], ["🦶", "sole", "Sohle"], ["✊", "fist", "Faust"], ["💪", "joint", "Gelenk"],
+    ["🤚", "nail", "Nagel"], ["👂", "hearing", "Hören"], ["🧍", "body", "Körper"], ["🧍", "waist", "Taille"], ["🦰", "curl", "Locke"], ["🧔", "beard", "Bart"],
+    ["🤒", "fever", "Fieber"], ["🤕", "bruise", "Beule"], ["🩹", "plaster", "Pflaster"], ["😷", "cough", "Husten"], ["😁", "grin", "Grinsen"], ["😢", "tear", "Träne"]
   ]],
   ["nature", "🌳", [
     ["🌳", "tree", "Baum"], ["🌸", "flower", "Blume"], ["🏞️", "river", "Fluss"], ["⛰️", "mountain", "Berg"], ["🌲", "forest", "Wald"], ["🏞️", "lake", "See"],
@@ -54,21 +86,37 @@ const LOOPY_WORDS = [
     ["🍃", "leaf", "Blatt"], ["🌿", "grass", "Gras"], ["⛰️", "hill", "Hügel"], ["🏖️", "beach", "Strand"], ["🏝️", "island", "Insel"], ["⏳", "sand", "Sand"],
     ["⛈️", "storm", "Sturm"], ["🧊", "ice", "Eis"], ["🔥", "fire", "Feuer"], ["🌫️", "fog", "Nebel"], ["🌱", "root", "Wurzel"], ["🌰", "seed", "Samen"],
     ["🌊", "wave", "Welle"], ["🏜️", "desert", "Wüste"], ["🕳️", "cave", "Höhle"], ["🏞️", "valley", "Tal"], ["🌋", "volcano", "Vulkan"], ["🌈", "rainbow", "Regenbogen"],
-    ["🍂", "autumn", "Herbst"], ["🌷", "spring", "Frühling"], ["☀️", "summer", "Sommer"], ["⛄", "winter", "Winter"]
+    ["🍂", "autumn", "Herbst"], ["🌷", "spring", "Frühling"], ["☀️", "summer", "Sommer"], ["⛄", "winter", "Winter"], ["🌿", "herb", "Kraut"], ["🌱", "sprout", "Keim"],
+    ["🌾", "wheat", "Weizen"], ["🌼", "blossom", "Blüte"], ["🌷", "tulip", "Tulpe"], ["🌹", "rose", "Rose"], ["🌵", "cactus", "Kaktus"], ["🍁", "maple", "Ahorn"],
+    ["🌲", "pine", "Kiefer"], ["🌳", "oak", "Eiche"], ["🪵", "log", "Stamm"], ["🌴", "palm", "Palme"], ["🪨", "rock", "Fels"], ["⛰️", "peak", "Gipfel"],
+    ["🏞️", "meadow", "Wiese"], ["🌊", "ocean", "Ozean"], ["🏝️", "coast", "Küste"], ["🌋", "lava", "Lava"], ["🌌", "sky", "Himmel"], ["🌤️", "weather", "Wetter"],
+    ["❄️", "frost", "Frost"], ["💧", "drop", "Tropfen"], ["💦", "puddle", "Pfütze"], ["🌫️", "mist", "Dunst"], ["🌧️", "shower", "Schauer"], ["⛈️", "thunder", "Donner"],
+    ["⚡", "flash", "Blitz"], ["🌬️", "breeze", "Brise"], ["🍂", "leaves", "Laub"], ["🍃", "twig", "Zweig"], ["🌰", "acorn", "Eichel"], ["🪺", "nest", "Nest"],
+    ["🐚", "shell", "Muschel"], ["🪸", "coral", "Koralle"]
   ]],
   ["clothes", "👕", [
     ["👕", "shirt", "Hemd"], ["👗", "dress", "Kleid"], ["🎩", "hat", "Hut"], ["👟", "shoe", "Schuh"], ["🧦", "sock", "Socke"], ["🧥", "coat", "Mantel"],
     ["🧣", "scarf", "Schal"], ["🧤", "glove", "Handschuh"], ["👖", "belt", "Gürtel"], ["🥾", "boot", "Stiefel"], ["👚", "skirt", "Rock"], ["👖", "jeans", "Jeans"],
     ["🧢", "cap", "Mütze"], ["🧥", "jacket", "Jacke"], ["🔘", "button", "Knopf"], ["👜", "pocket", "Tasche"], ["🧶", "sweater", "Pullover"], ["👔", "tie", "Krawatte"],
     ["💍", "ring", "Ring"], ["⌚", "watch", "Armbanduhr"], ["👓", "glasses", "Brille"], ["👒", "bonnet", "Haube"], ["🩳", "shorts", "Shorts"], ["🩱", "swimsuit", "Badeanzug"],
-    ["👠", "heel", "Absatz"], ["🧵", "thread", "Faden"], ["🪡", "needle", "Nadel"], ["🎽", "vest", "Weste"], ["🥻", "silk", "Seide"], ["🧶", "wool", "Wolle"]
+    ["👠", "heel", "Absatz"], ["🧵", "thread", "Faden"], ["🪡", "needle", "Nadel"], ["🎽", "vest", "Weste"], ["🥻", "silk", "Seide"], ["🧶", "wool", "Wolle"],
+    ["👔", "collar", "Kragen"], ["👕", "sleeve", "Ärmel"], ["👖", "trousers", "Hose"], ["🧥", "hood", "Kapuze"], ["🎀", "bow", "Schleife"], ["🎒", "bag", "Beutel"],
+    ["🩴", "sandal", "Sandale"], ["👗", "gown", "Robe"], ["🩱", "bikini", "Bikini"], ["👟", "trainer", "Sneaker"], ["👞", "lace", "Senkel"], ["🪡", "sew", "nähen"],
+    ["🧶", "knit", "stricken"], ["🪢", "knot", "Knoten"], ["📿", "beads", "Perlen"], ["👑", "crown", "Krone"], ["🎽", "jersey", "Trikot"], ["🥋", "kimono", "Kimono"],
+    ["🧥", "fleece", "Fleece"], ["🧦", "stocking", "Strumpf"], ["👚", "blouse", "Bluse"], ["🏷️", "label", "Etikett"], ["😴", "pyjamas", "Pyjama"], ["🥼", "apron", "Schürze"],
+    ["🧥", "parka", "Parka"], ["🧳", "suitcase", "Koffer"], ["🧣", "shawl", "Tuch"], ["👔", "suit", "Anzug"], ["🧥", "cloak", "Umhang"], ["👑", "tiara", "Diadem"]
   ]],
   ["colours", "🎨", [
     ["🔴", "red", "rot"], ["🔵", "blue", "blau"], ["🟢", "green", "grün"], ["🟡", "yellow", "gelb"], ["⚫", "black", "schwarz"], ["⚪", "white", "weiß"],
     ["🩷", "pink", "rosa"], ["🟤", "brown", "braun"], ["🩶", "grey", "grau"], ["🟠", "orange", "orange"], ["🟣", "purple", "lila"], ["🥇", "gold", "gold"],
     ["🥈", "silver", "silber"], ["🌑", "dark", "dunkel"], ["🌕", "light", "hell"], ["🌈", "bright", "bunt"], ["🩵", "pale", "blass"], ["🖤", "shade", "Schatten"],
     ["🖍️", "crayon", "Wachsmaler"], ["🎨", "colour", "Farbe"], ["🌈", "rainbow", "Regenbogen"], ["🟩", "lime", "limette"], ["🟦", "navy", "marine"], ["🟧", "amber", "bernstein"],
-    ["🌸", "rose", "rosé"], ["🍑", "peach", "pfirsich"], ["🫒", "olive", "oliv"], ["🧡", "warm", "warm"], ["💙", "cold", "kalt"], ["🤍", "clean", "sauber"]
+    ["🌸", "rose", "rosé"], ["🍑", "peach", "pfirsich"], ["🫒", "olive", "oliv"], ["🧡", "warm", "warm"], ["💙", "cold", "kalt"], ["🤍", "clean", "sauber"],
+    ["🟣", "violet", "violett"], ["🤎", "beige", "beige"], ["🍷", "wine", "weinrot"], ["🌿", "mint", "mintgrün"], ["🌲", "emerald", "smaragd"], ["🔵", "indigo", "indigo"],
+    ["🟠", "copper", "kupfer"], ["🟤", "bronze", "bronze"], ["⚪", "cream", "creme"], ["🩷", "magenta", "magenta"], ["🍅", "crimson", "purpur"], ["🟩", "jade", "jade"],
+    ["🎨", "tone", "Ton"], ["🎨", "tint", "Tönung"], ["🖌️", "stripe", "Streifen"], ["🔲", "spot", "Punkt"], ["⬛", "shiny", "glänzend"], ["✨", "glitter", "Glitzer"],
+    ["🌑", "dull", "matt"], ["💎", "clear", "klar"], ["🌞", "sunny", "sonnig"], ["🖍️", "marker", "Marker"], ["🎨", "palette", "Palette"], ["🧡", "apricot", "aprikose"],
+    ["💜", "lilac", "flieder"], ["🥇", "golden", "golden"], ["🌊", "aqua", "aqua"], ["🪻", "mauve", "malve"], ["🧊", "icy", "eisig"], ["🔥", "fiery", "feurig"]
   ]],
   ["sport", "🏀", [
     ["⚽", "ball", "Ball"], ["🥅", "goal", "Tor"], ["🏃", "run", "Lauf"], ["🤸", "jump", "Sprung"], ["👥", "team", "Team"], ["🚲", "bike", "Rad"],
@@ -76,7 +124,12 @@ const LOOPY_WORDS = [
     ["🎿", "ski", "Ski"], ["🧗", "climb", "klettern"], ["💃", "dance", "Tanz"], ["🥋", "judo", "Judo"], ["⛳", "golf", "Golf"], ["🥊", "boxing", "Boxen"],
     ["🏒", "hockey", "Hockey"], ["🏄", "surf", "surfen"], ["🪢", "rope", "Seil"], ["🏆", "trophy", "Pokal"], ["⏱️", "sprint", "Sprint"], ["⛑️", "helmet", "Helm"],
     ["🏟️", "field", "Feld"], ["🔢", "points", "Punkte"], ["🚦", "start", "Start"], ["🏁", "finish", "Ziel"], ["🏊", "swim", "Schwimmen"], ["🏀", "basket", "Korb"],
-    ["🛹", "skate", "Skaten"], ["🧘", "yoga", "Yoga"]
+    ["🛹", "skate", "Skaten"], ["🧘", "yoga", "Yoga"], ["🏈", "rugby", "Rugby"], ["⚾", "baseball", "Baseball"], ["🏏", "cricket", "Cricket"], ["🏸", "racket", "Schläger"],
+    ["🥊", "punch", "Schlag"], ["🤼", "wrestle", "ringen"], ["🤸", "flip", "Salto"], ["🧗", "grip", "Griff"], ["🏇", "riding", "Reiten"], ["🚣", "rowing", "Rudern"],
+    ["🛶", "canoe", "Kanu"], ["🚴", "cycling", "Radeln"], ["🛹", "board", "Brett"], ["🛷", "sledge", "Rodel"], ["⛷️", "slope", "Piste"], ["🏹", "archery", "Bogen"],
+    ["🎯", "dart", "Pfeil"], ["🎳", "bowling", "Kegeln"], ["🥏", "frisbee", "Frisbee"], ["🪁", "kite", "Drachen"], ["🤿", "dive", "Tauchen"], ["🏋️", "weights", "Gewichte"],
+    ["🤾", "handball", "Handball"], ["🥇", "first", "Erster"], ["🥉", "third", "Dritter"], ["🎽", "runner", "Läufer"], ["🏃", "marathon", "Marathon"], ["⏱️", "timer", "Stoppuhr"],
+    ["📣", "whistle", "Pfeife"], ["🚩", "flag", "Fahne"], ["🏟️", "stadium", "Stadion"], ["🤺", "fencing", "Fechten"]
   ]],
   ["space", "🚀", [
     ["☀️", "sun", "Sonne"], ["🌙", "moon", "Mond"], ["⭐", "star", "Stern"], ["🪐", "planet", "Planet"], ["🚀", "rocket", "Rakete"], ["☄️", "comet", "Komet"],
@@ -84,7 +137,12 @@ const LOOPY_WORDS = [
     ["🟠", "venus", "Venus"], ["🟤", "jupiter", "Jupiter"], ["🕳️", "crater", "Krater"], ["💡", "light", "Licht"], ["🌌", "space", "Weltall"], ["☄️", "meteor", "Meteor"],
     ["🌫️", "dust", "Staub"], ["💍", "ring", "Ring"], ["🛰️", "probe", "Sonde"], ["🧑‍🚀", "crew", "Crew"], ["🌑", "shadow", "Schatten"], ["🔭", "lens", "Linse"],
     ["🌠", "shooting", "Sternschnuppe"], ["🌞", "solar", "solar"], ["🌗", "phase", "Phase"], ["🛸", "ufo", "Ufo"], ["🌍", "globe", "Kugel"], ["🧭", "north", "Norden"],
-    ["🌡️", "heat", "Hitze"], ["🧊", "cold", "Kälte"]
+    ["🌡️", "heat", "Hitze"], ["🧊", "cold", "Kälte"], ["☄️", "asteroid", "Asteroid"], ["🪐", "neptune", "Neptun"], ["🪐", "uranus", "Uranus"], ["🪐", "pluto", "Pluto"],
+    ["🔴", "mercury", "Merkur"], ["🌌", "cosmos", "Kosmos"], ["🌠", "nebula", "Nebel"], ["🔭", "scope", "Fernrohr"], ["🛰️", "signal", "Signal"], ["🌍", "world", "Welt"],
+    ["🧭", "compass", "Kompass"], ["🌟", "sparkle", "Funkeln"], ["✨", "twinkle", "Glitzern"], ["🌙", "crescent", "Sichel"], ["🚀", "launch", "Start"], ["🚀", "thrust", "Schub"],
+    ["🚀", "engine", "Motor"], ["💫", "spin", "Drehung"], ["🌀", "vortex", "Wirbel"], ["💥", "bang", "Knall"], ["🔆", "shine", "Schein"], ["❄️", "frozen", "gefroren"],
+    ["🌈", "spectrum", "Spektrum"], ["📡", "antenna", "Antenne"], ["🎛️", "panel", "Konsole"], ["🌃", "night", "Nacht"], ["🌄", "horizon", "Horizont"], ["🌓", "quarter", "Viertel"],
+    ["🌍", "distance", "Distanz"], ["⏳", "time", "Zeit"], ["📏", "mile", "Meile"], ["🔋", "power", "Energie"]
   ]],
   ["jobs", "👩‍🚒", [
     ["🧑‍⚕️", "doctor", "Arzt"], ["🧑‍🍳", "baker", "Bäcker"], ["🧑‍✈️", "pilot", "Pilot"], ["🧑‍🌾", "farmer", "Bauer"], ["🧑‍🏫", "teacher", "Lehrer"], ["🧑‍⚕️", "nurse", "Pfleger"],
@@ -92,7 +150,13 @@ const LOOPY_WORDS = [
     ["🚗", "driver", "Fahrer"], ["🎤", "singer", "Sänger"], ["✍️", "writer", "Autor"], ["🤡", "clown", "Clown"], ["👑", "king", "König"], ["👸", "queen", "Königin"],
     ["🛡️", "knight", "Ritter"], ["⚓", "captain", "Kapitän"], ["🧱", "builder", "Maurer"], ["⛏️", "miner", "Bergmann"], ["⛵", "sailor", "Matrose"], ["💂", "guard", "Wächter"],
     ["🧑‍🚒", "fireman", "Feuerwehr"], ["💇", "barber", "Friseur"], ["🧑‍🔬", "chemist", "Chemiker"], ["🧑‍💻", "coder", "Coder"], ["🧑‍🔧", "mechanic", "Mechaniker"], ["📸", "photo", "Fotograf"],
-    ["🧑‍🎤", "dancer", "Tänzer"], ["🧑‍🚀", "pilot", "Astronaut"], ["🧑‍🌾", "gardener", "Gärtner"], ["🏪", "seller", "Verkäufer"]
+    ["🧑‍🎤", "dancer", "Tänzer"], ["🧑‍🚀", "pilot", "Astronaut"], ["🧑‍🌾", "gardener", "Gärtner"], ["🏪", "seller", "Verkäufer"], ["🕵️", "spy", "Spion"], ["🎨", "designer", "Designer"],
+    ["🎤", "rapper", "Rapper"], ["🎹", "pianist", "Pianist"], ["🎺", "musician", "Musiker"], ["📰", "reporter", "Reporter"], ["🍕", "waiter", "Kellner"], ["📦", "courier", "Bote"],
+    ["📮", "postman", "Postbote"], ["🤿", "diver", "Taucher"], ["🎣", "fisher", "Fischer"], ["🐄", "herder", "Hirte"], ["🐑", "shepherd", "Schäfer"], ["🌾", "miller", "Müller"],
+    ["🪚", "joiner", "Tischler"], ["🔧", "plumber", "Klempner"], ["🔨", "smith", "Schmied"], ["🪡", "tailor", "Näherin"], ["👷", "worker", "Arbeiter"], ["⚖️", "lawyer", "Anwalt"],
+    ["🤴", "prince", "Prinz"], ["🧙", "wizard", "Zauberer"], ["🧚", "fairy", "Fee"], ["🧜", "mermaid", "Nixe"], ["🧛", "vampire", "Vampir"], ["☠️", "pirate", "Pirat"],
+    ["🥷", "ninja", "Ninja"], ["🦸", "hero", "Held"], ["🎪", "acrobat", "Akrobat"], ["🤹", "juggler", "Jongleur"], ["🎓", "student", "Student"], ["🏫", "pupil", "Schüler"],
+    ["💼", "boss", "Chef"], ["💼", "manager", "Manager"], ["🌳", "forester", "Förster"]
   ]],
   ["town", "🏙️", [
     ["🛣️", "street", "Straße"], ["🏪", "shop", "Laden"], ["🌳", "park", "Park"], ["🌉", "bridge", "Brücke"], ["🚉", "station", "Bahnhof"], ["🧺", "market", "Markt"],
@@ -100,14 +164,25 @@ const LOOPY_WORDS = [
     ["🎬", "cinema", "Kino"], ["📚", "library", "Bücherei"], ["⚓", "harbour", "Hafen"], ["🏰", "castle", "Burg"], ["🦁", "zoo", "Zoo"], ["🏥", "hospital", "Klinik"],
     ["🚦", "traffic", "Verkehr"], ["🚋", "tram", "Tram"], ["🚕", "taxi", "Taxi"], ["🏙️", "square", "Platz"], ["⛲", "fountain", "Brunnen"], ["↪️", "corner", "Ecke"],
     ["🪧", "sign", "Schild"], ["🚗", "garage", "Garage"], ["🚇", "tunnel", "Tunnel"], ["🏙️", "city", "Stadt"], ["🏘️", "village", "Dorf"], ["🛤️", "road", "Weg"],
-    ["📮", "mail", "Post"], ["🏊", "pool", "Freibad"], ["🚏", "stop", "Halt"], ["🛒", "cart", "Wagen"]
+    ["📮", "mail", "Post"], ["🏊", "pool", "Freibad"], ["🚏", "stop", "Halt"], ["🛒", "cart", "Wagen"], ["🏢", "office", "Büro"], ["🏬", "mall", "Kaufhaus"],
+    ["🏭", "factory", "Fabrik"], ["🏛️", "hall", "Halle"], ["🕌", "mosque", "Moschee"], ["🎡", "fair", "Kirmes"], ["🎢", "ride", "Fahrt"], ["🛝", "slide", "Rutsche"],
+    ["🎭", "theatre", "Theater"], ["🏪", "kiosk", "Kiosk"], ["⛽", "petrol", "Benzin"], ["🚦", "lights", "Ampel"], ["🚇", "subway", "Metro"], ["🚶", "pavement", "Gehweg"],
+    ["🛣️", "highway", "Autobahn"], ["🛤️", "rails", "Gleise"], ["🏞️", "lawn", "Rasen"], ["🌳", "avenue", "Allee"], ["🗑️", "litter", "Müll"], ["🚧", "barrier", "Schranke"],
+    ["🏗️", "crane", "Kran"], ["🛵", "scooter", "Roller"], ["🚗", "car", "Auto"], ["🚚", "lorry", "Laster"], ["🚢", "ship", "Schiff"], ["⛴️", "ferry", "Fähre"],
+    ["✈️", "plane", "Flugzeug"], ["🛩️", "jet", "Jet"], ["🎪", "circus", "Zirkus"], ["🖼️", "gallery", "Galerie"], ["🏪", "store", "Geschäft"], ["🌆", "centre", "Zentrum"],
+    ["🪧", "poster", "Plakat"], ["📍", "place", "Ort"]
   ]],
   ["feelings", "😀", [
     ["😀", "happy", "froh"], ["😢", "sad", "traurig"], ["😠", "angry", "wütend"], ["😌", "proud", "stolz"], ["🦁", "brave", "mutig"], ["😳", "shy", "scheu"],
     ["😇", "calm", "ruhig"], ["🥱", "tired", "müde"], ["😱", "scared", "bang"], ["🤪", "silly", "albern"], ["🤗", "kind", "nett"], ["😂", "funny", "lustig"],
     ["😔", "lonely", "einsam"], ["😊", "glad", "heiter"], ["😤", "grumpy", "mürrisch"], ["😬", "nervous", "nervös"], ["😁", "cheerful", "fröhlich"], ["🤤", "hungry", "hungrig"],
     ["🥤", "thirsty", "durstig"], ["🥰", "nice", "lieb"], ["😎", "cool", "cool"], ["😮", "amazed", "staunend"], ["🤒", "sick", "krank"], ["😴", "sleepy", "dösig"],
-    ["🤩", "wow", "toll"], ["🙃", "upset", "sauer"], ["💪", "strong", "stark"], ["🥺", "sorry", "leid"], ["😌", "relaxed", "entspannt"], ["🥳", "merry", "munter"]
+    ["🤩", "wow", "toll"], ["🙃", "upset", "sauer"], ["💪", "strong", "stark"], ["🥺", "sorry", "leid"], ["😌", "relaxed", "entspannt"], ["🥳", "merry", "munter"],
+    ["😄", "joyful", "freudig"], ["🥰", "loved", "geliebt"], ["🤩", "excited", "gespannt"], ["🤗", "grateful", "dankbar"], ["😊", "gentle", "sanft"], ["😕", "confused", "verwirrt"],
+    ["😟", "worried", "besorgt"], ["😢", "crying", "weinend"], ["😭", "hurt", "verletzt"], ["😞", "gloomy", "düster"], ["😤", "cross", "böse"], ["😡", "mad", "zornig"],
+    ["😠", "annoyed", "genervt"], ["🙄", "moody", "launisch"], ["😏", "sly", "listig"], ["😜", "cheeky", "frech"], ["🤪", "crazy", "verrückt"], ["😇", "good", "brav"],
+    ["🤫", "quiet", "still"], ["🤐", "secret", "geheim"], ["😅", "relieved", "befreit"], ["🤭", "giggly", "kichernd"], ["😬", "awkward", "peinlich"], ["😋", "yummy", "lecker"],
+    ["🤤", "greedy", "gierig"], ["😵", "dizzy", "benommen"], ["🥶", "freezing", "eiskalt"], ["😷", "unwell", "unwohl"], ["🤓", "clever", "klug"], ["😈", "wicked", "gemein"]
   ]],
   ["science", "🔬", [
     ["⚡", "energy", "Energie"], ["🧲", "magnet", "Magnet"], ["⚛️", "atom", "Atom"], ["🦠", "cell", "Zelle"], ["🌡️", "climate", "Klima"], ["🦴", "fossil", "Fossil"],
@@ -115,7 +190,13 @@ const LOOPY_WORDS = [
     ["💪", "force", "Kraft"], ["⚙️", "motor", "Motor"], ["🧪", "molecule", "Molekül"], ["🧪", "acid", "Säure"], ["🌱", "plant", "Pflanze"], ["🐞", "insect", "Insekt"],
     ["💎", "mineral", "Mineral"], ["💎", "crystal", "Kristall"], ["⚫", "carbon", "Kohle"], ["🔦", "laser", "Laser"], ["🤖", "robot", "Roboter"], ["🦠", "microbe", "Keim"],
     ["🦠", "virus", "Virus"], ["💨", "gas", "Gas"], ["🧊", "solid", "fest"], ["💧", "liquid", "Wasser"], ["🧠", "nerve", "Nerv"], ["🔬", "lens", "Linse"],
-    ["🌍", "gravity", "Schwerkraft"], ["🧬", "gene", "Gen"], ["🪨", "rock", "Gestein"], ["🧫", "sample", "Probe"]
+    ["🌍", "gravity", "Schwerkraft"], ["🧬", "gene", "Gen"], ["🪨", "rock", "Gestein"], ["🧫", "sample", "Probe"], ["🧪", "tube", "Röhrchen"], ["🧫", "dish", "Schale"],
+    ["🔬", "lab", "Labor"], ["⚗️", "flask", "Kolben"], ["🌡️", "degree", "Grad"], ["⚖️", "scale", "Waage"], ["📏", "metre", "Meter"], ["⏱️", "second", "Sekunde"],
+    ["💡", "bulb", "Birne"], ["🔌", "wire", "Draht"], ["⚡", "spark", "Funke"], ["⚡", "volt", "Volt"], ["🧲", "pole", "Pol"], ["🔊", "echo", "Echo"],
+    ["💨", "air", "Luft"], ["🧊", "freeze", "frieren"], ["🔥", "melt", "tauen"], ["♨️", "boil", "kochen"], ["🫧", "bubble", "Blase"], ["🧼", "foam", "Schaum"],
+    ["💎", "diamond", "Diamant"], ["🌋", "magma", "Magma"], ["🪐", "mass", "Masse"], ["⚖️", "weight", "Gewicht"], ["📐", "angle", "Winkel"], ["🌈", "prism", "Prisma"],
+    ["🔦", "beam", "Strahl"], ["⚛️", "proton", "Proton"], ["⚛️", "neutron", "Neutron"], ["🔩", "screw", "Schraube"], ["⚙️", "gear", "Zahnrad"], ["🔧", "tool", "Werkzeug"],
+    ["🪝", "hook", "Haken"], ["🔗", "chain", "Kette"]
   ]],
   ["verbs", "🏃", [
     ["🏃", "run", "laufen"], ["🤸", "jump", "springen"], ["🏊", "swim", "schwimmen"], ["🎤", "sing", "singen"], ["📖", "read", "lesen"], ["✍️", "write", "schreiben"],
@@ -123,6 +204,12 @@ const LOOPY_WORDS = [
     ["🎨", "paint", "malen"], ["🍳", "cook", "kochen"], ["😂", "laugh", "lachen"], ["😢", "cry", "weinen"], ["🪁", "fly", "fliegen"], ["🪑", "sit", "sitzen"],
     ["🎁", "give", "geben"], ["🤔", "think", "denken"], ["👂", "hear", "hören"], ["👀", "see", "sehen"], ["🚪", "open", "öffnen"], ["🏗️", "build", "bauen"],
     ["🎓", "learn", "lernen"], ["🤝", "help", "helfen"], ["🚶", "walk", "gehen"], ["🥎", "throw", "werfen"], ["🧤", "catch", "fangen"], ["👉", "push", "drücken"],
-    ["👈", "pull", "ziehen"], ["🧹", "clean", "putzen"], ["🛒", "buy", "kaufen"], ["🔍", "find", "finden"]
+    ["👈", "pull", "ziehen"], ["🧹", "clean", "putzen"], ["🛒", "buy", "kaufen"], ["🔍", "find", "finden"], ["🧍", "stand", "stehen"], ["🚪", "shut", "zumachen"],
+    ["🏃", "hurry", "eilen"], ["🛑", "stop", "stoppen"], ["⏳", "wait", "warten"], ["🔍", "look", "schauen"], ["👂", "listen", "zuhören"], ["🗣️", "speak", "sprechen"],
+    ["💬", "talk", "reden"], ["🤫", "whisper", "flüstern"], ["📢", "shout", "rufen"], ["❓", "ask", "fragen"], ["💡", "know", "wissen"], ["🧠", "remember", "erinnern"],
+    ["✍️", "draw", "zeichnen"], ["🔢", "count", "zählen"], ["📏", "measure", "messen"], ["🎒", "carry", "tragen"], ["🤲", "hold", "halten"], ["👐", "show", "zeigen"],
+    ["🤝", "share", "teilen"], ["💝", "love", "lieben"], ["🤗", "hug", "umarmen"], ["🚿", "wash", "waschen"], ["🧺", "fold", "falten"], ["🧹", "sweep", "fegen"],
+    ["🪣", "fill", "füllen"], ["🥄", "stir", "rühren"], ["🍰", "bake", "backen"], ["🥣", "mix", "mischen"], ["😋", "taste", "kosten"], ["👃", "smell", "riechen"],
+    ["😴", "dream", "träumen"], ["🌱", "grow", "wachsen"]
   ]]
 ];
