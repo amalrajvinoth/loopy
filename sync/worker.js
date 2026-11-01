@@ -12,8 +12,11 @@
 //   GET  /stats             the last 90 nightly rows of counts (families, active in 7 and 30 days, size).
 //                           Counts only: no ids, no names, no emails
 //   POST /g                 body { m: email, l: language, k: remove key }: "Stay in touch", a grown-up's
-//                           email, kept in the GROWNUPS database (EU). 200 {}, 400 not an email, 429 too soon
-//   POST /g?del=1           body { m: email, k: remove key }: delete it. 200, 404 unknown, 403 wrong key
+//                           email, kept in the GROWNUPS database (EU). 200 {}, 400 not an email, 429 too soon.
+//                           An email already saved keeps its first remove key: a later save with another
+//                           key changes nothing (and still answers 200, so nobody can tell who is on the list)
+//   POST /g?del=1           body { m: email, k: remove key }: delete it. 200 deleted, 404 when there is no
+//                           row with this email and this key (unknown, or saved first from another device)
 //
 // All are "simple" requests (GET, or POST with text/plain), so browsers send no extra preflight request.
 // Once a day the scheduled job (wrangler.toml) deletes old copies (not written for 400 days) and old
@@ -131,7 +134,9 @@ export default {
 
 // "Stay in touch": a grown-up's email, saved from ⚙ Settings on the home page. One row per email, in its own
 // database (GROWNUPS, in the EU). The device keeps a random remove key; the server keeps only its hash, so
-// only that device (or the owner) can delete the row. Nothing else is stored: no family id, no IP, no name.
+// only that device (or the owner) can delete the row. The key never changes once saved, so nobody can take
+// a row over by posting the same email, and the answers are the same whether an email is on the list or
+// not. Nothing else is stored: no family id, no IP, no name.
 async function grownup(req, url, env, send) {
   if (req.method !== "POST") return send(405);
   const db = env.GROWNUPS;
@@ -149,8 +154,7 @@ async function grownup(req, url, env, send) {
   const row = await db.prepare("SELECT k, t FROM grownups WHERE m = ?").bind(m).first();
 
   if (url.searchParams.get("del") === "1") {
-    if (!row) return send(404);
-    if (row.k !== k) return send(403);
+    if (!row || row.k !== k) return send(404);
     await db.prepare("DELETE FROM grownups WHERE m = ? AND k = ?").bind(m, k).run();
     return send(200, {});
   }
@@ -158,8 +162,9 @@ async function grownup(req, url, env, send) {
   const l = body.l === "de" ? "de" : "en";
   const now = Date.now();
   if (row) {
+    if (row.k !== k) return send(200, {});
     if (now - row.t < MIN_GAP) return send(429);
-    await db.prepare("UPDATE grownups SET k = ?, l = ?, t = ? WHERE m = ?").bind(k, l, now, m).run();
+    await db.prepare("UPDATE grownups SET l = ?, t = ? WHERE m = ? AND k = ?").bind(l, now, m, k).run();
     return send(200, {});
   }
   const n = await db.prepare("SELECT COUNT(*) AS n FROM grownups").first();

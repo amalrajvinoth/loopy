@@ -370,12 +370,12 @@
       stText: "Leave your email if you would like to hear about new games, a few times a year. Only grown-ups, please. It is never shown to your child and never shared. It is kept on loopy's own server in the EU. You can remove it here at any time.",
       stLabel: "Your email", stAgree: "I am a grown-up and I agree to the ", stNote: "privacy note", stSave: "Save", stRemove: "Remove",
       stSaved: "Saved: {mail}. Thank you!", stDone: "Saved. Thank you!", stGone: "Removed.", stBad: "That does not look like an email.",
-      stTick: "Please tick the box first.", stWait: "Please wait a moment, then try again.", stElse: "This email was saved again from another device. Remove it there." },
+      stTick: "Please tick the box first.", stWait: "Please wait a moment, then try again.", stElse: "Removed from this device. If you saved it on another device too, remove it there as well." },
     de: { stHead: "Für Erwachsene: in Kontakt bleiben",
       stText: "Hinterlasse deine E-Mail, wenn du von neuen Spielen hören möchtest, ein paar Mal im Jahr. Nur für Erwachsene. Sie wird deinem Kind nie gezeigt und nie weitergegeben. Sie liegt auf loopys eigenem Server in der EU. Du kannst sie hier jederzeit löschen.",
       stLabel: "Deine E-Mail", stAgree: "Ich bin erwachsen und stimme dem ", stNote: "Datenschutzhinweis", stSave: "Speichern", stRemove: "Löschen",
       stSaved: "Gespeichert: {mail}. Danke!", stDone: "Gespeichert. Danke!", stGone: "Gelöscht.", stBad: "Das sieht nicht wie eine E-Mail aus.",
-      stTick: "Bitte zuerst das Kästchen ankreuzen.", stWait: "Bitte warte kurz und versuche es noch einmal.", stElse: "Diese E-Mail wurde von einem anderen Gerät neu gespeichert. Lösche sie dort." }
+      stTick: "Bitte zuerst das Kästchen ankreuzen.", stWait: "Bitte warte kurz und versuche es noch einmal.", stElse: "Auf diesem Gerät gelöscht. Hast du sie auch auf einem anderen Gerät gespeichert, lösche sie dort ebenfalls." }
   });
   function readTouch() {
     var s;
@@ -405,9 +405,11 @@
           send("/g?del=1", { m: saved.m, k: saved.k }).then(function (r) {
             remove.disabled = false;
             if (r.n === 0) { msg.textContent = t("syNoNet"); return; }
-            var was403 = r.n === 403;
+            // 404: no row with this email and this device's key. Either it is gone already, or the same
+            // email was saved first on another device, which is the one that can delete it.
+            var elsewhere = r.n !== 200;
             saved = null; writeTouch(null); draw();
-            msg.textContent = was403 ? t("stElse") : t("stGone");
+            msg.textContent = elsewhere ? t("stElse") : t("stGone");
           });
         });
         row.appendChild(remove);

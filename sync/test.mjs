@@ -85,10 +85,14 @@ ok(db.grownups.get("parent@example.com").k !== RK && !JSON.stringify([...db.grow
 ok(Object.keys(db.grownups.get("parent@example.com")).join() === "k,l,t", "a row holds only the key hash, language and time");
 ok((await call("POST", "/g", { m: MAIL, l: "en", k: RK })).n === 429, "saving the same email again within 10 seconds: 429");
 db.grownups.get("parent@example.com").t -= 11000;
-ok((await call("POST", "/g", { m: MAIL, l: "en", k: RK2 })).n === 200 && db.grownups.get("parent@example.com").l === "en", "saving again later from another device: 200, the new device's key and language");
-ok((await call("POST", "/g?del=1", { m: MAIL, k: RK })).n === 403, "remove with the old device's key: 403");
-ok((await call("POST", "/g?del=1", { m: MAIL, k: RK2 })).n === 200 && !db.grownups.has("parent@example.com"), "remove with the right key: 200, gone");
-ok((await call("POST", "/g?del=1", { m: MAIL, k: RK2 })).n === 404, "remove an unknown email: 404");
+const firstKey = db.grownups.get("parent@example.com").k, firstTime = db.grownups.get("parent@example.com").t;
+r = await call("POST", "/g", { m: MAIL, l: "en", k: RK2 });
+ok(r.n === 200 && db.grownups.get("parent@example.com").k === firstKey && db.grownups.get("parent@example.com").l === "de" && db.grownups.get("parent@example.com").t === firstTime,
+  "posting a saved email with another key answers 200 like a new one, but changes nothing: no takeover, nothing to tell");
+ok((await call("POST", "/g", { m: MAIL, l: "en", k: RK })).n === 200 && db.grownups.get("parent@example.com").l === "en", "saving again later with the same key: 200, the language is updated");
+ok((await call("POST", "/g?del=1", { m: MAIL, k: RK2 })).n === 404 && db.grownups.has("parent@example.com"), "remove with another device's key: 404, the row stays");
+ok((await call("POST", "/g?del=1", { m: "nobody@example.com", k: RK2 })).n === 404, "remove an unknown email: the same 404, so the list can't be read out");
+ok((await call("POST", "/g?del=1", { m: MAIL, k: RK })).n === 200 && !db.grownups.has("parent@example.com"), "remove with the right key: 200, gone");
 await call("POST", "/g", { m: "old@example.com", l: "en", k: RK });
 db.grownups.get("old@example.com").t = Date.now() - 731 * 86400000;
 await worker.scheduled({}, env);

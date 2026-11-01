@@ -28,7 +28,7 @@ export function fakeD1() {
     }
     if (/^SELECT k, t FROM grownups WHERE m = \?$/.test(sql)) { const r = grownups.get(a[0]); return { first: r ? { k: r.k, t: r.t } : null }; }
     if (/^DELETE FROM grownups WHERE m = \? AND k = \?$/.test(sql)) { const r = grownups.get(a[0]); const hit = r && r.k === a[1]; if (hit) grownups.delete(a[0]); return { changes: hit ? 1 : 0 }; }
-    if (/^UPDATE grownups SET k = \?, l = \?, t = \? WHERE m = \?$/.test(sql)) { const r = grownups.get(a[3]); if (!r) return { changes: 0 }; Object.assign(r, { k: a[0], l: a[1], t: a[2] }); return { changes: 1 }; }
+    if (/^UPDATE grownups SET l = \?, t = \? WHERE m = \? AND k = \?$/.test(sql)) { const r = grownups.get(a[2]); if (!r || r.k !== a[3]) return { changes: 0 }; Object.assign(r, { l: a[0], t: a[1] }); return { changes: 1 }; }
     if (/^SELECT COUNT\(\*\) AS n FROM grownups$/.test(sql)) return { first: { n: grownups.size } };
     if (/^INSERT INTO grownups \(m, k, l, t\) VALUES \(\?, \?, \?, \?\) ON CONFLICT\(m\) DO NOTHING$/.test(sql)) {
       if (grownups.has(a[0])) return { changes: 0 };

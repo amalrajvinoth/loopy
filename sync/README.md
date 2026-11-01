@@ -16,7 +16,7 @@ The plan and the options it was picked from: [docs/plans/remote-sync/](../docs/p
 
 ## Stay in touch
 
-A grown-up can leave their email in ⚙ Settings on the home page (above Family sync), to hear about new games. Nothing is sent until they tap **Save**. The email, the language (`en` or `de`) and the time go to this same Worker (`POST /g`) and into a **second database**, `loopy-grownups`, made in the EU (`--location weur`), apart from the family copies. The device makes a random remove key and keeps it in the browser (`loopy.touch`); the server keeps only a hash of it, so only that device can delete the row (**Remove**, `POST /g?del=1`). The owner can delete rows by hand in the D1 Console. An email is deleted 2 years after it was saved. The site's privacy note (`privacy/`) says all this to parents.
+A grown-up can leave their email in ⚙ Settings on the home page (above Family sync), to hear about new games. Nothing is sent until they tap **Save**. The email, the language (`en` or `de`) and the time go to this same Worker (`POST /g`) and into a **second database**, `loopy-grownups`, made in the EU (`--location weur`), apart from the family copies. The device makes a random remove key and keeps it in the browser (`loopy.touch`); the server keeps only a hash of it, so only that device can delete the row (**Remove**, `POST /g?del=1`). The key never changes once an email is saved, so posting someone else's email cannot take their row over, and the server answers the same whether an email is on the list or not. The owner can delete rows by hand in the D1 Console. An email is deleted 2 years after it was saved. The site's privacy note (`privacy/`) says all this to parents.
 
 To read the list: Cloudflare dashboard, **Storage & Databases**, **D1**, **loopy-grownups**, **Console**:
 
@@ -39,8 +39,8 @@ SELECT * FROM stats ORDER BY day DESC;
 | `POST /f/<id>?e=<hash>` with `{k, b}` | `200 {e}` saved. `412 {e}` another device saved first: read again, merge, try again. `403` wrong write key. `429` less than 10 seconds since the last save. `413` too big. `400` not a locked copy |
 | `POST /f/<id>?del=1` with `{k}` | Deletes the family copy |
 | `GET /stats` | The last 90 nightly rows of counts: `[{day, families, active7, active30, bytes}]` |
-| `POST /g` with `{m, l, k}` | Saves a grown-up's email `m` with language `l` and remove key `k`. `200 {}`. `400` not an email. `429` the same email was saved less than 10 seconds ago. `503` no emails database |
-| `POST /g?del=1` with `{m, k}` | Deletes that email. `200`, `404` unknown, `403` wrong remove key (it was saved again from another device) |
+| `POST /g` with `{m, l, k}` | Saves a grown-up's email `m` with language `l` and remove key `k`. `200 {}`. `400` not an email. `429` the same device saved it less than 10 seconds ago. `503` no emails database. An email already on the list keeps its first key: a save with another key changes nothing and still answers `200`, so nobody can take a row over or find out who is on the list |
+| `POST /g?del=1` with `{m, k}` | Deletes that email. `200` deleted. `404` no row with this email and this key: unknown, or saved first from another device (the same answer for both, on purpose) |
 
 Requests are plain `GET` and `POST` with `text/plain`, so the browser sends them without an extra check first (no CORS preflight). Only the pages in `ORIGINS` (`wrangler.toml`) may read the answers. A copy is at most 70 KB. The server keeps a hash of the write key, never the key.
 
