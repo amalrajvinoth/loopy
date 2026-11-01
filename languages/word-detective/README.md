@@ -28,7 +28,7 @@ The level shows next to the score, like "Level 2 of 5". After 10 right in a row,
 
 ## Words
 
-120 English and 120 German words, 24 at each level. Each word has a picture, a short meaning and a silly sentence. The German list is its own list with its own jokes, not a translation.
+240 English and 240 German words, 48 at each level. Each word has a picture, a short meaning and a silly sentence. The German list is its own list with its own jokes, not a translation.
 
 German words keep their capital letter in the clues and on the result card. In the grid all letters are capitals, so the child does not need to think about it. The German keyboard has ä, ö and ü.
 

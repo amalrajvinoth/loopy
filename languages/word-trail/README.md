@@ -29,7 +29,7 @@ Each word found is one right answer. A wrong trail of 3 or more letters is one w
 
 ## Words
 
-About 480 words in 15 topics. The topics are animals, food, at home, at school, body, nature, clothes and colours. Then sport, space, jobs, in town, feelings, science and doing words. Each word has a picture. The German words are their own list, not a translation of the English one, so "Igel" sits where "hedgehog" sits.
+About 1,000 words in 15 topics. The topics are animals, food, at home, at school, body, nature, clothes and colours. Then sport, space, jobs, in town, feelings, science and doing words. Each word has a picture. The German words are their own list, not a translation of the English one, so "Igel" sits where "hedgehog" sits.
 
 A word goes into a grid when it is 3 to 8 plain letters. In German, ä, ö and ü keep their own box. Words with ß, a space or a hyphen stay out of the grid. The empty boxes get letters that are common in that language, so German grids look German.
 

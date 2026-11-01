@@ -35,7 +35,7 @@ It works on phones, tablets and computers. There is no sign-up and no ads.
 | [Step by Step](math/step-by-step/) | Adding and taking away in steps, the way it is taught in school: 47 + 20 = 67, then 67 + 5 = 72, with a number line | [README](math/step-by-step/README.md) |
 | [Shapes and Angles](math/shapes-angles/) | Name shapes and count corners, spot right angles and lines of symmetry, work out perimeter and area on a grid, judge angles and sort triangles, with one line of why | [README](math/shapes-angles/README.md) |
 | [Sound Spell](languages/sound-spell/) | Starting and ending sounds of English and German words | [README](languages/sound-spell/README.md) |
-| [Word Match](languages/word-match/) | 100 words for animals, food, home and school, in English or German | [README](languages/word-match/README.md) |
+| [Word Match](languages/word-match/) | About 270 words for animals, food, home and school, in English or German | [README](languages/word-match/README.md) |
 | [Spell It](languages/spell-it/) | Hear a word and spell it on a letter pad, from 3 letters up to 8, in English or German | [README](languages/spell-it/README.md) |
 | [Sentence Builder](languages/sentence-builder/) | Tap the words in the right order to build a sentence, from 3 words up to 8, with questions and commas, in English or German | [README](languages/sentence-builder/README.md) |
 | [Spelling Quiz](languages/spelling-quiz/) | Pick the right spelling out of 3 or 4. Grown-ups can add the week's spelling words, and the wrong spellings are new every time, in English or German | [README](languages/spelling-quiz/README.md) |
@@ -234,13 +234,13 @@ Page sizes, sent over the network with `loopy.js`, `loopy.css` and the two fonts
 | Box Multiplication | 74 KB |
 | Step by Step | 75 KB |
 | Shapes and Angles | 80 KB |
-| Sound Spell | 73 KB |
-| Word Match | 78 KB |
-| Spell It | 73 KB |
-| Sentence Builder | 74 KB |
-| Spelling Quiz | 77 KB |
-| Word Detective | 85 KB |
-| Word Trail | 83 KB |
+| Sound Spell | 74 KB |
+| Word Match | 83 KB |
+| Spell It | 76 KB |
+| Sentence Builder | 78 KB |
+| Spelling Quiz | 78 KB |
+| Word Detective | 94 KB |
+| Word Trail | 89 KB |
 | Where Is It? | 98 KB |
 | Flags and Capitals | 77 KB |
 | Quick Facts | 83 KB |

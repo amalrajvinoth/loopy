@@ -15,14 +15,14 @@ A picture and word game. The child sees a picture and picks its word from three 
 | Age | What changes |
 | --- | --- |
 | 5 to 6 | Easy everyday words, 3 choices from other topics |
-| 7 to 8 | All 100 words, 4 choices from other topics |
-| 9 and up | All 100 words, 4 tricky choices from the same topic (an owl with a duck, a hen and a bird) |
+| 7 to 8 | All words, 4 choices from other topics |
+| 9 and up | All words, 4 tricky choices from the same topic (an owl with a duck, a hen and a bird) |
 
 The level shows next to the score, like "Level 2 of 3". After 10 right in a row, or 18 of the last 20 right, the game goes up a level by itself. It says so, with a **Back a step** button. After 3 wrong in the last 5 it offers an easier one, once a visit. A level picked by hand in Settings is kept for that age. When the age goes up, a level the child reached is kept, never lost. The levels: 3 words, 4 words, 4 tricky words.
 
 ## Words
 
-100 words with pictures, 25 in each topic:
+About 270 words with pictures, 64 to 70 in each topic:
 
 - **Animals:** dog, cat, horse, frog, elephant, butterfly...
 - **Food:** apple, bread, cheese, ice cream, strawberry...
