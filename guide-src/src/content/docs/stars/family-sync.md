@@ -25,7 +25,33 @@ On the other phone, tablet or computer:
 
 The stars from the other devices come over, and the stars here go to them. Nothing is taken away: for each child the bigger number wins, like with a [stars code](/loopy/guide/stars/move-stars/).
 
-Each child keeps their own stars. Give each child the same name on every device, so loopy knows who is who.
+Each child keeps their own stars. Give each child the same name on every device, so loopy knows who is who. Big and small letters do not matter. A child who is not on the other device yet is added there. On a brand-new device with one child and no name, the first child of the family takes that place.
+
+The other device may already have stars of its own. That is fine. Joining puts both together, and nothing is lost. The home page loads once more to show the family's stars.
+
+## The family code
+
+The family code is the key to your family's stars. It is 16 letters and numbers in 4 groups, like `7K2M-QX9D-4HPT-W3RA`. Small or capital letters both work, with or without the dashes. The code never has an O, I, L or U. If you type an O, I or L, loopy reads 0 or 1.
+
+To see the code again, open ⚙ **Settings** on any device where Family sync is on. The code is not in a stars code, a backup file or the QR code under My stars, so each device joins by itself. If no device has the code any more, tap **Turn on** again. That makes a new family with a new code. Then join the other devices with it. More under [Settings on the home page](/loopy/guide/settings/home-settings/).
+
+## What syncs, and what does not
+
+Family sync carries the same things as a [stars code](/loopy/guide/stars/move-stars/), for every child on the device.
+
+**Goes to every family device:**
+
+- Each child's name and picture.
+- Stars, badges, streaks and the day streak. The bigger number wins, nothing is taken away.
+- The answers for the grown-ups page, the Last 5 dots and the Try again list.
+- A child's age, their levels, Read aloud and their last game. Also their choices in a game, like the tables in Times Tables Sprint or the word list in Spelling Quiz. These only come to a device that has none for that child yet. A device that already has its own choice keeps it.
+
+**Stays on each device:**
+
+- The color theme, **Easier to read**, sound and language. A brand-new device that has not picked any takes them from the family once.
+- Which child is playing right now.
+- The family code itself, and whether loopy is on the home screen.
+- Your email under **Stay in touch**. It is not part of the family at all.
 
 ## When it syncs
 
@@ -51,3 +77,20 @@ Keep the family code private, like a house key. Anyone with the code can join yo
 - **Turn off everywhere** (tap twice) deletes the family copy on the server. Every device stops syncing.
 
 Either way, the stars on each device stay.
+
+## Messages you may see
+
+The line under the Family sync buttons says what is going on.
+
+| It says | What it means |
+| --- | --- |
+| Last sync at 16:20. | All is well. This device last synced at that time. |
+| Syncing… | It is syncing right now. It takes a moment. |
+| Waiting for the internet. Stars are safe on this device. | No internet. loopy syncs when it is back. |
+| loopy can't reach the sync server. Try again with internet. | **Turn on** or **Join** did not get through. Check the internet and tap again. |
+| That is not a family code. It has 16 letters and numbers. | The code is too short or too long. Check it on the other device. |
+| No family has this code. Check it on the other device. | A letter is wrong, or that family was turned off everywhere. |
+| The family copy was deleted on another device. Turn off, then turn on or join again. | Someone tapped **Turn off everywhere**. Tap **Turn off** here. Then start a new family or join one. |
+| Something went wrong. Stars are safe on this device. | The server did not answer as expected. Tap **Sync now** later. |
+
+Whatever the message, the stars on this device are never touched. Stars are saved on the device first, as always.
