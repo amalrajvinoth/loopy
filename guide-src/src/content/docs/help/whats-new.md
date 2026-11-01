@@ -10,6 +10,7 @@ The big changes, newest first. Small fixes are not listed. See [the full list on
 
 ## 1 November 2026
 
+- **Lighter game pages.** The words, facts, flags and map of each game now sit in their own small file next to the game. Nothing looks or plays differently, but a changed word list downloads alone, not with the whole page. See [Questions and answers](/loopy/guide/help/faq/) for how to add a word.
 - **Stay in touch, and a privacy note.** Grown-ups who want to hear about new games can leave their email in ⚙ Settings on the home page. Nothing is sent until you tap **Save**, and **Remove** deletes it. A new privacy note at the bottom of the home page says in plain words what loopy keeps, where and for how long. See [Settings on the home page](/loopy/guide/settings/home-settings/).
 - **New game for ages 6 to 14: Word Trail.** Find the words hidden in a grid of letters. Tap or drag through letters that touch, and each found word keeps its colour. Five levels. Level 1 is a 4 × 4 grid with short straight words. Level 5 is a 6 × 6 grid with long words that bend and run backwards. Three clues when you are stuck. 15 topics, in English or German. See [Word Trail](/loopy/guide/games/languages/word-trail/).
 

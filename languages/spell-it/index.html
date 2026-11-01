@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'sha256-FvARCbJjPQcaIOq/KYpU5YzyqBh92FZ0AO968H8L2Vs='; style-src 'self' 'sha256-z2P7kGW5Z05eCTjTZdYpc0vThTlOE9vmt97pVSvi2I4=' 'sha256-5/L3e/BVPjm2GPi51M3FkQuzTeZ4bCdHn3SxvjZFuAk=' 'sha256-RT1053JU5UiKvjrCUFx1rlhdFLMmgtuFJ9T8jnMeawQ=' 'sha256-nnHT/yp9/bcQWezNOoiKHtvXRiJS9w/rrwbtn2h3e9o='; img-src 'self' data:; font-src 'self'; connect-src 'self' https://loopy-sync.loopy-1e2.workers.dev; worker-src 'self'; object-src 'none'; base-uri 'none'; form-action 'none'; manifest-src 'self'; upgrade-insecure-requests">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'sha256-qnxzjmAQYdQIojbdhVYwM84pROWeB96jmZ4AtqE9tqM='; style-src 'self' 'sha256-z2P7kGW5Z05eCTjTZdYpc0vThTlOE9vmt97pVSvi2I4=' 'sha256-5/L3e/BVPjm2GPi51M3FkQuzTeZ4bCdHn3SxvjZFuAk=' 'sha256-RT1053JU5UiKvjrCUFx1rlhdFLMmgtuFJ9T8jnMeawQ=' 'sha256-SEktRybS5+xgAbehMpcOnFkalIHEvfjgtFJKzwHXSok='; img-src 'self' data:; font-src 'self'; connect-src 'self' https://loopy-sync.loopy-1e2.workers.dev; worker-src 'self'; object-src 'none'; base-uri 'none'; form-action 'none'; manifest-src 'self'; upgrade-insecure-requests">
 <meta name="referrer" content="strict-origin-when-cross-origin">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <style>:root{color-scheme:light;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}body{margin:0}[hidden]{display:none!important}</style>
@@ -190,8 +190,6 @@ body { min-height: 100vh; min-height: 100dvh; padding-block: 12px 16px; }
   .feedback strong { font-size: 1.05rem; }
 }
 
-
-
 /* Spell It: a picture, a speaker button, one box per letter, and a letter pad to spell the word. */
 .pic { font-size: clamp(3rem, 15dvh, 8rem); line-height: 1.15; }
 .speak { font: inherit; display: inline-flex; align-items: center; gap: 8px; min-height: 44px; padding: 0 16px; border-radius: 999px;
@@ -255,6 +253,7 @@ body { min-height: 100vh; min-height: 100dvh; padding-block: 12px 16px; }
 </style>
 <link rel="stylesheet" href="../../loopy.css">
 <script src="../../loopy.js"></script>
+<script src="words.js"></script>
 </head>
 <body>
 
@@ -339,41 +338,6 @@ Loopy.addStrings({
   }
 });
 
-// GEN START
-// Each word: [picture, word]. The game sorts them by length: 3, 4, 5, and 6 to 8 letters.
-// German words are nouns, so they start with a capital letter; the child does not need to type it.
-const WORDS = {
-  en: [
-    ["🐱","cat"],["🐶","dog"],["🐷","pig"],["🐄","cow"],["🚌","bus"],["☀️","sun"],["🎩","hat"],["🛏️","bed"],["☕","cup"],["🥚","egg"],
-    ["🦊","fox"],["🦉","owl"],["🐝","bee"],["🐜","ant"],["🦇","bat"],["🐔","hen"],["🚗","car"],["🗺️","map"],["🖊️","pen"],["📦","box"],
-    ["🔑","key"],["🥅","net"],["🥜","nut"],["👂","ear"],["🦵","leg"],["6️⃣","six"],["🔟","ten"],["🕸️","web"],["🚐","van"],["🥧","pie"],
-    ["🐟","fish"],["🐸","frog"],["🦆","duck"],["🐦","bird"],["🦁","lion"],["🐻","bear"],["🐐","goat"],["🦀","crab"],["🌙","moon"],["⭐","star"],
-    ["🌳","tree"],["🚢","ship"],["🎂","cake"],["🥛","milk"],["🚪","door"],["⚽","ball"],["📖","book"],["🪁","kite"],["💡","lamp"],["💍","ring"],
-    ["🧦","sock"],["👟","shoe"],["✋","hand"],["👃","nose"],["⛵","boat"],["🥁","drum"],["🌽","corn"],["🍐","pear"],["5️⃣","five"],["9️⃣","nine"],
-    ["4️⃣","four"],["🔔","bell"],
-    ["🍎","apple"],["🐴","horse"],["🐭","mouse"],["🐑","sheep"],["🐍","snake"],["🐯","tiger"],["🦓","zebra"],["🐳","whale"],["🐌","snail"],["🦈","shark"],
-    ["🏠","house"],["🪑","chair"],["🕰️","clock"],["🍞","bread"],["🍇","grape"],["🍋","lemon"],["🍕","pizza"],["🚂","train"],["🚚","truck"],["✈️","plane"],
-    ["☁️","cloud"],["❤️","heart"],["7️⃣","seven"],["3️⃣","three"],["8️⃣","eight"],["🤖","robot"],["🎹","piano"],
-    ["🐰","rabbit"],["🐵","monkey"],["🐢","turtle"],["🕷️","spider"],["🦜","parrot"],["🍌","banana"],["🥕","carrot"],["🍒","cherry"],["🧀","cheese"],["🍊","orange"],
-    ["🚀","rocket"],["🌸","flower"],["✏️","pencil"],["🕯️","candle"],["🎸","guitar"],["🌉","bridge"],["🪟","window"],["🍅","tomato"],["🦒","giraffe"],["🐧","penguin"],
-    ["🐬","dolphin"],["🎃","pumpkin"],["🐙","octopus"],["🦄","unicorn"],["🌈","rainbow"],["🐘","elephant"],["☂️","umbrella"],["🥪","sandwich"],["🦕","dinosaur"],["✂️","scissors"],
-    ["🦘","kangaroo"],["🍄","mushroom"],["🎒","backpack"]
-  ],
-  de: [
-    ["🎩","Hut"],["🚌","Bus"],["🚂","Zug"],["⌚","Uhr"],["🚲","Rad"],["👂","Ohr"],["🐄","Kuh"],["🐻","Bär"],["🦈","Hai"],["🦌","Reh"],
-    ["🍵","Tee"],["🍦","Eis"],["🦶","Fuß"],["💪","Arm"],["🛸","Ufo"],["🥅","Tor"],["🚪","Tür"],
-    ["🐶","Hund"],["🐭","Maus"],["🦆","Ente"],["🐰","Hase"],["🦔","Igel"],["🦁","Löwe"],["🐵","Affe"],["🦉","Eule"],["🐓","Hahn"],["🌙","Mond"],
-    ["🌳","Baum"],["🏠","Haus"],["⚽","Ball"],["📖","Buch"],["🛏️","Bett"],["🚗","Auto"],["⛵","Boot"],["🍞","Brot"],["✋","Hand"],["👃","Nase"],
-    ["🦵","Bein"],["⛺","Zelt"],["🌽","Mais"],["🥜","Nuss"],["🌹","Rose"],["🥝","Kiwi"],["❤️","Herz"],["💍","Ring"],["🍄","Pilz"],["2️⃣","Zwei"],
-    ["3️⃣","Drei"],["4️⃣","Vier"],["5️⃣","Fünf"],["8️⃣","Acht"],["9️⃣","Neun"],
-    ["🐱","Katze"],["🐟","Fisch"],["🐴","Pferd"],["🐯","Tiger"],["🦓","Zebra"],["🐑","Schaf"],["🐝","Biene"],["🐐","Ziege"],["🦀","Krebs"],["☀️","Sonne"],
-    ["⭐","Stern"],["☁️","Wolke"],["🌸","Blume"],["🍎","Apfel"],["🍐","Birne"],["🧀","Käse"],["☕","Tasse"],["💡","Lampe"],["🪑","Stuhl"],["🧦","Socke"],
-    ["👟","Schuh"],["🍕","Pizza"],["🎂","Torte"],["6️⃣","Sechs"],["🕯️","Kerze"],["👑","Krone"],["🏝️","Insel"],["🐙","Krake"],
-    ["🍌","Banane"],["🚢","Schiff"],["🚀","Rakete"],["🐉","Drache"],["7️⃣","Sieben"],["🌉","Brücke"],["🪟","Fenster"],["🍒","Kirsche"],["🍋","Zitrone"],["🦒","Giraffe"],
-    ["🐧","Pinguin"],["🐬","Delfin"],["🐌","Schnecke"],["🐍","Schlange"],["🐘","Elefant"],["🍅","Tomate"],["🥕","Karotte"],["🎸","Gitarre"],["✂️","Schere"],["🕷️","Spinne"],
-    ["🦜","Papagei"],["🎃","Kürbis"],["🦄","Einhorn"],["🍓","Erdbeere"],["🎒","Rucksack"],["✈️","Flugzeug"]
-  ]
-};
 // Extra letters for the pad: common letters, so the extras look like real choices.
 const EXTRA = { en: "abcdefghiklmnoprstuw", de: "abdefghiklmnorstuwz" };
 const randInt = (n) => Math.floor(Math.random() * n);
@@ -394,7 +358,6 @@ function makeProblem(lang, len, avoid) {
   const extra = shuffle([...EXTRA[lang]].filter(c => !need.includes(c))).slice(0, Math.max(2, keys - need.length));
   return { pic: w[0], word: w[1], letters, tiles: shuffle([...need, ...extra]), len, key: w[1] };
 }
-// GEN END
 
 (function () {
   const $ = (id) => document.getElementById(id);

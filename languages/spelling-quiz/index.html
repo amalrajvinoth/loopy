@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'sha256-3g9UaSdpw7HOjr54hJNUBXgLxFYhTzRr1SjwiXEIqZU='; style-src 'self' 'sha256-z2P7kGW5Z05eCTjTZdYpc0vThTlOE9vmt97pVSvi2I4=' 'sha256-t2PZo07Wgpfqgc/H1F1SYDRM0CNO5GbRA7u4WVGaGKo=' 'sha256-RT1053JU5UiKvjrCUFx1rlhdFLMmgtuFJ9T8jnMeawQ=' 'sha256-ZVtMEPo3z2GP/pry+1F9e4OBVbycAVZwPEHnPU17WYs='; img-src 'self' data:; font-src 'self'; connect-src 'self' https://loopy-sync.loopy-1e2.workers.dev; worker-src 'self'; object-src 'none'; base-uri 'none'; form-action 'none'; manifest-src 'self'; upgrade-insecure-requests">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'sha256-QeFbR3IvIwF0NZZxnBehXPhXLnuLG7NMSfR3sZrvBhs='; style-src 'self' 'sha256-z2P7kGW5Z05eCTjTZdYpc0vThTlOE9vmt97pVSvi2I4=' 'sha256-t2PZo07Wgpfqgc/H1F1SYDRM0CNO5GbRA7u4WVGaGKo=' 'sha256-RT1053JU5UiKvjrCUFx1rlhdFLMmgtuFJ9T8jnMeawQ=' 'sha256-ZVtMEPo3z2GP/pry+1F9e4OBVbycAVZwPEHnPU17WYs='; img-src 'self' data:; font-src 'self'; connect-src 'self' https://loopy-sync.loopy-1e2.workers.dev; worker-src 'self'; object-src 'none'; base-uri 'none'; form-action 'none'; manifest-src 'self'; upgrade-insecure-requests">
 <meta name="referrer" content="strict-origin-when-cross-origin">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <style>:root{color-scheme:light;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}body{margin:0}[hidden]{display:none!important}</style>
@@ -259,6 +259,7 @@ body { min-height: 100vh; min-height: 100dvh; padding-block: 12px 16px; }
 </style>
 <link rel="stylesheet" href="../../loopy.css">
 <script src="../../loopy.js"></script>
+<script src="words.js"></script>
 </head>
 <body>
 
@@ -361,30 +362,6 @@ Loopy.addStrings({
   }
 });
 
-// GEN START
-// loopy's own words for each level (grade 1, 2, 3, 4 to 5, 6 and up), used when there is no list from a grown-up.
-// Words with a common look-alike (there and their, das and dass) are left out, so a wrong spelling is never a real word.
-const WORDS = {
-  en: [
-    "the said was you they are come some have like one here what when love give play day look book went want ball call",
-    "because could should people water again every many any school friend house little after laugh eight night light mother father brother sister pretty happy money children Monday",
-    "beautiful different believe library through enough thought address answer island minute knife write wrong special surprise February Wednesday height weight guess busy caught early heart question quarter remember sentence straight together tomorrow",
-    "accident actually appear calendar certain continue describe disappear exercise experience grammar imagine important knowledge naughty occasion opposite ordinary particular peculiar perhaps possession potatoes pressure probably purpose separate strength although various",
-    "accommodate achieve aggressive amateur ancient apparent appreciate available awkward bargain cemetery committee conscience conscious definite desperate embarrass environment especially exaggerate excellent existence familiar foreign forty government guarantee immediately interrupt leisure mischievous necessary nuisance opportunity parliament persuade privilege pronunciation queue recommend restaurant rhythm sacrifice secretary signature soldier stomach sufficient temperature thorough twelfth vegetable vehicle yacht"
-  ].map(s => s.split(" ")),
-  de: [
-    "Hund Haus Maus Ball Mama Papa Auto Baum Sonne Name Oma Opa Kind Hand Tisch rot gut ich und wir Igel Nase Hose Esel Mond Fisch Rose Uhr",
-    "Schule Mutter Vater Kinder Wasser Sommer Winter Straße Fuß kommen spielen fahren gehen sehen lesen Tier Brief Lehrer Zahl Schuh Bett Mädchen Apfel Blume Vogel Fenster Zimmer Katze schnell",
-    "Bäume Häuser Freund Geburtstag Familie Ferien Fahrrad plötzlich Jacke Zucker Stück Spaß Fluss Schiff Wetter schwimmen Sonntag vielleicht Pferd wohnen ziehen Zähne Käse Gesicht Woche Klasse Hexe Fußball Mittwoch",
-    "Zeitung Gesundheit Fahrkarte Bibliothek Maschine Wäsche Gebäude ähnlich ärgern deutlich endlich eigentlich fröhlich Gemüse Gefühl Geschichte Kartoffel Kälte Lärm Nummer Paket Quelle Rätsel schließlich Spiegel Verkehr Vorsicht während zwölf Zeugnis Ergebnis Erlaubnis",
-    "Abenteuer Apotheke Atmosphäre Biologie Diskussion Erlebnis Fotografie Gymnasium Interesse Katastrophe Labyrinth Medizin Mikrofon Physik Reparatur Satellit Rhythmus Symbol Theater Thermometer Vergnügen Verständnis wiederholen Zylinder nämlich Empfehlung Wissenschaft Krankenhaus Gewitter Temperatur Information"
-  ].map(s => s.split(" "))
-};
-// Real words a wrong spelling could turn into. A made-up spelling that is one of these is never shown.
-const REAL = {
-  en: "their there theyre where wear were your youre to too two its then than our are hear here know no knew new night knight write right rite whole hole son sun one won ate eight meat meet see sea blue blew for four buy by bear bare peace piece plane plain weather whether which witch wood would flower flour mail male tail tale week weak road rode sail sale hair hare deer dear made maid lighting quite quiet loose lose accept except affect effect desert dessert principal principle breath breathe herd heard wait weight sum some come comb dew due allowed aloud board bored break brake cell sell hour stair stare steel steal threw through tide tied toe tow cent sent scent bee be fair fare hall haul main mane pair pear pare poor pour pore red read reed real reel role roll sole soul tea tee waist waste way weigh well wheel will knot not knit nit wright wring ring rap wrap rapper wrapper lead led lone loan sad dad did lad lid bell cell tell sell well fell hall wall tall fall pill fill hill will till bull pull full that them she he we me ten tin ton tan pan pen pin pun bad bed bid bud bag beg big bug cat cot cut hat hit hot hut mat met man men pet pit pot put sat set sit hop hope mad cap cape tap tape note kit kite bit bite rat rate fat fate car care plan win wine rid ride rob robe tub tube us use sin same came game home dome done gone bone tone ore art bit but bat bet lock luck lick lack",
-  de: "das dass wieder wider seid seit wahr war viel fiel mann man ist isst hast hasst rad rat lied lid ihm im ihn in mal mahl saite seite wal wahl leeren lehren malen mahlen ende ente weise waise rein rhein mehr meer lehre leere hol hohl stil stiel tod tot fälle felle wände wende lärche lerche bote boote miene mine ihr irr sohle sole moor mohr hand hund mund mond hase hose rat rot mut hut haut laus haus bein bahn bild bald rind wind wand land tor tür teer tanne wanne kanne lese leben nehmen butter kater rinder ehe ohr ofen offen bitte mama oma opa uhr kind mond ach auch euch ende bau mus"
-};
 const VOWELS = "aeiouäöüy";
 // The mistakes children really make, as [pattern, replacement] on the lower-case word. Each place a pattern
 // matches makes one wrong spelling. Patterns carry the letters around them in groups ($1, $2), not lookarounds,
@@ -498,7 +475,6 @@ function makeQuestion(word, lang, n, extra) {
   const wrong = wrongSpellings(word, lang, n - 1, extra);
   return { word, lang, options: shuffle([word, ...wrong]), key: lang + ":" + lower(word) };
 }
-// GEN END
 
 (function () {
   const $ = (id) => document.getElementById(id);

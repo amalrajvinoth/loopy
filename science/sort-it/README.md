@@ -72,5 +72,5 @@ Tap **Settings**, then **Print worksheet**. The print window opens. Print it, or
 ## For grown-ups
 
 - The pictures are emoji, so nothing is loaded from other websites. They look a little different on each device.
-- To add a thing, add a line at the end of the `THINGS` list in `index.html`: picture, level, set, group, then the English and German name and one line of why in each language. Add new things at the end only: a thing's place in the list is its key, and saved Try again mistakes use it. The groups of each set are in `GROUPS`.
+- To add a thing, add a line at the end of the `THINGS` list in `data.js`, next to the game page. Each line: picture, level, set, group, then the English and German name and one line of why in each language. Run `python3 tools/build.py` after a change. Add new things at the end only: a thing's place in the list is its key, and saved Try again mistakes use it. The groups of each set are in `GROUPS`.
 - The progress page groups missed answers by set, like "Animal groups" or "Solid, liquid or gas", with a tip for each.

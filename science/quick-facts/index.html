@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'sha256-nfpANEdDHasAW+OXqc3BO/mqdrcHSo8VFbadDnbTV58='; style-src 'self' 'sha256-z2P7kGW5Z05eCTjTZdYpc0vThTlOE9vmt97pVSvi2I4=' 'sha256-oLQF3jnCxf/mhP8dw8TD8Q631n/SdgEZHa5Z9K9C5do=' 'sha256-RT1053JU5UiKvjrCUFx1rlhdFLMmgtuFJ9T8jnMeawQ=' 'sha256-Br4cB+hVljxoS3/c/2l3lBJi6726stQfugcW6KWKnPU='; img-src 'self' data:; font-src 'self'; connect-src 'self' https://loopy-sync.loopy-1e2.workers.dev; worker-src 'self'; object-src 'none'; base-uri 'none'; form-action 'none'; manifest-src 'self'; upgrade-insecure-requests">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'sha256-ncsBUTEJEQIW3KrFL2LVOBxSO/HysXuVmFKwKk4OmJY='; style-src 'self' 'sha256-z2P7kGW5Z05eCTjTZdYpc0vThTlOE9vmt97pVSvi2I4=' 'sha256-oLQF3jnCxf/mhP8dw8TD8Q631n/SdgEZHa5Z9K9C5do=' 'sha256-RT1053JU5UiKvjrCUFx1rlhdFLMmgtuFJ9T8jnMeawQ=' 'sha256-Zj2eWbHvw+cKyrbCuvY4ARzZaBTPfD4uMLNo6NohEbM='; img-src 'self' data:; font-src 'self'; connect-src 'self' https://loopy-sync.loopy-1e2.workers.dev; worker-src 'self'; object-src 'none'; base-uri 'none'; form-action 'none'; manifest-src 'self'; upgrade-insecure-requests">
 <meta name="referrer" content="strict-origin-when-cross-origin">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <style>:root{color-scheme:light;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}body{margin:0}[hidden]{display:none!important}</style>
@@ -190,8 +190,6 @@ body { min-height: 100vh; min-height: 100dvh; padding-block: 12px 16px; }
   .feedback strong { font-size: 1.05rem; }
 }
 
-
-
 /* Quick Facts: a picture, a question, and answer buttons to pick from. */
 .pic { font-size: clamp(2.6rem, 11dvh, 6.5rem); line-height: 1.1; }
 .question { margin: 0; font-size: clamp(1.15rem, min(5.2vw, 3.4dvh), 1.9rem); font-weight: 700; line-height: 1.25;
@@ -248,6 +246,7 @@ body { min-height: 100vh; min-height: 100dvh; padding-block: 12px 16px; }
 </style>
 <link rel="stylesheet" href="../../loopy.css">
 <script src="../../loopy.js"></script>
+<script src="data.js"></script>
 </head>
 <body>
 
@@ -324,209 +323,6 @@ Loopy.addStrings({
   }
 });
 
-// GEN START
-// Each fact: [picture, level, English, German]. Each language is [question, right answer, three wrong answers, why].
-// Level 1 is for ages 7 to 8, level 2 adds harder facts from age 9, level 3 adds the hardest from age 11.
-const FACTS = {
-  space: [
-    ["🌍", 1, ["Which planet do we live on?", "Earth", ["Mars", "Venus", "Jupiter"], "We live on Earth, the third planet from the Sun."],
-      ["Auf welchem Planeten leben wir?", "Erde", ["Mars", "Venus", "Jupiter"], "Wir leben auf der Erde, dem dritten Planeten von der Sonne aus."]],
-    ["☀️", 1, ["What is the Sun?", "A star", ["A planet", "A moon", "A comet"], "The Sun is a star: a giant ball of hot, glowing gas."],
-      ["Was ist die Sonne?", "Ein Stern", ["Ein Planet", "Ein Mond", "Ein Komet"], "Die Sonne ist ein Stern: eine riesige Kugel aus heißem, leuchtendem Gas."]],
-    ["🌙", 1, ["What goes around the Earth about once a month?", "The Moon", ["The Sun", "Mars", "A star"], "The Moon circles the Earth. One trip takes about a month."],
-      ["Was kreist etwa einmal im Monat um die Erde?", "Der Mond", ["Die Sonne", "Der Mars", "Ein Stern"], "Der Mond kreist um die Erde. Eine Runde dauert etwa einen Monat."]],
-    ["🪐", 1, ["Which planet has big, bright rings?", "Saturn", ["Mars", "Earth", "Mercury"], "Saturn's rings are made of lots of pieces of ice and rock."],
-      ["Welcher Planet hat große, helle Ringe?", "Saturn", ["Mars", "Erde", "Merkur"], "Die Ringe des Saturn bestehen aus vielen Stücken aus Eis und Gestein."]],
-    ["🔴", 1, ["Which planet is called the Red Planet?", "Mars", ["Venus", "Neptune", "Earth"], "Mars looks red because its dust is rusty."],
-      ["Welcher Planet heißt der Rote Planet?", "Mars", ["Venus", "Neptun", "Erde"], "Der Mars sieht rot aus, weil sein Staub rostig ist."]],
-    ["🟠", 1, ["Which is the biggest planet?", "Jupiter", ["Earth", "Mars", "Mercury"], "Jupiter is so big that more than 1,000 Earths could fit inside it."],
-      ["Welcher ist der größte Planet?", "Jupiter", ["Erde", "Mars", "Merkur"], "Jupiter ist so groß, dass mehr als 1.000 Erden hineinpassen würden."]],
-    ["🔄", 1, ["How long does the Earth take to go once around the Sun?", "One year", ["One day", "One week", "One hour"], "One trip around the Sun takes about 365 days: one year."],
-      ["Wie lange braucht die Erde einmal um die Sonne?", "Ein Jahr", ["Einen Tag", "Eine Woche", "Eine Stunde"], "Eine Runde um die Sonne dauert etwa 365 Tage: ein Jahr."]],
-    ["🌗", 1, ["Why do we have day and night?", "The Earth spins", ["The Sun goes out", "Clouds cover the Sun", "The Moon hides the Sun"], "The Earth spins around. The side facing the Sun has day, the other side has night."],
-      ["Warum gibt es Tag und Nacht?", "Die Erde dreht sich", ["Die Sonne geht aus", "Wolken decken die Sonne zu", "Der Mond versteckt die Sonne"], "Die Erde dreht sich. Die Seite zur Sonne hat Tag, die andere Seite hat Nacht."]],
-    ["👩‍🚀", 1, ["What do we call a person who travels into space?", "An astronaut", ["A pilot", "A sailor", "A diver"], "Astronauts train for years before they fly into space."],
-      ["Wie heißt ein Mensch, der ins Weltall fliegt?", "Astronaut", ["Pilot", "Matrose", "Taucher"], "Astronauten üben jahrelang, bevor sie ins Weltall fliegen."]],
-    ["🚀", 1, ["What takes astronauts up into space?", "A rocket", ["A plane", "A balloon", "A helicopter"], "Only a rocket is strong and fast enough to leave the air far behind."],
-      ["Was bringt Astronauten ins Weltall?", "Eine Rakete", ["Ein Flugzeug", "Ein Ballon", "Ein Hubschrauber"], "Nur eine Rakete ist stark und schnell genug, um die Luft weit hinter sich zu lassen."]],
-    ["⭐", 1, ["When can we see the stars best?", "At night", ["At lunchtime", "In the morning", "At noon"], "Stars shine all the time, but in the day the bright Sun hides them."],
-      ["Wann sehen wir die Sterne am besten?", "Nachts", ["Mittags", "Morgens", "Zum Mittagessen"], "Sterne leuchten immer, aber am Tag überstrahlt die helle Sonne sie."]],
-    ["🌕", 1, ["What is on the Moon?", "Rocks and dust", ["Grass and trees", "Lakes and fish", "Clouds and rain"], "The Moon is made of rock and covered with grey dust. It has no air."],
-      ["Was gibt es auf dem Mond?", "Steine und Staub", ["Gras und Bäume", "Seen und Fische", "Wolken und Regen"], "Der Mond besteht aus Gestein und ist mit grauem Staub bedeckt. Er hat keine Luft."]],
-    ["🌝", 1, ["Why does the Moon shine at night?", "Sunlight hits it", ["It has lamps", "It is on fire", "It is a star"], "The Moon has no light of its own. Sunlight bounces off it."],
-      ["Warum leuchtet der Mond in der Nacht?", "Die Sonne scheint drauf", ["Er hat Lampen", "Er brennt", "Er ist ein Stern"], "Der Mond hat kein eigenes Licht. Er wirft das Sonnenlicht zurück."]],
-    ["🌌", 1, ["How many planets go around our Sun?", "8", ["5", "12", "20"], "Mercury, Venus, Earth, Mars, Jupiter, Saturn, Uranus and Neptune."],
-      ["Wie viele Planeten kreisen um unsere Sonne?", "8", ["5", "12", "20"], "Merkur, Venus, Erde, Mars, Jupiter, Saturn, Uranus und Neptun."]],
-    ["🌡️", 2, ["Which planet is closest to the Sun?", "Mercury", ["Venus", "Earth", "Neptune"], "Mercury is the closest planet to the Sun, and also the smallest."],
-      ["Welcher Planet ist der Sonne am nächsten?", "Merkur", ["Venus", "Erde", "Neptun"], "Merkur ist der Sonne am nächsten und auch der kleinste Planet."]],
-    ["🥶", 2, ["Which planet is farthest from the Sun?", "Neptune", ["Mars", "Saturn", "Mercury"], "Neptune is so far away that it gets very little sunlight. It is icy cold."],
-      ["Welcher Planet ist am weitesten von der Sonne weg?", "Neptun", ["Mars", "Saturn", "Merkur"], "Neptun ist so weit weg, dass er kaum Sonnenlicht bekommt. Er ist eisig kalt."]],
-    ["🔥", 2, ["Which planet is the hottest?", "Venus", ["Mercury", "Mars", "Earth"], "Venus is even hotter than Mercury, because its thick clouds trap the heat."],
-      ["Welcher Planet ist am heißesten?", "Venus", ["Merkur", "Mars", "Erde"], "Die Venus ist sogar heißer als Merkur, weil ihre dicken Wolken die Wärme festhalten."]],
-    ["👣", 2, ["Who was the first person to walk on the Moon?", "Neil Armstrong", ["Yuri Gagarin", "Albert Einstein", "Isaac Newton"], "Neil Armstrong stepped onto the Moon in 1969."],
-      ["Wer betrat als erster Mensch den Mond?", "Neil Armstrong", ["Juri Gagarin", "Albert Einstein", "Isaac Newton"], "Neil Armstrong betrat 1969 den Mond."]],
-    ["🧲", 2, ["What keeps the planets going around the Sun?", "Gravity", ["The wind", "Magnets", "Light"], "The Sun's gravity pulls on the planets and keeps them on their paths."],
-      ["Was hält die Planeten auf ihrer Bahn um die Sonne?", "Die Schwerkraft", ["Der Wind", "Magnete", "Das Licht"], "Die Schwerkraft der Sonne zieht an den Planeten und hält sie auf ihrer Bahn."]],
-    ["🌠", 2, ["What is a shooting star really?", "A burning space rock", ["A falling star", "A firework", "A planet"], "It is a tiny rock from space that burns up as it zooms into our air."],
-      ["Was ist eine Sternschnuppe wirklich?", "Ein glühender Stein", ["Ein fallender Stern", "Ein Feuerwerk", "Ein Planet"], "Es ist ein winziger Stein aus dem Weltall, der in unserer Luft verglüht."]],
-    ["☄️", 2, ["What is a comet made of?", "Ice and dust", ["Hot metal", "Gold", "Glass"], "Near the Sun, a comet's ice turns to gas and makes a long, glowing tail."],
-      ["Woraus besteht ein Komet?", "Aus Eis und Staub", ["Aus heißem Metall", "Aus Gold", "Aus Glas"], "In der Nähe der Sonne wird das Eis zu Gas und bildet einen langen, leuchtenden Schweif."]],
-    ["🌋", 2, ["Which planet has the tallest volcano we know?", "Mars", ["Earth", "Venus", "Mercury"], "Olympus Mons on Mars is more than twice as tall as Mount Everest."],
-      ["Auf welchem Planeten steht der höchste bekannte Vulkan?", "Mars", ["Erde", "Venus", "Merkur"], "Der Olympus Mons auf dem Mars ist mehr als doppelt so hoch wie der Mount Everest."]],
-    ["🌍", 2, ["How long does the Earth take to spin around once?", "One day", ["One month", "One year", "One hour"], "One full spin takes 24 hours. That is one day."],
-      ["Wie lange braucht die Erde für eine ganze Drehung?", "Einen Tag", ["Einen Monat", "Ein Jahr", "Eine Stunde"], "Eine ganze Drehung dauert 24 Stunden. Das ist ein Tag."]],
-    ["🛰️", 2, ["What is the ISS?", "A space station", ["A planet", "A star", "A moon"], "The International Space Station circles the Earth. Astronauts live on board."],
-      ["Was ist die ISS?", "Eine Raumstation", ["Ein Planet", "Ein Stern", "Ein Mond"], "Die Internationale Raumstation kreist um die Erde. Astronauten wohnen an Bord."]],
-    ["🧑‍🚀", 2, ["Why do astronauts wear space suits outside?", "There is no air", ["To look cool", "To stay clean", "To fly faster"], "Space has no air. The suit gives them air and keeps them safe from heat and cold."],
-      ["Warum tragen Astronauten draußen Raumanzüge?", "Es gibt keine Luft", ["Um cool auszusehen", "Um sauber zu bleiben", "Um schneller zu fliegen"], "Im Weltall gibt es keine Luft. Der Anzug gibt ihnen Luft und schützt vor Hitze und Kälte."]],
-    ["🌀", 3, ["What is the Milky Way?", "Our galaxy", ["A planet", "A comet", "A moon"], "The Milky Way is our galaxy: billions of stars. The Sun is one of them."],
-      ["Was ist die Milchstraße?", "Unsere Galaxie", ["Ein Planet", "Ein Komet", "Ein Mond"], "Die Milchstraße ist unsere Galaxie: Milliarden Sterne. Die Sonne ist einer davon."]],
-    ["💡", 3, ["About how long does sunlight take to reach the Earth?", "About 8 minutes", ["1 second", "1 day", "1 year"], "Light is very fast, but the Sun is 150 million km away. So it takes about 8 minutes."],
-      ["Wie lange braucht Sonnenlicht ungefähr bis zur Erde?", "Etwa 8 Minuten", ["1 Sekunde", "1 Tag", "1 Jahr"], "Licht ist sehr schnell, aber die Sonne ist 150 Millionen km weit weg. Darum dauert es etwa 8 Minuten."]],
-    ["🍂", 3, ["Why does the Earth have seasons?", "The Earth is tilted", ["The Sun comes closer", "The Moon moves", "The wind changes"], "The Earth is tilted. For part of the year your half leans toward the Sun and gets more sunlight."],
-      ["Warum gibt es Jahreszeiten?", "Die Erde ist geneigt", ["Die Sonne kommt näher", "Der Mond wandert", "Der Wind dreht sich"], "Die Erdachse ist geneigt. Einen Teil des Jahres neigt sich deine Erdhälfte zur Sonne und bekommt mehr Licht."]],
-    ["🌚", 3, ["What happens in a solar eclipse?", "The Moon blocks the Sun", ["The Earth blocks the Moon", "The Sun switches off", "A big cloud comes"], "The Moon moves between the Sun and the Earth and blocks the sunlight."],
-      ["Was passiert bei einer Sonnenfinsternis?", "Der Mond verdeckt die Sonne", ["Die Erde verdeckt den Mond", "Die Sonne geht aus", "Eine große Wolke kommt"], "Der Mond schiebt sich zwischen Sonne und Erde und verdeckt das Sonnenlicht."]],
-    ["🏋️", 3, ["How heavy would you feel on the Moon?", "Lighter", ["Heavier", "The same", "Twice as heavy"], "The Moon's gravity is about one sixth of the Earth's. You could jump very high."],
-      ["Wie schwer würdest du dich auf dem Mond fühlen?", "Leichter", ["Schwerer", "Genauso schwer", "Doppelt so schwer"], "Die Schwerkraft auf dem Mond ist etwa ein Sechstel so stark wie auf der Erde. Du könntest sehr hoch springen."]],
-    ["🔭", 3, ["Which planet spins on its side?", "Uranus", ["Venus", "Mars", "Earth"], "Uranus is tipped over, so it rolls around the Sun on its side."],
-      ["Welcher Planet dreht sich auf der Seite liegend?", "Uranus", ["Venus", "Mars", "Erde"], "Uranus ist umgekippt. Er rollt auf der Seite liegend um die Sonne."]],
-    ["✨", 3, ["Which star is closest to the Earth?", "The Sun", ["The North Star", "Sirius", "The Moon"], "The Sun is a star, and it is much closer to us than any other star."],
-      ["Welcher Stern ist der Erde am nächsten?", "Die Sonne", ["Der Polarstern", "Sirius", "Der Mond"], "Die Sonne ist ein Stern und viel näher an uns als jeder andere Stern."]]
-  ],
-  animals: [
-    ["🐄", 1, ["What does a cow give us to drink?", "Milk", ["Juice", "Water", "Tea"], "Cows give milk. We also make cheese and butter from it."],
-      ["Was gibt uns die Kuh zum Trinken?", "Milch", ["Saft", "Wasser", "Tee"], "Kühe geben Milch. Daraus macht man auch Käse und Butter."]],
-    ["🐛", 1, ["What does a caterpillar turn into?", "A butterfly", ["A bird", "A snake", "A spider"], "A caterpillar rests in a hard case, then comes out as a butterfly."],
-      ["Was wird aus einer Raupe?", "Ein Schmetterling", ["Ein Vogel", "Eine Schlange", "Eine Spinne"], "Die Raupe verpuppt sich und schlüpft dann als Schmetterling."]],
-    ["🕷️", 1, ["How many legs does a spider have?", "8", ["6", "4", "10"], "Spiders have 8 legs. Insects have 6."],
-      ["Wie viele Beine hat eine Spinne?", "8", ["6", "4", "10"], "Spinnen haben 8 Beine. Insekten haben 6."]],
-    ["🐞", 1, ["How many legs does an insect have?", "6", ["8", "4", "2"], "All insects, like ladybirds, bees and ants, have 6 legs."],
-      ["Wie viele Beine hat ein Insekt?", "6", ["8", "4", "2"], "Alle Insekten, wie Marienkäfer, Bienen und Ameisen, haben 6 Beine."]],
-    ["🐟", 1, ["How do fish breathe under water?", "With gills", ["With a nose", "With their tail", "They hold their breath"], "Gills take the oxygen out of the water."],
-      ["Wie atmen Fische unter Wasser?", "Mit Kiemen", ["Mit der Nase", "Mit dem Schwanz", "Sie halten die Luft an"], "Kiemen holen den Sauerstoff aus dem Wasser."]],
-    ["🐸", 1, ["What does a tadpole grow into?", "A frog", ["A fish", "A snail", "A duck"], "Tadpoles live in water. Then they grow legs and become frogs."],
-      ["Was wird aus einer Kaulquappe?", "Ein Frosch", ["Ein Fisch", "Eine Schnecke", "Eine Ente"], "Kaulquappen leben im Wasser. Dann wachsen ihnen Beine und sie werden Frösche."]],
-    ["🐝", 1, ["What do bees make?", "Honey", ["Milk", "Silk", "Bread"], "Bees turn the sweet nectar from flowers into honey."],
-      ["Was machen Bienen?", "Honig", ["Milch", "Seide", "Brot"], "Bienen machen aus dem süßen Nektar der Blüten Honig."]],
-    ["🐻", 1, ["What do many bears do in winter?", "Sleep for months", ["Fly away", "Swim in the sea", "Lay eggs"], "Many bears rest in a den all winter, when there is little food."],
-      ["Was machen viele Bären im Winter?", "Monatelang schlafen", ["Wegfliegen", "Im Meer schwimmen", "Eier legen"], "Viele Bären ruhen den ganzen Winter in einer Höhle, weil es dann wenig Futter gibt."]],
-    ["🐔", 1, ["Which animal lays eggs?", "A hen", ["A cow", "A dog", "A cat"], "Birds, like hens, lay eggs. Baby chicks hatch from them."],
-      ["Welches Tier legt Eier?", "Das Huhn", ["Die Kuh", "Der Hund", "Die Katze"], "Vögel wie Hühner legen Eier. Daraus schlüpfen Küken."]],
-    ["🐋", 1, ["Which is the biggest animal ever?", "The blue whale", ["The elephant", "The giraffe", "T. rex"], "The blue whale is the biggest animal we know of, bigger than any dinosaur."],
-      ["Welches ist das größte Tier aller Zeiten?", "Der Blauwal", ["Der Elefant", "Die Giraffe", "Der T. rex"], "Der Blauwal ist das größte Tier, das wir kennen, größer als jeder Dinosaurier."]],
-    ["🦒", 1, ["Which animal has the longest neck?", "The giraffe", ["The horse", "The elephant", "The camel"], "Its long neck helps a giraffe eat leaves high up in the trees."],
-      ["Welches Tier hat den längsten Hals?", "Die Giraffe", ["Das Pferd", "Der Elefant", "Das Kamel"], "Mit ihrem langen Hals frisst die Giraffe Blätter hoch oben in den Bäumen."]],
-    ["🐆", 1, ["Which is the fastest land animal?", "The cheetah", ["The horse", "The dog", "The tortoise"], "For a short time, a cheetah can run as fast as a car on a country road."],
-      ["Welches ist das schnellste Landtier?", "Der Gepard", ["Das Pferd", "Der Hund", "Die Schildkröte"], "Ein Gepard rennt kurz so schnell wie ein Auto auf der Landstraße."]],
-    ["🐧", 1, ["Penguins are birds. What can't they do?", "Fly", ["Swim", "Walk", "Lay eggs"], "Penguins can't fly, but they are great swimmers."],
-      ["Pinguine sind Vögel. Was können sie nicht?", "Fliegen", ["Schwimmen", "Laufen", "Eier legen"], "Pinguine können nicht fliegen, aber sie sind tolle Schwimmer."]],
-    ["🐪", 2, ["What does a camel store in its hump?", "Fat", ["Water", "Sand", "Milk"], "The hump holds fat. The camel can live on it when there is no food."],
-      ["Was speichert ein Kamel im Höcker?", "Fett", ["Wasser", "Sand", "Milch"], "Im Höcker ist Fett. Davon lebt das Kamel, wenn es kein Futter gibt."]],
-    ["🦇", 2, ["Which animal finds its way in the dark with echoes?", "The bat", ["The cat", "The snail", "The cow"], "Bats make very high calls and listen for the echo to find their way."],
-      ["Welches Tier findet sich im Dunkeln mit Echos zurecht?", "Die Fledermaus", ["Die Katze", "Die Schnecke", "Die Kuh"], "Fledermäuse rufen sehr hoch und hören auf das Echo, um sich zurechtzufinden."]],
-    ["🐬", 2, ["What kind of animal is a dolphin?", "A mammal", ["A fish", "A bird", "A reptile"], "Dolphins breathe air and feed their babies milk, so they are mammals."],
-      ["Was für ein Tier ist ein Delfin?", "Ein Säugetier", ["Ein Fisch", "Ein Vogel", "Ein Reptil"], "Delfine atmen Luft und säugen ihre Jungen mit Milch. Darum sind sie Säugetiere."]],
-    ["🐍", 2, ["Snakes, lizards and turtles are all...", "Reptiles", ["Mammals", "Insects", "Birds"], "Reptiles have dry, scaly skin, and most of them lay eggs."],
-      ["Schlangen, Eidechsen und Schildkröten sind alle...", "Reptilien", ["Säugetiere", "Insekten", "Vögel"], "Reptilien haben trockene, schuppige Haut, und die meisten legen Eier."]],
-    ["🦎", 2, ["What can many lizards do if you grab their tail?", "Drop the tail", ["Fly away", "Grow wings", "Turn to stone"], "The tail keeps wiggling and tricks the hunter. A new tail grows back."],
-      ["Was können viele Eidechsen tun, wenn man ihren Schwanz packt?", "Den Schwanz abwerfen", ["Wegfliegen", "Flügel bekommen", "Zu Stein werden"], "Der Schwanz zappelt weiter und lenkt den Jäger ab. Ein neuer wächst nach."]],
-    ["🦉", 2, ["When do most owls hunt?", "At night", ["At midday", "Only in winter", "In the morning"], "Most owls hunt at night. They have great eyes and ears for the dark."],
-      ["Wann jagen die meisten Eulen?", "Nachts", ["Mittags", "Nur im Winter", "Morgens"], "Die meisten Eulen jagen nachts. Sie haben sehr gute Augen und Ohren für die Dunkelheit."]],
-    ["🐼", 2, ["What do giant pandas eat most?", "Bamboo", ["Fish", "Meat", "Honey"], "Pandas spend many hours a day eating bamboo."],
-      ["Was fressen Große Pandas am meisten?", "Bambus", ["Fisch", "Fleisch", "Honig"], "Pandas fressen viele Stunden am Tag Bambus."]],
-    ["🐘", 2, ["What is an elephant's trunk?", "Its nose", ["Its tail", "A tooth", "An ear"], "The trunk is a long nose and top lip. It smells, drinks and grabs things."],
-      ["Was ist der Rüssel eines Elefanten?", "Seine Nase", ["Sein Schwanz", "Ein Zahn", "Ein Ohr"], "Der Rüssel ist Nase und Oberlippe in einem. Damit riecht, trinkt und greift der Elefant."]],
-    ["🐙", 2, ["How many arms does an octopus have?", "8", ["6", "10", "4"], "\"Octo\" means eight. Each arm is covered in suckers."],
-      ["Wie viele Arme hat ein Oktopus?", "8", ["6", "10", "4"], "„Okto“ heißt acht. Jeder Arm ist voller Saugnäpfe."]],
-    ["🦈", 2, ["What kind of animal is a shark?", "A fish", ["A mammal", "A reptile", "A bird"], "Sharks are fish. They breathe with gills."],
-      ["Was für ein Tier ist ein Hai?", "Ein Fisch", ["Ein Säugetier", "Ein Reptil", "Ein Vogel"], "Haie sind Fische. Sie atmen mit Kiemen."]],
-    ["🐿️", 2, ["What do squirrels do in autumn?", "Hide nuts", ["Fly south", "Lose their tails", "Lay eggs"], "Squirrels bury nuts to eat in winter. Forgotten nuts can grow into trees."],
-      ["Was machen Eichhörnchen im Herbst?", "Nüsse verstecken", ["Nach Süden fliegen", "Den Schwanz verlieren", "Eier legen"], "Eichhörnchen vergraben Nüsse für den Winter. Vergessene Nüsse können zu Bäumen wachsen."]],
-    ["🐦", 2, ["Why do many birds fly south in autumn?", "To find food", ["To see the sea", "To lay eggs on ice", "To hide from rain"], "In winter, food is hard to find, so they fly to warmer places."],
-      ["Warum fliegen viele Vögel im Herbst nach Süden?", "Um Futter zu finden", ["Um das Meer zu sehen", "Um Eier aufs Eis zu legen", "Um sich vor Regen zu verstecken"], "Im Winter gibt es hier wenig Futter. Darum fliegen sie in wärmere Länder."]],
-    ["🦎", 2, ["Which lizard is famous for changing its color?", "The chameleon", ["The crocodile", "The turtle", "The snake"], "Chameleons change color to show how they feel and to warm up or cool down."],
-      ["Welche Echse ist dafür bekannt, ihre Farbe zu ändern?", "Das Chamäleon", ["Das Krokodil", "Die Schildkröte", "Die Schlange"], "Chamäleons ändern die Farbe, um Gefühle zu zeigen und um sich zu wärmen oder abzukühlen."]],
-    ["🦘", 2, ["Where does a baby kangaroo grow up?", "In a pouch", ["In a nest", "In an egg", "Under water"], "A newborn kangaroo is as small as a bean. It grows in its mother's pouch."],
-      ["Wo wächst ein Kängurubaby auf?", "Im Beutel", ["In einem Nest", "In einem Ei", "Unter Wasser"], "Ein neugeborenes Känguru ist so klein wie eine Bohne. Es wächst im Beutel der Mutter heran."]],
-    ["🐳", 3, ["How do whales breathe?", "Through a blowhole", ["With gills", "Through their tail", "They don't need air"], "Whales are mammals with lungs. They come up and breathe through the blowhole on top of their head."],
-      ["Wie atmen Wale?", "Durch ein Blasloch", ["Mit Kiemen", "Durch den Schwanz", "Sie brauchen keine Luft"], "Wale sind Säugetiere mit Lungen. Sie tauchen auf und atmen durch das Blasloch oben auf dem Kopf."]],
-    ["🌿", 3, ["What do we call an animal that eats only plants?", "A herbivore", ["A carnivore", "An omnivore", "A predator"], "Herbivores eat plants. Carnivores eat meat. Omnivores eat both."],
-      ["Wie nennt man ein Tier, das nur Pflanzen frisst?", "Pflanzenfresser", ["Fleischfresser", "Allesfresser", "Raubtier"], "Pflanzenfresser fressen Pflanzen, Fleischfresser Fleisch und Allesfresser beides."]],
-    ["🦖", 3, ["When did the big dinosaurs die out?", "66 million years ago", ["500 years ago", "5,000 years ago", "100 years ago"], "A huge rock from space hit the Earth. Birds are the dinosaurs' living relatives."],
-      ["Wann sind die großen Dinosaurier ausgestorben?", "Vor 66 Millionen Jahren", ["Vor 500 Jahren", "Vor 5.000 Jahren", "Vor 100 Jahren"], "Ein riesiger Stein aus dem Weltall schlug auf der Erde ein. Vögel sind die heutigen Verwandten der Dinosaurier."]],
-    ["🐜", 3, ["Which animal lives in a big group with a queen?", "The ant", ["The cat", "The frog", "The owl"], "Ants live in huge colonies. The queen lays all the eggs."],
-      ["Welches Tier lebt in einem großen Volk mit einer Königin?", "Die Ameise", ["Die Katze", "Der Frosch", "Die Eule"], "Ameisen leben in riesigen Völkern. Die Königin legt alle Eier."]],
-    ["🐸", 3, ["Frogs and newts live on land and in water. They are...", "Amphibians", ["Reptiles", "Mammals", "Fish"], "Amphibians start life in water, and most move onto land later."],
-      ["Frösche und Molche leben an Land und im Wasser. Sie sind...", "Amphibien", ["Reptilien", "Säugetiere", "Fische"], "Amphibien beginnen ihr Leben im Wasser, und die meisten gehen später an Land."]]
-  ],
-  body: [
-    ["🫀", 1, ["Which part of your body pumps blood?", "The heart", ["The lungs", "The stomach", "The brain"], "Your heart is a strong muscle. It beats about 100,000 times a day."],
-      ["Welcher Teil des Körpers pumpt das Blut?", "Das Herz", ["Die Lunge", "Der Magen", "Das Gehirn"], "Dein Herz ist ein starker Muskel. Es schlägt etwa 100.000 Mal am Tag."]],
-    ["🫁", 1, ["What do you breathe with?", "Your lungs", ["Your heart", "Your stomach", "Your bones"], "Your lungs take in air and pass the oxygen into your blood."],
-      ["Womit atmest du?", "Mit der Lunge", ["Mit dem Herzen", "Mit dem Magen", "Mit den Knochen"], "Deine Lunge holt Luft und gibt den Sauerstoff ins Blut."]],
-    ["🧠", 1, ["What do you think with?", "Your brain", ["Your heart", "Your stomach", "Your knees"], "Your brain controls everything you think, feel and do."],
-      ["Womit denkst du?", "Mit dem Gehirn", ["Mit dem Herzen", "Mit dem Magen", "Mit den Knien"], "Dein Gehirn steuert alles, was du denkst, fühlst und tust."]],
-    ["👃", 1, ["What do you use your nose for?", "Smelling", ["Hearing", "Seeing", "Touching"], "Your nose can tell thousands of smells apart."],
-      ["Wofür brauchst du deine Nase?", "Zum Riechen", ["Zum Hören", "Zum Sehen", "Zum Tasten"], "Deine Nase kann Tausende Gerüche unterscheiden."]],
-    ["👀", 1, ["How many senses do we usually count?", "5", ["2", "3", "10"], "Seeing, hearing, smelling, tasting and touching."],
-      ["Wie viele Sinne zählt man meistens?", "5", ["2", "3", "10"], "Sehen, Hören, Riechen, Schmecken und Tasten."]],
-    ["🪥", 1, ["What keeps your teeth healthy?", "Brushing twice a day", ["Lots of sweets", "Never brushing", "Fizzy drinks"], "Brushing takes away the germs and bits of food that make holes in teeth."],
-      ["Was hält deine Zähne gesund?", "Zweimal am Tag putzen", ["Viele Süßigkeiten", "Nie putzen", "Limonade"], "Putzen entfernt Keime und Essensreste, die Löcher in die Zähne machen."]],
-    ["🦴", 1, ["What holds your body up and gives it shape?", "Your skeleton", ["Your skin", "Your hair", "Your blood"], "Your skeleton is made of bones. It holds you up and protects your insides."],
-      ["Was hält deinen Körper aufrecht und gibt ihm Form?", "Das Skelett", ["Die Haut", "Die Haare", "Das Blut"], "Dein Skelett besteht aus Knochen. Es hält dich aufrecht und schützt dein Inneres."]],
-    ["🧼", 1, ["Why do we wash our hands before eating?", "To wash off germs", ["To make them grow", "To make them warm", "To change their color"], "Soap washes away tiny germs that can make you sick."],
-      ["Warum waschen wir vor dem Essen die Hände?", "Gegen Keime", ["Damit sie wachsen", "Damit sie warm werden", "Damit sie die Farbe ändern"], "Seife wäscht winzige Keime ab, die krank machen können."]],
-    ["👂", 1, ["What do your ears do?", "Hear", ["See", "Smell", "Taste"], "Your ears catch sounds and send them to your brain."],
-      ["Was machen deine Ohren?", "Hören", ["Sehen", "Riechen", "Schmecken"], "Deine Ohren fangen Geräusche auf und schicken sie ans Gehirn."]],
-    ["😴", 1, ["Why do children need lots of sleep?", "To grow and rest", ["To miss school", "To get hungry", "To make noise"], "While you sleep, your body grows and your brain sorts what you learned."],
-      ["Warum brauchen Kinder viel Schlaf?", "Zum Wachsen und Ausruhen", ["Um Schule zu verpassen", "Um Hunger zu bekommen", "Um laut zu sein"], "Im Schlaf wächst dein Körper, und dein Gehirn sortiert, was du gelernt hast."]],
-    ["💧", 1, ["What is the best drink when you are thirsty?", "Water", ["Cola", "Lemonade", "Syrup"], "Your body needs water most, and it has no sugar."],
-      ["Was ist das beste Getränk bei Durst?", "Wasser", ["Cola", "Limonade", "Sirup"], "Wasser braucht dein Körper am meisten, und es hat keinen Zucker."]],
-    ["👅", 1, ["What do you taste with?", "Your tongue", ["Your ears", "Your elbows", "Your hair"], "Your tongue has thousands of taste buds for sweet, salty, sour and more."],
-      ["Womit schmeckst du?", "Mit der Zunge", ["Mit den Ohren", "Mit den Ellbogen", "Mit den Haaren"], "Auf deiner Zunge sind Tausende Geschmacksknospen für süß, salzig, sauer und mehr."]],
-    ["🍎", 2, ["Where does your food go after you swallow it?", "To your stomach", ["To your lungs", "To your brain", "To your heart"], "A tube called the food pipe carries it down to your stomach."],
-      ["Wohin geht dein Essen nach dem Schlucken?", "In den Magen", ["In die Lunge", "Ins Gehirn", "Ins Herz"], "Ein Schlauch, die Speiseröhre, bringt es nach unten in den Magen."]],
-    ["💪", 2, ["What moves your bones?", "Your muscles", ["Your hair", "Your nails", "Your skin"], "Muscles pull on your bones to move them."],
-      ["Was bewegt deine Knochen?", "Die Muskeln", ["Die Haare", "Die Nägel", "Die Haut"], "Muskeln ziehen an den Knochen und bewegen sie."]],
-    ["🩸", 2, ["What color is the blood inside you?", "Red", ["Blue", "Green", "Yellow"], "Blood is always red. Veins only look blue through your skin."],
-      ["Welche Farbe hat das Blut in dir?", "Rot", ["Blau", "Grün", "Gelb"], "Blut ist immer rot. Adern sehen durch die Haut nur blau aus."]],
-    ["🦵", 2, ["Which is the longest bone in your body?", "The thigh bone", ["A rib", "A finger bone", "The nose bone"], "The thigh bone in your upper leg is the longest and strongest bone."],
-      ["Welcher ist der längste Knochen im Körper?", "Der Oberschenkelknochen", ["Eine Rippe", "Ein Fingerknochen", "Das Nasenbein"], "Der Oberschenkelknochen ist der längste und stärkste Knochen."]],
-    ["🌡️", 2, ["How warm is a healthy body?", "About 37 °C", ["About 20 °C", "About 50 °C", "About 10 °C"], "A healthy body stays at about 37 °C (98.6 °F). With a fever it is warmer."],
-      ["Wie warm ist ein gesunder Körper?", "Etwa 37 °C", ["Etwa 20 °C", "Etwa 50 °C", "Etwa 10 °C"], "Ein gesunder Körper hat etwa 37 °C. Bei Fieber ist er wärmer."]],
-    ["🦷", 2, ["How many baby teeth do children have?", "20", ["10", "32", "50"], "Children have 20 baby teeth. Grown-ups have up to 32 teeth."],
-      ["Wie viele Milchzähne haben Kinder?", "20", ["10", "32", "50"], "Kinder haben 20 Milchzähne. Erwachsene haben bis zu 32 Zähne."]],
-    ["👁️", 2, ["What is the black circle in the middle of your eye?", "The pupil", ["The eyelid", "The eyebrow", "The eyelash"], "The pupil is a hole that lets light in. It gets smaller in bright light."],
-      ["Was ist der schwarze Kreis mitten im Auge?", "Die Pupille", ["Das Augenlid", "Die Augenbraue", "Die Wimper"], "Die Pupille ist ein Loch, das Licht hineinlässt. Bei hellem Licht wird sie kleiner."]],
-    ["🖐️", 2, ["What is the biggest organ of your body?", "Your skin", ["Your heart", "Your brain", "Your stomach"], "Your skin covers your whole body and keeps germs out."],
-      ["Welches ist das größte Organ des Körpers?", "Die Haut", ["Das Herz", "Das Gehirn", "Der Magen"], "Die Haut bedeckt den ganzen Körper und hält Keime draußen."]],
-    ["🥚", 2, ["Which food helps you build strong muscles?", "Beans and eggs", ["Sweets", "Cola", "Ice cream"], "Beans, eggs, fish and meat have protein, which builds muscles."],
-      ["Welches Essen hilft beim Aufbau starker Muskeln?", "Bohnen und Eier", ["Süßigkeiten", "Cola", "Eis"], "Bohnen, Eier, Fisch und Fleisch haben Eiweiß, das Muskeln aufbaut."]],
-    ["🏃", 2, ["What does your heart do when you run?", "It beats faster", ["It stops", "It beats slower", "It gets smaller"], "Your muscles need more oxygen, so your heart pumps faster."],
-      ["Was macht dein Herz, wenn du rennst?", "Es schlägt schneller", ["Es bleibt stehen", "Es schlägt langsamer", "Es wird kleiner"], "Deine Muskeln brauchen mehr Sauerstoff, darum pumpt das Herz schneller."]],
-    ["🤧", 2, ["What makes you sneeze?", "Dust in your nose", ["Too much sleep", "Loud music", "Drinking water"], "A sneeze blows dust and germs out of your nose, very fast."],
-      ["Warum musst du niesen?", "Staub in der Nase", ["Zu viel Schlaf", "Laute Musik", "Wasser trinken"], "Beim Niesen werden Staub und Keime ganz schnell aus der Nase geblasen."]],
-    ["⚡", 3, ["What carries messages between your brain and your body?", "Nerves", ["Bones", "Hair", "Nails"], "Nerves are like wires. They carry signals very fast."],
-      ["Was bringt Nachrichten zwischen Gehirn und Körper hin und her?", "Die Nerven", ["Die Knochen", "Die Haare", "Die Nägel"], "Nerven sind wie Kabel. Sie leiten Signale sehr schnell weiter."]],
-    ["🛡️", 3, ["Which part of your blood fights germs?", "White blood cells", ["Red blood cells", "Platelets", "Plasma"], "White blood cells find germs and destroy them."],
-      ["Welcher Teil des Blutes kämpft gegen Keime?", "Weiße Blutkörperchen", ["Rote Blutkörperchen", "Blutplättchen", "Blutplasma"], "Weiße Blutkörperchen finden Keime und machen sie unschädlich."]],
-    ["🌬️", 3, ["Which gas does your body need from the air?", "Oxygen", ["Carbon dioxide", "Helium", "Nitrogen"], "You breathe in oxygen and breathe out carbon dioxide."],
-      ["Welches Gas braucht dein Körper aus der Luft?", "Sauerstoff", ["Kohlendioxid", "Helium", "Stickstoff"], "Du atmest Sauerstoff ein und Kohlendioxid aus."]],
-    ["💀", 3, ["About how many bones does a grown-up have?", "206", ["50", "100", "1,000"], "Babies have about 300 bones. Some grow together, so grown-ups have 206."],
-      ["Wie viele Knochen hat ein Erwachsener ungefähr?", "206", ["50", "100", "1.000"], "Babys haben etwa 300 Knochen. Manche wachsen zusammen, darum haben Erwachsene 206."]],
-    ["👂", 3, ["Where is the smallest bone in your body?", "In your ear", ["In your toe", "In your nose", "In your finger"], "The stirrup bone in your ear is smaller than a grain of rice."],
-      ["Wo ist der kleinste Knochen im Körper?", "Im Ohr", ["Im Zeh", "In der Nase", "Im Finger"], "Der Steigbügel im Ohr ist kleiner als ein Reiskorn."]],
-    ["🍞", 3, ["Where does most of your food pass into your blood?", "The small intestine", ["The stomach", "The mouth", "The lungs"], "The small intestine is a tube several metres long. Food passes into your blood there."],
-      ["Wo gelangt das meiste Essen ins Blut?", "Im Dünndarm", ["Im Magen", "Im Mund", "In der Lunge"], "Der Dünndarm ist ein mehrere Meter langer Schlauch. Dort geht die Nahrung ins Blut über."]],
-    ["💉", 3, ["What does a vaccine do?", "Trains your body", ["Makes you taller", "Cleans your teeth", "Helps you sleep"], "A vaccine shows your body a harmless part of a germ, so it is ready if the real germ comes."],
-      ["Was macht eine Impfung?", "Sie trainiert den Körper", ["Sie macht größer", "Sie putzt die Zähne", "Sie hilft beim Schlafen"], "Eine Impfung zeigt dem Körper einen harmlosen Teil eines Keims. So ist er bereit, wenn der echte Keim kommt."]],
-    ["❤️", 3, ["How many spaces (chambers) does your heart have inside?", "4", ["1", "2", "8"], "Your heart has 4 chambers: 2 take blood in and 2 pump it out."],
-      ["In wie viele Räume ist dein Herz innen geteilt?", "4", ["1", "2", "8"], "Dein Herz hat 2 Vorhöfe, die Blut aufnehmen, und 2 Kammern, die es hinauspumpen."]],
-    ["🌞", 3, ["Which vitamin does your skin make in sunlight?", "Vitamin D", ["Vitamin C", "Vitamin A", "Vitamin B"], "Sunlight helps your skin make vitamin D, which keeps your bones strong."],
-      ["Welches Vitamin bildet deine Haut im Sonnenlicht?", "Vitamin D", ["Vitamin C", "Vitamin A", "Vitamin B"], "Mit Sonnenlicht bildet deine Haut Vitamin D. Das hält die Knochen stark."]]
-  ]
-};
 const TOPICS = Object.keys(FACTS);
 const randInt = (n) => Math.floor(Math.random() * n);
 const pick = (arr) => arr[randInt(arr.length)];
@@ -546,7 +342,6 @@ function makeProblem(lang, topic, level, avoid) {
   const options = shuffle([text.a, ...shuffle(text.wrong).slice(0, level === 1 ? 2 : 3)]);
   return { fact, text, options, key: fact.key, answer: text.a };
 }
-// GEN END
 
 (function () {
   const $ = (id) => document.getElementById(id);

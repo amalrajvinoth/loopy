@@ -72,6 +72,10 @@ Jedes Wort ist ein Pfad aus Buchstaben, die sich berühren: seitwärts, nach obe
 
 Ja. Jede Buchstabenfolge zählt als Versuch, damit ein Kind Laute ausprobieren kann. Die Kästchen zeigen, welche Buchstaben im Wort sind, und drei Hinweise helfen. Siehe [Wortdetektiv](/loopy/guide/de/games/languages/word-detective/).
 
+## Kann ich die Wörter in einem Spiel ändern?
+
+Im [Rechtschreib-Quiz](/loopy/guide/de/games/languages/spelling-quiz/) ja: Erwachsene fügen in den Einstellungen ihre eigene Liste ein. In den anderen Spielen gehören die Wörter, Fakten und Länder zu loopy. Auf GitHub hat jedes dieser Spiele eine Datei `words.js` oder `data.js` neben sich, und Bild und Wort und Wortpfad teilen sich eine Wortliste. Wer sich ein wenig mit Code auskennt, kann dort ein Wort ergänzen und es einschicken. Die README des Spiels sagt, was in eine Zeile gehört.
+
 ## Wie sehe ich, wie es meinem Kind geht?
 
 Tippe unten auf der Startseite auf den Knopf **Erwachsene**. Um die Woche zu drucken, tippe auf **Drucken** neben **Diese Woche teilen**. Mehr unter [Die Seite für Erwachsene](/loopy/guide/de/grown-ups/grown-ups-page/).

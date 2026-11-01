@@ -70,5 +70,5 @@ Tap **Settings**, then **Print worksheet**. The print window opens. Print it, or
 - The flags are drawn in the page itself from simple shapes. Nothing is loaded from other websites, so the game works offline. Emoji flags are not used, because they do not show on Windows.
 - All flags are drawn 3 by 2 (Switzerland is square). Real flags have different shapes, like 2 by 1 for the United Kingdom.
 - Coats of arms and emblems are simplified or left out, like on Spain, Portugal and Mexico.
-- The flags, names and capitals are in the `FLAGS` list in `index.html`. Each one has a region and a level: 1 for well-known, 2 for the rest.
+- The flags, names and capitals are in the `FLAGS` list in `data.js`, next to the game page (run `python3 tools/build.py` after a change). Each one has a region and a level: 1 for well-known, 2 for the rest.
 - The progress page groups missed answers into flags and capitals, like "Practise capitals: say the country and its capital together."

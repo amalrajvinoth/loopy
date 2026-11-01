@@ -68,6 +68,6 @@ Reading out loud uses the voice built into the browser or device, in the languag
 ## For grown-ups
 
 - The pictures are emoji, so nothing is loaded from other websites. They look a little different on each device.
-- To add sentences, edit the `SENTENCES` list at the top of `index.html`: the picture, then the sentence, one list per level. A `*` in front of a word marks the verb, so the game can say "The verb comes right after who does it." when it lands in the wrong place.
+- To add sentences, edit the `SENTENCES` list in `words.js`, next to the game page. Each line: the picture, then the sentence, one list per level. Run `python3 tools/build.py` after a change. A `*` in front of a word marks the verb, so the game can say "The verb comes right after who does it." when it lands in the wrong place.
 - The progress page groups missed sentences by level, like "Practise questions: the question word comes first, the question mark last."
 - Sentence Builder is not part of Today's 10, because Today's 10 uses answers to pick from.

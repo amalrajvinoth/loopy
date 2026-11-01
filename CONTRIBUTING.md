@@ -25,7 +25,7 @@ You need a free GitHub account. GitHub accounts are for ages 13 and up, so a gro
 ## Change the code
 
 1. Fork the repo and make a new branch.
-2. Make your change. Keep it small and focused.
+2. Make your change. Keep it small and focused. To add or fix words, facts or countries, edit the game's `words.js` or `data.js` (Word Match and Word Trail share `languages/words.js`). Each game's README says what goes on a line.
 3. Test it on a phone size and a computer size, in English and German.
    If you edited a page or anything in `src/`, run `python3 tools/build.py` (see the README) and `python3 tools/check_external.py`.
 4. Open a pull request and say what you changed and why.

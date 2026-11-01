@@ -58,5 +58,5 @@ Tap **Settings**, then **Print worksheet**. The print window opens. Print it, or
 ## For grown-ups
 
 - The pictures are emoji, so nothing is loaded from other websites. They look a little different on each device.
-- To add a fact, edit the `FACTS` list in `index.html`: picture, level, then the English and German question, right answer, three wrong answers and one line of why.
+- To add a fact, edit the `FACTS` list in `data.js`, next to the game page. Each line: picture, level, then the English and German question, right answer, three wrong answers and one line of why. Run `python3 tools/build.py` after a change.
 - The progress page groups missed questions by topic, like "Talk about space: the Sun, the Moon and the planets."

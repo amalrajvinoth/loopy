@@ -67,5 +67,5 @@ Reading out loud uses the voice built into the browser or device, in the languag
 ## For grown-ups
 
 - The pictures are emoji, so nothing is loaded from other websites. They look a little different on each device.
-- To add words, edit the `WORDS` list at the top of `index.html`: picture, English word, German word with its article, level. Level 2 words come from age 7.
+- The words come from the shared word bank `languages/words.js`, which Word Trail uses too. To add a word, add a line to one of the four topics (animals, food, home, school). Each line: picture, English word, German word with its article, level (1, or 2 from age 7). Then run `python3 tools/build.py`. A word with a level is in Word Match. Add a fifth value `0` if it should stay out of Word Trail, for example a word with a space in it.
 - The progress page groups missed words by topic, like "Practise words for food."
