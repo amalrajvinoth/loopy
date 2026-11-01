@@ -12,7 +12,7 @@ Yes. Loopy is free. There are no ads, no sign-up and nothing to buy.
 
 ## Does Loopy collect data about my child?
 
-No. There are no accounts, no ads, no tracking and no analytics. Stars and settings are saved only in this browser on this device. Even the fonts are stored on the Loopy site, so your browser only talks to Loopy. The one exception is Family sync, and only if a grown-up turns it on. It sends a copy of the stars. That copy is locked on your device first, so the server can't read it.
+No. There are no accounts, no ads, no tracking and no analytics. Stars and settings are saved only in this browser on this device. Even the fonts are stored on the Loopy site, so your browser only talks to Loopy. The one exception is Family sync, and only if a grown-up turns it on. It sends a copy of the stars. That copy is locked on your device first, so the server can't read it. A grown-up can also leave their own email under **Stay in touch** in Settings; nothing about the child is in it. See the [privacy note](https://amalrajvinoth.github.io/loopy/privacy/).
 
 ## Which ages is Loopy for?
 
@@ -57,6 +57,10 @@ The code carries stars, badges, best scores, the day streak, the answers on the 
 Yes, with Family sync. On the home page, open ⚙ Settings and tap **Turn on** under Family sync. loopy shows a family code and a QR code. On the other device, scan the QR code, or open Settings, tap **Join with a code** and type it. From then on, new stars go to every family device by themselves. Nothing is taken away: for each child the bigger number wins.
 
 Everything is locked on your device before it is sent, with a key made from the family code. The server only keeps the locked copy and can't read it. There is no account. **Turn off** stops it on one device; **Turn off everywhere** deletes the family copy. The stars on each device stay.
+
+## Can I hear about new games?
+
+Yes. On the home page, open ⚙ Settings and find **Stay in touch**. Type your email, tick the box and tap **Save**. Only grown-ups, please. Loopy keeps the email, your language and the time on its own server in the EU. Nothing else. It sends a note a few times a year. Tap **Remove** in the same place to delete it; it is deleted by itself after 2 years anyway. Nothing is sent until you tap Save. The [privacy note](https://amalrajvinoth.github.io/loopy/privacy/) has the details.
 
 ## Can I use Loopy like an app?
 

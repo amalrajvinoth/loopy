@@ -22,7 +22,7 @@ Den gleichen Link gibt es auf der Hilfe-Seite von loopy, unter **Sicherheitsprob
 
 ## Was loopy für die Sicherheit tut
 
-- **Keine persönlichen Daten.** Keine Konten, keine Werbung, kein Tracking, keine Analyse. Sterne und Einstellungen bleiben auf deinem Gerät.
+- **Keine persönlichen Daten.** Keine Konten, keine Werbung, kein Tracking, keine Analyse. Sterne und Einstellungen bleiben auf deinem Gerät. Das Einzige, was ein Erwachsener geben kann, ist die eigene E-Mail, unter **In Kontakt bleiben** in den Einstellungen, und nur mit **Speichern**. Siehe den [Datenschutzhinweis](/loopy/privacy/).
 - **Nichts von anderen Seiten.** Schriften und alle Dateien kommen von der loopy-Seite selbst. Die Seite sendet nie Daten, außer beim Familien-Sync, wenn ein Erwachsener ihn einschaltet. Seine Kopie wird vorher auf dem Gerät verschlossen, sodass der Server sie nicht lesen kann.
 - **Eine strenge Sicherheitsregel.** Jede Seite sagt dem Browser, nur Dateien von loopy zu laden und nur ihren eigenen Code auszuführen.
 - **Kein fremder Code.** loopy nutzt keine Bibliotheken oder Pakete.

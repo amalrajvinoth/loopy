@@ -26,7 +26,7 @@ const AXE = fs.readFileSync(require.resolve("axe-core/axe.min.js"), "utf8");
 // Every theme in src/loopy.css (a theme sets its own --bg).
 const THEMES = [...new Set([...fs.readFileSync(path.join(ROOT, "src/loopy.css"), "utf8")
   .matchAll(/:root\[data-theme="([a-z]+)"\]\s*\{[^}]*--bg:/g)].map(m => m[1]))];
-const PAGES = ["", "help/", "progress/"];
+const PAGES = ["", "help/", "privacy/", "progress/"];
 for (const subject of fs.readdirSync(ROOT).sort()) {
   const dir = path.join(ROOT, subject);
   if (!fs.statSync(dir).isDirectory() || /^[._]|^(docs|fonts|tools|src|help|progress|node_modules|guide-src)$/.test(subject)) continue;

@@ -14,7 +14,7 @@ Ja. Es gibt keine Werbung, keine Anmeldung und nichts zu kaufen.
 
 ## Sammelt loopy Daten über mein Kind?
 
-Nein. Es gibt keine Konten, keine Werbung, kein Tracking und keine Analyse. Sterne und Einstellungen bleiben in diesem Browser auf diesem Gerät. Sogar die Schriften kommen von der loopy-Seite. Die einzige Ausnahme ist der [Familien-Sync](/loopy/guide/de/stars/family-sync/), wenn ein Erwachsener ihn einschaltet: Seine Kopie wird vorher auf deinem Gerät verschlossen, sodass der Server sie nicht lesen kann. Mehr unter [Ist es sicher?](/loopy/guide/de/start/is-it-safe/).
+Nein. Es gibt keine Konten, keine Werbung, kein Tracking und keine Analyse. Sterne und Einstellungen bleiben in diesem Browser auf diesem Gerät. Sogar die Schriften kommen von der loopy-Seite. Die einzige Ausnahme ist der [Familien-Sync](/loopy/guide/de/stars/family-sync/), wenn ein Erwachsener ihn einschaltet: Seine Kopie wird vorher auf deinem Gerät verschlossen, sodass der Server sie nicht lesen kann. Ein Erwachsener kann außerdem unter **In Kontakt bleiben** die eigene E-Mail hinterlassen; nichts über das Kind steht darin. Mehr unter [Ist es sicher?](/loopy/guide/de/start/is-it-safe/) und im [Datenschutzhinweis](/loopy/privacy/).
 
 ## Für welches Alter ist loopy?
 
@@ -39,6 +39,10 @@ In diesem Browser, in zwei Speichern. Gelöschte Browserdaten oder ein privates 
 ## Können die Sterne auf allen unseren Geräten gleich sein?
 
 Ja, mit dem Familien-Sync. Öffne auf der Startseite ⚙ **Einstellungen** und tippe auf **Einschalten**. Scanne auf dem anderen Gerät den QR-Code. Neue Sterne kommen dann von selbst auf jedes Gerät der Familie. Alles wird verschlossen, bevor es gesendet wird, und es gibt kein Konto. Mehr unter [Familien-Sync](/loopy/guide/de/stars/family-sync/).
+
+## Kann ich von neuen Spielen erfahren?
+
+Ja. In ⚙ **Einstellungen** auf der Startseite, unter **In Kontakt bleiben**, tippe deine E-Mail ein, kreuze das Kästchen an und tippe auf **Speichern**. Nur für Erwachsene. loopy behält die E-Mail, deine Sprache und die Zeit, sonst nichts, und **Löschen** entfernt sie. Mehr unter [Einstellungen auf der Startseite](/loopy/guide/de/settings/home-settings/).
 
 ## Kann ich loopy wie eine App nutzen, auch offline?
 

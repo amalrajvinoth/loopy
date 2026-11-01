@@ -85,11 +85,13 @@ In a game, tap **Settings** to change age, language, colors, the reading font, s
 
 ## Your data stays on your device
 
-Stars, settings, children's names and the answers on the grown-ups' page are saved in your browser. Nothing is sent anywhere, unless a grown-up turns on Family sync (below). There are no ads, no tracking and no outside services. Even the fonts are stored on the site.
+Stars, settings, children's names and the answers on the grown-ups' page are saved in your browser. Nothing is sent anywhere, unless a grown-up turns on Family sync (below) or leaves their email under **Stay in touch** (below). There are no ads, no tracking and no outside services. Even the fonts are stored on the site. The [privacy note](https://amalrajvinoth.github.io/loopy/privacy/) says it all in plain words, in English and German.
 Everything is saved twice in the browser: in IndexedDB (a bigger store) and in localStorage (quick to read when a page opens). If one is cleared, loopy brings it back from the other. Once a child has stars, loopy asks the browser to keep them (persistent storage). If IndexedDB is blocked, for example in a private window, loopy works from localStorage alone.
 To move stars to another device, open the home page and tap **Move my stars to another device**. Scan the QR code with the other device's camera, tap **Send** to share the link, or copy the code or the link across. **Save backup** writes the code to a small file (`loopy-stars-<date>.json`) that lands in Downloads or Files, so iCloud Drive or Google Drive can keep it; **Open backup** loads such a file. The QR code is drawn on the device and the file is made on the device, so still nothing is sent anywhere. With two or more children, pick everyone or one child. The code also carries the day streak, progress, Last 5, the age, the game levels and settings, and the last game. The link holds the code after the `#`, so it never reaches the web server; opening it asks first. Loading a code only adds, it never takes anything away. Old codes still load.
 
 Family sync keeps the stars the same on all a family's devices, by themselves. Open ⚙ Settings on the home page and tap **Turn on** under **Family sync**. Then scan its QR code on the other device. Everything is locked on the device before it is sent (AES-GCM, with a key made from the 16-letter family code). So the sync server can't read it. There is no account. It is off until a grown-up turns it on; with it off, nothing is sent. See [sync/README.md](sync/README.md).
+
+Stay in touch is for grown-ups who want to hear about new games, a few times a year. Open ⚙ Settings on the home page, type your email under **Stay in touch**, tick the box and tap **Save**. The email, the language and the time go to loopy's own sync server. They land in a separate database in the EU. Nothing else is stored, nothing about the child, and nothing is sent until Save. **Remove** deletes it; after 2 years it is deleted by itself. Once a night the server also counts how many families have Family sync on. Counts only, no names. So loopy's maker can see whether loopy is used.
 
 ## Screen readers and keyboards
 
@@ -121,6 +123,7 @@ The site is plain HTML, CSS and JavaScript. One small build step makes the share
 | `DESIGN.md` | How loopy looks: colors, fonts, buttons, layout and rules. Read it before you change a page |
 | `logo.svg`, `logo-white.svg`, `icon.svg` | The logo (for light and dark backgrounds) and the app icon |
 | `help/index.html` | The Help page: FAQ and feedback links |
+| `privacy/index.html` | The privacy note: what loopy keeps, where, how long, how to delete it (EN + DE) |
 | `progress/index.html` | How it's going: the grown-ups' page. Games log answers with `Loopy.rewards.wrong(game, { q, a, y, k })` |
 | `fonts/` | The Fredoka, Lexend and Atkinson Hyperlegible Next fonts, stored here so no request goes to Google. The `-latin` files are made by the build from `src/fonts/`. Licence: `fonts/OFL.txt` |
 | `.github/` | Forms for problems, ideas and questions, the automatic checks, and Dependabot |

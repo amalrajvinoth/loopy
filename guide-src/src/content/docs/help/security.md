@@ -22,7 +22,7 @@ The same link is on loopy's Help page, under **Report a security problem**.
 
 ## What loopy does to stay safe
 
-- **No personal data.** No accounts, no ads, no tracking, no analytics. Stars and settings stay on your device.
+- **No personal data.** No accounts, no ads, no tracking, no analytics. Stars and settings stay on your device. The one thing a grown-up can give is their own email, under **Stay in touch** in Settings, and only by tapping **Save**. See the [privacy note](/loopy/privacy/).
 - **Nothing from other sites.** Fonts and every file come from the loopy site itself. The page never sends data anywhere, except Family sync when a grown-up turns it on. Its copy is locked on the device first, so the server can't read it.
 - **A strict security policy.** Each page tells the browser to load files only from loopy and to run only its own code.
 - **No outside code.** loopy uses no libraries or packages.

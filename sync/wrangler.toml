@@ -1,5 +1,5 @@
 # loopy Family sync server on Cloudflare (free plan). See sync/README.md.
-# GitHub Actions deploys it (.github/workflows/sync.yml). database_id is filled in by that job.
+# GitHub Actions deploys it (.github/workflows/sync.yml). Both database_id values are filled in by that job.
 name = "loopy-sync"
 main = "worker.js"
 compatibility_date = "2026-10-01"
@@ -13,6 +13,12 @@ ORIGINS = "https://amalrajvinoth.github.io"
 binding = "DB"
 database_name = "loopy-sync"
 database_id = "DATABASE_ID"
+
+# "Stay in touch" emails, apart from the family copies and kept in the EU (made with --location weur).
+[[d1_databases]]
+binding = "GROWNUPS"
+database_name = "loopy-grownups"
+database_id = "GROWNUPS_ID"
 
 [triggers]
 crons = ["17 3 * * *"]

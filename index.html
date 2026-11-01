@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'sha256-aotNLhuHM636WIwuLuH0t4pM4ZoeNHKfjXSbn9ok8Tk='; style-src 'self' 'sha256-dJItlcMQd9O+m7VeTwF6qvXLEzV/DncJGRpqHNv0MJg='; img-src 'self' data:; font-src 'self'; connect-src 'self' https://loopy-sync.loopy-1e2.workers.dev; worker-src 'self'; object-src 'none'; base-uri 'none'; form-action 'none'; manifest-src 'self'; upgrade-insecure-requests">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'sha256-wBfeoia5WyJ4kNMRYbuI48r/s+jnyfNmcfGYd1ENQiQ='; style-src 'self' 'sha256-Aug25tMQP9CHuV6bjgveyFauiFOjS+rcrFnt5jSTbuw='; img-src 'self' data:; font-src 'self'; connect-src 'self' https://loopy-sync.loopy-1e2.workers.dev; worker-src 'self'; object-src 'none'; base-uri 'none'; form-action 'none'; manifest-src 'self'; upgrade-insecure-requests">
 <meta name="referrer" content="strict-origin-when-cross-origin">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <link rel="icon" href="icon.svg" type="image/svg+xml">
@@ -116,10 +116,18 @@ footer p { margin: 0; }
 .foot-btn:active { transform: translateY(1px); }
 .foot-btn:focus-visible { outline: 3px solid var(--mark); outline-offset: 2px; }
 :root[data-theme="contrast"] .foot-btn:not(:focus-visible) { outline: 2px solid var(--line); outline-offset: -2px; }
-/* Family sync: a part of Settings, before Use like an app. */
-.set-sync { display: flex; flex-direction: column; gap: 10px; border-top: 2px dashed var(--line); padding-top: 12px; }
-.set-sync[hidden] { display: none; }
-.set-sync p:not(.set-head) { margin: 0; color: var(--muted); font-size: 0.9rem; line-height: 1.4; }
+/* Stay in touch (a grown-up's email) and Family sync: two parts of Settings, before Use like an app. */
+.set-sync, .set-touch { display: flex; flex-direction: column; gap: 10px; border-top: 2px dashed var(--line); padding-top: 12px; }
+.sync-join input.touch-mail { text-transform: none; }
+.touch-agree { display: flex; gap: 10px; align-items: flex-start; color: var(--ink); font-size: 0.95rem; line-height: 1.35; cursor: pointer; }
+.touch-agree input { flex: none; width: 24px; height: 24px; margin: 0; accent-color: var(--c1); }
+.touch-agree a { color: var(--c1); }
+.touch-agree a:focus-visible, .touch-agree input:focus-visible { outline: 3px solid var(--mark); outline-offset: 2px; }
+.set-touch p.touch-saved { color: var(--ink); font-weight: 600; overflow-wrap: anywhere; }
+.foot-small { font-size: 0.85rem; }
+.foot-small a { color: var(--muted); }
+.set-sync[hidden], .set-touch[hidden] { display: none; }
+.set-sync p:not(.set-head), .set-touch p:not(.set-head) { margin: 0; color: var(--muted); font-size: 0.9rem; line-height: 1.4; }
 .set-sync p.sync-code { font-family: "Fredoka", "Lexend", sans-serif; font-size: 1.35rem; letter-spacing: 0.06em; color: var(--ink); overflow-wrap: anywhere; }
 .sync-qr { display: block; width: min(100%, 200px); height: auto; border-radius: 12px; background: #fff; }
 .sync-join { display: flex; gap: 8px; }
@@ -199,6 +207,7 @@ footer p { margin: 0; }
       <a class="foot-btn" href="help/" data-t-aria="helpLink" aria-label="Help and feedback"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M9.5 9.2a2.6 2.6 0 1 1 3.6 2.4c-.7.3-1.1.9-1.1 1.6v.6"/><path d="M12 17.2h.01"/></svg><span data-t="footHelp">Help</span></a>
       <a class="foot-btn" id="guide-link" href="guide/" data-t-aria="guideLink" aria-label="How loopy works: the guide"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 19.5V5a2 2 0 0 1 2-2h14v15H6.5A2.5 2.5 0 0 0 4 20.5 2.5 2.5 0 0 0 6.5 23H20"/><path d="M8 7h8"/><path d="M8 11h6"/></svg><span data-t="footGuide">Guide</span></a>
     </nav>
+    <p class="foot-small"><a href="privacy/" data-t="footPrivacy">Privacy note</a></p>
   </footer>
 </div>
 <script>
@@ -219,7 +228,7 @@ Loopy.addStrings({
     askOne: "Load {name}'s stars here?", askMany: "Load the stars of {names} here?", askNone: "Load these stars here?",
     askText: "This adds their stars, progress, game levels and where they left off to this device. Nothing here is taken away.",
     askLoad: "Load", askNo: "Not now",
-    pasteHere: "Paste a code here", pasteCode: "Paste a stars code", load: "Load", moreSoon: "More games are on the way!", helpLink: "Help and feedback", guideLink: "How loopy works: the guide", progressLink: "For grown-ups: how it's going", footGrown: "Grown-ups", footHelp: "Help", footGuide: "Guide",
+    pasteHere: "Paste a code here", pasteCode: "Paste a stars code", load: "Load", moreSoon: "More games are on the way!", helpLink: "Help and feedback", guideLink: "How loopy works: the guide", progressLink: "For grown-ups: how it's going", footGrown: "Grown-ups", footHelp: "Help", footGuide: "Guide", footPrivacy: "Privacy note",
     copied: "Copied!", copyByHand: "Select the code and copy it.", badCode: "That code didn't work. Check it was copied in full.",
     toNext: "{n} more stars to the {name} badge. Every right answer earns a star.", toNextOne: "1 more star to the {name} badge. Every right answer earns a star.",
     allBadges: "You have every badge. You're a loopy Master!", earned: "Earned", nStars: "{n} stars",
@@ -271,7 +280,7 @@ Loopy.addStrings({
     askOne: "Die Sterne von {name} hier laden?", askMany: "Die Sterne von {names} hier laden?", askNone: "Diese Sterne hier laden?",
     askText: "Das fügt Sterne, Fortschritt, Stufen in den Spielen und wo aufgehört wurde zu diesem Gerät hinzu. Hier geht nichts verloren.",
     askLoad: "Laden", askNo: "Nicht jetzt",
-    pasteHere: "Code hier einfügen", pasteCode: "Sterne-Code einfügen", load: "Laden", moreSoon: "Bald kommen mehr Spiele!", helpLink: "Hilfe und Feedback", guideLink: "So geht loopy: die Anleitung", progressLink: "Für Erwachsene: so läuft es", footGrown: "Erwachsene", footHelp: "Hilfe", footGuide: "Anleitung",
+    pasteHere: "Code hier einfügen", pasteCode: "Sterne-Code einfügen", load: "Laden", moreSoon: "Bald kommen mehr Spiele!", helpLink: "Hilfe und Feedback", guideLink: "So geht loopy: die Anleitung", progressLink: "Für Erwachsene: so läuft es", footGrown: "Erwachsene", footHelp: "Hilfe", footGuide: "Anleitung", footPrivacy: "Datenschutzhinweis",
     copied: "Kopiert!", copyByHand: "Markiere den Code und kopiere ihn.", badCode: "Der Code hat nicht geklappt. Prüfe, ob er ganz kopiert wurde.",
     toNext: "Noch {n} Sterne bis zum Abzeichen {name}. Jede richtige Antwort gibt einen Stern.", toNextOne: "Noch 1 Stern bis zum Abzeichen {name}. Jede richtige Antwort gibt einen Stern.",
     allBadges: "Du hast alle Abzeichen. Du bist ein loopy-Meister!", earned: "Geschafft", nStars: "{n} Sterne",
@@ -618,26 +627,27 @@ window.addEventListener("loopy:age", render);
   }
 })();
 
-// Family sync: a part of ⚙ Settings on the home page, only when loopy has a sync server (Loopy.syncHost).
-// Its buttons and words live in loopy-sync.js (Loopy.sync.settings), loaded when Settings opens or a
-// link loopy/#family=CODE comes in, so the home page stays as small as it was.
+// Stay in touch (a grown-up's email) and Family sync: two parts of ⚙ Settings on the home page, only when
+// loopy has a sync server (Loopy.syncHost). Their buttons and words live in loopy-sync.js (Loopy.sync.touch
+// and Loopy.sync.settings), loaded when Settings opens or a link loopy/#family=CODE comes in, so the home
+// page stays as small as it was.
 (function familySync() {
   if (!Loopy.syncHost) return;
   Loopy.syncPage = "home";
   const panel = document.getElementById("settings-panel");
   if (!panel) return;
-  const box = document.createElement("div");
-  box.className = "set-sync";
-  box.hidden = true;
+  const box = document.createElement("div"), mail = document.createElement("div");
+  box.className = "set-sync"; mail.className = "set-touch";
+  box.hidden = mail.hidden = true;
   let asked = false;
   const fill = () => {
     if (asked) return;
     asked = true;
-    Loopy.load("sync").then(() => Loopy.sync.settings(box), () => { asked = false; });
+    Loopy.load("sync").then(() => { Loopy.sync.touch(mail); Loopy.sync.settings(box); }, () => { asked = false; });
   };
   const link = () => /^#family=/.test(location.hash);
   const add = () => {
-    panel.appendChild(box);
+    panel.append(mail, box);
     if (!panel.hidden || link()) fill();
     const gear = document.getElementById("settings-toggle");
     if (gear) gear.addEventListener("click", fill);

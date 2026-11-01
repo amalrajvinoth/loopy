@@ -2,7 +2,8 @@
 #
 # One-time setup by the repo owner (sync/README.md has the steps): two repository secrets,
 # CLOUDFLARE_API_TOKEN and CLOUDFLARE_ACCOUNT_ID. Until they are set, this job does nothing and passes.
-# It makes the database the first time (loopy-sync), sets up its table, and deploys the Worker.
+# It makes the databases the first time (loopy-sync, and loopy-grownups in the EU), sets up their tables,
+# and deploys the Worker.
 name: Family sync server
 
 on:
@@ -47,13 +48,21 @@ jobs:
         working-directory: sync
         run: |
           w() { npx --yes "$WRANGLER" "$@"; }
-          find_id() { w d1 list --json | node -e 'let s="";process.stdin.on("data",d=>s+=d).on("end",()=>{const d=JSON.parse(s).find(x=>x.name==="loopy-sync");process.stdout.write(d?d.uuid:"")})'; }
-          id=$(find_id)
+          find_id() { w d1 list --json | node -e 'let s="";process.stdin.on("data",d=>s+=d).on("end",()=>{const d=JSON.parse(s).find(x=>x.name===process.argv[1]);process.stdout.write(d?d.uuid:"")})' "$1"; }
+          id=$(find_id loopy-sync)
           if [ -z "$id" ]; then
             w d1 create loopy-sync --update-config=false
-            id=$(find_id)
+            id=$(find_id loopy-sync)
           fi
           test -n "$id"
           sed -i "s/DATABASE_ID/$id/" wrangler.toml
+          gid=$(find_id loopy-grownups)
+          if [ -z "$gid" ]; then
+            w d1 create loopy-grownups --location weur --update-config=false
+            gid=$(find_id loopy-grownups)
+          fi
+          test -n "$gid"
+          sed -i "s/GROWNUPS_ID/$gid/" wrangler.toml
           w d1 execute loopy-sync --remote --yes --file schema.sql
+          w d1 execute loopy-grownups --remote --yes --file grownups.sql
           w deploy
