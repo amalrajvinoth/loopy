@@ -25,13 +25,21 @@ const TAG = /<([a-zA-Z][\w-]*)([^<>]*?)\sstyle="([^"]*)"([^<>]*)>/g;
 let stacked = 0;
 function stackWideTables(html) {
   return html.replace(/<table>([\s\S]*?)<\/table>/g, (all, inner) => {
-    const heads = [...inner.matchAll(/<th[^>]*>([\s\S]*?)<\/th>/g)].map(m => m[1].replace(/<[^>]+>/g, "").replace(/\s+/g, " ").trim());
+    const heads = [...inner.matchAll(/<th[^>]*>([\s\S]*?)<\/th>/g)].map(m => m[1]
+      .replace(/<[^>]+>/g, "")
+      .replace(/\s+/g, " ")
+      .trim()
+      .replace(/[&<>"]/g, (ch) => (
+        ch === "&" ? "&amp;" :
+        ch === "<" ? "&lt;" :
+        ch === ">" ? "&gt;" : "&quot;"
+      )));
     if (heads.length < 4) return all;
     stacked++;
     let i = 0;
     const body = inner.replace(/<tr>|<td(?=[\s>])/g, (tag) => {
       if (tag === "<tr>") { i = 0; return tag; }
-      return `<td data-label="${(heads[i++] || "").replace(/"/g, "&quot;")}"`;
+      return `<td data-label="${heads[i++] || ""}"`;
     });
     return `<table class="stack">${body}</table>`;
   });
