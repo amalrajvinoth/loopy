@@ -1,0 +1,81 @@
+# Who uses loopy? Every Monday this lists the forks and stars that are new since its last run, the
+# totals, and (when a token allows it) how often the repo was cloned in the last two weeks. The Summary
+# of the run shows it all. When there is a new fork or star, it also adds a comment to the one "Forks
+# and stars" issue, which is assigned to the owner, so the owner gets an email. Nothing is sent anywhere
+# else. GitHub itself has no notification for a new fork or star, which is why this job exists.
+#
+# Clone counts: GitHub only gives them to a token with admin read on the repo, which the Actions token
+# has not. Optional: add a fine-grained token with "Administration: read" as the secret TRAFFIC_TOKEN.
+# Without it, the forks and stars still work and the clone line says why it is missing.
+# Run it any time: Actions → Forks and stars → Run workflow.
+name: Forks and stars
+
+on:
+  schedule:
+    - cron: "13 5 * * 1" # Mondays, 05:13 UTC, before the owner's Monday check
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  issues: write
+  actions: read
+
+jobs:
+  count:
+    runs-on: ubuntu-latest
+    steps:
+      - name: New forks and stars since the last run
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          TRAFFIC_TOKEN: ${{ secrets.TRAFFIC_TOKEN }}
+          OWNER: ${{ github.repository_owner }}
+        run: |
+          set -eu
+          R="$GITHUB_REPOSITORY"
+          # Since the last green run of this job, or the last 7 days the first time.
+          since=$(gh api "repos/$R/actions/workflows/forks.yml/runs?status=success&per_page=1" \
+                    --jq '.workflow_runs[0].run_started_at // empty' 2>/dev/null || true)
+          [ -n "$since" ] || since=$(date -u -d '7 days ago' +%FT%TZ)
+          echo "Looking for forks and stars since $since."
+
+          forks=$(gh api "repos/$R/forks?sort=newest&per_page=100" --paginate \
+                    --jq ".[] | select(.created_at > \"$since\") | \"- \(.created_at[:10]) [\(.full_name)](\(.html_url))\"")
+          stars=$(gh api -H "Accept: application/vnd.github.star+json" "repos/$R/stargazers?per_page=100" --paginate \
+                    --jq ".[] | select(.starred_at > \"$since\") | \"- \(.starred_at[:10]) [\(.user.login)](\(.user.html_url))\"")
+          totals=$(gh api "repos/$R" --jq '"\(.forks_count) forks, \(.stargazers_count) stars"')
+
+          # The Actions token is tried first; it usually may not read traffic, and then the optional secret is used.
+          clones=$(gh api "repos/$R/traffic/clones" 2>/dev/null \
+                     --jq '"Cloned \(.count) times by \(.uniques) people in the last 14 days."' \
+                   || GH_TOKEN="${TRAFFIC_TOKEN:-$GH_TOKEN}" gh api "repos/$R/traffic/clones" 2>/dev/null \
+                     --jq '"Cloned \(.count) times by \(.uniques) people in the last 14 days."' \
+                   || echo "Clone counts need the optional TRAFFIC_TOKEN secret with Administration: read (see the top of forks.yml).")
+
+          {
+            echo "## Forks and stars"
+            echo
+            echo "New since $(echo "$since" | cut -c1-10):"
+            echo
+            if [ -n "$forks" ]; then echo "Forks:"; echo "$forks"; else echo "No new forks."; fi
+            echo
+            if [ -n "$stars" ]; then echo "Stars:"; echo "$stars"; else echo "No new stars."; fi
+            echo
+            echo "In all: $totals. $clones"
+          } > "$RUNNER_TEMP/report.md"
+          cat "$RUNNER_TEMP/report.md" | tee -a "$GITHUB_STEP_SUMMARY"
+
+          if [ -z "$forks" ] && [ -z "$stars" ]; then
+            echo "Nothing new, so no comment on the issue."
+            exit 0
+          fi
+
+          # One issue carries every report. The owner is assigned to it, so each comment sends an email.
+          gh label create usage --color 0E8A16 --description "Who uses loopy: forks, stars and clones" --force >/dev/null
+          issue=$(gh issue list --repo "$R" --label usage --state open --json number --jq '.[0].number // empty')
+          if [ -z "$issue" ]; then
+            issue=$(gh issue create --repo "$R" --title "Forks and stars" --label usage --assignee "$OWNER" \
+                      --body "Every Monday the Forks and stars job adds a comment here when someone new forked or starred loopy. Nothing to do; it is only so the owner hears about it. Close it any time: the next report opens a new one." \
+                    | grep -oE '[0-9]+$')
+          fi
+          gh issue comment "$issue" --repo "$R" --body-file "$RUNNER_TEMP/report.md"
+          echo "Added the report to issue #$issue."
