@@ -3,8 +3,8 @@ import worker from "./worker.js";
 import { fakeD1 } from "./fake-d1.mjs";
 
 const db = fakeD1();
-const env = { DB: db, GROWNUPS: db, ORIGINS: "https://amalrajvinoth.github.io,https://loopykids.dev" };
-const ORIGIN = "https://amalrajvinoth.github.io", SECOND = "https://loopykids.dev";
+const env = { DB: db, GROWNUPS: db, ORIGINS: "https://amalrajvinoth.github.io,https://loopykids.de" };
+const ORIGIN = "https://amalrajvinoth.github.io", SECOND = "https://loopykids.de";
 const ID = "0123456789abcdef0123456789abcdef", KEY = "A".repeat(43), OTHER = "B".repeat(43);
 const copy = n => JSON.stringify({ v: 1, iv: "AAAAAAAAAAAAAAAA", d: btoa("locked " + n) });
 let fails = 0;

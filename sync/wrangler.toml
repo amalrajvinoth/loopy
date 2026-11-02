@@ -8,7 +8,7 @@ workers_dev = true
 [vars]
 # Pages that may read and write. A comma-separated list of origins: the GitHub Pages address and the site's own
 # address on Cloudflare Pages (README, "Two addresses").
-ORIGINS = "https://amalrajvinoth.github.io,https://loopykids.dev"
+ORIGINS = "https://amalrajvinoth.github.io,https://loopykids.de"
 
 [[d1_databases]]
 binding = "DB"

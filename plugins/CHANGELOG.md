@@ -4,7 +4,7 @@ Newest first. One line per change: date, plugin and version, what it learned, an
 
 | Date | Plugin | What changed | Learned from |
 | --- | --- | --- | --- |
-| 2026-11-02 | loopy 1.6.4 | ship-pr names the Cloudflare Pages step of the Pages run (the site's own address, skipped until the secrets and `CF_PAGES_PROJECT` are set); heal has a recipe for when that step is red. | loopykids.dev, loopy project 2 Nov 2026 |
+| 2026-11-02 | loopy 1.6.4 | ship-pr names the Cloudflare Pages step of the Pages run (the site's own address, skipped until the secrets and `CF_PAGES_PROJECT` are set); heal has a recipe for when that step is red. | loopykids.de, loopy project 2 Nov 2026 |
 | 2026-11-02 | loopy 1.6.3 | ship-pr's docs step says to regenerate the guide's game pictures (`npm run screens --prefix guide-src`) when a game looks different, so the guide never shows an old layout. | Second UI audit, finding 10, loopy project 2 Nov 2026 |
 | 2026-11-02 | loopy 1.6.2 | ship-pr and weekly-check know the Monday Forks and stars job (`forks.yml`: new forks and stars, comment on the "Forks and stars" issue); heal has a recipe for it. | Owner's ask "notify any new fork or download", loopy project 2 Nov 2026 |
 | 2026-11-01 | loopy 1.6.1 | RULES.md and ship-pr say to use the repo's own improve-ui copy, not a global skill of the same name, and that `/impeccable critique <page>` is a second opinion where impeccable is installed. | Owner's ask to install ui-skills and impeccable globally on the Mac, loopy project 1 Nov 2026 |
