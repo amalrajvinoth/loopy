@@ -10,6 +10,7 @@ The big changes, newest first. Small fixes are not listed. See [the full list on
 
 ## 2 November 2026
 
+- **A shorter Settings box, grouped Help, clearer home page.** On the home page, the grown-up parts of ⚙ Settings (email, Family sync, install) fold under one line. The Help page sorts its questions into four groups. "More to explore" is now "For older kids", with a line that says what it is. See [Settings on the home page](/loopy/guide/settings/home-settings/).
 - **Tidier tiles on tablets.** The home page shows at most two lines about each game, so all tiles in a row are the same height. Word Detective's letter grid is bigger on a tablet.
 - **Game pages fit on a phone.** A wide Age levels table now shows one small card per level, so the page no longer slides sideways.
 - **Word Detective keys fit in German.** The erase key is now the ⌫ sign and the Check key is wider, so "Prüfen" is no longer cut off on a phone. See [Word Detective](/loopy/guide/games/languages/word-detective/).

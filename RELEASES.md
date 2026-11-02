@@ -4,6 +4,7 @@ The big changes, newest first. Small fixes are not listed.
 
 | Date | What's new | Where | PR |
 | --- | --- | --- | --- |
+| 2026-11-02 | Home Settings is short again for a child: Stay in touch, Family sync and Use like an app fold under one line, "For grown-ups: email, family sync, install". The Help page groups its questions under Getting started, Stars and devices, The games and For grown-ups. "More to explore" is now "For older kids" with a line that says what it is (and "For younger kids" for a teenager). Findings 15, 16 and 18 of the second UI check. | Home, Help | #201 |
 | 2026-11-02 | On tablets and computers the game tiles on the home page show at most two lines about each game. So every tile in a row is the same height and the page is a screen shorter. Word Detective's letter grid grows with the card on a tablet, like Word Trail's. Findings 1 and 2 of the second UI check. | Home, Word Detective | #200 |
 | 2026-11-02 | The guide's game pages no longer scroll sideways on a phone. A wide Age levels table (4 columns or more) now shows one small card per level, with the column name before each value. Finding 17 of the second UI check. | Guide | #199 |
 | 2026-11-02 | In German, Word Detective's Erase and Check keys were cut off on phones ("Lösche", "Prüfe"). The erase key is now the ⌫ sign, one and a half keys wide, and Check is two and a half keys wide. Both rows add up to the same width, so "Prüfen" fits on a small phone. Finding 13 of the second UI check. | Word Detective | #198 |
