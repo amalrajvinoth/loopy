@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'sha256-3hvY5R502X3wt+JF3SLiM7t24ze7QRBs1XoVCTAEsiU='; style-src 'self' 'sha256-z2P7kGW5Z05eCTjTZdYpc0vThTlOE9vmt97pVSvi2I4=' 'sha256-5/L3e/BVPjm2GPi51M3FkQuzTeZ4bCdHn3SxvjZFuAk=' 'sha256-RT1053JU5UiKvjrCUFx1rlhdFLMmgtuFJ9T8jnMeawQ=' 'sha256-WhxJ2OKu/OtommpaJyYsnbvIUCyF57+rLCTwtHS+3+0='; img-src 'self' data:; font-src 'self'; connect-src 'self' https://loopy-sync.loopy-1e2.workers.dev; worker-src 'self'; object-src 'none'; base-uri 'none'; form-action 'none'; manifest-src 'self'; upgrade-insecure-requests">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'sha256-Y7bUyncC8nJozjpJntvk2kUG/uSC3bzO5AMy3DSI1eE='; style-src 'self' 'sha256-z2P7kGW5Z05eCTjTZdYpc0vThTlOE9vmt97pVSvi2I4=' 'sha256-USzpGbF0Q+9Z4NTinLy2gbh1T53b7lkljfjciW8tHqQ=' 'sha256-RT1053JU5UiKvjrCUFx1rlhdFLMmgtuFJ9T8jnMeawQ=' 'sha256-WhxJ2OKu/OtommpaJyYsnbvIUCyF57+rLCTwtHS+3+0='; img-src 'self' data:; font-src 'self'; connect-src 'self' https://loopy-sync.loopy-1e2.workers.dev; worker-src 'self'; object-src 'none'; base-uri 'none'; form-action 'none'; manifest-src 'self'; upgrade-insecure-requests">
 <meta name="referrer" content="strict-origin-when-cross-origin">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <style>:root{color-scheme:light;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}body{margin:0}[hidden]{display:none!important}</style>
@@ -54,6 +54,7 @@ h1 { margin: 0; font-size: 1.6rem; font-weight: 700; text-wrap: balance; }
 
 .settings { display: flex; flex-direction: column; gap: 8px; }
 .seg-label { font-size: 0.8rem; font-weight: 600; letter-spacing: 0.06em; text-transform: uppercase; color: var(--muted); margin: 0 0 4px 4px; }
+.seg-note { margin: 4px 0 0 4px; font-size: 0.85rem; line-height: 1.35; color: var(--muted); }
 .seg { display: grid; grid-template-columns: repeat(3, 1fr); gap: 6px; background: var(--chip); padding: 5px; border-radius: 14px; }
 .seg.two { grid-template-columns: repeat(2, 1fr); }
 .seg button {
@@ -280,6 +281,7 @@ body { min-height: 100vh; min-height: 100dvh; padding-block: 12px 16px; }
         <button type="button" data-words="en">English</button>
         <button type="button" data-words="de">Deutsch</button>
       </div>
+      <p class="seg-note" data-t="wordsNote">The words to play with. loopy's own language is under Age, look and sound.</p>
     </div>
     <div>
       <p class="seg-label" id="len-label" data-t="siLen">Word length</p>
@@ -318,6 +320,7 @@ body { min-height: 100vh; min-height: 100dvh; padding-block: 12px 16px; }
 <script>
 Loopy.addStrings({
   en: {
+    wordsNote: "The words to play with. loopy's own language is under Age, look and sound.",
     siName: "Spell It", siWords: "Words in", siLen: "Word length", siL3: "3 letters", siL4: "4 letters", siL5: "5 letters", siL6: "6 letters", siL7: "7 to 8",
     siHear: "Hear the word", siEraseAria: "Erase the last letter",
     siKbd: "Keyboard works too: type the letters, Backspace erases, Enter checks.",
@@ -326,6 +329,7 @@ Loopy.addStrings({
     siHow: "Look at each picture. Write the word on the line. The letters under the line help."
   },
   de: {
+    wordsNote: "Die Wörter zum Spielen. Die Sprache von loopy selbst steht unter Alter, Aussehen und Ton.",
     siName: "Wörter schreiben", siWords: "Wörter auf", siLen: "Wortlänge", siL3: "3 Buchstaben", siL4: "4 Buchstaben", siL5: "5 Buchstaben", siL6: "6 Buchstaben", siL7: "7 bis 8",
     siHear: "Wort anhören", siEraseAria: "Letzten Buchstaben löschen",
     siKbd: "Die Tastatur geht auch: Buchstaben tippen, Rücktaste löscht, Enter prüft.",
