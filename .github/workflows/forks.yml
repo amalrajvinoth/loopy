@@ -1,12 +1,14 @@
-# Who uses loopy? Every Monday this lists the forks and stars that are new since its last run, the
-# totals, and (when a token allows it) how often the repo was cloned in the last two weeks. The Summary
-# of the run shows it all. When there is a new fork or star, it also adds a comment to the one "Forks
-# and stars" issue, which is assigned to the owner, so the owner gets an email. Nothing is sent anywhere
-# else. GitHub itself has no notification for a new fork or star, which is why this job exists.
+# Who uses loopy? Every Monday this lists the forks that are new since its last run, says when the star
+# count went up, gives the totals, and (when a token allows it) how often the repo was cloned in the last
+# two weeks. The Summary of the run shows it all. The one "Forks and stars" issue, assigned to the owner,
+# keeps the last counts in its text; when there is a new fork or star, the job adds a comment there, so
+# the owner gets an email. Nothing is sent anywhere else. GitHub itself has no notification for a new
+# fork or star, which is why this job exists.
 #
-# Clone counts: GitHub only gives them to a token with admin read on the repo, which the Actions token
-# has not. Optional: add a fine-grained token with "Administration: read" as the secret TRAFFIC_TOKEN.
-# Without it, the forks and stars still work and the clone line says why it is missing.
+# What the Actions token may read (tried on 2 November 2026): the forks list and the totals, yes; the
+# list of who starred, no (403), so stars are counted, not named; clone counts, no. Optional: a
+# fine-grained token with "Administration: read" on this repo as the secret TRAFFIC_TOKEN gives the
+# clone counts. Without it the clone line says why it is missing.
 # Run it any time: Actions → Forks and stars → Run workflow.
 name: Forks and stars
 
@@ -38,28 +40,29 @@ jobs:
           [ -n "$since" ] || since=$(date -u -d '7 days ago' +%FT%TZ)
           echo "Looking for forks and stars since $since."
 
-          # Forks, stars and totals are public, so they are read without a token: the Actions token answers
-          # "Resource not accessible by integration" for these (seen on the first run, 2 November 2026).
-          pub() { curl -fsS -H "Accept: application/vnd.github.star+json" "https://api.github.com/repos/$R/$1"; }
-          forks=$(pub "forks?sort=newest&per_page=100" \
-                    | jq -r ".[] | select(.created_at > \"$since\") | \"- \(.created_at[:10]) [\(.full_name)](\(.html_url))\"")
-          # Stars come oldest first, 100 a page, so every page is read until a short one.
-          stars=""
-          for page in 1 2 3 4 5 6 7 8 9 10; do
-            got=$(pub "stargazers?per_page=100&page=$page")
-            new=$(echo "$got" | jq -r ".[] | select(.starred_at > \"$since\") | \"- \(.starred_at[:10]) [\(.user.login)](\(.user.html_url))\"")
-            [ -z "$new" ] || stars="${stars:+$stars
-          }$new"
-            [ "$(echo "$got" | jq 'length')" -eq 100 ] || break
-          done
-          totals=$(curl -fsS "https://api.github.com/repos/$R" | jq -r '"\(.forks_count) forks, \(.stargazers_count) stars"')
+          forks=$(gh api "repos/$R/forks?sort=newest&per_page=100" --paginate \
+                    --jq ".[] | select(.created_at > \"$since\") | \"- \(.created_at[:10]) [\(.full_name)](\(.html_url))\"")
+          read -r fork_total star_total < <(gh api "repos/$R" --jq '"\(.forks_count) \(.stargazers_count)"')
 
-          # The Actions token is tried first; it usually may not read traffic, and then the optional secret is used.
-          clones=$(gh api "repos/$R/traffic/clones" 2>/dev/null \
-                     --jq '"Cloned \(.count) times by \(.uniques) people in the last 14 days."' \
-                   || GH_TOKEN="${TRAFFIC_TOKEN:-$GH_TOKEN}" gh api "repos/$R/traffic/clones" 2>/dev/null \
-                     --jq '"Cloned \(.count) times by \(.uniques) people in the last 14 days."' \
-                   || echo "Clone counts need the optional TRAFFIC_TOKEN secret with Administration: read (see the top of forks.yml).")
+          # The one issue that carries the reports. Its text keeps the counts of the last run.
+          gh label create usage --repo "$R" --color 0E8A16 --description "Who uses loopy: forks, stars and clones" --force >/dev/null
+          issue=$(gh issue list --repo "$R" --label usage --state open --json number --jq '.[0].number // empty')
+          last_stars=""
+          if [ -n "$issue" ]; then
+            last_stars=$(gh issue view "$issue" --repo "$R" --json body --jq '.body' \
+                           | sed -n 's/.*<!-- loopy-counts forks=[0-9]* stars=\([0-9]*\) -->.*/\1/p' | head -1)
+          fi
+          stars=""
+          if [ -n "$last_stars" ] && [ "$star_total" -gt "$last_stars" ]; then
+            stars="$((star_total - last_stars)) new (was $last_stars, now $star_total). GitHub does not tell this job who; the star button on the repo page shows the names."
+          fi
+
+          clones="Clone counts need the optional TRAFFIC_TOKEN secret with Administration: read (see the top of forks.yml)."
+          if [ -n "$TRAFFIC_TOKEN" ]; then
+            clones=$(GH_TOKEN="$TRAFFIC_TOKEN" gh api "repos/$R/traffic/clones" 2>/dev/null \
+                       --jq '"Cloned \(.count) times by \(.uniques) people in the last 14 days."' \
+                     || echo "Clone counts: the TRAFFIC_TOKEN secret did not work (it needs Administration: read on this repo).")
+          fi
 
           {
             echo "## Forks and stars"
@@ -68,24 +71,28 @@ jobs:
             echo
             if [ -n "$forks" ]; then echo "Forks:"; echo "$forks"; else echo "No new forks."; fi
             echo
-            if [ -n "$stars" ]; then echo "Stars:"; echo "$stars"; else echo "No new stars."; fi
+            if [ -n "$stars" ]; then echo "Stars: $stars"; else echo "No new stars."; fi
             echo
-            echo "In all: $totals. $clones"
+            echo "In all: $fork_total forks, $star_total stars. $clones"
           } > "$RUNNER_TEMP/report.md"
           cat "$RUNNER_TEMP/report.md" | tee -a "$GITHUB_STEP_SUMMARY"
 
-          if [ -z "$forks" ] && [ -z "$stars" ]; then
-            echo "Nothing new, so no comment on the issue."
-            exit 0
+          body="Every Monday the Forks and stars job adds a comment here when someone new forked or starred loopy. Nothing to do; it is only so the owner hears about it. Close it any time: the next run opens a new one.
+
+          Last counted: $fork_total forks, $star_total stars.
+          <!-- loopy-counts forks=$fork_total stars=$star_total -->"
+          body=$(echo "$body" | sed 's/^          //')
+          if [ -z "$issue" ]; then
+            issue=$(gh issue create --repo "$R" --title "Forks and stars" --label usage --assignee "$OWNER" --body "$body" \
+                    | grep -oE '[0-9]+$')
+            echo "Made issue #$issue to keep the counts. It gets a comment when they go up."
+          else
+            gh issue edit "$issue" --repo "$R" --body "$body" >/dev/null
           fi
 
-          # One issue carries every report. The owner is assigned to it, so each comment sends an email.
-          gh label create usage --color 0E8A16 --description "Who uses loopy: forks, stars and clones" --force >/dev/null
-          issue=$(gh issue list --repo "$R" --label usage --state open --json number --jq '.[0].number // empty')
-          if [ -z "$issue" ]; then
-            issue=$(gh issue create --repo "$R" --title "Forks and stars" --label usage --assignee "$OWNER" \
-                      --body "Every Monday the Forks and stars job adds a comment here when someone new forked or starred loopy. Nothing to do; it is only so the owner hears about it. Close it any time: the next report opens a new one." \
-                    | grep -oE '[0-9]+$')
+          if [ -z "$forks" ] && [ -z "$stars" ]; then
+            echo "Nothing new, so no comment on issue #$issue."
+            exit 0
           fi
           gh issue comment "$issue" --repo "$R" --body-file "$RUNNER_TEMP/report.md"
           echo "Added the report to issue #$issue."
