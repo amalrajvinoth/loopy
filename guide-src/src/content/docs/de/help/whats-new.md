@@ -10,6 +10,7 @@ Die großen Änderungen, die neuesten zuerst. Kleine Korrekturen stehen nicht da
 
 ## 2. November 2026
 
+- **Kürzere Einstellungen, sortierte Hilfe, klarere Startseite.** Auf der Startseite sind die Teile für Erwachsene in ⚙ Einstellungen (E-Mail, Familien-Sync, App) unter einer Zeile eingeklappt. Die Hilfe-Seite sortiert ihre Fragen in vier Gruppen. „Mehr entdecken“ heißt jetzt „Für ältere Kinder“, mit einer Zeile, die sagt, was es ist. Siehe [Einstellungen auf der Startseite](/loopy/guide/de/settings/home-settings/).
 - **Ordentlichere Kacheln auf dem Tablet.** Die Startseite zeigt höchstens zwei Zeilen zu jedem Spiel, so sind alle Kacheln einer Reihe gleich hoch. Das Buchstabengitter im Wortdetektiv ist auf dem Tablet größer.
 - **Spielseiten passen aufs Handy.** Eine breite Tabelle mit Altersstufen zeigt jetzt eine kleine Karte pro Stufe, so rutscht die Seite nicht mehr zur Seite.
 - **Die Tasten im Wortdetektiv passen auf Deutsch.** Die Löschtaste zeigt jetzt das Zeichen ⌫ und die Taste Prüfen ist breiter, so wird „Prüfen“ auf dem Handy nicht mehr abgeschnitten. Siehe [Wortdetektiv](/loopy/guide/de/games/languages/word-detective/).
