@@ -31,6 +31,8 @@
     "checks.yml: Every needed check passed",
     "dependabot-merge.yml: Dependabot merge",
     "dependabot-merge.yml: Merge the green Dependabot pull request, then put the site live",
+    "forks.yml: Forks and stars",
+    "forks.yml: New forks and stars since the last run",
     "lighthouse.yml: Lighthouse",
     "lighthouse.yml: Score the home page, a game and the guide on a phone",
     "lighthouse.yml: Every score is 90 or more",
@@ -96,5 +98,5 @@
     "844 × 390"
   ],
   "games_lists": 1,
-  "learned_at": "47e2fc7"
+  "learned_at": "5729173"
 }

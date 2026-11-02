@@ -93,3 +93,8 @@ One per failure. Add new ones at the end (the heal skill step 3). Keep each to f
 - Looks like: the hand-run "Family sync usage" job fails in "Count families and grown-ups": `test -n "$id"` fails, wrangler says "Authentication error", or `tools/sync-usage.mjs` throws on JSON.
 - Cause: a missing or expired Cloudflare secret, the `loopy-sync` database renamed, or wrangler's `--json` output changed shape.
 - Fix: ask the owner to check `CLOUDFLARE_API_TOKEN` and `CLOUDFLARE_ACCOUNT_ID` (sync/README.md). For a shape change, run `npx wrangler d1 execute loopy-sync --remote --json --command "SELECT 1"` and fit `query()` in `tools/sync-usage.mjs` to it. It must keep printing counts only: the log is public. (1 Nov 2026)
+
+## Forks and stars job is red
+- Looks like: the Monday "Forks and stars" run fails in "New forks and stars since the last run": `gh api` says "Resource not accessible by integration", or `gh issue create` or `gh label create` fails.
+- Cause: the job needs `issues: write` (the issue, its label and the comments) and `actions: read` (the time of its last green run); a change to the workflow's `permissions` or to the repo's Actions token setting took one away. Clone counts are optional and never fail the job.
+- Fix: put the permissions back in `forks.yml`. If the repo's Settings → Actions → General → Workflow permissions is "Read repository contents", the per-job `permissions` block still grants `issues: write`, so check the block first. Run it again: Actions → Forks and stars → Run workflow. (2 Nov 2026)

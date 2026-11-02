@@ -134,6 +134,7 @@ The site is plain HTML, CSS and JavaScript. One small build step makes the share
 | `.github/workflows/pages.yml` | Puts the site live: the games as they are, plus the built guide. Its last job opens the live site and checks it serves this very version, so nobody has to look by hand |
 | `.github/workflows/dependabot-merge.yml` | Merges a Dependabot update by itself once every check is green, then starts the deploy. A red one stays open for a person |
 | `.github/workflows/lighthouse.yml` | Once a month, scores the live site on a phone (home page, a game, the guide) and goes red under 90. The reports are kept with the run |
+| `.github/workflows/forks.yml` | Every Monday, lists new forks and stars (and clone counts when a token allows it) in the run's Summary, and comments on the "Forks and stars" issue when there are any, so the owner gets an email. GitHub has no notification of its own for forks or stars |
 | `.github/workflows/sync.yml` | Puts the Family sync server live on Cloudflare, once the owner has added the Cloudflare secrets ([how](sync/README.md)) |
 | `.claude/skills/loopy-review/` | The review checklist for every change: design, architecture, saved data, speed and size, docs, games alike, and release notes after a merge |
 | `tools/ralph/` | The Ralph loop: a script for your Mac. It runs Claude Code on one task again and again, on its own branch, until the task is done. Caps and checks keep it safe ([how](tools/ralph/README.md)) |
