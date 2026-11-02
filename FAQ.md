@@ -70,15 +70,26 @@ On an iPhone, iPad or Mac, the loopy on the home screen keeps its own stars, apa
 
 ## Can Loopy read the questions out loud?
 
-Yes, in Plus and Minus, Times and Share, What Time Is It?, Make 10, Bigger or Smaller, Pizza Fractions, Coins and Change, Equation Balance, Times Tables Sprint, Percent and Ratio, Sentence Builder, Spelling Quiz, Graphs and Data, Box Multiplication, Step by Step, Shapes and Angles, Word Detective, Word Trail, Quick Facts, Sort It, Where Is It? and Flags and Capitals. Open Settings and turn on **Read aloud**. A speaker button shows next to the question. It uses the device's own voice, in English or German, and nothing is downloaded. It is on by itself for ages 5 to 7.
+Yes, in Plus and Minus, Times and Share, What Time Is It?, Make 10, Bigger or Smaller, Pizza Fractions, Coins and Change, Equation Balance, Times Tables Sprint, Percent and Ratio, Sentence Builder, Spelling Quiz, My Words, Graphs and Data, Box Multiplication, Step by Step, Shapes and Angles, Word Detective, Word Trail, Quick Facts, Sort It, Where Is It? and Flags and Capitals. Open Settings and turn on **Read aloud**. A speaker button shows next to the question. It uses the device's own voice, in English or German, and nothing is downloaded. It is on by itself for ages 5 to 7.
 
 ## Can my child practise their own spelling words from school?
 
-Yes. Open **Spelling Quiz**, tap **Settings** and type or paste the words into **Your word list**, with commas between them: `friend, because, said`. Tap **Save list**. Each question shows the word spelled 3 or 4 ways, and the wrong spellings are new every time. Each child has their own list, in English or German. The list stays in this browser and moves with the stars code.
+Yes, in two games. In **Spelling Quiz** the child picks the right spelling out of 3 or 4. In **My Words** loopy reads the word aloud and the child types it. In either game, tap **Settings** and type or paste the words into **Your word list**: `friend, because, said`. Tap **Save list**. Each child has their own list, in English or German. The list stays in this browser and moves with the stars code.
+
+## How do I import a CSV word list into My Words?
+
+Open **My Words**, tap **Settings** and tap **Import a CSV file**. Pick a `.csv` or `.txt` file from your device, with one word per line. A sentence after the word on the same line, after a comma or semicolon, is read aloud with the word and shown with a gap, like "My ___ is kind." A first line like `word,sentence` is skipped. Up to 50 words, each 2 to 20 letters. You can also type or paste the list into the box and tap **Save list**. The file is read on your device and never uploaded.
+
+```
+word,sentence
+friend,My friend is kind.
+because,I ran because I was late.
+said
+```
 
 ## Can I change the words in a game?
 
-In **Spelling Quiz**, yes: grown-ups paste their own list in Settings. In the other games the words, facts and countries are part of loopy. On GitHub, each of those games has a file called `words.js` or `data.js` next to it. Word Match and Word Trail share one word bank. A grown-up who knows a little code can add a word there and send it in. The game's README says what goes on a line.
+In **Spelling Quiz** and **My Words**, yes: grown-ups paste their own list in Settings, or import a CSV file into My Words. In the other games the words, facts and countries are part of loopy. On GitHub, each of those games has a file called `words.js` or `data.js` next to it. Word Match and Word Trail share one word bank. A grown-up who knows a little code can add a word there and send it in. The game's README says what goes on a line.
 
 ## Can Loopy be easier to see or read?
 

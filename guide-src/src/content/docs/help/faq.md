@@ -72,9 +72,13 @@ Each word is a trail of letters that touch, sideways, up and down or diagonally.
 
 Yes. Any letters count as a try, so a child can try sounds. The tiles show which letters are in the word, and three clues help. See [Word Detective](/loopy/guide/games/languages/word-detective/).
 
+## Can my child practise their own spelling words from school?
+
+Yes, in two games. In [Spelling Quiz](/loopy/guide/games/languages/spelling-quiz/) the child picks the right spelling out of 3 or 4. In [My Words](/loopy/guide/games/languages/my-words/) loopy reads the word aloud and the child types it. In either game, open ⚙ **Settings**, type the words into **Your word list** and tap **Save list**. My Words can also import a `.csv` file: one word per line, with a sentence after the word if you like. Each child has their own list, in English or German.
+
 ## Can I change the words in a game?
 
-In [Spelling Quiz](/loopy/guide/games/languages/spelling-quiz/), yes: grown-ups paste their own list in Settings. In the other games the words, facts and countries are part of loopy. On GitHub, each of those games has a file called `words.js` or `data.js` next to it. Word Match and Word Trail share one word bank. A grown-up who knows a little code can add a word there and send it in. The game's README says what goes on a line.
+In [Spelling Quiz](/loopy/guide/games/languages/spelling-quiz/) and [My Words](/loopy/guide/games/languages/my-words/), yes: grown-ups paste their own list in Settings, or import a CSV file into My Words. In the other games the words, facts and countries are part of loopy. On GitHub, each of those games has a file called `words.js` or `data.js` next to it. Word Match and Word Trail share one word bank. A grown-up who knows a little code can add a word there and send it in. The game's README says what goes on a line.
 
 ## How do I see how my child is doing?
 

@@ -1,0 +1,94 @@
+---
+title: My Words
+description: Hear a word and type it, like a spelling test. Grown-ups add the week's words or import a CSV file. For ages 6 to 12.
+sidebar:
+  order: 8
+---
+import KidsBox from "~/components/KidsBox.astro";
+
+<KidsBox game="languages/my-words" steps={[
+  "Listen to the word.",
+  "Type it with the letters.",
+  "Tap Check. Wrong? Look at the green letters, then tap Next.",
+]} />
+
+A spelling game for ages 6 to 12, like a spelling test at school. loopy reads a word out loud and the child types it. A grown-up types in the spelling words from school, or imports a CSV file. Without a list, loopy plays its own spelling words for the age.
+
+## How to play
+
+1. Listen to the word. Tap **Hear the word** to hear it again. If the word has a sentence, loopy reads that too, and the card shows it with a gap: "My ___ is kind."
+2. Type the word with the letter tiles or the keyboard. At levels 1 to 3 there is one box for each letter.
+3. **⌫** takes back the last letter.
+4. Tap **Check**. Right: the boxes turn green and you get a star.
+5. Wrong: the wrong letters turn red. The right spelling appears under your try, one letter at a time. The line shows it with the tricky part underlined, like "fr<u>ie</u>nd". loopy reads the word once more.
+6. Tap **Next** for a new word.
+
+On a keyboard, type the letters, use **Backspace** to erase and **Enter** to check.
+
+## Your own word list
+
+This part is for grown-ups.
+
+1. Open ⚙ **Settings** in the game and find **Your word list**.
+2. Type the words, one per line. Or tap **Import a CSV file** and pick a `.csv` or `.txt` file from your device.
+3. Tap **Save list**. The card now says "Your list · 12 words".
+
+A file or the box can look like this:
+
+```
+word,sentence
+friend,My friend is kind.
+because,I ran because I was late.
+said
+```
+
+- One word per line. A sentence can follow the word on the same line, after a comma, a semicolon or a tab. It is read aloud with the word and shown with a gap. Up to 50 letters per sentence.
+- Words with commas between them on one line work too: `friend, because, said`.
+- A first line like `word,sentence` is a heading and is skipped. A file saved from Excel or Numbers works.
+- Up to 50 words, each 2 to 20 letters. "don't", "ice-cream" and "ice cream" work too.
+- The game says what it left out, like numbers or a typing mistake with @.
+- Each child has their own list. There is one list for English and one for German: switch **Words in** to fill the other.
+- Every word on the list comes once before any word comes back.
+- **Clear list** goes back to loopy's own words.
+- The list stays in this browser. It moves to another device with the [stars code](/loopy/guide/stars/move-stars/). The file is read on your device and never uploaded.
+
+## English and German words
+
+Choose the language in ⚙ **Settings** under **Words in**. The voice follows it. Without a list, loopy's words are the same as in [Spelling Quiz](/loopy/guide/games/languages/spelling-quiz/): grade 1 words for age 6 and under, up to grade 6 words and up at 11.
+
+German words keep their capital letter: the child types "hund" and the box shows "Hund". The German keyboard has ä, ö and ü. A letter the word needs that is not on the keyboard, like ß or é, joins the last row.
+
+## Age levels
+
+The level sets how much help the child gets. It does not change the words.
+
+| Level | Age | Help |
+| --- | --- | --- |
+| 1 | 6 and under | Letter tiles: the word's letters plus a few extra. The first letter shows faintly in its box |
+| 2 | 7 | Letter tiles, no first letter |
+| 3 | 8 and 9 | A whole keyboard, one box per letter |
+| 4 | 10 and up | A whole keyboard, no boxes: the number of letters is a secret |
+
+After 10 right in a row, or 18 of the last 20 right, the game goes up a level by itself. After 3 wrong in the last 5 it offers an easier one. See [Levels](/loopy/guide/playing/levels/).
+
+## Settings
+
+Tap ⚙ **Settings** in the game to choose:
+
+- **Words in:** **English** or **Deutsch**. It starts in the site's language.
+- **Your word list:** see above.
+- **Level:** **Letter tiles, first letter shown**, **Letter tiles**, **Keyboard** or **Keyboard, no boxes**. These are the four levels above.
+- **Read aloud:** the same pill as in every game, next to the sound button. Here it reads each new word, and it is on at the start. Turn it off and the child taps **Hear the word** instead. After a miss the word is always read out.
+- **Print worksheet:** 20 numbered lines to write on, like a spelling test, with each word's sentence and its gap under the line. The words are on page 2, for the grown-up to read out.
+
+The voice is the one built into the device. Nothing is downloaded. If the device has no voice for that language, the **Hear the word** button hides and the card says so. Then a grown-up reads the word out.
+
+## Example help text
+
+- "Listen, then type the word."
+- "Not quite. It is spelled fr<u>ie</u>nd."
+- "Correct! You spelled “because”."
+
+## Something wrong?
+
+Tap the 🚩 flag at the top of the game to tell us. See [Report a problem](/loopy/guide/help/report-a-problem/).

@@ -1,0 +1,94 @@
+---
+title: Meine Wörter
+description: Hör ein Wort und tippe es, wie bei einem Diktat. Eltern tragen die Lernwörter der Woche ein oder laden eine CSV-Datei. Für 6 bis 12 Jahre.
+sidebar:
+  order: 8
+---
+import KidsBox from "~/components/KidsBox.astro";
+
+<KidsBox game="languages/my-words" steps={[
+  "Hör dir das Wort an.",
+  "Tippe es mit den Buchstaben.",
+  "Tippe auf Prüfen. Falsch? Schau auf die grünen Buchstaben, dann auf Weiter.",
+]} />
+
+Ein Rechtschreibspiel für 6 bis 12 Jahre, wie ein Diktat in der Schule. loopy liest ein Wort vor und du tippst es. Ein Erwachsener trägt die Lernwörter aus der Schule ein oder lädt eine CSV-Datei. Ohne Liste spielt loopy seine eigenen Lernwörter für das Alter.
+
+## So wird gespielt
+
+1. Hör dir das Wort an. Mit **Wort anhören** hörst du es noch einmal. Hat das Wort einen Satz, liest loopy den auch vor, und die Karte zeigt ihn mit einer Lücke: „Mein ___ ist nett.“
+2. Tippe das Wort mit den Buchstaben-Tasten oder der Tastatur. Auf Stufe 1 bis 3 gibt es für jeden Buchstaben ein Kästchen.
+3. **⌫** nimmt den letzten Buchstaben zurück.
+4. Tippe auf **Prüfen**. Ist es richtig, werden die Kästchen grün und du bekommst einen Stern.
+5. Falsch: Die falschen Buchstaben werden rot. Die richtige Schreibweise erscheint unter deinem Versuch, Buchstabe für Buchstabe, und die Zeile zeigt sie mit der kniffligen Stelle unterstrichen, wie „Fr<u>eu</u>nd“. loopy liest das Wort noch einmal vor.
+6. Tippe auf **Weiter** für ein neues Wort.
+
+Mit der Tastatur: Buchstaben tippen, **Rücktaste** löscht, **Enter** prüft.
+
+## Eure eigene Wortliste
+
+Dieser Teil ist für Erwachsene.
+
+1. Öffne im Spiel ⚙ **Einstellungen** und suche **Eure Wortliste**.
+2. Tippt die Wörter ein, eins pro Zeile. Oder tippt auf **CSV-Datei laden** und wählt eine `.csv`- oder `.txt`-Datei vom Gerät.
+3. Tippt auf **Liste speichern**. Die Karte sagt jetzt „Eure Liste · 12 Wörter“.
+
+Eine Datei oder das Feld kann so aussehen:
+
+```
+Wort;Satz
+Freund;Mein Freund ist nett.
+Straße;Wir wohnen in einer ruhigen Straße.
+fahren
+```
+
+- Ein Wort pro Zeile. Ein Satz nach dem Wort in derselben Zeile, nach einem Komma, einem Semikolon oder einem Tab, wird mit vorgelesen und mit einer Lücke gezeigt. Bis zu 50 Zeichen pro Satz.
+- Wörter mit Kommas dazwischen in einer Zeile gehen auch: `Freund, Straße, fahren`.
+- Eine erste Zeile wie `Wort;Satz` ist eine Überschrift und wird übersprungen. Eine Datei aus Excel oder Numbers geht.
+- Bis zu 50 Wörter, jedes 2 bis 20 Buchstaben lang. „Eis-Café“ und „zu Hause“ gehen auch.
+- Das Spiel sagt, was es weggelassen hat, etwa Zahlen oder einen Tippfehler mit @.
+- Jedes Kind hat seine eigene Liste. Es gibt eine Liste für Deutsch und eine für Englisch: Schaltet **Wörter auf** um, um die andere zu füllen.
+- Jedes Wort der Liste kommt einmal dran, bevor eines wiederkommt.
+- **Liste leeren** geht zurück zu den Wörtern von loopy.
+- Die Liste bleibt in diesem Browser. Mit dem [Sterne-Code](/loopy/guide/de/stars/move-stars/) zieht sie auf ein anderes Gerät um. Die Datei wird auf eurem Gerät gelesen und nie hochgeladen.
+
+## Deutsche und englische Wörter
+
+Wähle die Sprache in ⚙ **Einstellungen** unter **Wörter auf**. Die Stimme folgt ihr. Ohne Liste sind die Wörter von loopy dieselben wie im [Rechtschreib-Quiz](/loopy/guide/de/games/languages/spelling-quiz/): Wörter aus Klasse 1 bis 6 Jahre, bis zu Wörtern ab Klasse 6 mit 11.
+
+Deutsche Wörter behalten ihren großen Anfangsbuchstaben: Das Kind tippt „hund“ und das Kästchen zeigt „Hund“. Die deutsche Tastatur hat ä, ö und ü. Ein Buchstabe, den das Wort braucht und der nicht auf der Tastatur ist, wie ß oder é, kommt in die letzte Reihe.
+
+## Altersstufen
+
+Die Stufe bestimmt, wie viel Hilfe das Kind bekommt. Die Wörter ändert sie nicht.
+
+| Stufe | Alter | Hilfe |
+| --- | --- | --- |
+| 1 | 6 und jünger | Buchstaben-Tasten: die Buchstaben des Wortes und ein paar dazu. Der erste Buchstabe steht blass in seinem Kästchen |
+| 2 | 7 | Buchstaben-Tasten, ohne ersten Buchstaben |
+| 3 | 8 und 9 | Eine ganze Tastatur, ein Kästchen pro Buchstabe |
+| 4 | 10 und älter | Eine ganze Tastatur, keine Kästchen: Die Zahl der Buchstaben bleibt geheim |
+
+Nach 10 richtigen hintereinander, oder 18 von den letzten 20, geht das Spiel von selbst eine Stufe höher. Nach 3 Fehlern in den letzten 5 bietet es eine leichtere an. Siehe [Stufen](/loopy/guide/de/playing/levels/).
+
+## Einstellungen
+
+Tippe im Spiel auf ⚙ **Einstellungen** und wähle:
+
+- **Wörter auf:** **Deutsch** oder **English**. Das Spiel beginnt in der Sprache der Seite.
+- **Eure Wortliste:** siehe oben.
+- **Stufe:** **Buchstaben-Tasten, erster Buchstabe**, **Buchstaben-Tasten**, **Tastatur** oder **Tastatur, ohne Kästchen**. Das sind die vier Stufen oben.
+- **Vorlesen:** dieselbe Schaltfläche wie in jedem Spiel, neben dem Ton-Knopf. Hier liest sie jedes neue Wort vor und ist am Anfang an. Schaltet sie aus, dann tippt das Kind auf **Wort anhören**. Nach einem Fehler wird das Wort immer vorgelesen.
+- **Arbeitsblatt drucken:** 20 nummerierte Linien zum Schreiben, wie bei einem Diktat, mit dem Satz und seiner Lücke unter der Linie. Die Wörter stehen auf Seite 2, zum Vorlesen für den Erwachsenen.
+
+Die Stimme ist die des Geräts. Nichts wird heruntergeladen. Hat das Gerät keine Stimme für die Sprache, verschwindet der Knopf **Wort anhören** und die Karte sagt es. Dann liest ein Erwachsener das Wort vor.
+
+## Beispiel-Hilfetexte
+
+- „Hör zu und tippe das Wort.“
+- „Nicht ganz. Richtig geschrieben: Fr<u>eu</u>nd.“
+- „Richtig! Du hast „Straße“ geschrieben.“
+
+## Stimmt etwas nicht?
+
+Tippe oben im Spiel auf die 🚩 Flagge und sag es uns. Siehe [Ein Problem melden](/loopy/guide/de/help/report-a-problem/).
