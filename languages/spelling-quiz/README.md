@@ -89,4 +89,5 @@ Tap **Settings**, then **Print worksheet**. The print window opens. Print it, or
 - The grown-ups page shows each missed word with the spelling the child picked, under "Words from your list" or "Tricky spellings". Try again brings missed words back with new wrong spellings.
 - Once in a while a made-up spelling can still be a real word. Tap the flag at the top of the game to tell us.
 - To change loopy's own words, edit the `WORDS` list in `words.js`, next to the game page, then run `python3 tools/build.py`. Leave out words with a common look-alike, or add the look-alike to `REAL`.
+- [My Words](../my-words/) reads the same `words.js` when a child has no list of their own. A word added here is read aloud there too.
 - Spelling Quiz is not part of Today's 10, because each child can have their own words.

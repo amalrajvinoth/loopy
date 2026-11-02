@@ -72,9 +72,13 @@ Jedes Wort ist ein Pfad aus Buchstaben, die sich berühren: seitwärts, nach obe
 
 Ja. Jede Buchstabenfolge zählt als Versuch, damit ein Kind Laute ausprobieren kann. Die Kästchen zeigen, welche Buchstaben im Wort sind, und drei Hinweise helfen. Siehe [Wortdetektiv](/loopy/guide/de/games/languages/word-detective/).
 
+## Kann mein Kind die Übungswörter aus der Schule üben?
+
+Ja, in zwei Spielen. Im [Rechtschreib-Quiz](/loopy/guide/de/games/languages/spelling-quiz/) wählt das Kind die richtige Schreibweise aus 3 oder 4. In [Meine Wörter](/loopy/guide/de/games/languages/my-words/) liest loopy das Wort vor und das Kind tippt es. In beiden Spielen: ⚙ **Einstellungen** öffnen, die Wörter in **Eure Wortliste** schreiben und auf **Liste speichern** tippen. Meine Wörter kann auch eine `.csv`-Datei laden: ein Wort pro Zeile, mit einem Satz nach dem Wort, wenn ihr mögt. Jedes Kind hat seine eigene Liste, auf Deutsch oder Englisch.
+
 ## Kann ich die Wörter in einem Spiel ändern?
 
-Im [Rechtschreib-Quiz](/loopy/guide/de/games/languages/spelling-quiz/) ja: Erwachsene fügen in den Einstellungen ihre eigene Liste ein. In den anderen Spielen gehören die Wörter, Fakten und Länder zu loopy. Auf GitHub hat jedes dieser Spiele eine Datei `words.js` oder `data.js` neben sich, und Bild und Wort und Wortpfad teilen sich eine Wortliste. Wer sich ein wenig mit Code auskennt, kann dort ein Wort ergänzen und es einschicken. Die README des Spiels sagt, was in eine Zeile gehört.
+Im [Rechtschreib-Quiz](/loopy/guide/de/games/languages/spelling-quiz/) und in [Meine Wörter](/loopy/guide/de/games/languages/my-words/) ja: Erwachsene fügen in den Einstellungen ihre eigene Liste ein oder laden in Meine Wörter eine CSV-Datei. In den anderen Spielen gehören die Wörter, Fakten und Länder zu loopy. Auf GitHub hat jedes dieser Spiele eine Datei `words.js` oder `data.js` neben sich, und Bild und Wort und Wortpfad teilen sich eine Wortliste. Wer sich ein wenig mit Code auskennt, kann dort ein Wort ergänzen und es einschicken. Die README des Spiels sagt, was in eine Zeile gehört.
 
 ## Wie sehe ich, wie es meinem Kind geht?
 

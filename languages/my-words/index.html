@@ -1,0 +1,866 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'sha256-ZNnmqQ9ABCIPq3ZjAwjb04jpSV5bHaaQRjSzMSKHLUI='; style-src 'self' 'sha256-z2P7kGW5Z05eCTjTZdYpc0vThTlOE9vmt97pVSvi2I4=' 'sha256-jcH3LwvMmX79gXapy3S3RXn1cQVRv5z/9HhHMpj9fUk=' 'sha256-RT1053JU5UiKvjrCUFx1rlhdFLMmgtuFJ9T8jnMeawQ=' 'sha256-Rf2qDCR6xfVN4tjURdU06HX1QTFO+7IYxsO37fQPK64='; img-src 'self' data:; font-src 'self'; connect-src 'self' https://loopy-sync.loopy-1e2.workers.dev; worker-src 'self'; object-src 'none'; base-uri 'none'; form-action 'none'; manifest-src 'self'; upgrade-insecure-requests">
+<meta name="referrer" content="strict-origin-when-cross-origin">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<style>:root{color-scheme:light;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}body{margin:0}[hidden]{display:none!important}</style>
+<link rel="icon" href="../../icon.svg" type="image/svg+xml">
+<link rel="manifest" href="../../manifest.webmanifest">
+<link rel="apple-touch-icon" href="../../apple-touch-icon.png">
+<meta name="theme-color" content="#0a0a0c">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="loopy">
+<title data-t="mwName">My Words</title>
+<meta name="description" content="My Words on loopy: grown-ups type in the spelling words from school or import a CSV file, loopy reads each word aloud and the child types it. English and German, free, no ads.">
+<link rel="preload" href="../../fonts/lexend-latin.woff2" as="font" type="font/woff2" crossorigin>
+<style>
+/* Layout: a speaker button and letter boxes on a card, letter tiles or a keyboard below. Shared look with the other games. */
+:root {
+  --bg: #f3f6fb;
+  --card: #ffffff;
+  --ink: #1d2a3f;
+  --muted: #5d6b82;
+  --line: #d5dde9;
+  --accent: #2457c5;
+  --accent-ink: #ffffff;
+  --mark: #e2622b;
+  --good: #1f8a4c;
+  --good-bg: #e3f5ea;
+  --bad: #c23a3a;
+  --bad-bg: #fbe6e6;
+  --chip: #e6ecf6;
+  --key: #ffffff;
+  --font: "Lexend", "Segoe UI", "Helvetica Neue", Arial, sans-serif;
+}
+
+* { box-sizing: border-box; }
+body {
+  background: var(--bg); color: var(--ink); font-family: var(--font); font-size: 16px;
+  padding-left: max(16px, env(safe-area-inset-left, 0px));
+  padding-right: max(16px, env(safe-area-inset-right, 0px));
+  padding-block: 20px 32px;
+}
+.wrap { max-width: 520px; margin: 0 auto; display: flex; flex-direction: column; gap: 16px; }
+
+.top { display: flex; flex-wrap: wrap; gap: 12px; align-items: center; justify-content: space-between; }
+h1 { margin: 0; font-size: 1.6rem; font-weight: 700; text-wrap: balance; }
+.score { display: flex; flex-wrap: wrap; gap: 8px; font-variant-numeric: tabular-nums; }
+.pill { background: var(--card); border: 1px solid var(--line); border-radius: 999px; padding: 6px 14px; font-weight: 600; font-size: 1rem; white-space: nowrap; }
+.pill span { color: var(--muted); font-weight: 400; margin-right: 4px; }
+
+.settings { display: flex; flex-direction: column; gap: 8px; }
+.seg-label { font-size: 0.8rem; font-weight: 600; letter-spacing: 0.06em; text-transform: uppercase; color: var(--muted); margin: 0 0 4px 4px; }
+.seg-note { margin: 4px 0 0 4px; font-size: 0.85rem; line-height: 1.35; color: var(--muted); }
+.seg { display: grid; grid-template-columns: repeat(3, 1fr); gap: 6px; background: var(--chip); padding: 5px; border-radius: 14px; }
+.seg.two { grid-template-columns: repeat(2, 1fr); }
+.seg button {
+  font: inherit; font-size: 0.95rem; font-weight: 600; color: var(--muted);
+  background: transparent; border: 0; border-radius: 10px; padding: 8px 6px; min-height: 44px; cursor: pointer;
+}
+.seg button[aria-pressed="true"] { background: var(--card); color: var(--ink); box-shadow: 0 1px 3px rgb(0 0 0 / 0.12); }
+
+.problem-card {
+  background: var(--card); border: 1px solid var(--line); border-radius: 24px;
+  padding: 20px 18px 18px; display: flex; flex-direction: column; align-items: center; gap: 14px;
+}
+.problem-card.good { border-color: var(--good); box-shadow: 0 0 0 2px var(--good) inset; }
+.problem-card.bad { border-color: var(--bad); box-shadow: 0 0 0 2px var(--bad) inset; }
+
+/* Vertical problem, written like the worksheets: operator on the left, digits right-aligned. */
+.vert {
+  display: grid; grid-template-columns: auto auto; column-gap: 0.35em;
+  font-size: clamp(3.4rem, 15vw, 4.6rem); font-weight: 600; line-height: 1.12;
+  font-variant-numeric: tabular-nums; letter-spacing: 0.04em;
+}
+.vert .num { grid-column: 2; text-align: right; min-width: 3ch; }
+.vert .op { grid-column: 1; grid-row: 2; color: var(--accent); }
+.vert .rule { grid-column: 1 / -1; height: 0.07em; background: var(--ink); border-radius: 2px; margin: 0.1em 0 0.12em; }
+.vert .ans {
+  grid-column: 2; text-align: right; min-width: 3ch; min-height: 1.12em;
+  color: var(--accent); position: relative;
+}
+.vert .ans.empty::after {
+  content: ""; position: absolute; right: 0; bottom: 0.12em; width: 0.55em; height: 0.07em;
+  background: var(--mark); border-radius: 2px; animation: blink 1s steps(2, start) infinite;
+}
+.problem-card.good .ans { color: var(--good); }
+.problem-card.bad .ans { color: var(--bad); text-decoration: line-through; text-decoration-thickness: 0.06em; }
+@keyframes blink { to { visibility: hidden; } }
+
+.feedback { min-height: 3.1em; text-align: center; font-size: 1.1rem; line-height: 1.45; margin: 0; max-width: 34ch; }
+.feedback strong { display: block; font-size: 1.45rem; }
+.feedback.good strong { color: var(--good); }
+.feedback.bad strong { color: var(--bad); }
+.feedback .hint { color: var(--muted); }
+
+.pad { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; }
+.pad button {
+  font: inherit; font-size: 2rem; font-weight: 700; font-variant-numeric: tabular-nums; color: var(--ink);
+  background: var(--key); border: 2px solid var(--line); border-radius: 18px; min-height: 72px; cursor: pointer;
+  transition: transform .08s ease, border-color .15s ease;
+  touch-action: manipulation; -webkit-tap-highlight-color: transparent;
+}
+.pad button:hover:not(:disabled) { border-color: var(--accent); }
+.pad button:active:not(:disabled) { transform: scale(0.96); }
+.pad button:disabled { opacity: 0.4; cursor: default; }
+.pad .erase { font-size: 1.15rem; color: var(--muted); }
+.pad .go { background: var(--accent); border-color: var(--accent); color: var(--accent-ink); font-size: 1.35rem; }
+.pad .go:hover:not(:disabled) { border-color: var(--accent); filter: brightness(1.08); }
+
+.foot { display: flex; justify-content: space-between; align-items: center; gap: 12px; flex-wrap: wrap; }
+.foot p { margin: 0; color: var(--muted); font-size: 0.9rem; }
+.reset { font: inherit; font-size: 0.95rem; color: var(--muted); background: transparent; border: 2px solid var(--line); border-radius: 14px; padding: 0 16px; min-height: 44px; cursor: pointer; }
+button:focus-visible { outline: 3px solid var(--mark); outline-offset: 3px; }
+
+@media (max-width: 420px) {
+  h1 { font-size: 1.35rem; }
+  .pad button { min-height: 64px; font-size: 1.8rem; }
+  .seg button { font-size: 0.85rem; }
+}
+@media (prefers-reduced-motion: reduce) {
+  * { transition: none !important; }
+  .vert .ans.empty::after { animation: none; }
+}
+</style>
+<style>.home-link{display:inline-flex;align-items:center;min-height:40px;color:var(--muted);font-weight:600;text-decoration:none;font-size:0.95rem}.home-link:hover{color:var(--ink)}</style>
+<style>
+/* Phones and tablets: the game fills one screen; settings sit behind a button. */
+body { min-height: 100vh; min-height: 100dvh; padding-block: 12px 16px; }
+.wrap { gap: 12px; }
+.game-bar { display: flex; align-items: center; justify-content: space-between; gap: 8px; }
+.bar-right { display: flex; align-items: center; gap: 8px; }
+.top { gap: 8px 12px; }
+.play { display: flex; flex-direction: column; gap: 12px; -webkit-user-select: none; user-select: none; }
+@media (min-width: 600px) and (orientation: portrait) { .wrap { max-width: 640px; } }
+@media (orientation: landscape) and (min-width: 640px) {
+  .wrap { max-width: 1100px; }
+  .play { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; align-items: center; }
+}
+
+.problem-card { padding: 14px 14px 12px; gap: 8px; }
+.vert { font-size: clamp(2.4rem, min(15vw, 8.5vh), 5rem); font-size: clamp(2.4rem, min(15vw, 8.5dvh), 5rem); }
+.feedback { min-height: 2.9em; font-size: 1.05rem; }
+.feedback strong { font-size: 1.3rem; }
+.pad { gap: 8px; }
+.pad button { min-height: clamp(50px, 8vh, 92px); min-height: clamp(50px, 8dvh, 92px); }
+@media (min-width: 600px) and (orientation: portrait) {
+  .vert { font-size: clamp(3rem, 10dvh, 7rem); }
+  .pad button { min-height: clamp(60px, 10dvh, 120px); font-size: 2.4rem; }
+}
+@media (orientation: landscape) and (min-width: 640px) {
+  .problem-card { height: 100%; justify-content: center; }
+  .vert { font-size: clamp(2.2rem, min(7vw, 13dvh), 7rem); }
+  .pad button { min-height: clamp(44px, calc((100dvh - 150px) / 4.4), 130px); }
+}
+/* Short phones: keep long explanations from pushing the number pad off screen. */
+@media (max-height: 760px) and (orientation: portrait) {
+  .feedback { font-size: 0.95rem; line-height: 1.35; }
+  .feedback strong { font-size: 1.15rem; }
+}
+
+/* Portrait: the page is exactly one screen tall; the pad or answers stay at the bottom
+   and the top part shrinks to fit. With settings open, the page scrolls normally. */
+@media (orientation: portrait) {
+  body { height: calc(100dvh - env(safe-area-inset-top, 0px) - env(safe-area-inset-bottom, 0px)); min-height: 0; display: flex; flex-direction: column; overflow: hidden; }
+  body:has(#settings-panel:not([hidden])) { height: auto; overflow: visible; }
+  .wrap { flex: 1 1 auto; min-height: 0; width: 100%; }
+  .play { flex: 1 1 auto; min-height: 0; }
+}
+@media (orientation: portrait) {
+  .problem-card { flex: 1 1 auto; min-height: 0; justify-content: center; overflow: hidden; }
+  .feedback { flex: 0 1 auto; min-height: 0; overflow-y: auto; }
+}
+@media (orientation: landscape) and (min-width: 640px) {
+  body { height: calc(100dvh - env(safe-area-inset-top, 0px) - env(safe-area-inset-bottom, 0px)); min-height: 0; display: flex; flex-direction: column; overflow: hidden; }
+  body:has(#settings-panel:not([hidden])) { height: auto; overflow: visible; }
+  .wrap { flex: 1 1 auto; min-height: 0; width: 100%; }
+  .play { flex: 1 1 auto; min-height: 0; grid-template-rows: minmax(0, 1fr); }
+  .problem-card { min-height: 0; overflow: hidden; }
+  .feedback { flex: 0 1 auto; min-height: 0; overflow-y: auto; }
+}
+/* After answering on smaller screens, shrink the sum so the reason has room. */
+@media (max-height: 900px), (max-width: 599px) {
+  .problem-card.good .vert, .problem-card.bad .vert { zoom: 0.7; }
+}
+@media (max-height: 500px) {
+  .feedback { font-size: 0.9rem; line-height: 1.3; }
+  .feedback strong { font-size: 1.05rem; }
+}
+
+/* My Words: a speaker button to hear the word, a sentence with a gap, one box per letter, and letter tiles or a keyboard to type it. The word list for grown-ups sits in Settings. */
+.src { margin: 0; font-size: 0.9rem; font-weight: 600; color: var(--muted); text-align: center; }
+.speak { font: inherit; display: inline-flex; align-items: center; gap: 10px; min-height: clamp(48px, 7dvh, 64px); padding: 0 22px; border-radius: 999px;
+  border: 2px solid var(--line); background: var(--key); color: var(--ink); cursor: pointer; font-weight: 700; font-size: clamp(1rem, 2.4dvh, 1.2rem); }
+.speak svg { width: 28px; height: 28px; fill: currentColor; }
+.speak:hover { border-color: var(--accent); }
+.speak.speaking { color: var(--accent); border-color: var(--accent); }
+.speak[hidden] { display: none; }
+.say { margin: 0; text-align: center; font-size: clamp(1rem, 2.6dvh, 1.3rem); line-height: 1.35; max-width: 34ch; text-wrap: balance; }
+.say .gap { display: inline-block; min-width: 3ch; border-bottom: 3px solid var(--accent); vertical-align: -2px; }
+.say mark { background: transparent; color: var(--accent); font-weight: 700; }
+.say[hidden] { display: none; }
+/* The boxes grow with the card: as wide as the card allows for the word's letters (--n), up to a cap by height. */
+.problem-card { container-type: inline-size; }
+.slots { display: flex; flex-wrap: wrap; justify-content: center; gap: 0.18em; font-weight: 700; line-height: 1.2;
+  font-size: min(clamp(1.6rem, 9dvh, 6rem), calc(88cqw / var(--n, 6) / 1.25)); }
+.slot { min-width: 1.05em; text-align: center; border-bottom: 0.09em solid var(--line); color: var(--ink); white-space: pre; }
+.slot:empty::before { content: "\00a0"; }
+.slot.cur { border-color: var(--accent); }
+.slot.ghost { color: var(--muted); opacity: 0.55; }
+.slot.ok { color: var(--good); border-color: var(--good); }
+.slot.no { color: var(--bad); border-color: var(--bad); text-decoration: line-through; text-decoration-thickness: 0.06em; }
+.slots.reveal { font-size: min(clamp(1.3rem, 6dvh, 4rem), calc(70cqw / var(--n, 6) / 1.25)); }
+.slots.reveal .slot { color: var(--good); border-color: var(--good); opacity: 0; transform: translateY(0.2em); transition: opacity .2s ease, transform .2s ease; }
+.slots.reveal .slot.show { opacity: 1; transform: none; }
+.feedback .word { font-weight: 700; font-size: 1.15em; color: var(--ink); white-space: nowrap; font-variant-ligatures: none; letter-spacing: 0.02em; }
+.feedback .word u { color: var(--accent); text-decoration-thickness: 0.12em; text-underline-offset: 0.18em; }
+.side { display: flex; flex-direction: column; gap: 8px; }
+/* Letter tiles (levels 1 and 2): a grid of 4 or 5 keys a row. A keyboard (levels 3 and 4): three rows of keys. */
+.letters { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; }
+.letters.five { grid-template-columns: repeat(5, 1fr); }
+.letters button, .actions button {
+  font: inherit; font-size: clamp(1.5rem, 4.5dvh, 2.3rem); font-weight: 700; color: var(--ink);
+  background: var(--key); border: 2px solid var(--line); border-radius: 18px; min-height: clamp(50px, 8dvh, 92px); cursor: pointer;
+  transition: transform .08s ease, border-color .15s ease; touch-action: manipulation; -webkit-tap-highlight-color: transparent;
+}
+.letters.kbd { display: flex; flex-direction: column; gap: 6px; }
+.letters.kbd .krow { display: flex; gap: 5px; justify-content: center; }
+.letters.kbd button { flex: 1 1 0; min-width: 0; min-height: clamp(44px, 6.5dvh, 60px); border-radius: 9px; padding: 0; font-size: clamp(1.05rem, 2.6dvh, 1.5rem); }
+.letters.kbd button.space { flex: 2.5 1 0; font-size: 0.9rem; font-weight: 600; color: var(--muted); }
+.letters button:hover:not(:disabled), .actions button:hover:not(:disabled) { border-color: var(--accent); }
+.letters button:active:not(:disabled), .actions button:active:not(:disabled) { transform: scale(0.96); }
+.letters button:disabled, .actions button:disabled { opacity: 0.4; cursor: default; }
+.actions { display: grid; grid-template-columns: 1fr 2fr; gap: 8px; }
+.actions .erase { font-size: 1.4rem; color: var(--muted); }
+.actions .go { background: var(--accent); border-color: var(--accent); color: var(--accent-ink); font-size: 1.3rem; }
+.actions .go:hover:not(:disabled) { border-color: var(--accent); filter: brightness(1.08); }
+.seg.four { grid-template-columns: repeat(2, 1fr); }
+.seg button { padding-inline: 4px; line-height: 1.2; }
+/* The word list: a box to type or paste into, Import, Save and Clear, and a line that says what was saved. */
+.list-box { display: flex; flex-direction: column; gap: 8px; }
+.list-help, .list-status, .level-note { margin: 0 4px; color: var(--muted); font-size: 0.9rem; line-height: 1.4; }
+.list-status:empty { display: none; }
+#word-list { font: inherit; font-size: 1rem; color: var(--ink); background: var(--key); border: 2px solid var(--line); border-radius: 14px;
+  padding: 10px 12px; min-height: 96px; width: 100%; resize: vertical; line-height: 1.4; }
+#word-list:focus-visible { outline: 3px solid var(--mark); outline-offset: 2px; }
+.list-row { display: flex; gap: 8px; flex-wrap: wrap; }
+.list-row button { font: inherit; font-size: 0.95rem; font-weight: 600; min-height: 44px; padding: 0 18px; border-radius: 14px; cursor: pointer;
+  color: var(--ink); background: transparent; border: 2px solid var(--line); }
+.list-row button.save { color: var(--accent-ink); background: var(--accent); border-color: var(--accent); }
+@media (min-width: 600px) and (orientation: portrait) {
+  .letters button, .actions button { min-height: clamp(60px, 9dvh, 110px); }
+  .letters.kbd button { min-height: clamp(52px, 9dvh, 110px); font-size: 2rem; }
+  .speak { min-height: 80px; font-size: 1.6rem; padding: 0 32px; gap: 14px; }
+  .speak svg { width: 36px; height: 36px; }
+  .say { font-size: 1.7rem; max-width: 40ch; }
+  .slots { font-size: min(clamp(1.6rem, 10dvh, 7.5rem), calc(88cqw / var(--n, 6) / 1.25)); }
+  .problem-card { gap: 22px; }
+  .feedback { font-size: 1.25rem; }
+}
+@media (orientation: landscape) and (min-width: 640px) {
+  .problem-card { height: 100%; justify-content: center; }
+  .side { height: 100%; justify-content: center; }
+  .letters button, .actions button { min-height: clamp(44px, 15dvh, 120px); }
+  .letters.kbd button { min-height: clamp(36px, 9dvh, 64px); }
+  .letters.kbd .krow { gap: 4px; }
+}
+@media (orientation: landscape) and (min-width: 1000px) {
+  .letters.kbd button { min-height: clamp(44px, 10dvh, 84px); font-size: 1.5rem; }
+  .say { font-size: 1.4rem; }
+}
+/* Short phones: smaller keys, so the boxes and the explanation have room. */
+@media (max-height: 700px) and (orientation: portrait) {
+  .speak { min-height: 44px; font-size: 0.95rem; padding: 0 16px; }
+  .speak svg { width: 22px; height: 22px; }
+  .letters.kbd button { min-height: 40px; font-size: 1rem; }
+  .letters.kbd { gap: 4px; }
+  .letters.kbd .krow { gap: 4px; }
+  .letters button, .actions button { min-height: clamp(44px, 6.5dvh, 60px); }
+  .say { font-size: 0.95rem; }
+  .problem-card { gap: 6px; }
+}
+@media (max-height: 700px) and (orientation: portrait) {
+  .problem-card.bad .say { display: none; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .slots.reveal .slot { transform: none; }
+}
+
+/* Worksheet cells (only printed): a long line to write the word, with the sentence and its gap under it. */
+@media print {
+  .sheet-line li > div.ws-mw { align-items: flex-start; gap: 1mm; padding-right: 2mm; width: 100%; }
+  .ws-mw .ws-blank { width: 62mm; margin-left: 0; height: 7mm; }
+  .ws-mw .ws-say { font-size: 9pt; line-height: 1.25; color: #333; white-space: normal; }
+  .ws-mw .ws-say .ws-gap { display: inline-block; min-width: 10mm; border-bottom: 0.3mm solid #000; }
+}
+</style>
+<link rel="stylesheet" href="../../loopy.css">
+<script src="../../loopy.js"></script>
+<script src="../spelling-quiz/words.js"></script>
+</head>
+<body>
+
+<div class="wrap">
+  <header class="game-bar">
+    <a class="home-link" href="../../">&larr; loopy</a>
+    <div class="bar-right">
+      <span id="star-chip"></span>
+      <button type="button" id="settings-toggle" aria-controls="settings-panel"></button>
+    </div>
+  </header>
+  <section class="top" aria-labelledby="title">
+    <h1 id="title" data-t="mwName">My Words</h1>
+    <div class="score" aria-live="polite">
+      <div class="pill pill-score"><span data-t="score">Score</span><b id="score">0 / 0</b></div>
+      <div id="level"></div>
+      <div class="pill pill-streak"><span data-t="streak">Streak</span><b id="streak">0</b></div>
+      <div id="last5" data-game="my-words"></div>
+    </div>
+  </section>
+  <div class="settings-panel" id="settings-panel" hidden>
+    <div class="controls"><div id="age-picker"></div><div id="theme-picker"></div><button id="sound-toggle"></button><div id="lang-picker"></div></div>
+    <div>
+      <p class="seg-label" id="words-label" data-t="mwWordsIn">Words in</p>
+      <div class="seg two" role="group" aria-labelledby="words-label" id="words-seg">
+        <button type="button" data-words="en">English</button>
+        <button type="button" data-words="de">Deutsch</button>
+      </div>
+      <p class="seg-note" data-t="wordsNote">The words to play with. loopy's own language is under Age, look and sound.</p>
+    </div>
+    <div class="list-box">
+      <label class="seg-label" for="word-list" data-t="mwList">Your word list</label>
+      <p class="list-help" id="list-help" data-t="mwListHelp">For grown-ups: type the words, one per line, or import a CSV file. A sentence after the word on the same line, after a comma, is read aloud too. Up to 50 words. Leave it empty and loopy picks words for the age.</p>
+      <textarea id="word-list" rows="4" autocomplete="off" autocapitalize="off" spellcheck="false" aria-describedby="list-help list-status"></textarea>
+      <div class="list-row">
+        <button type="button" class="save" id="list-save" data-t="mwSave">Save list</button>
+        <button type="button" id="list-import" data-t="mwImport">Import a CSV file</button>
+        <button type="button" id="list-clear" data-t="mwClear">Clear list</button>
+        <input type="file" id="list-file" accept=".csv,.txt,text/csv,text/plain" hidden>
+      </div>
+      <p class="list-status" id="list-status" role="status"></p>
+    </div>
+    <div>
+      <p class="seg-label" id="level-label" data-t="mwLevel">Level</p>
+      <div class="seg four" role="group" aria-labelledby="level-label" id="level-seg">
+        <button type="button" data-level="1" data-t="mwL1">Letter tiles, first letter shown</button>
+        <button type="button" data-level="2" data-t="mwL2">Letter tiles</button>
+        <button type="button" data-level="3" data-t="mwL3">Keyboard</button>
+        <button type="button" data-level="4" data-t="mwL4">Keyboard, no boxes</button>
+      </div>
+      <p class="level-note" data-t="mwLevelNote">Levels 1 and 2 show the letters the word needs, plus a few extra. Levels 3 and 4 show a whole keyboard. At level 4 the number of letters is a secret.</p>
+    </div>
+    <div class="panel-foot">
+      <p data-t="mwKbd">Keyboard works too: type the letters, Backspace erases, Enter checks.</p>
+      <button type="button" class="reset" id="reset" data-t="resetScore">Reset score</button>
+    </div>
+  </div>
+
+  <main class="play">
+    <div class="problem-card" id="card">
+      <p class="src" id="src"></p>
+      <button type="button" class="speak" id="speak"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 9v6h4l5 4V5L7 9H3zm13.5 3a4.5 4.5 0 0 0-2.5-4v8a4.5 4.5 0 0 0 2.5-4zM14 3.2v2.1a7 7 0 0 1 0 13.4v2.1a9 9 0 0 0 0-17.6z"/></svg><span data-t="mwHear">Hear the word</span></button>
+      <p class="say" id="say" hidden></p>
+      <div class="slots" id="slots" role="group" aria-live="polite"></div>
+      <div class="slots reveal" id="reveal" aria-hidden="true" hidden></div>
+      <p class="feedback" id="feedback"><span class="hint"></span></p>
+    </div>
+    <div class="side">
+      <div class="letters" id="letters"></div>
+      <div class="actions">
+        <button type="button" class="erase" id="k-erase" data-t-aria="mwEraseAria">⌫</button>
+        <button type="button" class="go" id="k-go" data-t="check">Check</button>
+      </div>
+    </div>
+  </main>
+</div>
+
+<script>
+Loopy.addStrings({
+  en: {
+    wordsNote: "The words to play with. loopy's own language is under Age, look and sound.",
+    mwName: "My Words", mwWordsIn: "Words in", mwLevel: "Level",
+    mwList: "Your word list",
+    mwListHelp: "For grown-ups: type the words, one per line, or import a CSV file. A sentence after the word on the same line, after a comma, is read aloud too. Up to 50 words. Leave it empty and loopy picks words for the age.",
+    mwPlaceholder: "friend, My friend is kind.\nbecause\nsaid",
+    mwSave: "Save list", mwImport: "Import a CSV file", mwClear: "Clear list",
+    mwSaved: "{n} words saved. The game now uses your list.", mwSaved1: "1 word saved. Add a few more for a better mix.", mwSays: "{n} of them have a sentence.",
+    mwLeftOut: "Left out (letters only, 2 to 20 long): {list}.", mwTooMany: "Only the first 50 words are kept.",
+    mwLongSay: "Sentences longer than 50 letters were left out.", mwEmpty: "The list is empty. loopy picks words for the age.",
+    mwFileBad: "That file could not be read. Try a .csv or .txt file.", mwFileBig: "That file is too big. Up to 200 KB.",
+    mwL1: "Letter tiles, first letter shown", mwL2: "Letter tiles", mwL3: "Keyboard", mwL4: "Keyboard, no boxes",
+    mwLevelNote: "Levels 1 and 2 show the letters the word needs, plus a few extra. Levels 3 and 4 show a whole keyboard. At level 4 the number of letters is a secret.",
+    mwKbd: "Keyboard works too: type the letters, Backspace erases, Enter checks.",
+    mwHear: "Hear the word", mwEraseAria: "Erase the last letter", mwSpace: "Space",
+    mwAsk: "Listen, then type the word.", mwAskNoVoice: "This device has no voice for these words. A grown-up reads the word out, then type it.",
+    mwMine: "Your list · {n} words", mwLoopy: "loopy's words for age {n}",
+    mwBoxes: "{n} letters", mwYes: "You spelled “{w}”.", mwRightIs: "It is spelled {w}.",
+    mwHow: "A grown-up reads each word out loud. Write it on the line. The words are on page 2."
+  },
+  de: {
+    wordsNote: "Die Wörter zum Spielen. Die Sprache von loopy selbst steht unter Alter, Aussehen und Ton.",
+    mwName: "Meine Wörter", mwWordsIn: "Wörter auf", mwLevel: "Stufe",
+    mwList: "Eure Wortliste",
+    mwListHelp: "Für Erwachsene: Tippt die Wörter ein, eins pro Zeile, oder ladet eine CSV-Datei. Ein Satz nach dem Wort in derselben Zeile, nach einem Komma, wird mit vorgelesen. Bis zu 50 Wörter. Bleibt die Liste leer, wählt loopy Wörter für das Alter.",
+    mwPlaceholder: "Freund, Mein Freund ist nett.\nStraße\nfahren",
+    mwSave: "Liste speichern", mwImport: "CSV-Datei laden", mwClear: "Liste leeren",
+    mwSaved: "{n} Wörter gespeichert. Das Spiel nimmt jetzt eure Liste.", mwSaved1: "1 Wort gespeichert. Mit ein paar mehr wird es abwechslungsreicher.", mwSays: "{n} davon haben einen Satz.",
+    mwLeftOut: "Weggelassen (nur Buchstaben, 2 bis 20 lang): {list}.", mwTooMany: "Nur die ersten 50 Wörter bleiben.",
+    mwLongSay: "Sätze mit mehr als 50 Zeichen wurden weggelassen.", mwEmpty: "Die Liste ist leer. loopy wählt Wörter für das Alter.",
+    mwFileBad: "Die Datei konnte nicht gelesen werden. Probiert eine .csv- oder .txt-Datei.", mwFileBig: "Die Datei ist zu groß. Bis zu 200 KB.",
+    mwL1: "Buchstaben-Tasten, erster Buchstabe", mwL2: "Buchstaben-Tasten", mwL3: "Tastatur", mwL4: "Tastatur, ohne Kästchen",
+    mwLevelNote: "Stufe 1 und 2 zeigen die Buchstaben des Wortes und ein paar dazu. Stufe 3 und 4 zeigen eine ganze Tastatur. Auf Stufe 4 bleibt die Zahl der Buchstaben geheim.",
+    mwKbd: "Die Tastatur geht auch: Buchstaben tippen, Rücktaste löscht, Enter prüft.",
+    mwHear: "Wort anhören", mwEraseAria: "Letzten Buchstaben löschen", mwSpace: "Leerzeichen",
+    mwAsk: "Hör zu und tippe das Wort.", mwAskNoVoice: "Dieses Gerät hat keine Stimme für diese Wörter. Ein Erwachsener liest das Wort vor, dann tippst du es.",
+    mwMine: "Eure Liste · {n} Wörter", mwLoopy: "Wörter von loopy für {n} Jahre",
+    mwBoxes: "{n} Buchstaben", mwYes: "Du hast „{w}“ geschrieben.", mwRightIs: "Richtig geschrieben: {w}.",
+    mwHow: "Ein Erwachsener liest jedes Wort vor. Schreib es auf die Linie. Die Wörter stehen auf Seite 2."
+  }
+});
+
+// Extra letters for the tiles at levels 1 and 2: common letters, so the extras look like real choices.
+const EXTRA = { en: "abcdefghiklmnoprstuw", de: "abdefghiklmnorstuwz" };
+// The keyboard at levels 3 and 4. A letter the word needs that is not here (ß, é, an apostrophe) joins the last row.
+const KEYS = { en: ["qwertyuiop", "asdfghjkl", "zxcvbnm"], de: ["qwertzuiopü", "asdfghjklöä", "yxcvbnm"] };
+const MAX_WORDS = 50, MAX_SAY = 50, MAX_STORE = 4000, MAX_FILE = 200000;
+const randInt = (n) => Math.floor(Math.random() * n);
+const shuffle = (arr) => { const a = arr.slice(); for (let i = a.length - 1; i > 0; i--) { const j = randInt(i + 1); [a[i], a[j]] = [a[j], a[i]]; } return a; };
+const lower = (w) => w.toLocaleLowerCase("de");
+const isLetter = (c) => /\p{L}/u.test(c);
+
+// One word from a grown-up: letters (any language), with ' or - or one space inside, 2 to 20 long. null if not.
+function cleanWord(s) {
+  if (typeof s !== "string") return null;
+  const w = s.normalize("NFC").replace(/[’`]/g, "'").replace(/\s+/g, " ").trim();
+  return w.length >= 2 && w.length <= 20 && /^\p{L}(?:[\p{L}'\- ]*\p{L})?$/u.test(w) ? w : null;
+}
+// A sentence that goes with a word, up to 50 letters. Semicolons become commas, so the list can be shown and read back.
+// "" when there is none, null when it is too long.
+function cleanSay(s) {
+  if (typeof s !== "string") return "";
+  const v = s.normalize("NFC").replace(/;/g, ",").replace(/\s+/g, " ").trim();
+  return v.length > MAX_SAY ? null : v;
+}
+// One CSV line into its parts: tabs, semicolons or commas between them (the first kind found), quotes around a part allowed.
+function splitLine(line) {
+  const sep = /\t/.test(line) ? "\t" : /;/.test(line) ? ";" : ",";
+  const parts = [];
+  let cur = "", q = false;
+  for (let i = 0; i < line.length; i++) {
+    const c = line[i];
+    if (c === '"') { if (q && line[i + 1] === '"') { cur += '"'; i++; } else q = !q; }
+    else if (c === sep && !q) { parts.push(cur); cur = ""; }
+    else cur += c;
+  }
+  parts.push(cur);
+  return parts.map(p => p.trim());
+}
+// A pasted list or a CSV file: one word per line, with a sentence after it on the same line, or words with commas
+// between them. A first line like "word,sentence" is a heading and skipped. Returns { list, says, bad, cut, long }:
+// the good entries [word, sentence] (no doubles, at most 50), how many have a sentence, what was left out,
+// whether some words were cut, and whether a sentence was too long.
+function parseList(text) {
+  const t = String(text || "").replace(/^﻿/, "").slice(0, MAX_FILE);
+  let lines = t.split(/\r\n|\r|\n/).map(l => l.trim()).filter(Boolean);
+  // One line with only spaces between the words: split at the spaces.
+  if (lines.length === 1 && !/[,;\t]/.test(lines[0])) lines = lines[0].split(/\s+/);
+  const list = [], bad = [], seen = new Set();
+  let says = 0, cut = false, long = false;
+  lines.forEach((line, li) => {
+    const parts = splitLine(line);
+    if (li === 0 && lines.length > 1 && /^(word|words|wort|wörter|lernwort|lernwörter|spelling)$/i.test(parts[0])) return;
+    // "friend, My friend is kind." is a word and its sentence; "friend, because, said" is three words.
+    const items = parts.length >= 2 && parts.slice(1).some(p => /\s/.test(p)) ? [[parts[0], parts.slice(1).filter(Boolean).join(", ")]] : parts.map(p => [p, ""]);
+    items.forEach(([w0, s0]) => {
+      const w = cleanWord(w0);
+      if (!w) { if (w0 && bad.length < 5) bad.push(w0.slice(0, 24)); return; }
+      if (seen.has(lower(w))) return;
+      if (list.length >= MAX_WORDS) { cut = true; return; }
+      let s = cleanSay(s0);
+      if (s === null) { long = true; s = ""; }
+      if (s) says++;
+      seen.add(lower(w)); list.push([w, s]);
+    });
+  });
+  return { list, says, bad, cut, long };
+}
+// The sentence with the word taken out: [before, after], or null when the word is not in it.
+function gapOf(say, word) {
+  const a = lower(say), b = lower(word);
+  let at = a.indexOf(b);
+  while (at !== -1 && ((at > 0 && isLetter(a[at - 1])) || (at + b.length < a.length && isLetter(a[at + b.length])))) at = a.indexOf(b, at + 1);
+  return at === -1 ? null : [say.slice(0, at), say.slice(at + word.length)];
+}
+// The part of right that differs from wrong, for underlining: [before, part, after].
+function diff(right, wrong) {
+  const a = lower(right), b = lower(wrong);
+  let p = 0, s = 0;
+  while (p < a.length && p < b.length && a[p] === b[p]) p++;
+  while (s < a.length - p && s < b.length - p && a[a.length - 1 - s] === b[b.length - 1 - s]) s++;
+  let from = p, to = right.length - s;
+  if (from >= to) { from = Math.max(0, p - 1); to = Math.min(right.length, from + 1); }
+  return [right.slice(0, from), right.slice(from, to), right.slice(to)];
+}
+// One word to type: { word, say, lang, letters, tiles, key }. letters are lower case, one per box. tiles are the keys
+// at levels 1 and 2: the word's letters, each once, plus extras (8 keys for short words, 10 for longer ones).
+function makeProblem(word, say, lang) {
+  const letters = [...lower(word)];
+  const need = [...new Set(letters)];
+  const keys = Math.max(letters.length <= 4 ? 8 : 10, need.length + 2);
+  const extra = shuffle([...EXTRA[lang]].filter(c => !need.includes(c))).slice(0, keys - need.length);
+  return { word, say, lang, letters, tiles: shuffle([...need, ...extra]), key: lang + ":" + lower(word) };
+}
+
+(function () {
+  const $ = (id) => document.getElementById(id);
+  const card = $("card"), srcEl = $("src"), sayEl = $("say"), slotsEl = $("slots"), revealEl = $("reveal"), lettersEl = $("letters"),
+    feedbackEl = $("feedback"), goBtn = $("k-go"), eraseBtn = $("k-erase"), speakBtn = $("speak");
+  const listEl = $("word-list"), statusEl = $("list-status"), fileEl = $("list-file");
+  const wordsBtns = [...document.querySelectorAll("#words-seg button")];
+  const levelBtns = [...document.querySelectorAll("#level-seg button")];
+  const t = Loopy.t;
+  const store = {
+    // ok: the values this setting may have; anything else falls back to the default.
+    get(k, d, ok) { try { const v = JSON.parse(Loopy.store.get(k)); return ok.includes(v) ? v : d; } catch (e) { return d; } },
+    set(k, v) { Loopy.store.set(k, JSON.stringify(v)); }
+  };
+  const still = window.matchMedia && matchMedia("(prefers-reduced-motion: reduce)").matches;
+  // The grown-up's list for each word language, saved for this child as [[word, sentence], ...]. Every entry is
+  // checked again when it is read back, so a broken or too long value gives a shorter list or none, never an error.
+  const LIST_KEY = { en: "mw.listEn", de: "mw.listDe" };
+  function readList(l) {
+    try {
+      const raw = JSON.parse(Loopy.store.get(LIST_KEY[l]));
+      if (!Array.isArray(raw)) return [];
+      const out = [], seen = new Set();
+      raw.forEach(e => {
+        const w = Array.isArray(e) ? cleanWord(e[0]) : null;
+        if (!w || seen.has(lower(w)) || out.length >= MAX_WORDS) return;
+        seen.add(lower(w)); out.push([w, cleanSay(e[1]) || ""]);
+      });
+      return out;
+    } catch (e) { return []; }
+  }
+  // Saves the list so it fits in the stars code (4,000 letters): the last sentences go first when it does not.
+  function writeList(l, list) {
+    const copy = list.map(e => e.slice());
+    let json = JSON.stringify(copy), dropped = false;
+    for (let i = copy.length - 1; i >= 0 && json.length > MAX_STORE; i--) { if (copy[i][1]) { copy[i][1] = ""; dropped = true; json = JSON.stringify(copy); } }
+    Loopy.store.set(LIST_KEY[l], json);
+    return { list: copy, dropped };
+  }
+
+  let age = Loopy.getAge();
+  let wordsLang = store.get("mw.words", Loopy.lang === "de" ? "de" : "en", ["en", "de"]);
+  let autoRead = store.get("mw.autoRead", true, [true, false]);
+  let mine = readList(wordsLang);
+  // Opened from the grown-ups' page to practise (#practise=mw-mine): the game already plays the right words.
+  if (/^mw-/.test(Loopy.log.hint || "")) Loopy.log.hint = "";
+  let level;
+  // The level is the help the child gets, remembered per age: tiles with the first letter up to age 6, tiles at 7,
+  // a keyboard with one box per letter at 8 and 9, a keyboard with no boxes from 10.
+  const levelForAge = (a) => a <= 6 ? 1 : a === 7 ? 2 : a <= 9 ? 3 : 4;
+  // Without a list, loopy's own spelling words follow the age like Spelling Quiz: grade 1 up to age 6, then a grade a year.
+  const gradeForAge = (a) => a <= 6 ? 1 : a === 7 ? 2 : a === 8 ? 3 : a <= 10 ? 4 : 5;
+  const tiles = () => level <= 2, boxes = () => level <= 3;
+  function loadForAge() { level = store.get("mw.level.a" + age, levelForAge(age), [1, 2, 3, 4]); }
+  loadForAge();
+  Loopy.levels.init({ names: ["mwL1", "mwL2", "mwL3", "mwL4"],
+    get: () => level - 1, base: () => levelForAge(age) - 1,
+    set: (i) => { level = i + 1; store.set("mw.level.a" + age, level); recent = []; newRound(); } });
+  let right = 0, tried = 0, streak = 0;
+  let current = null, typed = [], answered = false, recent = [], interacted = false, timers = [];
+
+  const pool = () => mine.length ? mine : WORDS[wordsLang][gradeForAge(age) - 1].map(w => [w, ""]);
+  const kind = () => mine.length ? "mw-mine" : "mw-loopy";
+  const make = () => { const p = pool(), e = p[randInt(p.length)]; return makeProblem(e[0], e[1], wordsLang); };
+
+  // Read the word aloud with the browser's own voice, in the language of the words, then its sentence.
+  // Nothing is downloaded. If there is no voice for that language, the button hides and the card says so.
+  const canSpeak = "speechSynthesis" in window && "SpeechSynthesisUtterance" in window;
+  function voiceFor(lang) {
+    const list = speechSynthesis.getVoices().map(v => ({ v, l: String(v.lang).toLowerCase().replace("_", "-") }));
+    const mine = list.filter(x => x.l === lang || x.l.startsWith(lang + "-"));
+    const best = mine.find(x => x.v.default) || mine.find(x => x.v.localService) || mine[0];
+    return best ? best.v : null;
+  }
+  function voiceOk() {
+    if (!canSpeak) return false;
+    try { const all = speechSynthesis.getVoices(); return !all.length || !!voiceFor(wordsLang); } catch (e) { return false; }
+  }
+  let talking = null;
+  function speak() {
+    if (!canSpeak || !current) return;
+    try {
+      speechSynthesis.cancel();
+      const u = new SpeechSynthesisUtterance(current.word + (current.say ? ". " + current.say : ""));
+      u.lang = wordsLang === "de" ? "de-DE" : "en-US";
+      const v = voiceFor(wordsLang);
+      if (v) u.voice = v;
+      u.rate = 0.8;
+      talking = u;
+      speakBtn.classList.add("speaking");
+      u.onend = u.onerror = () => { if (talking === u) speakBtn.classList.remove("speaking"); };
+      speechSynthesis.speak(u);
+    } catch (e) {}
+  }
+
+  // The word's own capital letters show in the boxes, whatever key was pressed ("Hund", "I").
+  const shown = (c, i) => { const o = current.word[i]; return o && lower(o) === c && o !== c ? o : c; };
+  function drawSlots() {
+    slotsEl.textContent = "";
+    const n = boxes() ? current.letters.length : typed.length + (answered ? 0 : 1);
+    slotsEl.style.setProperty("--n", Math.max(n, 4));
+    for (let i = 0; i < n; i++) {
+      const s = document.createElement("span");
+      s.className = "slot";
+      const c = typed[i];
+      if (c) s.textContent = shown(c, i);
+      else if (level === 1 && i === 0) { s.textContent = shown(current.letters[0], 0); s.classList.add("ghost"); }
+      if (answered) s.classList.add(c === current.letters[i] ? "ok" : "no");
+      else if (i === typed.length) s.classList.add("cur");
+      slotsEl.appendChild(s);
+    }
+    slotsEl.setAttribute("aria-label", (boxes() ? t("mwBoxes", { n: current.letters.length }) : "") + (typed.length ? ": " + typed.join(" ") : ""));
+  }
+  // The sentence, with a gap where the word goes until the word is answered, then the word marked in it.
+  function drawSay() {
+    sayEl.textContent = "";
+    sayEl.hidden = !current.say;
+    if (!current.say) return;
+    const g = gapOf(current.say, current.word);
+    if (!g) { sayEl.textContent = current.say; return; }
+    const mid = document.createElement(answered ? "mark" : "span");
+    if (answered) mid.textContent = current.say.slice(g[0].length, current.say.length - g[1].length);
+    else { mid.className = "gap"; mid.setAttribute("aria-label", "…"); }
+    sayEl.append(g[0], mid, g[1]);
+  }
+  function key(c) {
+    const b = document.createElement("button");
+    b.type = "button"; b.textContent = c; b.lang = wordsLang; b.dataset.k = c;
+    if (c === " ") { b.className = "space"; b.textContent = t("mwSpace"); }
+    b.addEventListener("click", () => add(c));
+    return b;
+  }
+  // Levels 1 and 2: the word's letters and a few extra, as tiles. Levels 3 and 4: a keyboard, plus any letter the word
+  // needs that is not on it (ß, é, an apostrophe, a space), in the last row.
+  function drawKeys() {
+    lettersEl.textContent = "";
+    lettersEl.classList.toggle("kbd", !tiles());
+    lettersEl.classList.toggle("five", tiles() && current.tiles.length > 8);
+    if (tiles()) { current.tiles.forEach(c => lettersEl.appendChild(key(c))); return; }
+    const on = KEYS[wordsLang].join("");
+    const extra = [...new Set(current.letters.filter(c => !on.includes(c)))];
+    KEYS[wordsLang].forEach((line, li) => {
+      const row = document.createElement("div"); row.className = "krow";
+      [...line].forEach(c => row.appendChild(key(c)));
+      if (li === KEYS[wordsLang].length - 1) extra.forEach(c => row.appendChild(key(c)));
+      lettersEl.appendChild(row);
+    });
+  }
+  const full = () => boxes() ? typed.length >= current.letters.length : typed.length >= 24;
+  function render() {
+    Loopy.levels.render();
+    $("score").textContent = right + " / " + tried;
+    $("streak").textContent = streak;
+    wordsBtns.forEach(b => b.setAttribute("aria-pressed", String(b.dataset.words === wordsLang)));
+    levelBtns.forEach(b => b.setAttribute("aria-pressed", String(+b.dataset.level === level)));
+    readPill();
+    speakBtn.hidden = !voiceOk();
+    srcEl.textContent = mine.length ? t("mwMine", { n: Loopy.num(mine.length) }) : t("mwLoopy", { n: Loopy.num(age) });
+    goBtn.textContent = t(answered ? "next" : "check");
+    goBtn.disabled = !answered && (boxes() ? typed.length < current.letters.length : !typed.length);
+    eraseBtn.disabled = answered || !typed.length;
+    lettersEl.querySelectorAll("button").forEach(b => { b.disabled = answered || full(); });
+    // The browser test types the word while it is open: data-tries says so, data-a carries the letters to tap.
+    if (answered) { card.removeAttribute("data-tries"); card.removeAttribute("data-a"); }
+    else { card.setAttribute("data-tries", "on"); card.setAttribute("data-a", current.letters.join("")); }
+    drawSay();
+    drawSlots();
+  }
+  function stopReveal() { timers.forEach(clearTimeout); timers = []; }
+  // Try again: a missed word comes back later (Loopy.retry). The note is the word language and the word ("en:friend").
+  // Its sentence comes from the list, if it is still there.
+  function rebuild(r) {
+    const m = /^(en|de):(.{2,20})$/.exec(r || "");
+    if (!m || m[1] !== wordsLang) return null;
+    const w = cleanWord(m[2]);
+    if (!w) return null;
+    const e = mine.find(x => lower(x[0]) === lower(w));
+    return makeProblem(w, e ? e[1] : "", wordsLang);
+  }
+
+  function newRound() {
+    stopReveal();
+    // Nothing back within 10, or, with a shorter list, before all the others have come.
+    const keep = Math.max(1, Math.min(10, pool().length - 1));
+    current = Loopy.retry.fresh("my-words", recent, make, rebuild, keep);
+    typed = []; answered = false;
+    drawKeys();
+    revealEl.hidden = true; revealEl.textContent = "";
+    card.classList.remove("good", "bad");
+    feedbackEl.className = "feedback";
+    feedbackEl.innerHTML = '<span class="hint"></span>';
+    feedbackEl.firstChild.textContent = t(voiceOk() ? "mwAsk" : "mwAskNoVoice");
+    render();
+    if (autoRead && interacted && Loopy.sound.isOn()) speak();
+  }
+  function add(c) {
+    if (answered || full()) return;
+    typed.push(c);
+    render();
+  }
+  function erase() {
+    if (answered || !typed.length) return;
+    typed.pop();
+    render();
+  }
+  // After a wrong answer, the right spelling appears under the child's try, one letter at a time.
+  function reveal() {
+    revealEl.textContent = "";
+    revealEl.style.setProperty("--n", Math.max(current.letters.length, 4));
+    const spans = current.letters.map((c, i) => {
+      const s = document.createElement("span");
+      s.className = "slot"; s.textContent = shown(c, i);
+      revealEl.appendChild(s);
+      return s;
+    });
+    revealEl.hidden = false;
+    spans.forEach((s, i) => {
+      if (still) s.classList.add("show");
+      else timers.push(setTimeout(() => s.classList.add("show"), 250 + i * 300));
+    });
+  }
+  // The right word, with the part that differs from the child's try underlined.
+  function wordNode(wrong) {
+    const n = document.createElement("span");
+    n.className = "word"; n.lang = current.lang;
+    if (!wrong) { n.textContent = current.word; return n; }
+    const [a, b, c] = diff(current.word, wrong), u = document.createElement("u");
+    u.textContent = b;
+    n.append(a, u, c);
+    return n;
+  }
+  function check() {
+    if (answered || goBtn.disabled) return;
+    answered = true; tried++;
+    const ok = typed.join("") === current.letters.join("");
+    const yours = typed.map(shown).join("");
+    if (ok) { right++; streak++; } else { streak = 0; }
+    if (ok) Loopy.rewards.correct("my-words", streak, kind());
+    else Loopy.rewards.wrong("my-words", { q: ("📝 " + current.word).slice(0, 40), a: current.word, y: yours, k: kind(), r: current.key });
+    card.classList.remove("good", "bad");
+    card.classList.add(ok ? "good" : "bad");
+    feedbackEl.className = "feedback " + (ok ? "good" : "bad");
+    feedbackEl.innerHTML = "<strong></strong>";
+    feedbackEl.firstChild.textContent = ok ? (streak >= 3 ? t("correctRow", { n: streak }) : t("correct")) : t("notQuite");
+    // "It is spelled fr[ie]nd." after a miss, "You spelled “friend”." after a right one.
+    const [pre, post] = t(ok ? "mwYes" : "mwRightIs", { w: "\u0000" }).split("\u0000");
+    feedbackEl.append(pre, wordNode(ok ? "" : yours), post);
+    if (!ok) reveal();
+    render();
+    goBtn.focus({ preventScroll: true });
+    if ((!ok || autoRead) && interacted && Loopy.sound.isOn()) speak();
+  }
+
+  // The word list in Settings: one line per word, the sentence after a comma.
+  function showList() { listEl.value = mine.map(e => e[1] ? e[0] + ", " + e[1] : e[0]).join("\n"); listEl.placeholder = t("mwPlaceholder"); listEl.lang = wordsLang; }
+  function saveList(text) {
+    const r = parseList(text);
+    const w = writeList(wordsLang, r.list);
+    mine = w.list;
+    const msg = [mine.length === 0 ? t("mwEmpty") : mine.length === 1 ? t("mwSaved1") : t("mwSaved", { n: Loopy.num(mine.length) })];
+    const says = mine.filter(e => e[1]).length;
+    if (says) msg.push(t("mwSays", { n: Loopy.num(says) }));
+    if (r.bad.length) msg.push(t("mwLeftOut", { list: r.bad.join(", ") }));
+    if (r.cut) msg.push(t("mwTooMany"));
+    if (r.long || w.dropped) msg.push(t("mwLongSay"));
+    statusEl.textContent = msg.join(" ");
+    showList();
+    recent = [];
+    newRound();
+  }
+  $("list-save").addEventListener("click", () => saveList(listEl.value));
+  $("list-clear").addEventListener("click", () => saveList(""));
+  // Import: a .csv or .txt file from the device, read here in the browser. Nothing is uploaded.
+  $("list-import").addEventListener("click", () => { fileEl.value = ""; fileEl.click(); });
+  fileEl.addEventListener("change", () => {
+    const f = fileEl.files && fileEl.files[0];
+    if (!f) return;
+    if (f.size > MAX_FILE) { statusEl.textContent = t("mwFileBig"); return; }
+    const reader = new FileReader();
+    reader.onload = () => saveList(String(reader.result || ""));
+    reader.onerror = () => { statusEl.textContent = t("mwFileBad"); };
+    try { reader.readAsText(f); } catch (e) { statusEl.textContent = t("mwFileBad"); }
+  });
+
+  document.addEventListener("pointerdown", () => { interacted = true; }, { once: true });
+  document.addEventListener("keydown", () => { interacted = true; }, { once: true });
+  speakBtn.addEventListener("click", speak);
+  eraseBtn.addEventListener("click", erase);
+  goBtn.addEventListener("click", () => { answered ? newRound() : check(); });
+  wordsBtns.forEach(b => b.addEventListener("click", () => {
+    wordsLang = b.dataset.words; store.set("mw.words", wordsLang); mine = readList(wordsLang); statusEl.textContent = ""; showList(); recent = []; newRound();
+  }));
+  levelBtns.forEach(b => b.addEventListener("click", () => { level = +b.dataset.level; store.set("mw.level.a" + age, level); recent = []; newRound(); }));
+  // The Read aloud pill in Settings. The setting stays this game's own: it reads each new word, on at the start.
+  const readPill = Loopy.speech.toggle({ isOn: () => autoRead, set: (on) => { autoRead = on; store.set("mw.autoRead", on); } });
+  window.addEventListener("loopy:age", (e) => { age = e.detail; recent = []; loadForAge(); newRound(); });
+  $("reset").addEventListener("click", () => { right = 0; tried = 0; streak = 0; Loopy.recent.clear("my-words"); newRound(); });
+  document.addEventListener("keydown", (e) => {
+    if (e.target.tagName === "INPUT" || e.target.tagName === "TEXTAREA" || e.ctrlKey || e.metaKey || e.altKey || document.querySelector(".loopy-cheer.big")) return;
+    if (e.key === "Enter") {
+      if (e.target.tagName === "BUTTON") return;
+      answered ? newRound() : check();
+      e.preventDefault();
+      return;
+    }
+    if (e.key === "Backspace") { erase(); e.preventDefault(); return; }
+    const c = e.key.length === 1 ? e.key.normalize("NFC").toLocaleLowerCase("de") : "";
+    if (!c) return;
+    // The keys on screen say which letters count: a space only when the word has one.
+    if (tiles() ? current.tiles.includes(c) : (isLetter(c) || c === "'" || c === "-" || (c === " " && current.letters.includes(" ")))) { add(c); e.preventDefault(); }
+  });
+  // Some browsers load their voices a moment after the page.
+  if (canSpeak) speechSynthesis.addEventListener("voiceschanged", render);
+  window.addEventListener("pagehide", () => { try { speechSynthesis.cancel(); } catch (e) {} });
+
+  // Print worksheet: 20 lines to write on, like a spelling test. A grown-up reads the words from page 2.
+  const part = (cls, text) => { const n = document.createElement("span"); n.className = cls; if (text) n.textContent = text; return n; };
+  Loopy.worksheet({
+    title: () => t("mwName"),
+    level: () => [t("ageLabel", { n: age }), mine.length ? t("mwMine", { n: Loopy.num(mine.length) }) : t("mwLoopy", { n: Loopy.num(age) }), wordsLang === "de" ? "Deutsch" : "English"].join(" · "),
+    how: () => t("mwHow"),
+    layout: "line",
+    // Every word of the list once before any comes back.
+    make: (n) => {
+      const list = [];
+      let bag = [];
+      while (list.length < n) { if (!bag.length) bag = shuffle(pool()); const e = bag.pop(); list.push(makeProblem(e[0], e[1], wordsLang)); }
+      return list;
+    },
+    cell: (q) => {
+      const box = document.createElement("div");
+      box.className = "ws-mw";
+      box.appendChild(part("ws-blank"));
+      if (q.say) {
+        const g = gapOf(q.say, q.word), say = part("ws-say");
+        say.lang = q.lang;
+        if (g) say.append(g[0], part("ws-gap"), g[1]); else say.textContent = q.say;
+        box.appendChild(say);
+      }
+      return box;
+    },
+    answer: (q) => q.word
+  });
+
+  showList();
+  newRound();
+})();
+</script>
+</body>
+</html>
