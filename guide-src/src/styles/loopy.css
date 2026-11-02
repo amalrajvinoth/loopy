@@ -107,6 +107,16 @@ h1, h2, h3, h4, .sl-markdown-content :is(h1, h2, h3, h4), .site-title, [data-pag
 /* Pictures of the site in the text */
 .sl-markdown-content img.shot { border-radius: 16px; border: 1px solid var(--sl-color-gray-5); max-width: min(100%, 320px); height: auto; }
 .sl-markdown-content table { display: table; width: 100%; }
+/* Phones: a wide table (4 columns or more, like a game's Age levels; astro.config.mjs marks it "stack") turns into
+   one small card per row, with the column heading before each value. So nothing scrolls sideways. */
+@media (max-width: 50rem) {
+  .sl-markdown-content table.stack, .sl-markdown-content table.stack tbody, .sl-markdown-content table.stack tr { display: block; width: 100%; }
+  .sl-markdown-content table.stack thead { display: none; }
+  .sl-markdown-content table.stack tr { padding: 0.6rem 0; border-bottom: 1px solid var(--sl-color-gray-5); }
+  .sl-markdown-content table.stack td { display: block; border: 0; padding: 0.1rem 0; }
+  .sl-markdown-content table.stack td::before { content: attr(data-label) ": "; font-weight: 600; color: var(--sl-color-white); }
+  .sl-markdown-content table.stack td:first-child { font-weight: 700; color: var(--sl-color-white); }
+}
 
 /* The logo in the top bar: white on Black, dark ink on Sunny. */
 .loopy-title { display: flex; align-items: center; gap: 0.6rem; text-decoration: none; color: var(--sl-color-white); }
