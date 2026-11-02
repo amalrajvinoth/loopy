@@ -430,5 +430,12 @@ button.next.skip:hover { color: var(--ink) !important; }
 }
 .loopy-hint::after { content: ""; position: absolute; left: 50%; bottom: -11px; margin-left: -12px; border: 12px solid transparent; border-bottom: 0; border-top-color: var(--c1); }
 @keyframes hint-bob { 50% { transform: translate(-50%, calc(-100% - 6px)); } }
+.loopy-hint.up { transform: translate(-50%, 0); }
+.loopy-hint.up::after { bottom: auto; top: -11px; border-top: 0; border-bottom: 12px solid var(--c1); }
+@keyframes hint-bob-up { 50% { transform: translate(-50%, 6px); } }
+.loopy-hint.up { animation-name: hint-bob-up; }
+.loopy-hint.fade { opacity: 0; transition: opacity .6s ease; animation: none; }
+/* Short screens: a slimmer bubble, so it can have a row of its own without crowding the card. */
+@media (max-height: 700px) { .loopy-hint { font-size: 1.05rem; padding: 7px 14px; border-radius: 16px; } }
 @media (prefers-reduced-motion: reduce) { .loopy-hint { animation: none; } }
 @media print { .loopy-hint, .loopy-plus { display: none; } }

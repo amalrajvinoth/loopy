@@ -8,6 +8,10 @@ loopy keeps getting new games. Here is what came lately!
 
 The big changes, newest first. Small fixes are not listed. See [the full list on GitHub](https://github.com/amalrajvinoth/loopy/blob/main/RELEASES.md).
 
+## 2 November 2026
+
+- **The first-time hint hides nothing.** The blue bubble that shows what to tap now looks for a free spot. It goes above the answers, in an empty part of the card, or in a row of its own. In Word Trail it sits between the word list and Clue. It never sits on an answer, a key or a letter any more. It fades by itself after a few seconds. See [The game screen](/loopy/guide/playing/game-screen/).
+
 ## 1 November 2026
 
 - **Easier to tap.** Three small buttons grew to at least 44px. They are the Play links in the folded list on the grown-ups page, the Clear key in Word Trail and the gear-only Settings button on small phones.
