@@ -10,6 +10,7 @@ Die großen Änderungen, die neuesten zuerst. Kleine Korrekturen stehen nicht da
 
 ## 2. November 2026
 
+- **Ordentlichere Kacheln auf dem Tablet.** Die Startseite zeigt höchstens zwei Zeilen zu jedem Spiel, so sind alle Kacheln einer Reihe gleich hoch. Das Buchstabengitter im Wortdetektiv ist auf dem Tablet größer.
 - **Spielseiten passen aufs Handy.** Eine breite Tabelle mit Altersstufen zeigt jetzt eine kleine Karte pro Stufe, so rutscht die Seite nicht mehr zur Seite.
 - **Die Tasten im Wortdetektiv passen auf Deutsch.** Die Löschtaste zeigt jetzt das Zeichen ⌫ und die Taste Prüfen ist breiter, so wird „Prüfen“ auf dem Handy nicht mehr abgeschnitten. Siehe [Wortdetektiv](/loopy/guide/de/games/languages/word-detective/).
 - **Der Tipp beim ersten Mal verdeckt nichts mehr.** Die blaue Blase, die zeigt, wohin man tippt, sucht sich jetzt einen freien Platz: über den Antworten, in einem leeren Teil der Karte, im Wortpfad zwischen der Wortliste und Hinweis, oder in einer eigenen Zeile. Sie sitzt nie mehr auf einer Antwort, einer Taste oder einem Buchstaben. Nach ein paar Sekunden verschwindet sie von selbst. Siehe [Der Spielbildschirm](/loopy/guide/de/playing/game-screen/).
