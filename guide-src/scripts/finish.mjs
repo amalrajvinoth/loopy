@@ -23,24 +23,20 @@ const pages = [];
 
 const TAG = /<([a-zA-Z][\w-]*)([^<>]*?)\sstyle="([^"]*)"([^<>]*)>/g;
 let stacked = 0;
+// The text of a heading cell, with its tags gone: a character after "<" is skipped until the
+// next ">", so no "<" or ">" can survive. Quotes become entities; "&" is already one in built HTML.
+function headingText(cell) {
+  let out = "", inTag = false;
+  for (const ch of cell) {
+    if (ch === "<") inTag = true;
+    else if (ch === ">") inTag = false;
+    else if (!inTag) out += ch;
+  }
+  return out.replace(/\s+/g, " ").trim().replace(/"/g, "&quot;");
+}
 function stackWideTables(html) {
   return html.replace(/<table>([\s\S]*?)<\/table>/g, (all, inner) => {
-    const heads = [...inner.matchAll(/<th[^>]*>([\s\S]*?)<\/th>/g)].map(m => {
-      let text = m[1];
-      let prev;
-      do {
-        prev = text;
-        text = text.replace(/<[^>]+>/g, "");
-      } while (text !== prev);
-      return text
-        .replace(/\s+/g, " ")
-        .trim()
-        .replace(/[&<>"]/g, (ch) => (
-          ch === "&" ? "&amp;" :
-          ch === "<" ? "&lt;" :
-          ch === ">" ? "&gt;" : "&quot;"
-        ));
-    });
+    const heads = [...inner.matchAll(/<th[^>]*>([\s\S]*?)<\/th>/g)].map(m => headingText(m[1]));
     if (heads.length < 4) return all;
     stacked++;
     let i = 0;
