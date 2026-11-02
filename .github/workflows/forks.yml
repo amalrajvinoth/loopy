@@ -24,6 +24,19 @@ jobs:
   count:
     runs-on: ubuntu-latest
     steps:
+      - name: Probe what the Actions token and a plain request may read (temporary)
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          R="$GITHUB_REPOSITORY"
+          for e in "repos/$R" "repos/$R/forks?per_page=5" "repos/$R/stargazers?per_page=5" "repos/$R/traffic/clones" "repos/$R/actions/workflows/forks.yml/runs?per_page=1" "repos/$R/issues?labels=usage&state=open"; do
+            if out=$(gh api "$e" 2>&1 >/dev/null); then echo "gh  ok   $e"; else echo "gh  FAIL $e: $out"; fi
+            echo "curl $(curl -s -o /dev/null -w '%{http_code}' "https://api.github.com/$e") $e"
+            echo "curl+token $(curl -s -o /dev/null -w '%{http_code}' -H "Authorization: Bearer $GH_TOKEN" "https://api.github.com/$e") $e"
+          done
+          echo "star+json: $(gh api -H 'Accept: application/vnd.github.star+json' "repos/$R/stargazers?per_page=5" 2>&1 | head -c 300)"
+          echo "graphql:"; gh api graphql -f query='{ repository(owner:"'"${R%%/*}"'", name:"'"${R#*/}"'") { forkCount stargazerCount forks(first:5, orderBy:{field:CREATED_AT, direction:DESC}) { nodes { nameWithOwner url createdAt } } stargazers(first:5, orderBy:{field:STARRED_AT, direction:DESC}) { edges { starredAt node { login url } } } } }' 2>&1 | head -c 600; echo
+          env | grep -iE 'netrc|curl|github_api' || true; ls -la ~/.netrc 2>&1 || true
       - name: New forks and stars since the last run
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
