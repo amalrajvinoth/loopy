@@ -10,6 +10,7 @@ The big changes, newest first. Small fixes are not listed. See [the full list on
 
 ## 2 November 2026
 
+- **Game pages fit on a phone.** A wide Age levels table now shows one small card per level, so the page no longer slides sideways.
 - **Word Detective keys fit in German.** The erase key is now the ⌫ sign and the Check key is wider, so "Prüfen" is no longer cut off on a phone. See [Word Detective](/loopy/guide/games/languages/word-detective/).
 - **The first-time hint hides nothing.** The blue bubble that shows what to tap now looks for a free spot. It goes above the answers, in an empty part of the card, or in a row of its own. In Word Trail it sits between the word list and Clue. It never sits on an answer, a key or a letter any more. It fades by itself after a few seconds. See [The game screen](/loopy/guide/playing/game-screen/).
 
