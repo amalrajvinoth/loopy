@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'sha256-IGgxvwF9Jj9qmrf2RSPOZoc+olM0CxBRCvOmb/kYEfs='; style-src 'self' 'sha256-z2P7kGW5Z05eCTjTZdYpc0vThTlOE9vmt97pVSvi2I4=' 'sha256-ibtFOuTMIdUHzBb1O1DUg3O6mNXIeZNbOW0riCE9CtE='; img-src 'self' data:; font-src 'self'; connect-src 'self' https://loopy-sync.loopy-1e2.workers.dev; worker-src 'self'; object-src 'none'; base-uri 'none'; form-action 'none'; manifest-src 'self'; upgrade-insecure-requests">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'sha256-IGgxvwF9Jj9qmrf2RSPOZoc+olM0CxBRCvOmb/kYEfs='; style-src 'self' 'sha256-z2P7kGW5Z05eCTjTZdYpc0vThTlOE9vmt97pVSvi2I4=' 'sha256-dEHBs9W5MBVTWrcpjVubD7BHTqhXjE4OsZTnXzIfiuA='; img-src 'self' data:; font-src 'self'; connect-src 'self' https://loopy-sync.loopy-1e2.workers.dev; worker-src 'self'; object-src 'none'; base-uri 'none'; form-action 'none'; manifest-src 'self'; upgrade-insecure-requests">
 <meta name="referrer" content="strict-origin-when-cross-origin">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <style>:root{color-scheme:light;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}body{margin:0}[hidden]{display:none!important}</style>
@@ -56,7 +56,7 @@ h1 { margin: 0; font-size: 1.6rem; font-weight: 700; text-wrap: balance; }
 }
 .problem-card.good { border-color: var(--good); box-shadow: 0 0 0 2px var(--good) inset; }
 .problem-card.bad { border-color: var(--bad); box-shadow: 0 0 0 2px var(--bad) inset; }
-.kind { align-self: center; background: var(--chip); color: var(--ink); font-size: 0.78rem; font-weight: 600; letter-spacing: 0.06em; text-transform: uppercase; padding: 4px 10px; border-radius: 999px; }
+.kind { align-self: center; background: var(--chip); color: var(--ink); font-size: 0.8rem; font-weight: 600; letter-spacing: 0.06em; text-transform: uppercase; padding: 4px 10px; border-radius: 999px; }
 .stage { display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 6px; flex: 1 1 auto; min-height: 0; width: 100%; container-type: inline-size; }
 /* Big sums (age 11+, like 10,000 − 9,999) shrink to fit the card. --n is the number of characters, set by the script. */
 .sum { font-size: min(clamp(2.2rem, min(11vw, 9dvh), 4.4rem), calc(100cqi / (var(--n, 1) * 0.56))); font-weight: 700; font-variant-numeric: tabular-nums; white-space: nowrap; letter-spacing: 0.02em; }

@@ -187,6 +187,8 @@ All fonts are stored on the site and cut down to English and German letters (`py
 | Body | Lexend | 16px | 400 |
 | Small labels | Lexend | 0.8rem, uppercase, 0.06em spacing | 600 |
 
+No text on screen is smaller than 0.72rem (11.5px). The age tags on the home tiles, the "What it means" label in Word Detective and the "10 stars" lines under the badges sit at that floor. The kind label in Today's 10 uses the small label size.
+
 Rules:
 
 - Numbers use `font-variant-numeric: tabular-nums`, so they line up and do not jump.
@@ -219,6 +221,7 @@ The "loopy" bunny logo sits at the top of the home page. Its letters hop one aft
 - **Answer buttons** (the clock and multiple-choice games): card color, 2px line border like the pad keys, radius 18px, big bold text. Word answers are at least 1.1rem and grow to about 2rem; letters, times and fractions are bigger. Four answers sit in a 2 × 2 grid; three answers sit in one column, so none looks bigger than the others. The one exception is the three signs in Bigger or Smaller and Pizza Fractions (compare). `<`, `=` and `>` sit in one row of equal widths, read left to right, the way the signs are used. Right turns green, wrong turns red, the rest fade to 45%.
 - **Skip and Next** (the button under the answers, `Loopy.nextButton()`): before an answer it is a small quiet pill, "Skip", in the middle (muted text, 2px line border, no fill). After an answer it is the full-width `c1` button "Next". Every game uses these two words. Two exceptions: in the pad games (number pad or letter keyboard) the Check key itself turns into a key-sized Next, bottom right, where the thumb already is. Today's 10 has no Skip; its Next shows only after an answer, never greyed out before one.
 - **Round icon buttons:** the sound toggle (40px), the age picker plus and minus (38px), and the Read aloud speaker (44px).
+- **Fold lines** (`summary` rows like "See all badges and day streak", "Move my stars to another device", the grown-ups page's "Not played" fold and its topics): at least 44px tall. Word Trail's Clear and Clue row is 44px in landscape too, 40px only on short phones.
 - **Quiet buttons:** transparent with a 2px line border. Used for Reset and "Not now".
 - **Disabled:** 35% to 40% opacity.
 
@@ -376,7 +379,7 @@ Every game has the same big back button in the top-left corner. It takes you to 
 
 ### Last 5 pill
 
-The score row shows the last 5 answers in this game as dots.
+The score row shows the last 5 answers in this game as dots. Next to it sit the level pill and the streak pill (🔥 and the number). The streak pill shows only from a streak of 2, so a screen a child has just opened does not say "🔥 0".
 
 - A pill with the label "Last 5" ("Letzte 5") and five 22px dots, 5px apart.
 - Right: a green (`good`) dot with a tick. Wrong: a red (`bad`) dot with a cross. The icon is in `on-accent`.

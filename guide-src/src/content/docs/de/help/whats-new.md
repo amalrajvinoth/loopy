@@ -10,6 +10,7 @@ Die großen Änderungen, die neuesten zuerst. Kleine Korrekturen stehen nicht da
 
 ## 2. November 2026
 
+- **Feinschliff.** Die 🔥-Serie erscheint erst ab 2 richtigen hintereinander. Kleine Beschriftungen sind etwas größer. Aufklapp-Zeilen lassen sich leichter antippen. „Wo liegt das?“ fragt nur einmal. Diese Anleitung zeigt neue Bilder von jedem Spiel.
 - **Kleine Dinge am selben Platz.** Die 10 von heute zeigen Weiter erst nach einer Antwort. Der Hinweis im Wortdetektiv steht unter der Tastatur, wie im Wortpfad. Die Wortspiele erklären ihren Schalter „Wörter auf“. Die Karte Nochmal versuchen nennt die Uhrzeit, die bei einem Fehler zu sehen war.
 - **Kürzere Einstellungen, sortierte Hilfe, klarere Startseite.** Auf der Startseite sind die Teile für Erwachsene in ⚙ Einstellungen (E-Mail, Familien-Sync, App) unter einer Zeile eingeklappt. Die Hilfe-Seite sortiert ihre Fragen in vier Gruppen. „Mehr entdecken“ heißt jetzt „Für ältere Kinder“, mit einer Zeile, die sagt, was es ist. Siehe [Einstellungen auf der Startseite](/loopy/guide/de/settings/home-settings/).
 - **Ordentlichere Kacheln auf dem Tablet.** Die Startseite zeigt höchstens zwei Zeilen zu jedem Spiel, so sind alle Kacheln einer Reihe gleich hoch. Das Buchstabengitter im Wortdetektiv ist auf dem Tablet größer.

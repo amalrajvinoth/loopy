@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'sha256-/aBGWccUOB2ArGQL1cOYV0R6fza7UHoutetUATSWr1o='; style-src 'self' 'sha256-j+ZRYFqQFsPfaTvoxNpEVMbPIvnyDWzbFyLJGvZnW/4='; img-src 'self' data:; font-src 'self'; connect-src 'self' https://loopy-sync.loopy-1e2.workers.dev; worker-src 'self'; object-src 'none'; base-uri 'none'; form-action 'none'; manifest-src 'self'; upgrade-insecure-requests">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'sha256-/aBGWccUOB2ArGQL1cOYV0R6fza7UHoutetUATSWr1o='; style-src 'self' 'sha256-GQkq82ruWYni6/VWurzasLQGAySMrx8V32bOmwyppt0='; img-src 'self' data:; font-src 'self'; connect-src 'self' https://loopy-sync.loopy-1e2.workers.dev; worker-src 'self'; object-src 'none'; base-uri 'none'; form-action 'none'; manifest-src 'self'; upgrade-insecure-requests">
 <meta name="referrer" content="strict-origin-when-cross-origin">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <link rel="icon" href="icon.svg" type="image/svg+xml">
@@ -73,7 +73,7 @@ h1 { margin: 0; line-height: 0; color: var(--ink); }
 .quiz.game .pic { font-size: 2rem; line-height: 1.1; }
 /* Small names are in ink: the tone color is only readable enough at the bigger size (the tile border and shadow keep the tone). */
 .quiz.game h3 { font-size: clamp(0.85rem, 3.7vw, 1.45rem); line-height: 1.15; overflow-wrap: anywhere; color: var(--ink); }
-.quiz.game .tag { align-self: center; margin-top: auto; font-size: 0.62rem; padding: 2px 7px; }
+.quiz.game .tag { align-self: center; margin-top: auto; font-size: 0.72rem; padding: 2px 7px; }
 .quiz.game p { display: none; font-size: 0.9rem; }
 @media (min-width: 600px) {
   .quiz.game { padding: 14px 10px 12px; gap: 6px; }
@@ -101,7 +101,7 @@ h1 { margin: 0; line-height: 0; color: var(--ink); }
 .day-streak { font-weight: 700; }
 /* The badge grid and the day streak fold away under one line, so the shelf stays short. */
 .fold { border-top: 2px dashed var(--line); padding-top: 12px; }
-.fold summary { cursor: pointer; font-weight: 600; color: var(--muted); min-height: 32px; }
+.fold summary { cursor: pointer; font-weight: 600; color: var(--muted); min-height: 44px; padding: 10px 0; box-sizing: border-box; }
 .fold .badges, .fold .days { margin-top: 12px; }
 .days { display: flex; flex-direction: column; gap: 10px; border-top: 2px solid var(--line); padding-top: 14px; }
 .days p { margin: 0; color: var(--muted); }

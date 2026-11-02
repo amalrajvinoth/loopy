@@ -2159,6 +2159,20 @@ Loopy.nextButton = function (btn, answered) {
   window.addEventListener("load", function () { navigator.serviceWorker.register(url).catch(function () {}); });
 })();
 
+// The streak pill (🔥 n) in the score row shows only from a streak of 2, so a screen a child has just
+// opened does not say "you have nothing". Each game writes the number into #streak; this watches it.
+(function () {
+  function hook() {
+    var b = document.getElementById("streak"), pill = b && b.closest(".pill-streak");
+    if (!pill) return;
+    var update = function () { pill.hidden = !(parseInt(b.textContent, 10) >= 2); };
+    new MutationObserver(update).observe(b, { childList: true, characterData: true, subtree: true });
+    update();
+  }
+  if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", hook);
+  else hook();
+})();
+
 // Show the page. This listener is added last, so it runs after every part above is built.
 (function () {
   var show = function () { document.documentElement.classList.remove("loopy-building"); };

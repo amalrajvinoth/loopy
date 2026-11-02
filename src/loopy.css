@@ -217,7 +217,7 @@
 .badge.got { color: var(--ink); }
 .badge.got .medal { background: var(--tone); border: 3px solid var(--tone); }
 .badge.got .medal svg { fill: var(--card); }
-.badge small { font-weight: 400; color: var(--muted); }
+.badge small { font-weight: 400; font-size: 0.75rem; color: var(--muted); }
 
 .cheer-actions { display: flex; flex-wrap: wrap; gap: 10px; justify-content: center; }
 .loopy-cheer button.quiet { background: transparent; color: var(--ink); border: 2px solid var(--line); }
@@ -229,7 +229,7 @@
 .sound-toggle[aria-pressed="false"] { color: var(--muted); }
 .sound-toggle:focus-visible { outline: 3px solid var(--mark); outline-offset: 2px; }
 .transfer { border-top: 2px dashed var(--line); padding-top: 12px; }
-.transfer summary { cursor: pointer; font-weight: 600; color: var(--muted); min-height: 32px; }
+.transfer summary { cursor: pointer; font-weight: 600; color: var(--muted); min-height: 44px; padding: 10px 0; box-sizing: border-box; }
 .transfer-body { display: flex; flex-direction: column; gap: 8px; margin-top: 8px; }
 .transfer-row { display: flex; gap: 8px; flex-wrap: wrap; }
 .transfer input { flex: 1; min-width: 0; font: inherit; font-size: 0.9rem; padding: 10px 12px; border-radius: 12px; border: 2px solid var(--line); background: var(--bg); color: var(--ink); }
@@ -394,6 +394,7 @@ a.home-link.loopy-back:focus-visible { outline: 3px solid var(--mark); outline-o
 .score .last5 { order: -1; }
 .score .pill-streak span { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); clip-path: inset(50%); white-space: nowrap; }
 .score .pill-streak b::before { content: "🔥 "; content: "🔥 " / ""; }
+.score .pill-streak[hidden] { display: none; }
 /* The level pill (Loopy.levels). On narrow phones the "Last 5" word goes, so Last 5, Level and the streak fit one line. */
 .score .pill-level { order: 0; }
 @media (max-width: 419px) {
