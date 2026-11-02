@@ -45,7 +45,7 @@ jobs:
           read -r fork_total star_total < <(gh api "repos/$R" --jq '"\(.forks_count) \(.stargazers_count)"')
 
           # The one issue that carries the reports. Its text keeps the counts of the last run.
-          gh label create usage --color 0E8A16 --description "Who uses loopy: forks, stars and clones" --force >/dev/null
+          gh label create usage --repo "$R" --color 0E8A16 --description "Who uses loopy: forks, stars and clones" --force >/dev/null
           issue=$(gh issue list --repo "$R" --label usage --state open --json number --jq '.[0].number // empty')
           last_stars=""
           if [ -n "$issue" ]; then
