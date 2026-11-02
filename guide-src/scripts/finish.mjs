@@ -1,8 +1,10 @@
 // After `astro build`: make the guide pass loopy's strict security policy.
 //
 // The policy blocks style="..." attributes, so each one becomes a small class in
-// _assets/attrs.css. Then tools/csp.py writes the policy with a hash for each inline script.
-// Runs as part of `npm run build`.
+// _assets/attrs.css. Wide tables (4 columns or more, like a game's Age levels) get the class
+// "stack" and each cell its column heading as data-label, so src/styles/loopy.css can show them
+// as one small card per row on a phone. Then tools/csp.py writes the policy with a hash for
+// each inline script. Runs as part of `npm run build`.
 import fs from "node:fs";
 import path from "node:path";
 import crypto from "node:crypto";
@@ -20,8 +22,22 @@ const pages = [];
 })(DIST);
 
 const TAG = /<([a-zA-Z][\w-]*)([^<>]*?)\sstyle="([^"]*)"([^<>]*)>/g;
+let stacked = 0;
+function stackWideTables(html) {
+  return html.replace(/<table>([\s\S]*?)<\/table>/g, (all, inner) => {
+    const heads = [...inner.matchAll(/<th[^>]*>([\s\S]*?)<\/th>/g)].map(m => m[1].replace(/<[^>]+>/g, "").replace(/\s+/g, " ").trim());
+    if (heads.length < 4) return all;
+    stacked++;
+    let i = 0;
+    const body = inner.replace(/<tr>|<td(?=[\s>])/g, (tag) => {
+      if (tag === "<tr>") { i = 0; return tag; }
+      return `<td data-label="${(heads[i++] || "").replace(/"/g, "&quot;")}"`;
+    });
+    return `<table class="stack">${body}</table>`;
+  });
+}
 for (const page of pages) {
-  let html = fs.readFileSync(page, "utf8");
+  let html = stackWideTables(fs.readFileSync(page, "utf8"));
   html = html.replace(TAG, (all, tag, before, style, after) => {
     // Search's keyboard hint starts hidden and its script shows it with el.style. Leave it to the classes it has.
     if (tag === "kbd" && /^display:\s*none;?$/.test(style.trim())) return `<${tag}${before}${after}>`;
@@ -38,4 +54,4 @@ for (const page of pages) {
 }
 const css = [...rules].sort().map(([n, s]) => `.${n}{${s}}`).join("\n") + "\n";
 fs.writeFileSync(path.join(DIST, "_assets", "attrs.css"), "/* style=\"...\" attributes from the build, as classes (see scripts/finish.mjs). */\n" + css);
-console.log(`finish: ${pages.length} pages, ${rules.size} style attributes moved to _assets/attrs.css`);
+console.log(`finish: ${pages.length} pages, ${rules.size} style attributes moved to _assets/attrs.css, ${stacked} wide tables marked for phones`);
