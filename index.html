@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'sha256-wBfeoia5WyJ4kNMRYbuI48r/s+jnyfNmcfGYd1ENQiQ='; style-src 'self' 'sha256-MIyGh7fwNn1z61qbi5Tm66E5QnpN2FES3o+rUAHp4Oc='; img-src 'self' data:; font-src 'self'; connect-src 'self' https://loopy-sync.loopy-1e2.workers.dev; worker-src 'self'; object-src 'none'; base-uri 'none'; form-action 'none'; manifest-src 'self'; upgrade-insecure-requests">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'sha256-/aBGWccUOB2ArGQL1cOYV0R6fza7UHoutetUATSWr1o='; style-src 'self' 'sha256-j+ZRYFqQFsPfaTvoxNpEVMbPIvnyDWzbFyLJGvZnW/4='; img-src 'self' data:; font-src 'self'; connect-src 'self' https://loopy-sync.loopy-1e2.workers.dev; worker-src 'self'; object-src 'none'; base-uri 'none'; form-action 'none'; manifest-src 'self'; upgrade-insecure-requests">
 <meta name="referrer" content="strict-origin-when-cross-origin">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <link rel="icon" href="icon.svg" type="image/svg+xml">
@@ -47,6 +47,7 @@ h1 { margin: 0; line-height: 0; color: var(--ink); }
 .settings-panel { width: 100%; text-align: left; }
 .list { display: flex; flex-direction: column; gap: 22px; }
 .subject { display: flex; flex-direction: column; gap: 12px; }
+.sub-note { margin: -6px 0 0; color: var(--muted); font-size: 0.95rem; }
 .subject h2.sub { margin: 0; font-family: var(--display); font-size: 1.6rem; font-weight: 700; text-wrap: balance; }
 /* Game tiles: a big picture, the name and the ages, three per row. On phones they are compact, so 16 games fit in fewer screens; from 600px wide they get roomier. */
 .grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; }
@@ -116,6 +117,12 @@ footer p { margin: 0; }
 .foot-btn:active { transform: translateY(1px); }
 .foot-btn:focus-visible { outline: 3px solid var(--mark); outline-offset: 2px; }
 :root[data-theme="contrast"] .foot-btn:not(:focus-visible) { outline: 2px solid var(--line); outline-offset: -2px; }
+/* The grown-up parts of Settings (Stay in touch, Family sync, Use like an app) fold under one line, closed by default, so a child who opens ⚙ for the colours does not scroll past an email form. */
+.grown { border-top: 2px dashed var(--line); padding-top: 4px; }
+.grown > summary { cursor: pointer; padding: 10px 0; font-weight: 600; min-height: 44px; }
+.grown > summary:focus-visible { outline: 3px solid var(--mark); outline-offset: 3px; }
+.grown-parts { display: flex; flex-direction: column; gap: 12px; }
+.grown-parts > :first-child { border-top: 0; padding-top: 4px; }
 /* Stay in touch (a grown-up's email) and Family sync: two parts of Settings, before Use like an app. */
 .set-sync, .set-touch { display: flex; flex-direction: column; gap: 10px; border-top: 2px dashed var(--line); padding-top: 12px; }
 .sync-join input.touch-mail { text-transform: none; }
@@ -232,7 +239,7 @@ Loopy.addStrings({
     copied: "Copied!", copyByHand: "Select the code and copy it.", badCode: "That code didn't work. Check it was copied in full.",
     toNext: "{n} more stars to the {name} badge. Every right answer earns a star.", toNextOne: "1 more star to the {name} badge. Every right answer earns a star.",
     allBadges: "You have every badge. You're a loopy Master!", earned: "Earned", nStars: "{n} stars",
-    ages: "Ages {a}–{b}", more: "More to explore", noneForAge: "No games for age {n} yet. Try the ones below.",
+    ages: "Ages {a}–{b}", older: "For older kids", olderNote: "Games for ages {n} and up. Try them any time.", younger: "For younger kids", youngerNote: "Easier games, good for a quick warm-up.", grownFold: "For grown-ups: email, family sync, install", noneForAge: "No games for age {n} yet. Try the ones below.",
     math: "Math", languages: "Languages", science: "Science", geography: "Geography",
     pmTitle: "Plus and Minus", pmTag: "Adding and taking away", pmText: "Worksheet-style sums typed on a big number pad. The numbers grow with your age.",
     ttTitle: "Times Tables Sprint", ttTag: "Times tables against the clock", ttText: "60 seconds. Answer as many as you can, then beat your best.",
@@ -284,7 +291,7 @@ Loopy.addStrings({
     copied: "Kopiert!", copyByHand: "Markiere den Code und kopiere ihn.", badCode: "Der Code hat nicht geklappt. Prüfe, ob er ganz kopiert wurde.",
     toNext: "Noch {n} Sterne bis zum Abzeichen {name}. Jede richtige Antwort gibt einen Stern.", toNextOne: "Noch 1 Stern bis zum Abzeichen {name}. Jede richtige Antwort gibt einen Stern.",
     allBadges: "Du hast alle Abzeichen. Du bist ein loopy-Meister!", earned: "Geschafft", nStars: "{n} Sterne",
-    ages: "{a}–{b} Jahre", more: "Mehr entdecken", noneForAge: "Noch keine Spiele für {n} Jahre. Probier die unten.",
+    ages: "{a}–{b} Jahre", older: "Für ältere Kinder", olderNote: "Spiele ab {n} Jahren. Probier sie jederzeit.", younger: "Für jüngere Kinder", youngerNote: "Leichtere Spiele, gut zum Aufwärmen.", grownFold: "Für Erwachsene: E-Mail, Familien-Sync, App", noneForAge: "Noch keine Spiele für {n} Jahre. Probier die unten.",
     math: "Mathe", languages: "Sprachen", science: "Naturwissenschaft", geography: "Erdkunde",
     pmTitle: "Plus und Minus", pmTag: "Plus und Minus rechnen", pmText: "Aufgaben wie auf dem Arbeitsblatt, getippt auf einem großen Zahlenfeld. Die Zahlen wachsen mit deinem Alter.",
     ttTitle: "Einmaleins-Sprint", ttTag: "Einmaleins gegen die Uhr", ttText: "60 Sekunden. Löse so viele Aufgaben wie du kannst und knacke deinen Rekord.",
@@ -364,11 +371,12 @@ function card(g) {
   a.children[3].textContent = t("ages", { a: g.ages[0], b: g.ages[1] });
   return a;
 }
-function section(title) {
+function section(title, note) {
   const sec = document.createElement("section");
   sec.className = "subject";
   sec.innerHTML = '<h2 class="sub"></h2><div class="grid"></div>';
   sec.firstChild.textContent = title;
+  if (note) { const p = document.createElement("p"); p.className = "sub-note"; p.textContent = note; sec.insertBefore(p, sec.lastChild); }
   list.appendChild(sec);
   return sec.lastChild;
 }
@@ -376,7 +384,8 @@ function render() {
   const age = window.Loopy ? Loopy.getAge() : 8;
   list.innerHTML = "";
   const fits = GAMES.filter(g => age >= g.ages[0] && age <= g.ages[1]);
-  const others = GAMES.filter(g => !fits.includes(g));
+  // The games that do not fit the age yet, or not any more. The heading says which, so nobody reads it as a fifth subject.
+  const older = GAMES.filter(g => g.ages[0] > age), younger = GAMES.filter(g => g.ages[1] < age);
   const groups = {};
   for (const g of fits) (groups[g.subject] = groups[g.subject] || section(t(g.subject))).appendChild(card(g));
   if (!fits.length) {
@@ -385,9 +394,13 @@ function render() {
     p.textContent = t("noneForAge", { n: age });
     list.appendChild(p);
   }
-  if (others.length) {
-    const grid = section(t("more"));
-    for (const g of others) grid.appendChild(card(g));
+  if (older.length) {
+    const grid = section(t("older"), t("olderNote", { n: Math.min(...older.map(g => g.ages[0])) }));
+    for (const g of older) grid.appendChild(card(g));
+  }
+  if (younger.length) {
+    const grid = section(t("younger"), t("youngerNote"));
+    for (const g of younger) grid.appendChild(card(g));
   }
 }
 render();
@@ -631,6 +644,20 @@ window.addEventListener("loopy:age", render);
 // loopy has a sync server (Loopy.syncHost). Their buttons and words live in loopy-sync.js (Loopy.sync.touch
 // and Loopy.sync.settings), loaded when Settings opens or a link loopy/#family=CODE comes in, so the home
 // page stays as small as it was.
+// The grown-up parts of ⚙ Settings (Stay in touch, Family sync, Use like an app) sit in one fold,
+// "For grown-ups: email, family sync, install", closed by default. The first part to arrive makes it.
+function grownFold() {
+  const panel = document.getElementById("settings-panel");
+  let fold = document.getElementById("grown-fold");
+  if (!fold) {
+    fold = document.createElement("details"); fold.className = "grown"; fold.id = "grown-fold";
+    const sum = document.createElement("summary"); sum.textContent = t("grownFold");
+    const parts = document.createElement("div"); parts.className = "grown-parts";
+    fold.append(sum, parts);
+    panel.appendChild(fold);
+  }
+  return fold;
+}
 (function familySync() {
   if (!Loopy.syncHost) return;
   Loopy.syncPage = "home";
@@ -647,14 +674,17 @@ window.addEventListener("loopy:age", render);
   };
   const link = () => /^#family=/.test(location.hash);
   const add = () => {
-    panel.append(mail, box);
+    const fold = grownFold();
+    fold.lastChild.append(mail, box);
+    // A family link opens the fold, so the Join box is in view.
+    if (link()) fold.open = true;
     if (!panel.hidden || link()) fill();
     const gear = document.getElementById("settings-toggle");
     if (gear) gear.addEventListener("click", fill);
   };
   if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", add);
   else add();
-  window.addEventListener("hashchange", () => { if (link()) fill(); });
+  window.addEventListener("hashchange", () => { if (link()) { grownFold().open = true; fill(); } });
 })();
 
 // Add to home screen: the last part of ⚙ Settings on the home page. When the browser has its own
@@ -700,8 +730,8 @@ window.addEventListener("loopy:age", render);
     o.prompt();
     o.userChoice.then(c => { if (c.outcome === "accepted") done(); }, () => {});
   });
-  // After loopy.js has built the Kids and "Age, look and sound" parts, so this part comes last.
-  const add = () => panel.appendChild(box);
+  // After loopy.js has built the Kids and "Age, look and sound" parts, so this part comes last, inside the grown-ups fold.
+  const add = () => grownFold().lastChild.appendChild(box);
   if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", add);
   else add();
 })();

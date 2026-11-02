@@ -54,17 +54,17 @@ The code carries stars, badges, best scores, the day streak, the answers on the 
 
 ## Can the stars stay the same on all our devices?
 
-Yes, with Family sync. On the home page, open ⚙ Settings and tap **Turn on** under Family sync. loopy shows a family code and a QR code. On the other device, scan the QR code, or open Settings, tap **Join with a code** and type it. From then on, new stars go to every family device by themselves. Nothing is taken away: for each child the bigger number wins.
+Yes, with Family sync. On the home page, open ⚙ Settings, open **For grown-ups** and tap **Turn on** under Family sync. loopy shows a family code and a QR code. On the other device, scan the QR code, or open Settings, tap **Join with a code** and type it. From then on, new stars go to every family device by themselves. Nothing is taken away: for each child the bigger number wins.
 
 It carries what a stars code carries: every child's name, stars, badges, streaks, answers, age, levels and game choices. The color theme, sound, language and your email stay on each device. The family code is 16 letters and numbers; see it again in Settings on any device where sync is on. Everything is locked on your device before it is sent, with a key made from the family code. The server only keeps the locked copy and can't read it. There is no account. **Turn off** stops it on one device; **Turn off everywhere** deletes the family copy. The stars on each device stay.
 
 ## Can I hear about new games?
 
-Yes. On the home page, open ⚙ Settings and find **Stay in touch**. Type your email, tick the box and tap **Save**. Only grown-ups, please. Loopy keeps the email, your language and the time on its own server in the EU. Nothing else. It sends a note a few times a year. Tap **Remove** in the same place to delete it; it is deleted by itself after 2 years anyway. Nothing is sent until you tap Save. The [privacy note](https://amalrajvinoth.github.io/loopy/privacy/) has the details.
+Yes. On the home page, open ⚙ Settings, open **For grown-ups** and find **Stay in touch**. Type your email, tick the box and tap **Save**. Only grown-ups, please. Loopy keeps the email, your language and the time on its own server in the EU. Nothing else. It sends a note a few times a year. Tap **Remove** in the same place to delete it; it is deleted by itself after 2 years anyway. Nothing is sent until you tap Save. The [privacy note](https://amalrajvinoth.github.io/loopy/privacy/) has the details.
 
 ## Can I use Loopy like an app?
 
-Yes. On the home page, open ⚙ **Settings** and tap **Add loopy to the home screen** (on a computer: **Install loopy on this computer**). Where the browser has its own install box (Chrome, Edge, Samsung Internet), it opens. Otherwise loopy shows the steps for your device: iPhone, iPad, Android, a Mac with Safari, or a computer. It then opens full screen.
+Yes. On the home page, open ⚙ **Settings**, open **For grown-ups** and tap **Add loopy to the home screen** (on a computer: **Install loopy on this computer**). Where the browser has its own install box (Chrome, Edge, Samsung Internet), it opens. Otherwise loopy shows the steps for your device: iPhone, iPad, Android, a Mac with Safari, or a computer. It then opens full screen.
 
 On an iPhone, iPad or Mac, the loopy on the home screen keeps its own stars, apart from Safari. The steps box shows your stars code: copy it, open the new loopy, and load it under **My stars → Move my stars to another device**. Firefox on a computer cannot add sites as apps, so there loopy suggests a bookmark. After one visit with internet, it also works offline, on a plane or in the car. When you are online, it gets the newest version by itself.
 
