@@ -199,6 +199,15 @@ More in [tools/a11y/README.md](tools/a11y/README.md) and [tools/e2e/README.md](t
 
 After editing any page, run `python3 tools/build.py` (or at least `python3 tools/csp.py`). The GitHub check fails otherwise.
 
+### Two addresses
+
+The site lives at `amalrajvinoth.github.io/loopy` (GitHub Pages) and is getting its own address, `loopykids.de`, served by Cloudflare Pages from the very same files. Both stay up for a while. A child's stars are saved per address, so a browser that saved them on the old one does not see them on the new one.
+
+- `.github/workflows/pages.yml` deploys to GitHub Pages on every push to `main`. It also deploys to Cloudflare Pages once the repo has the `CLOUDFLARE_API_TOKEN` and `CLOUDFLARE_ACCOUNT_ID` secrets and a `CF_PAGES_PROJECT` repository variable with the Pages project name. The secrets are the Family sync ones, with **Cloudflare Pages: Edit** added to the token. The custom address is attached to that project in the Cloudflare dashboard.
+- `sync/wrangler.toml` lists both addresses in `ORIGINS`, so Family sync answers both.
+- The home page has a "loopy has a new home" card with **Take my stars along**. It opens the new address with this device's stars code, so nothing is left behind. It is off until `NEW_HOME` in `index.html` names the new address; then it shows on every other address.
+- When the Family sync counts show nobody left on the old address, GitHub gets the custom domain too and the old links redirect.
+
 ### Build the small files
 
 Pages load `loopy.js` and `loopy.css`. These are small copies of `src/loopy.js` and `src/loopy.css`, made by a script. Never edit them by hand.

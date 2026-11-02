@@ -1,5 +1,6 @@
 # Put loopy live on GitHub Pages: the games exactly as they are in the repo, and the guide,
-# built from guide-src/, at /loopy/guide/.
+# built from guide-src/, at /loopy/guide/. The same files also go to Cloudflare Pages, the site's
+# own address, once the repo has the Cloudflare secrets and a CF_PAGES_PROJECT variable (README, "Two addresses").
 #
 # One-time setup by the repo owner: Settings → Pages → Build and deployment → Source: GitHub Actions.
 # Until then Pages keeps serving the main branch as before, and this workflow's deploy step fails.
@@ -23,6 +24,13 @@ concurrency:
 jobs:
   build:
     runs-on: ubuntu-latest
+    env:
+      # For the Cloudflare Pages step only. Empty until the owner sets them (sync/README.md); the step then skips.
+      CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+      CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+      CF_PAGES_PROJECT: ${{ vars.CF_PAGES_PROJECT }}
+      # The same exact version as the Family sync deploy (sync.yml).
+      WRANGLER: wrangler@4.149.0
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
       - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
@@ -48,6 +56,24 @@ jobs:
           # The guide.
           cp -R guide-src/dist "$RUNNER_TEMP/site/guide"
           tar --dereference --hard-dereference -C "$RUNNER_TEMP/site" -cf "$RUNNER_TEMP/artifact.tar" .
+      - name: The same site on Cloudflare Pages, the site's own address
+        if: env.CF_PAGES_PROJECT != '' && env.CLOUDFLARE_API_TOKEN != '' && env.CLOUDFLARE_ACCOUNT_ID != ''
+        run: |
+          w() { npx --yes "$WRANGLER" "$@"; }
+          # The project is made the first time. "already exists" is fine; any real problem shows at the deploy.
+          w pages project create "$CF_PAGES_PROJECT" --production-branch main || true
+          w pages deploy "$RUNNER_TEMP/site" --project-name "$CF_PAGES_PROJECT" --branch main --commit-hash "$GITHUB_SHA" --commit-dirty=true
+          # Cloudflare hands out the new version within a few seconds. sw.js changes with every release, so when it
+          # matches, the whole site there is this version.
+          for try in $(seq 1 12); do
+            if curl -fsS "https://$CF_PAGES_PROJECT.pages.dev/sw.js?v=$GITHUB_SHA" -o "$RUNNER_TEMP/cf-sw.js" && cmp -s "$RUNNER_TEMP/cf-sw.js" sw.js; then
+              echo "Cloudflare Pages has this version."
+              exit 0
+            fi
+            sleep 10
+          done
+          echo "::error::Two minutes after the deploy, $CF_PAGES_PROJECT.pages.dev still serves an older sw.js."
+          exit 1
       - uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
         with:
           name: github-pages

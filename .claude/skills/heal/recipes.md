@@ -79,6 +79,11 @@ One per failure. Add new ones at the end (the heal skill step 3). Keep each to f
 - Cause: Pages took longer than ten minutes (rare), the deploy job failed before it, or the guide folder is missing from the site.
 - Fix: open the Pages run; if the deploy job is green, run the workflow again (Actions → Pages → Run workflow) and the check passes once the new version is out. If it is red on the second run, compare `sw.js` on the live site with `sw.js` on `main`. (25 Oct 2026)
 
+## Cloudflare Pages step is red in the Pages run
+- Looks like: CI "Pages" run, job "build", step "The same site on Cloudflare Pages, the site's own address": wrangler says "Authentication error" or "Project not found", or "still serves an older sw.js".
+- Cause: the `CLOUDFLARE_API_TOKEN` secret has no **Cloudflare Pages: Edit** permission, the `CF_PAGES_PROJECT` variable names a project that could not be made, or the pages.dev copy took longer than two minutes.
+- Fix: the step only runs when the secrets and the variable are set, so GitHub Pages itself is not affected. For a token error ask the owner to add the permission (sync/README.md, step 3). For a slow copy run the workflow again (Actions → Pages → Run workflow). (2 Nov 2026)
+
 ## A Dependabot pull request did not merge by itself
 - Looks like: a green Dependabot pull request stays open; or the "Dependabot merge" run says "nothing to merge".
 - Cause: the merge job only runs for a "Checks" run that passed on a pull request from a `dependabot/` branch against `main`; a push to the branch after the run (a rebase) changes the commit, so the run no longer matches.
