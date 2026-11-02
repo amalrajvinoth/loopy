@@ -73,7 +73,7 @@ Cloudflare's free plan allows 100,000 requests a day, and D1 allows 100,000 save
 
 1. Make a free account at dash.cloudflare.com.
 2. Open **Workers & Pages** once and pick a workers.dev name, for example `amal`. The server's address will be `loopy-sync.amal.workers.dev`.
-3. Make an API token with only what the deploy needs: profile icon, **My Profile**, **API Tokens**, **Create Token**, **Create Custom Token**. Add three **Account** permissions: **Workers Scripts: Edit**, **D1: Edit** and **Account Settings: Read**. Under Account Resources include only your account. Add no zone permissions and no IP filter (GitHub's runners change address). **Continue to summary**, **Create Token**, and copy it.
+3. Make an API token with only what the deploy needs: profile icon, **My Profile**, **API Tokens**, **Create Token**, **Create Custom Token**. Add four **Account** permissions: **Workers Scripts: Edit**, **D1: Edit**, **Cloudflare Pages: Edit** (the site's own address, README "Two addresses") and **Account Settings: Read**. Under Account Resources include only your account. Add no zone permissions and no IP filter (GitHub's runners change address). **Continue to summary**, **Create Token**, and copy it.
 4. Copy the **Account ID** from the right side of the Workers & Pages overview.
 5. In GitHub: **Settings**, **Secrets and variables**, **Actions**, **New repository secret**. Add `CLOUDFLARE_API_TOKEN` and `CLOUDFLARE_ACCOUNT_ID`.
 6. Run the **Family sync server** workflow (Actions tab, **Run workflow**), or push a change to `sync/`. It makes the `loopy-sync` database the first time (and `loopy-grownups` in the EU), sets up their tables and deploys the server.

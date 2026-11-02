@@ -27,6 +27,7 @@ description: Finish a loopy change and open its pull request with every check, s
    node sync/test.mjs             # the Family sync server answers right (when sync/ changed)
    node tools/e2e/sync.mjs        # Family sync keeps two devices in step and sends nothing when off (when src/loopy-sync.js, sync/ or the home page changed)
    ```
+   The **Pages** run deploys `main` to GitHub Pages and, when the repo has the Cloudflare secrets and a `CF_PAGES_PROJECT` variable, the same files to Cloudflare Pages (the site's own address, README "Two addresses"); that step is skipped until then.
    The **Family sync usage** job (Actions → Family sync usage → Run workflow) is not a check: it prints how many families use sync, counts only (`tools/sync-usage.mjs`, `sync/README.md`).
    The **Forks and stars** job (`.github/workflows/forks.yml`, Mondays and by hand) is not a check either: it lists new forks and counts new stars in its Summary, keeps the counts in the "Forks and stars" issue and comments there when they go up, so the owner gets an email.
    CI runs the a11y check and the play test in two halves at once (`SHARD=1/2`, `SHARD=2/2`). On a pull request it skips them, and the guide job, when `tools/ci_changes.py` says no file they read changed (docs, `.claude/`, `plugins/`). A new file type or folder the pages read must not match its DOCS list. "All checks" fails if any job failed.

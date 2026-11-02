@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'sha256-/aBGWccUOB2ArGQL1cOYV0R6fza7UHoutetUATSWr1o='; style-src 'self' 'sha256-GQkq82ruWYni6/VWurzasLQGAySMrx8V32bOmwyppt0='; img-src 'self' data:; font-src 'self'; connect-src 'self' https://loopy-sync.loopy-1e2.workers.dev; worker-src 'self'; object-src 'none'; base-uri 'none'; form-action 'none'; manifest-src 'self'; upgrade-insecure-requests">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'sha256-ZN/68kLaHoqWO3P9NmkiChRxTaiVk8tQfecbmMPThDY='; style-src 'self' 'sha256-bUYjgjyOmWEZ2Jv2ShcP2VrVraZncHPuIxIuXuxr2mI='; img-src 'self' data:; font-src 'self'; connect-src 'self' https://loopy-sync.loopy-1e2.workers.dev; worker-src 'self'; object-src 'none'; base-uri 'none'; form-action 'none'; manifest-src 'self'; upgrade-insecure-requests">
 <meta name="referrer" content="strict-origin-when-cross-origin">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <link rel="icon" href="icon.svg" type="image/svg+xml">
@@ -96,6 +96,17 @@ h1 { margin: 0; line-height: 0; color: var(--ink); }
 /* Try again: this week's mistakes, one row under Carry on. */
 .wrap .again { --tone: var(--c4); }
 .again-list { color: var(--muted); font-size: 0.9rem; line-height: 1.3; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+/* loopy's new home: a card on the old address only, once the new one is live (NEW_HOME in the script below). */
+.wrap .moved { --tone: var(--c1); min-height: 0; gap: 10px; padding: 16px 18px; }
+.wrap .moved[hidden] { display: none; }
+.moved-top { display: flex; align-items: center; gap: 14px; }
+.moved .pic { font-size: 2.4rem; line-height: 1; }
+.moved h3 { font-size: 1.4rem; }
+.moved-row { display: flex; flex-wrap: wrap; gap: 10px; align-items: center; }
+.moved-row button { font: inherit; font-weight: 600; min-height: 44px; border-radius: 999px; cursor: pointer; }
+.moved-row .go { margin: 0; border: 0; font-family: var(--display); font-weight: 700; font-size: 1.2rem; }
+.moved-row .later { background: transparent; color: var(--muted); border: 2px solid var(--line); padding: 0 16px; }
+.moved-row button:focus-visible { outline: 3px solid var(--ink); outline-offset: 3px; }
 .today .row { display: flex; flex-wrap: wrap; gap: 8px 12px; align-items: center; justify-content: space-between; margin-top: auto; }
 .today .go { margin-top: 0; }
 .day-streak { font-weight: 700; }
@@ -166,6 +177,11 @@ footer p { margin: 0; }
   </header>
   <a class="quiz carry" id="carry" href="./" hidden><span class="pic" id="carry-pic" aria-hidden="true"></span><span class="carry-text"><span class="tag" data-t="carryTag">Carry on</span><span class="carry-name" id="carry-name"></span></span><span class="go" data-t="carryGo">Go →</span></a>
   <a class="quiz carry again" id="again" href="./" hidden><span class="pic" aria-hidden="true">🔁</span><span class="carry-text"><span class="tag" data-t="againTag">Try again</span><span class="carry-name" id="again-name"></span><span class="again-list" id="again-list"></span></span><span class="go" data-t="carryGo">Go →</span></a>
+  <section class="quiz moved" id="moved" hidden aria-labelledby="moved-title">
+    <div class="moved-top"><span class="pic" aria-hidden="true">🏠</span><div class="carry-text"><span class="tag" data-t="movedTag">New address</span><h3 id="moved-title" data-t="movedTitle">loopy has a new home</h3></div></div>
+    <p id="moved-text"></p>
+    <div class="moved-row"><button type="button" class="go" id="moved-go" data-t="movedGo">Take my stars along</button><button type="button" class="later" id="moved-later" data-t="movedLater">Later</button></div>
+  </section>
   <section aria-labelledby="today-title">
   <a class="quiz today" id="today" href="mix/daily-mix/">
     <span class="tag" data-t="dmTag">Every day</span>
@@ -235,6 +251,8 @@ Loopy.addStrings({
     askOne: "Load {name}'s stars here?", askMany: "Load the stars of {names} here?", askNone: "Load these stars here?",
     askText: "This adds their stars, progress, game levels and where they left off to this device. Nothing here is taken away.",
     askLoad: "Load", askNo: "Not now",
+    movedTag: "New address", movedTitle: "loopy has a new home", movedGo: "Take my stars along", movedLater: "Later",
+    movedText: "loopy now lives at {host}. Tap the button and your stars, badges and levels come along. This page keeps working for now.",
     pasteHere: "Paste a code here", pasteCode: "Paste a stars code", load: "Load", moreSoon: "More games are on the way!", helpLink: "Help and feedback", guideLink: "How loopy works: the guide", progressLink: "For grown-ups: how it's going", footGrown: "Grown-ups", footHelp: "Help", footGuide: "Guide", footPrivacy: "Privacy note",
     copied: "Copied!", copyByHand: "Select the code and copy it.", badCode: "That code didn't work. Check it was copied in full.",
     toNext: "{n} more stars to the {name} badge. Every right answer earns a star.", toNextOne: "1 more star to the {name} badge. Every right answer earns a star.",
@@ -287,6 +305,8 @@ Loopy.addStrings({
     askOne: "Die Sterne von {name} hier laden?", askMany: "Die Sterne von {names} hier laden?", askNone: "Diese Sterne hier laden?",
     askText: "Das fügt Sterne, Fortschritt, Stufen in den Spielen und wo aufgehört wurde zu diesem Gerät hinzu. Hier geht nichts verloren.",
     askLoad: "Laden", askNo: "Nicht jetzt",
+    movedTag: "Neue Adresse", movedTitle: "loopy hat ein neues Zuhause", movedGo: "Meine Sterne mitnehmen", movedLater: "Später",
+    movedText: "loopy wohnt jetzt unter {host}. Tippe auf den Knopf, dann kommen deine Sterne, Abzeichen und Stufen mit. Diese Seite geht erst mal weiter.",
     pasteHere: "Code hier einfügen", pasteCode: "Sterne-Code einfügen", load: "Laden", moreSoon: "Bald kommen mehr Spiele!", helpLink: "Hilfe und Feedback", guideLink: "So geht loopy: die Anleitung", progressLink: "Für Erwachsene: so läuft es", footGrown: "Erwachsene", footHelp: "Hilfe", footGuide: "Anleitung", footPrivacy: "Datenschutzhinweis",
     copied: "Kopiert!", copyByHand: "Markiere den Code und kopiere ihn.", badCode: "Der Code hat nicht geklappt. Prüfe, ob er ganz kopiert wurde.",
     toNext: "Noch {n} Sterne bis zum Abzeichen {name}. Jede richtige Antwort gibt einen Stern.", toNextOne: "Noch 1 Stern bis zum Abzeichen {name}. Jede richtige Antwort gibt einen Stern.",
@@ -593,6 +613,27 @@ window.addEventListener("loopy:age", render);
   fromLink();
   // A link opened while the home page is already showing.
   window.addEventListener("hashchange", fromLink);
+
+  // loopy's new home. NEW_HOME is "" until the new address is live (README, "Two addresses"). Then every other
+  // address shows the card above the games: Take my stars along opens the new address with this device's stars
+  // code (#load=), so nothing a child has is left behind. Loading the same code twice adds nothing twice
+  // (Loopy.backup merges), so tapping it again later is safe. Later hides the card for a week, per child.
+  const NEW_HOME = "";
+  (function () {
+    let home = null;
+    try { home = NEW_HOME ? new URL(NEW_HOME) : null; } catch (e) { home = null; }
+    if (!home || home.origin === location.origin) return;
+    const card = document.getElementById("moved"), go = document.getElementById("moved-go");
+    const LATER = "moved.later", WEEK = 7 * 24 * 60 * 60 * 1000, later = Number(Loopy.store.get(LATER)) || 0;
+    if (later > 0 && Date.now() - later < WEEK) return;
+    document.getElementById("moved-text").textContent = t("movedText", { host: home.host });
+    card.hidden = false;
+    document.getElementById("moved-later").addEventListener("click", () => { Loopy.store.set(LATER, Date.now()); card.hidden = true; });
+    go.addEventListener("click", () => {
+      go.disabled = true;
+      Loopy.backup.exportCode().then(code => { location.href = home.href + "#load=" + code; }, () => { location.href = home.href; });
+    });
+  })();
 
   const box = document.getElementById("badges");
   for (const b of R.BADGES) {

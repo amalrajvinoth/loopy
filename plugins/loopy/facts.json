@@ -41,6 +41,7 @@
     "pages.yml: Build the guide",
     "pages.yml: The same safety checks as on every pull request",
     "pages.yml: Put the site together",
+    "pages.yml: The same site on Cloudflare Pages, the site's own address",
     "pages.yml: github-pages",
     "pages.yml: github-pages",
     "pages.yml: Live site check",
@@ -98,5 +99,5 @@
     "844 × 390"
   ],
   "games_lists": 1,
-  "learned_at": "5729173"
+  "learned_at": "a19a873"
 }

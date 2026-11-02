@@ -3,8 +3,8 @@ import worker from "./worker.js";
 import { fakeD1 } from "./fake-d1.mjs";
 
 const db = fakeD1();
-const env = { DB: db, GROWNUPS: db, ORIGINS: "https://amalrajvinoth.github.io" };
-const ORIGIN = "https://amalrajvinoth.github.io";
+const env = { DB: db, GROWNUPS: db, ORIGINS: "https://amalrajvinoth.github.io,https://loopykids.dev" };
+const ORIGIN = "https://amalrajvinoth.github.io", SECOND = "https://loopykids.dev";
 const ID = "0123456789abcdef0123456789abcdef", KEY = "A".repeat(43), OTHER = "B".repeat(43);
 const copy = n => JSON.stringify({ v: 1, iv: "AAAAAAAAAAAAAAAA", d: btoa("locked " + n) });
 let fails = 0;
@@ -22,6 +22,8 @@ ok(r.n === 404, "no copy yet: 404");
 ok(r.h.get("Access-Control-Allow-Origin") === ORIGIN, "the loopy site may read the answer");
 r = await call("GET", `/f/${ID}`, undefined, "https://evil.example");
 ok(!r.h.get("Access-Control-Allow-Origin"), "another site may not read the answer");
+r = await call("GET", `/f/${ID}?e=`, undefined, SECOND);
+ok(r.h.get("Access-Control-Allow-Origin") === SECOND, "the second loopy address may read the answer too");
 ok((await call("GET", "/f/not-an-id")).n === 404, "a bad id: 404");
 ok((await call("PUT", `/f/${ID}`, { k: KEY, b: copy(1) })).n === 405, "PUT is not allowed");
 
