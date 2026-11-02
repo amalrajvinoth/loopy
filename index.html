@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'sha256-wBfeoia5WyJ4kNMRYbuI48r/s+jnyfNmcfGYd1ENQiQ='; style-src 'self' 'sha256-0D8c8Fxcc6ivYd6SR2SGCLAxP/Xec1GF5/7I4HaHwiQ='; img-src 'self' data:; font-src 'self'; connect-src 'self' https://loopy-sync.loopy-1e2.workers.dev; worker-src 'self'; object-src 'none'; base-uri 'none'; form-action 'none'; manifest-src 'self'; upgrade-insecure-requests">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'sha256-wBfeoia5WyJ4kNMRYbuI48r/s+jnyfNmcfGYd1ENQiQ='; style-src 'self' 'sha256-MIyGh7fwNn1z61qbi5Tm66E5QnpN2FES3o+rUAHp4Oc='; img-src 'self' data:; font-src 'self'; connect-src 'self' https://loopy-sync.loopy-1e2.workers.dev; worker-src 'self'; object-src 'none'; base-uri 'none'; form-action 'none'; manifest-src 'self'; upgrade-insecure-requests">
 <meta name="referrer" content="strict-origin-when-cross-origin">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <link rel="icon" href="icon.svg" type="image/svg+xml">
@@ -80,8 +80,8 @@ h1 { margin: 0; line-height: 0; color: var(--ink); }
   .quiz.game h3 { color: var(--tone); }
   .quiz.game .tag { font-size: 0.78rem; padding: 4px 10px; }
 }
-/* Tablets and computers have room for the one-line description too. */
-@media (min-width: 700px) { .quiz.game p { display: block; } }
+/* Tablets and computers have room for a short line about the game too: at most two lines, so every tile in a row stays the same height. */
+@media (min-width: 700px) { .quiz.game p { display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; } }
 .go { margin-top: auto; align-self: flex-start; background: var(--tone); color: var(--card); font-family: var(--display); font-weight: 700; font-size: 1.2rem; padding: 6px 16px; border-radius: 999px; }
 /* Today's 10: one big button above the shelf. */
 .wrap .today { --tone: var(--c5); min-height: 0; }
