@@ -1920,8 +1920,9 @@ Loopy.nextButton = function (btn, answered) {
   else build();
 })();
 
-// First-time hint: the first time a child opens a game, a bubble above the answers says what to tap.
-// It hides at the first tap or key press, and stops coming back once the child has answered there
+// First-time hint: the first time a child opens a game, a bubble says what to tap. It sits where it hides
+// no words and no button (see place()), fades by itself after 8 seconds, hides at the first tap or key
+// press, and stops coming back once the child has answered there
 // (Loopy.rewards calls Loopy.hint.done). Kept per child in "loopy.seen" as a list of game folders.
 (function () {
   var KEY = "loopy.seen", NAME = /^[a-z0-9-]{1,40}$/;
@@ -1935,41 +1936,86 @@ Loopy.nextButton = function (btn, answered) {
   } catch (e) {}
   // The game is the page's folder, e.g. "plus-minus" for math/plus-minus/.
   var game = location.pathname.replace(/index\.html$/, "").split("/").filter(Boolean).pop() || "";
-  var bubble = null, target = null;
+  var bubble = null, target = null, fadeTimer = null;
 
   function hide() {
     if (bubble) bubble.remove();
     bubble = null;
+    clearTimeout(fadeTimer);
+    if (target) target.style.marginTop = "";
     window.removeEventListener("resize", place);
   }
+  // Where the bubble may sit. Each spot is tried in turn and the first one that lies over no words and no
+  // button wins, so the bubble never hides an answer, a key or a letter a child needs to see:
+  //   1. just above the answers (the usual place);
+  //   2. inside the problem card's bottom edge, then 3. its top edge (the cards keep an empty band there);
+  //   4. under a part of the side column, pointing up (Word Trail: between the words and Clue);
+  //   5. a row of its own above the answers, by shrinking the card (portrait only, and only when the card
+  //      still shows everything), else over the side column's last button (Clue, Skip);
+  //   6. over the first row of keys, as a last resort. On the map it always sits inside the map's bottom edge.
   function place() {
     if (!bubble) return;
+    target.style.marginTop = "";
     var r = target.getBoundingClientRect();
     if (!r.width) { hide(); return; }
-    bubble.style.left = (r.left + r.width / 2) + "px";
-    // Above the answers; on the map it sits inside the map's bottom edge, so it does not hide the question.
-    bubble.style.top = (target.id === "map" ? r.bottom - 12 : Math.max(r.top - 14, 70)) + "px";
-    // When that would cover words (a long question, the hand legend, the score row in landscape), it moves
-    // down over the first row of keys instead. A key under it still works, and the bubble goes at the first tap.
-    if (target.id !== "map" && overWords()) bubble.style.top = (r.top + 10 + bubble.offsetHeight) + "px";
+    var h = bubble.offsetHeight, x = r.left + r.width / 2;
+    if (target.id === "map") { put(x, r.bottom - 12); return; }
+    // The problem card: the one the answers sit in (Word Trail), else the first block of the play area.
+    var play = document.querySelector(".play") || document.body;
+    var card = target.closest(".problem-card") || play.firstElementChild;
+    if (card === target || (card && card.contains(target) && !target.closest(".problem-card"))) card = null;
+    var c = card ? card.getBoundingClientRect() : null;
+    if (put(x, Math.max(r.top - 14, 70)) && clear()) return spot(1);
+    if (c && put(c.left + c.width / 2, c.bottom - 12) && clear()) return spot(2);
+    if (c && put(c.left + c.width / 2, c.top + 12 + h) && clear()) return spot(3);
+    var side = document.querySelector(".side");
+    if (side) for (var i = 0; i < side.children.length - 1; i++) {
+      var kid = side.children[i], k = kid.getBoundingClientRect();
+      if (k.height && put(k.left + k.width / 2, k.bottom + 12, true) && clear()) return spot(4);
+    }
+    if (card && !card.contains(target) && innerHeight > innerWidth) {
+      target.style.marginTop = (h + 14) + "px";
+      r = target.getBoundingClientRect();
+      if (card.scrollHeight <= card.clientHeight + 1 && put(x, r.top - 10) && clear()) return spot(5);
+      target.style.marginTop = "";
+      r = target.getBoundingClientRect();
+    }
+    // Over the side column's last button (Clue in Word Trail): better than over the letters themselves.
+    var tail = side && side.lastElementChild;
+    while (tail && (tail === target || !tail.getClientRects().length)) tail = tail.previousElementSibling;
+    if (tail && !tail.contains(target)) { var t = tail.getBoundingClientRect(); if (put(t.left + t.width / 2, t.top + 10 + h) && clear(tail)) return spot(5); }
+    put(x, r.top + 10 + h);
+    spot(6);
   }
-  // True when the bubble, where it is now, lies over any words: the question, the explanation line,
-  // the hand legend, the Last 5 and level pills. Every element with text of its own is checked once.
-  function overWords() {
+  // Which spot won, for the play test and the screenshots (data-spot on the bubble).
+  function spot(n) { bubble.dataset.spot = n; }
+  // Moves the bubble so its arrow tip is at (x, top): the arrow points down, or up when up is set.
+  function put(x, top, up) {
+    bubble.classList.toggle("up", !!up);
+    bubble.style.left = x + "px";
+    bubble.style.top = top + "px";
+    var b = bubble.getBoundingClientRect();
+    return b.top >= 0 && b.bottom <= innerHeight;
+  }
+  // True when the bubble, where it is now, lies over no words and no button: not the question, the
+  // explanation line, the hand legend, the Last 5 and level pills, and not a key, an answer or a letter.
+  // Every element with text of its own, and every control, is checked once.
+  function clear(except) {
     var b = bubble.getBoundingClientRect(), all = document.body.getElementsByTagName("*");
     for (var i = 0; i < all.length; i++) {
-      var el = all[i], text = false;
-      if (el === bubble || target.contains(el)) continue;
-      for (var n = el.firstChild; n && !text; n = n.nextSibling) text = n.nodeType === 3 && /\S/.test(n.data);
-      if (!text) continue;
+      var el = all[i], hit = false;
+      if (el === bubble || (except && except.contains(el))) continue;
+      if (/^(BUTTON|A|INPUT|SELECT|SUMMARY)$/.test(el.tagName) || el.getAttribute("role") === "button") hit = true;
+      for (var n = el.firstChild; n && !hit; n = n.nextSibling) hit = n.nodeType === 3 && /\S/.test(n.data);
+      if (!hit) continue;
       var rs = el.getClientRects();
       for (var j = 0; j < rs.length; j++) {
         var r = rs[j];
-        if (r.width > 2 && r.height > 2 && r.bottom > b.top && r.top < b.bottom && r.right > b.left && r.left < b.right &&
-            getComputedStyle(el).visibility !== "hidden") return true;
+        if (r.width > 2 && r.height > 2 && r.bottom > b.top + 2 && r.top < b.bottom - 2 && r.right > b.left + 2 && r.left < b.right - 2 &&
+            getComputedStyle(el).visibility !== "hidden") return false;
       }
     }
-    return false;
+    return true;
   }
   function show() {
     if (!NAME.test(game) || seen.indexOf(game) !== -1) return;
@@ -1982,8 +2028,17 @@ Loopy.nextButton = function (btn, answered) {
     bubble.textContent = "👆 " + Loopy.t(pick[1]);
     document.body.appendChild(bubble);
     place();
+    // The card can still settle after the first placement (fonts, pictures that size to the room), so look again.
+    setTimeout(place, 400);
+    setTimeout(place, 1200);
     window.addEventListener("resize", place);
     ["pointerdown", "keydown"].forEach(function (k) { document.addEventListener(k, hide, { capture: true, once: true }); });
+    // After a while it fades by itself, so a child who is still looking gets the whole screen back.
+    fadeTimer = setTimeout(function () {
+      if (!bubble) return;
+      bubble.classList.add("fade");
+      fadeTimer = setTimeout(hide, 700);
+    }, 8000);
   }
   Loopy.hint = {
     done: function () {
