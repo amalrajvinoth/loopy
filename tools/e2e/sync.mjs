@@ -89,7 +89,12 @@ async function device(name) {
 }
 const stars = page => page.evaluate(() => Loopy.rewards.get().stars);
 const earn = (page, n) => page.evaluate(n => { for (let i = 0; i < n; i++) Loopy.rewards.correct("plus-minus", i + 1, null); }, n);
-const openSettings = async page => { if (await page.locator("#settings-panel").isHidden()) await page.click("#settings-toggle"); };
+const openSettings = async page => {
+  if (await page.locator("#settings-panel").isHidden()) await page.click("#settings-toggle");
+  // Family sync and Stay in touch sit in the "For grown-ups" fold, closed by default.
+  const fold = page.locator("#grown-fold");
+  if (await fold.count() && !(await fold.evaluate(d => d.open))) await fold.locator("summary").click();
+};
 const syncText = page => page.locator(".set-sync").innerText();
 
 // 1. Sync off: nothing is loaded for it and nothing is sent, on the home page and in a game.

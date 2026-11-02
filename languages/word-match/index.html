@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'sha256-Exv1p2X3tyvjtpO9Louostkbc/nKGVdgF7Y+1rnAOTo='; style-src 'self' 'sha256-z2P7kGW5Z05eCTjTZdYpc0vThTlOE9vmt97pVSvi2I4=' 'sha256-W+M0+NGBKbL1fCGEKkbWgDUCO62JWeFSLj5trGkqXRE=' 'sha256-RT1053JU5UiKvjrCUFx1rlhdFLMmgtuFJ9T8jnMeawQ=' 'sha256-s3JSUtvmNdT3XMAqKWur04L9xyczerYxvOKBoEeKlRQ='; img-src 'self' data:; font-src 'self'; connect-src 'self' https://loopy-sync.loopy-1e2.workers.dev; worker-src 'self'; object-src 'none'; base-uri 'none'; form-action 'none'; manifest-src 'self'; upgrade-insecure-requests">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'sha256-sx9XLRuIAWxaSswJd1qcLYHCQPhrfzstpz+AlOEvf60='; style-src 'self' 'sha256-z2P7kGW5Z05eCTjTZdYpc0vThTlOE9vmt97pVSvi2I4=' 'sha256-Cohb3Ig0/jkFAkAJO+r9yZGagPIr/b50XDJknt4UA58=' 'sha256-RT1053JU5UiKvjrCUFx1rlhdFLMmgtuFJ9T8jnMeawQ=' 'sha256-s3JSUtvmNdT3XMAqKWur04L9xyczerYxvOKBoEeKlRQ='; img-src 'self' data:; font-src 'self'; connect-src 'self' https://loopy-sync.loopy-1e2.workers.dev; worker-src 'self'; object-src 'none'; base-uri 'none'; form-action 'none'; manifest-src 'self'; upgrade-insecure-requests">
 <meta name="referrer" content="strict-origin-when-cross-origin">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <style>:root{color-scheme:light;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}body{margin:0}[hidden]{display:none!important}</style>
@@ -54,6 +54,7 @@ h1 { margin: 0; font-size: 1.6rem; font-weight: 700; text-wrap: balance; }
 
 .settings { display: flex; flex-direction: column; gap: 8px; }
 .seg-label { font-size: 0.8rem; font-weight: 600; letter-spacing: 0.06em; text-transform: uppercase; color: var(--muted); margin: 0 0 4px 4px; }
+.seg-note { margin: 4px 0 0 4px; font-size: 0.85rem; line-height: 1.35; color: var(--muted); }
 .seg { display: grid; grid-template-columns: repeat(3, 1fr); gap: 6px; background: var(--chip); padding: 5px; border-radius: 14px; }
 .seg.two { grid-template-columns: repeat(2, 1fr); }
 .seg button {
@@ -266,6 +267,7 @@ body { min-height: 100vh; min-height: 100dvh; padding-block: 12px 16px; }
         <button type="button" data-words="en">English</button>
         <button type="button" data-words="de">Deutsch</button>
       </div>
+      <p class="seg-note" data-t="wordsNote">The words to play with. loopy's own language is under Age, look and sound.</p>
     </div>
     <div>
       <p class="seg-label" id="topic-label" data-t="wmTopic">Topic</p>
@@ -307,6 +309,7 @@ body { min-height: 100vh; min-height: 100dvh; padding-block: 12px 16px; }
 <script>
 Loopy.addStrings({
   en: {
+    wordsNote: "The words to play with. loopy's own language is under Age, look and sound.",
     wmName: "Word Match", wmWords: "Words in", wmTopic: "Topic", wmAll: "All", wmAnimals: "Animals", wmFood: "Food", wmHome: "Home", wmSchool: "School",
     wmChoices: "Choices", wmThree: "3 words", wmFour: "4 words", wmTricky: "4, tricky",
     wmHear: "Hear the word",
@@ -316,6 +319,7 @@ Loopy.addStrings({
     wmHow: "Look at each picture. Circle the word that goes with it."
   },
   de: {
+    wordsNote: "Die Wörter zum Spielen. Die Sprache von loopy selbst steht unter Alter, Aussehen und Ton.",
     wmName: "Bild und Wort", wmWords: "Wörter auf", wmTopic: "Thema", wmAll: "Alle", wmAnimals: "Tiere", wmFood: "Essen", wmHome: "Zuhause", wmSchool: "Schule",
     wmChoices: "Auswahl", wmThree: "3 Wörter", wmFour: "4 Wörter", wmTricky: "4, knifflig",
     wmHear: "Wort anhören",

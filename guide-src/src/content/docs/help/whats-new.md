@@ -8,6 +8,16 @@ loopy keeps getting new games. Here is what came lately!
 
 The big changes, newest first. Small fixes are not listed. See [the full list on GitHub](https://github.com/amalrajvinoth/loopy/blob/main/RELEASES.md).
 
+## 2 November 2026
+
+- **Polish.** The 🔥 streak pill shows only from a streak of 2. Small labels are a little bigger. Fold lines are easier to tap. Where Is It? asks once. This guide shows new pictures of every game.
+- **Small things in the same place.** Today's 10 shows Next only after an answer. Word Detective's Clue sits under the keyboard, like Word Trail's. The word games explain their "Words in" switch. The Try again card names the time a clock mistake showed.
+- **A shorter Settings box, grouped Help, clearer home page.** On the home page, the grown-up parts of ⚙ Settings (email, Family sync, install) fold under one line. The Help page sorts its questions into four groups. "More to explore" is now "For older kids", with a line that says what it is. See [Settings on the home page](/loopy/guide/settings/home-settings/).
+- **Tidier tiles on tablets.** The home page shows at most two lines about each game, so all tiles in a row are the same height. Word Detective's letter grid is bigger on a tablet.
+- **Game pages fit on a phone.** A wide Age levels table now shows one small card per level, so the page no longer slides sideways.
+- **Word Detective keys fit in German.** The erase key is now the ⌫ sign and the Check key is wider, so "Prüfen" is no longer cut off on a phone. See [Word Detective](/loopy/guide/games/languages/word-detective/).
+- **The first-time hint hides nothing.** The blue bubble that shows what to tap now looks for a free spot. It goes above the answers, in an empty part of the card, or in a row of its own. In Word Trail it sits between the word list and Clue. It never sits on an answer, a key or a letter any more. It fades by itself after a few seconds. See [The game screen](/loopy/guide/playing/game-screen/).
+
 ## 1 November 2026
 
 - **Easier to tap.** Three small buttons grew to at least 44px. They are the Play links in the folded list on the grown-ups page, the Clear key in Word Trail and the gear-only Settings button on small phones.

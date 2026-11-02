@@ -8,6 +8,16 @@ loopy bekommt immer wieder neue Spiele. Das ist zuletzt dazugekommen!
 
 Die großen Änderungen, die neuesten zuerst. Kleine Korrekturen stehen nicht dabei. Die [ganze Liste steht auf GitHub](https://github.com/amalrajvinoth/loopy/blob/main/RELEASES.md) (auf Englisch).
 
+## 2. November 2026
+
+- **Feinschliff.** Die 🔥-Serie erscheint erst ab 2 richtigen hintereinander. Kleine Beschriftungen sind etwas größer. Aufklapp-Zeilen lassen sich leichter antippen. „Wo liegt das?“ fragt nur einmal. Diese Anleitung zeigt neue Bilder von jedem Spiel.
+- **Kleine Dinge am selben Platz.** Die 10 von heute zeigen Weiter erst nach einer Antwort. Der Hinweis im Wortdetektiv steht unter der Tastatur, wie im Wortpfad. Die Wortspiele erklären ihren Schalter „Wörter auf“. Die Karte Nochmal versuchen nennt die Uhrzeit, die bei einem Fehler zu sehen war.
+- **Kürzere Einstellungen, sortierte Hilfe, klarere Startseite.** Auf der Startseite sind die Teile für Erwachsene in ⚙ Einstellungen (E-Mail, Familien-Sync, App) unter einer Zeile eingeklappt. Die Hilfe-Seite sortiert ihre Fragen in vier Gruppen. „Mehr entdecken“ heißt jetzt „Für ältere Kinder“, mit einer Zeile, die sagt, was es ist. Siehe [Einstellungen auf der Startseite](/loopy/guide/de/settings/home-settings/).
+- **Ordentlichere Kacheln auf dem Tablet.** Die Startseite zeigt höchstens zwei Zeilen zu jedem Spiel, so sind alle Kacheln einer Reihe gleich hoch. Das Buchstabengitter im Wortdetektiv ist auf dem Tablet größer.
+- **Spielseiten passen aufs Handy.** Eine breite Tabelle mit Altersstufen zeigt jetzt eine kleine Karte pro Stufe, so rutscht die Seite nicht mehr zur Seite.
+- **Die Tasten im Wortdetektiv passen auf Deutsch.** Die Löschtaste zeigt jetzt das Zeichen ⌫ und die Taste Prüfen ist breiter, so wird „Prüfen“ auf dem Handy nicht mehr abgeschnitten. Siehe [Wortdetektiv](/loopy/guide/de/games/languages/word-detective/).
+- **Der Tipp beim ersten Mal verdeckt nichts mehr.** Die blaue Blase, die zeigt, wohin man tippt, sucht sich jetzt einen freien Platz: über den Antworten, in einem leeren Teil der Karte, im Wortpfad zwischen der Wortliste und Hinweis, oder in einer eigenen Zeile. Sie sitzt nie mehr auf einer Antwort, einer Taste oder einem Buchstaben. Nach ein paar Sekunden verschwindet sie von selbst. Siehe [Der Spielbildschirm](/loopy/guide/de/playing/game-screen/).
+
 ## 1. November 2026
 
 - **Leichter zu tippen.** Drei kleine Knöpfe sind jetzt mindestens 44px groß. Das sind die Spielen-Links in der eingeklappten Liste auf der Erwachsenen-Seite, die Löschen-Taste im Wortpfad und der Zahnrad-Knopf für die Einstellungen auf kleinen Handys.

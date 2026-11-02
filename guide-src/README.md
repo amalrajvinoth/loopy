@@ -61,7 +61,7 @@ and puts it at `/loopy/guide/`, with the games as they are. Nothing in this fold
 2. One or two sentences: what it teaches and for which ages.
 3. `## How to play`
 4. `## When an answer is wrong`
-5. `## Age levels` (a table)
+5. `## Age levels` (a table; with 4 columns or more it becomes one card per row on phones, see `scripts/finish.mjs`)
 6. `## Settings`
 7. `## Example help text`
 8. `## Something wrong?` (points to the 🚩 flag and Report a problem)
