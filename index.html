@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'sha256-J/28ExFNsZyOaorhgLZTcJrharBmbXneYhIOh8EJxC4='; style-src 'self' 'sha256-GQkq82ruWYni6/VWurzasLQGAySMrx8V32bOmwyppt0='; img-src 'self' data:; font-src 'self'; connect-src 'self' https://loopy-sync.loopy-1e2.workers.dev; worker-src 'self'; object-src 'none'; base-uri 'none'; form-action 'none'; manifest-src 'self'; upgrade-insecure-requests">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'sha256-uaNCYzoXYRtnuD3EjOKpT1kF2Aht498kNMadknfgtDw='; style-src 'self' 'sha256-GQkq82ruWYni6/VWurzasLQGAySMrx8V32bOmwyppt0='; img-src 'self' data:; font-src 'self'; connect-src 'self' https://loopy-sync.loopy-1e2.workers.dev; worker-src 'self'; object-src 'none'; base-uri 'none'; form-action 'none'; manifest-src 'self'; upgrade-insecure-requests">
 <meta name="referrer" content="strict-origin-when-cross-origin">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <link rel="icon" href="icon.svg" type="image/svg+xml">
@@ -248,6 +248,8 @@ Loopy.addStrings({
     bmTitle: "Box Multiplication", bmTag: "The grid method", bmText: "Split 23 × 14 into tens and ones, fill each box, then add them up. Bigger numbers as you grow.",
     stTitle: "Step by Step", stTag: "Adding and taking away in steps", stText: "Split a number into tens and ones and work it out one step at a time: 47 + 20 = 67, then 67 + 5 = 72.",
     shTitle: "Shapes and Angles", shTag: "Shapes, symmetry, area and angles", shText: "Name shapes and count their corners, spot right angles and lines of symmetry, work out perimeter and area, judge angles and sort triangles, with one line of why.",
+    cdTitle: "Calendar and Dates", cdTag: "Days, weeks, months", cdText: "The days of the week, a month grid, counting days and weeks, months, seasons and dates, with one line of why after each answer.",
+    npTitle: "Number Patterns", npTag: "What comes next?", npText: "A row of numbers with one missing. Count on in steps, backwards, doubling, square numbers, growing steps and two rules mixed, with the jumps shown after each answer.",
     tsTitle: "Times and Share", tsTag: "Times and division", tsText: "Times tables with dots to count, and sharing into equal groups. Bigger numbers as you grow.",
     clTitle: "What Time Is It?", clTag: "Telling time", clText: "Read the hands on the clock and pick the right time, from half hours down to the minute.",
     bsTitle: "Bigger or Smaller", bsTag: "Comparing numbers", bsText: "Pick <, = or >, put numbers in order and round them, with a number line to show why.",
@@ -266,6 +268,8 @@ Loopy.addStrings({
     wdTitle: "Word Detective", wdTag: "Guess the mystery word", wdText: "Be a word detective: guess the word in six tries. Green and yellow tiles show which letters fit, funny clues help. Five words close a case file. English or German.",
     wtTitle: "Word Trail", wtTag: "Find the hidden words", wtText: "Find the words hidden in a grid of letters. Connect letters that touch to spell the words on the list, with pictures to help. From short straight words to long bending ones. English or German.",
     mwTitle: "My Words", mwTag: "Hear it, type it", mwText: "Grown-ups add the spelling words from school, typed in or from a CSV file. loopy reads each word aloud and you type it. English or German.",
+    wfTitle: "Word Forms", wfTag: "One word, change its form", wfText: "Plurals, past tense, comparing, opposites and a or an. One word with a picture, four forms to pick from, and one line that says the rule. In German: der, die, das.",
+    raTitle: "Read and Answer", raTag: "A short text, one question", raText: "Two to four sentences and a question with three answers. First the answer is in the text, then why and how, then a title or an ending that fits. 60 texts per language.",
     qfTitle: "Quick Facts", qfTag: "Science quiz", qfText: "Short picture quizzes about space, animals and your body, with one line of why after each answer.",
     soTitle: "Sort It", soTag: "Sorting things", soText: "See a thing and pick its group: mammal or bird, solid or liquid, fruit or vegetable, planet or star, with one line of why.",
     ebTitle: "Equation Balance", ebTag: "First steps in algebra", ebText: "Find x so the see-saw is level. Starts with a missing number and grows to x on both sides.",
@@ -301,6 +305,8 @@ Loopy.addStrings({
     bmTitle: "Malkreuz", bmTag: "Malnehmen im Kreuz", bmText: "Zerlege 23 × 14 in Zehner und Einer, fülle jedes Kästchen und zähle dann zusammen. Größere Zahlen, wenn du wächst.",
     stTitle: "Schrittweise rechnen", stTag: "Plus und Minus in Schritten", stText: "Zerlege eine Zahl in Zehner und Einer und rechne Schritt für Schritt: 47 + 20 = 67, dann 67 + 5 = 72.",
     shTitle: "Formen und Winkel", shTag: "Formen, Symmetrie, Fläche und Winkel", shText: "Formen benennen und Ecken zählen, rechte Winkel und Symmetrieachsen finden, Umfang und Fläche berechnen, Winkel schätzen und Dreiecke sortieren, mit einem Satz zum Warum.",
+    cdTitle: "Kalender und Datum", cdTag: "Tage, Wochen, Monate", cdText: "Die Wochentage, ein Monatskalender, Tage und Wochen zählen, Monate, Jahreszeiten und das Datum, mit einem Satz zum Warum nach jeder Antwort.",
+    npTitle: "Zahlenmuster", npTag: "Was kommt als Nächstes?", npText: "Eine Zahlenreihe mit einer Lücke. Schritte vorwärts und rückwärts, Verdoppeln, Quadratzahlen, wachsende Schritte und zwei Regeln gemischt, mit den Sprüngen nach jeder Antwort.",
     tsTitle: "Mal und Teilen", tsTag: "Malnehmen und Teilen", tsText: "Einmaleins mit Punkten zum Zählen und Teilen in gleiche Gruppen. Größere Zahlen, wenn du wächst.",
     clTitle: "Wie spät ist es?", clTag: "Uhr lesen", clText: "Lies die Zeiger der Uhr und wähle die richtige Zeit, von halben Stunden bis zur Minute.",
     bsTitle: "Größer oder kleiner", bsTag: "Zahlen vergleichen", bsText: "Wähle <, = oder >, ordne Zahlen und runde sie, mit einem Zahlenstrahl, der zeigt warum.",
@@ -318,6 +324,8 @@ Loopy.addStrings({
     wdTitle: "Wortdetektiv", wdTag: "Rate das Rätselwort", wdText: "Sei Wortdetektiv: Rate das Wort in sechs Versuchen. Grüne und gelbe Kästchen zeigen, welche Buchstaben passen, lustige Hinweise helfen. Fünf Wörter schließen eine Akte. Deutsch oder Englisch.",
     wtTitle: "Wortpfad", wtTag: "Finde die versteckten Wörter", wtText: "Finde die Wörter, die in einem Buchstabengitter versteckt sind. Verbinde Buchstaben, die sich berühren, zu den Wörtern auf der Liste, mit Bildern als Hilfe. Von kurzen geraden Wörtern bis zu langen mit Knicken. Deutsch oder Englisch.",
     mwTitle: "Meine Wörter", mwTag: "Hören und tippen", mwText: "Eltern tragen die Lernwörter aus der Schule ein, getippt oder aus einer CSV-Datei. loopy liest jedes Wort vor und du tippst es. Deutsch oder Englisch.",
+    wfTitle: "Wortformen", wfTag: "Ein Wort, eine neue Form", wfText: "Mehrzahl, Vergangenheit, Steigern, Gegenteile und der, die, das. Ein Wort mit Bild, vier Formen zur Auswahl und eine Zeile, die die Regel sagt.",
+    raTitle: "Lesen und Antworten", raTag: "Ein kurzer Text, eine Frage", raText: "Zwei bis vier Sätze und eine Frage mit drei Antworten. Erst steht die Antwort im Text, dann geht es um Warum und Wie, dann um einen Titel oder ein Ende, das passt. 60 Texte pro Sprache.",
     siTitle: "Wörter schreiben", siTag: "Rechtschreibung", siText: "Hör ein Wort und schreibe es mit den Buchstaben. Erst Wörter mit 3 Buchstaben, dann längere. Deutsch oder Englisch.",
     qfTitle: "Blitzwissen", qfTag: "Wissens-Quiz", qfText: "Kurze Bilder-Quizze über das Weltall, Tiere und deinen Körper, mit einem Satz zum Warum nach jeder Antwort.",
     soTitle: "Sortieren", soTag: "Dinge sortieren", soText: "Sieh ein Ding und wähle seine Gruppe: Säugetier oder Vogel, fest oder flüssig, Obst oder Gemüse, Planet oder Stern, mit einem Satz zum Warum.",
@@ -345,6 +353,8 @@ const GAMES = [
   { subject: "math", path: "math/box-multiply/", id: "bm", pic: "🔲", ages: [7, 12] },
   { subject: "math", path: "math/step-by-step/", id: "st", pic: "🪜", ages: [6, 12] },
   { subject: "math", path: "math/shapes-angles/", id: "sh", pic: "📐", ages: [7, 14] },
+  { subject: "math", path: "math/calendar-dates/", id: "cd", pic: "🗓️", ages: [6, 11] },
+  { subject: "math", path: "math/number-patterns/", id: "np", pic: "🔁", ages: [6, 14] },
   { subject: "languages", path: "languages/sound-spell/", id: "ss", pic: "👂", ages: [5, 8] },
   { subject: "languages", path: "languages/word-match/", id: "wm", pic: "🖼️", ages: [5, 10] },
   { subject: "languages", path: "languages/spell-it/", id: "si", pic: "✏️", ages: [6, 10] },
@@ -353,6 +363,8 @@ const GAMES = [
   { subject: "languages", path: "languages/word-detective/", id: "wd", pic: "🕵️", ages: [6, 14] },
   { subject: "languages", path: "languages/word-trail/", id: "wt", pic: "🔗", ages: [6, 14] },
   { subject: "languages", path: "languages/my-words/", id: "mw", pic: "📝", ages: [6, 12] },
+  { subject: "languages", path: "languages/word-forms/", id: "wf", pic: "🔤", ages: [6, 13] },
+  { subject: "languages", path: "languages/read-answer/", id: "ra", pic: "📖", ages: [7, 14] },
   { subject: "science", path: "science/quick-facts/", id: "qf", pic: "🔬", ages: [7, 12] },
   { subject: "science", path: "science/sort-it/", id: "so", pic: "🗂️", ages: [6, 12] },
   { subject: "geography", path: "geography/where-is-it/", id: "wi", pic: "🗺️", ages: [7, 14] },

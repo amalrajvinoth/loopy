@@ -42,6 +42,8 @@ Von der ersten bis zur letzten Stufe. Die 10 von heute hat keine Stufen.
 | Malkreuz | 6 | Zweistellig × 2 bis 5 → Zweistellig × einstellig → Dreistellig × einstellig → Zweistellig × zweistellig → Dreistellig × zweistellig → Kommazahlen |
 | Schrittweise rechnen | 6 | Über den Zehner, bis 20 → Bis 100 → Bis 100 mit Übertrag → Bis 1.000 → Bis 1.000 mit Übertrag → Bis 10.000 |
 | Formen und Winkel | 5 | Formen, Ecken und Seiten → Linien und Symmetrie → Umfang und Fläche → Winkel → Dreiecke und Formeln |
+| Kalender und Datum | 4 | Wochentage → Der Monat → Tage und Wochen → Monate und Datum |
+| Zahlenmuster | 5 | Schritte von 1, 2 und 10 → Jeder Schritt, auch rückwärts → Verdoppeln und Quadratzahlen → Wachsende Schritte → Zwei Regeln gemischt |
 | Anlaut und Endlaut | 3 | Anlaute, 3 Antworten → Beide Laute, 3 Antworten → Beide Laute, 4 Antworten |
 | Bild und Wort | 3 | 3 Wörter → 4 Wörter → 4, knifflig |
 | Wörter schreiben | 5 | 3 Buchstaben → 4 Buchstaben → 5 Buchstaben → 6 Buchstaben → 7 bis 8 Buchstaben |
@@ -50,6 +52,8 @@ Von der ersten bis zur letzten Stufe. Die 10 von heute hat keine Stufen.
 | Wortdetektiv | 5 | 3 Buchstaben → 4 Buchstaben → 5 Buchstaben → 5 Buchstaben, knifflig → 6 Buchstaben |
 | Wortpfad | 5 | 4 × 4, gerade → 5 × 5, ein Knick → 6 × 6, mit Knicken → 6 × 6, 5 Wörter → 6 × 6, lange Wörter |
 | Meine Wörter | 4 | Buchstaben-Tasten, erster Buchstabe → Buchstaben-Tasten → Tastatur → Tastatur, ohne Kästchen |
+| Wortformen | 5 | Gegenteile und Mehrzahl → der, die, das → Vergangenheit → Steigern → Alles gemischt, die kniffligen |
+| Lesen und Antworten | 4 | Zwei Sätze → Drei Sätze → Warum und wie → Ein Titel oder ein Ende |
 | Blitzwissen | 3 | Einsteiger → Entdecker → Profi |
 | Sortieren | 4 | Tiere und Lebewesen → Materialien und Stoffe → Essen, Weltall und Sinne → Alles gemischt, mit kniffligen |
 | Wo liegt das? | 5 | Kontinente und Ozeane → Länder Europas → Hauptstädte Europas → Länder der Welt → Hauptstädte der Welt |

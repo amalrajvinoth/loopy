@@ -1,0 +1,535 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'sha256-8xBbhe/+p9orKrvrrsE897N8boBat1ckXOMP3zbdOxM='; style-src 'self' 'sha256-z2P7kGW5Z05eCTjTZdYpc0vThTlOE9vmt97pVSvi2I4=' 'sha256-feiFDjVckSlKY3vxtWaFHyIxv/0vJasrggHW3bKZHdo=' 'sha256-RT1053JU5UiKvjrCUFx1rlhdFLMmgtuFJ9T8jnMeawQ=' 'sha256-IcLsa0WCHm78QTXufLmOnFxgaqwdldgmj2DqQdmGV1g='; img-src 'self' data:; font-src 'self'; connect-src 'self' https://loopy-sync.loopy-1e2.workers.dev; worker-src 'self'; object-src 'none'; base-uri 'none'; form-action 'none'; manifest-src 'self'; upgrade-insecure-requests">
+<meta name="referrer" content="strict-origin-when-cross-origin">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<style>:root{color-scheme:light;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}body{margin:0}[hidden]{display:none!important}</style>
+<link rel="icon" href="../../icon.svg" type="image/svg+xml">
+<link rel="manifest" href="../../manifest.webmanifest">
+<link rel="apple-touch-icon" href="../../apple-touch-icon.png">
+<meta name="theme-color" content="#0a0a0c">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="loopy">
+<title data-t="wfName">Word Forms</title>
+<meta name="description" content="Word Forms on loopy: plurals, past tense, comparing, opposites, a or an and der, die, das. Free grammar practice for ages 6 to 13, English and German.">
+<link rel="preload" href="../../fonts/lexend-latin.woff2" as="font" type="font/woff2" crossorigin>
+<style>
+/* Layout: a picture and a sentence with a blank on the card, answer buttons below. Shared look with the other games. */
+:root {
+  --bg: #f3f6fb;
+  --card: #ffffff;
+  --ink: #1d2a3f;
+  --muted: #5d6b82;
+  --line: #d5dde9;
+  --accent: #2457c5;
+  --accent-ink: #ffffff;
+  --mark: #e2622b;
+  --good: #1f8a4c;
+  --good-bg: #e3f5ea;
+  --bad: #c23a3a;
+  --bad-bg: #fbe6e6;
+  --chip: #e6ecf6;
+  --key: #ffffff;
+  --font: "Lexend", "Segoe UI", "Helvetica Neue", Arial, sans-serif;
+}
+
+* { box-sizing: border-box; }
+body {
+  background: var(--bg); color: var(--ink); font-family: var(--font); font-size: 16px;
+  padding-left: max(16px, env(safe-area-inset-left, 0px));
+  padding-right: max(16px, env(safe-area-inset-right, 0px));
+  padding-block: 20px 32px;
+}
+.wrap { max-width: 520px; margin: 0 auto; display: flex; flex-direction: column; gap: 16px; }
+
+.top { display: flex; flex-wrap: wrap; gap: 12px; align-items: center; justify-content: space-between; }
+h1 { margin: 0; font-size: 1.6rem; font-weight: 700; text-wrap: balance; }
+.score { display: flex; flex-wrap: wrap; gap: 8px; font-variant-numeric: tabular-nums; }
+.pill { background: var(--card); border: 1px solid var(--line); border-radius: 999px; padding: 6px 14px; font-weight: 600; font-size: 1rem; white-space: nowrap; }
+.pill span { color: var(--muted); font-weight: 400; margin-right: 4px; }
+
+.settings { display: flex; flex-direction: column; gap: 8px; }
+.seg-label { font-size: 0.8rem; font-weight: 600; letter-spacing: 0.06em; text-transform: uppercase; color: var(--muted); margin: 0 0 4px 4px; }
+.seg { display: grid; grid-template-columns: repeat(2, 1fr); gap: 6px; background: var(--chip); padding: 5px; border-radius: 14px; }
+.seg button {
+  font: inherit; font-size: 0.95rem; font-weight: 600; color: var(--muted);
+  background: transparent; border: 0; border-radius: 10px; padding: 8px 4px; min-height: 44px; cursor: pointer;
+}
+.seg button[aria-pressed="true"] { background: var(--card); color: var(--ink); box-shadow: 0 1px 3px rgb(0 0 0 / 0.12); }
+
+.problem-card {
+  background: var(--card); border: 1px solid var(--line); border-radius: 24px;
+  padding: 20px 18px 18px; display: flex; flex-direction: column; align-items: center; gap: 14px;
+}
+.problem-card.good { border-color: var(--good); box-shadow: 0 0 0 2px var(--good) inset; }
+.problem-card.bad { border-color: var(--bad); box-shadow: 0 0 0 2px var(--bad) inset; }
+
+.feedback { min-height: 3.1em; text-align: center; font-size: 1.1rem; line-height: 1.45; margin: 0; max-width: 34ch; }
+.feedback strong { display: block; font-size: 1.45rem; }
+.feedback.good strong { color: var(--good); }
+.feedback.bad strong { color: var(--bad); }
+.feedback .hint { color: var(--muted); }
+
+.foot { display: flex; justify-content: space-between; align-items: center; gap: 12px; flex-wrap: wrap; }
+.foot p { margin: 0; color: var(--muted); font-size: 0.9rem; }
+.reset { font: inherit; font-size: 0.95rem; color: var(--muted); background: transparent; border: 2px solid var(--line); border-radius: 14px; padding: 0 16px; min-height: 44px; cursor: pointer; }
+button:focus-visible { outline: 3px solid var(--mark); outline-offset: 3px; }
+
+@media (max-width: 420px) {
+  h1 { font-size: 1.35rem; }
+  .seg button { font-size: 0.85rem; }
+}
+@media (prefers-reduced-motion: reduce) {
+  * { transition: none !important; }
+}
+</style>
+<style>.home-link{display:inline-flex;align-items:center;min-height:40px;color:var(--muted);font-weight:600;text-decoration:none;font-size:0.95rem}.home-link:hover{color:var(--ink)}</style>
+<style>
+/* Phones and tablets: the game fills one screen; settings sit behind a button. */
+body { min-height: 100vh; min-height: 100dvh; padding-block: 12px 16px; }
+.wrap { gap: 12px; }
+.game-bar { display: flex; align-items: center; justify-content: space-between; gap: 8px; }
+.bar-right { display: flex; align-items: center; gap: 8px; }
+.top { gap: 8px 12px; }
+.play { display: flex; flex-direction: column; gap: 12px; -webkit-user-select: none; user-select: none; }
+@media (min-width: 600px) and (orientation: portrait) { .wrap { max-width: 640px; } }
+@media (orientation: landscape) and (min-width: 640px) {
+  .wrap { max-width: 1100px; }
+  .play { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; align-items: center; }
+}
+
+.problem-card { padding: 14px 14px 12px; gap: 8px; }
+.feedback { min-height: 2.9em; font-size: 1.05rem; }
+.feedback strong { font-size: 1.3rem; }
+@media (max-height: 760px) and (orientation: portrait) {
+  .feedback { font-size: 0.95rem; line-height: 1.35; }
+  .feedback strong { font-size: 1.15rem; }
+}
+
+/* Portrait: the page is exactly one screen tall; the answers stay at the bottom and the card shrinks to fit. */
+@media (orientation: portrait) {
+  body { height: calc(100dvh - env(safe-area-inset-top, 0px) - env(safe-area-inset-bottom, 0px)); min-height: 0; display: flex; flex-direction: column; overflow: hidden; }
+  body:has(#settings-panel:not([hidden])) { height: auto; overflow: visible; }
+  .wrap { flex: 1 1 auto; min-height: 0; width: 100%; }
+  .play { flex: 1 1 auto; min-height: 0; }
+  .problem-card { flex: 1 1 auto; min-height: 0; justify-content: center; overflow: hidden; }
+  .feedback { flex: 0 1 auto; min-height: 0; overflow-y: auto; }
+}
+@media (orientation: landscape) and (min-width: 640px) {
+  body { height: calc(100dvh - env(safe-area-inset-top, 0px) - env(safe-area-inset-bottom, 0px)); min-height: 0; display: flex; flex-direction: column; overflow: hidden; }
+  body:has(#settings-panel:not([hidden])) { height: auto; overflow: visible; }
+  .wrap { flex: 1 1 auto; min-height: 0; width: 100%; }
+  .play { flex: 1 1 auto; min-height: 0; grid-template-rows: minmax(0, 1fr); }
+  .problem-card { min-height: 0; overflow: hidden; height: 100%; justify-content: center; }
+  .side { height: 100%; justify-content: center; }
+  .feedback { flex: 0 1 auto; min-height: 0; overflow-y: auto; }
+}
+@media (max-height: 500px) {
+  .feedback { font-size: 0.9rem; line-height: 1.3; }
+  .feedback strong { font-size: 1.05rem; }
+}
+
+/* Word Forms: a kind chip, a picture, the sentence with a blank, then the answers. */
+.kind { align-self: flex-start; display: inline-flex; align-items: center; gap: 6px; background: var(--chip); color: var(--muted); border-radius: 999px; padding: 4px 12px; font-size: 0.85rem; font-weight: 600; }
+.pic { font-size: clamp(2.6rem, 9dvh, 5rem); line-height: 1.1; text-align: center; }
+.question { margin: 0; font-size: clamp(1.3rem, min(6vw, 4dvh), 2.2rem); font-weight: 700; line-height: 1.3; text-align: center; max-width: 24ch; text-wrap: balance; }
+.question .hold { white-space: nowrap; }
+.question .blank { display: inline-block; min-width: 2.4em; border-bottom: 3px solid var(--accent); vertical-align: baseline; line-height: 1; margin: 0 0.1em; text-align: center; }
+.problem-card.good .question .blank { color: var(--good); border-color: var(--good); }
+.problem-card.bad .question .blank { color: var(--good); border-color: var(--good); }
+.sub { margin: 0; color: var(--muted); font-size: clamp(0.95rem, 2.6dvh, 1.15rem); text-align: center; }
+.sub:empty { display: none; }
+.side { display: flex; flex-direction: column; gap: 10px; }
+.choices { display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; }
+.choices.three { grid-template-columns: repeat(3, 1fr); }
+.choices button {
+  font: inherit; font-size: clamp(1.05rem, min(5vw, 3.2dvh), 1.7rem); font-weight: 700; color: var(--ink); line-height: 1.2;
+  background: var(--key); border: 2px solid var(--line); border-radius: 18px; min-height: clamp(56px, 9dvh, 96px); padding: 6px 10px; cursor: pointer;
+  overflow-wrap: anywhere; hyphens: auto;
+  transition: transform .08s ease, border-color .15s ease; touch-action: manipulation; -webkit-tap-highlight-color: transparent;
+}
+.choices button:hover:not(:disabled) { border-color: var(--accent); }
+.choices button:active:not(:disabled) { transform: scale(0.96); }
+.choices button:disabled { cursor: default; }
+.choices button.right { border-color: var(--good); background: var(--good-bg); color: var(--good); }
+.choices button.wrong { border-color: var(--bad); background: var(--bad-bg); color: var(--bad); }
+.choices button.faded { opacity: 0.45; }
+.next { font: inherit; font-size: 1.25rem; font-weight: 700; color: var(--accent-ink); background: var(--accent); border: 0; border-radius: 16px; min-height: clamp(52px, 7dvh, 72px); cursor: pointer; width: 100%; }
+.seg { grid-template-columns: repeat(2, 1fr); }
+.seg button:last-child { grid-column: 1 / -1; }
+@media (min-width: 600px) and (orientation: portrait) {
+  .choices button { min-height: clamp(64px, 10dvh, 120px); }
+  .pic { font-size: clamp(4rem, 12dvh, 7rem); }
+  .question { font-size: clamp(1.6rem, 4.5dvh, 2.6rem); }
+}
+@media (orientation: landscape) and (min-width: 640px) {
+  .choices button { min-height: clamp(52px, 14dvh, 130px); }
+  .choices.three { grid-template-columns: repeat(3, 1fr); }
+}
+/* After the answer the picture gets smaller, so the sentence and the reason have room. */
+@media (max-height: 760px) {
+  .problem-card.good .pic, .problem-card.bad .pic { font-size: 1.8rem; }
+}
+@media (max-height: 700px) {
+  .question { font-size: clamp(1.1rem, min(5.2vw, 3.4dvh), 1.6rem); }
+  .kind { font-size: 0.78rem; padding: 3px 10px; }
+}
+@media (max-height: 500px) {
+  .question { font-size: 1.1rem; }
+  .pic { font-size: 1.8rem; }
+  .problem-card.good .pic, .problem-card.bad .pic { display: none; }
+}
+
+/* Worksheet cells (only printed): the sentence, then the forms to circle. */
+@media print {
+  .sheet-grid li > div.ws-wf { align-items: flex-start; gap: 0.6mm; padding-right: 2mm; }
+  .ws-wf .ws-q { font-size: 10pt; font-weight: 600; line-height: 1.2; }
+  .ws-wf .ws-opts { display: flex; flex-wrap: wrap; gap: 0.2mm 3mm; font-size: 9pt; line-height: 1.2; color: #333; }
+  .ws-wf .ws-opts span::before { content: "○ "; }
+}
+</style>
+<link rel="stylesheet" href="../../loopy.css">
+</head>
+<body>
+
+<div class="wrap">
+  <header class="game-bar">
+    <a class="home-link" href="../../">&larr; loopy</a>
+    <div class="bar-right">
+      <span id="star-chip"></span>
+      <button type="button" id="settings-toggle" aria-controls="settings-panel"></button>
+    </div>
+  </header>
+  <section class="top" aria-labelledby="title">
+    <h1 id="title" data-t="wfName">Word Forms</h1>
+    <div class="score" aria-live="polite">
+      <div class="pill pill-score"><span data-t="score">Score</span><b id="score">0 / 0</b></div>
+      <div id="level"></div>
+      <div class="pill pill-streak"><span data-t="streak">Streak</span><b id="streak">0</b></div>
+      <div id="last5" data-game="word-forms"></div>
+    </div>
+  </section>
+  <div class="settings-panel" id="settings-panel" hidden>
+    <div class="controls"><div id="age-picker"></div><div id="theme-picker"></div><button id="sound-toggle"></button><div id="lang-picker"></div></div>
+    <div>
+      <p class="seg-label" id="level-label" data-t="wfLevel">Level</p>
+      <div class="seg" role="group" aria-labelledby="level-label" id="level-seg">
+        <button type="button" data-level="1" data-t="wfL1">Opposites and plurals</button>
+        <button type="button" data-level="2" data-t="wfL2">a or an</button>
+        <button type="button" data-level="3" data-t="wfL3">Past tense</button>
+        <button type="button" data-level="4" data-t="wfL4">Comparing</button>
+        <button type="button" data-level="5" data-t="wfL5">All mixed, the tricky ones</button>
+      </div>
+    </div>
+    <div class="panel-foot">
+      <p data-t="wfKbd">Keyboard works too: 1 to 4 picks an answer, Enter goes on.</p>
+      <button type="button" class="reset" id="reset" data-t="resetScore">Reset score</button>
+    </div>
+  </div>
+
+  <main class="play">
+    <div class="problem-card" id="card">
+      <span class="kind" id="kind"></span>
+      <div class="pic" id="pic" aria-hidden="true"></div>
+      <p class="question" id="question"></p>
+      <p class="sub" id="sub"></p>
+      <p class="feedback" id="feedback"></p>
+    </div>
+    <div class="side">
+      <div class="choices" id="choices"></div>
+      <button type="button" class="next skip" id="next" data-t="skip">Skip</button>
+    </div>
+  </main>
+</div>
+
+<script src="../../loopy.js"></script>
+<script src="words.js"></script>
+<script>
+Loopy.addStrings({
+  en: {
+    wfName: "Word Forms", wfLevel: "Level",
+    wfL1: "Opposites and plurals", wfL2: "a or an", wfL3: "Past tense", wfL4: "Comparing", wfL5: "All mixed, the tricky ones",
+    wfKbd: "Keyboard works too: 1 to 4 picks an answer, Enter goes on.",
+    wfKPlural: "Plural", wfKPast: "Past tense", wfKComp: "Comparing", wfKOpp: "Opposites", wfKArt: "a or an",
+    wfQPlural: "one {s}, two ___", wfQPast: "Today I {v}. Yesterday I ___.", wfQOpp: "The opposite of {w} is ___.",
+    wfQArt: "___ {n}", wfSubArt: "a or an?",
+    wfBlank: "blank", wfRead: "{q} Is it {list}?",
+    wfWhyS: "Most words add s: {p}.", wfWhyEs: "Words that end in s, x, ch or sh add es: {p}.", wfWhyIes: "Change the y to i and add es: {p}.",
+    wfWhyVes: "Change the f to v and add es: {p}.", wfWhySame: "{s} stays the same: one {s}, two {p}.", wfWhyOdd: "{s} is a special word. Its plural is {p}.",
+    wfWhyEd: "{v} is a regular verb: add ed. Yesterday I {p}.", wfWhyIrr: "{v} is an irregular verb. Its past form is {p}.",
+    wfWhyEr: "Short words add er and est: {a}, {c}, {s}.", wfWhyMore: "Long words use more and most: {a}, {c}, {s}.", wfWhyCompIrr: "{a} is special: {a}, {c}, {s}.",
+    wfWhyOpp: "{w} and {o} are opposites.",
+    wfWhyAn: "an before a vowel sound: an {n}.", wfWhyA: "a before a consonant sound: a {n}.",
+    wfWhyAnH: "The h in {n} is silent, so it starts with a vowel sound: an {n}.", wfWhyAU: "{n} starts with a \"you\" sound, so it takes a: a {n}.",
+    wfHow: "Circle the right form."
+  },
+  de: {
+    wfName: "Wortformen", wfLevel: "Stufe",
+    wfL1: "Gegenteile und Mehrzahl", wfL2: "der, die, das", wfL3: "Vergangenheit", wfL4: "Steigern", wfL5: "Alles gemischt, die kniffligen",
+    wfKbd: "Die Tastatur geht auch: 1 bis 4 wählt eine Antwort, Enter geht weiter.",
+    wfKPlural: "Mehrzahl", wfKPast: "Vergangenheit", wfKComp: "Steigern", wfKOpp: "Gegenteile", wfKArt: "der, die, das",
+    wfQPlural: "{art} {s}, die ___", wfQPast: "Heute {v} ich. Gestern ___ ich.", wfQOpp: "Das Gegenteil von {w} ist ___.",
+    wfQArt: "___ {n}", wfSubArt: "Welcher Artikel passt?",
+    wfBlank: "Lücke", wfRead: "{q} Ist es {list}?",
+    wfWhyS: "Die Mehrzahl von {s} ist {p}.", wfWhyEs: "Die Mehrzahl von {s} ist {p}.", wfWhyIes: "Die Mehrzahl von {s} ist {p}.",
+    wfWhyVes: "Die Mehrzahl von {s} ist {p}.", wfWhySame: "{s} bleibt gleich: ein {s}, zwei {p}.", wfWhyOdd: "Die Mehrzahl von {s} ist {p}, mit Umlaut.",
+    wfWhyEd: "{v} ist ein schwaches Verb: Gestern {p} ich.", wfWhyIrr: "{v} ist ein starkes Verb, der Vokal ändert sich: Gestern {p} ich.",
+    wfWhyEr: "So wird gesteigert: {a}, {c}, {s}.", wfWhyMore: "So wird gesteigert: {a}, {c}, {s}.", wfWhyCompIrr: "{a} wird anders gesteigert: {a}, {c}, {s}.",
+    wfWhyOpp: "{w} und {o} sind Gegenteile.",
+    wfWhyAn: "Es heißt {art} {n}. Den Artikel lernt man mit dem Wort mit.", wfWhyA: "Es heißt {art} {n}. Den Artikel lernt man mit dem Wort mit.",
+    wfWhyAnH: "Es heißt {art} {n}.", wfWhyAU: "Es heißt {art} {n}.",
+    wfHow: "Kreise die richtige Form ein."
+  }
+});
+
+(function () {
+  const $ = (id) => document.getElementById(id);
+  const card = $("card"), kindEl = $("kind"), picEl = $("pic"), qEl = $("question"), subEl = $("sub"), choicesEl = $("choices"), feedbackEl = $("feedback"), nextBtn = $("next");
+  const levelBtns = [...document.querySelectorAll("#level-seg button")];
+  const t = Loopy.t, lang = Loopy.lang === "de" ? "de" : "en";
+  const W = WF[lang];
+  const randInt = (n) => Math.floor(Math.random() * n);
+  const pick = (arr) => arr[randInt(arr.length)];
+  const shuffle = (arr) => arr.slice().sort(() => Math.random() - 0.5);
+  const store = {
+    get(k, d, ok) { try { const v = JSON.parse(Loopy.store.get(k)); return ok.includes(v) ? v : d; } catch (e) { return d; } },
+    set(k, v) { Loopy.store.set(k, JSON.stringify(v)); }
+  };
+
+  let age = Loopy.getAge();
+  let level;
+  const levelForAge = (a) => a <= 7 ? 1 : a <= 8 ? 2 : a <= 10 ? 3 : a <= 12 ? 4 : 5;
+  function loadForAge() { level = store.get("wf.level.a" + age, levelForAge(age), [1, 2, 3, 4, 5]); }
+  loadForAge();
+  Loopy.levels.init({ names: ["wfL1", "wfL2", "wfL3", "wfL4", "wfL5"],
+    get: () => level - 1, base: () => levelForAge(age) - 1,
+    set: (i) => { level = i + 1; store.set("wf.level.a" + age, level); render(); } });
+  let right = 0, tried = 0, streak = 0;
+  let current = null, answered = false, recent = [];
+
+  // Wrong answers: the mistakes children really make, made from the word by the usual rules. Never the right one, never twice.
+  function others(cands, answer, n) {
+    const out = [];
+    for (const x of cands) { if (x && x !== answer && !out.includes(x) && out.length < n) out.push(x); }
+    return out;
+  }
+  const cap = (s) => s.charAt(0).toUpperCase() + s.slice(1);
+  const noUmlaut = (s) => s.replace(/ä/g, "a").replace(/ö/g, "o").replace(/ü/g, "u").replace(/Ä/g, "A").replace(/Ö/g, "O").replace(/Ü/g, "U");
+  const umlaut = (s) => s.replace(/au/, "äu").replace(/a(?!u)([^aeiouäöü]*)$/, "ä$1").replace(/o([^aeiouäöü]*)$/, "ö$1").replace(/u([^aeiouäöü]*)$/, "ü$1");
+  function wrongPlural(s, p) {
+    if (lang === "de") {
+      const base = [s + "s", s + "e", s + "en", s + "n", s + "er", s, noUmlaut(p) !== p ? noUmlaut(p) : "", umlaut(s) + "e", umlaut(s) + "er", p + "s", p + "n"];
+      return others(shuffle(base), p, 3);
+    }
+    const y = s.endsWith("y") ? s.slice(0, -1) + "ies" : "", f = /fe?$/.test(s) ? s.replace(/fe?$/, "ves") : "";
+    const base = [s + "s", s + "es", y, f, s, p + "s", s.endsWith("s") ? "" : s + "ses", s.replace(/o$/, "oes"), s + "en"];
+    return others(shuffle(base), p, 3);
+  }
+  function wrongPast(v, p) {
+    if (lang === "de") {
+      const stem = v.replace(/e$/, "");
+      const base = [stem + "te", stem + "t", v, stem + "ete", "ge" + stem + "t", p + "te", stem + "en", "ge" + stem + "en"];
+      return others(shuffle(base), p, 3);
+    }
+    const last = v.slice(-1), dbl = /[aeiou][bdgmnpt]$/.test(v) ? v + last + "ed" : "";
+    const base = [v + "ed", v.endsWith("e") ? v + "d" : "", dbl, v.endsWith("y") ? v.slice(0, -1) + "ied" : "", v, v + "s", v.endsWith("e") ? v.slice(0, -1) + "ing" : v + "ing", p + "ed", v + "t"];
+    return others(shuffle(base), p, 3);
+  }
+  function wrongComp(a, c, s, askSup) {
+    const want = askSup ? s : c;
+    if (lang === "de") {
+      const base = askSup
+        ? ["am " + a + "sten", "am " + a + "esten", "am " + noUmlaut(s).slice(3), a + "sten", "am meisten " + a, c + "sten", "am " + c + "en"]
+        : [a + "er", noUmlaut(c) !== c ? noUmlaut(c) : "", "mehr " + a, a + "r", a + "ter", "am " + a + "er", umlaut(a) + "er"];
+      return others(shuffle(base), want, 3);
+    }
+    const last = a.slice(-1), dbl = /[aeiou][bdgmnpt]$/.test(a) ? a + last : a, y = a.endsWith("y") ? a.slice(0, -1) + "i" : a;
+    const base = askSup
+      ? [a + "est", dbl + "est", y + "est", "most " + a, "more " + a, c + "est", "the " + a + "est", "most " + c, s === a + "est" ? "" : a + "st"]
+      : [a + "er", dbl + "er", y + "er", "more " + a, "most " + a, a + "ier", "more " + c, a + "r"];
+    return others(shuffle(base), want, 3);
+  }
+  // Wrong opposites: other opposites from the list.
+  const wrongOpp = (w, o) => others(shuffle(W.opps.map(x => x[2]).concat(W.opps.map(x => x[1]))).filter(x => x !== w), o, 3);
+
+  const problem = (kind, key, pic, q, sub, answer, wrong, why, said) =>
+    ({ kind, key, pic, q, sub, answer, options: shuffle([answer, ...wrong]), why, said: said || q.replace("___", answer) });
+
+  // One question of each kind, from the word with number i in the list. The key is "kind:i" (plus ":s" or ":c" for comparing).
+  function qPlural(i) {
+    const [pic, art, s, p, hard] = W.nouns[i];
+    const q = lang === "de" ? t("wfQPlural", { art, s }) : t("wfQPlural", { s });
+    let why;
+    if (lang === "de") why = t(p === s ? "wfWhySame" : noUmlaut(p) !== p && noUmlaut(s) === s ? "wfWhyOdd" : "wfWhyS", { s, p });
+    else if (p === s) why = t("wfWhySame", { s, p });
+    else if (p === s + "s") why = t("wfWhyS", { p });
+    else if (p === s + "es" && /(s|x|ch|sh)$/.test(s)) why = t("wfWhyEs", { p });
+    else if (s.endsWith("y") && p === s.slice(0, -1) + "ies") why = t("wfWhyIes", { p });
+    else if (/ves$/.test(p) && /fe?$/.test(s)) why = t("wfWhyVes", { p });
+    else why = t("wfWhyOdd", { s, p });
+    return problem("plural", "plural:" + i, pic, q, "", p, wrongPlural(s, p), why);
+  }
+  function qPast(i) {
+    const [pic, v, p, hard] = W.verbs[i];
+    const q = t("wfQPast", { v });
+    const regular = lang === "de" ? /te$/.test(p) && !["brachte", "dachte", "kannte", "wusste", "hatte"].includes(p) : p === v + "ed" || p === v + "d" || p === v.slice(0, -1) + "ied" || p === v + v.slice(-1) + "ed";
+    return problem("past", "past:" + i, pic, q, "", p, wrongPast(v, p), t(regular ? "wfWhyEd" : "wfWhyIrr", { v, p }));
+  }
+  function qComp(i, askSup) {
+    const [pic, a, c, s, hard] = W.adjs[i];
+    const q = askSup ? a + ", " + c + ", ___" : a + ", ___, " + s;
+    const irregular = lang === "de" ? ["gut", "viel", "gern", "hoch", "nah"].includes(a) : ["good", "bad", "far", "little", "many"].includes(a);
+    const why = t(irregular ? "wfWhyCompIrr" : c.startsWith("more ") || c.startsWith("mehr ") ? "wfWhyMore" : "wfWhyEr", { a, c, s });
+    return problem("comp", "comp:" + i + (askSup ? ":s" : ":c"), pic, q, "", askSup ? s : c, wrongComp(a, c, s, askSup), why);
+  }
+  function qOpp(i) {
+    const [pic, w, o] = W.opps[i];
+    return problem("opp", "opp:" + i, pic, t("wfQOpp", { w }), "", o, wrongOpp(w, o), t("wfWhyOpp", { w, o }));
+  }
+  function qArt(i) {
+    const [pic, art, n] = W.nouns[i];
+    const q = t("wfQArt", { n }), hard = W.nouns[i][4];
+    if (lang === "de") return problem("art", "art:" + i, pic, q, t("wfSubArt"), art, others(["der", "die", "das"], art, 2), t("wfWhyA", { art, n }));
+    const vowel = /^[aeiou]/.test(n), why = art === "an" && !vowel ? "wfWhyAnH" : art === "a" && vowel ? "wfWhyAU" : art === "an" ? "wfWhyAn" : "wfWhyA";
+    return problem("art", "art:" + i, pic, q, t("wfSubArt"), art, [art === "a" ? "an" : "a"], t(why, { n }));
+  }
+  const KINDS = { plural: qPlural, past: qPast, comp: qComp, opp: qOpp, art: qArt };
+  const LIST = { plural: "nouns", past: "verbs", comp: "adjs", opp: "opps", art: "nouns" };
+  // Which kinds each level asks, and how often a tricky word comes (levels 1 to 4: one in four; level 5: most of the time).
+  const LEVELS = { 1: ["opp", "plural"], 2: ["art", "art", "art", "plural"], 3: ["past"], 4: ["comp"], 5: ["plural", "past", "comp", "opp", "art"] };
+  function indexFor(kind) {
+    const list = W[LIST[kind]], wantHard = kind !== "opp" && Math.random() < (level === 5 ? 0.7 : 0.25);
+    const hardField = kind === "past" ? 3 : 4;
+    for (let tries = 0; tries < 20; tries++) { const i = randInt(list.length); if (kind === "opp" || (list[i][hardField] === 1) === wantHard) return i; }
+    return randInt(list.length);
+  }
+  function makeProblem() {
+    const kind = pick(LEVELS[level]), i = indexFor(kind);
+    return kind === "comp" ? qComp(i, Math.random() < 0.5) : KINDS[kind](i);
+  }
+  // Try again: the note is "en:past:12" or "de:comp:4:s", the language and the word. The same word comes back.
+  const note = (p) => lang + ":" + p.key;
+  function rebuild(r) {
+    const m = /^(en|de):(plural|past|comp|opp|art):(\d{1,3})(?::([sc]))?$/.exec(r);
+    if (!m || m[1] !== lang || !LEVELS[level].includes(m[2])) return null;
+    const i = +m[3];
+    if (i >= W[LIST[m[2]]].length) return null;
+    return m[2] === "comp" ? qComp(i, m[4] === "s") : KINDS[m[2]](i);
+  }
+
+  const KIND_CHIP = { plural: ["🔢", "wfKPlural"], past: ["⏪", "wfKPast"], comp: ["📈", "wfKComp"], opp: ["↔️", "wfKOpp"], art: ["📘", "wfKArt"] };
+  function drawQuestion(p, answerText) {
+    qEl.textContent = "";
+    const [before, after] = p.q.split("___");
+    qEl.appendChild(document.createTextNode(before));
+    // The blank and the comma or dot right after it stay on one line.
+    const hold = Loopy.el("span", "hold"), tail = /^[,.]*/.exec(after || "")[0];
+    hold.appendChild(Loopy.el("span", "blank", answerText || ""));
+    if (tail) hold.appendChild(document.createTextNode(tail));
+    qEl.appendChild(hold);
+    if (after && after.length > tail.length) qEl.appendChild(document.createTextNode(after.slice(tail.length)));
+  }
+  function render() {
+    Loopy.levels.render();
+    $("score").textContent = right + " / " + tried;
+    $("streak").textContent = streak;
+    levelBtns.forEach(b => b.setAttribute("aria-pressed", String(+b.dataset.level === level)));
+    Loopy.nextButton(nextBtn, answered);
+  }
+  function newRound() {
+    current = Loopy.retry.fresh("word-forms", recent, makeProblem, rebuild, 20);
+    answered = false;
+    const chip = KIND_CHIP[current.kind];
+    kindEl.textContent = chip[0] + " " + t(chip[1]);
+    picEl.textContent = current.pic;
+    drawQuestion(current);
+    subEl.textContent = current.sub;
+    choicesEl.textContent = "";
+    choicesEl.classList.toggle("three", current.options.length === 3);
+    current.options.forEach((a, i) => {
+      const b = document.createElement("button");
+      b.type = "button"; b.id = "choice-" + i; b.textContent = a;
+      b.dataset.correct = String(a === current.answer);
+      b.addEventListener("click", () => choose(b));
+      choicesEl.appendChild(b);
+    });
+    card.classList.remove("good", "bad");
+    feedbackEl.className = "feedback";
+    feedbackEl.textContent = "";
+    render();
+    Loopy.speech.read();
+  }
+  function choose(btn) {
+    if (answered) return;
+    answered = true; tried++;
+    const ok = btn.dataset.correct === "true";
+    [...choicesEl.children].forEach(b => {
+      b.disabled = true;
+      if (b.dataset.correct === "true") b.classList.add("right");
+      else if (b === btn) b.classList.add("wrong");
+      else b.classList.add("faded");
+    });
+    if (ok) { right++; streak++; } else { streak = 0; }
+    drawQuestion(current, current.answer);
+    const q = current.q.length > 40 ? current.q.slice(0, 39) + "…" : current.q;
+    if (ok) Loopy.rewards.correct("word-forms", streak, "wf-" + current.kind);
+    else Loopy.rewards.wrong("word-forms", { q, a: current.answer, y: btn.textContent, k: "wf-" + current.kind, r: note(current) });
+    card.classList.remove("good", "bad");
+    card.classList.add(ok ? "good" : "bad");
+    feedbackEl.className = "feedback " + (ok ? "good" : "bad");
+    feedbackEl.innerHTML = "<strong></strong>";
+    feedbackEl.firstChild.textContent = ok ? (streak >= 3 ? t("correctRow", { n: streak }) : t("correct")) : t("notQuite");
+    feedbackEl.appendChild(document.createTextNode((ok ? "" : t("qfAnswerIs", { a: current.answer }) + " ") + current.why));
+    render();
+    nextBtn.focus({ preventScroll: true });
+  }
+  // "The answer is: {a}." is the same line as in Quick Facts.
+  Loopy.addStrings({ en: { qfAnswerIs: "The answer is: {a}." }, de: { qfAnswerIs: "Die Antwort ist: {a}." } });
+
+  nextBtn.addEventListener("click", newRound);
+  levelBtns.forEach(b => b.addEventListener("click", () => { level = +b.dataset.level; store.set("wf.level.a" + age, level); recent = []; newRound(); }));
+  window.addEventListener("loopy:age", (e) => { age = e.detail; recent = []; loadForAge(); newRound(); });
+  $("reset").addEventListener("click", () => { right = 0; tried = 0; streak = 0; Loopy.recent.clear("word-forms"); newRound(); });
+  document.addEventListener("keydown", (e) => {
+    if (e.target.tagName === "INPUT" || document.querySelector(".loopy-cheer.big")) return;
+    if (e.key === "Enter" && answered && e.target.tagName !== "BUTTON") { newRound(); return; }
+    const n = parseInt(e.key, 10);
+    if (n >= 1 && n <= 4 && !answered) { const b = choicesEl.children[n - 1]; if (b) choose(b); }
+  });
+
+  // Read aloud: "one cat, two blank. Is it cats, cates or catss?" After the answer, the whole right sentence.
+  Loopy.speech.question({ host: card, text: () => {
+    if (answered) return current.said;
+    const o = current.options, q = current.q.replace("___", t("wfBlank")) + (current.sub ? " " + current.sub : "");
+    return t("wfRead", { q, list: o.slice(0, -1).join(", ") + " " + t("orWord") + " " + o[o.length - 1] });
+  } });
+
+  // Print worksheet: 20 sentences at the game's level, each with its forms to circle.
+  const part = (cls, text) => { const n = document.createElement("span"); if (cls) n.className = cls; if (text) n.textContent = text; return n; };
+  Loopy.worksheet({
+    title: () => t("wfName"),
+    level: () => [t("ageLabel", { n: age }), t("wfLevel") + ": " + t("wfL" + level)].join(" · "),
+    how: () => t("wfHow"),
+    layout: "line",
+    make: (n) => { const out = [], keys = []; for (let i = 0; i < 400 && out.length < n; i++) { const p = makeProblem(); if (!keys.includes(p.key)) { keys.push(p.key); out.push(p); } } return out; },
+    cell: (p) => {
+      const box = document.createElement("div");
+      box.className = "ws-wf";
+      box.appendChild(part("ws-q", p.q + (p.sub ? " (" + p.sub + ")" : "")));
+      const opts = part("ws-opts");
+      p.options.forEach(a => opts.appendChild(part("", a)));
+      box.appendChild(opts);
+      return box;
+    },
+    answer: (p) => p.answer
+  });
+
+  newRound();
+})();
+</script>
+</body>
+</html>

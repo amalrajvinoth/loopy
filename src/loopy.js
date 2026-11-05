@@ -37,7 +37,7 @@ document.documentElement.classList.add("loopy-building");
   Loopy.whole = function (n, max) { return typeof n === "number" && isFinite(n) && n >= 0 ? Math.min(Math.floor(n), max) : 0; };
   // Every game id, oldest first. Stars, the progress log, the last answers and backups keep only these.
   // A new game goes in here, the progress page list and the home page GAMES list.
-  Loopy.GAMES = ["plus-minus", "times-share", "clock", "sound-spell", "daily-mix", "make-10", "bigger-smaller", "pizza-fractions", "coins-change", "word-match", "spell-it", "quick-facts", "where-is-it", "equation-balance", "flags-capitals", "times-sprint", "percent-ratio", "sentence-builder", "sort-it", "graphs-data", "box-multiply", "step-by-step", "spelling-quiz", "shapes-angles", "word-detective", "word-trail", "my-words"];
+  Loopy.GAMES = ["plus-minus", "times-share", "clock", "sound-spell", "daily-mix", "make-10", "bigger-smaller", "pizza-fractions", "coins-change", "word-match", "spell-it", "quick-facts", "where-is-it", "equation-balance", "flags-capitals", "times-sprint", "percent-ratio", "sentence-builder", "sort-it", "graphs-data", "box-multiply", "step-by-step", "spelling-quiz", "shapes-angles", "word-detective", "word-trail", "my-words", "calendar-dates", "number-patterns", "word-forms", "read-answer"];
   Loopy.setLang = function (l) {
     if (LANGS.indexOf(l) === -1 || l === lang) return;
     try { localStorage.setItem(KEY, l); } catch (e) {}
@@ -1430,7 +1430,7 @@ document.documentElement.classList.add("loopy-building");
   var KEY = "loopy.log", DAYS = 30, MAX_WRONG = 300, MAX_N = 100000, LEN = 40, NOTE = 80;
   var GAMES = window.Loopy.GAMES;
   // What kind of problem it was, so the page can say what to practise. See Loopy.log.kind.
-  var KIND = /^(?:(?:add|sub)(?:-rg)?|(?:mul|div)-(?:big|\d{1,2})|cl-(?:0|30|15|5|1|24)|ss-(?:start|end)|mk-(?:10|20|100|1000)|bs-(?:cmp|ord|rnd|dec|neg)|pz-(?:name|cmp|add)|cc-(?:small|count|ch10|ch)|wm-(?:animals|food|home|school)|si-[3-7]|qf-(?:space|animals|body)|wi-(?:cont|eu|euc|wd|wdc)|eb-(?:box|add|mul|two|both)|fc-(?:flag|cap)|pr-(?:frac|any|disc|ratio)|sb-(?:3|5|6|8)|so-(?:animal|living|matter|food|space|material|sense)|gd-(?:read|total|diff|mean|median|cmp)|bm-(?:small|one|three|two|big|dec)|st-(?:add|sub)|sq-(?:mine|loopy)|sh-(?:name|lines|area|angle|tri)|wd-[3-6]|wt-[357]|mw-(?:mine|loopy))$/;
+  var KIND = /^(?:(?:add|sub)(?:-rg)?|(?:mul|div)-(?:big|\d{1,2})|cl-(?:0|30|15|5|1|24)|ss-(?:start|end)|mk-(?:10|20|100|1000)|bs-(?:cmp|ord|rnd|dec|neg)|pz-(?:name|cmp|add)|cc-(?:small|count|ch10|ch)|wm-(?:animals|food|home|school)|si-[3-7]|qf-(?:space|animals|body)|wi-(?:cont|eu|euc|wd|wdc)|eb-(?:box|add|mul|two|both)|fc-(?:flag|cap)|pr-(?:frac|any|disc|ratio)|sb-(?:3|5|6|8)|so-(?:animal|living|matter|food|space|material|sense)|gd-(?:read|total|diff|mean|median|cmp)|bm-(?:small|one|three|two|big|dec)|st-(?:add|sub)|sq-(?:mine|loopy)|sh-(?:name|lines|area|angle|tri)|wd-[3-6]|wt-[357]|mw-(?:mine|loopy)|cd-(?:week|grid|count|month)|np-(?:step|back|double|grow|mix)|wf-(?:plural|past|comp|opp|art)|ra-(?:find|why|think))$/;
   var DAY = /^\d{4}-\d{2}-\d{2}$/;
   var Loopy = window.Loopy = window.Loopy || {};
   var whole = function (n) { return Loopy.whole(n, MAX_N); };

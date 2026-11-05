@@ -34,6 +34,8 @@ It works on phones, tablets and computers. There is no sign-up and no ads.
 | [Box Multiplication](math/box-multiply/) | Multiply big numbers with the grid method: split them into tens and ones, fill each box, then add them up | [README](math/box-multiply/README.md) |
 | [Step by Step](math/step-by-step/) | Adding and taking away in steps, the way it is taught in school: 47 + 20 = 67, then 67 + 5 = 72, with a number line | [README](math/step-by-step/README.md) |
 | [Shapes and Angles](math/shapes-angles/) | Name shapes and count corners, spot right angles and lines of symmetry, work out perimeter and area on a grid, judge angles and sort triangles, with one line of why | [README](math/shapes-angles/README.md) |
+| [Calendar and Dates](math/calendar-dates/) | The days of the week, a month grid, counting days and weeks, months, seasons and dates, with one line of why | [README](math/calendar-dates/README.md) |
+| [Number Patterns](math/number-patterns/) | A row of numbers with one missing. Steps, doubling, square numbers, growing jumps and two rules mixed. The jumps show after every answer | [README](math/number-patterns/README.md) |
 | [Sound Spell](languages/sound-spell/) | Starting and ending sounds of English and German words | [README](languages/sound-spell/README.md) |
 | [Word Match](languages/word-match/) | About 270 words for animals, food, home and school, in English or German | [README](languages/word-match/README.md) |
 | [Spell It](languages/spell-it/) | Hear a word and spell it on a letter pad, from 3 letters up to 8, in English or German | [README](languages/spell-it/README.md) |
@@ -42,6 +44,8 @@ It works on phones, tablets and computers. There is no sign-up and no ads.
 | [Word Detective](languages/word-detective/) | Be a word detective: guess the mystery word in six tries. Green and yellow tiles show which letters fit, funny clues help, and every five words close a case file. From 3-letter words to 6, in English or German | [README](languages/word-detective/README.md) |
 | [Word Trail](languages/word-trail/) | Find the words hidden in a grid of letters. Connect letters that touch to spell the words on the list, with pictures to help. From 4 × 4 grids with short straight words to 6 × 6 grids with long bending ones, in English or German | [README](languages/word-trail/README.md) |
 | [My Words](languages/my-words/) | Hear a word and type it, like a spelling test. Grown-ups type in the week's words or import a CSV file, with a sentence for each word if they like, in English or German | [README](languages/my-words/README.md) |
+| [Word Forms](languages/word-forms/) | One word, change its form: plurals, past tense, comparing, opposites and a or an. In German der, die, das. The wrong answers are the mistakes children really make | [README](languages/word-forms/README.md) |
+| [Read and Answer](languages/read-answer/) | A short text of two to four sentences and one question with three answers. First the answer is in the text, then why and how, then a title or an ending that fits. 60 texts per language | [README](languages/read-answer/README.md) |
 | [Quick Facts](science/quick-facts/) | Short science quizzes about space, animals and the body, with one line of why after each answer | [README](science/quick-facts/README.md) |
 | [Sort It](science/sort-it/) | See a thing and pick its group: mammal or bird, solid or liquid, fruit or vegetable, planet or star, with one line of why | [README](science/sort-it/README.md) |
 | [Where Is It?](geography/where-is-it/) | Continents, oceans, countries and capitals on a map, Europe first, then the world | [README](geography/where-is-it/README.md) |
@@ -67,7 +71,7 @@ Open it with the Grown-ups button at the bottom of the home page.
 - **Easier to read.** In **Settings**, turn on **Easier to read** to switch every text to Atkinson Hyperlegible, a font made so letters like b and d, or I, l and 1, are easy to tell apart. Pages only load the font when it is on, and it is saved for offline use like the other fonts.
 - **Stars.** Every right answer gives a star. More stars unlock badges, from 10 stars up to 5,000. A streak of right answers sets off confetti, and the best streak earns badges at 10, 20 and 50 in a row. There are badges for playing 5, 10 and all games, and a Brave badge for 10 in a row on a level above your age.
 - **Sound.** Short happy sounds play. Tap the speaker to turn them off.
-- **Read aloud.** In Plus and Minus, Times and Share, What Time Is It?, Make 10, Bigger or Smaller, Pizza Fractions, Coins and Change, Equation Balance, Times Tables Sprint, Percent and Ratio, Sentence Builder, Spelling Quiz, My Words, Graphs and Data, Box Multiplication, Step by Step, Shapes and Angles, Word Detective, Word Trail, Quick Facts, Sort It, Where Is It? and Flags and Capitals, a speaker button reads the question out loud in the device's own voice, in English or German. Nothing is downloaded. It is on by itself for ages 5 to 7. Turn it on or off in **Settings**.
+- **Read aloud.** In Plus and Minus, Times and Share, What Time Is It?, Make 10, Bigger or Smaller, Pizza Fractions, Coins and Change, Equation Balance, Times Tables Sprint, Percent and Ratio, Sentence Builder, Spelling Quiz, My Words, Word Forms, Read and Answer, Graphs and Data, Box Multiplication, Step by Step, Shapes and Angles, Calendar and Dates, Number Patterns, Word Detective, Word Trail, Quick Facts, Sort It, Where Is It? and Flags and Capitals, a speaker button reads the question out loud in the device's own voice, in English or German. Nothing is downloaded. It is on by itself for ages 5 to 7. Turn it on or off in **Settings**.
 - **Help.** After each answer, the game shows a short reason, so kids learn from mistakes.
 - **Last 5.** Each game shows the last 5 answers as green and red dots.
 - **Back.** The big button with the loopy bunny at the top of a game goes back to all games.
@@ -237,6 +241,10 @@ Page sizes, sent over the network with `loopy.js`, `loopy.css` and the two fonts
 | Box Multiplication | 74 KB |
 | Step by Step | 75 KB |
 | Shapes and Angles | 80 KB |
+| Calendar and Dates | 75 KB |
+| Number Patterns | 72 KB |
+| Word Forms | 82 KB |
+| Read and Answer | 71 KB |
 | Sound Spell | 74 KB |
 | Word Match | 83 KB |
 | Spell It | 76 KB |

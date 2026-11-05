@@ -42,6 +42,8 @@ From the first step to the last. Today's 10 has no levels.
 | Box Multiplication | 6 | Two digits × 2 to 5 → Two digits × one digit → Three digits × one digit → Two digits × two digits → Three digits × two digits → Decimals |
 | Step by Step | 6 | Over the ten, to 20 → Up to 100 → Up to 100 with carrying → Up to 1,000 → Up to 1,000 with carrying → Up to 10,000 |
 | Shapes and Angles | 5 | Shapes, corners and sides → Lines and symmetry → Perimeter and area → Angles → Triangles and formulas |
+| Calendar and Dates | 4 | Days of the week → The month → Days and weeks → Months and dates |
+| Number Patterns | 5 | Steps of 1, 2 and 10 → Any step, backwards too → Doubling and squares → Growing steps → Two rules mixed |
 | Sound Spell | 3 | Starting sounds, 3 choices → Both sounds, 3 choices → Both sounds, 4 choices |
 | Word Match | 3 | 3 words → 4 words → 4, tricky |
 | Spell It | 5 | 3 letters → 4 letters → 5 letters → 6 letters → 7 to 8 letters |
@@ -50,6 +52,8 @@ From the first step to the last. Today's 10 has no levels.
 | Word Detective | 5 | 3 letters → 4 letters → 5 letters → 5 letters, tricky → 6 letters |
 | Word Trail | 5 | 4 × 4, straight → 5 × 5, one bend → 6 × 6, bends → 6 × 6, 5 words → 6 × 6, long words |
 | My Words | 4 | Letter tiles, first letter shown → Letter tiles → Keyboard → Keyboard, no boxes |
+| Word Forms | 5 | Opposites and plurals → a or an (der, die, das) → Past tense → Comparing → All mixed, the tricky ones |
+| Read and Answer | 4 | Two sentences → Three sentences → Why and how → A title or an ending |
 | Quick Facts | 3 | Starter → Explorer → Expert |
 | Sort It | 4 | Animals and living things → Materials and matter → Food, space and senses → All mixed, with tricky ones |
 | Where Is It? | 5 | Continents and oceans → Countries of Europe → Capitals of Europe → Countries of the world → Capitals of the world |

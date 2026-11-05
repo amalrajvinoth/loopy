@@ -284,6 +284,22 @@ Where Is It? draws its maps in SVG, from simple Natural Earth outlines stored in
 
 Word Detective marks a letter in the right place in `good`. A letter that is not in the word is `chip`. A letter that is in the word but somewhere else gets the detective yellow: `#e0ad00` with dark text. It is the same in every theme, like coins and flags, because the guide and the kids' box call it yellow. In High contrast it is the theme's `c5` with `on-accent` text. The page keeps it in its own `--wd-y` and `--wd-y-ink` variables.
 
+### Sentence with a blank
+
+Word Forms shows the sentence in the heading size with the blank as an `accent` underline. After the answer the right form fills the blank in `good`, right or wrong, so the card shows the full right sentence. The kind chip ("Past tense") is `chip` with `muted` text, top left of the card. No other colour.
+
+### Story bubble
+
+Read and Answer shows the text in a `chip` bubble with the picture at the left and `ink` text in the body size, the question under it in the heading size, and the three answers as full-width `key` buttons with a 2px `line` border, each with a small numbered `chip` circle. Right and wrong turn the button and its circle `good` or `bad`. On the smallest phones a long text scrolls inside the bubble, and an `accent` shadow at the bottom edge says there is more; after the answer the text folds to three lines so the right answer always shows. No other colour.
+
+### Pattern boxes
+
+Number Patterns shows the row as square `chip` boxes with `ink` numbers and the 2px `line` border. The empty box has a 2px `accent` line on `card` and shows the typed digits in `accent`. After the answer it turns `good` or `bad` (the wrong number crossed out), and the jumps appear under the row in `muted` text, each one centred between two boxes. No other colour.
+
+### Calendar pictures
+
+Calendar and Dates draws the week, a month grid or the twelve months. The boxes are `chip` with `ink` text. The day or month in the question is `accent` with `on-accent` text. No other colour. The grid is a table with the short day names on top, 3px apart, so the picture reads like a wall calendar.
+
 ### Flags
 
 Flags and Capitals draws each flag in SVG from a few boxes, stripes, circles, stars and lines stored in the page, on a 30 × 20 grid (Switzerland is square). Like coins, flags keep their real colors in every theme, High contrast too, so they look like the real thing. Emoji flags are not used, because they do not show on Windows. Emblems and coats of arms are left out or drawn as simple shapes. A thin `muted` edge goes round every flag, so white parts show on a white card. The flag fills the room left on the card and gets smaller after an answer, so the question and the fact line fit. The answers are the same four buttons as Quick Facts. On the worksheet the flags print in color.

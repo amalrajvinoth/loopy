@@ -8,6 +8,13 @@ loopy keeps getting new games. Here is what came lately!
 
 The big changes, newest first. Small fixes are not listed. See [the full list on GitHub](https://github.com/amalrajvinoth/loopy/blob/main/RELEASES.md).
 
+## 5 November 2026
+
+- **New game: Read and Answer.** A short text of two to four sentences and one question with three answers, for ages 7 to 14. First the answer is in the text, then why and how, then a title or an ending that fits. 60 texts per language. [How to play](/loopy/guide/games/languages/read-answer/).
+- **New game: Word Forms.** One word, change its form: plurals, past tense, comparing, opposites and a or an, in German der, die, das. For ages 6 to 13, close to 400 words per language. The wrong answers are the mistakes children really make, and one line says the rule. [How to play](/loopy/guide/games/languages/word-forms/).
+- **New game: Number Patterns.** A row of numbers with one box empty, for ages 6 to 14. Five levels, from counting on in twos to two rules mixed and the Fibonacci numbers. The jumps between the boxes show after every answer, with one line that says the rule. [How to play](/loopy/guide/games/math/number-patterns/).
+- **New game: Calendar and Dates.** The days of the week, a month grid, counting days and weeks, months, seasons and dates, for ages 6 to 11. One line of why after every answer. See [Calendar and Dates](/loopy/guide/games/math/calendar-dates/).
+
 ## 2 November 2026
 
 - **New game: My Words.** loopy reads a word out loud and you type it, like a spelling test. Grown-ups type in the week's words or import a CSV file, with a sentence for each word if they like. Four levels of help, from letter tiles to a whole keyboard with no boxes. See [My Words](/loopy/guide/games/languages/my-words/).
