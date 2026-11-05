@@ -24,6 +24,7 @@ export const GAMES: Game[] = [
   g("math", "step-by-step", "🪜", [6, 12], "Step by Step", "Schrittweise rechnen"),
   g("math", "shapes-angles", "📐", [7, 14], "Shapes and Angles", "Formen und Winkel"),
   g("math", "calendar-dates", "🗓️", [6, 11], "Calendar and Dates", "Kalender und Datum"),
+  g("math", "number-patterns", "🔁", [6, 14], "Number Patterns", "Zahlenmuster"),
   g("languages", "sound-spell", "👂", [5, 8], "Sound Spell", "Anlaut und Endlaut"),
   g("languages", "word-match", "🖼️", [5, 10], "Word Match", "Bild und Wort"),
   g("languages", "spell-it", "✏️", [6, 10], "Spell It", "Wörter schreiben"),

@@ -1,0 +1,61 @@
+---
+title: Number Patterns
+description: A row of numbers with one missing. Steps, doubling, square numbers, growing jumps and two rules mixed. For ages 6 to 14.
+sidebar:
+  order: 16
+---
+import KidsBox from "~/components/KidsBox.astro";
+
+<KidsBox game="math/number-patterns" steps={[
+  "Look at the row of numbers. One box is empty.",
+  "Work out the rule. Type the missing number.",
+  "See the jumps and read why. Then tap Next.",
+]} />
+
+A pattern game for ages 6 to 14. The card shows a row of numbers with one box empty. The child works out the rule and types the missing number. After every answer the jumps between the boxes show, and one line says the rule.
+
+## How to play
+
+1. Look at the row. One box has a question mark. Most of the time it is the last box. On the higher levels it can be in the middle.
+2. Work out the rule. Is each number 3 more? Double? A square number?
+3. Type the missing number on the pad and tap **Check**. The box turns green when it is right.
+4. The jumps show under the row, like "+3 +3 +3 +3", and one line says why, like "Each number is 3 more than the one before. 12 + 3 = 15."
+5. Tap **Next** for a new row.
+
+On a keyboard, the digits type, **Backspace** erases and **Enter** checks or goes on.
+
+## When an answer is wrong
+
+The child has one try. The typed number turns red and is crossed out. The line says the right number first and then the rule, like "Not quite. The missing number is 45. Each number is 9 more than the one before. 36 + 9 = 45."
+
+A right answer earns a star. A missed pattern comes back later in **Try again**, exactly the same row.
+
+## Age levels
+
+| Level | Age | What comes |
+| --- | --- | --- |
+| 1 | 6 and under | Steps of 1, 2 and 10, forwards, the last box missing |
+| 2 | 7 to 8 | Any step from 2 to 10, forwards or backwards, within 100 |
+| 3 | 9 to 10 | Doubling, tripling, the square numbers, steps of 25, 50 and 100, sometimes a middle box |
+| 4 | 11 to 12 | Six boxes where the jumps grow (+1, +2, +3 …) or shrink, the missing box anywhere but the first |
+| 5 | 13 and up | Two rules that take turns (+5, −2), double and add, the Fibonacci numbers, square numbers plus a number |
+
+After 10 right in a row, or 18 of the last 20 right, the game goes up a level by itself. After 3 wrong in the last 5 it offers an easier one. See [Levels](/loopy/guide/playing/levels/).
+
+## Settings
+
+Tap ⚙ **Settings** in the game to choose:
+
+- **Level:** the five levels above.
+- **Read aloud:** a speaker button on the card reads the row out loud, like "3, 6, 9, 12. What comes next?" A gap in the middle is read as "blank". It is on by itself for ages 5 to 7.
+- **Print worksheet:** 20 patterns at the game's level, each with a line for the missing number. The answers are on page 2.
+
+## Example help text
+
+- "Each number is 3 more than the one before. 12 + 3 = 15."
+- "Correct! The jumps grow: +2, +3, +4, +5, +6. 18 + 5 = 23."
+- "Not quite. The missing number is 17. Double it, then take away 1. 9 × 2 − 1 = 17."
+
+## Something wrong?
+
+Tap the 🚩 flag at the top of the game to tell us. See [Report a problem](/loopy/guide/help/report-a-problem/).

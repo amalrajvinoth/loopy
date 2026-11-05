@@ -1,0 +1,61 @@
+---
+title: Zahlenmuster
+description: Eine Zahlenreihe mit einer Lücke. Schritte, Verdoppeln, Quadratzahlen, wachsende Sprünge und zwei Regeln gemischt. Für 6 bis 14 Jahre.
+sidebar:
+  order: 16
+---
+import KidsBox from "~/components/KidsBox.astro";
+
+<KidsBox game="math/number-patterns" steps={[
+  "Schau dir die Zahlenreihe an. Ein Kästchen ist leer.",
+  "Finde die Regel. Tippe die fehlende Zahl ein.",
+  "Schau dir die Sprünge an und lies, warum. Dann tippe auf Weiter.",
+]} />
+
+Ein Musterspiel für 6 bis 14 Jahre. Die Karte zeigt eine Zahlenreihe mit einem leeren Kästchen. Das Kind findet die Regel und tippt die fehlende Zahl ein. Nach jeder Antwort erscheinen die Sprünge zwischen den Kästchen, und eine Zeile sagt die Regel.
+
+## So wird gespielt
+
+1. Schau dir die Reihe an. Ein Kästchen hat ein Fragezeichen. Meistens ist es das letzte. Auf den höheren Stufen kann es auch in der Mitte sein.
+2. Finde die Regel. Ist jede Zahl 3 mehr? Das Doppelte? Eine Quadratzahl?
+3. Tippe die fehlende Zahl auf dem Ziffernblock ein und tippe auf **Prüfen**. Das Kästchen wird grün, wenn es stimmt.
+4. Unter der Reihe erscheinen die Sprünge, zum Beispiel „+3 +3 +3 +3“, und eine Zeile sagt, warum, zum Beispiel „Jede Zahl ist 3 mehr als die davor. 12 + 3 = 15.“
+5. Tippe auf **Weiter** für eine neue Reihe.
+
+Mit der Tastatur: die Ziffern tippen, **Rücktaste** löscht, **Enter** prüft oder geht weiter.
+
+## Wenn eine Antwort falsch ist
+
+Du hast einen Versuch. Die getippte Zahl wird rot und durchgestrichen. Die Zeile sagt zuerst die richtige Zahl und dann die Regel, zum Beispiel „Nicht ganz. Die fehlende Zahl ist 45. Jede Zahl ist 9 mehr als die davor. 36 + 9 = 45.“
+
+Eine richtige Antwort bringt einen Stern. Ein verpasstes Muster kommt später in **Nochmal versuchen** wieder, genau dieselbe Reihe.
+
+## Stufen nach Alter
+
+| Stufe | Alter | Was drankommt |
+| --- | --- | --- |
+| 1 | 6 und jünger | Schritte von 1, 2 und 10, vorwärts, das letzte Kästchen fehlt |
+| 2 | 7 bis 8 | Jeder Schritt von 2 bis 10, vorwärts oder rückwärts, bis 100 |
+| 3 | 9 bis 10 | Verdoppeln, Verdreifachen, die Quadratzahlen, Schritte von 25, 50 und 100, manchmal fehlt ein Kästchen in der Mitte |
+| 4 | 11 bis 12 | Sechs Kästchen, die Sprünge werden größer (+1, +2, +3 …) oder kleiner, das fehlende Kästchen überall außer am Anfang |
+| 5 | 13 und älter | Zwei Regeln im Wechsel (+5, −2), verdoppeln und dazuzählen, die Fibonacci-Zahlen, Quadratzahlen plus eine Zahl |
+
+Nach 10 richtigen hintereinander, oder 18 richtigen von den letzten 20, geht das Spiel von selbst eine Stufe höher. Nach 3 falschen in den letzten 5 bietet es eine leichtere an. Mehr dazu unter [Stufen](/loopy/guide/de/playing/levels/).
+
+## Einstellungen
+
+Tippe im Spiel auf ⚙ **Einstellungen**. Dort wählst du:
+
+- **Stufe:** die fünf Stufen oben.
+- **Vorlesen:** ein Lautsprecher-Knopf auf der Karte liest die Reihe vor, zum Beispiel „3, 6, 9, 12. Was kommt als Nächstes?“ Eine Lücke in der Mitte wird als „Lücke“ gelesen. Bis 7 Jahre ist es von selbst an.
+- **Arbeitsblatt drucken:** 20 Muster auf der Stufe des Spiels, jedes mit einer Linie für die fehlende Zahl. Die Lösungen stehen auf Seite 2.
+
+## Beispiele für Hilfetexte
+
+- „Jede Zahl ist 3 mehr als die davor. 12 + 3 = 15.“
+- „Richtig! Die Sprünge werden größer: +2, +3, +4, +5, +6. 18 + 5 = 23.“
+- „Nicht ganz. Die fehlende Zahl ist 17. Verdoppeln, dann 1 weg. 9 × 2 − 1 = 17.“
+
+## Stimmt etwas nicht?
+
+Tippe oben im Spiel auf die 🚩 Fahne und sag uns Bescheid. Mehr dazu unter [Problem melden](/loopy/guide/de/help/report-a-problem/).

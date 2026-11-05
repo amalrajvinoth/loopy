@@ -10,6 +10,7 @@ Die großen Änderungen, die neuesten zuerst. Kleine Korrekturen stehen nicht da
 
 ## 5. November 2026
 
+- **Neues Spiel: Zahlenmuster.** Eine Zahlenreihe mit einem leeren Kästchen, für 6 bis 14 Jahre. Fünf Stufen, vom Zählen in Zweierschritten bis zu zwei Regeln gemischt und den Fibonacci-Zahlen. Nach jeder Antwort erscheinen die Sprünge zwischen den Kästchen, mit einer Zeile, die die Regel sagt. [So wird gespielt](/loopy/guide/de/games/math/number-patterns/).
 - **Neues Spiel: Kalender und Datum.** Die Wochentage, ein Monatskalender, Tage und Wochen zählen, Monate, Jahreszeiten und das Datum, für 6 bis 11 Jahre. Nach jeder Antwort ein Satz zum Warum. Siehe [Kalender und Datum](/loopy/guide/de/games/math/calendar-dates/).
 
 ## 2. November 2026

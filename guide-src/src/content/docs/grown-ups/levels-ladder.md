@@ -43,6 +43,7 @@ From the first step to the last. Today's 10 has no levels.
 | Step by Step | 6 | Over the ten, to 20 → Up to 100 → Up to 100 with carrying → Up to 1,000 → Up to 1,000 with carrying → Up to 10,000 |
 | Shapes and Angles | 5 | Shapes, corners and sides → Lines and symmetry → Perimeter and area → Angles → Triangles and formulas |
 | Calendar and Dates | 4 | Days of the week → The month → Days and weeks → Months and dates |
+| Number Patterns | 5 | Steps of 1, 2 and 10 → Any step, backwards too → Doubling and squares → Growing steps → Two rules mixed |
 | Sound Spell | 3 | Starting sounds, 3 choices → Both sounds, 3 choices → Both sounds, 4 choices |
 | Word Match | 3 | 3 words → 4 words → 4, tricky |
 | Spell It | 5 | 3 letters → 4 letters → 5 letters → 6 letters → 7 to 8 letters |
