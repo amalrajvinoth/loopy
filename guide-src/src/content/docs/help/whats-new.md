@@ -10,6 +10,7 @@ The big changes, newest first. Small fixes are not listed. See [the full list on
 
 ## 5 November 2026
 
+- **New game: Word Forms.** One word, change its form: plurals, past tense, comparing, opposites and a or an, in German der, die, das. For ages 6 to 13, close to 400 words per language. The wrong answers are the mistakes children really make, and one line says the rule. [How to play](/loopy/guide/games/languages/word-forms/).
 - **New game: Number Patterns.** A row of numbers with one box empty, for ages 6 to 14. Five levels, from counting on in twos to two rules mixed and the Fibonacci numbers. The jumps between the boxes show after every answer, with one line that says the rule. [How to play](/loopy/guide/games/math/number-patterns/).
 - **New game: Calendar and Dates.** The days of the week, a month grid, counting days and weeks, months, seasons and dates, for ages 6 to 11. One line of why after every answer. See [Calendar and Dates](/loopy/guide/games/math/calendar-dates/).
 

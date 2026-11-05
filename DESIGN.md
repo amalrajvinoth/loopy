@@ -284,6 +284,10 @@ Where Is It? draws its maps in SVG, from simple Natural Earth outlines stored in
 
 Word Detective marks a letter in the right place in `good`. A letter that is not in the word is `chip`. A letter that is in the word but somewhere else gets the detective yellow: `#e0ad00` with dark text. It is the same in every theme, like coins and flags, because the guide and the kids' box call it yellow. In High contrast it is the theme's `c5` with `on-accent` text. The page keeps it in its own `--wd-y` and `--wd-y-ink` variables.
 
+### Sentence with a blank
+
+Word Forms shows the sentence in the heading size with the blank as an `accent` underline. After the answer the right form fills the blank in `good`, right or wrong, so the card shows the full right sentence. The kind chip ("Past tense") is `chip` with `muted` text, top left of the card. No other colour.
+
 ### Pattern boxes
 
 Number Patterns shows the row as square `chip` boxes with `ink` numbers and the 2px `line` border. The empty box has a 2px `accent` line on `card` and shows the typed digits in `accent`. After the answer it turns `good` or `bad` (the wrong number crossed out), and the jumps appear under the row in `muted` text, each one centred between two boxes. No other colour.

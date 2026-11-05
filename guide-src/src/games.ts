@@ -33,6 +33,7 @@ export const GAMES: Game[] = [
   g("languages", "word-detective", "🕵️", [6, 14], "Word Detective", "Wortdetektiv"),
   g("languages", "word-trail", "🔗", [6, 14], "Word Trail", "Wortpfad"),
   g("languages", "my-words", "📝", [6, 12], "My Words", "Meine Wörter"),
+  g("languages", "word-forms", "🔤", [6, 13], "Word Forms", "Wortformen"),
   g("science", "quick-facts", "🔬", [7, 12], "Quick Facts", "Blitzwissen"),
   g("science", "sort-it", "🗂️", [6, 12], "Sort It", "Sortieren"),
   g("geography", "where-is-it", "🗺️", [7, 14], "Where Is It?", "Wo liegt das?"),

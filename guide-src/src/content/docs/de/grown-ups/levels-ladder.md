@@ -52,6 +52,7 @@ Von der ersten bis zur letzten Stufe. Die 10 von heute hat keine Stufen.
 | Wortdetektiv | 5 | 3 Buchstaben → 4 Buchstaben → 5 Buchstaben → 5 Buchstaben, knifflig → 6 Buchstaben |
 | Wortpfad | 5 | 4 × 4, gerade → 5 × 5, ein Knick → 6 × 6, mit Knicken → 6 × 6, 5 Wörter → 6 × 6, lange Wörter |
 | Meine Wörter | 4 | Buchstaben-Tasten, erster Buchstabe → Buchstaben-Tasten → Tastatur → Tastatur, ohne Kästchen |
+| Wortformen | 5 | Gegenteile und Mehrzahl → der, die, das → Vergangenheit → Steigern → Alles gemischt, die kniffligen |
 | Blitzwissen | 3 | Einsteiger → Entdecker → Profi |
 | Sortieren | 4 | Tiere und Lebewesen → Materialien und Stoffe → Essen, Weltall und Sinne → Alles gemischt, mit kniffligen |
 | Wo liegt das? | 5 | Kontinente und Ozeane → Länder Europas → Hauptstädte Europas → Länder der Welt → Hauptstädte der Welt |
