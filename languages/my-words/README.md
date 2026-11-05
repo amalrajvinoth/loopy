@@ -56,7 +56,7 @@ The keyboard is QWERTY for English and QWERTZ with ä, ö and ü for German. A l
 
 ## Reading aloud
 
-The word is read with the device's own voice, in the language of the words. Nothing is downloaded. **Read aloud** in Settings is on at the start, so each new word is read by itself. Turn it off and the child taps **Hear the word** instead. After a miss the word is always read again.
+The word is read with the device's own voice, in the language of the words. Nothing is downloaded. **Read aloud** in Settings is on at the start, so each new word is read by itself. Turn it off and the child taps **Hear the word** instead. After a miss the word is always read again. After Check, loopy lets the right or wrong tone finish before it reads, so the voice is not mixed with the tone.
 
 If the device has no voice for that language, the button hides and the card says so: a grown-up reads the word out, and the child types it.
 

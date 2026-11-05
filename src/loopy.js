@@ -746,8 +746,11 @@ document.documentElement.classList.add("loopy-building");
 
 // Loopy sounds: short tones made in the browser (no files). The mute choice is remembered.
 (function () {
-  var KEY = "loopy.sound", on = true, ac = null;
+  var KEY = "loopy.sound", on = true, ac = null, idle = 0;
   try { on = localStorage.getItem(KEY) !== "off"; } catch (e) {}
+  // The sound chip sleeps a second after the last tone. On iPhones a voice read while it is awake
+  // sounds muffled and broken, and sleeping saves battery. play() wakes it again.
+  function rest() { clearTimeout(idle); idle = setTimeout(function () { try { if (ac.state === "running") ac.suspend(); } catch (e) {} }, 1200); }
   var TUNES = {
     right: [[660, 0, .12], [880, .09, .16]],
     wrong: [[330, 0, .16], [262, .13, .22]],
@@ -770,6 +773,7 @@ document.documentElement.classList.add("loopy-building");
         o.connect(g).connect(ac.destination);
         o.start(t0 + n[1]); o.stop(t0 + n[1] + n[2] + 0.05);
       });
+      rest();
     } catch (e) {}
   }
   var ON_ICON = '<path d="M4 9v6h4l5 4V5L8 9H4z"/><path d="M16 8.5a5 5 0 0 1 0 7M18.5 6a8.5 8.5 0 0 1 0 12" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>';

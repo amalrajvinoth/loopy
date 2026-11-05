@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'sha256-ZNnmqQ9ABCIPq3ZjAwjb04jpSV5bHaaQRjSzMSKHLUI='; style-src 'self' 'sha256-z2P7kGW5Z05eCTjTZdYpc0vThTlOE9vmt97pVSvi2I4=' 'sha256-jcH3LwvMmX79gXapy3S3RXn1cQVRv5z/9HhHMpj9fUk=' 'sha256-RT1053JU5UiKvjrCUFx1rlhdFLMmgtuFJ9T8jnMeawQ=' 'sha256-Rf2qDCR6xfVN4tjURdU06HX1QTFO+7IYxsO37fQPK64='; img-src 'self' data:; font-src 'self'; connect-src 'self' https://loopy-sync.loopy-1e2.workers.dev; worker-src 'self'; object-src 'none'; base-uri 'none'; form-action 'none'; manifest-src 'self'; upgrade-insecure-requests">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'sha256-J2IverJrPlDRCPKwr0WVPv2qrWtQvVZY7yPxQyQhwso='; style-src 'self' 'sha256-z2P7kGW5Z05eCTjTZdYpc0vThTlOE9vmt97pVSvi2I4=' 'sha256-jcH3LwvMmX79gXapy3S3RXn1cQVRv5z/9HhHMpj9fUk=' 'sha256-RT1053JU5UiKvjrCUFx1rlhdFLMmgtuFJ9T8jnMeawQ=' 'sha256-Rf2qDCR6xfVN4tjURdU06HX1QTFO+7IYxsO37fQPK64='; img-src 'self' data:; font-src 'self'; connect-src 'self' https://loopy-sync.loopy-1e2.workers.dev; worker-src 'self'; object-src 'none'; base-uri 'none'; form-action 'none'; manifest-src 'self'; upgrade-insecure-requests">
 <meta name="referrer" content="strict-origin-when-cross-origin">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <style>:root{color-scheme:light;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}body{margin:0}[hidden]{display:none!important}</style>
@@ -592,22 +592,27 @@ function makeProblem(word, say, lang) {
     if (!canSpeak) return false;
     try { const all = speechSynthesis.getVoices(); return !all.length || !!voiceFor(wordsLang); } catch (e) { return false; }
   }
-  let talking = null;
+  let talking = null, speakTimer = 0;
   function speak() {
     if (!canSpeak || !current) return;
+    clearTimeout(speakTimer);
     try {
-      speechSynthesis.cancel();
+      // Stopping a voice that is not talking makes phones clip or garble the next word, so only stop a live one.
+      if (speechSynthesis.speaking || speechSynthesis.pending) speechSynthesis.cancel();
       const u = new SpeechSynthesisUtterance(current.word + (current.say ? ". " + current.say : ""));
-      u.lang = wordsLang === "de" ? "de-DE" : "en-US";
       const v = voiceFor(wordsLang);
       if (v) u.voice = v;
-      u.rate = 0.8;
+      // The voice and the language must agree, or some Android phones play a distorted word.
+      u.lang = v ? v.lang : (wordsLang === "de" ? "de-DE" : "en-US");
+      u.rate = 0.9;
       talking = u;
       speakBtn.classList.add("speaking");
       u.onend = u.onerror = () => { if (talking === u) speakBtn.classList.remove("speaking"); };
       speechSynthesis.speak(u);
     } catch (e) {}
   }
+  // Read after the right or wrong tone has finished: a voice over the tone sounds broken on phones.
+  function speakAfterTone() { clearTimeout(speakTimer); speakTimer = setTimeout(speak, 550); }
 
   // The word's own capital letters show in the boxes, whatever key was pressed ("Hund", "I").
   const shown = (c, i) => { const o = current.word[i]; return o && lower(o) === c && o !== c ? o : c; };
@@ -696,6 +701,7 @@ function makeProblem(word, say, lang) {
 
   function newRound() {
     stopReveal();
+    clearTimeout(speakTimer);
     // Nothing back within 10, or, with a shorter list, before all the others have come.
     const keep = Math.max(1, Math.min(10, pool().length - 1));
     current = Loopy.retry.fresh("my-words", recent, make, rebuild, keep);
@@ -764,7 +770,7 @@ function makeProblem(word, say, lang) {
     if (!ok) reveal();
     render();
     goBtn.focus({ preventScroll: true });
-    if ((!ok || autoRead) && interacted && Loopy.sound.isOn()) speak();
+    if ((!ok || autoRead) && interacted && Loopy.sound.isOn()) speakAfterTone();
   }
 
   // The word list in Settings: one line per word, the sentence after a comma.
@@ -827,7 +833,7 @@ function makeProblem(word, say, lang) {
   });
   // Some browsers load their voices a moment after the page.
   if (canSpeak) speechSynthesis.addEventListener("voiceschanged", render);
-  window.addEventListener("pagehide", () => { try { speechSynthesis.cancel(); } catch (e) {} });
+  window.addEventListener("pagehide", () => { clearTimeout(speakTimer); try { speechSynthesis.cancel(); } catch (e) {} });
 
   // Print worksheet: 20 lines to write on, like a spelling test. A grown-up reads the words from page 2.
   const part = (cls, text) => { const n = document.createElement("span"); n.className = cls; if (text) n.textContent = text; return n; };
