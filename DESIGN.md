@@ -288,6 +288,10 @@ Word Detective marks a letter in the right place in `good`. A letter that is not
 
 Word Forms shows the sentence in the heading size with the blank as an `accent` underline. After the answer the right form fills the blank in `good`, right or wrong, so the card shows the full right sentence. The kind chip ("Past tense") is `chip` with `muted` text, top left of the card. No other colour.
 
+### Story bubble
+
+Read and Answer shows the text in a `chip` bubble with the picture at the left and `ink` text in the body size, the question under it in the heading size, and the three answers as full-width `key` buttons with a 2px `line` border, each with a small numbered `chip` circle. Right and wrong turn the button and its circle `good` or `bad`. On the smallest phones a long text scrolls inside the bubble, and an `accent` shadow at the bottom edge says there is more; after the answer the text folds to three lines so the right answer always shows. No other colour.
+
 ### Pattern boxes
 
 Number Patterns shows the row as square `chip` boxes with `ink` numbers and the 2px `line` border. The empty box has a 2px `accent` line on `card` and shows the typed digits in `accent`. After the answer it turns `good` or `bad` (the wrong number crossed out), and the jumps appear under the row in `muted` text, each one centred between two boxes. No other colour.

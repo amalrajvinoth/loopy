@@ -10,6 +10,7 @@ Die großen Änderungen, die neuesten zuerst. Kleine Korrekturen stehen nicht da
 
 ## 5. November 2026
 
+- **Neues Spiel: Lesen und Antworten.** Ein kurzer Text mit zwei bis vier Sätzen und eine Frage mit drei Antworten, für 7 bis 14 Jahre. Erst steht die Antwort im Text, dann geht es um Warum und Wie, dann um einen Titel oder ein Ende, das passt. 60 Texte pro Sprache. [So wird gespielt](/loopy/guide/de/games/languages/read-answer/).
 - **Neues Spiel: Wortformen.** Ein Wort, eine neue Form: Mehrzahl, Vergangenheit, Steigern, Gegenteile und der, die, das. Für 6 bis 13 Jahre, fast 400 Wörter pro Sprache. Die falschen Antworten sind die Fehler, die Kinder wirklich machen, und eine Zeile sagt die Regel. [So wird gespielt](/loopy/guide/de/games/languages/word-forms/).
 - **Neues Spiel: Zahlenmuster.** Eine Zahlenreihe mit einem leeren Kästchen, für 6 bis 14 Jahre. Fünf Stufen, vom Zählen in Zweierschritten bis zu zwei Regeln gemischt und den Fibonacci-Zahlen. Nach jeder Antwort erscheinen die Sprünge zwischen den Kästchen, mit einer Zeile, die die Regel sagt. [So wird gespielt](/loopy/guide/de/games/math/number-patterns/).
 - **Neues Spiel: Kalender und Datum.** Die Wochentage, ein Monatskalender, Tage und Wochen zählen, Monate, Jahreszeiten und das Datum, für 6 bis 11 Jahre. Nach jeder Antwort ein Satz zum Warum. Siehe [Kalender und Datum](/loopy/guide/de/games/math/calendar-dates/).

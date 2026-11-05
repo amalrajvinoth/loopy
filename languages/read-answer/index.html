@@ -1,0 +1,441 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'sha256-kC7BPx8eYxVyHlIdH46QahlASmcO4KgCW4TpPB8xlzM='; style-src 'self' 'sha256-z2P7kGW5Z05eCTjTZdYpc0vThTlOE9vmt97pVSvi2I4=' 'sha256-feiFDjVckSlKY3vxtWaFHyIxv/0vJasrggHW3bKZHdo=' 'sha256-RT1053JU5UiKvjrCUFx1rlhdFLMmgtuFJ9T8jnMeawQ=' 'sha256-LewszfCZVCOIhWlnH0MGPnOd9nqf/AQSx+61WtCyFps='; img-src 'self' data:; font-src 'self'; connect-src 'self' https://loopy-sync.loopy-1e2.workers.dev; worker-src 'self'; object-src 'none'; base-uri 'none'; form-action 'none'; manifest-src 'self'; upgrade-insecure-requests">
+<meta name="referrer" content="strict-origin-when-cross-origin">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<style>:root{color-scheme:light;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}body{margin:0}[hidden]{display:none!important}</style>
+<link rel="icon" href="../../icon.svg" type="image/svg+xml">
+<link rel="manifest" href="../../manifest.webmanifest">
+<link rel="apple-touch-icon" href="../../apple-touch-icon.png">
+<meta name="theme-color" content="#0a0a0c">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="loopy">
+<title data-t="raName">Read and Answer</title>
+<meta name="description" content="Read and Answer on loopy: a short text of two to four sentences and a question with three answers. Free reading practice for ages 7 to 14, English and German.">
+<link rel="preload" href="../../fonts/lexend-latin.woff2" as="font" type="font/woff2" crossorigin>
+<style>
+/* Layout: a picture and a sentence with a blank on the card, answer buttons below. Shared look with the other games. */
+:root {
+  --bg: #f3f6fb;
+  --card: #ffffff;
+  --ink: #1d2a3f;
+  --muted: #5d6b82;
+  --line: #d5dde9;
+  --accent: #2457c5;
+  --accent-ink: #ffffff;
+  --mark: #e2622b;
+  --good: #1f8a4c;
+  --good-bg: #e3f5ea;
+  --bad: #c23a3a;
+  --bad-bg: #fbe6e6;
+  --chip: #e6ecf6;
+  --key: #ffffff;
+  --font: "Lexend", "Segoe UI", "Helvetica Neue", Arial, sans-serif;
+}
+
+* { box-sizing: border-box; }
+body {
+  background: var(--bg); color: var(--ink); font-family: var(--font); font-size: 16px;
+  padding-left: max(16px, env(safe-area-inset-left, 0px));
+  padding-right: max(16px, env(safe-area-inset-right, 0px));
+  padding-block: 20px 32px;
+}
+.wrap { max-width: 520px; margin: 0 auto; display: flex; flex-direction: column; gap: 16px; }
+
+.top { display: flex; flex-wrap: wrap; gap: 12px; align-items: center; justify-content: space-between; }
+h1 { margin: 0; font-size: 1.6rem; font-weight: 700; text-wrap: balance; }
+.score { display: flex; flex-wrap: wrap; gap: 8px; font-variant-numeric: tabular-nums; }
+.pill { background: var(--card); border: 1px solid var(--line); border-radius: 999px; padding: 6px 14px; font-weight: 600; font-size: 1rem; white-space: nowrap; }
+.pill span { color: var(--muted); font-weight: 400; margin-right: 4px; }
+
+.settings { display: flex; flex-direction: column; gap: 8px; }
+.seg-label { font-size: 0.8rem; font-weight: 600; letter-spacing: 0.06em; text-transform: uppercase; color: var(--muted); margin: 0 0 4px 4px; }
+.seg { display: grid; grid-template-columns: repeat(2, 1fr); gap: 6px; background: var(--chip); padding: 5px; border-radius: 14px; }
+.seg button {
+  font: inherit; font-size: 0.95rem; font-weight: 600; color: var(--muted);
+  background: transparent; border: 0; border-radius: 10px; padding: 8px 4px; min-height: 44px; cursor: pointer;
+}
+.seg button[aria-pressed="true"] { background: var(--card); color: var(--ink); box-shadow: 0 1px 3px rgb(0 0 0 / 0.12); }
+
+.problem-card {
+  background: var(--card); border: 1px solid var(--line); border-radius: 24px;
+  padding: 20px 18px 18px; display: flex; flex-direction: column; align-items: center; gap: 14px;
+}
+.problem-card.good { border-color: var(--good); box-shadow: 0 0 0 2px var(--good) inset; }
+.problem-card.bad { border-color: var(--bad); box-shadow: 0 0 0 2px var(--bad) inset; }
+
+.feedback { min-height: 3.1em; text-align: center; font-size: 1.1rem; line-height: 1.45; margin: 0; max-width: 34ch; }
+.feedback strong { display: block; font-size: 1.45rem; }
+.feedback.good strong { color: var(--good); }
+.feedback.bad strong { color: var(--bad); }
+.feedback .hint { color: var(--muted); }
+
+.foot { display: flex; justify-content: space-between; align-items: center; gap: 12px; flex-wrap: wrap; }
+.foot p { margin: 0; color: var(--muted); font-size: 0.9rem; }
+.reset { font: inherit; font-size: 0.95rem; color: var(--muted); background: transparent; border: 2px solid var(--line); border-radius: 14px; padding: 0 16px; min-height: 44px; cursor: pointer; }
+button:focus-visible { outline: 3px solid var(--mark); outline-offset: 3px; }
+
+@media (max-width: 420px) {
+  h1 { font-size: 1.35rem; }
+  .seg button { font-size: 0.85rem; }
+}
+@media (prefers-reduced-motion: reduce) {
+  * { transition: none !important; }
+}
+</style>
+<style>.home-link{display:inline-flex;align-items:center;min-height:40px;color:var(--muted);font-weight:600;text-decoration:none;font-size:0.95rem}.home-link:hover{color:var(--ink)}</style>
+<style>
+/* Phones and tablets: the game fills one screen; settings sit behind a button. */
+body { min-height: 100vh; min-height: 100dvh; padding-block: 12px 16px; }
+.wrap { gap: 12px; }
+.game-bar { display: flex; align-items: center; justify-content: space-between; gap: 8px; }
+.bar-right { display: flex; align-items: center; gap: 8px; }
+.top { gap: 8px 12px; }
+.play { display: flex; flex-direction: column; gap: 12px; -webkit-user-select: none; user-select: none; }
+@media (min-width: 600px) and (orientation: portrait) { .wrap { max-width: 640px; } }
+@media (orientation: landscape) and (min-width: 640px) {
+  .wrap { max-width: 1100px; }
+  .play { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; align-items: center; }
+}
+
+.problem-card { padding: 14px 14px 12px; gap: 8px; }
+.feedback { min-height: 2.9em; font-size: 1.05rem; }
+.feedback strong { font-size: 1.3rem; }
+@media (max-height: 760px) and (orientation: portrait) {
+  .feedback { font-size: 0.95rem; line-height: 1.35; }
+  .feedback strong { font-size: 1.15rem; }
+}
+
+/* Portrait: the page is exactly one screen tall; the answers stay at the bottom and the card shrinks to fit. */
+@media (orientation: portrait) {
+  body { height: calc(100dvh - env(safe-area-inset-top, 0px) - env(safe-area-inset-bottom, 0px)); min-height: 0; display: flex; flex-direction: column; overflow: hidden; }
+  body:has(#settings-panel:not([hidden])) { height: auto; overflow: visible; }
+  .wrap { flex: 1 1 auto; min-height: 0; width: 100%; }
+  .play { flex: 1 1 auto; min-height: 0; }
+  .problem-card { flex: 1 1 auto; min-height: 0; justify-content: center; overflow: hidden; }
+  .feedback { flex: 0 1 auto; min-height: 0; overflow-y: auto; }
+}
+@media (orientation: landscape) and (min-width: 640px) {
+  body { height: calc(100dvh - env(safe-area-inset-top, 0px) - env(safe-area-inset-bottom, 0px)); min-height: 0; display: flex; flex-direction: column; overflow: hidden; }
+  body:has(#settings-panel:not([hidden])) { height: auto; overflow: visible; }
+  .wrap { flex: 1 1 auto; min-height: 0; width: 100%; }
+  .play { flex: 1 1 auto; min-height: 0; grid-template-rows: minmax(0, 1fr); }
+  .problem-card { min-height: 0; overflow: hidden; height: 100%; justify-content: center; }
+  .side { height: 100%; justify-content: center; }
+  .feedback { flex: 0 1 auto; min-height: 0; overflow-y: auto; }
+}
+@media (max-height: 500px) {
+  .feedback { font-size: 0.9rem; line-height: 1.3; }
+  .feedback strong { font-size: 1.05rem; }
+}
+
+/* Read and Answer: a kind chip, the short text in a speech bubble, the question, then three answers in a column. */
+.kind { align-self: flex-start; display: inline-flex; align-items: center; gap: 6px; background: var(--chip); color: var(--muted); border-radius: 999px; padding: 4px 12px; font-size: 0.85rem; font-weight: 600; }
+.story { display: flex; gap: 12px; align-items: flex-start; width: 100%; background: var(--chip); border-radius: 16px; padding: 12px 14px; min-height: 0; overflow-y: auto; -webkit-user-select: text; user-select: text; }
+.story .pic { font-size: clamp(1.6rem, 5dvh, 2.8rem); line-height: 1.1; flex: 0 0 auto; }
+/* A shadow at the bottom of the bubble says there is more text to scroll to (only on the smallest phones). */
+.story.more { box-shadow: inset 0 -22px 16px -16px var(--accent); }
+.story p { margin: 0; font-size: clamp(0.95rem, min(4vw, 2.7dvh), 1.35rem); line-height: 1.42; color: var(--ink); text-wrap: pretty; }
+.question { margin: 0; font-size: clamp(1.15rem, min(5vw, 3.4dvh), 1.7rem); font-weight: 700; line-height: 1.3; text-align: center; max-width: 30ch; text-wrap: balance; }
+.side { display: flex; flex-direction: column; gap: 10px; }
+.choices { display: grid; grid-template-columns: 1fr; gap: 8px; }
+.choices button {
+  font: inherit; font-size: clamp(1rem, min(4.4vw, 2.8dvh), 1.4rem); font-weight: 700; color: var(--ink); line-height: 1.25; text-align: left;
+  display: flex; align-items: center; gap: 10px;
+  background: var(--key); border: 2px solid var(--line); border-radius: 16px; min-height: clamp(48px, 7.5dvh, 76px); padding: 6px 14px; cursor: pointer;
+  overflow-wrap: anywhere;
+  transition: transform .08s ease, border-color .15s ease; touch-action: manipulation; -webkit-tap-highlight-color: transparent;
+}
+.choices button .n { flex: 0 0 auto; width: 1.6em; height: 1.6em; border-radius: 50%; background: var(--chip); color: var(--muted); font-size: 0.85em; display: inline-flex; align-items: center; justify-content: center; }
+.choices button:hover:not(:disabled) { border-color: var(--accent); }
+.choices button:active:not(:disabled) { transform: scale(0.97); }
+.choices button:disabled { cursor: default; }
+.choices button.right { border-color: var(--good); background: var(--good-bg); color: var(--good); }
+.choices button.right .n { background: var(--good); color: #fff; }
+.choices button.wrong { border-color: var(--bad); background: var(--bad-bg); color: var(--bad); }
+.choices button.wrong .n { background: var(--bad); color: #fff; }
+.choices button.faded { opacity: 0.45; }
+.next { font: inherit; font-size: 1.25rem; font-weight: 700; color: var(--accent-ink); background: var(--accent); border: 0; border-radius: 16px; min-height: clamp(52px, 7dvh, 72px); cursor: pointer; width: 100%; }
+.seg { grid-template-columns: repeat(2, 1fr); }
+.feedback { min-height: 2.6em; }
+@media (min-width: 600px) and (orientation: portrait) {
+  .story { padding: 16px 18px; gap: 14px; }
+  .story p { font-size: clamp(1.4rem, 3dvh, 1.9rem); line-height: 1.5; }
+  .story .pic { font-size: clamp(2.4rem, 5dvh, 3.6rem); }
+  .question { font-size: clamp(1.6rem, 3.6dvh, 2.3rem); }
+  .choices { gap: 12px; }
+  .choices button { font-size: clamp(1.25rem, 2.8dvh, 1.7rem); min-height: clamp(64px, 9dvh, 100px); }
+}
+@media (orientation: landscape) and (min-width: 640px) {
+  .story p { font-size: clamp(0.95rem, 3.6dvh, 1.5rem); }
+  .question { font-size: clamp(1.05rem, 4.4dvh, 1.8rem); }
+  .choices button { min-height: clamp(44px, 14dvh, 100px); }
+}
+/* On a phone the empty feedback line takes no room, and after the answer the text gets smaller, so the question and the feedback have room. */
+@media (max-height: 900px) and (max-width: 599px) {
+  .feedback:empty { display: none; }
+  .problem-card.good .story p, .problem-card.bad .story p { font-size: 0.92rem; line-height: 1.35; }
+  .problem-card.good .story .pic, .problem-card.bad .story .pic { font-size: 1.4rem; }
+}
+@media (max-height: 700px) {
+  .story { padding: 9px 11px; gap: 8px; }
+  .story p { font-size: clamp(0.88rem, min(3.9vw, 2.5dvh), 1.1rem); line-height: 1.36; }
+  .question { font-size: clamp(1rem, min(4.6vw, 3dvh), 1.3rem); }
+  .kind { font-size: 0.78rem; padding: 3px 10px; }
+  .choices { gap: 6px; }
+  .choices button { min-height: 44px; font-size: clamp(0.95rem, 4.2vw, 1.2rem); padding: 4px 12px; }
+  .next { min-height: 48px; }
+  .feedback { min-height: 0; }
+  /* After the answer the text folds to three lines (it scrolls), so the right answer always shows. */
+  .problem-card.good .kind, .problem-card.bad .kind { display: none; }
+  .problem-card.good .story p, .problem-card.bad .story p { font-size: 0.85rem; line-height: 1.3; max-height: 4em; overflow-y: auto; }
+}
+@media (max-height: 500px) {
+  .story p { font-size: 0.85rem; line-height: 1.3; }
+  .story .pic { display: none; }
+  .question { font-size: 1rem; }
+  .kind { display: none; }
+}
+
+/* Worksheet cells (only printed): the text, the question, then the answers to circle. */
+@media print {
+  .sheet-grid li > div.ws-ra { align-items: flex-start; gap: 0.8mm; padding-right: 2mm; }
+  .ws-ra .ws-t { font-size: 9.5pt; line-height: 1.3; }
+  .ws-ra .ws-q { font-size: 10pt; font-weight: 600; line-height: 1.2; }
+  .ws-ra .ws-opts { display: flex; flex-wrap: wrap; gap: 0.2mm 3mm; font-size: 9pt; line-height: 1.2; color: #333; }
+  .ws-ra .ws-opts span::before { content: "○ "; }
+}
+</style>
+<link rel="stylesheet" href="../../loopy.css">
+</head>
+<body>
+
+<div class="wrap">
+  <header class="game-bar">
+    <a class="home-link" href="../../">&larr; loopy</a>
+    <div class="bar-right">
+      <span id="star-chip"></span>
+      <button type="button" id="settings-toggle" aria-controls="settings-panel"></button>
+    </div>
+  </header>
+  <section class="top" aria-labelledby="title">
+    <h1 id="title" data-t="raName">Read and Answer</h1>
+    <div class="score" aria-live="polite">
+      <div class="pill pill-score"><span data-t="score">Score</span><b id="score">0 / 0</b></div>
+      <div id="level"></div>
+      <div class="pill pill-streak"><span data-t="streak">Streak</span><b id="streak">0</b></div>
+      <div id="last5" data-game="read-answer"></div>
+    </div>
+  </section>
+  <div class="settings-panel" id="settings-panel" hidden>
+    <div class="controls"><div id="age-picker"></div><div id="theme-picker"></div><button id="sound-toggle"></button><div id="lang-picker"></div></div>
+    <div>
+      <p class="seg-label" id="level-label" data-t="raLevel">Level</p>
+      <div class="seg" role="group" aria-labelledby="level-label" id="level-seg">
+        <button type="button" data-level="1" data-t="raL1">Two sentences</button>
+        <button type="button" data-level="2" data-t="raL2">Three sentences</button>
+        <button type="button" data-level="3" data-t="raL3">Why and how</button>
+        <button type="button" data-level="4" data-t="raL4">A title or an ending</button>
+      </div>
+    </div>
+    <div class="panel-foot">
+      <p data-t="raKbd">Keyboard works too: 1 to 3 picks an answer, Enter goes on.</p>
+      <button type="button" class="reset" id="reset" data-t="resetScore">Reset score</button>
+    </div>
+  </div>
+
+  <main class="play">
+    <div class="problem-card" id="card">
+      <span class="kind" id="kind"></span>
+      <div class="story">
+        <div class="pic" id="pic" aria-hidden="true"></div>
+        <p id="text"></p>
+      </div>
+      <p class="question" id="question"></p>
+      <p class="feedback" id="feedback"></p>
+    </div>
+    <div class="side">
+      <div class="choices" id="choices"></div>
+      <button type="button" class="next skip" id="next" data-t="skip">Skip</button>
+    </div>
+  </main>
+</div>
+
+<script src="../../loopy.js"></script>
+<script src="data.js"></script>
+<script>
+Loopy.addStrings({
+  en: {
+    raName: "Read and Answer", raLevel: "Level",
+    raL1: "Two sentences", raL2: "Three sentences", raL3: "Why and how", raL4: "A title or an ending",
+    raKbd: "Keyboard works too: 1 to 3 picks an answer, Enter goes on.",
+    raKFind: "It says so in the text", raKWhy: "Why and how", raKThink: "Think about it",
+    raRead: "{text} {q} Is it {list}?", raSaid: "{q} {a}.",
+    raLookAgain: "Read the text once more and find the sentence that says so.",
+    raHow: "Read the text. Then circle the right answer."
+  },
+  de: {
+    raName: "Lesen und Antworten", raLevel: "Stufe",
+    raL1: "Zwei Sätze", raL2: "Drei Sätze", raL3: "Warum und wie", raL4: "Ein Titel oder ein Ende",
+    raKbd: "Die Tastatur geht auch: 1 bis 3 wählt eine Antwort, Enter geht weiter.",
+    raKFind: "Steht im Text", raKWhy: "Warum und wie", raKThink: "Nachdenken",
+    raRead: "{text} {q} Ist es {list}?", raSaid: "{q} {a}.",
+    raLookAgain: "Lies den Text noch einmal und such den Satz, in dem es steht.",
+    raHow: "Lies den Text. Dann kreise die richtige Antwort ein."
+  }
+});
+
+(function () {
+  const $ = (id) => document.getElementById(id);
+  const card = $("card"), storyEl = card.querySelector(".story"), kindEl = $("kind"), picEl = $("pic"), textEl = $("text"), qEl = $("question"), choicesEl = $("choices"), feedbackEl = $("feedback"), nextBtn = $("next");
+  const levelBtns = [...document.querySelectorAll("#level-seg button")];
+  const t = Loopy.t, lang = Loopy.lang === "de" ? "de" : "en";
+  const TEXTS = RA[lang];
+  const randInt = (n) => Math.floor(Math.random() * n);
+  const shuffle = (arr) => arr.slice().sort(() => Math.random() - 0.5);
+  const store = {
+    get(k, d, ok) { try { const v = JSON.parse(Loopy.store.get(k)); return ok.includes(v) ? v : d; } catch (e) { return d; } },
+    set(k, v) { Loopy.store.set(k, JSON.stringify(v)); }
+  };
+
+  let age = Loopy.getAge();
+  let level;
+  const levelForAge = (a) => a <= 8 ? 1 : a <= 10 ? 2 : a <= 12 ? 3 : 4;
+  function loadForAge() { level = store.get("ra.level.a" + age, levelForAge(age), [1, 2, 3, 4]); }
+  loadForAge();
+  Loopy.levels.init({ names: ["raL1", "raL2", "raL3", "raL4"],
+    get: () => level - 1, base: () => levelForAge(age) - 1,
+    set: (i) => { level = i + 1; store.set("ra.level.a" + age, level); render(); } });
+  let right = 0, tried = 0, streak = 0;
+  let current = null, answered = false, recent = [];
+
+  // The kind of question: levels 1 and 2 ask what the text says, level 3 asks why and how, level 4 asks for a title or what happened.
+  const KIND_OF = { 1: "find", 2: "find", 3: "why", 4: "think" };
+  const KIND_CHIP = { find: ["🔍", "raKFind"], why: ["🤔", "raKWhy"], think: ["💡", "raKThink"] };
+  // One question: text number ti in the list, question number qi (0 or 1). The key is "ti:qi".
+  function build(ti, qi) {
+    const row = TEXTS[ti], q = row[3][qi];
+    return { kind: KIND_OF[row[0]], key: ti + ":" + qi, pic: row[1], text: row[2], q: q[0], answer: q[1], options: shuffle(q.slice(1)) };
+  }
+  const atLevel = () => TEXTS.map((row, i) => row[0] === level ? i : -1).filter(i => i >= 0);
+  function makeProblem() {
+    const list = atLevel();
+    return build(list[randInt(list.length)], randInt(2));
+  }
+  // Try again: the note is "en:12:1", the language, the text and the question. The same text and question come back.
+  const note = (p) => lang + ":" + p.key;
+  function rebuild(r) {
+    const m = /^(en|de):(\d{1,3}):([01])$/.exec(r);
+    if (!m || m[1] !== lang || +m[2] >= TEXTS.length) return null;
+    return build(+m[2], +m[3]);
+  }
+
+  function render() {
+    Loopy.levels.render();
+    $("score").textContent = right + " / " + tried;
+    $("streak").textContent = streak;
+    levelBtns.forEach(b => b.setAttribute("aria-pressed", String(+b.dataset.level === level)));
+    Loopy.nextButton(nextBtn, answered);
+    moreHint();
+  }
+  const moreHint = () => storyEl.classList.toggle("more", storyEl.scrollHeight > storyEl.clientHeight + 2 && storyEl.scrollTop + storyEl.clientHeight < storyEl.scrollHeight - 2);
+  storyEl.addEventListener("scroll", moreHint, { passive: true });
+  window.addEventListener("resize", moreHint);
+  function newRound() {
+    current = Loopy.retry.fresh("read-answer", recent, makeProblem, rebuild, 20);
+    answered = false;
+    const chip = KIND_CHIP[current.kind];
+    kindEl.textContent = chip[0] + " " + t(chip[1]);
+    picEl.textContent = current.pic;
+    textEl.textContent = current.text; storyEl.scrollTop = 0;
+    qEl.textContent = current.q;
+    choicesEl.textContent = "";
+    current.options.forEach((a, i) => {
+      const b = document.createElement("button");
+      b.type = "button"; b.id = "choice-" + i; b.dataset.a = a;
+      b.appendChild(Loopy.el("span", "n", String(i + 1)));
+      b.appendChild(document.createTextNode(a));
+      b.dataset.correct = String(a === current.answer);
+      b.addEventListener("click", () => choose(b));
+      choicesEl.appendChild(b);
+    });
+    card.classList.remove("good", "bad");
+    feedbackEl.className = "feedback";
+    feedbackEl.textContent = "";
+    render();
+    Loopy.speech.read();
+  }
+  function choose(btn) {
+    if (answered) return;
+    answered = true; tried++;
+    const ok = btn.dataset.correct === "true";
+    [...choicesEl.children].forEach(b => {
+      b.disabled = true;
+      if (b.dataset.correct === "true") b.classList.add("right");
+      else if (b === btn) b.classList.add("wrong");
+      else b.classList.add("faded");
+    });
+    if (ok) { right++; streak++; } else { streak = 0; }
+    const q = current.q.length > 40 ? current.q.slice(0, 39) + "…" : current.q;
+    if (ok) Loopy.rewards.correct("read-answer", streak, "ra-" + current.kind);
+    else Loopy.rewards.wrong("read-answer", { q, a: current.answer, y: btn.dataset.a, k: "ra-" + current.kind, r: note(current) });
+    card.classList.remove("good", "bad");
+    card.classList.add(ok ? "good" : "bad");
+    feedbackEl.className = "feedback " + (ok ? "good" : "bad");
+    feedbackEl.innerHTML = "<strong></strong>";
+    feedbackEl.firstChild.textContent = ok ? (streak >= 3 ? t("correctRow", { n: streak }) : t("correct")) : t("notQuite");
+    if (!ok) feedbackEl.appendChild(document.createTextNode(t("qfAnswerIs", { a: current.answer }) + (current.kind === "find" ? " " + t("raLookAgain") : "")));
+    render();
+    nextBtn.focus({ preventScroll: true });
+  }
+  // "The answer is: {a}." is the same line as in Quick Facts.
+  Loopy.addStrings({ en: { qfAnswerIs: "The answer is: {a}." }, de: { qfAnswerIs: "Die Antwort ist: {a}." } });
+
+  nextBtn.addEventListener("click", newRound);
+  levelBtns.forEach(b => b.addEventListener("click", () => { level = +b.dataset.level; store.set("ra.level.a" + age, level); recent = []; newRound(); }));
+  window.addEventListener("loopy:age", (e) => { age = e.detail; recent = []; loadForAge(); newRound(); });
+  $("reset").addEventListener("click", () => { right = 0; tried = 0; streak = 0; Loopy.recent.clear("read-answer"); newRound(); });
+  document.addEventListener("keydown", (e) => {
+    if (e.target.tagName === "INPUT" || document.querySelector(".loopy-cheer.big")) return;
+    if (e.key === "Enter" && answered && e.target.tagName !== "BUTTON") { newRound(); return; }
+    const n = parseInt(e.key, 10);
+    if (n >= 1 && n <= 3 && !answered) { const b = choicesEl.children[n - 1]; if (b) choose(b); }
+  });
+
+  // Read aloud: the text, the question and the three answers. After the answer, the question and the right answer.
+  Loopy.speech.question({ host: card, text: () => {
+    if (answered) return t("raSaid", { q: current.q, a: current.answer });
+    const o = current.options;
+    return t("raRead", { text: current.text, q: current.q, list: o.slice(0, -1).join(", ") + " " + t("orWord") + " " + o[o.length - 1] });
+  } });
+
+  // Print worksheet: up to 12 texts at the game's level, each with one question and the answers to circle.
+  const part = (cls, text) => { const n = document.createElement("span"); if (cls) n.className = cls; if (text) n.textContent = text; return n; };
+  Loopy.worksheet({
+    title: () => t("raName"),
+    level: () => [t("ageLabel", { n: age }), t("raLevel") + ": " + t("raL" + level)].join(" · "),
+    how: () => t("raHow"),
+    layout: "line",
+    make: (n) => shuffle(atLevel()).slice(0, Math.min(n, 12)).map(ti => build(ti, randInt(2))),
+    cell: (p) => {
+      const box = document.createElement("div");
+      box.className = "ws-ra";
+      box.appendChild(part("ws-t", p.pic + " " + p.text));
+      box.appendChild(part("ws-q", p.q));
+      const opts = part("ws-opts");
+      p.options.forEach(a => opts.appendChild(part("", a)));
+      box.appendChild(opts);
+      return box;
+    },
+    answer: (p) => p.answer
+  });
+
+  newRound();
+})();
+</script>
+</body>
+</html>
