@@ -70,7 +70,7 @@ On an iPhone, iPad or Mac, the loopy on the home screen keeps its own stars, apa
 
 ## Can Loopy read the questions out loud?
 
-Yes, in Plus and Minus, Times and Share, What Time Is It?, Make 10, Bigger or Smaller, Pizza Fractions, Coins and Change, Equation Balance, Times Tables Sprint, Percent and Ratio, Sentence Builder, Spelling Quiz, My Words, Graphs and Data, Box Multiplication, Step by Step, Shapes and Angles, Word Detective, Word Trail, Quick Facts, Sort It, Where Is It? and Flags and Capitals. Open Settings and turn on **Read aloud**. A speaker button shows next to the question. It uses the device's own voice, in English or German, and nothing is downloaded. It is on by itself for ages 5 to 7.
+Yes, in Plus and Minus, Times and Share, What Time Is It?, Make 10, Bigger or Smaller, Pizza Fractions, Coins and Change, Equation Balance, Times Tables Sprint, Percent and Ratio, Sentence Builder, Spelling Quiz, My Words, Graphs and Data, Box Multiplication, Step by Step, Shapes and Angles, Calendar and Dates, Word Detective, Word Trail, Quick Facts, Sort It, Where Is It? and Flags and Capitals. Open Settings and turn on **Read aloud**. A speaker button shows next to the question. It uses the device's own voice, in English or German, and nothing is downloaded. It is on by itself for ages 5 to 7.
 
 ## Can my child practise their own spelling words from school?
 

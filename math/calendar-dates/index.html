@@ -1,0 +1,612 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'sha256-aaEznvxzzzrsKqwc6htucRJv4oKsfJqJlfaMJAWX73c='; style-src 'self' 'sha256-z2P7kGW5Z05eCTjTZdYpc0vThTlOE9vmt97pVSvi2I4=' 'sha256-w/GMtRHLRwc2vd23XOtGEp6NFt120pkrRXlFu+r8kSI=' 'sha256-RT1053JU5UiKvjrCUFx1rlhdFLMmgtuFJ9T8jnMeawQ=' 'sha256-qxgyzivagbO++jcKcNnlO126HlYyVV1K7iYJvmBf2mM='; img-src 'self' data:; font-src 'self'; connect-src 'self' https://loopy-sync.loopy-1e2.workers.dev; worker-src 'self'; object-src 'none'; base-uri 'none'; form-action 'none'; manifest-src 'self'; upgrade-insecure-requests">
+<meta name="referrer" content="strict-origin-when-cross-origin">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<style>:root{color-scheme:light;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}body{margin:0}[hidden]{display:none!important}</style>
+<link rel="icon" href="../../icon.svg" type="image/svg+xml">
+<link rel="manifest" href="../../manifest.webmanifest">
+<link rel="apple-touch-icon" href="../../apple-touch-icon.png">
+<meta name="theme-color" content="#0a0a0c">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="loopy">
+<title data-t="cdName">Calendar and Dates</title>
+<meta name="description" content="Calendar and Dates on loopy: the days of the week, a month grid, counting days and weeks, months and seasons. Free practice for ages 6 to 11, English and German.">
+<link rel="preload" href="../../fonts/lexend-latin.woff2" as="font" type="font/woff2" crossorigin>
+<style>
+/* Layout: a calendar picture and a question on the card, answer buttons below. Shared look with the other games. */
+:root {
+  --bg: #f3f6fb;
+  --card: #ffffff;
+  --ink: #1d2a3f;
+  --muted: #5d6b82;
+  --line: #d5dde9;
+  --accent: #2457c5;
+  --accent-ink: #ffffff;
+  --mark: #e2622b;
+  --good: #1f8a4c;
+  --good-bg: #e3f5ea;
+  --bad: #c23a3a;
+  --bad-bg: #fbe6e6;
+  --chip: #e6ecf6;
+  --key: #ffffff;
+  --font: "Lexend", "Segoe UI", "Helvetica Neue", Arial, sans-serif;
+}
+
+* { box-sizing: border-box; }
+body {
+  background: var(--bg); color: var(--ink); font-family: var(--font); font-size: 16px;
+  padding-left: max(16px, env(safe-area-inset-left, 0px));
+  padding-right: max(16px, env(safe-area-inset-right, 0px));
+  padding-block: 20px 32px;
+}
+.wrap { max-width: 520px; margin: 0 auto; display: flex; flex-direction: column; gap: 16px; }
+
+.top { display: flex; flex-wrap: wrap; gap: 12px; align-items: center; justify-content: space-between; }
+h1 { margin: 0; font-size: 1.6rem; font-weight: 700; text-wrap: balance; }
+.score { display: flex; flex-wrap: wrap; gap: 8px; font-variant-numeric: tabular-nums; }
+.pill { background: var(--card); border: 1px solid var(--line); border-radius: 999px; padding: 6px 14px; font-weight: 600; font-size: 1rem; white-space: nowrap; }
+.pill span { color: var(--muted); font-weight: 400; margin-right: 4px; }
+
+.settings { display: flex; flex-direction: column; gap: 8px; }
+.seg-label { font-size: 0.8rem; font-weight: 600; letter-spacing: 0.06em; text-transform: uppercase; color: var(--muted); margin: 0 0 4px 4px; }
+.seg { display: grid; grid-template-columns: repeat(2, 1fr); gap: 6px; background: var(--chip); padding: 5px; border-radius: 14px; }
+.seg button {
+  font: inherit; font-size: 0.95rem; font-weight: 600; color: var(--muted);
+  background: transparent; border: 0; border-radius: 10px; padding: 8px 4px; min-height: 44px; cursor: pointer;
+}
+.seg button[aria-pressed="true"] { background: var(--card); color: var(--ink); box-shadow: 0 1px 3px rgb(0 0 0 / 0.12); }
+
+.problem-card {
+  background: var(--card); border: 1px solid var(--line); border-radius: 24px;
+  padding: 20px 18px 18px; display: flex; flex-direction: column; align-items: center; gap: 14px;
+}
+.problem-card.good { border-color: var(--good); box-shadow: 0 0 0 2px var(--good) inset; }
+.problem-card.bad { border-color: var(--bad); box-shadow: 0 0 0 2px var(--bad) inset; }
+
+.feedback { min-height: 3.1em; text-align: center; font-size: 1.1rem; line-height: 1.45; margin: 0; max-width: 34ch; }
+.feedback strong { display: block; font-size: 1.45rem; }
+.feedback.good strong { color: var(--good); }
+.feedback.bad strong { color: var(--bad); }
+.feedback .hint { color: var(--muted); }
+
+.foot { display: flex; justify-content: space-between; align-items: center; gap: 12px; flex-wrap: wrap; }
+.foot p { margin: 0; color: var(--muted); font-size: 0.9rem; }
+.reset { font: inherit; font-size: 0.95rem; color: var(--muted); background: transparent; border: 2px solid var(--line); border-radius: 14px; padding: 0 16px; min-height: 44px; cursor: pointer; }
+button:focus-visible { outline: 3px solid var(--mark); outline-offset: 3px; }
+
+@media (max-width: 420px) {
+  h1 { font-size: 1.35rem; }
+  .seg button { font-size: 0.85rem; }
+}
+@media (prefers-reduced-motion: reduce) {
+  * { transition: none !important; }
+}
+</style>
+<style>.home-link{display:inline-flex;align-items:center;min-height:40px;color:var(--muted);font-weight:600;text-decoration:none;font-size:0.95rem}.home-link:hover{color:var(--ink)}</style>
+<style>
+/* Phones and tablets: the game fills one screen; settings sit behind a button. */
+body { min-height: 100vh; min-height: 100dvh; padding-block: 12px 16px; }
+.wrap { gap: 12px; }
+.game-bar { display: flex; align-items: center; justify-content: space-between; gap: 8px; }
+.bar-right { display: flex; align-items: center; gap: 8px; }
+.top { gap: 8px 12px; }
+.play { display: flex; flex-direction: column; gap: 12px; -webkit-user-select: none; user-select: none; }
+@media (min-width: 600px) and (orientation: portrait) { .wrap { max-width: 640px; } }
+@media (orientation: landscape) and (min-width: 640px) {
+  .wrap { max-width: 1100px; }
+  .play { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; align-items: center; }
+}
+
+.problem-card { padding: 14px 14px 12px; gap: 8px; }
+.feedback { min-height: 2.9em; font-size: 1.05rem; }
+.feedback strong { font-size: 1.3rem; }
+@media (max-height: 760px) and (orientation: portrait) {
+  .feedback { font-size: 0.95rem; line-height: 1.35; }
+  .feedback strong { font-size: 1.15rem; }
+}
+
+/* Portrait: the page is exactly one screen tall; the answers stay at the bottom and the card shrinks to fit. */
+@media (orientation: portrait) {
+  body { height: calc(100dvh - env(safe-area-inset-top, 0px) - env(safe-area-inset-bottom, 0px)); min-height: 0; display: flex; flex-direction: column; overflow: hidden; }
+  body:has(#settings-panel:not([hidden])) { height: auto; overflow: visible; }
+  .wrap { flex: 1 1 auto; min-height: 0; width: 100%; }
+  .play { flex: 1 1 auto; min-height: 0; }
+  .problem-card { flex: 1 1 auto; min-height: 0; justify-content: center; overflow: hidden; }
+  .feedback { flex: 0 1 auto; min-height: 0; overflow-y: auto; }
+}
+@media (orientation: landscape) and (min-width: 640px) {
+  body { height: calc(100dvh - env(safe-area-inset-top, 0px) - env(safe-area-inset-bottom, 0px)); min-height: 0; display: flex; flex-direction: column; overflow: hidden; }
+  body:has(#settings-panel:not([hidden])) { height: auto; overflow: visible; }
+  .wrap { flex: 1 1 auto; min-height: 0; width: 100%; }
+  .play { flex: 1 1 auto; min-height: 0; grid-template-rows: minmax(0, 1fr); }
+  .problem-card { min-height: 0; overflow: hidden; height: 100%; justify-content: center; }
+  .side { height: 100%; justify-content: center; }
+  .feedback { flex: 0 1 auto; min-height: 0; overflow-y: auto; }
+}
+@media (max-height: 500px) {
+  .feedback { font-size: 0.9rem; line-height: 1.3; }
+  .feedback strong { font-size: 1.05rem; }
+}
+
+/* Calendar and Dates: a picture of the week, the month or the year, then the question and the answers. */
+.pic { width: 100%; display: flex; justify-content: center; flex: 0 1 auto; min-height: 0; }
+.question { margin: 0; font-size: clamp(1.1rem, min(5vw, 3.2dvh), 1.8rem); font-weight: 700; line-height: 1.25;
+  text-align: center; max-width: 32ch; text-wrap: balance; }
+.side { display: flex; flex-direction: column; gap: 10px; }
+.choices { display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; }
+.choices button {
+  font: inherit; font-size: clamp(1.05rem, min(5vw, 3.2dvh), 1.7rem); font-weight: 700; color: var(--ink); line-height: 1.2;
+  background: var(--key); border: 2px solid var(--line); border-radius: 18px; min-height: clamp(56px, 9dvh, 96px); padding: 6px 10px; cursor: pointer;
+  overflow-wrap: anywhere; hyphens: auto;
+  transition: transform .08s ease, border-color .15s ease; touch-action: manipulation; -webkit-tap-highlight-color: transparent;
+}
+.choices button:hover:not(:disabled) { border-color: var(--accent); }
+.choices button:active:not(:disabled) { transform: scale(0.96); }
+.choices button:disabled { cursor: default; }
+.choices button.right { border-color: var(--good); background: var(--good-bg); color: var(--good); }
+.choices button.wrong { border-color: var(--bad); background: var(--bad-bg); color: var(--bad); }
+.choices button.faded { opacity: 0.45; }
+.next { font: inherit; font-size: 1.25rem; font-weight: 700; color: var(--accent-ink); background: var(--accent); border: 0; border-radius: 16px; min-height: clamp(52px, 7dvh, 72px); cursor: pointer; width: 100%; }
+@media (min-width: 600px) and (orientation: portrait) {
+  .choices button { min-height: clamp(64px, 10dvh, 120px); }
+}
+@media (orientation: landscape) and (min-width: 640px) {
+  .choices button { min-height: clamp(52px, 14dvh, 130px); }
+}
+
+/* The week: seven day chips in a row, the day in the question marked. */
+.week { display: grid; grid-template-columns: repeat(7, 1fr); gap: 4px; width: 100%; max-width: 420px; }
+.week span, .months span {
+  display: grid; place-items: center; min-height: 40px; border-radius: 10px; background: var(--chip);
+  font-weight: 600; font-size: clamp(0.8rem, 2.4dvh, 1.1rem); font-variant-numeric: tabular-nums; padding: 4px 2px; text-align: center;
+}
+.week span.now, .months span.now, .cal td.now { background: var(--accent); color: var(--accent-ink); }
+/* The month: a grid with the days of the week on top. */
+.cal { width: 100%; max-width: 340px; border-collapse: separate; border-spacing: 3px; font-variant-numeric: tabular-nums; font-weight: 600;
+  font-size: clamp(0.85rem, 2.4dvh, 1.1rem); table-layout: fixed; }
+.cal caption { font-weight: 700; font-size: clamp(1rem, 2.8dvh, 1.3rem); padding-bottom: 4px; }
+.cal th { color: var(--muted); font-weight: 600; font-size: 0.78em; padding: 0 0 2px; }
+.cal td { text-align: center; height: clamp(18px, 3.6dvh, 40px); border-radius: 8px; background: var(--chip); }
+.cal td:empty { background: transparent; }
+/* The year: twelve month chips in three rows. */
+.months { display: grid; grid-template-columns: repeat(4, 1fr); gap: 5px; width: 100%; max-width: 420px; }
+.months span { min-height: clamp(36px, 6dvh, 56px); }
+/* Tablets: the pictures grow with the room, like in the other games. */
+@media (min-width: 600px) and (min-height: 700px) {
+  .week, .months { max-width: 560px; }
+  .week span, .months span { font-size: 1.3rem; min-height: 56px; }
+  .cal { max-width: 460px; font-size: 1.25rem; }
+  .cal td { height: clamp(40px, 6dvh, 60px); }
+}
+/* After the answer the picture gets smaller, so the question and the reason have room. */
+@media (max-height: 900px), (max-width: 599px) {
+  .problem-card.good .pic, .problem-card.bad .pic { zoom: 0.75; }
+}
+/* One screen: the card is a size container, so the month grid takes the height the card has and no more. */
+@media (orientation: portrait), (orientation: landscape) and (min-width: 640px) {
+  body:not(:has(#settings-panel:not([hidden]))) .problem-card { container-type: size; }
+  .cal { font-size: clamp(0.7rem, 2.8cqh, 1.25rem); }
+  .cal caption { font-size: clamp(0.85rem, 3.4cqh, 1.3rem); }
+  .cal td { height: clamp(14px, calc((100cqh - 150px) / 6), 44px); }
+  .week span, .months span { min-height: clamp(30px, 8cqh, 56px); }
+}
+@media (max-height: 700px) {
+  .cal { border-spacing: 2px; }
+  .cal caption { padding-bottom: 2px; }
+  .question { font-size: clamp(1rem, min(4.6vw, 3dvh), 1.4rem); }
+  .problem-card.good .pic, .problem-card.bad .pic { display: none; }
+}
+@media (max-height: 500px) {
+  .question { font-size: 1rem; }
+}
+
+/* Worksheet cells (only printed): the question, then the answers to circle. */
+@media print {
+  .sheet-grid li > div.ws-cd { align-items: flex-start; gap: 0.6mm; padding-right: 2mm; }
+  .ws-cd .ws-q { font-size: 9.5pt; font-weight: 600; line-height: 1.2; }
+  .ws-cd .ws-opts { display: flex; flex-wrap: wrap; gap: 0.2mm 3mm; font-size: 8.5pt; line-height: 1.2; color: #333; }
+  .ws-cd .ws-opts span::before { content: "○ "; }
+}
+</style>
+<link rel="stylesheet" href="../../loopy.css">
+<script src="../../loopy.js"></script>
+</head>
+<body>
+
+<div class="wrap">
+  <header class="game-bar">
+    <a class="home-link" href="../../">&larr; loopy</a>
+    <div class="bar-right">
+      <span id="star-chip"></span>
+      <button type="button" id="settings-toggle" aria-controls="settings-panel"></button>
+    </div>
+  </header>
+  <section class="top" aria-labelledby="title">
+    <h1 id="title" data-t="cdName">Calendar and Dates</h1>
+    <div class="score" aria-live="polite">
+      <div class="pill pill-score"><span data-t="score">Score</span><b id="score">0 / 0</b></div>
+      <div id="level"></div>
+      <div class="pill pill-streak"><span data-t="streak">Streak</span><b id="streak">0</b></div>
+      <div id="last5" data-game="calendar-dates"></div>
+    </div>
+  </section>
+  <div class="settings-panel" id="settings-panel" hidden>
+    <div class="controls"><div id="age-picker"></div><div id="theme-picker"></div><button id="sound-toggle"></button><div id="lang-picker"></div></div>
+    <div>
+      <p class="seg-label" id="level-label" data-t="cdLevel">Level</p>
+      <div class="seg" role="group" aria-labelledby="level-label" id="level-seg">
+        <button type="button" data-level="1" data-t="cdL1">Days of the week</button>
+        <button type="button" data-level="2" data-t="cdL2">The month</button>
+        <button type="button" data-level="3" data-t="cdL3">Days and weeks</button>
+        <button type="button" data-level="4" data-t="cdL4">Months and dates</button>
+      </div>
+    </div>
+    <div class="panel-foot">
+      <p data-t="cdKbd">Keyboard works too: 1 to 4 picks an answer, Enter goes on.</p>
+      <button type="button" class="reset" id="reset" data-t="resetScore">Reset score</button>
+    </div>
+  </div>
+
+  <main class="play">
+    <div class="problem-card" id="card">
+      <div class="pic" id="pic" aria-hidden="true"></div>
+      <p class="question" id="question"></p>
+      <p class="feedback" id="feedback"></p>
+    </div>
+    <div class="side">
+      <div class="choices" id="choices"></div>
+      <button type="button" class="next skip" id="next" data-t="skip">Skip</button>
+    </div>
+  </main>
+</div>
+
+<script>
+Loopy.addStrings({
+  en: {
+    cdName: "Calendar and Dates", cdLevel: "Level",
+    cdL1: "Days of the week", cdL2: "The month", cdL3: "Days and weeks", cdL4: "Months and dates",
+    cdKbd: "Keyboard works too: 1 to 4 picks an answer, Enter goes on.",
+    cdDays: "Monday|Tuesday|Wednesday|Thursday|Friday|Saturday|Sunday", cdDaysShort: "Mo|Tu|We|Th|Fr|Sa|Su",
+    cdMonths: "January|February|March|April|May|June|July|August|September|October|November|December",
+    cdMonthsShort: "Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec",
+    cdSeasons: "winter|spring|summer|autumn",
+    cdAfter: "What day comes after {d}?", cdBefore: "What day comes before {d}?",
+    cdTomorrow: "Today is {d}. What day is tomorrow?", cdYesterday: "Today is {d}. What day was yesterday?",
+    cdWeekDays: "How many days are in a week?",
+    cdOrder: "The days go {list}.", cdAfterWhy: "After {a} comes {b}.", cdBeforeWhy: "Before {a} comes {b}.", cdWeekWhy: "A week has 7 days: {list}.",
+    cdDow: "What day of the week is the {d}?", cdDowWhy: "Find the {d} in the grid and look at the top of its column: {a}.",
+    cdNth: "What is the date of the {n} {d} in {m}?", cdNthWhy: "Count down the {d} column: the {n} one is the {a}.",
+    cdInDays: "It is {d}. What day is it in {n} days?", cdInDaysWhy: "Count on {n} days from the {d}: that is {a}.",
+    cdDaysIn: "How many days has {m}?", cdDaysInWhy: "{m} has {n} days.", cdFebWhy: "February has 28 days, and 29 in a leap year.",
+    cdBetween: "How many days is it from the {a} to the {b}?", cdBetweenWhy: "{b} minus {a} is {n}.",
+    cdWeeksDays: "{w} weeks and {d} days. How many days is that?", cdWeeksDaysWhy: "{w} weeks are {wd} days. {wd} plus {d} is {n}.",
+    cdWeeks: "How many weeks are {n} days?", cdWeeksWhy: "A week has 7 days. {n} divided by 7 is {w}.",
+    cdInWeeks: "It is the {d}. What date is it in {w} weeks?", cdInWeeksWhy: "{w} weeks are {n} days. The {d} plus {n} days is the {a}.",
+    cdDayPlus: "Today is {d}. What day is it in {n} days?", cdDayPlusWhy: "7 days later is {d} again. {n} days is {w} weeks and {r} more days, so it is {a}.",
+    cdNextMonth: "Which month comes after {m}?", cdPrevMonth: "Which month comes before {m}?",
+    cdMonthWhy: "The months go {list}.",
+    cdNthMonth: "Which month is month number {n} of the year?", cdNthMonthWhy: "Count from January: {a} is month number {n}.",
+    cdMonthNo: "What number is {m} in the year?", cdMonthNoWhy: "Count from January: {m} is month number {n}.",
+    cdSeason: "Which season is {m} in?", cdSeasonWhy: "In Europe, {m} is in {s}. Winter is December to February, spring March to May, summer June to August and autumn September to November.",
+    cdDate: "Day {d} of month {m}. Which date is that?", cdDateWhy: "Month {m} is {mn}, so it is {a}.",
+    cdYearMonths: "How many months are in a year?", cdYearMonthsWhy: "A year has 12 months, from January to December.",
+    cdYearDays: "How many days are in a year?", cdYearDaysWhy: "A year has 365 days, and 366 in a leap year.",
+    cdWeek: "week", cdWeeks2: "weeks", cdDay: "day", cdDays2: "days",
+    cdNths: "first|second|third|fourth|fifth|last",
+    cdReadList: "{q} Is it {list}?",
+    cdHow: "Read each question. Circle the right answer."
+  },
+  de: {
+    cdName: "Kalender und Datum", cdLevel: "Stufe",
+    cdL1: "Wochentage", cdL2: "Der Monat", cdL3: "Tage und Wochen", cdL4: "Monate und Datum",
+    cdKbd: "Die Tastatur geht auch: 1 bis 4 wählt eine Antwort, Enter geht weiter.",
+    cdDays: "Montag|Dienstag|Mittwoch|Donnerstag|Freitag|Samstag|Sonntag", cdDaysShort: "Mo|Di|Mi|Do|Fr|Sa|So",
+    cdMonths: "Januar|Februar|März|April|Mai|Juni|Juli|August|September|Oktober|November|Dezember",
+    cdMonthsShort: "Jan|Feb|Mär|Apr|Mai|Jun|Jul|Aug|Sep|Okt|Nov|Dez",
+    cdSeasons: "Winter|Frühling|Sommer|Herbst",
+    cdAfter: "Welcher Tag kommt nach {d}?", cdBefore: "Welcher Tag kommt vor {d}?",
+    cdTomorrow: "Heute ist {d}. Welcher Tag ist morgen?", cdYesterday: "Heute ist {d}. Welcher Tag war gestern?",
+    cdWeekDays: "Wie viele Tage hat eine Woche?",
+    cdOrder: "Die Tage gehen so: {list}.", cdAfterWhy: "Nach {a} kommt {b}.", cdBeforeWhy: "Vor {a} kommt {b}.", cdWeekWhy: "Eine Woche hat 7 Tage: {list}.",
+    cdDow: "Welcher Wochentag ist der {d}?", cdDowWhy: "Such den {d} im Kalender und schau oben in seine Spalte: {a}.",
+    cdNth: "Welches Datum hat der {n} {d} im {m}?", cdNthWhy: "Zähle in der Spalte {d} nach unten: der {n} ist der {a}.",
+    cdInDays: "Es ist {d}. Welcher Tag ist in {n} Tagen?", cdInDaysWhy: "Zähle vom {d} {n} Tage weiter: das ist {a}.",
+    cdDaysIn: "Wie viele Tage hat der {m}?", cdDaysInWhy: "Der {m} hat {n} Tage.", cdFebWhy: "Der Februar hat 28 Tage, im Schaltjahr 29.",
+    cdBetween: "Wie viele Tage sind es vom {a} bis zum {b}?", cdBetweenWhy: "{b} minus {a} ist {n}.",
+    cdWeeksDays: "{w} Wochen und {d} Tage. Wie viele Tage sind das?", cdWeeksDaysWhy: "{w} Wochen sind {wd} Tage. {wd} plus {d} ist {n}.",
+    cdWeeks: "Wie viele Wochen sind {n} Tage?", cdWeeksWhy: "Eine Woche hat 7 Tage. {n} geteilt durch 7 ist {w}.",
+    cdInWeeks: "Es ist der {d}. Welches Datum ist in {w} Wochen?", cdInWeeksWhy: "{w} Wochen sind {n} Tage. Der {d} plus {n} Tage ist der {a}.",
+    cdDayPlus: "Heute ist {d}. Welcher Tag ist in {n} Tagen?", cdDayPlusWhy: "7 Tage später ist wieder {d}. {n} Tage sind {w} Wochen und {r} Tage mehr, also ist es {a}.",
+    cdNextMonth: "Welcher Monat kommt nach dem {m}?", cdPrevMonth: "Welcher Monat kommt vor dem {m}?",
+    cdMonthWhy: "Die Monate gehen so: {list}.",
+    cdNthMonth: "Welcher Monat ist der {n}. Monat im Jahr?", cdNthMonthWhy: "Zähle vom Januar an: {a} ist der {n}. Monat.",
+    cdMonthNo: "Der wievielte Monat im Jahr ist der {m}?", cdMonthNoWhy: "Zähle vom Januar an: der {m} ist der {n}. Monat.",
+    cdSeason: "In welcher Jahreszeit ist der {m}?", cdSeasonWhy: "Der {m} ist im {s}. Winter ist Dezember bis Februar, Frühling März bis Mai, Sommer Juni bis August und Herbst September bis November.",
+    cdDate: "Welches Datum ist der {d}.{m}.?", cdDateWhy: "Der {m}. Monat ist der {mn}, also ist es der {a}.",
+    cdYearMonths: "Wie viele Monate hat ein Jahr?", cdYearMonthsWhy: "Ein Jahr hat 12 Monate, von Januar bis Dezember.",
+    cdYearDays: "Wie viele Tage hat ein Jahr?", cdYearDaysWhy: "Ein Jahr hat 365 Tage, im Schaltjahr 366.",
+    cdWeek: "Woche", cdWeeks2: "Wochen", cdDay: "Tag", cdDays2: "Tage",
+    cdNths: "erste|zweite|dritte|vierte|fünfte|letzte",
+    cdReadList: "{q} Ist es {list}?",
+    cdHow: "Lies jede Frage. Kreise die richtige Antwort ein."
+  }
+});
+
+(function () {
+  const $ = (id) => document.getElementById(id);
+  const card = $("card"), picEl = $("pic"), qEl = $("question"), choicesEl = $("choices"), feedbackEl = $("feedback"), nextBtn = $("next");
+  const levelBtns = [...document.querySelectorAll("#level-seg button")];
+  const t = Loopy.t, lang = Loopy.lang === "de" ? "de" : "en";
+  const randInt = (n) => Math.floor(Math.random() * n);
+  const pick = (arr) => arr[randInt(arr.length)];
+  const shuffle = (arr) => arr.slice().sort(() => Math.random() - 0.5);
+  const list = (key) => t(key).split("|");
+  const DAYS = list("cdDays"), DAYS_SHORT = list("cdDaysShort"), MONTHS = list("cdMonths"), MONTHS_SHORT = list("cdMonthsShort"), SEASONS = list("cdSeasons"), NTHS = list("cdNths");
+  const YEAR = new Date().getFullYear();
+  const daysIn = (m) => new Date(YEAR, m + 1, 0).getDate();
+  // 0 = Monday, like the grid. (Date gives 0 = Sunday.)
+  const firstDow = (m) => (new Date(YEAR, m, 1).getDay() + 6) % 7;
+  // "the 14th" in English, "der 14." in German, for a question; without the article inside a sentence.
+  const nth = (n) => lang === "de" ? n + "." : n + (n % 100 >= 11 && n % 100 <= 13 ? "th" : ["th", "st", "nd", "rd"][n % 10] || "th");
+  // "the 14th" / "14." in an answer button.
+  const nthA = (n) => lang === "de" ? n + "." : nth(n);
+  const join = (arr) => arr.join(", ");
+  // "Saturday 14" / "Samstag, 14." for a day with its date.
+  const dayDate = (dow, d) => lang === "de" ? DAYS[dow] + ", " + d + "." : DAYS[dow] + " " + d;
+  // The same inside a question: "Dienstag, der 1." in German.
+  const dayDateQ = (dow, d) => lang === "de" ? DAYS[dow] + ", der " + d + "." : DAYS[dow] + " " + d;
+  // "12 March" / "12. März".
+  const dateText = (d, m) => lang === "de" ? d + ". " + MONTHS[m] : d + " " + MONTHS[m];
+  const store = {
+    get(k, d, ok) { try { const v = JSON.parse(Loopy.store.get(k)); return ok.includes(v) ? v : d; } catch (e) { return d; } },
+    set(k, v) { Loopy.store.set(k, JSON.stringify(v)); }
+  };
+
+  let age = Loopy.getAge();
+  let level;
+  const levelForAge = (a) => a <= 6 ? 1 : a <= 8 ? 2 : a === 9 ? 3 : 4;
+  function loadForAge() { level = store.get("cd.level.a" + age, levelForAge(age), [1, 2, 3, 4]); }
+  loadForAge();
+  Loopy.levels.init({ names: ["cdL1", "cdL2", "cdL3", "cdL4"],
+    get: () => level - 1, base: () => levelForAge(age) - 1,
+    set: (i) => { level = i + 1; store.set("cd.level.a" + age, level); render(); } });
+  let right = 0, tried = 0, streak = 0;
+  let current = null, answered = false, recent = [];
+
+  // Wrong answers: other items of the same kind, never the right one, never twice.
+  function others(all, answer, n) {
+    const out = [];
+    for (const x of shuffle(all)) { if (x !== answer && !out.includes(x) && out.length < n) out.push(x); }
+    return out;
+  }
+  const numbers = (n, around) => { const s = new Set(); while (s.size < n) { const v = around + randInt(9) - 4; if (v > 0) s.add(v); } return [...s]; };
+  // German dates end with a dot ("der 11."), so a sentence that ends with one would show two.
+  const dots = (s) => lang === "de" ? s.replace(/\.\.(?!\.)/g, ".") : s;
+  const problem = (kind, key, q, answer, wrong, why, pic) => ({ kind, key, q: dots(q), answer, options: shuffle([answer, ...wrong]), why: dots(why), pic });
+
+  // Level 1: the days of the week.
+  function makeWeek() {
+    const d = randInt(7), type = pick(["after", "before", "tomorrow", "yesterday", "after", "tomorrow", "count"]);
+    if (type === "count") return problem("week", "w:count", t("cdWeekDays"), "7", ["5", "6", "10"], t("cdWeekWhy", { list: join(DAYS) }), { week: -1 });
+    const fwd = type === "after" || type === "tomorrow", a = (d + (fwd ? 1 : 6)) % 7;
+    const q = t(type === "after" ? "cdAfter" : type === "before" ? "cdBefore" : type === "tomorrow" ? "cdTomorrow" : "cdYesterday", { d: DAYS[d] });
+    const why = t("cdOrder", { list: join(DAYS) }) + " " + t(fwd ? "cdAfterWhy" : "cdBeforeWhy", { a: DAYS[d], b: DAYS[a] });
+    return problem("week", "w:" + type + ":" + d, q, DAYS[a], others(DAYS, DAYS[a], 3), why, { week: d });
+  }
+  // Level 2: a month grid.
+  function makeGrid() {
+    const m = randInt(12), n = daysIn(m), f = firstDow(m), type = pick(["dow", "dow", "nth", "in", "in", "days"]);
+    const dowOf = (d) => (f + d - 1) % 7;
+    if (type === "days") {
+      const why = m === 1 ? t("cdFebWhy") : t("cdDaysInWhy", { m: MONTHS[m], n });
+      return problem("grid", "g:days:" + m, t("cdDaysIn", { m: MONTHS[m] }), String(n), others(["28", "29", "30", "31"], String(n), 3), why, { month: m });
+    }
+    if (type === "dow") {
+      const d = 1 + randInt(n), a = DAYS[dowOf(d)];
+      return problem("grid", "g:dow:" + m + ":" + d, t("cdDow", { d: nth(d) }), a, others(DAYS, a, 3), t("cdDowWhy", { d: nth(d), a }), { month: m, mark: d });
+    }
+    if (type === "nth") {
+      const dow = randInt(7), k = randInt(4), first = 1 + (dow - f + 7) % 7, d = first + 7 * k;
+      if (d > n) return makeGrid();
+      const a = nthA(d), wrong = others([first, first + 7, first + 14, first + 21, first + 28].filter(x => x <= n && x !== d).map(nthA).concat([nthA(d + 1), nthA(d - 1)].filter(x => x !== nthA(0))), a, 3);
+      return problem("grid", "g:nth:" + m + ":" + dow + ":" + k, t("cdNth", { n: NTHS[k], d: DAYS[dow], m: MONTHS[m] }), a, wrong, t("cdNthWhy", { d: DAYS[dow], n: NTHS[k], a }), { month: m });
+    }
+    const d = 1 + randInt(n - 10), k = 2 + randInt(9), e = d + k, a = dayDate(dowOf(e), e);
+    const wrong = others([dayDate(dowOf(e), e + 1), dayDate(dowOf(e - 1), e - 1), dayDate((dowOf(e) + 1) % 7, e), dayDate(dowOf(e + 1), e + 1), dayDate((dowOf(e) + 6) % 7, e)].filter(x => x !== a), a, 3);
+    return problem("grid", "g:in:" + m + ":" + d + ":" + k, t("cdInDays", { d: dayDateQ(dowOf(d), d), n: k }), a, wrong, t("cdInDaysWhy", { d: nth(d), n: k, a }), { month: m, mark: d });
+  }
+  // Level 3: counting days and weeks.
+  function makeCount() {
+    const type = pick(["between", "wd", "weeks", "inweeks", "dayplus", "dayplus"]);
+    if (type === "between") {
+      const a = 1 + randInt(12), b = a + 2 + randInt(16), n = b - a;
+      return problem("count", "c:between:" + a + ":" + b, t("cdBetween", { a: nth(a), b: nth(b) }), String(n), numbers(3, n).filter(x => x !== n).slice(0, 3).map(String), t("cdBetweenWhy", { a, b, n }), { month: new Date().getMonth(), mark: a, mark2: b });
+    }
+    if (type === "wd") {
+      const w = 1 + randInt(4), d = 1 + randInt(6), n = 7 * w + d;
+      return problem("count", "c:wd:" + w + ":" + d, t("cdWeeksDays", { w, d }), String(n), others([String(n - 7), String(n + 7), String(n - 1), String(n + 1), String(w + d), String(7 * w)], String(n), 3), t("cdWeeksDaysWhy", { w, wd: 7 * w, d, n }), { week: -1 });
+    }
+    if (type === "weeks") {
+      const w = 2 + randInt(7), n = 7 * w;
+      return problem("count", "c:weeks:" + w, t("cdWeeks", { n }), String(w), others([String(w - 1), String(w + 1), String(w + 2), String(n - 7), String(w * 2)], String(w), 3), t("cdWeeksWhy", { n, w }), { week: -1 });
+    }
+    if (type === "inweeks") {
+      const m = randInt(12), n = daysIn(m), w = 1 + randInt(3), d = 1 + randInt(n - 7 * w), e = d + 7 * w;
+      return problem("count", "c:inweeks:" + m + ":" + d + ":" + w, t("cdInWeeks", { d: nth(d), w }), nthA(e), others([nthA(e + 1), nthA(e - 1), nthA(d + w), nthA(e + 7), nthA(e - 7)].filter(x => x !== nthA(0)), nthA(e), 3), t("cdInWeeksWhy", { w, n: 7 * w, d: nth(d), a: nth(e) }), { month: m, mark: d });
+    }
+    const d = randInt(7), n = 8 + randInt(13), a = DAYS[(d + n) % 7];
+    return problem("count", "c:dayplus:" + d + ":" + n, t("cdDayPlus", { d: DAYS[d], n }), a, others(DAYS, a, 3), t("cdDayPlusWhy", { d: DAYS[d], n, w: Math.floor(n / 7), r: n % 7, a }), { week: d });
+  }
+  // Level 4: months, seasons and dates.
+  function makeMonth() {
+    const m = randInt(12), type = pick(["next", "prev", "nthm", "no", "days", "season", "date", "date", "year"]);
+    if (type === "next" || type === "prev") {
+      const a = MONTHS[(m + (type === "next" ? 1 : 11)) % 12];
+      return problem("month", "m:" + type + ":" + m, t(type === "next" ? "cdNextMonth" : "cdPrevMonth", { m: MONTHS[m] }), a, others(MONTHS, a, 3), t("cdMonthWhy", { list: join(MONTHS_SHORT) }), { year: m });
+    }
+    if (type === "nthm") return problem("month", "m:nthm:" + m, t("cdNthMonth", { n: m + 1 }), MONTHS[m], others(MONTHS, MONTHS[m], 3), t("cdNthMonthWhy", { a: MONTHS[m], n: m + 1 }), { year: -1 });
+    if (type === "no") return problem("month", "m:no:" + m, t("cdMonthNo", { m: MONTHS[m] }), String(m + 1), numbers(3, m + 1).filter(x => x !== m + 1 && x <= 12).slice(0, 3).map(String), t("cdMonthNoWhy", { m: MONTHS[m], n: m + 1 }), { year: m });
+    if (type === "days") {
+      const n = daysIn(m);
+      return problem("month", "m:days:" + m, t("cdDaysIn", { m: MONTHS[m] }), String(n), others(["28", "29", "30", "31"], String(n), 3), m === 1 ? t("cdFebWhy") : t("cdDaysInWhy", { m: MONTHS[m], n }), { year: m });
+    }
+    if (type === "season") {
+      const s = SEASONS[Math.floor(((m + 1) % 12) / 3)];
+      return problem("month", "m:season:" + m, t("cdSeason", { m: MONTHS[m] }), s, others(SEASONS, s, 3), t("cdSeasonWhy", { m: MONTHS[m], s }), { year: m });
+    }
+    if (type === "year") {
+      const months = randInt(2) === 0;
+      return problem("month", "m:year:" + (months ? "m" : "d"), t(months ? "cdYearMonths" : "cdYearDays"), months ? "12" : "365", months ? ["10", "7", "24"] : ["360", "300", "100"], t(months ? "cdYearMonthsWhy" : "cdYearDaysWhy"), { year: -1 });
+    }
+    const d = 1 + randInt(12), a = dateText(d, m);
+    // The classic mix-up: day and month swapped, when that is a real date.
+    const wrong = others([d <= 12 && d - 1 !== m ? dateText(m + 1, d - 1) : "", dateText(d, (m + 1) % 12), dateText(d + 1, m), dateText(d, (m + 11) % 12)].filter(Boolean), a, 3);
+    return problem("month", "m:date:" + d + ":" + m, t("cdDate", { d, m: m + 1 }), a, wrong, t("cdDateWhy", { m: m + 1, mn: MONTHS[m], a }), { year: m });
+  }
+  const MAKE = { 1: makeWeek, 2: makeGrid, 3: makeCount, 4: makeMonth };
+  function makeProblem() { return MAKE[level](); }
+
+  // The picture: the week, the month or the year, with the asked day or month marked.
+  const el = (tag, cls, text) => Loopy.el(tag, cls, text);
+  function drawPic(p) {
+    picEl.textContent = "";
+    const s = p.pic;
+    if (s.week !== undefined) {
+      const w = el("div", "week");
+      DAYS_SHORT.forEach((d, i) => w.appendChild(el("span", i === s.week ? "now" : "", d)));
+      picEl.appendChild(w);
+    } else if (s.month !== undefined) {
+      const m = s.month, n = daysIn(m), f = firstDow(m);
+      const tbl = el("table", "cal"), cap = el("caption", "", MONTHS[m] + " " + YEAR), head = el("tr"), body = el("tbody");
+      DAYS_SHORT.forEach(d => head.appendChild(el("th", "", d)));
+      tbl.appendChild(cap); tbl.appendChild(el("thead")).appendChild(head);
+      let row = el("tr"), cell = 0;
+      for (let i = 0; i < f; i++) { row.appendChild(el("td")); cell++; }
+      for (let d = 1; d <= n; d++) {
+        row.appendChild(el("td", d === s.mark || d === s.mark2 ? "now" : "", String(d))); cell++;
+        if (cell % 7 === 0) { body.appendChild(row); row = el("tr"); }
+      }
+      if (cell % 7) { while (cell++ % 7) row.appendChild(el("td")); body.appendChild(row); }
+      tbl.appendChild(body);
+      picEl.appendChild(tbl);
+    } else {
+      const y = el("div", "months");
+      MONTHS_SHORT.forEach((mo, i) => y.appendChild(el("span", i === s.year ? "now" : "", mo)));
+      picEl.appendChild(y);
+    }
+  }
+
+  function render() {
+    Loopy.levels.render();
+    $("score").textContent = right + " / " + tried;
+    $("streak").textContent = streak;
+    levelBtns.forEach(b => b.setAttribute("aria-pressed", String(+b.dataset.level === level)));
+    Loopy.nextButton(nextBtn, answered);
+  }
+  // Try again: a missed question comes back later (Loopy.retry). The note is "en:g:dow:10:14" (the page language
+  // and the question's key). A question from another level or language waits.
+  const note = (p) => lang + ":" + p.key;
+  function rebuild(r) {
+    const m = /^(en|de):([wgcm]):([a-z]+)((?::\d{1,2})*)$/.exec(r);
+    if (!m || m[1] !== lang) return null;
+    const want = m[2] + ":" + m[3] + m[4], make = { w: makeWeek, g: makeGrid, c: makeCount, m: makeMonth }[m[2]];
+    if (make !== MAKE[level]) return null;
+    for (let i = 0; i < 300; i++) { const p = make(); if (p.key === want) return p; }
+    return null;
+  }
+
+  function newRound() {
+    current = Loopy.retry.fresh("calendar-dates", recent, makeProblem, rebuild, 20);
+    answered = false;
+    drawPic(current);
+    qEl.textContent = current.q;
+    choicesEl.textContent = "";
+    current.options.forEach((a, i) => {
+      const b = document.createElement("button");
+      b.type = "button"; b.id = "choice-" + i; b.textContent = a;
+      b.dataset.correct = String(a === current.answer);
+      b.addEventListener("click", () => choose(b));
+      choicesEl.appendChild(b);
+    });
+    card.classList.remove("good", "bad");
+    feedbackEl.className = "feedback";
+    feedbackEl.textContent = "";
+    render();
+    Loopy.speech.read();
+  }
+  function choose(btn) {
+    if (answered) return;
+    answered = true; tried++;
+    const ok = btn.dataset.correct === "true";
+    [...choicesEl.children].forEach(b => {
+      b.disabled = true;
+      if (b.dataset.correct === "true") b.classList.add("right");
+      else if (b === btn) b.classList.add("wrong");
+      else b.classList.add("faded");
+    });
+    if (ok) { right++; streak++; } else { streak = 0; }
+    const q = current.q.length > 40 ? current.q.slice(0, 39) + "…" : current.q;
+    if (ok) Loopy.rewards.correct("calendar-dates", streak, "cd-" + current.kind);
+    else Loopy.rewards.wrong("calendar-dates", { q, a: current.answer, y: btn.textContent, k: "cd-" + current.kind, r: note(current) });
+    card.classList.remove("good", "bad");
+    card.classList.add(ok ? "good" : "bad");
+    feedbackEl.className = "feedback " + (ok ? "good" : "bad");
+    feedbackEl.innerHTML = "<strong></strong>";
+    feedbackEl.firstChild.textContent = ok ? (streak >= 3 ? t("correctRow", { n: streak }) : t("correct")) : t("notQuite");
+    feedbackEl.appendChild(document.createTextNode(dots((ok ? "" : t("qfAnswerIs", { a: current.answer }) + " ") + current.why)));
+    render();
+    nextBtn.focus({ preventScroll: true });
+  }
+  // "The answer is: {a}." is the same line as in Quick Facts.
+  Loopy.addStrings({ en: { qfAnswerIs: "The answer is: {a}." }, de: { qfAnswerIs: "Die Antwort ist: {a}." } });
+
+  nextBtn.addEventListener("click", newRound);
+  levelBtns.forEach(b => b.addEventListener("click", () => { level = +b.dataset.level; store.set("cd.level.a" + age, level); recent = []; newRound(); }));
+  window.addEventListener("loopy:age", (e) => { age = e.detail; recent = []; loadForAge(); newRound(); });
+  $("reset").addEventListener("click", () => { right = 0; tried = 0; streak = 0; Loopy.recent.clear("calendar-dates"); newRound(); });
+  document.addEventListener("keydown", (e) => {
+    if (e.target.tagName === "INPUT" || document.querySelector(".loopy-cheer.big")) return;
+    if (e.key === "Enter" && answered && e.target.tagName !== "BUTTON") { newRound(); return; }
+    const n = parseInt(e.key, 10);
+    if (n >= 1 && n <= 4 && !answered) { const b = choicesEl.children[n - 1]; if (b) choose(b); }
+  });
+
+  // Read aloud: "What day comes after Thursday? Is it Friday, Monday, Sunday or Wednesday?"
+  Loopy.speech.question({ host: card, text: () => {
+    const o = current.options;
+    return t("cdReadList", { q: current.q, list: o.slice(0, -1).join(", ") + " " + t("orWord") + " " + o[o.length - 1] });
+  } });
+
+  // Print worksheet: 20 questions at the game's level, each with its answers to circle. A grid question says
+  // on paper what the grid shows on screen: the month, and which day of the week its 1st is.
+  const part = (cls, text) => { const n = document.createElement("span"); if (cls) n.className = cls; if (text) n.textContent = text; return n; };
+  const onPaper = (p) => p.pic.month !== undefined && p.kind !== "count" || p.kind === "count" && p.key.startsWith("c:inweeks")
+    ? p.q + " (" + MONTHS[p.pic.month] + " " + YEAR + ": " + (lang === "de" ? "der 1. ist ein " : "the 1st is a ") + DAYS[firstDow(p.pic.month)] + ")" : p.q;
+  Loopy.worksheet({
+    title: () => t("cdName"),
+    level: () => [t("ageLabel", { n: age }), t("cdLevel") + ": " + t("cdL" + level)].join(" · "),
+    how: () => t("cdHow"),
+    layout: "line",
+    make: (n) => { const out = [], keys = []; for (let i = 0; i < 400 && out.length < n; i++) { const p = makeProblem(); if (!keys.includes(p.key)) { keys.push(p.key); out.push(p); } } return out; },
+    cell: (p) => {
+      const box = document.createElement("div");
+      box.className = "ws-cd";
+      box.appendChild(part("ws-q", onPaper(p)));
+      const opts = part("ws-opts");
+      p.options.forEach(a => opts.appendChild(part("", a)));
+      box.appendChild(opts);
+      return box;
+    },
+    answer: (p) => p.answer
+  });
+
+  newRound();
+})();
+</script>
+</body>
+</html>

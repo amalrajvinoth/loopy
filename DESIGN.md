@@ -284,6 +284,10 @@ Where Is It? draws its maps in SVG, from simple Natural Earth outlines stored in
 
 Word Detective marks a letter in the right place in `good`. A letter that is not in the word is `chip`. A letter that is in the word but somewhere else gets the detective yellow: `#e0ad00` with dark text. It is the same in every theme, like coins and flags, because the guide and the kids' box call it yellow. In High contrast it is the theme's `c5` with `on-accent` text. The page keeps it in its own `--wd-y` and `--wd-y-ink` variables.
 
+### Calendar pictures
+
+Calendar and Dates draws the week, a month grid or the twelve months. The boxes are `chip` with `ink` text. The day or month in the question is `accent` with `on-accent` text. No other colour. The grid is a table with the short day names on top, 3px apart, so the picture reads like a wall calendar.
+
 ### Flags
 
 Flags and Capitals draws each flag in SVG from a few boxes, stripes, circles, stars and lines stored in the page, on a 30 × 20 grid (Switzerland is square). Like coins, flags keep their real colors in every theme, High contrast too, so they look like the real thing. Emoji flags are not used, because they do not show on Windows. Emblems and coats of arms are left out or drawn as simple shapes. A thin `muted` edge goes round every flag, so white parts show on a white card. The flag fills the room left on the card and gets smaller after an answer, so the question and the fact line fit. The answers are the same four buttons as Quick Facts. On the worksheet the flags print in color.

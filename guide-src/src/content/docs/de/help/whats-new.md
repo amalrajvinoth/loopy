@@ -8,6 +8,10 @@ loopy bekommt immer wieder neue Spiele. Das ist zuletzt dazugekommen!
 
 Die großen Änderungen, die neuesten zuerst. Kleine Korrekturen stehen nicht dabei. Die [ganze Liste steht auf GitHub](https://github.com/amalrajvinoth/loopy/blob/main/RELEASES.md) (auf Englisch).
 
+## 5. November 2026
+
+- **Neues Spiel: Kalender und Datum.** Die Wochentage, ein Monatskalender, Tage und Wochen zählen, Monate, Jahreszeiten und das Datum, für 6 bis 11 Jahre. Nach jeder Antwort ein Satz zum Warum. Siehe [Kalender und Datum](/loopy/guide/de/games/math/calendar-dates/).
+
 ## 2. November 2026
 
 - **Neues Spiel: Meine Wörter.** loopy liest ein Wort vor und du tippst es, wie bei einem Diktat. Eltern tragen die Lernwörter der Woche ein oder laden eine CSV-Datei, mit einem Satz zu jedem Wort, wenn sie mögen. Vier Stufen Hilfe, von Buchstaben-Tasten bis zu einer ganzen Tastatur ohne Kästchen. Siehe [Meine Wörter](/loopy/guide/de/games/languages/my-words/).

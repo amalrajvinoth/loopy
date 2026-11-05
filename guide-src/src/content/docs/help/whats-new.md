@@ -8,6 +8,10 @@ loopy keeps getting new games. Here is what came lately!
 
 The big changes, newest first. Small fixes are not listed. See [the full list on GitHub](https://github.com/amalrajvinoth/loopy/blob/main/RELEASES.md).
 
+## 5 November 2026
+
+- **New game: Calendar and Dates.** The days of the week, a month grid, counting days and weeks, months, seasons and dates, for ages 6 to 11. One line of why after every answer. See [Calendar and Dates](/loopy/guide/games/math/calendar-dates/).
+
 ## 2 November 2026
 
 - **New game: My Words.** loopy reads a word out loud and you type it, like a spelling test. Grown-ups type in the week's words or import a CSV file, with a sentence for each word if they like. Four levels of help, from letter tiles to a whole keyboard with no boxes. See [My Words](/loopy/guide/games/languages/my-words/).
