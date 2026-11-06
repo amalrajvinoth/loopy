@@ -51,7 +51,7 @@ Open them with the gear button.
 
 Tap **Settings**, then **Print worksheet**. The print window opens. Print it, or save it as a PDF.
 
-- Page 1 has up to 12 texts at the same level as the game, each with one question and three answers to circle.
+- The sheet has up to 12 texts at the same level as the game, each with one question and three answers to circle. Each box grows with its text, so long texts run over two pages.
 - The last page has the answers.
 
 ## On a small phone

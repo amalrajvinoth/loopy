@@ -15,7 +15,7 @@
     f.appendChild(el("i"));
     return f;
   }
-  function head(key) {
+  function head(key, n) {
     var h = el("header", "sheet-head");
     var top = el("div", "sheet-top");
     top.appendChild(el("h1", "sheet-title", key ? Loopy.t("sheetAnswers") + ": " + state.opts.title() : state.opts.title()));
@@ -29,7 +29,7 @@
       fields.appendChild(field(Loopy.t("sheetName"), "wide"));
       fields.appendChild(field(Loopy.t("sheetDate"), ""));
       var score = field(Loopy.t("score"), "score");
-      score.appendChild(el("b", "", "/ " + N));
+      score.appendChild(el("b", "", "/ " + n));
       fields.appendChild(score);
       h.appendChild(fields);
       h.appendChild(el("p", "sheet-how", state.opts.how()));
@@ -40,7 +40,7 @@
     var items = state.opts.make(N).slice(0, N);
     var layout = LAYOUTS.indexOf(state.opts.layout) === -1 ? "line" : state.opts.layout;
     var work = el("div", "sheet-page");
-    work.appendChild(head(false));
+    work.appendChild(head(false, items.length));
     var grid = el("ol", "sheet-grid sheet-" + layout);
     items.forEach(function (p, i) {
       var li = el("li"), cell = state.opts.cell(p), own = cell.dataset ? cell.dataset.layout : "";
@@ -52,7 +52,7 @@
     });
     work.appendChild(grid);
     var key = el("div", "sheet-page sheet-answers");
-    key.appendChild(head(true));
+    key.appendChild(head(true, items.length));
     var list = el("ol", "sheet-key");
     items.forEach(function (p, i) {
       var li = el("li");
