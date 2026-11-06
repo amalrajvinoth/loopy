@@ -304,6 +304,10 @@ Times Table Grid is a table. The factor cells on the edges are `chip` boxes with
 
 Tens and Ones draws the school picture in `ink`: squares for hundreds, lines for tens (4px bars in a column), dots for ones (in rows of 5). The place value table under it uses the same boxes as Times Table Grid: `chip` with a `muted` heading (H, T, O and the number), dashed on `card` while empty, the `accent` line on the box being asked, `good` on `good-bg` when right, a `bad` border when wrong. On Draw it the number pad becomes two wide keys, a line and a dot, in the same `key` style; the picture grows in a `line` frame as the child taps, and the T and O boxes count along in `accent`. In Giants and dwarfs, what the dwarf or giant took away is drawn as an empty `bad` outline, what one brought is `accent`. No other colour.
 
+### Shop and purse
+
+Is It Enough? shows three things as `chip` cards (emoji, price, name) with the 2px `line` border; the wanted ones get the `accent` line on `card`. The purse under them keeps fixed paper and metal colours in every theme, like Coins and Change: the 5, 10, 20 and 50 notes in grey, red, blue and orange paper with dark ink, the 2 and 1 coins in gold and silver. The typed amount sits in an `accent` box like the other number games; Yes and No are two `key` buttons with the 2px `line` border, `good` and `bad` after the answer. No other colour.
+
 ### Calendar pictures
 
 Calendar and Dates draws the week, a month grid or the twelve months. The boxes are `chip` with `ink` text. The day or month in the question is `accent` with `on-accent` text. No other colour. The grid is a table with the short day names on top, 3px apart, so the picture reads like a wall calendar.
