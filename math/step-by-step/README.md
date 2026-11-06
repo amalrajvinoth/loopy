@@ -48,6 +48,8 @@ Tap **Settings** to choose:
   - **Tens first** (the default): 47 + 25 is 47 + 20 = 67, then 67 + 5 = 72.
   - **Place by place:** tens with tens, ones with ones, then put them together: 40 + 20 = 60, 7 + 5 = 12, 60 + 12 = 72. For sums up to 100.
   - **Nearly round:** for numbers close to a ten or a hundred: 47 + 29 is 47 + 30 = 77, then 77 − 1 = 76.
+  - **To the ten:** a one-digit number that crosses the ten: 57 + 6 is 57 + 3 = 60, then 60 + 3 = 63. Taking away: 63 − 6 is 63 − 3 = 60, then 60 − 3 = 57. In German books this is "verliebt in den Zehner". For sums up to 100.
+  - **Help with 10:** the second number is 8, 9, 11 or 12, so 10 does the work: 35 − 9 is 35 − 10 = 25, then 25 + 1 = 26. In German books: "Aufgaben mit 10 helfen". For sums up to 100.
   - Level 1 (over the ten) has its own way: first make 10, then the rest.
 - **Split first:** Off (the split is shown, the default) or On. When it is on, the child first picks the right split of the second number from three chips, like "20 + 5", "2 + 5" or "2 + 50". Then come the steps. Three pills at the top show where you are: Split, Steps, Answer. It works with Tens first.
 - **Read aloud:** On or Off. When it is on, a speaker button sits in the corner of the card. It reads the step on screen, for example "What is 47 plus 20?". It starts on for ages 5 to 7 and off from 8. If the device has no voice, the button and the setting do not show.

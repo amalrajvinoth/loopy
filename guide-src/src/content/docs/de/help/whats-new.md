@@ -10,6 +10,7 @@ Die großen Änderungen, die neuesten zuerst. Kleine Korrekturen stehen nicht da
 
 ## 6. November 2026
 
+- **Schrittweise rechnen: zwei neue Wege.** Zum Zehner (57 + 3 = 60, dann 60 + 3, „verliebt in den Zehner“) und 10 hilft (35 − 10 = 25, dann 25 + 1, „Aufgaben mit 10 helfen“), die Wege aus den Büchern der 2. Klasse, bis 100. Wähle sie in den Einstellungen unter Weg. [So wird gespielt](/loopy/guide/de/games/math/step-by-step/).
 - **Neues Spiel: Zehner und Einer.** Das Stellenwert-Bild aus der Schule, für 6 bis 10 Jahre: ein Strich ist ein Zehner, ein Punkt ein Einer. Lies das Bild in die Tabelle ab, male eine Zahl selbst und sieh bei Riesen und Zwergen, welche Ziffer sich bei 68 − 5 und 68 − 50 ändert. [So wird gespielt](/loopy/guide/de/games/math/tens-ones/).
 - **Neues Spiel: Einmaleins-Tabelle.** Die Einmaleins-Tabelle aus der Schule, für 7 bis 11 Jahre. Fülle die leeren Kästchen, finde eine fehlende Reihe aus einem Ergebnis und zerlege eine schwere Aufgabe wie 7 · 4 in 5 · 4 und 2 · 4. [So wird gespielt](/loopy/guide/de/games/math/times-grid/).
 
