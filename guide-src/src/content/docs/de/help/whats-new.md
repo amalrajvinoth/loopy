@@ -8,6 +8,10 @@ loopy bekommt immer wieder neue Spiele. Das ist zuletzt dazugekommen!
 
 Die großen Änderungen, die neuesten zuerst. Kleine Korrekturen stehen nicht dabei. Die [ganze Liste steht auf GitHub](https://github.com/amalrajvinoth/loopy/blob/main/RELEASES.md) (auf Englisch).
 
+## 6. November 2026
+
+- **Neues Spiel: Einmaleins-Tabelle.** Die Einmaleins-Tabelle aus der Schule, für 7 bis 11 Jahre. Fülle die leeren Kästchen, finde eine fehlende Reihe aus einem Ergebnis und zerlege eine schwere Aufgabe wie 7 · 4 in 5 · 4 und 2 · 4. [So wird gespielt](/loopy/guide/de/games/math/times-grid/).
+
 ## 5. November 2026
 
 - **Neues Spiel: Lesen und Antworten.** Ein kurzer Text mit zwei bis vier Sätzen und eine Frage mit drei Antworten, für 7 bis 14 Jahre. Erst steht die Antwort im Text, dann geht es um Warum und Wie, dann um einen Titel oder ein Ende, das passt. 60 Texte pro Sprache. [So wird gespielt](/loopy/guide/de/games/languages/read-answer/).

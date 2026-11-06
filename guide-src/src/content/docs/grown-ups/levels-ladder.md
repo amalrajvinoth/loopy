@@ -44,6 +44,7 @@ From the first step to the last. Today's 10 has no levels.
 | Shapes and Angles | 5 | Shapes, corners and sides → Lines and symmetry → Perimeter and area → Angles → Triangles and formulas |
 | Calendar and Dates | 4 | Days of the week → The month → Days and weeks → Months and dates |
 | Number Patterns | 5 | Steps of 1, 2 and 10 → Any step, backwards too → Doubling and squares → Growing steps → Two rules mixed |
+| Times Table Grid | 5 | Tables of 2, 5 and 10 → A missing factor → Bigger grid → Split it → Tables to 12 |
 | Sound Spell | 3 | Starting sounds, 3 choices → Both sounds, 3 choices → Both sounds, 4 choices |
 | Word Match | 3 | 3 words → 4 words → 4, tricky |
 | Spell It | 5 | 3 letters → 4 letters → 5 letters → 6 letters → 7 to 8 letters |

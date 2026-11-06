@@ -296,6 +296,10 @@ Read and Answer shows the text in a `chip` bubble with the picture at the left a
 
 Number Patterns shows the row as square `chip` boxes with `ink` numbers and the 2px `line` border. The empty box has a 2px `accent` line on `card` and shows the typed digits in `accent`. After the answer it turns `good` or `bad` (the wrong number crossed out), and the jumps appear under the row in `muted` text, each one centred between two boxes. No other colour.
 
+### Times table grid
+
+Times Table Grid is a table. The factor cells on the edges are `chip` boxes with `muted` numbers. The product cells inside are `chip` with `ink`. All have the 2px `line` border and 14px corners. A box still to fill is dashed on `card`. The box being asked has the `accent` line and shows the typed digits in `accent`. A done box is `good` on `good-bg`. A box the child got wrong keeps the right number with a `bad` border. Split it uses the same boxes in a column of equations. No other colour.
+
 ### Calendar pictures
 
 Calendar and Dates draws the week, a month grid or the twelve months. The boxes are `chip` with `ink` text. The day or month in the question is `accent` with `on-accent` text. No other colour. The grid is a table with the short day names on top, 3px apart, so the picture reads like a wall calendar.

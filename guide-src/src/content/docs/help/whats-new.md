@@ -8,6 +8,10 @@ loopy keeps getting new games. Here is what came lately!
 
 The big changes, newest first. Small fixes are not listed. See [the full list on GitHub](https://github.com/amalrajvinoth/loopy/blob/main/RELEASES.md).
 
+## 6 November 2026
+
+- **New game: Times Table Grid.** The times table grid from school, for ages 7 to 11. Fill the empty boxes and work out a missing table from one answer. Split a hard sum like 7 × 4 into 5 × 4 and 2 × 4. [How to play](/loopy/guide/games/math/times-grid/).
+
 ## 5 November 2026
 
 - **New game: Read and Answer.** A short text of two to four sentences and one question with three answers, for ages 7 to 14. First the answer is in the text, then why and how, then a title or an ending that fits. 60 texts per language. [How to play](/loopy/guide/games/languages/read-answer/).

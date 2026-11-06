@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'sha256-phKXHD+Ywhwh/B4+dhM98bsRntS/bQ6NMdpwbAiRfmw='; style-src 'self' 'sha256-7Zwgm7pZj3kbSQNT4RP1s9lYkgIvpV9k1JmwVayDMQM='; img-src 'self' data:; font-src 'self'; connect-src 'self' https://loopy-sync.loopy-1e2.workers.dev; worker-src 'self'; object-src 'none'; base-uri 'none'; form-action 'none'; manifest-src 'self'; upgrade-insecure-requests">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'sha256-3KVH4GLk8Er6dw/pZrnuzvz8zJHr9JZ0zeZ/KMDnjnA='; style-src 'self' 'sha256-7Zwgm7pZj3kbSQNT4RP1s9lYkgIvpV9k1JmwVayDMQM='; img-src 'self' data:; font-src 'self'; connect-src 'self' https://loopy-sync.loopy-1e2.workers.dev; worker-src 'self'; object-src 'none'; base-uri 'none'; form-action 'none'; manifest-src 'self'; upgrade-insecure-requests">
 <meta name="referrer" content="strict-origin-when-cross-origin">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <link rel="icon" href="../icon.svg" type="image/svg+xml">
@@ -262,6 +262,7 @@ Loopy.addStrings({
     "nm-sq-mine": "Words from your list", "nm-sq-loopy": "Tricky spellings", "nm-mw-mine": "Typing words from your list", "nm-mw-loopy": "Typing spelling words",
     "nm-wf-plural": "Plurals", "nm-wf-past": "Past tense", "nm-wf-comp": "Comparing (big, bigger, biggest)", "nm-wf-opp": "Opposites", "nm-wf-art": "a or an",
     "nm-ra-find": "It says so in the text", "nm-ra-why": "Why and how", "nm-ra-think": "A title or an ending",
+    "nm-tg-fill": "Times table answers", "nm-tg-factor": "The missing factor", "nm-tg-split": "Splitting a times sum",
     "nm-wd-3": "Mystery words with 3 letters", "nm-wd-4": "Mystery words with 4 letters", "nm-wd-5": "Mystery words with 5 letters", "nm-wd-6": "Mystery words with 6 letters",
     "nm-wt-3": "Hidden words with 3 to 4 letters", "nm-wt-5": "Hidden words with 5 to 6 letters", "nm-wt-7": "Hidden words with 7 to 8 letters",
     "nm-mul": "{n} times table", "nm-mul-big": "Times with bigger numbers", "nm-div": "Sharing by {n}", "nm-div-big": "Sharing bigger numbers",
@@ -292,7 +293,7 @@ Loopy.addStrings({
     prSheet: "Print a practice sheet", prSheetMaking: "Making the sheet…", prSheetGo: "Print the sheet", prSheetReady: "The sheet is ready. Tap Print the sheet.", prSheetFail: "The sheet could not be made. Open a game and print its worksheet from Settings instead.",
     prSheetTitle: "Practice sheet", prSheetTitleKid: "Practice sheet for {name}", prSheetHow: "20 problems of the kinds missed most. Answers on the last page.",
     prStars: "⭐ {n} stars", prDays: "🔥 {n} days in a row", prDay: "🔥 1 day in a row", prBadge: "🏅 {name}", prBest: "🏆 Best streak: {n}", prGameBest: "Best streak: {n} in a row", prPlay: "Play →",
-    gPlusMinus: "Plus and Minus", gTimesShare: "Times and Share", gTimesSprint: "Times Tables Sprint", gClock: "What Time Is It?", gSoundSpell: "Sound Spell", gDailyMix: "Today's 10", gMake10: "Make 10", gBiggerSmaller: "Bigger or Smaller", gPizza: "Pizza Fractions", gCoinsChange: "Coins and Change", gWordMatch: "Word Match", gSpellIt: "Spell It", gSentence: "Sentence Builder", gQuickFacts: "Quick Facts", gSortIt: "Sort It", gGraphs: "Graphs and Data", gBox: "Box Multiplication", gWhereIsIt: "Where Is It?", gFlags: "Flags and Capitals", gEquation: "Equation Balance", gPercent: "Percent and Ratio", gStep: "Step by Step", gShapes: "Shapes and Angles", gCalendar: "Calendar and Dates", gPatterns: "Number Patterns", gSpellQuiz: "Spelling Quiz", gWordTrail: "Word Trail", gWordDetective: "Word Detective", gMyWords: "My Words", gWordForms: "Word Forms", gReadAnswer: "Read and Answer",
+    gPlusMinus: "Plus and Minus", gTimesShare: "Times and Share", gTimesSprint: "Times Tables Sprint", gClock: "What Time Is It?", gSoundSpell: "Sound Spell", gDailyMix: "Today's 10", gMake10: "Make 10", gBiggerSmaller: "Bigger or Smaller", gPizza: "Pizza Fractions", gCoinsChange: "Coins and Change", gWordMatch: "Word Match", gSpellIt: "Spell It", gSentence: "Sentence Builder", gQuickFacts: "Quick Facts", gSortIt: "Sort It", gGraphs: "Graphs and Data", gBox: "Box Multiplication", gWhereIsIt: "Where Is It?", gFlags: "Flags and Capitals", gEquation: "Equation Balance", gPercent: "Percent and Ratio", gStep: "Step by Step", gShapes: "Shapes and Angles", gCalendar: "Calendar and Dates", gPatterns: "Number Patterns", gTimesGrid: "Times Table Grid", gSpellQuiz: "Spelling Quiz", gWordTrail: "Word Trail", gWordDetective: "Word Detective", gMyWords: "My Words", gWordForms: "Word Forms", gReadAnswer: "Read and Answer",
     tipNone: "Not played this week. A few minutes a day helps.", tipAll: "All right this week. Try a harder level in Settings.",
     tipLast: "Mostly right. Keep going.",
     "tip-add": "Practise adding.", "tip-add-rg": "Practise adding with carrying, like 38 + 25.",
@@ -384,7 +385,10 @@ Loopy.addStrings({
     "tip-wf-art": "Say the sound the word starts with: an apple, an egg, but a banana. The h in hour is silent, so it is an hour.",
     "tip-ra-find": "Read the text out loud together, then ask: where does it say that? Point at the sentence with a finger.",
     "tip-ra-why": "After a story, ask why and how: why did the fox stop coming? Let the child explain in their own words.",
-    "tip-ra-think": "Ask for a title for a story or a page in a book. A good title says what the whole text is about, not just the first line."
+    "tip-ra-think": "Ask for a title for a story or a page in a book. A good title says what the whole text is about, not just the first line.",
+    "tip-tg-fill": "Say one table out loud every day, up and down: 3, 6, 9, 12. Point at the grid and say the row, then the column.",
+    "tip-tg-factor": "Turn it around: 21 is in the 7 row. Count in 7s until you reach 21: 7, 14, 21. That is 3 times.",
+    "tip-tg-split": "Hard sums are two easy ones: 7 × 4 is 5 × 4 and 2 × 4. Let your child pick the easy part first, then add."
   },
   de: {
     prTitle: "So läuft es · loopy", prHeading: "So läuft es", prHeadingKid: "So läuft es bei {name}", prLead: "Für Erwachsene. Antworten auf diesem Gerät aus den letzten 30 Tagen.",
@@ -413,6 +417,7 @@ Loopy.addStrings({
     "nm-sq-mine": "Wörter aus eurer Liste", "nm-sq-loopy": "Knifflige Schreibweisen", "nm-mw-mine": "Wörter aus eurer Liste tippen", "nm-mw-loopy": "Lernwörter tippen",
     "nm-wf-plural": "Mehrzahl", "nm-wf-past": "Vergangenheit", "nm-wf-comp": "Steigern (groß, größer, am größten)", "nm-wf-opp": "Gegenteile", "nm-wf-art": "der, die, das",
     "nm-ra-find": "Steht im Text", "nm-ra-why": "Warum und wie", "nm-ra-think": "Ein Titel oder ein Ende",
+    "nm-tg-fill": "Einmaleins-Ergebnisse", "nm-tg-factor": "Die fehlende Zahl am Rand", "nm-tg-split": "Eine Malaufgabe zerlegen",
     "nm-wd-3": "Rätselwörter mit 3 Buchstaben", "nm-wd-4": "Rätselwörter mit 4 Buchstaben", "nm-wd-5": "Rätselwörter mit 5 Buchstaben", "nm-wd-6": "Rätselwörter mit 6 Buchstaben",
     "nm-wt-3": "Versteckte Wörter mit 3 bis 4 Buchstaben", "nm-wt-5": "Versteckte Wörter mit 5 bis 6 Buchstaben", "nm-wt-7": "Versteckte Wörter mit 7 bis 8 Buchstaben",
     "nm-mul": "{n}er-Reihe", "nm-mul-big": "Mal mit größeren Zahlen", "nm-div": "Teilen durch {n}", "nm-div-big": "Teilen mit größeren Zahlen",
@@ -443,7 +448,7 @@ Loopy.addStrings({
     prSheet: "Übungsblatt drucken", prSheetMaking: "Blatt wird gemacht…", prSheetGo: "Blatt drucken", prSheetReady: "Das Blatt ist fertig. Tippe auf Blatt drucken.", prSheetFail: "Das Blatt konnte nicht gemacht werden. Öffnet ein Spiel und druckt dort in den Einstellungen das Arbeitsblatt.",
     prSheetTitle: "Übungsblatt", prSheetTitleKid: "Übungsblatt für {name}", prSheetHow: "20 Aufgaben der Arten, die am häufigsten falsch waren. Lösungen auf der letzten Seite.",
     prStars: "⭐ {n} Sterne", prDays: "🔥 {n} Tage hintereinander", prDay: "🔥 1 Tag hintereinander", prBadge: "🏅 {name}", prBest: "🏆 Beste Serie: {n}", prGameBest: "Beste Serie: {n} hintereinander", prPlay: "Spielen →",
-    gPlusMinus: "Plus und Minus", gTimesShare: "Mal und Teilen", gTimesSprint: "Einmaleins-Sprint", gClock: "Wie spät ist es?", gSoundSpell: "Anlaut und Endlaut", gDailyMix: "Die 10 von heute", gMake10: "Ergänze bis 10", gBiggerSmaller: "Größer oder kleiner", gPizza: "Pizza-Brüche", gCoinsChange: "Münzen und Wechselgeld", gWordMatch: "Bild und Wort", gSpellIt: "Wörter schreiben", gSentence: "Satzbau", gQuickFacts: "Blitzwissen", gSortIt: "Sortieren", gGraphs: "Diagramme und Daten", gBox: "Malkreuz", gWhereIsIt: "Wo liegt das?", gFlags: "Flaggen und Hauptstädte", gEquation: "Waage", gPercent: "Prozent und Verhältnis", gStep: "Schrittweise rechnen", gShapes: "Formen und Winkel", gCalendar: "Kalender und Datum", gPatterns: "Zahlenmuster", gSpellQuiz: "Rechtschreib-Quiz", gWordTrail: "Wortpfad", gWordDetective: "Wortdetektiv", gMyWords: "Meine Wörter", gWordForms: "Wortformen", gReadAnswer: "Lesen und Antworten",
+    gPlusMinus: "Plus und Minus", gTimesShare: "Mal und Teilen", gTimesSprint: "Einmaleins-Sprint", gClock: "Wie spät ist es?", gSoundSpell: "Anlaut und Endlaut", gDailyMix: "Die 10 von heute", gMake10: "Ergänze bis 10", gBiggerSmaller: "Größer oder kleiner", gPizza: "Pizza-Brüche", gCoinsChange: "Münzen und Wechselgeld", gWordMatch: "Bild und Wort", gSpellIt: "Wörter schreiben", gSentence: "Satzbau", gQuickFacts: "Blitzwissen", gSortIt: "Sortieren", gGraphs: "Diagramme und Daten", gBox: "Malkreuz", gWhereIsIt: "Wo liegt das?", gFlags: "Flaggen und Hauptstädte", gEquation: "Waage", gPercent: "Prozent und Verhältnis", gStep: "Schrittweise rechnen", gShapes: "Formen und Winkel", gCalendar: "Kalender und Datum", gPatterns: "Zahlenmuster", gTimesGrid: "Einmaleins-Tabelle", gSpellQuiz: "Rechtschreib-Quiz", gWordTrail: "Wortpfad", gWordDetective: "Wortdetektiv", gMyWords: "Meine Wörter", gWordForms: "Wortformen", gReadAnswer: "Lesen und Antworten",
     tipNone: "Diese Woche nicht gespielt. Ein paar Minuten am Tag helfen.", tipAll: "Diese Woche alles richtig. Probiert in den Einstellungen eine schwerere Stufe.",
     tipLast: "Fast alles richtig. Weiter so.",
     "tip-add": "Übt Plusrechnen.", "tip-add-rg": "Übt Plusrechnen mit Übertrag, wie 38 + 25.",
@@ -535,7 +540,10 @@ Loopy.addStrings({
     "tip-wf-art": "Lernt jedes neue Wort gleich mit seinem Artikel: der Apfel, die Katze, das Haus. Wörter auf -chen sind immer das.",
     "tip-ra-find": "Lest den Text zusammen laut, dann fragt: Wo steht das? Mit dem Finger auf den Satz zeigen.",
     "tip-ra-why": "Fragt nach einer Geschichte nach dem Warum und Wie: Warum kam der Fuchs nicht mehr? Das Kind erklärt es mit eigenen Worten.",
-    "tip-ra-think": "Lasst euch einen Titel für eine Geschichte oder eine Buchseite ausdenken. Ein guter Titel sagt, worum es im ganzen Text geht, nicht nur im ersten Satz."
+    "tip-ra-think": "Lasst euch einen Titel für eine Geschichte oder eine Buchseite ausdenken. Ein guter Titel sagt, worum es im ganzen Text geht, nicht nur im ersten Satz.",
+    "tip-tg-fill": "Sagt jeden Tag eine Reihe laut auf, vorwärts und rückwärts: 3, 6, 9, 12. Zeigt auf die Tabelle und sagt erst die Zeile, dann die Spalte.",
+    "tip-tg-factor": "Dreht es um: 21 steht in der 7er-Reihe. Zählt in 7er-Schritten bis 21: 7, 14, 21. Das ist 3 mal.",
+    "tip-tg-split": "Schwere Aufgaben sind zwei leichte: 7 · 4 ist 5 · 4 und 2 · 4. Lass dein Kind erst den leichten Teil rechnen, dann zusammenzählen."
   }
 });
 (function () {
@@ -558,6 +566,7 @@ Loopy.addStrings({
     { id: "shapes-angles", name: "gShapes", path: "../math/shapes-angles/" },
     { id: "calendar-dates", name: "gCalendar", path: "../math/calendar-dates/" },
     { id: "number-patterns", name: "gPatterns", path: "../math/number-patterns/" },
+    { id: "times-grid", name: "gTimesGrid", path: "../math/times-grid/" },
     { id: "sound-spell", name: "gSoundSpell", path: "../languages/sound-spell/" },
     { id: "word-match", name: "gWordMatch", path: "../languages/word-match/" },
     { id: "spell-it", name: "gSpellIt", path: "../languages/spell-it/" },
@@ -576,7 +585,7 @@ Loopy.addStrings({
   ];
   // Which game practises a kind of question. Today's 10 mixes three games, so its misses point to those.
   const OWNER = { add: "plus-minus", sub: "plus-minus", mul: "times-share", div: "times-share", cl: "clock", ss: "sound-spell", mk: "make-10",
-    bs: "bigger-smaller", pz: "pizza-fractions", cc: "coins-change", wm: "word-match", si: "spell-it", sb: "sentence-builder", qf: "quick-facts", so: "sort-it", wi: "where-is-it", eb: "equation-balance", fc: "flags-capitals", pr: "percent-ratio", gd: "graphs-data", bm: "box-multiply", st: "step-by-step", sq: "spelling-quiz", sh: "shapes-angles", wd: "word-detective", wt: "word-trail", mw: "my-words", cd: "calendar-dates", np: "number-patterns", wf: "word-forms", ra: "read-answer" };
+    bs: "bigger-smaller", pz: "pizza-fractions", cc: "coins-change", wm: "word-match", si: "spell-it", sb: "sentence-builder", qf: "quick-facts", so: "sort-it", wi: "where-is-it", eb: "equation-balance", fc: "flags-capitals", pr: "percent-ratio", gd: "graphs-data", bm: "box-multiply", st: "step-by-step", sq: "spelling-quiz", sh: "shapes-angles", wd: "word-detective", wt: "word-trail", mw: "my-words", cd: "calendar-dates", np: "number-patterns", wf: "word-forms", ra: "read-answer", tg: "times-grid" };
   const gameOf = (id) => GAMES.find(g => g.id === id);
   const nameOf = (id) => t(gameOf(id).name);
   // Weeks start on Monday. Week 0: Monday to today. Week 1: the 7 days before, and so on, back four weeks.

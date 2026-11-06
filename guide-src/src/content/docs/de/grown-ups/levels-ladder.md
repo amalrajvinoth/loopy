@@ -44,6 +44,7 @@ Von der ersten bis zur letzten Stufe. Die 10 von heute hat keine Stufen.
 | Formen und Winkel | 5 | Formen, Ecken und Seiten → Linien und Symmetrie → Umfang und Fläche → Winkel → Dreiecke und Formeln |
 | Kalender und Datum | 4 | Wochentage → Der Monat → Tage und Wochen → Monate und Datum |
 | Zahlenmuster | 5 | Schritte von 1, 2 und 10 → Jeder Schritt, auch rückwärts → Verdoppeln und Quadratzahlen → Wachsende Schritte → Zwei Regeln gemischt |
+| Einmaleins-Tabelle | 5 | Die 2er-, 5er- und 10er-Reihe → Eine Zahl am Rand fehlt → Größere Tabelle → Leichte Aufgaben zuerst → Reihen bis 12 |
 | Anlaut und Endlaut | 3 | Anlaute, 3 Antworten → Beide Laute, 3 Antworten → Beide Laute, 4 Antworten |
 | Bild und Wort | 3 | 3 Wörter → 4 Wörter → 4, knifflig |
 | Wörter schreiben | 5 | 3 Buchstaben → 4 Buchstaben → 5 Buchstaben → 6 Buchstaben → 7 bis 8 Buchstaben |

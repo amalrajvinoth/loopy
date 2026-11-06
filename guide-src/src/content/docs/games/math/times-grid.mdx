@@ -1,0 +1,61 @@
+---
+title: Times Table Grid
+description: The times table grid from school. Fill the empty boxes, find a missing table from one answer, and split a hard sum into two easy ones. For ages 7 to 11.
+sidebar:
+  order: 17
+---
+import KidsBox from "~/components/KidsBox.astro";
+
+<KidsBox game="math/times-grid" steps={[
+  "Look at the grid. The edge numbers are the tables.",
+  "Type the number for the blue box. Tap Check.",
+  "Tap Next for the next box.",
+]} />
+
+A times tables game for ages 7 to 11. The card shows the grid from school: the tables on the top and at the side, the answers inside. The child fills the empty boxes one at a time. Sometimes a number on the edge is empty, and the child works out which table a number belongs to. One level splits a hard sum into two easy ones.
+
+## How to play
+
+1. Look at the grid. The number at the top times the number at the side gives the box inside.
+2. One box has a blue line. The line under the grid asks for it, like "What is 7 times 3?" or "Which number times 7 makes 21?".
+3. Type the number on the pad and tap **Check**. The box turns green when it is right.
+4. Tap **Next** for the next box. When the grid is full, a new one comes.
+5. On the **Split it** level there is no grid. A sum like 7 × 4 is done in three steps. First 5 × 4, then 2 × 4, then the two answers added up.
+
+On a keyboard, the digits type, **Backspace** erases and **Enter** checks or goes on.
+
+## When an answer is wrong
+
+The child has one try. The typed number turns red and is crossed out. The line says the right number first and then why, like "Not quite. The missing number is 3. 3 × 7 = 21, so the missing number is 3." The box keeps the right number with a red line, so the rest of the grid can still be filled.
+
+A right box earns a star. A missed box comes back later in **Try again**, in the same grid with only that box empty.
+
+## Age levels
+
+| Level | Age | What comes |
+| --- | --- | --- |
+| 1 | 7 and under | A 2 by 2 grid with the 2, 5 and 10 tables, all four answers empty |
+| 2 | 8 | A 2 by 2 grid with the tables to 10, one number on the edge empty |
+| 3 | 9 | Three tables across and two down, one or two edge numbers empty |
+| 4 | 10 | Split it: 7 × 4 is 5 × 4 and 2 × 4, then add |
+| 5 | 11 and up | A 3 by 3 grid with the tables to 12 and two edge numbers empty, or a split with a number over 10 |
+
+After 10 right in a row, or 18 of the last 20 right, the game goes up a level by itself. After 3 wrong in the last 5 it offers an easier one. See [Levels](/loopy/guide/playing/levels/).
+
+## Settings
+
+Tap ⚙ **Settings** in the game to choose:
+
+- **Level:** the five levels above.
+- **Read aloud:** a speaker button on the card reads the question out loud. It is on by itself for ages 5 to 7.
+- **Print worksheet:** 20 grids at the game's level with the empty boxes to fill, 4 across. The answers are on page 2.
+
+## Example help text
+
+- "7 × 3 = 21. Count in 7s: 7, 14, 21."
+- "Correct! 3 × 7 = 21, so the missing number is 3."
+- "Not quite. The missing number is 28. 5 × 4 = 20 and 2 × 4 = 8. Together: 20 + 8 = 28. So 7 × 4 = 28."
+
+## Something wrong?
+
+Tap the 🚩 flag at the top of the game to tell us. See [Report a problem](/loopy/guide/help/report-a-problem/).
