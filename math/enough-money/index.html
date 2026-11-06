@@ -1,0 +1,700 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'sha256-DsFyy6KmUUJioyLUa8Yte26/xbada+IFkvQguBVi5cc='; style-src 'self' 'sha256-z2P7kGW5Z05eCTjTZdYpc0vThTlOE9vmt97pVSvi2I4=' 'sha256-+Yyd9YXCRiuDdDuXBlT9hmSuTFI5zU8H8Lyu9dQafo4=' 'sha256-RT1053JU5UiKvjrCUFx1rlhdFLMmgtuFJ9T8jnMeawQ=' 'sha256-IGEL+dhUF8ftiHrahPUHPnbuShA5MvbQQ5fS4U5IocY='; img-src 'self' data:; font-src 'self'; connect-src 'self' https://loopy-sync.loopy-1e2.workers.dev; worker-src 'self'; object-src 'none'; base-uri 'none'; form-action 'none'; manifest-src 'self'; upgrade-insecure-requests">
+<meta name="referrer" content="strict-origin-when-cross-origin">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<style>:root{color-scheme:light;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}body{margin:0}[hidden]{display:none!important}</style>
+<link rel="icon" href="../../icon.svg" type="image/svg+xml">
+<link rel="manifest" href="../../manifest.webmanifest">
+<link rel="apple-touch-icon" href="../../apple-touch-icon.png">
+<meta name="theme-color" content="#0a0a0c">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="loopy">
+<title data-t="emName">Is It Enough?</title>
+<meta name="description" content="Is It Enough? on loopy: count notes and coins up to 100 euros, then shop word problems: is the money enough, how much is left or missing. Free practice for ages 7 to 10, English and German.">
+<link rel="preload" href="../../fonts/lexend-latin.woff2" as="font" type="font/woff2" crossorigin>
+<style>
+/* Layout: a small times table grid on the card with one cell marked, the number pad below. Shared look with the other games. */
+:root {
+  --bg: #f3f6fb;
+  --card: #ffffff;
+  --ink: #1d2a3f;
+  --muted: #5d6b82;
+  --line: #d5dde9;
+  --accent: #2457c5;
+  --accent-ink: #ffffff;
+  --mark: #e2622b;
+  --good: #1f8a4c;
+  --good-bg: #e3f5ea;
+  --bad: #c23a3a;
+  --bad-bg: #fbe6e6;
+  --chip: #e6ecf6;
+  --key: #ffffff;
+  --font: "Lexend", "Segoe UI", "Helvetica Neue", Arial, sans-serif;
+}
+
+* { box-sizing: border-box; }
+body {
+  background: var(--bg); color: var(--ink); font-family: var(--font); font-size: 16px;
+  padding-left: max(16px, env(safe-area-inset-left, 0px));
+  padding-right: max(16px, env(safe-area-inset-right, 0px));
+  padding-block: 20px 32px;
+}
+.wrap { max-width: 520px; margin: 0 auto; display: flex; flex-direction: column; gap: 16px; }
+
+.top { display: flex; flex-wrap: wrap; gap: 12px; align-items: center; justify-content: space-between; }
+h1 { margin: 0; font-size: 1.6rem; font-weight: 700; text-wrap: balance; }
+.score { display: flex; flex-wrap: wrap; gap: 8px; font-variant-numeric: tabular-nums; }
+.pill { background: var(--card); border: 1px solid var(--line); border-radius: 999px; padding: 6px 14px; font-weight: 600; font-size: 1rem; white-space: nowrap; }
+.pill span { color: var(--muted); font-weight: 400; margin-right: 4px; }
+
+.settings { display: flex; flex-direction: column; gap: 8px; }
+.seg-label { font-size: 0.8rem; font-weight: 600; letter-spacing: 0.06em; text-transform: uppercase; color: var(--muted); margin: 0 0 4px 4px; }
+.seg { display: grid; grid-template-columns: repeat(2, 1fr); gap: 6px; background: var(--chip); padding: 5px; border-radius: 14px; }
+.seg button {
+  font: inherit; font-size: 0.95rem; font-weight: 600; color: var(--muted);
+  background: transparent; border: 0; border-radius: 10px; padding: 8px 4px; min-height: 44px; cursor: pointer;
+}
+.seg button:last-child { grid-column: 1 / -1; }
+.seg button[aria-pressed="true"] { background: var(--card); color: var(--ink); box-shadow: 0 1px 3px rgb(0 0 0 / 0.12); }
+
+.problem-card {
+  background: var(--card); border: 1px solid var(--line); border-radius: 24px;
+  padding: 20px 18px 18px; display: flex; flex-direction: column; align-items: center; gap: 14px;
+}
+.problem-card.good { border-color: var(--good); box-shadow: 0 0 0 2px var(--good) inset; }
+.problem-card.bad { border-color: var(--bad); box-shadow: 0 0 0 2px var(--bad) inset; }
+
+.feedback { min-height: 3.1em; text-align: center; font-size: 1.1rem; line-height: 1.45; margin: 0; max-width: 34ch; }
+.feedback strong { display: block; font-size: 1.45rem; }
+.feedback.good strong { color: var(--good); }
+.feedback.bad strong { color: var(--bad); }
+.feedback .hint { color: var(--muted); }
+
+.pad { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; }
+.pad button {
+  font: inherit; font-size: 2rem; font-weight: 700; font-variant-numeric: tabular-nums; color: var(--ink);
+  background: var(--key); border: 2px solid var(--line); border-radius: 18px; min-height: 72px; cursor: pointer;
+  transition: transform .08s ease, border-color .15s ease;
+  touch-action: manipulation; -webkit-tap-highlight-color: transparent;
+}
+.pad button:hover:not(:disabled) { border-color: var(--accent); }
+.pad button:active:not(:disabled) { transform: scale(0.96); }
+.pad button:disabled { opacity: 0.4; cursor: default; }
+.pad .erase { font-size: 1.15rem; color: var(--muted); }
+.pad .go { background: var(--accent); border-color: var(--accent); color: var(--accent-ink); font-size: 1.35rem; }
+.pad .go:hover:not(:disabled) { border-color: var(--accent); filter: brightness(1.08); }
+
+.foot { display: flex; justify-content: space-between; align-items: center; gap: 12px; flex-wrap: wrap; }
+.foot p { margin: 0; color: var(--muted); font-size: 0.9rem; }
+.reset { font: inherit; font-size: 0.95rem; color: var(--muted); background: transparent; border: 2px solid var(--line); border-radius: 14px; padding: 0 16px; min-height: 44px; cursor: pointer; }
+button:focus-visible { outline: 3px solid var(--mark); outline-offset: 3px; }
+
+@media (max-width: 420px) {
+  h1 { font-size: 1.35rem; }
+  .pad button { min-height: 64px; font-size: 1.8rem; }
+  .seg button { font-size: 0.85rem; }
+}
+@media (prefers-reduced-motion: reduce) {
+  * { transition: none !important; }
+}
+</style>
+<style>.home-link{display:inline-flex;align-items:center;min-height:40px;color:var(--muted);font-weight:600;text-decoration:none;font-size:0.95rem}.home-link:hover{color:var(--ink)}</style>
+<style>
+/* Phones and tablets: the game fills one screen; settings sit behind a button. */
+body { min-height: 100vh; min-height: 100dvh; padding-block: 12px 16px; }
+.wrap { gap: 12px; }
+.game-bar { display: flex; align-items: center; justify-content: space-between; gap: 8px; }
+.bar-right { display: flex; align-items: center; gap: 8px; }
+.top { gap: 8px 12px; }
+.play { display: flex; flex-direction: column; gap: 12px; -webkit-user-select: none; user-select: none; }
+@media (min-width: 600px) and (orientation: portrait) { .wrap { max-width: 640px; } }
+@media (orientation: landscape) and (min-width: 640px) {
+  .wrap { max-width: 1100px; }
+  .play { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; align-items: center; }
+}
+
+.problem-card { padding: 14px 14px 12px; gap: 8px; }
+.feedback { min-height: 2.9em; font-size: 1.05rem; }
+.feedback strong { font-size: 1.3rem; }
+.pad { gap: 8px; }
+.pad button { min-height: clamp(50px, 8vh, 92px); min-height: clamp(50px, 8dvh, 92px); }
+@media (min-width: 600px) and (orientation: portrait) {
+  .pad button { min-height: clamp(60px, 10dvh, 120px); font-size: 2.4rem; }
+}
+@media (orientation: landscape) and (min-width: 640px) {
+  .problem-card { height: 100%; justify-content: center; }
+  .pad button { min-height: clamp(44px, calc((100dvh - 150px) / 4.4), 130px); }
+}
+@media (max-height: 760px) and (orientation: portrait) {
+  .feedback { font-size: 0.95rem; line-height: 1.35; }
+  .feedback strong { font-size: 1.15rem; }
+}
+
+/* Portrait: the page is exactly one screen tall; the pad stays at the bottom and the card shrinks to fit. */
+@media (orientation: portrait) {
+  body { height: calc(100dvh - env(safe-area-inset-top, 0px) - env(safe-area-inset-bottom, 0px)); min-height: 0; display: flex; flex-direction: column; overflow: hidden; }
+  body:has(#settings-panel:not([hidden])) { height: auto; overflow: visible; }
+  .wrap { flex: 1 1 auto; min-height: 0; width: 100%; }
+  .play { flex: 1 1 auto; min-height: 0; }
+  .problem-card { flex: 1 1 auto; min-height: 0; justify-content: center; overflow: hidden; }
+  .feedback { flex: 0 1 auto; min-height: 0; overflow-y: auto; }
+}
+@media (orientation: landscape) and (min-width: 640px) {
+  body { height: calc(100dvh - env(safe-area-inset-top, 0px) - env(safe-area-inset-bottom, 0px)); min-height: 0; display: flex; flex-direction: column; overflow: hidden; }
+  body:has(#settings-panel:not([hidden])) { height: auto; overflow: visible; }
+  .wrap { flex: 1 1 auto; min-height: 0; width: 100%; }
+  .play { flex: 1 1 auto; min-height: 0; grid-template-rows: minmax(0, 1fr); }
+  .problem-card { min-height: 0; overflow: hidden; }
+  .feedback { flex: 0 1 auto; min-height: 0; overflow-y: auto; }
+}
+@media (max-height: 500px) {
+  .feedback { font-size: 0.9rem; line-height: 1.3; }
+  .feedback strong { font-size: 1.05rem; }
+}
+
+
+/* Is It Enough?: a small shop of three things with price tags, a purse of notes and coins, and one question.
+   Notes and coins keep fixed paper and metal colours in every theme, like Coins and Change. */
+.tag { margin: 0; font-size: 0.85rem; font-weight: 600; color: var(--muted); background: var(--chip); border-radius: 999px; padding: 4px 12px; }
+.shop { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; width: 100%; max-width: 420px; }
+.shop .item { display: flex; flex-direction: column; align-items: center; gap: 2px; padding: 8px 4px; border: 2px solid var(--line); border-radius: 16px; background: var(--chip); color: var(--ink); min-width: 0; }
+.shop .item.want { border-color: var(--accent); box-shadow: 0 0 0 2px var(--accent) inset; background: var(--card); }
+.shop .item.faded { opacity: 0.55; }
+.shop .pic { font-size: clamp(1.8rem, 8vw, 2.6rem); line-height: 1.15; }
+.shop .price { font-size: clamp(1.05rem, 4.6vw, 1.35rem); font-weight: 700; font-variant-numeric: tabular-nums; }
+.shop .nm { font-size: 0.85rem; color: var(--muted); font-weight: 600; max-width: 100%; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.has { margin: 0; font-size: 0.95rem; color: var(--muted); font-weight: 600; text-align: center; }
+.money { display: flex; flex-wrap: wrap; justify-content: center; align-items: center; gap: 6px; width: 100%; --mh: clamp(36px, 6dvh, 52px); }
+.money i { display: inline-grid; place-items: center; font-style: normal; font-weight: 700; font-variant-numeric: tabular-nums; color: #2b2112; height: var(--mh); font-size: clamp(0.95rem, 4vw, 1.2rem); line-height: 1; }
+.money .note { width: calc(var(--mh) * 1.9); border-radius: 6px; border: 2px solid rgb(0 0 0 / 0.3); box-shadow: inset 0 0 0 3px rgb(255 255 255 / 0.45); }
+.money .n5 { background: #bfc3cb; } .money .n10 { background: #eaa595; } .money .n20 { background: #a9c1ea; } .money .n50 { background: #f0c08a; }
+.money .coin { width: var(--mh); border-radius: 50%; font-size: clamp(0.85rem, 3.4vw, 1.05rem); }
+.money .c2 { background: #c9ced6; border: 4px solid #e2b84a; box-shadow: 0 0 0 1.5px #9a7420; }
+.money .c1 { background: #e2b84a; border: 4px solid #c9ced6; box-shadow: 0 0 0 1.5px #7d8592; }
+.question { margin: 0; font-size: clamp(1.05rem, min(4.8vw, 3dvh), 1.5rem); font-weight: 700; line-height: 1.3; text-align: center; text-wrap: balance; }
+.where { margin: 0; font-size: 0.9rem; color: var(--muted); text-align: center; text-wrap: balance; }
+/* The answer line: the typed amount in a box, "? €" while empty. */
+.eq { margin: 0; font-size: clamp(1.6rem, 7vw, 2.4rem); font-weight: 700; font-variant-numeric: tabular-nums; line-height: 1.1; display: flex; align-items: center; gap: 8px; }
+.eq[hidden] { display: none; }
+.eq .ans { min-width: 2.2em; height: 1.5em; padding: 0 0.3em; display: grid; place-items: center; border: 2px solid var(--accent); box-shadow: 0 0 0 2px var(--accent) inset; border-radius: 14px; background: var(--card); color: var(--accent); }
+.eq .ans:empty::after { content: "?"; color: var(--muted); }
+.problem-card.good .eq .ans { border-color: var(--good); box-shadow: 0 0 0 2px var(--good) inset; color: var(--good); }
+.problem-card.bad .eq .ans { border-color: var(--bad); box-shadow: 0 0 0 2px var(--bad) inset; color: var(--bad); text-decoration: line-through; text-decoration-thickness: 0.08em; }
+/* Yes and No take the place of the number pad, with Next under them. */
+.yn { display: flex; flex-direction: column; gap: 10px; }
+.yn[hidden], .pad[hidden] { display: none; }
+.choices { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+.choices button {
+  font: inherit; font-size: 1.5rem; font-weight: 700; color: var(--ink); background: var(--key); border: 2px solid var(--line); border-radius: 18px;
+  min-height: clamp(64px, 12dvh, 120px); cursor: pointer; touch-action: manipulation; -webkit-tap-highlight-color: transparent; transition: transform .08s ease, border-color .15s ease;
+}
+.choices button:hover:not(:disabled) { border-color: var(--accent); }
+.choices button:active:not(:disabled) { transform: scale(0.96); }
+.choices button:disabled { cursor: default; }
+.choices button.right { border-color: var(--good); background: var(--good-bg); color: var(--good); }
+.choices button.wrong { border-color: var(--bad); background: var(--bad-bg); color: var(--bad); }
+.choices button.faded { opacity: 0.45; }
+.yn .go { font: inherit; font-size: 1.35rem; font-weight: 700; color: var(--accent-ink); background: var(--accent); border: 2px solid var(--accent); border-radius: 18px; min-height: clamp(50px, 8dvh, 80px); cursor: pointer; }
+.yn .go:disabled { opacity: 0.4; cursor: default; }
+@media (orientation: landscape) and (min-width: 640px) { .choices button { min-height: clamp(60px, 22dvh, 160px); } }
+/* A purse of six or more pieces takes two rows, so its pieces are smaller. */
+.money.many { --mh: clamp(30px, 4.4dvh, 40px); gap: 4px; }
+/* Phones up to 900px tall: with the number pad up, the amount question plus the why line need a shorter shop and purse. */
+@media (max-height: 900px) and (orientation: portrait) {
+  .problem-card { gap: 8px; }
+  .shop { gap: 6px; }
+  .shop .item { padding: 6px 4px; gap: 0; }
+  .shop .pic { font-size: 1.9rem; line-height: 1.1; }
+  .shop .price { font-size: 1.1rem; }
+  .shop .nm { font-size: 0.8rem; }
+  .money { --mh: clamp(32px, 5dvh, 44px); }
+  .money.many { --mh: 32px; }
+  .eq { font-size: 1.7rem; }
+}
+@media (max-height: 760px) and (orientation: portrait) {
+  .problem-card { gap: 6px; }
+  .shop .nm { display: none; }
+  .shop .item { padding: 4px; }
+  .shop .pic { font-size: 1.5rem; }
+  .shop .price { font-size: 1rem; }
+  .money { --mh: clamp(30px, 5dvh, 40px); gap: 4px; }
+  .money.many { --mh: 26px; gap: 3px; }
+  .money i { font-size: 0.85rem; }
+  .money .coin { font-size: 0.75rem; }
+  .money.many i { font-size: 0.75rem; }
+  .eq { font-size: 1.5rem; }
+  .feedback { font-size: 0.9rem; line-height: 1.3; }
+  .question { font-size: 1rem; }
+  .where { font-size: 0.85rem; }
+}
+/* The smallest phones: the kind tag and the item names go, the pictures shrink, so the first-time hint still finds room. */
+@media (max-height: 660px) and (orientation: portrait) {
+  .problem-card { gap: 6px; }
+  .tag, .shop .nm { display: none; }
+  .shop { gap: 6px; }
+  .shop .item { padding: 4px; border-radius: 12px; }
+  .shop .pic { font-size: 1.4rem; line-height: 1.1; }
+  .shop .price { font-size: 0.95rem; }
+  .money { --mh: 28px; gap: 3px; }
+  .money.many { --mh: 24px; }
+  .money i { font-size: 0.8rem; }
+  .money .coin { font-size: 0.7rem; }
+  .has { font-size: 0.85rem; }
+  .question { font-size: 1rem; }
+  .where { font-size: 0.85rem; }
+  .eq { font-size: 1.4rem; }
+}
+@media (max-height: 500px) { .tag { display: none; } .question { font-size: 0.95rem; } .shop .pic { font-size: 1.3rem; } .shop .item { padding: 3px; gap: 0; } .shop .nm { display: none; } .money { --mh: 28px; gap: 3px; } .money.many { --mh: 24px; } .money i { font-size: 0.8rem; } .money .coin { font-size: 0.7rem; } .eq { font-size: 1.3rem; } }
+
+/* Worksheet cells (only printed): the money as outlined boxes with a line for the total, or the shop problem in words. */
+@media print {
+  .sheet-clock .ws-em { display: flex; flex-direction: column; align-items: center; gap: 1.5mm; width: 100%; font-size: 9pt; }
+  .sheet-clock .ws-em .money { display: flex; flex-wrap: wrap; justify-content: center; gap: 1mm; }
+  .sheet-clock .ws-em .money i { display: inline-grid; place-items: center; font-style: normal; font-weight: 700; font-size: 8pt; height: 6mm; border: 0.3mm solid #000; color: #000; background: none; box-shadow: none; }
+  .sheet-clock .ws-em .money .note { width: 11mm; border-radius: 1mm; }
+  .sheet-clock .ws-em .money .coin { width: 6mm; border-radius: 50%; }
+  .sheet-clock .ws-em p { margin: 0; text-align: center; line-height: 1.3; }
+  .sheet-clock .ws-em b { font-size: 10pt; }
+  .sheet-clock .ws-em span { display: flex; align-items: flex-end; gap: 1mm; width: 100%; font-size: 8.5pt; font-weight: 600; }
+  .sheet-clock .ws-em span.sum { justify-content: center; font-size: 10pt; }
+  .sheet-clock .ws-em i.ws-line { display: inline-block; flex: 1; min-width: 6mm; height: 4mm; border-bottom: 0.4mm solid #000; }
+  .sheet-clock .ws-em span.sum i.ws-line { flex: 0 0 12mm; }
+}
+</style>
+<link rel="stylesheet" href="../../loopy.css">
+<script src="../../loopy.js"></script>
+</head>
+<body>
+
+<div class="wrap">
+  <header class="game-bar">
+    <a class="home-link" href="../../">&larr; loopy</a>
+    <div class="bar-right">
+      <span id="star-chip"></span>
+      <button type="button" id="settings-toggle" aria-controls="settings-panel"></button>
+    </div>
+  </header>
+  <section class="top" aria-labelledby="title">
+    <h1 id="title" data-t="emName">Is It Enough?</h1>
+    <div class="score" aria-live="polite">
+      <div class="pill pill-score"><span data-t="score">Score</span><b id="score">0 / 0</b></div>
+      <div id="level"></div>
+      <div class="pill pill-streak"><span data-t="streak">Streak</span><b id="streak">0</b></div>
+      <div id="last5" data-game="enough-money"></div>
+    </div>
+  </section>
+  <div class="settings-panel" id="settings-panel" hidden>
+    <div class="controls"><div id="age-picker"></div><div id="theme-picker"></div><button id="sound-toggle"></button><div id="lang-picker"></div></div>
+    <div>
+      <p class="seg-label" id="level-label" data-t="emLevel">Level</p>
+      <div class="seg" role="group" aria-labelledby="level-label" id="level-seg">
+        <button type="button" data-level="1" data-t="emL1">Count the notes</button>
+        <button type="button" data-level="2" data-t="emL2">Notes and coins</button>
+        <button type="button" data-level="3" data-t="emL3">Enough for one thing?</button>
+        <button type="button" data-level="4" data-t="emL4">Two things</button>
+        <button type="button" data-level="5" data-t="emL5">Three things</button>
+      </div>
+    </div>
+    <div class="panel-foot">
+      <p data-t="emKbd">Keyboard works too: numbers, Backspace, Enter. Y for yes, N for no.</p>
+      <button type="button" class="reset" id="reset" data-t="resetScore">Reset score</button>
+    </div>
+  </div>
+
+  <main class="play">
+    <div class="problem-card" id="card">
+      <p class="tag" id="tag"></p>
+      <div class="shop" id="shop" hidden></div>
+      <p class="has" id="has" hidden></p>
+      <div class="money" id="money" role="img"></div>
+      <p class="question" id="question"></p>
+      <p class="where" id="where"></p>
+      <p class="eq" id="eq" hidden></p>
+      <p class="feedback" id="feedback"></p>
+    </div>
+
+    <div class="yn" id="yn" hidden>
+      <div class="choices" id="choices">
+        <button type="button" id="yes" data-yn="y" data-t="emYes">Yes ✓</button>
+        <button type="button" id="no" data-yn="n" data-t="emNo">No ✗</button>
+      </div>
+      <button type="button" class="go" id="next" data-t="next">Next</button>
+    </div>
+    <div class="pad" id="pad">
+      <button type="button" id="k1" data-d="1">1</button>
+      <button type="button" id="k2" data-d="2">2</button>
+      <button type="button" id="k3" data-d="3">3</button>
+      <button type="button" id="k4" data-d="4">4</button>
+      <button type="button" id="k5" data-d="5">5</button>
+      <button type="button" id="k6" data-d="6">6</button>
+      <button type="button" id="k7" data-d="7">7</button>
+      <button type="button" id="k8" data-d="8">8</button>
+      <button type="button" id="k9" data-d="9">9</button>
+      <button type="button" id="k-erase" class="erase" aria-label="Erase last digit" data-t-aria="eraseAria" data-t="erase">Erase</button>
+      <button type="button" id="k0" data-d="0">0</button>
+      <button type="button" id="k-go" class="go" data-t="check">Check</button>
+    </div>
+  </main>
+</div>
+
+<script>
+Loopy.addStrings({
+  en: {
+    emName: "Is It Enough?", emLevel: "Level",
+    emL1: "Count the notes", emL2: "Notes and coins", emL3: "Enough for one thing?", emL4: "Two things", emL5: "Three things",
+    emKbd: "Keyboard works too: numbers, Backspace, Enter. Y for yes, N for no.",
+    emTagCount: "💶 Count big money", emTagShop: "🛒 Enough money?",
+    emAskCount: "How much is this?", emCountTip: "Notes first, then the coins.",
+    emMoneyAria: "{list}", emEuro: "€{n}", emEuroWord: "{n} euros", emEuroWord1: "1 euro",
+    emHas: "{name} has", emWants: "{name} wants {items}.", emEnough: "Is the money enough?", emThe: "the {a}", emAnd: " and ", emComma: ", ",
+    emYes: "Yes ✓", emNo: "No ✗", emYesWord: "Yes", emNoWord: "No",
+    emAskLeft: "How much is left?", emAskMissing: "How much is missing?", emAskStill: "Can {name} still buy the {a}?",
+    emTipLeft: "The money was enough.", emTipMissing: "The money was not enough.", emTipStill: "After the first things are paid.",
+    emWhyCount: "{list} = {total}.",
+    emWhyCost1: "Price of the {a}: {cost}.", emWhyCost: "{list} = {cost}.",
+    emWhyYes: "{name} has {has}. {has} is enough for {cost}, so yes.", emWhyNo: "{name} has {has}. {has} is less than {cost}, so no.",
+    emWhyLeft: "{has} − {cost} = {left} left.", emWhyMissing: "{cost} − {has} = {missing} missing.",
+    emWhyStillYes: "{left} is left and the price of the {a} is {p}, so yes.", emWhyStillNo: "{left} is left and the price of the {a} is {p}, so no.",
+    emAnswerIs: "The answer is {a}.",
+    emHowCount: "Count the notes and coins and write how much it is.",
+    emHowShop: "Is the money enough? Write yes or no, and how much is left or missing."
+  },
+  de: {
+    emName: "Reicht das Geld?", emLevel: "Stufe",
+    emL1: "Scheine zählen", emL2: "Scheine und Münzen", emL3: "Reicht es für eins?", emL4: "Zwei Sachen", emL5: "Drei Sachen",
+    emKbd: "Tastatur geht auch: Zahlen, Rücktaste, Enter. J für ja, N für nein.",
+    emTagCount: "💶 Großes Geld zählen", emTagShop: "🛒 Reicht das Geld?",
+    emAskCount: "Wie viel Geld ist das?", emCountTip: "Erst die Scheine, dann die Münzen.",
+    emMoneyAria: "{list}", emEuro: "{n} €", emEuroWord: "{n} Euro", emEuroWord1: "1 Euro",
+    emHas: "{name} hat", emWants: "{name} möchte {items}.", emEnough: "Reicht das Geld?", emThe: "{a}", emAnd: " und ", emComma: ", ",
+    emYes: "Ja ✓", emNo: "Nein ✗", emYesWord: "Ja", emNoWord: "Nein",
+    emAskLeft: "Wie viel bleibt übrig?", emAskMissing: "Wie viel fehlt?", emAskStill: "Kann {name} noch {a} kaufen?",
+    emTipLeft: "Das Geld hat gereicht.", emTipMissing: "Das Geld hat nicht gereicht.", emTipStill: "Nachdem die ersten Sachen bezahlt sind.",
+    emWhyCount: "{list} = {total}.",
+    emWhyCost1: "Preis für {a}: {cost}.", emWhyCost: "{list} = {cost}.",
+    emWhyYes: "{name} hat {has}. {has} reicht für {cost}, also ja.", emWhyNo: "{name} hat {has}. {has} ist weniger als {cost}, also nein.",
+    emWhyLeft: "{has} − {cost} = {left} bleiben übrig.", emWhyMissing: "{cost} − {has} = {missing} fehlen.",
+    emWhyStillYes: "{left} bleiben übrig und der Preis für {a} ist {p}, also ja.", emWhyStillNo: "{left} bleiben übrig und der Preis für {a} ist {p}, also nein.",
+    emAnswerIs: "Die Antwort ist {a}.",
+    emHowCount: "Zähl die Scheine und Münzen und schreib, wie viel Geld es ist.",
+    emHowShop: "Reicht das Geld? Schreib ja oder nein, und wie viel übrig bleibt oder fehlt."
+  }
+});
+
+(function () {
+  const $ = (id) => document.getElementById(id);
+  const card = $("card"), tagEl = $("tag"), shopEl = $("shop"), hasEl = $("has"), moneyEl = $("money"), qEl = $("question"), whereEl = $("where"), eqEl = $("eq"), feedbackEl = $("feedback");
+  const padEl = $("pad"), ynEl = $("yn"), goBtn = $("k-go"), nextBtn = $("next"), ynBtns = [$("yes"), $("no")];
+  const levelBtns = [...document.querySelectorAll("#level-seg button")];
+  const digitBtns = [...document.querySelectorAll("#pad [data-d]")];
+  const t = Loopy.t, fmt = (n) => Loopy.num(n);
+  const randInt = (n) => Math.floor(Math.random() * n);
+  const pick = (arr) => arr[randInt(arr.length)];
+  const el = (tag, cls, text) => Loopy.el(tag, cls, text);
+  const store = {
+    get(k, d, ok) { try { const v = JSON.parse(Loopy.store.get(k)); return ok.includes(v) ? v : d; } catch (e) { return d; } },
+    set(k, v) { Loopy.store.set(k, JSON.stringify(v)); }
+  };
+  let age = Loopy.getAge();
+  let level;
+  const levelForAge = (a) => a <= 6 ? 1 : a <= 7 ? 2 : a <= 8 ? 3 : a <= 9 ? 4 : 5;
+  function loadForAge() { level = store.get("em.level.a" + age, levelForAge(age), [1, 2, 3, 4, 5]); }
+  loadForAge();
+  Loopy.levels.init({ names: ["emL1", "emL2", "emL3", "emL4", "emL5"],
+    get: () => level - 1, base: () => levelForAge(age) - 1,
+    set: (i) => { level = i + 1; store.set("em.level.a" + age, level); render(); } });
+  let right = 0, tried = 0, streak = 0;
+  let current = null, typed = "", answered = false, recent = [], chosen = null;
+
+  // The shop: emoji, English name, German name on the card, German name in a sentence (with "den", "die" or "das"),
+  // and the price range in whole euros. Names of the children are the same in both languages.
+  const ITEMS = [
+    ["⚽", "ball", "Ball", "den Ball", 5, 15], ["📘", "book", "Buch", "das Buch", 8, 15], ["⛑️", "helmet", "Helm", "den Helm", 15, 30],
+    ["🛹", "skateboard", "Skateboard", "das Skateboard", 40, 60], ["🛴", "scooter", "Roller", "den Roller", 50, 90], ["🧸", "teddy", "Teddy", "den Teddy", 10, 25],
+    ["🧩", "puzzle", "Puzzle", "das Puzzle", 8, 20], ["🪁", "kite", "Drachen", "den Drachen", 10, 20], ["🧢", "cap", "Kappe", "die Kappe", 8, 15],
+    ["👟", "shoes", "Schuhe", "die Schuhe", 30, 60], ["🎒", "backpack", "Rucksack", "den Rucksack", 20, 40], ["⌚", "watch", "Uhr", "die Uhr", 20, 50],
+    ["🎧", "headphones", "Kopfhörer", "die Kopfhörer", 20, 45], ["🎮", "game controller", "Controller", "den Controller", 30, 60], ["👕", "shirt", "T-Shirt", "das T-Shirt", 10, 25],
+    ["🍕", "pizza", "Pizza", "die Pizza", 8, 12], ["🍦", "ice cream", "Eis", "das Eis", 2, 4], ["🎂", "cake", "Kuchen", "den Kuchen", 10, 20],
+    ["💐", "flowers", "Blumen", "die Blumen", 5, 15], ["🪴", "plant", "Pflanze", "die Pflanze", 5, 12], ["☂️", "umbrella", "Schirm", "den Schirm", 10, 20],
+    ["🕶️", "sunglasses", "Sonnenbrille", "die Sonnenbrille", 10, 25], ["📷", "camera", "Kamera", "die Kamera", 50, 90], ["🥁", "drum", "Trommel", "die Trommel", 30, 60],
+    ["🎸", "guitar", "Gitarre", "die Gitarre", 60, 95], ["🎨", "paints", "Farben", "die Farben", 8, 20], ["✏️", "pencils", "Stifte", "die Stifte", 2, 6],
+    ["📓", "notebook", "Heft", "das Heft", 3, 8], ["🧱", "building bricks", "Bausteine", "die Bausteine", 20, 50], ["🪆", "doll", "Puppe", "die Puppe", 10, 25],
+    ["🤖", "robot", "Roboter", "den Roboter", 25, 50], ["🦖", "dinosaur", "Dino", "den Dino", 8, 20], ["💡", "lamp", "Lampe", "die Lampe", 10, 25],
+    ["☕", "mug", "Tasse", "die Tasse", 5, 10], ["🎩", "hat", "Hut", "den Hut", 10, 20], ["🧣", "scarf", "Schal", "den Schal", 8, 15],
+    ["🧤", "gloves", "Handschuhe", "die Handschuhe", 6, 12], ["🚲", "bike", "Fahrrad", "das Fahrrad", 80, 100], ["🏀", "basketball", "Basketball", "den Basketball", 15, 30],
+    ["📚", "comics", "Comics", "die Comics", 5, 15]
+  ];
+  const NAMES = ["Samu", "Mia", "Leo", "Lina", "Ben", "Emma", "Noah", "Zoe", "Tom", "Ida"];
+  const PIECES = [50, 20, 10, 5, 2, 1];
+  const de = () => Loopy.lang === "de";
+  const euro = (n) => t("emEuro", { n: fmt(n) });
+  const euroWord = (n) => n === 1 ? t("emEuroWord1") : t("emEuroWord", { n: fmt(n) });
+  const label = (it) => de() ? it[2] : it[1];
+  const inText = (it) => de() ? it[3] : t("emThe", { a: it[1] });
+  const list = (arr) => arr.length === 1 ? arr[0] : arr.slice(0, -1).join(t("emComma")) + t("emAnd") + arr[arr.length - 1];
+
+  // Notes and coins for an amount: the fewest pieces, then sometimes a note swapped for smaller ones so purses differ.
+  function piecesFor(n, mix) {
+    const out = [];
+    for (const v of PIECES) while (n >= v) { out.push(v); n -= v; }
+    if (mix) {
+      const i = out.findIndex(v => v >= 10 && randInt(2));
+      if (i >= 0) { const v = out[i]; out.splice(i, 1, ...(v === 50 ? [20, 20, 10] : v === 20 ? [10, 10] : [5, 5])); }
+    }
+    return out.sort((a, b) => b - a);
+  }
+  const sum = (arr) => arr.reduce((s, v) => s + v, 0);
+
+  // Count big money: one question, the total of the notes (and coins).
+  function count(pieces) {
+    const total = sum(pieces);
+    return { type: "c", pieces, total, cells: { n: total }, blanks: ["n"], i: 0, done: {},
+      key: level + ":c:" + pieces.join(",") + ":n",
+      ask: () => t("emAskCount"),
+      sub: () => t("emCountTip"),
+      why: () => t("emWhyCount", { list: pieces.map(fmt).join(" + "), total: euro(total) }) };
+  }
+  // The shop: three things, the wanted ones (want: indexes), a purse, and up to three questions: yes or no (yn),
+  // how much is left or missing (d), and at the top level whether one more thing (extra) can still be bought (x).
+  function shop(nameI, items, want, purse, extra, blanks) {
+    const name = NAMES[nameI], cost = sum(want.map(i => items[i].price)), has = sum(purse), enough = has >= cost;
+    const cells = { yn: enough ? "y" : "n", d: Math.abs(has - cost), x: extra >= 0 && enough && has - cost >= items[extra].price ? "y" : "n" };
+    const wanted = () => list(want.map(i => inText(ITEMS[items[i].id])));
+    const costWhy = () => want.length === 1 ? t("emWhyCost1", { a: de() ? ITEMS[items[want[0]].id][3] : ITEMS[items[want[0]].id][1], cost: euro(cost) })
+      : t("emWhyCost", { list: want.map(i => euro(items[i].price)).join(" + "), cost: euro(cost) });
+    return { type: "s", nameI, name, items, want, purse, extra, cost, has, enough, cells, blanks, i: 0, done: {},
+      key: level + ":s:" + nameI + ":" + items.map(it => it.id + "-" + it.price).join(",") + ":" + want.join("") + ":" + purse.join(",") + ":" + (extra >= 0 ? extra : "-") + ":" + blanks[0],
+      ask: (id) => id === "yn" ? t("emWants", { name, items: wanted() }) + " " + t("emEnough")
+        : id === "d" ? t(enough ? "emAskLeft" : "emAskMissing")
+        : t("emAskStill", { name, a: de() ? ITEMS[items[extra].id][3] : ITEMS[items[extra].id][1] }),
+      sub: (id) => id === "yn" ? "" : id === "d" ? t(enough ? "emTipLeft" : "emTipMissing") : t("emTipStill"),
+      why: (id) => id === "yn" ? costWhy() + " " + t(enough ? "emWhyYes" : "emWhyNo", { name, has: euro(has), cost: euro(cost) })
+        : id === "d" ? (enough ? t("emWhyLeft", { has: euro(has), cost: euro(cost), left: euro(has - cost) }) : t("emWhyMissing", { has: euro(has), cost: euro(cost), missing: euro(cost - has) }))
+        : t(cells.x === "y" ? "emWhyStillYes" : "emWhyStillNo", { left: euro(has - cost), a: de() ? ITEMS[items[extra].id][3] : ITEMS[items[extra].id][1], p: euro(items[extra].price) }) };
+  }
+  const distinct = (n, from) => { const out = []; while (out.length < n) { const v = pick(from); if (!out.includes(v)) out.push(v); } return out; };
+  function make1() {
+    for (let i = 0; i < 100; i++) { const n = 2 + randInt(3), p = []; for (let j = 0; j < n; j++) p.push(pick([50, 20, 10, 5])); if (sum(p) <= 100) return count(p.sort((a, b) => b - a)); }
+    return count([20, 10]);
+  }
+  function make2() {
+    for (let i = 0; i < 100; i++) {
+      const n = 3 + randInt(3), p = []; for (let j = 0; j < n; j++) p.push(pick(PIECES));
+      if (sum(p) <= 100 && p.some(v => v <= 2) && p.some(v => v >= 5)) return count(p.sort((a, b) => b - a));
+    }
+    return count([20, 5, 2, 1]);
+  }
+  // A shop problem: n wanted things out of three, the purse a little more or a little less than they cost.
+  function makeShop(n, extraToo) {
+    for (let tries = 0; tries < 200; tries++) {
+      const ids = distinct(3, ITEMS.map((x, i) => i));
+      const items = ids.map(id => { const it = ITEMS[id]; return { id, price: it[4] + randInt(it[5] - it[4] + 1) }; });
+      const want = distinct(n, [0, 1, 2]).sort();
+      const cost = sum(want.map(i => items[i].price));
+      if (cost > 95) continue;
+      const enough = randInt(2) === 0;
+      const has = enough ? cost + randInt(Math.min(16, 100 - cost) + 1) : cost - 1 - randInt(Math.min(15, cost - 1));
+      if (has < 1 || has > 100) continue;
+      const rest = [0, 1, 2].filter(i => !want.includes(i));
+      const extra = extraToo && enough && rest.length ? pick(rest) : -1;
+      const blanks = ["yn", "d"];
+      if (extra >= 0) blanks.push("x");
+      return shop(randInt(NAMES.length), items, want, piecesFor(has, true), extra, blanks);
+    }
+    return shop(0, [{ id: 2, price: 20 }, { id: 0, price: 10 }, { id: 3, price: 50 }], [0, 1], [20, 20, 5], -1, ["yn", "d"]);
+  }
+  const MAKE = { 1: make1, 2: make2, 3: () => makeShop(1, false), 4: () => makeShop(2, false), 5: () => makeShop(randInt(2) ? 3 : 2, true) };
+  function makeProblem() { return MAKE[level](); }
+
+  const cur = () => current.blanks[current.i];
+  const kindOf = (p, id) => "em-" + (p.type === "c" ? "count" : id === "d" ? "diff" : "yn");
+  const isYn = () => current.type === "s" && cur() !== "d";
+
+  function drawMoney(host, pieces) {
+    host.textContent = "";
+    host.classList.toggle("many", pieces.length >= 6);
+    pieces.forEach(v => host.appendChild(el("i", (v >= 5 ? "note n" : "coin c") + v, euro(v))));
+    host.setAttribute("aria-label", pieces.map(euroWord).join(", "));
+  }
+  function drawShop(p) {
+    shopEl.textContent = "";
+    p.items.forEach((it, i) => {
+      const box = el("div", "item" + (p.want.includes(i) ? " want" : cur() === "x" && i !== p.extra ? " faded" : ""));
+      box.appendChild(el("span", "pic", ITEMS[it.id][0]));
+      box.appendChild(el("span", "price", euro(it.price)));
+      box.appendChild(el("span", "nm", label(ITEMS[it.id])));
+      box.setAttribute("aria-label", label(ITEMS[it.id]) + ", " + euroWord(it.price));
+      shopEl.appendChild(box);
+    });
+  }
+  function draw() {
+    const p = current, id = cur();
+    tagEl.textContent = t(p.type === "c" ? "emTagCount" : "emTagShop");
+    shopEl.hidden = p.type !== "s"; hasEl.hidden = p.type !== "s";
+    if (p.type === "s") { drawShop(p); hasEl.textContent = t("emHas", { name: p.name }); }
+    drawMoney(moneyEl, p.type === "c" ? p.pieces : p.purse);
+    eqEl.hidden = isYn();
+    eqEl.textContent = "";
+    if (!isYn()) {
+      const ans = el("span", "ans", typed === "" ? "" : euro(parseInt(typed, 10)));
+      if (!answered) { ans.setAttribute("role", "textbox"); ans.setAttribute("aria-label", p.ask(id)); ans.dataset.a = p.cells[id]; }
+      eqEl.appendChild(ans);
+    }
+  }
+  function render() {
+    if (!current) return;
+    Loopy.levels.render();
+    $("score").textContent = right + " / " + tried;
+    $("streak").textContent = streak;
+    levelBtns.forEach(b => b.setAttribute("aria-pressed", String(+b.dataset.level === level)));
+    const yn = isYn();
+    padEl.hidden = yn; ynEl.hidden = !yn;
+    goBtn.textContent = t(answered ? "next" : "check");
+    // Yes and No: the keys keep Check enabled under the covers, so a keyboard Enter and the play test still go on.
+    goBtn.disabled = !yn && !answered && typed === "";
+    nextBtn.disabled = !answered;
+    digitBtns.forEach(b => b.disabled = answered || yn);
+    $("k-erase").disabled = answered || yn || typed === "";
+    ynBtns.forEach(b => {
+      b.disabled = answered || !yn;
+      b.dataset.correct = String(yn && !answered && current.cells[cur()] === b.dataset.yn);
+      b.className = answered && chosen ? (current.cells[cur()] === b.dataset.yn ? "right" : b === chosen ? "wrong" : "faded") : "";
+    });
+    draw();
+  }
+
+  // Try again: a missed question comes back later (Loopy.retry). The note names the problem and the question, like
+  // "4:s:1:2-20,0-10,3-50:01:20,20,5:-:d"; a problem's key is the note of its first question. A note from another level waits.
+  const note = (p, id) => p.key.replace(/:[^:]*$/, ":" + id);
+  function ask() {
+    typed = ""; answered = false; chosen = null;
+    const id = cur();
+    const q = note(current, id);
+    if (document.body.getAttribute("data-q") !== q) document.body.setAttribute("data-q", q);
+    if (current.i > 0) { recent.push(q); while (recent.length > 12) recent.shift(); }
+    qEl.textContent = current.ask(id);
+    whereEl.textContent = current.sub(id);
+    card.className = "problem-card";
+    feedbackEl.className = "feedback";
+    feedbackEl.textContent = "";
+    render();
+    Loopy.speech.read();
+  }
+  function newRound() {
+    current = Loopy.retry.fresh("enough-money", recent, makeProblem, rebuild, 12);
+    ask();
+  }
+  function rebuild(r) {
+    const m = /^([1-5]):([cs]):(.+):(n|yn|d|x)$/.exec(r);
+    if (!m || +m[1] !== level) return null;
+    const id = m[4];
+    if (m[2] === "c") {
+      const pieces = m[3].split(",").map(Number);
+      return id === "n" && pieces.length >= 2 && pieces.length <= 6 && pieces.every(v => PIECES.includes(v)) && sum(pieces) <= 100 ? count(pieces) : null;
+    }
+    const s = /^(\d{1,2}):([\d,-]{5,30}):([012]{1,3}):([\d,]{1,24}):(\d|-)$/.exec(m[3]);
+    if (!s || id === "n") return null;
+    const nameI = +s[1], items = s[2].split(",").map(x => { const [a, b] = x.split("-").map(Number); return { id: a, price: b }; });
+    const want = s[3].split("").map(Number), purse = s[4].split(",").map(Number), extra = s[5] === "-" ? -1 : +s[5];
+    if (nameI >= NAMES.length || items.length !== 3 || items.some(it => !ITEMS[it.id] || !(it.price >= 1 && it.price <= 100)) || new Set(want).size !== want.length) return null;
+    if (purse.some(v => !PIECES.includes(v)) || sum(purse) > 100 || (extra >= 0 && (extra > 2 || want.includes(extra))) || (id === "x" && extra < 0)) return null;
+    return shop(nameI, items, want, purse, extra, [id]);
+  }
+
+  function press(d) {
+    if (answered || isYn() || typed.length >= 3) return;
+    if (typed === "0") typed = "";
+    typed += d;
+    render();
+  }
+  function erase() { if (answered || isYn()) return; typed = typed.slice(0, -1); render(); }
+  function finish(ok, id, mine) {
+    answered = true; tried++;
+    if (ok) { right++; streak++; } else { streak = 0; }
+    const kind = kindOf(current, id), answer = current.cells[id];
+    // Logged as plain numbers (the question says it is money), so Try again can type them back.
+    const shown = (v) => isYn() ? t(v === "y" ? "emYesWord" : "emNoWord") : fmt(v);
+    if (ok) Loopy.rewards.correct("enough-money", streak, kind);
+    else Loopy.rewards.wrong("enough-money", { q: current.ask(id), a: shown(answer), y: shown(mine), k: kind, r: note(current, id) });
+    card.className = "problem-card " + (ok ? "good" : "bad");
+    feedbackEl.className = "feedback " + (ok ? "good" : "bad");
+    feedbackEl.innerHTML = "<strong></strong>";
+    feedbackEl.firstChild.textContent = ok ? (streak >= 3 ? t("correctRow", { n: streak }) : t("correct")) : t("notQuite");
+    feedbackEl.appendChild(document.createTextNode((ok ? "" : t("emAnswerIs", { a: isYn() ? shown(answer) : euro(answer) }) + " ") + current.why(id)));
+    render();
+    current.done[id] = ok ? "ok" : "fixed";
+    if (isYn()) nextBtn.focus({ preventScroll: true });
+  }
+  function check() {
+    if (answered || isYn() || typed === "") return;
+    const id = cur(), mine = parseInt(typed, 10);
+    finish(mine === current.cells[id], id, mine);
+  }
+  function choose(btn) {
+    if (answered || !isYn()) return;
+    chosen = btn;
+    finish(btn.dataset.yn === current.cells[cur()], cur(), btn.dataset.yn);
+  }
+  function go() {
+    if (!answered) return check();
+    if (current.i + 1 < current.blanks.length) { current.i++; ask(); } else newRound();
+    // Keyboard play: Check turns off until a digit is typed, so focus moves to the keys (or to Yes).
+    const a = document.activeElement;
+    if (a && a !== document.body && (a.disabled || a.offsetParent === null)) (isYn() ? ynBtns[0] : digitBtns[0]).focus({ preventScroll: true });
+  }
+
+  digitBtns.forEach(b => b.addEventListener("click", () => press(b.dataset.d)));
+  $("k-erase").addEventListener("click", erase);
+  goBtn.addEventListener("click", go);
+  nextBtn.addEventListener("click", () => { if (answered) go(); });
+  ynBtns.forEach(b => b.addEventListener("click", () => choose(b)));
+  levelBtns.forEach(b => b.addEventListener("click", () => { level = +b.dataset.level; store.set("em.level.a" + age, level); recent = []; newRound(); }));
+  window.addEventListener("loopy:age", (e) => { age = e.detail; recent = []; loadForAge(); newRound(); });
+  $("reset").addEventListener("click", () => { right = 0; tried = 0; streak = 0; Loopy.recent.clear("enough-money"); newRound(); });
+  document.addEventListener("keydown", (e) => {
+    if (e.target.tagName === "INPUT" || document.querySelector(".loopy-cheer.big")) return;
+    const k = e.key.toLowerCase();
+    if (e.key >= "0" && e.key <= "9") press(e.key);
+    else if ((k === "y" || k === "j") && isYn()) choose(ynBtns[0]);
+    else if (k === "n" && isYn()) choose(ynBtns[1]);
+    else if (e.key === "Backspace") erase();
+    else if (e.key === "Enter" && e.target.tagName !== "BUTTON") go();
+  });
+
+  // Read aloud: the question, and for the shop the purse too, like "Samu has 20 euros, 20 euros, 10 euros."
+  Loopy.speech.question({ host: card, text: () => (current.type === "s" ? t("emHas", { name: current.name }) + " " + current.purse.map(euroWord).join(", ") + ". " : "") + current.ask(cur()) });
+
+  // Print worksheet: 20 purses to count, or 20 shop problems in words, at the game's level.
+  Loopy.worksheet({
+    title: () => t("emName"),
+    level: () => [t("ageLabel", { n: age }), t("emLevel") + ": " + t("emL" + level)].join(" · "),
+    how: () => t(level <= 2 ? "emHowCount" : "emHowShop"),
+    layout: "clock",
+    make: (n) => { const out = [], keys = []; for (let i = 0; i < 400 && out.length < n; i++) { const p = makeProblem(); if (!keys.includes(p.key)) { keys.push(p.key); out.push(p); } } return out; },
+    cell: (p) => {
+      const box = el("div", "ws-em");
+      if (p.type === "c") {
+        const m = el("div", "money"); p.pieces.forEach(v => m.appendChild(el("i", (v >= 5 ? "note n" : "coin c") + v, euro(v)))); box.appendChild(m);
+        const line = el("span", "sum", "="); line.appendChild(el("i", "ws-line")); box.appendChild(line);
+        return box;
+      }
+      box.appendChild(el("p", "", p.want.map(i => ITEMS[p.items[i].id][0] + " " + label(ITEMS[p.items[i].id]) + " " + euro(p.items[i].price)).join(", ")));
+      box.appendChild(el("b", "", t("emHas", { name: p.name }) + " " + euro(p.has)));
+      const qs = [t("emEnough"), t(p.enough ? "emAskLeft" : "emAskMissing")];
+      if (p.extra >= 0) qs.push(t("emAskStill", { name: p.name, a: (de() ? ITEMS[p.items[p.extra].id][3] : ITEMS[p.items[p.extra].id][1]) + " (" + euro(p.items[p.extra].price) + ")" }));
+      qs.forEach(q => { const line = el("span", "", q); line.appendChild(el("i", "ws-line")); box.appendChild(line); });
+      return box;
+    },
+    answer: (p) => p.type === "c" ? euro(p.total) : t(p.enough ? "emYesWord" : "emNoWord") + ", " + euro(p.cells.d) + (p.extra >= 0 ? ", " + t(p.cells.x === "y" ? "emYesWord" : "emNoWord") : "")
+  });
+
+  newRound();
+})();
+</script>
+</body>
+</html>

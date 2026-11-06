@@ -1,0 +1,63 @@
+---
+title: Tens and Ones
+description: The place value picture from school. Read lines and dots into the table, draw a number yourself, and see with giants and dwarfs which digit changes. For ages 6 to 10.
+sidebar:
+  order: 18
+---
+import KidsBox from "~/components/KidsBox.astro";
+
+<KidsBox game="math/tens-ones" steps={[
+  "Look at the picture. A line is a ten, a dot is a one.",
+  "Type the number for the blue box. Tap Check.",
+  "Tap Next for the next box.",
+]} />
+
+A place value game for ages 6 to 10. The card shows the picture from school: lines for tens, dots for ones, and at the top level squares for hundreds. The child reads the picture into the table and writes the number. One level turns it around: the number is given and the child draws it. Another level is giants and dwarfs: 68 − 5 and 68 − 50 one after the other, so the child sees which digit changes.
+
+## How to play
+
+1. Look at the picture. Each line is a ten, each dot is a one.
+2. One box of the table has a blue line. The line under the table asks for it: "How many tens?", "How many ones?", then "What is the number?".
+3. Type the number on the pad and tap **Check**. The box turns green when it is right.
+4. Tap **Next** for the next box. When the table is full, a new picture comes.
+5. On the **Draw it** level the number is given. Tap **— ten** for every ten and **• one** for every one, then **Check**.
+6. On the **Giants and dwarfs** level two sums come one after the other, like 68 − 5 and 68 − 50. The dwarf changes the ones, the giant changes the tens.
+
+On a keyboard, the digits type, **Backspace** erases and **Enter** checks or goes on. On Draw it, **T** draws a ten and **O** a one.
+
+## When an answer is wrong
+
+The child has one try. The typed number turns red and is crossed out. The line says the right number first and then why, like "Not quite. The answer is 4. Count the lines: 4. That is 4 tens." The box keeps the right number with a red line, so the rest of the table can still be filled.
+
+A right box earns a star. A missed box comes back later in **Try again**, with the same picture and only that box empty.
+
+## Age levels
+
+| Level | Age | What comes |
+| --- | --- | --- |
+| 1 | 6 and under | Lines and dots for a number up to 20. Fill T, O and the number |
+| 2 | 7 | Lines and dots for a number up to 99 |
+| 3 | 8 | Draw it: a number up to 99 is given, draw it with lines and dots |
+| 4 | 9 | Giants and dwarfs: 68 − 5 and 68 − 50, or 37 + 4 and 37 + 40, no carrying |
+| 5 | 10 and up | Hundreds too: squares, lines and dots for a number up to 999 |
+
+After 10 right in a row, or 18 of the last 20 right, the game goes up a level by itself. After 3 wrong in the last 5 it offers an easier one. See [Levels](/loopy/guide/playing/levels/).
+
+## Settings
+
+Tap ⚙ **Settings** in the game to choose:
+
+- **Level:** the five levels above.
+- **Read aloud:** a speaker button on the card reads the question out loud. It is on by itself for ages 5 to 7.
+- **Print worksheet:** 20 problems at the game's level, 4 across: pictures with an empty table, numbers with a box to draw in, or pairs of sums. The answers are on page 2.
+
+## Example help text
+
+- "Count the lines: 4. That is 4 tens."
+- "Correct! 4 tens and 7 ones make 47."
+- "Not quite. You drew 3 lines and 2 dots. That is 32. 42 is 4 tens and 2 ones: 4 lines and 2 dots."
+- "68 − 50 = 18. Only the tens change: 6 tens − 5 tens = 1 ten."
+
+## Something wrong?
+
+Tap the 🚩 flag at the top of the game to tell us. See [Report a problem](/loopy/guide/help/report-a-problem/).

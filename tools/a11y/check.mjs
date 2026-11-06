@@ -210,7 +210,8 @@ for (const page of GAMES) {
     const next = await p.$("#next");
     if (next && await next.isVisible()) {
       await p.focus("#next"); await p.keyboard.press("Enter"); await p.waitForTimeout(250);
-      const at = await p.evaluate(() => !!document.activeElement.closest("#choices, #answers, #map"));
+      // A game can mix choices and a pad from one question to the next (Is It Enough?), so either area is fine.
+      const at = await p.evaluate(() => !!document.activeElement.closest("#choices, #answers, #map, #pad, #letters, #words"));
       if (!at) fail(where, `after Next, focus is on ${await focusIn()}, not on the first answer`);
     } else if (!pad) {
       await p.waitForTimeout(2600);
@@ -220,7 +221,7 @@ for (const page of GAMES) {
       // Check is now Next: Enter on it brings the next problem, and focus must go back to the keys.
       await p.waitForTimeout(300);
       await p.keyboard.press("Enter"); await p.waitForTimeout(250);
-      if (!(await p.evaluate(() => !!document.activeElement.closest("#pad, #letters, #words")))) fail(where, `after Next, focus is on ${await focusIn()}, not on the keys`);
+      if (!(await p.evaluate(() => !!document.activeElement.closest("#pad, #letters, #words, #choices, #answers, #map")))) fail(where, `after Next, focus is on ${await focusIn()}, not on the keys`);
     }
   }
   results.play++;

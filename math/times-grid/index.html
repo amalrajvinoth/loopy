@@ -1,0 +1,601 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'sha256-X32oe36JKwAwQH8wXEOfMmH1x0IH8Oq/rGhmEC0XzGM='; style-src 'self' 'sha256-z2P7kGW5Z05eCTjTZdYpc0vThTlOE9vmt97pVSvi2I4=' 'sha256-+Yyd9YXCRiuDdDuXBlT9hmSuTFI5zU8H8Lyu9dQafo4=' 'sha256-RT1053JU5UiKvjrCUFx1rlhdFLMmgtuFJ9T8jnMeawQ=' 'sha256-cjsvEUAdC8NMHFFGvgd4x43DVKzO+60ak6SDHw1Qy0o='; img-src 'self' data:; font-src 'self'; connect-src 'self' https://loopy-sync.loopy-1e2.workers.dev; worker-src 'self'; object-src 'none'; base-uri 'none'; form-action 'none'; manifest-src 'self'; upgrade-insecure-requests">
+<meta name="referrer" content="strict-origin-when-cross-origin">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<style>:root{color-scheme:light;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}body{margin:0}[hidden]{display:none!important}</style>
+<link rel="icon" href="../../icon.svg" type="image/svg+xml">
+<link rel="manifest" href="../../manifest.webmanifest">
+<link rel="apple-touch-icon" href="../../apple-touch-icon.png">
+<meta name="theme-color" content="#0a0a0c">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="loopy">
+<title data-t="tgName">Times Table Grid</title>
+<meta name="description" content="Times Table Grid on loopy: fill the times table grid, find the missing factor from a product, and split a hard times sum into two easy ones. Free practice for ages 7 to 11, English and German.">
+<link rel="preload" href="../../fonts/lexend-latin.woff2" as="font" type="font/woff2" crossorigin>
+<style>
+/* Layout: a small times table grid on the card with one cell marked, the number pad below. Shared look with the other games. */
+:root {
+  --bg: #f3f6fb;
+  --card: #ffffff;
+  --ink: #1d2a3f;
+  --muted: #5d6b82;
+  --line: #d5dde9;
+  --accent: #2457c5;
+  --accent-ink: #ffffff;
+  --mark: #e2622b;
+  --good: #1f8a4c;
+  --good-bg: #e3f5ea;
+  --bad: #c23a3a;
+  --bad-bg: #fbe6e6;
+  --chip: #e6ecf6;
+  --key: #ffffff;
+  --font: "Lexend", "Segoe UI", "Helvetica Neue", Arial, sans-serif;
+}
+
+* { box-sizing: border-box; }
+body {
+  background: var(--bg); color: var(--ink); font-family: var(--font); font-size: 16px;
+  padding-left: max(16px, env(safe-area-inset-left, 0px));
+  padding-right: max(16px, env(safe-area-inset-right, 0px));
+  padding-block: 20px 32px;
+}
+.wrap { max-width: 520px; margin: 0 auto; display: flex; flex-direction: column; gap: 16px; }
+
+.top { display: flex; flex-wrap: wrap; gap: 12px; align-items: center; justify-content: space-between; }
+h1 { margin: 0; font-size: 1.6rem; font-weight: 700; text-wrap: balance; }
+.score { display: flex; flex-wrap: wrap; gap: 8px; font-variant-numeric: tabular-nums; }
+.pill { background: var(--card); border: 1px solid var(--line); border-radius: 999px; padding: 6px 14px; font-weight: 600; font-size: 1rem; white-space: nowrap; }
+.pill span { color: var(--muted); font-weight: 400; margin-right: 4px; }
+
+.settings { display: flex; flex-direction: column; gap: 8px; }
+.seg-label { font-size: 0.8rem; font-weight: 600; letter-spacing: 0.06em; text-transform: uppercase; color: var(--muted); margin: 0 0 4px 4px; }
+.seg { display: grid; grid-template-columns: repeat(2, 1fr); gap: 6px; background: var(--chip); padding: 5px; border-radius: 14px; }
+.seg button {
+  font: inherit; font-size: 0.95rem; font-weight: 600; color: var(--muted);
+  background: transparent; border: 0; border-radius: 10px; padding: 8px 4px; min-height: 44px; cursor: pointer;
+}
+.seg button:last-child { grid-column: 1 / -1; }
+.seg button[aria-pressed="true"] { background: var(--card); color: var(--ink); box-shadow: 0 1px 3px rgb(0 0 0 / 0.12); }
+
+.problem-card {
+  background: var(--card); border: 1px solid var(--line); border-radius: 24px;
+  padding: 20px 18px 18px; display: flex; flex-direction: column; align-items: center; gap: 14px;
+}
+.problem-card.good { border-color: var(--good); box-shadow: 0 0 0 2px var(--good) inset; }
+.problem-card.bad { border-color: var(--bad); box-shadow: 0 0 0 2px var(--bad) inset; }
+
+.feedback { min-height: 3.1em; text-align: center; font-size: 1.1rem; line-height: 1.45; margin: 0; max-width: 34ch; }
+.feedback strong { display: block; font-size: 1.45rem; }
+.feedback.good strong { color: var(--good); }
+.feedback.bad strong { color: var(--bad); }
+.feedback .hint { color: var(--muted); }
+
+.pad { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; }
+.pad button {
+  font: inherit; font-size: 2rem; font-weight: 700; font-variant-numeric: tabular-nums; color: var(--ink);
+  background: var(--key); border: 2px solid var(--line); border-radius: 18px; min-height: 72px; cursor: pointer;
+  transition: transform .08s ease, border-color .15s ease;
+  touch-action: manipulation; -webkit-tap-highlight-color: transparent;
+}
+.pad button:hover:not(:disabled) { border-color: var(--accent); }
+.pad button:active:not(:disabled) { transform: scale(0.96); }
+.pad button:disabled { opacity: 0.4; cursor: default; }
+.pad .erase { font-size: 1.15rem; color: var(--muted); }
+.pad .go { background: var(--accent); border-color: var(--accent); color: var(--accent-ink); font-size: 1.35rem; }
+.pad .go:hover:not(:disabled) { border-color: var(--accent); filter: brightness(1.08); }
+
+.foot { display: flex; justify-content: space-between; align-items: center; gap: 12px; flex-wrap: wrap; }
+.foot p { margin: 0; color: var(--muted); font-size: 0.9rem; }
+.reset { font: inherit; font-size: 0.95rem; color: var(--muted); background: transparent; border: 2px solid var(--line); border-radius: 14px; padding: 0 16px; min-height: 44px; cursor: pointer; }
+button:focus-visible { outline: 3px solid var(--mark); outline-offset: 3px; }
+
+@media (max-width: 420px) {
+  h1 { font-size: 1.35rem; }
+  .pad button { min-height: 64px; font-size: 1.8rem; }
+  .seg button { font-size: 0.85rem; }
+}
+@media (prefers-reduced-motion: reduce) {
+  * { transition: none !important; }
+}
+</style>
+<style>.home-link{display:inline-flex;align-items:center;min-height:40px;color:var(--muted);font-weight:600;text-decoration:none;font-size:0.95rem}.home-link:hover{color:var(--ink)}</style>
+<style>
+/* Phones and tablets: the game fills one screen; settings sit behind a button. */
+body { min-height: 100vh; min-height: 100dvh; padding-block: 12px 16px; }
+.wrap { gap: 12px; }
+.game-bar { display: flex; align-items: center; justify-content: space-between; gap: 8px; }
+.bar-right { display: flex; align-items: center; gap: 8px; }
+.top { gap: 8px 12px; }
+.play { display: flex; flex-direction: column; gap: 12px; -webkit-user-select: none; user-select: none; }
+@media (min-width: 600px) and (orientation: portrait) { .wrap { max-width: 640px; } }
+@media (orientation: landscape) and (min-width: 640px) {
+  .wrap { max-width: 1100px; }
+  .play { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; align-items: center; }
+}
+
+.problem-card { padding: 14px 14px 12px; gap: 8px; }
+.feedback { min-height: 2.9em; font-size: 1.05rem; }
+.feedback strong { font-size: 1.3rem; }
+.pad { gap: 8px; }
+.pad button { min-height: clamp(50px, 8vh, 92px); min-height: clamp(50px, 8dvh, 92px); }
+@media (min-width: 600px) and (orientation: portrait) {
+  .pad button { min-height: clamp(60px, 10dvh, 120px); font-size: 2.4rem; }
+}
+@media (orientation: landscape) and (min-width: 640px) {
+  .problem-card { height: 100%; justify-content: center; }
+  .pad button { min-height: clamp(44px, calc((100dvh - 150px) / 4.4), 130px); }
+}
+@media (max-height: 760px) and (orientation: portrait) {
+  .feedback { font-size: 0.95rem; line-height: 1.35; }
+  .feedback strong { font-size: 1.15rem; }
+}
+
+/* Portrait: the page is exactly one screen tall; the pad stays at the bottom and the card shrinks to fit. */
+@media (orientation: portrait) {
+  body { height: calc(100dvh - env(safe-area-inset-top, 0px) - env(safe-area-inset-bottom, 0px)); min-height: 0; display: flex; flex-direction: column; overflow: hidden; }
+  body:has(#settings-panel:not([hidden])) { height: auto; overflow: visible; }
+  .wrap { flex: 1 1 auto; min-height: 0; width: 100%; }
+  .play { flex: 1 1 auto; min-height: 0; }
+  .problem-card { flex: 1 1 auto; min-height: 0; justify-content: center; overflow: hidden; }
+  .feedback { flex: 0 1 auto; min-height: 0; overflow-y: auto; }
+}
+@media (orientation: landscape) and (min-width: 640px) {
+  body { height: calc(100dvh - env(safe-area-inset-top, 0px) - env(safe-area-inset-bottom, 0px)); min-height: 0; display: flex; flex-direction: column; overflow: hidden; }
+  body:has(#settings-panel:not([hidden])) { height: auto; overflow: visible; }
+  .wrap { flex: 1 1 auto; min-height: 0; width: 100%; }
+  .play { flex: 1 1 auto; min-height: 0; grid-template-rows: minmax(0, 1fr); }
+  .problem-card { min-height: 0; overflow: hidden; }
+  .feedback { flex: 0 1 auto; min-height: 0; overflow-y: auto; }
+}
+@media (max-height: 500px) {
+  .feedback { font-size: 0.9rem; line-height: 1.3; }
+  .feedback strong { font-size: 1.05rem; }
+}
+
+/* Times Table Grid: the grid is a table. Factor cells are chip boxes on the edges, products sit inside.
+   A cell still to come is dashed, the one being asked has the accent line, a done one is green or red. */
+.gridwrap { width: 100%; container-type: inline-size; display: flex; flex-direction: column; align-items: center; gap: 6px; }
+.mg { border-collapse: separate; border-spacing: clamp(4px, 1.4cqw, 8px); margin: -4px auto; font-weight: 700; font-variant-numeric: tabular-nums; }
+.mg th, .mg td {
+  width: clamp(48px, 17cqw, 88px); height: clamp(44px, 6.5dvh, 80px); padding: 0 4px; text-align: center; vertical-align: middle;
+  border: 2px solid var(--line); border-radius: 14px; background: var(--chip); color: var(--ink); font-size: clamp(1.1rem, 5cqw, 1.9rem); line-height: 1;
+}
+.mg th { color: var(--muted); }
+.mg .corner { background: transparent; border-color: transparent; color: var(--muted); }
+.mg .blank { border-style: dashed; background: var(--card); }
+.mg .ask { border-style: solid; border-color: var(--accent); box-shadow: 0 0 0 2px var(--accent) inset; background: var(--card); color: var(--accent); }
+.mg .ask:empty::after { content: "?"; color: var(--muted); }
+.mg .ok { border-color: var(--good); color: var(--good); background: var(--good-bg); }
+.mg .fixed { border-color: var(--bad); color: var(--ink); }
+.problem-card.good .mg .ask { border-color: var(--good); box-shadow: 0 0 0 2px var(--good) inset; color: var(--good); }
+.problem-card.bad .mg .ask { border-color: var(--bad); box-shadow: 0 0 0 2px var(--bad) inset; color: var(--bad); text-decoration: line-through; text-decoration-thickness: 0.08em; }
+/* Split it: the sum on top, then one line for each easy part and one for the total. */
+.sum { margin: 0; font-size: clamp(1.6rem, 7cqw, 2.6rem); font-weight: 700; font-variant-numeric: tabular-nums; line-height: 1.1; }
+.sum b { color: var(--accent); }
+.rows { display: flex; flex-direction: column; gap: 6px; align-items: stretch; width: 100%; max-width: 300px; }
+.rows .eq { display: grid; grid-template-columns: 1fr auto; align-items: center; gap: 10px; font-size: clamp(1.1rem, 5cqw, 1.6rem); font-weight: 700; font-variant-numeric: tabular-nums; }
+.rows .eq span:first-child { text-align: right; color: var(--muted); }
+.rows .eq.on span:first-child { color: var(--ink); }
+.rows .box { min-width: clamp(64px, 20cqw, 96px); height: clamp(44px, 6.5dvh, 72px); display: grid; place-items: center; border: 2px dashed var(--line); border-radius: 14px; background: var(--card); padding: 0 10px; }
+.rows .box.ask { border-style: solid; border-color: var(--accent); box-shadow: 0 0 0 2px var(--accent) inset; color: var(--accent); }
+.rows .box.ask:empty::after { content: "?"; color: var(--muted); }
+.rows .box.ok { border-style: solid; border-color: var(--good); color: var(--good); background: var(--good-bg); }
+.rows .box.fixed { border-style: solid; border-color: var(--bad); color: var(--ink); }
+.problem-card.good .rows .box.ask { border-color: var(--good); box-shadow: 0 0 0 2px var(--good) inset; color: var(--good); }
+.problem-card.bad .rows .box.ask { border-color: var(--bad); box-shadow: 0 0 0 2px var(--bad) inset; color: var(--bad); text-decoration: line-through; text-decoration-thickness: 0.08em; }
+.question { margin: 0; font-size: clamp(1.1rem, min(5vw, 3.2dvh), 1.8rem); font-weight: 700; line-height: 1.25; text-align: center; text-wrap: balance; }
+.where { margin: 0; font-size: 0.9rem; color: var(--muted); text-align: center; font-variant-numeric: tabular-nums; }
+@media (min-width: 600px) and (min-height: 700px) {
+  .mg th, .mg td { width: clamp(64px, 17cqw, 110px); height: clamp(56px, 8dvh, 100px); font-size: clamp(1.4rem, 5cqw, 2.4rem); }
+}
+@media (max-height: 700px) and (orientation: portrait) {
+  .mg th, .mg td { height: clamp(38px, 5.5dvh, 60px); }
+  .rows .box { height: clamp(38px, 5.5dvh, 56px); }
+}
+/* The smallest phones: shorter boxes, so the first-time hint still finds a free band in the card. */
+@media (max-height: 660px) and (orientation: portrait) {
+  .mg { border-spacing: 4px; }
+  .mg th, .mg td { height: clamp(30px, 4.8dvh, 44px); font-size: clamp(1rem, 4.6cqw, 1.5rem); }
+  .rows { gap: 4px; }
+  .rows .box { height: clamp(32px, 5dvh, 44px); }
+  .question { font-size: 1.05rem; }
+}
+@media (max-height: 500px) { .question { font-size: 1rem; } .mg th, .mg td { height: 36px; font-size: 1rem; } }
+
+/* Worksheet cells (only printed): a small grid with empty cells, or a split sum with three lines. */
+@media print {
+  .sheet-clock .ws-tg { display: flex; flex-direction: column; align-items: center; gap: 1.2mm; }
+  .sheet-clock .ws-tg table { border-collapse: collapse; font-size: 10pt; }
+  .sheet-clock .ws-tg th, .sheet-clock .ws-tg td { border: 0.3mm solid #000; height: 7mm; min-width: 9mm; padding: 0 1mm; text-align: center; font-weight: 600; }
+  .sheet-clock .ws-tg th { background: #eee; }
+  .sheet-clock .ws-tg .ws-x { border: 0; background: none; }
+  .sheet-clock .ws-tg b { font-size: 13pt; font-weight: 700; }
+  .sheet-clock .ws-tg span { font-size: 11pt; font-weight: 600; }
+  .sheet-clock .ws-tg i { display: inline-block; width: 12mm; border-bottom: 0.4mm solid #000; margin-left: 1mm; }
+}
+</style>
+<link rel="stylesheet" href="../../loopy.css">
+<script src="../../loopy.js"></script>
+</head>
+<body>
+
+<div class="wrap">
+  <header class="game-bar">
+    <a class="home-link" href="../../">&larr; loopy</a>
+    <div class="bar-right">
+      <span id="star-chip"></span>
+      <button type="button" id="settings-toggle" aria-controls="settings-panel"></button>
+    </div>
+  </header>
+  <section class="top" aria-labelledby="title">
+    <h1 id="title" data-t="tgName">Times Table Grid</h1>
+    <div class="score" aria-live="polite">
+      <div class="pill pill-score"><span data-t="score">Score</span><b id="score">0 / 0</b></div>
+      <div id="level"></div>
+      <div class="pill pill-streak"><span data-t="streak">Streak</span><b id="streak">0</b></div>
+      <div id="last5" data-game="times-grid"></div>
+    </div>
+  </section>
+  <div class="settings-panel" id="settings-panel" hidden>
+    <div class="controls"><div id="age-picker"></div><div id="theme-picker"></div><button id="sound-toggle"></button><div id="lang-picker"></div></div>
+    <div>
+      <p class="seg-label" id="level-label" data-t="tgLevel">Level</p>
+      <div class="seg" role="group" aria-labelledby="level-label" id="level-seg">
+        <button type="button" data-level="1" data-t="tgL1">Tables of 2, 5 and 10</button>
+        <button type="button" data-level="2" data-t="tgL2">A missing factor</button>
+        <button type="button" data-level="3" data-t="tgL3">Bigger grid</button>
+        <button type="button" data-level="4" data-t="tgL4">Split it</button>
+        <button type="button" data-level="5" data-t="tgL5">Tables to 12</button>
+      </div>
+    </div>
+    <div class="panel-foot">
+      <p data-t="kbdHint">Keyboard works too: numbers, Backspace, Enter.</p>
+      <button type="button" class="reset" id="reset" data-t="resetScore">Reset score</button>
+    </div>
+  </div>
+
+  <main class="play">
+    <div class="problem-card" id="card">
+      <div class="gridwrap" id="pic"></div>
+      <p class="question" id="question"></p>
+      <p class="where" id="where"></p>
+      <p class="feedback" id="feedback"></p>
+    </div>
+
+    <div class="pad" id="pad">
+      <button type="button" id="k1" data-d="1">1</button>
+      <button type="button" id="k2" data-d="2">2</button>
+      <button type="button" id="k3" data-d="3">3</button>
+      <button type="button" id="k4" data-d="4">4</button>
+      <button type="button" id="k5" data-d="5">5</button>
+      <button type="button" id="k6" data-d="6">6</button>
+      <button type="button" id="k7" data-d="7">7</button>
+      <button type="button" id="k8" data-d="8">8</button>
+      <button type="button" id="k9" data-d="9">9</button>
+      <button type="button" id="k-erase" class="erase" aria-label="Erase last digit" data-t-aria="eraseAria" data-t="erase">Erase</button>
+      <button type="button" id="k0" data-d="0">0</button>
+      <button type="button" id="k-go" class="go" data-t="check">Check</button>
+    </div>
+  </main>
+</div>
+
+<script>
+Loopy.addStrings({
+  en: {
+    tgName: "Times Table Grid", tgLevel: "Level", tgSign: "×",
+    tgL1: "Tables of 2, 5 and 10", tgL2: "A missing factor", tgL3: "Bigger grid", tgL4: "Split it", tgL5: "Tables to 12",
+    tgAskProduct: "What is {a} times {b}?", tgAskFactor: "Which number times {a} makes {p}?", tgAskSum: "What is {x} plus {y}?",
+    tgEasy: "Easy ones first.", tgTogether: "Now put them together.",
+    tgWhere: "Box {n} of {of}", tgGridAria: "Times table grid", tgSplitAria: "Split the sum",
+    tgAnswerIs: "The missing number is {a}.",
+    tgWhyProduct: "{a} × {b} = {p}.", tgWhyCount: "{a} × {b} = {p}. Count in {a}s: {list}.",
+    tgWhyFactor: "{b} × {a} = {p}, so the missing number is {b}.",
+    tgWhyPart: "{h} × {b} = {hp}. That one is easy.",
+    tgWhySum: "{h} × {b} = {hp} and {l} × {b} = {lp}. Together: {hp} + {lp} = {p}. So {a} × {b} = {p}.",
+    tgHow: "Fill every empty box. The numbers on the edge are the tables, the boxes inside are times."
+  },
+  de: {
+    tgName: "Einmaleins-Tabelle", tgLevel: "Stufe", tgSign: "·",
+    tgL1: "Die 2er-, 5er- und 10er-Reihe", tgL2: "Eine Zahl am Rand fehlt", tgL3: "Größere Tabelle", tgL4: "Leichte Aufgaben zuerst", tgL5: "Reihen bis 12",
+    tgAskProduct: "Was ist {a} mal {b}?", tgAskFactor: "Welche Zahl mal {a} ergibt {p}?", tgAskSum: "Was ist {x} plus {y}?",
+    tgEasy: "Löse erst die leichten Aufgaben.", tgTogether: "Jetzt beides zusammen.",
+    tgWhere: "Kästchen {n} von {of}", tgGridAria: "Einmaleins-Tabelle", tgSplitAria: "Die Aufgabe zerlegen",
+    tgAnswerIs: "Die fehlende Zahl ist {a}.",
+    tgWhyProduct: "{a} · {b} = {p}.", tgWhyCount: "{a} · {b} = {p}. Zähle in {a}er-Schritten: {list}.",
+    tgWhyFactor: "{b} · {a} = {p}, also ist die fehlende Zahl {b}.",
+    tgWhyPart: "{h} · {b} = {hp}. Die ist leicht.",
+    tgWhySum: "{h} · {b} = {hp} und {l} · {b} = {lp}. Zusammen: {hp} + {lp} = {p}. Also {a} · {b} = {p}.",
+    tgHow: "Fülle jedes leere Kästchen. Die Zahlen am Rand sind die Reihen, die Kästchen innen sind mal."
+  }
+});
+
+(function () {
+  const $ = (id) => document.getElementById(id);
+  const card = $("card"), picEl = $("pic"), qEl = $("question"), whereEl = $("where"), feedbackEl = $("feedback"), goBtn = $("k-go");
+  const levelBtns = [...document.querySelectorAll("#level-seg button")];
+  const digitBtns = [...document.querySelectorAll("#pad [data-d]")];
+  const t = Loopy.t, fmt = (n) => Loopy.num(n);
+  const randInt = (n) => Math.floor(Math.random() * n);
+  const pick = (arr) => arr[randInt(arr.length)];
+  const el = (tag, cls, text) => Loopy.el(tag, cls, text);
+  const store = {
+    get(k, d, ok) { try { const v = JSON.parse(Loopy.store.get(k)); return ok.includes(v) ? v : d; } catch (e) { return d; } },
+    set(k, v) { Loopy.store.set(k, JSON.stringify(v)); }
+  };
+
+  let age = Loopy.getAge();
+  let level;
+  const levelForAge = (a) => a <= 7 ? 1 : a <= 8 ? 2 : a <= 9 ? 3 : a <= 10 ? 4 : 5;
+  function loadForAge() { level = store.get("tg.level.a" + age, levelForAge(age), [1, 2, 3, 4, 5]); }
+  loadForAge();
+  Loopy.levels.init({ names: ["tgL1", "tgL2", "tgL3", "tgL4", "tgL5"],
+    get: () => level - 1, base: () => levelForAge(age) - 1,
+    set: (i) => { level = i + 1; store.set("tg.level.a" + age, level); render(); } });
+  let right = 0, tried = 0, streak = 0;
+  let current = null, typed = "", answered = false, recent = [];
+
+  // A problem is a grid (cols: the factors on top, rows: the factors at the side) or a split sum (a × b done as
+  // h × b + l × b). cells maps every cell id to its number: c0, c1 … on top, r0, r1 … at the side, p<row><col> inside;
+  // s0, s1, s2 for the two easy parts and the total of a split. blanks lists the cells to fill, in the order asked.
+  // Everything is built from a few numbers, so a missed cell can be built again from its key.
+  function grid(cols, rows, blanks) {
+    const cells = {};
+    cols.forEach((c, i) => { cells["c" + i] = c; });
+    rows.forEach((r, j) => { cells["r" + j] = r; cols.forEach((c, i) => { cells["p" + j + i] = r * c; }); });
+    const sign = t("tgSign");
+    return { type: "g", cols, rows, cells, blanks, i: 0, done: {},
+      key: level + ":g:" + cols.join(",") + ":" + rows.join(",") + ":" + blanks[0],
+      // Which factor pair a cell stands for: a factor cell is deduced from a product in its line whose other factor is given.
+      ask(id) {
+        if (id[0] === "p") { const j = +id[1], i = +id[2]; return t("tgAskProduct", { a: fmt(cols[i]), b: fmt(rows[j]) }); }
+        const f = anchor(this, id);
+        return t("tgAskFactor", { a: fmt(f.other), p: fmt(f.p) });
+      },
+      why(id) {
+        if (id[0] === "p") {
+          const j = +id[1], i = +id[2], a = cols[i], b = rows[j], p = a * b;
+          if (b <= 5) { const list = []; for (let k = 1; k <= b; k++) list.push(fmt(a * k)); return t("tgWhyCount", { a: fmt(a), b: fmt(b), p: fmt(p), list: list.join(", ") }); }
+          return t("tgWhyProduct", { a: fmt(a), b: fmt(b), p: fmt(p) });
+        }
+        const f = anchor(this, id);
+        return t("tgWhyFactor", { a: fmt(f.other), b: fmt(cells[id]), p: fmt(f.p) });
+      },
+      sub: () => "",
+      sign
+    };
+  }
+  // For a blank factor cell: a product in its row or column whose other factor is not blank, so the child can work it out.
+  function anchor(p, id) {
+    const isBlank = (c) => p.blanks.includes(c) && !p.done[c];
+    const k = +id[1];
+    if (id[0] === "c") { for (let j = 0; j < p.rows.length; j++) if (!isBlank("r" + j)) return { other: p.rows[j], p: p.rows[j] * p.cols[k] }; }
+    else { for (let i = 0; i < p.cols.length; i++) if (!isBlank("c" + i)) return { other: p.cols[i], p: p.cols[i] * p.rows[k] }; }
+    return { other: 1, p: p.cells[id] };
+  }
+  // 7 × 4 is 5 × 4 + 2 × 4: the bigger part is always an easy one (10, 5, or a double).
+  const splitOf = (a) => a >= 11 ? [10, a - 10] : a >= 6 ? [5, a - 5] : a === 4 ? [2, 2] : [1, a - 1];
+  function split(a, b, blanks) {
+    const [h, l] = splitOf(a), cells = { s0: h * b, s1: l * b, s2: a * b };
+    const v = { a: fmt(a), b: fmt(b), h: fmt(h), l: fmt(l), hp: fmt(h * b), lp: fmt(l * b), p: fmt(a * b) };
+    return { type: "s", a, b, h, l, cells, blanks, i: 0, done: {},
+      key: level + ":s:" + a + ":" + b + ":" + blanks[0],
+      ask: (id) => id === "s2" ? t("tgAskSum", { x: v.hp, y: v.lp }) : t("tgAskProduct", { a: id === "s0" ? v.h : v.l, b: v.b }),
+      why: (id) => id === "s2" ? t("tgWhySum", v) : t("tgWhyPart", { h: id === "s0" ? v.h : v.l, b: v.b, hp: id === "s0" ? v.hp : v.lp }),
+      sub: (id) => t(id === "s2" ? "tgTogether" : "tgEasy"),
+      sign: t("tgSign") };
+  }
+  const shuffle = (arr) => { for (let i = arr.length - 1; i > 0; i--) { const j = randInt(i + 1); [arr[i], arr[j]] = [arr[j], arr[i]]; } return arr; };
+  const distinct = (n, from) => { const out = []; while (out.length < n) { const v = pick(from); if (!out.includes(v)) out.push(v); } return out; };
+  // The blanks of a grid: the blank factors first, then the products that are not needed to work a factor out.
+  function blanksFor(cols, rows, blankFactors) {
+    const keep = new Set();
+    blankFactors.forEach(id => { const k = +id[1]; rows.forEach((r, j) => cols.forEach((c, i) => { if ((id[0] === "c" && i === k) || (id[0] === "r" && j === k)) keep.add("p" + j + i); })); });
+    const prods = [];
+    rows.forEach((r, j) => cols.forEach((c, i) => { if (!keep.has("p" + j + i)) prods.push("p" + j + i); }));
+    return blankFactors.concat(shuffle(prods).slice(0, 4));
+  }
+  // Level 1: a 2 × 2 grid of the 2, 5 and 10 tables, every product empty.
+  function make1() {
+    return grid(distinct(2, [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]), distinct(2, [2, 5, 10]), ["p00", "p01", "p10", "p11"]);
+  }
+  // Level 2: a 2 × 2 grid of the tables to 10, one factor missing, then the products.
+  function make2() {
+    const cols = distinct(2, [2, 3, 4, 5, 6, 7, 8, 9, 10]), rows = distinct(2, [2, 3, 4, 5, 6, 7, 8, 9, 10]);
+    return grid(cols, rows, blanksFor(cols, rows, [pick(["c0", "c1", "r0", "r1"])]));
+  }
+  // Level 3: three tables across, two down, one or two factors missing.
+  function make3() {
+    const cols = distinct(3, [2, 3, 4, 5, 6, 7, 8, 9, 10]), rows = distinct(2, [2, 3, 4, 5, 6, 7, 8, 9, 10]);
+    const bf = randInt(2) ? [pick(["c0", "c1", "c2"])] : shuffle([pick(["c0", "c1", "c2"]), pick(["r0", "r1"])]);
+    return grid(cols, rows, blanksFor(cols, rows, bf));
+  }
+  // Level 4: split a hard sum into two easy ones.
+  function make4() { return split(3 + randInt(7), 2 + randInt(8), ["s0", "s1", "s2"]); }
+  // Level 5: tables to 12 in a 3 × 3 grid with two factors missing, or a split with a number over 10.
+  function make5() {
+    if (randInt(3) === 0) return split(11 + randInt(9), 2 + randInt(8), ["s0", "s1", "s2"]);
+    const from = [2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12], cols = distinct(3, from), rows = distinct(3, from);
+    const bf = randInt(2) ? distinct(2, ["c0", "c1", "c2"]) : [pick(["c0", "c1", "c2"]), pick(["r0", "r1", "r2"])];
+    return grid(cols, rows, blanksFor(cols, rows, bf));
+  }
+  const MAKE = { 1: make1, 2: make2, 3: make3, 4: make4, 5: make5 };
+  function makeProblem() { return MAKE[level](); }
+
+  const cur = () => current.blanks[current.i];
+  const kindOf = (p, id) => "tg-" + (p.type === "s" ? "split" : id[0] === "p" ? "fill" : "factor");
+  function cellText(p, id) {
+    if (id === cur() && !p.done[id]) return typed === "" ? "" : fmt(parseInt(typed, 10));
+    if (p.blanks.includes(id) && !p.done[id]) return "";
+    return fmt(p.cells[id]);
+  }
+  function cellClass(p, id) {
+    if (id === cur() && !p.done[id]) return "ask";
+    if (p.done[id]) return p.done[id];
+    return p.blanks.includes(id) ? "blank" : "";
+  }
+  function mark(node, p, id) {
+    node.className = (node.className + " " + cellClass(p, id)).trim();
+    node.textContent = cellText(p, id);
+    if (id === cur() && !p.done[id]) { node.setAttribute("role", "textbox"); node.setAttribute("aria-label", p.ask(id)); node.dataset.a = p.cells[id]; }
+    return node;
+  }
+  function drawGrid(p) {
+    const table = el("table", "mg"); table.setAttribute("aria-label", t("tgGridAria"));
+    const head = table.insertRow(), corner = el("td", "corner", p.sign); head.appendChild(corner);
+    p.cols.forEach((c, i) => { const th = el("th"); th.scope = "col"; head.appendChild(mark(th, p, "c" + i)); });
+    p.rows.forEach((r, j) => {
+      const tr = table.insertRow(), th = el("th"); th.scope = "row"; tr.appendChild(mark(th, p, "r" + j));
+      p.cols.forEach((c, i) => tr.appendChild(mark(tr.insertCell(), p, "p" + j + i)));
+    });
+    picEl.appendChild(table);
+  }
+  function drawSplit(p) {
+    const sum = el("p", "sum", fmt(p.a) + " " + p.sign + " " + fmt(p.b) + " = ");
+    sum.appendChild(el("b", "", p.done.s2 ? fmt(p.cells.s2) : "?"));
+    picEl.appendChild(sum);
+    const rows = el("div", "rows"); rows.setAttribute("aria-label", t("tgSplitAria"));
+    const known = (id) => p.done[id] || !p.blanks.includes(id) ? fmt(p.cells[id]) : "?";
+    [["s0", fmt(p.h) + " " + p.sign + " " + fmt(p.b)], ["s1", fmt(p.l) + " " + p.sign + " " + fmt(p.b)], ["s2", known("s0") + " + " + known("s1")]].forEach(([id, left]) => {
+      const row = el("div", "eq" + (id === cur() && !p.done[id] ? " on" : ""));
+      row.appendChild(el("span", "", left + " ="));
+      row.appendChild(mark(el("span", "box"), p, id));
+      rows.appendChild(row);
+    });
+    picEl.appendChild(rows);
+  }
+  function draw() {
+    picEl.textContent = "";
+    if (current.type === "g") drawGrid(current); else drawSplit(current);
+  }
+  function render() {
+    Loopy.levels.render();
+    $("score").textContent = right + " / " + tried;
+    $("streak").textContent = streak;
+    levelBtns.forEach(b => b.setAttribute("aria-pressed", String(+b.dataset.level === level)));
+    goBtn.textContent = t(answered ? "next" : "check");
+    goBtn.disabled = !answered && typed === "";
+    digitBtns.forEach(b => b.disabled = answered);
+    $("k-erase").disabled = answered || typed === "";
+    draw();
+  }
+
+  // Try again: a missed cell comes back later (Loopy.retry). The note names the grid and the cell, like "2:g:7,3:3,5:c0";
+  // a problem's key is the note of its first cell. It comes back with only that cell empty. A cell from another level waits.
+  const note = (p, id) => p.key.replace(/:[^:]*$/, ":" + id);
+  function ask() {
+    typed = ""; answered = false;
+    const id = cur();
+    // Each box is one question: the page marks it (the first one is marked by Loopy.retry.fresh already).
+    const q = note(current, id);
+    if (document.body.getAttribute("data-q") !== q) document.body.setAttribute("data-q", q);
+    // A box asked just now does not come back from Try again straight away: it waits like a whole grid does.
+    if (current.i > 0) { recent.push(q); while (recent.length > 12) recent.shift(); }
+    qEl.textContent = current.ask(id);
+    whereEl.textContent = current.type === "s" ? current.sub(id) : current.blanks.length > 1 ? t("tgWhere", { n: current.i + 1, of: current.blanks.length }) : "";
+    card.className = "problem-card";
+    feedbackEl.className = "feedback";
+    feedbackEl.textContent = "";
+    render();
+    Loopy.speech.read();
+  }
+  function newRound() {
+    current = Loopy.retry.fresh("times-grid", recent, makeProblem, rebuild, 12);
+    ask();
+  }
+  // Build the noted problem again from its key, with only the noted cell empty. A problem from another level waits.
+  function rebuild(r) {
+    const m = /^([1-5]):([gs]):([\d,]{1,8}):([\d,]{1,8}):([a-z]\d\d?)$/.exec(r);
+    if (!m || +m[1] !== level) return null;
+    const id = m[5];
+    if (m[2] === "s") {
+      const a = +m[3], b = +m[4];
+      if (!/^\d+$/.test(m[3] + m[4]) || a < 3 || a > 19 || b < 2 || b > 9 || !/^s[0-2]$/.test(id)) return null;
+      return split(a, b, [id]);
+    }
+    const cols = m[3].split(",").map(Number), rows = m[4].split(",").map(Number);
+    if (cols.length < 2 || cols.length > 3 || rows.length < 2 || rows.length > 3 || cols.concat(rows).some(n => !(n >= 1 && n <= 12))) return null;
+    const p = grid(cols, rows, [id]);
+    return id in p.cells ? p : null;
+  }
+
+  function press(d) {
+    if (answered || typed.length >= 3) return;
+    if (typed === "0") typed = "";
+    typed += d;
+    render();
+  }
+  function erase() { if (answered) return; typed = typed.slice(0, -1); render(); }
+  function check() {
+    if (answered || typed === "") return;
+    answered = true; tried++;
+    const id = cur(), answer = current.cells[id];
+    const ok = parseInt(typed, 10) === answer;
+    if (ok) { right++; streak++; } else { streak = 0; }
+    const kind = kindOf(current, id);
+    if (ok) Loopy.rewards.correct("times-grid", streak, kind);
+    else Loopy.rewards.wrong("times-grid", { q: current.ask(id), a: fmt(answer), y: fmt(parseInt(typed, 10)), k: kind, r: note(current, id) });
+    card.className = "problem-card " + (ok ? "good" : "bad");
+    feedbackEl.className = "feedback " + (ok ? "good" : "bad");
+    feedbackEl.innerHTML = "<strong></strong>";
+    feedbackEl.firstChild.textContent = ok ? (streak >= 3 ? t("correctRow", { n: streak }) : t("correct")) : t("notQuite");
+    feedbackEl.appendChild(document.createTextNode((ok ? "" : t("tgAnswerIs", { a: fmt(answer) }) + " ") + current.why(id)));
+    render();
+    current.done[id] = ok ? "ok" : "fixed";
+  }
+  function go() {
+    if (!answered) return check();
+    if (current.i + 1 < current.blanks.length) { current.i++; ask(); } else newRound();
+  }
+
+  digitBtns.forEach(b => b.addEventListener("click", () => press(b.dataset.d)));
+  $("k-erase").addEventListener("click", erase);
+  goBtn.addEventListener("click", go);
+  levelBtns.forEach(b => b.addEventListener("click", () => { level = +b.dataset.level; store.set("tg.level.a" + age, level); recent = []; newRound(); }));
+  window.addEventListener("loopy:age", (e) => { age = e.detail; recent = []; loadForAge(); newRound(); });
+  $("reset").addEventListener("click", () => { right = 0; tried = 0; streak = 0; Loopy.recent.clear("times-grid"); newRound(); });
+  document.addEventListener("keydown", (e) => {
+    if (e.target.tagName === "INPUT" || document.querySelector(".loopy-cheer.big")) return;
+    if (e.key >= "0" && e.key <= "9") press(e.key);
+    else if (e.key === "Backspace") erase();
+    else if (e.key === "Enter") go();
+  });
+
+  // Read aloud: the question of the cell being asked, like "Which number times 7 makes 21?"
+  Loopy.speech.question({ host: card, text: () => current.ask(cur()) });
+
+  // Print worksheet: 20 grids or split sums at the game's level, with the empty cells to fill.
+  Loopy.worksheet({
+    title: () => t("tgName"),
+    level: () => [t("ageLabel", { n: age }), t("tgLevel") + ": " + t("tgL" + level)].join(" · "),
+    how: () => t("tgHow"),
+    layout: "clock",
+    make: (n) => { const out = [], keys = []; for (let i = 0; i < 400 && out.length < n; i++) { const p = makeProblem(); if (!keys.includes(p.key)) { keys.push(p.key); out.push(p); } } return out; },
+    cell: (p) => {
+      const box = el("div", "ws-tg");
+      const show = (id) => p.blanks.includes(id) ? "" : fmt(p.cells[id]);
+      if (p.type === "s") {
+        box.appendChild(el("b", "", fmt(p.a) + " " + p.sign + " " + fmt(p.b) + " ="));
+        [[fmt(p.h) + " " + p.sign + " " + fmt(p.b)], [fmt(p.l) + " " + p.sign + " " + fmt(p.b)], ["+"]].forEach(([left]) => {
+          const line = el("span", "", left + " ="); line.appendChild(el("i")); box.appendChild(line);
+        });
+        return box;
+      }
+      const table = el("table"), head = table.insertRow(), x = el("th", "ws-x", p.sign); head.appendChild(x);
+      p.cols.forEach((c, i) => head.appendChild(el("th", "", show("c" + i))));
+      p.rows.forEach((r, j) => { const tr = table.insertRow(); tr.appendChild(el("th", "", show("r" + j))); p.cols.forEach((c, i) => { tr.insertCell().textContent = show("p" + j + i); }); });
+      box.appendChild(table);
+      return box;
+    },
+    answer: (p) => p.blanks.map(id => fmt(p.cells[id])).join(", ")
+  });
+
+  newRound();
+})();
+</script>
+</body>
+</html>

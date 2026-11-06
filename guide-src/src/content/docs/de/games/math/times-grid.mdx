@@ -1,0 +1,61 @@
+---
+title: Einmaleins-Tabelle
+description: Die Einmaleins-Tabelle aus der Schule. Fülle die leeren Kästchen, finde eine fehlende Reihe aus einem Ergebnis und zerlege eine schwere Aufgabe in zwei leichte. Für 7 bis 11 Jahre.
+sidebar:
+  order: 17
+---
+import KidsBox from "~/components/KidsBox.astro";
+
+<KidsBox game="math/times-grid" steps={[
+  "Schau dir die Tabelle an. Am Rand stehen die Reihen.",
+  "Tippe die Zahl für das blaue Kästchen ein. Tippe auf Prüfen.",
+  "Tippe auf Weiter für das nächste Kästchen.",
+]} />
+
+Ein Einmaleins-Spiel für 7 bis 11 Jahre. Die Karte zeigt die Tabelle aus der Schule: die Reihen oben und an der Seite, die Ergebnisse innen. Das Kind füllt die leeren Kästchen nacheinander. Manchmal fehlt eine Zahl am Rand, und das Kind findet heraus, zu welcher Reihe ein Ergebnis gehört. Eine Stufe zerlegt eine schwere Aufgabe in zwei leichte.
+
+## So wird gespielt
+
+1. Schau dir die Tabelle an. Die Zahl oben mal die Zahl an der Seite ergibt das Kästchen innen.
+2. Ein Kästchen hat eine blaue Linie. Die Zeile unter der Tabelle fragt danach, zum Beispiel „Was ist 7 mal 3?“ oder „Welche Zahl mal 7 ergibt 21?“.
+3. Tippe die Zahl auf dem Ziffernblock ein und tippe auf **Prüfen**. Das Kästchen wird grün, wenn es stimmt.
+4. Tippe auf **Weiter** für das nächste Kästchen. Wenn die Tabelle voll ist, kommt eine neue.
+5. Auf der Stufe **Leichte Aufgaben zuerst** wird eine Aufgabe wie 7 · 4 in drei Schritten gelöst: 5 · 4, dann 2 · 4, dann beide Ergebnisse zusammen.
+
+Mit der Tastatur: die Ziffern tippen, **Rücktaste** löscht, **Enter** prüft oder geht weiter.
+
+## Wenn eine Antwort falsch ist
+
+Du hast einen Versuch. Die getippte Zahl wird rot und durchgestrichen. Die Zeile sagt zuerst die richtige Zahl und dann, warum, zum Beispiel „Nicht ganz. Die fehlende Zahl ist 3. 3 · 7 = 21, also ist die fehlende Zahl 3.“ Das Kästchen behält die richtige Zahl mit einer roten Linie, damit der Rest der Tabelle weitergeht.
+
+Ein richtiges Kästchen bringt einen Stern. Ein verpasstes Kästchen kommt später in **Nochmal versuchen** wieder, in derselben Tabelle mit nur diesem Kästchen leer.
+
+## Altersstufen
+
+| Stufe | Alter | Was kommt |
+| --- | --- | --- |
+| 1 | 7 und jünger | Eine 2-mal-2-Tabelle mit der 2er-, 5er- und 10er-Reihe, alle vier Ergebnisse leer |
+| 2 | 8 | Eine 2-mal-2-Tabelle mit den Reihen bis 10, eine Zahl am Rand leer |
+| 3 | 9 | Drei Reihen quer und zwei nach unten, ein oder zwei Zahlen am Rand leer |
+| 4 | 10 | Leichte Aufgaben zuerst: 7 · 4 ist 5 · 4 und 2 · 4, dann zusammenzählen |
+| 5 | 11 und älter | Eine 3-mal-3-Tabelle mit den Reihen bis 12 und zwei Zahlen am Rand leer, oder eine Zerlegung mit einer Zahl über 10 |
+
+Nach 10 richtigen Antworten in Folge, oder 18 von den letzten 20, geht das Spiel von selbst eine Stufe höher. Nach 3 falschen in den letzten 5 bietet es eine leichtere an. Siehe [Stufen](/loopy/guide/de/playing/levels/).
+
+## Einstellungen
+
+Tippe im Spiel auf ⚙ **Einstellungen**:
+
+- **Stufe:** die fünf Stufen oben.
+- **Vorlesen:** ein Lautsprecher-Knopf auf der Karte liest die Frage vor. Für 5 bis 7 Jahre ist er von selbst an.
+- **Arbeitsblatt drucken:** 20 Tabellen auf der Stufe des Spiels mit den leeren Kästchen, 4 nebeneinander. Die Lösungen stehen auf Seite 2.
+
+## Beispiele für die Hilfe
+
+- „7 · 3 = 21. Zähle in 7er-Schritten: 7, 14, 21.“
+- „Richtig! 3 · 7 = 21, also ist die fehlende Zahl 3.“
+- „Nicht ganz. Die fehlende Zahl ist 28. 5 · 4 = 20 und 2 · 4 = 8. Zusammen: 20 + 8 = 28. Also 7 · 4 = 28.“
+
+## Stimmt etwas nicht?
+
+Tippe oben im Spiel auf die 🚩 Flagge. Siehe [Ein Problem melden](/loopy/guide/de/help/report-a-problem/).
