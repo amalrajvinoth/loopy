@@ -67,6 +67,10 @@ jobs:
     steps:
       - id: deployment
         uses: actions/deploy-pages@368f82528645a54fb793d4d04e342629a3f51346 # v5.0.1
+        with:
+          # GitHub Pages sometimes takes far longer than the 10-minute default to pick a deployment up
+          # (6 November 2026: three runs timed out with an empty status). Wait up to 30 minutes.
+          timeout: 1800000
 
   check:
     name: Live site check
