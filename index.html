@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'sha256-31YF0CIuGzfvKOU3QPExN2EgIvf6dVROwZDZ0NTYIuM='; style-src 'self' 'sha256-GQkq82ruWYni6/VWurzasLQGAySMrx8V32bOmwyppt0='; img-src 'self' data:; font-src 'self'; connect-src 'self' https://loopy-sync.loopy-1e2.workers.dev; worker-src 'self'; object-src 'none'; base-uri 'none'; form-action 'none'; manifest-src 'self'; upgrade-insecure-requests">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'sha256-xuQIrkfr+h6P4UP4r1x04bjFfRlJKZQKPedY/kwj8nE='; style-src 'self' 'sha256-GQkq82ruWYni6/VWurzasLQGAySMrx8V32bOmwyppt0='; img-src 'self' data:; font-src 'self'; connect-src 'self' https://loopy-sync.loopy-1e2.workers.dev; worker-src 'self'; object-src 'none'; base-uri 'none'; form-action 'none'; manifest-src 'self'; upgrade-insecure-requests">
 <meta name="referrer" content="strict-origin-when-cross-origin">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <link rel="icon" href="icon.svg" type="image/svg+xml">
@@ -251,6 +251,7 @@ Loopy.addStrings({
     cdTitle: "Calendar and Dates", cdTag: "Days, weeks, months", cdText: "The days of the week, a month grid, counting days and weeks, months, seasons and dates, with one line of why after each answer.",
     npTitle: "Number Patterns", npTag: "What comes next?", npText: "A row of numbers with one missing. Count on in steps, backwards, doubling, square numbers, growing steps and two rules mixed, with the jumps shown after each answer.",
     tgTitle: "Times Table Grid", tgTag: "Fill the grid, find the factor", tgText: "The times table grid from school: the tables on the edges, the answers inside. Fill the empty boxes, find a missing table from one answer, and split a hard sum into two easy ones.",
+    toTitle: "Tens and Ones", toTag: "Lines are tens, dots are ones", toText: "The place value picture from school: a line is a ten, a dot is a one. Read the picture into the table, draw a number yourself, and see with giants and dwarfs which digit changes in 68 − 5 and 68 − 50.",
     tsTitle: "Times and Share", tsTag: "Times and division", tsText: "Times tables with dots to count, and sharing into equal groups. Bigger numbers as you grow.",
     clTitle: "What Time Is It?", clTag: "Telling time", clText: "Read the hands on the clock and pick the right time, from half hours down to the minute.",
     bsTitle: "Bigger or Smaller", bsTag: "Comparing numbers", bsText: "Pick <, = or >, put numbers in order and round them, with a number line to show why.",
@@ -309,6 +310,7 @@ Loopy.addStrings({
     cdTitle: "Kalender und Datum", cdTag: "Tage, Wochen, Monate", cdText: "Die Wochentage, ein Monatskalender, Tage und Wochen zählen, Monate, Jahreszeiten und das Datum, mit einem Satz zum Warum nach jeder Antwort.",
     npTitle: "Zahlenmuster", npTag: "Was kommt als Nächstes?", npText: "Eine Zahlenreihe mit einer Lücke. Schritte vorwärts und rückwärts, Verdoppeln, Quadratzahlen, wachsende Schritte und zwei Regeln gemischt, mit den Sprüngen nach jeder Antwort.",
     tgTitle: "Einmaleins-Tabelle", tgTag: "Tabelle füllen, Zahl am Rand finden", tgText: "Die Einmaleins-Tabelle aus der Schule: die Reihen am Rand, die Ergebnisse innen. Fülle die leeren Kästchen, finde eine fehlende Reihe aus einem Ergebnis und zerlege eine schwere Aufgabe in zwei leichte.",
+    toTitle: "Zehner und Einer", toTag: "Striche sind Zehner, Punkte Einer", toText: "Das Stellenwert-Bild aus der Schule: ein Strich ist ein Zehner, ein Punkt ein Einer. Lies das Bild in die Tabelle ab, male eine Zahl selbst und sieh bei Riesen und Zwergen, welche Ziffer sich bei 68 − 5 und 68 − 50 ändert.",
     tsTitle: "Mal und Teilen", tsTag: "Malnehmen und Teilen", tsText: "Einmaleins mit Punkten zum Zählen und Teilen in gleiche Gruppen. Größere Zahlen, wenn du wächst.",
     clTitle: "Wie spät ist es?", clTag: "Uhr lesen", clText: "Lies die Zeiger der Uhr und wähle die richtige Zeit, von halben Stunden bis zur Minute.",
     bsTitle: "Größer oder kleiner", bsTag: "Zahlen vergleichen", bsText: "Wähle <, = oder >, ordne Zahlen und runde sie, mit einem Zahlenstrahl, der zeigt warum.",
@@ -358,6 +360,7 @@ const GAMES = [
   { subject: "math", path: "math/calendar-dates/", id: "cd", pic: "🗓️", ages: [6, 11] },
   { subject: "math", path: "math/number-patterns/", id: "np", pic: "🔁", ages: [6, 14] },
   { subject: "math", path: "math/times-grid/", id: "tg", pic: "🔳", ages: [7, 11] },
+  { subject: "math", path: "math/tens-ones/", id: "to", pic: "🔟", ages: [6, 10] },
   { subject: "languages", path: "languages/sound-spell/", id: "ss", pic: "👂", ages: [5, 8] },
   { subject: "languages", path: "languages/word-match/", id: "wm", pic: "🖼️", ages: [5, 10] },
   { subject: "languages", path: "languages/spell-it/", id: "si", pic: "✏️", ages: [6, 10] },

@@ -10,6 +10,7 @@ The big changes, newest first. Small fixes are not listed. See [the full list on
 
 ## 6 November 2026
 
+- **New game: Tens and Ones.** The place value picture from school, for ages 6 to 10: a line is a ten, a dot is a one. Read the picture into the table, draw a number yourself, and see with giants and dwarfs which digit changes in 68 − 5 and 68 − 50. [How to play](/loopy/guide/games/math/tens-ones/).
 - **New game: Times Table Grid.** The times table grid from school, for ages 7 to 11. Fill the empty boxes and work out a missing table from one answer. Split a hard sum like 7 × 4 into 5 × 4 and 2 × 4. [How to play](/loopy/guide/games/math/times-grid/).
 
 ## 5 November 2026

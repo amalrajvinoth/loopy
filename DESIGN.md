@@ -300,6 +300,10 @@ Number Patterns shows the row as square `chip` boxes with `ink` numbers and the 
 
 Times Table Grid is a table. The factor cells on the edges are `chip` boxes with `muted` numbers. The product cells inside are `chip` with `ink`. All have the 2px `line` border and 14px corners. A box still to fill is dashed on `card`. The box being asked has the `accent` line and shows the typed digits in `accent`. A done box is `good` on `good-bg`. A box the child got wrong keeps the right number with a `bad` border. Split it uses the same boxes in a column of equations. No other colour.
 
+### Tens and ones picture
+
+Tens and Ones draws the school picture in `ink`: squares for hundreds, lines for tens (4px bars in a column), dots for ones (in rows of 5). The place value table under it uses the same boxes as Times Table Grid: `chip` with a `muted` heading (H, T, O and the number), dashed on `card` while empty, the `accent` line on the box being asked, `good` on `good-bg` when right, a `bad` border when wrong. On Draw it the number pad becomes two wide keys, a line and a dot, in the same `key` style; the picture grows in a `line` frame as the child taps, and the T and O boxes count along in `accent`. In Giants and dwarfs, what the dwarf or giant took away is drawn as an empty `bad` outline, what one brought is `accent`. No other colour.
+
 ### Calendar pictures
 
 Calendar and Dates draws the week, a month grid or the twelve months. The boxes are `chip` with `ink` text. The day or month in the question is `accent` with `on-accent` text. No other colour. The grid is a table with the short day names on top, 3px apart, so the picture reads like a wall calendar.

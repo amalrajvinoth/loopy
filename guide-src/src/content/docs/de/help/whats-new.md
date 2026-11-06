@@ -10,6 +10,7 @@ Die großen Änderungen, die neuesten zuerst. Kleine Korrekturen stehen nicht da
 
 ## 6. November 2026
 
+- **Neues Spiel: Zehner und Einer.** Das Stellenwert-Bild aus der Schule, für 6 bis 10 Jahre: ein Strich ist ein Zehner, ein Punkt ein Einer. Lies das Bild in die Tabelle ab, male eine Zahl selbst und sieh bei Riesen und Zwergen, welche Ziffer sich bei 68 − 5 und 68 − 50 ändert. [So wird gespielt](/loopy/guide/de/games/math/tens-ones/).
 - **Neues Spiel: Einmaleins-Tabelle.** Die Einmaleins-Tabelle aus der Schule, für 7 bis 11 Jahre. Fülle die leeren Kästchen, finde eine fehlende Reihe aus einem Ergebnis und zerlege eine schwere Aufgabe wie 7 · 4 in 5 · 4 und 2 · 4. [So wird gespielt](/loopy/guide/de/games/math/times-grid/).
 
 ## 5. November 2026

@@ -1,0 +1,687 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'sha256-QQJEcdjQ3TS0xbAl1KrNmYSYUObgzVnt5qyCBJvJscg='; style-src 'self' 'sha256-z2P7kGW5Z05eCTjTZdYpc0vThTlOE9vmt97pVSvi2I4=' 'sha256-+Yyd9YXCRiuDdDuXBlT9hmSuTFI5zU8H8Lyu9dQafo4=' 'sha256-RT1053JU5UiKvjrCUFx1rlhdFLMmgtuFJ9T8jnMeawQ=' 'sha256-mZbWpx73sr2xD8mLXEH9ELV+qYnnOsPQAyhBw7LfAy4='; img-src 'self' data:; font-src 'self'; connect-src 'self' https://loopy-sync.loopy-1e2.workers.dev; worker-src 'self'; object-src 'none'; base-uri 'none'; form-action 'none'; manifest-src 'self'; upgrade-insecure-requests">
+<meta name="referrer" content="strict-origin-when-cross-origin">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<style>:root{color-scheme:light;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}body{margin:0}[hidden]{display:none!important}</style>
+<link rel="icon" href="../../icon.svg" type="image/svg+xml">
+<link rel="manifest" href="../../manifest.webmanifest">
+<link rel="apple-touch-icon" href="../../apple-touch-icon.png">
+<meta name="theme-color" content="#0a0a0c">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="loopy">
+<title data-t="toName">Tens and Ones</title>
+<meta name="description" content="Tens and Ones on loopy: read lines and dots as tens and ones, draw a number with lines and dots, and see which digit changes with giants and dwarfs. Free practice for ages 6 to 10, English and German.">
+<link rel="preload" href="../../fonts/lexend-latin.woff2" as="font" type="font/woff2" crossorigin>
+<style>
+/* Layout: a small times table grid on the card with one cell marked, the number pad below. Shared look with the other games. */
+:root {
+  --bg: #f3f6fb;
+  --card: #ffffff;
+  --ink: #1d2a3f;
+  --muted: #5d6b82;
+  --line: #d5dde9;
+  --accent: #2457c5;
+  --accent-ink: #ffffff;
+  --mark: #e2622b;
+  --good: #1f8a4c;
+  --good-bg: #e3f5ea;
+  --bad: #c23a3a;
+  --bad-bg: #fbe6e6;
+  --chip: #e6ecf6;
+  --key: #ffffff;
+  --font: "Lexend", "Segoe UI", "Helvetica Neue", Arial, sans-serif;
+}
+
+* { box-sizing: border-box; }
+body {
+  background: var(--bg); color: var(--ink); font-family: var(--font); font-size: 16px;
+  padding-left: max(16px, env(safe-area-inset-left, 0px));
+  padding-right: max(16px, env(safe-area-inset-right, 0px));
+  padding-block: 20px 32px;
+}
+.wrap { max-width: 520px; margin: 0 auto; display: flex; flex-direction: column; gap: 16px; }
+
+.top { display: flex; flex-wrap: wrap; gap: 12px; align-items: center; justify-content: space-between; }
+h1 { margin: 0; font-size: 1.6rem; font-weight: 700; text-wrap: balance; }
+.score { display: flex; flex-wrap: wrap; gap: 8px; font-variant-numeric: tabular-nums; }
+.pill { background: var(--card); border: 1px solid var(--line); border-radius: 999px; padding: 6px 14px; font-weight: 600; font-size: 1rem; white-space: nowrap; }
+.pill span { color: var(--muted); font-weight: 400; margin-right: 4px; }
+
+.settings { display: flex; flex-direction: column; gap: 8px; }
+.seg-label { font-size: 0.8rem; font-weight: 600; letter-spacing: 0.06em; text-transform: uppercase; color: var(--muted); margin: 0 0 4px 4px; }
+.seg { display: grid; grid-template-columns: repeat(2, 1fr); gap: 6px; background: var(--chip); padding: 5px; border-radius: 14px; }
+.seg button {
+  font: inherit; font-size: 0.95rem; font-weight: 600; color: var(--muted);
+  background: transparent; border: 0; border-radius: 10px; padding: 8px 4px; min-height: 44px; cursor: pointer;
+}
+.seg button:last-child { grid-column: 1 / -1; }
+.seg button[aria-pressed="true"] { background: var(--card); color: var(--ink); box-shadow: 0 1px 3px rgb(0 0 0 / 0.12); }
+
+.problem-card {
+  background: var(--card); border: 1px solid var(--line); border-radius: 24px;
+  padding: 20px 18px 18px; display: flex; flex-direction: column; align-items: center; gap: 14px;
+}
+.problem-card.good { border-color: var(--good); box-shadow: 0 0 0 2px var(--good) inset; }
+.problem-card.bad { border-color: var(--bad); box-shadow: 0 0 0 2px var(--bad) inset; }
+
+.feedback { min-height: 3.1em; text-align: center; font-size: 1.1rem; line-height: 1.45; margin: 0; max-width: 34ch; }
+.feedback strong { display: block; font-size: 1.45rem; }
+.feedback.good strong { color: var(--good); }
+.feedback.bad strong { color: var(--bad); }
+.feedback .hint { color: var(--muted); }
+
+.pad { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; }
+.pad button {
+  font: inherit; font-size: 2rem; font-weight: 700; font-variant-numeric: tabular-nums; color: var(--ink);
+  background: var(--key); border: 2px solid var(--line); border-radius: 18px; min-height: 72px; cursor: pointer;
+  transition: transform .08s ease, border-color .15s ease;
+  touch-action: manipulation; -webkit-tap-highlight-color: transparent;
+}
+.pad button:hover:not(:disabled) { border-color: var(--accent); }
+.pad button:active:not(:disabled) { transform: scale(0.96); }
+.pad button:disabled { opacity: 0.4; cursor: default; }
+.pad .erase { font-size: 1.15rem; color: var(--muted); }
+.pad .go { background: var(--accent); border-color: var(--accent); color: var(--accent-ink); font-size: 1.35rem; }
+.pad .go:hover:not(:disabled) { border-color: var(--accent); filter: brightness(1.08); }
+
+.foot { display: flex; justify-content: space-between; align-items: center; gap: 12px; flex-wrap: wrap; }
+.foot p { margin: 0; color: var(--muted); font-size: 0.9rem; }
+.reset { font: inherit; font-size: 0.95rem; color: var(--muted); background: transparent; border: 2px solid var(--line); border-radius: 14px; padding: 0 16px; min-height: 44px; cursor: pointer; }
+button:focus-visible { outline: 3px solid var(--mark); outline-offset: 3px; }
+
+@media (max-width: 420px) {
+  h1 { font-size: 1.35rem; }
+  .pad button { min-height: 64px; font-size: 1.8rem; }
+  .seg button { font-size: 0.85rem; }
+}
+@media (prefers-reduced-motion: reduce) {
+  * { transition: none !important; }
+}
+</style>
+<style>.home-link{display:inline-flex;align-items:center;min-height:40px;color:var(--muted);font-weight:600;text-decoration:none;font-size:0.95rem}.home-link:hover{color:var(--ink)}</style>
+<style>
+/* Phones and tablets: the game fills one screen; settings sit behind a button. */
+body { min-height: 100vh; min-height: 100dvh; padding-block: 12px 16px; }
+.wrap { gap: 12px; }
+.game-bar { display: flex; align-items: center; justify-content: space-between; gap: 8px; }
+.bar-right { display: flex; align-items: center; gap: 8px; }
+.top { gap: 8px 12px; }
+.play { display: flex; flex-direction: column; gap: 12px; -webkit-user-select: none; user-select: none; }
+@media (min-width: 600px) and (orientation: portrait) { .wrap { max-width: 640px; } }
+@media (orientation: landscape) and (min-width: 640px) {
+  .wrap { max-width: 1100px; }
+  .play { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; align-items: center; }
+}
+
+.problem-card { padding: 14px 14px 12px; gap: 8px; }
+.feedback { min-height: 2.9em; font-size: 1.05rem; }
+.feedback strong { font-size: 1.3rem; }
+.pad { gap: 8px; }
+.pad button { min-height: clamp(50px, 8vh, 92px); min-height: clamp(50px, 8dvh, 92px); }
+@media (min-width: 600px) and (orientation: portrait) {
+  .pad button { min-height: clamp(60px, 10dvh, 120px); font-size: 2.4rem; }
+}
+@media (orientation: landscape) and (min-width: 640px) {
+  .problem-card { height: 100%; justify-content: center; }
+  .pad button { min-height: clamp(44px, calc((100dvh - 150px) / 4.4), 130px); }
+}
+@media (max-height: 760px) and (orientation: portrait) {
+  .feedback { font-size: 0.95rem; line-height: 1.35; }
+  .feedback strong { font-size: 1.15rem; }
+}
+
+/* Portrait: the page is exactly one screen tall; the pad stays at the bottom and the card shrinks to fit. */
+@media (orientation: portrait) {
+  body { height: calc(100dvh - env(safe-area-inset-top, 0px) - env(safe-area-inset-bottom, 0px)); min-height: 0; display: flex; flex-direction: column; overflow: hidden; }
+  body:has(#settings-panel:not([hidden])) { height: auto; overflow: visible; }
+  .wrap { flex: 1 1 auto; min-height: 0; width: 100%; }
+  .play { flex: 1 1 auto; min-height: 0; }
+  .problem-card { flex: 1 1 auto; min-height: 0; justify-content: center; overflow: hidden; }
+  .feedback { flex: 0 1 auto; min-height: 0; overflow-y: auto; }
+}
+@media (orientation: landscape) and (min-width: 640px) {
+  body { height: calc(100dvh - env(safe-area-inset-top, 0px) - env(safe-area-inset-bottom, 0px)); min-height: 0; display: flex; flex-direction: column; overflow: hidden; }
+  body:has(#settings-panel:not([hidden])) { height: auto; overflow: visible; }
+  .wrap { flex: 1 1 auto; min-height: 0; width: 100%; }
+  .play { flex: 1 1 auto; min-height: 0; grid-template-rows: minmax(0, 1fr); }
+  .problem-card { min-height: 0; overflow: hidden; }
+  .feedback { flex: 0 1 auto; min-height: 0; overflow-y: auto; }
+}
+@media (max-height: 500px) {
+  .feedback { font-size: 0.9rem; line-height: 1.3; }
+  .feedback strong { font-size: 1.05rem; }
+}
+
+
+/* Tens and Ones: the school picture. A square is a hundred, a line is a ten, a dot is a one.
+   Under it the place value table (H, T, O and the number) as boxes; the box being asked has the accent line. */
+.tag { margin: 0; font-size: 0.85rem; font-weight: 600; color: var(--muted); background: var(--chip); border-radius: 999px; padding: 4px 12px; }
+.pic { display: flex; align-items: center; justify-content: center; gap: clamp(14px, 5vw, 32px); width: 100%; min-height: 48px; --ln: clamp(72px, 24vw, 120px); --dt: clamp(12px, 3.4vw, 18px); }
+.pic[hidden] { display: none; }
+.pic i { display: block; background: var(--ink); }
+.pic .hund { display: grid; grid-template-columns: repeat(3, auto); gap: 6px; }
+.pic .hund i { width: clamp(22px, 6vw, 32px); height: clamp(22px, 6vw, 32px); border-radius: 4px; }
+.pic .lines { display: flex; flex-direction: column; gap: 5px; }
+.pic .lines i { width: var(--ln); height: 4px; border-radius: 2px; }
+.pic .dots { display: grid; grid-template-columns: repeat(5, var(--dt)); gap: 6px; }
+.pic .dots i { width: var(--dt); height: var(--dt); border-radius: 50%; }
+.pic i.gone { background: transparent; border: 2px solid var(--bad); }
+.pic i.add { background: var(--accent); }
+.pic.empty { border: 2px dashed var(--line); border-radius: 18px; min-height: 64px; width: min(100%, 280px); }
+.pic.drawn { border: 2px solid var(--line); border-radius: 18px; padding: 10px 12px; width: min(100%, 280px); min-height: 64px; }
+.pic.drawn .lines i { width: clamp(64px, 20vw, 100px); }
+/* The place value table: a heading over each box, the number box last after an equals sign. */
+.tbl { display: flex; align-items: flex-end; justify-content: center; gap: 8px; font-weight: 700; font-variant-numeric: tabular-nums; }
+.tbl .col { display: flex; flex-direction: column; align-items: center; gap: 2px; }
+.tbl .hd { font-size: 0.8rem; font-weight: 700; color: var(--muted); letter-spacing: 0.04em; }
+.tbl .box { min-width: clamp(48px, 14vw, 64px); height: clamp(44px, 6.5dvh, 64px); padding: 0 8px; display: grid; place-items: center; border: 2px solid var(--line); border-radius: 14px; background: var(--chip); color: var(--ink); font-size: clamp(1.3rem, 5vw, 1.8rem); line-height: 1; }
+.tbl .num .box { min-width: clamp(64px, 20vw, 96px); }
+.tbl .eq { font-size: 1.4rem; color: var(--muted); height: clamp(44px, 6.5dvh, 64px); display: grid; place-items: center; }
+.tbl .box.blank { border-style: dashed; background: var(--card); }
+.tbl .box.ask { border-style: solid; border-color: var(--accent); box-shadow: 0 0 0 2px var(--accent) inset; background: var(--card); color: var(--accent); }
+.tbl .box.ask:empty::after { content: "?"; color: var(--muted); }
+.tbl .box.ok { border-color: var(--good); color: var(--good); background: var(--good-bg); }
+.tbl .box.fixed { border-color: var(--bad); color: var(--ink); }
+.tbl .box.live { color: var(--accent); }
+.problem-card.good .tbl .box.ask { border-color: var(--good); box-shadow: 0 0 0 2px var(--good) inset; color: var(--good); }
+.problem-card.bad .tbl .box.ask { border-color: var(--bad); box-shadow: 0 0 0 2px var(--bad) inset; color: var(--bad); text-decoration: line-through; text-decoration-thickness: 0.08em; }
+/* Giants and dwarfs: the sum in one big line, the part already done in a chip under it. */
+.sum { margin: 0; font-size: clamp(1.8rem, 8vw, 2.8rem); font-weight: 700; font-variant-numeric: tabular-nums; line-height: 1.1; }
+.sum b { color: var(--accent); }
+.sum b:empty::after { content: "?"; color: var(--muted); }
+.problem-card.good .sum b { color: var(--good); }
+.problem-card.bad .sum b { color: var(--bad); text-decoration: line-through; text-decoration-thickness: 0.08em; }
+.prev { margin: 0; font-size: 1.05rem; font-weight: 600; color: var(--muted); background: var(--chip); border-radius: 12px; padding: 6px 14px; font-variant-numeric: tabular-nums; }
+.prev[hidden] { display: none; }
+.question { margin: 0; font-size: clamp(1.1rem, min(5vw, 3.2dvh), 1.7rem); font-weight: 700; line-height: 1.25; text-align: center; text-wrap: balance; }
+.where { margin: 0; font-size: 0.9rem; color: var(--muted); text-align: center; text-wrap: balance; }
+/* Draw it: two big keys for a ten and a one take the place of the digits. */
+.pad.draw { grid-template-columns: 1fr 1fr; }
+.pad.draw [data-d="t"], .pad.draw [data-d="o"] { font-size: 1.35rem; }
+.pad:not(.draw) [data-d="t"], .pad:not(.draw) [data-d="o"] { display: none; }
+.pad.draw [data-d]:not([data-d="t"]):not([data-d="o"]) { display: none; }
+@media (max-height: 760px) and (orientation: portrait) {
+  .pic { --ln: clamp(64px, 20vw, 100px); --dt: clamp(11px, 3vw, 16px); }
+  .pic .lines { gap: 4px; }
+  .pic .dots { gap: 5px; }
+  .tbl .box { height: clamp(40px, 6dvh, 56px); font-size: 1.3rem; }
+  .tbl .eq { height: clamp(40px, 6dvh, 56px); }
+}
+/* The smallest phones: the kind tag goes, the picture and the boxes shrink, so the first-time hint still finds room. */
+@media (max-height: 660px) and (orientation: portrait) {
+  .tag { display: none; }
+  .pic { --ln: clamp(56px, 18vw, 90px); --dt: 11px; min-height: 36px; }
+  .pic .lines { gap: 2px; }
+  .pic .lines i { height: 3px; }
+  .pic .hund i { width: 20px; height: 20px; }
+  .pic .dots { gap: 4px; }
+  .tbl .box { height: 36px; font-size: 1.15rem; min-width: 44px; }
+  .tbl .num .box { min-width: 56px; }
+  .tbl .eq { height: 36px; }
+  .problem-card { gap: 6px; }
+  .question { font-size: 1.05rem; }
+  .where { font-size: 0.85rem; }
+  .sum { font-size: 1.45rem; }
+  .prev { font-size: 0.95rem; padding: 4px 12px; }
+  .pic.drawn, .pic.empty { min-height: 48px; padding: 6px 10px; }
+}
+@media (max-height: 500px) { .tag { display: none; } .question { font-size: 1rem; } .tbl .box { height: 36px; font-size: 1.1rem; } .tbl .eq { height: 36px; } .pic { --ln: 60px; --dt: 10px; } .pic .lines { gap: 3px; } .pic .lines i { height: 3px; } .pic .dots { gap: 4px; } }
+
+/* Worksheet cells (only printed): the picture in black with the table under it, a number with a box to draw in,
+   or the two sums of a giants and dwarfs pair. */
+@media print {
+  .sheet-clock .ws-to { display: flex; flex-direction: column; align-items: center; gap: 1.5mm; width: 100%; }
+  .sheet-clock .ws-to .pic { display: flex; align-items: center; justify-content: center; gap: 2.5mm; min-height: 0; }
+  .sheet-clock .ws-to .pic i { display: block; background: #000; }
+  .sheet-clock .ws-to .hund { display: grid; grid-template-columns: repeat(3, auto); gap: 0.8mm; }
+  .sheet-clock .ws-to .hund i { width: 3mm; height: 3mm; border-radius: 0.4mm; }
+  .sheet-clock .ws-to .lines { display: flex; flex-direction: column; gap: 0.9mm; }
+  .sheet-clock .ws-to .lines i { width: 10mm; height: 0.7mm; }
+  .sheet-clock .ws-to .dots { display: grid; grid-template-columns: repeat(5, 2mm); gap: 0.8mm; }
+  .sheet-clock .ws-to .dots i { width: 2mm; height: 2mm; border-radius: 50%; }
+  .sheet-clock .ws-to table { border-collapse: collapse; font-size: 8pt; }
+  .sheet-clock .ws-to th, .sheet-clock .ws-to td { border: 0.3mm solid #000; width: 6.5mm; height: 6mm; padding: 0; text-align: center; font-weight: 600; }
+  .sheet-clock .ws-to th { background: #eee; }
+  .sheet-clock .ws-to td.ws-eq, .sheet-clock .ws-to th.ws-eq { border: 0; background: none; width: 3.5mm; }
+  .sheet-clock .ws-to td.ws-n, .sheet-clock .ws-to th.ws-n { width: 13mm; }
+  .sheet-clock .ws-to b { font-size: 16pt; font-weight: 700; }
+  .sheet-clock .ws-to .ws-room { width: 34mm; height: 16mm; border: 0.3mm dashed #000; border-radius: 2mm; }
+  .sheet-clock .ws-to span { font-size: 12pt; font-weight: 600; white-space: nowrap; }
+  .sheet-clock .ws-to i.ws-line { display: inline-block; width: 11mm; border-bottom: 0.4mm solid #000; margin-left: 1mm; background: none; }
+}
+</style>
+<link rel="stylesheet" href="../../loopy.css">
+<script src="../../loopy.js"></script>
+</head>
+<body>
+
+<div class="wrap">
+  <header class="game-bar">
+    <a class="home-link" href="../../">&larr; loopy</a>
+    <div class="bar-right">
+      <span id="star-chip"></span>
+      <button type="button" id="settings-toggle" aria-controls="settings-panel"></button>
+    </div>
+  </header>
+  <section class="top" aria-labelledby="title">
+    <h1 id="title" data-t="toName">Tens and Ones</h1>
+    <div class="score" aria-live="polite">
+      <div class="pill pill-score"><span data-t="score">Score</span><b id="score">0 / 0</b></div>
+      <div id="level"></div>
+      <div class="pill pill-streak"><span data-t="streak">Streak</span><b id="streak">0</b></div>
+      <div id="last5" data-game="tens-ones"></div>
+    </div>
+  </section>
+  <div class="settings-panel" id="settings-panel" hidden>
+    <div class="controls"><div id="age-picker"></div><div id="theme-picker"></div><button id="sound-toggle"></button><div id="lang-picker"></div></div>
+    <div>
+      <p class="seg-label" id="level-label" data-t="toLevel">Level</p>
+      <div class="seg" role="group" aria-labelledby="level-label" id="level-seg">
+        <button type="button" data-level="1" data-t="toL1">Read to 20</button>
+        <button type="button" data-level="2" data-t="toL2">Read to 100</button>
+        <button type="button" data-level="3" data-t="toL3">Draw it</button>
+        <button type="button" data-level="4" data-t="toL4">Giants and dwarfs</button>
+        <button type="button" data-level="5" data-t="toL5">Hundreds too</button>
+      </div>
+    </div>
+    <div class="panel-foot">
+      <p data-t="toKbd">Keyboard works too: numbers, Backspace, Enter. On Draw it: T for a ten, O for a one.</p>
+      <button type="button" class="reset" id="reset" data-t="resetScore">Reset score</button>
+    </div>
+  </div>
+
+  <main class="play">
+    <div class="problem-card" id="card">
+      <p class="tag" id="tag"></p>
+      <p class="sum" id="sum" hidden></p>
+      <p class="prev" id="prev" hidden></p>
+      <div class="pic" id="pic" role="img"></div>
+      <div class="tbl" id="tbl"></div>
+      <p class="question" id="question"></p>
+      <p class="where" id="where"></p>
+      <p class="feedback" id="feedback"></p>
+    </div>
+
+    <div class="pad" id="pad">
+      <button type="button" id="k1" data-d="1">1</button>
+      <button type="button" id="k2" data-d="2">2</button>
+      <button type="button" id="k3" data-d="3">3</button>
+      <button type="button" id="k4" data-d="4">4</button>
+      <button type="button" id="k5" data-d="5">5</button>
+      <button type="button" id="k6" data-d="6">6</button>
+      <button type="button" id="k7" data-d="7">7</button>
+      <button type="button" id="k8" data-d="8">8</button>
+      <button type="button" id="k9" data-d="9">9</button>
+      <button type="button" id="k-ten" data-d="t" data-t="toTen" data-t-aria="toTenAria" aria-label="Add a ten">— ten</button>
+      <button type="button" id="k-one" data-d="o" data-t="toOne" data-t-aria="toOneAria" aria-label="Add a one">• one</button>
+      <button type="button" id="k-erase" class="erase" aria-label="Erase last digit" data-t-aria="eraseAria" data-t="erase">Erase</button>
+      <button type="button" id="k0" data-d="0">0</button>
+      <button type="button" id="k-go" class="go" data-t="check">Check</button>
+    </div>
+  </main>
+</div>
+
+<script>
+Loopy.addStrings({
+  en: {
+    toName: "Tens and Ones", toLevel: "Level",
+    toL1: "Read to 20", toL2: "Read to 100", toL3: "Draw it", toL4: "Giants and dwarfs", toL5: "Hundreds too",
+    toKbd: "Keyboard works too: numbers, Backspace, Enter. On Draw it: T for a ten, O for a one.",
+    toTagRead: "🔟 Read the picture", toTagDraw: "✏️ Draw the number", toTagGd: "🧙 Giants and dwarfs",
+    toLegend: "A line is a ten. A dot is a one.", toLegendH: "A square is a hundred, a line a ten, a dot a one.",
+    toH: "H", toT: "T", toO: "O", toNum: "Number", toWhere: "Box {n} of {of}",
+    toPicAria: "{squares}, {lines} and {dots}", toPicAria2: "{lines} and {dots}", toDrawAria: "Your drawing: {lines} and {dots}",
+    toNHundred: "hundred", toNHundreds: "hundreds", toNTen: "ten", toNTens: "tens", toNOne: "one", toNOnes: "ones",
+    toNSquare: "square", toNSquares: "squares", toNLine: "line", toNLines: "lines", toNDot: "dot", toNDots: "dots",
+    toAskH: "How many hundreds?", toAskT: "How many tens?", toAskO: "How many ones?", toAskN: "What is the number?",
+    toWhyH: "Count the squares: {h}. That is {hundreds}.", toWhyT: "Count the lines: {t}. That is {tens}.", toWhyO: "Count the dots: {o}. That is {ones}.",
+    toWhyN: "{tens} and {ones} make {n}.", toWhyNH: "{hundreds}, {tens} and {ones} make {n}.",
+    toAskDraw: "Draw {n} with lines and dots.", toDrawTip: "Tap — for a ten and • for a one.",
+    toTen: "— ten", toOne: "• one", toTenAria: "Add a ten", toOneAria: "Add a one",
+    toWhyDraw: "{n} is {tens} and {ones}: {lines} and {dots}.", toDrew: "You drew {lines} and {dots}. That is {m}.",
+    toAskSub: "What is {a} minus {b}?", toAskAdd: "What is {a} plus {b}?",
+    toDwarfSub: "The dwarf takes away {ones}.", toGiantSub: "The giant takes away {tens}.",
+    toDwarfAdd: "The dwarf brings {ones}.", toGiantAdd: "The giant brings {tens}.", toWhich: "Which digit changes?",
+    toWhyDwarf: "{a} {s} {b} = {r}. Only the ones change: {x} {s} {b} = {y}.",
+    toWhyGiant: "{a} {s} {b0} = {r}. Only the tens change: {xt} {s} {bt} = {yt}.",
+    toAnswerIs: "The answer is {a}.",
+    toHowRead: "Count the squares, lines and dots. Fill the table and write the number.",
+    toHowDraw: "Draw each number in its box: a line for every ten, a dot for every one.",
+    toHowGd: "Work out both sums. The dwarf changes the ones, the giant changes the tens."
+  },
+  de: {
+    toName: "Zehner und Einer", toLevel: "Stufe",
+    toL1: "Lesen bis 20", toL2: "Lesen bis 100", toL3: "Zeichne die Zahl", toL4: "Riesen und Zwerge", toL5: "Auch Hunderter",
+    toKbd: "Tastatur geht auch: Zahlen, Rücktaste, Enter. Beim Zeichnen: Z für einen Zehner, E für einen Einer.",
+    toTagRead: "🔟 Lies das Bild", toTagDraw: "✏️ Zeichne die Zahl", toTagGd: "🧙 Riesen und Zwerge",
+    toLegend: "Ein Strich ist ein Zehner. Ein Punkt ist ein Einer.", toLegendH: "Ein Quadrat ist ein Hunderter, ein Strich ein Zehner, ein Punkt ein Einer.",
+    toH: "H", toT: "Z", toO: "E", toNum: "Zahl", toWhere: "Kästchen {n} von {of}",
+    toPicAria: "{squares}, {lines} und {dots}", toPicAria2: "{lines} und {dots}", toDrawAria: "Deine Zeichnung: {lines} und {dots}",
+    toNHundred: "Hunderter", toNHundreds: "Hunderter", toNTen: "Zehner", toNTens: "Zehner", toNOne: "Einer", toNOnes: "Einer",
+    toNSquare: "Quadrat", toNSquares: "Quadrate", toNLine: "Strich", toNLines: "Striche", toNDot: "Punkt", toNDots: "Punkte",
+    toAskH: "Wie viele Hunderter?", toAskT: "Wie viele Zehner?", toAskO: "Wie viele Einer?", toAskN: "Wie heißt die Zahl?",
+    toWhyH: "Zähl die Quadrate: {h}. Das sind {hundreds}.", toWhyT: "Zähl die Striche: {t}. Das sind {tens}.", toWhyO: "Zähl die Punkte: {o}. Das sind {ones}.",
+    toWhyN: "{tens} und {ones} sind {n}.", toWhyNH: "{hundreds}, {tens} und {ones} sind {n}.",
+    toAskDraw: "Male {n} mit Strichen und Punkten.", toDrawTip: "Tippe — für einen Zehner und • für einen Einer.",
+    toTen: "— Zehner", toOne: "• Einer", toTenAria: "Einen Zehner dazu", toOneAria: "Einen Einer dazu",
+    toWhyDraw: "{n} sind {tens} und {ones}: {lines} und {dots}.", toDrew: "Du hast {lines} und {dots} gemalt. Das ist {m}.",
+    toAskSub: "Was ist {a} minus {b}?", toAskAdd: "Was ist {a} plus {b}?",
+    toDwarfSub: "Der Zwerg nimmt {ones} weg.", toGiantSub: "Der Riese nimmt {tens} weg.",
+    toDwarfAdd: "Der Zwerg bringt {ones}.", toGiantAdd: "Der Riese bringt {tens}.", toWhich: "Welche Ziffer ändert sich?",
+    toWhyDwarf: "{a} {s} {b} = {r}. Nur die Einer ändern sich: {x} {s} {b} = {y}.",
+    toWhyGiant: "{a} {s} {b0} = {r}. Nur die Zehner ändern sich: {xt} {s} {bt} = {yt}.",
+    toAnswerIs: "Die Antwort ist {a}.",
+    toHowRead: "Zähl die Quadrate, Striche und Punkte. Fülle die Tabelle aus und schreib die Zahl.",
+    toHowDraw: "Male jede Zahl in ihr Kästchen: ein Strich für jeden Zehner, ein Punkt für jeden Einer.",
+    toHowGd: "Rechne beide Aufgaben. Der Zwerg ändert die Einer, der Riese die Zehner."
+  }
+});
+
+(function () {
+  const $ = (id) => document.getElementById(id);
+  const card = $("card"), tagEl = $("tag"), sumEl = $("sum"), prevEl = $("prev"), picEl = $("pic"), tblEl = $("tbl"), qEl = $("question"), whereEl = $("where"), feedbackEl = $("feedback"), padEl = $("pad"), goBtn = $("k-go");
+  const levelBtns = [...document.querySelectorAll("#level-seg button")];
+  const digitBtns = [...document.querySelectorAll("#pad [data-d]")].filter(b => /\d/.test(b.dataset.d));
+  const drawBtns = [$("k-ten"), $("k-one")];
+  const t = Loopy.t, fmt = (n) => Loopy.num(n);
+  const randInt = (n) => Math.floor(Math.random() * n);
+  const pick = (arr) => arr[randInt(arr.length)];
+  const el = (tag, cls, text) => Loopy.el(tag, cls, text);
+  const store = {
+    get(k, d, ok) { try { const v = JSON.parse(Loopy.store.get(k)); return ok.includes(v) ? v : d; } catch (e) { return d; } },
+    set(k, v) { Loopy.store.set(k, JSON.stringify(v)); }
+  };
+  let age = Loopy.getAge();
+  let level;
+  const levelForAge = (a) => a <= 6 ? 1 : a <= 7 ? 2 : a <= 8 ? 3 : a <= 9 ? 4 : 5;
+  function loadForAge() { level = store.get("to.level.a" + age, levelForAge(age), [1, 2, 3, 4, 5]); }
+  loadForAge();
+  // The first-time hint over the keys says "Tap the numbers": on Draw it the keys are a line and a dot instead.
+  if (level === 3) Loopy.addStrings({ en: { hintPad: "Tap — and •, then Check!" }, de: { hintPad: "Tippe — und •, dann Prüfen!" } });
+  Loopy.levels.init({ names: ["toL1", "toL2", "toL3", "toL4", "toL5"],
+    get: () => level - 1, base: () => levelForAge(age) - 1,
+    set: (i) => { level = i + 1; store.set("to.level.a" + age, level); render(); } });
+  let right = 0, tried = 0, streak = 0;
+  let current = null, typed = "", answered = false, recent = [];
+  let drawn = { t: 0, o: 0 };
+
+  const digits = (n) => ({ h: Math.floor(n / 100), t: Math.floor(n / 10) % 10, o: n % 10 });
+  // "4 tens", "1 ten": a count with its word.
+  const unit = (n, one, many) => fmt(n) + " " + t(n === 1 ? one : many);
+  const words = (h, tt, o) => ({ hundreds: unit(h, "toNHundred", "toNHundreds"), tens: unit(tt, "toNTen", "toNTens"), ones: unit(o, "toNOne", "toNOnes"),
+    squares: unit(h, "toNSquare", "toNSquares"), lines: unit(tt, "toNLine", "toNLines"), dots: unit(o, "toNDot", "toNDots") });
+  // Read the picture: the boxes H (only with hundreds), T, O and the number, asked in that order.
+  function read(n, blanks) {
+    const d = digits(n), cells = { h: d.h, t: d.t, o: d.o, n };
+    return { type: "r", n, h: d.h, t: d.t, o: d.o, cells, blanks, i: 0, done: {},
+      key: level + ":r:" + n + ":" + blanks[0],
+      ask: (id) => t({ h: "toAskH", t: "toAskT", o: "toAskO", n: "toAskN" }[id]),
+      why: (id) => t(id === "n" ? (d.h ? "toWhyNH" : "toWhyN") : { h: "toWhyH", t: "toWhyT", o: "toWhyO" }[id], Object.assign({ h: fmt(d.h), t: fmt(d.t), o: fmt(d.o), n: fmt(n) }, words(d.h, d.t, d.o))),
+      sub: (id, i) => i === 0 ? t(d.h ? "toLegendH" : "toLegend") : t("toWhere", { n: fmt(i + 1), of: fmt(blanks.length) }) };
+  }
+  // Draw the number: one question, answered with the line and dot keys.
+  function drawNum(n) {
+    const d = digits(n);
+    return { type: "d", n, t: d.t, o: d.o, cells: { d: n }, blanks: ["d"], i: 0, done: {},
+      key: level + ":d:" + n + ":d",
+      ask: () => t("toAskDraw", { n: fmt(n) }),
+      why: () => t("toWhyDraw", Object.assign({ n: fmt(n) }, words(0, d.t, d.o))),
+      sub: () => t("toDrawTip") };
+  }
+  // Giants and dwarfs: the dwarf changes the ones (68 − 5), the giant changes the tens (68 − 50). Both sums are asked,
+  // one after the other; no carrying, so only one digit changes each time. op is "s" (minus) or "a" (plus).
+  function gd(a, b, op, blanks) {
+    const d = digits(a), sign = op === "s" ? "−" : "+", f = op === "s" ? -1 : 1;
+    const cells = { o: a + f * b, t: a + f * 10 * b };
+    const sumOf = (id) => fmt(a) + " " + sign + " " + fmt(id === "o" ? b : 10 * b);
+    return { type: "g", a, b, op, sign, cells, blanks, i: 0, done: {},
+      key: level + ":g:" + a + ":" + b + ":" + op + ":" + blanks[0],
+      sumOf,
+      ask: (id) => t(op === "s" ? "toAskSub" : "toAskAdd", { a: fmt(a), b: fmt(id === "o" ? b : 10 * b) }),
+      sub: (id) => t(id === "o" ? (op === "s" ? "toDwarfSub" : "toDwarfAdd") : (op === "s" ? "toGiantSub" : "toGiantAdd"), words(0, b, b)) + " " + t("toWhich"),
+      why: (id) => id === "o"
+        ? t("toWhyDwarf", { a: fmt(a), s: sign, b: fmt(b), r: fmt(cells.o), x: fmt(d.o), y: fmt(d.o + f * b) })
+        : t("toWhyGiant", { a: fmt(a), s: sign, b0: fmt(10 * b), r: fmt(cells.t), xt: unit(d.t, "toNTen", "toNTens"), bt: unit(b, "toNTen", "toNTens"), yt: unit(d.t + f * b, "toNTen", "toNTens") }) };
+  }
+  function make1() { return read(1 + randInt(20), ["t", "o", "n"]); }
+  function make2() { const n = 10 + randInt(90); return read(n % 10 === 0 && randInt(2) ? n + 1 + randInt(9) : n, ["t", "o", "n"]); }
+  function make3() { return drawNum(11 + randInt(89)); }
+  function make4() {
+    const op = pick(["s", "a", "s"]);
+    let a, b, d;
+    do { a = 11 + randInt(89); d = digits(a); } while (op === "s" ? (d.t < 1 || d.o < 1) : (d.t > 8 || d.o > 8 || d.t < 1));
+    const most = op === "s" ? Math.min(d.t, d.o) : Math.min(9 - d.t, 9 - d.o);
+    b = 1 + randInt(most);
+    return gd(a, b, op, randInt(3) ? ["o", "t"] : ["t", "o"]);
+  }
+  function make5() { return read(100 + randInt(900), ["h", "t", "o", "n"]); }
+  const MAKE = { 1: make1, 2: make2, 3: make3, 4: make4, 5: make5 };
+  function makeProblem() { return MAKE[level](); }
+
+  const cur = () => current.blanks[current.i];
+  const kindOf = (p, id) => "to-" + (p.type === "d" ? "draw" : p.type === "g" ? "gd" : id === "n" ? "num" : "read");
+  const maxLen = (p, id) => p.type === "g" ? 2 : id === "n" ? 3 : 1;
+
+  // The picture: squares for hundreds, lines for tens, dots for ones. gone marks what a dwarf or giant took away,
+  // add marks what one brought.
+  function drawPic(h, tt, o, mark) {
+    picEl.textContent = "";
+    const group = (cls, n, mk) => { if (!n) return; const g = el("div", cls); for (let i = 0; i < n; i++) { const it = el("i"); if (mk) mk(it, i); g.appendChild(it); } picEl.appendChild(g); };
+    group("hund", h);
+    group("lines", tt, mark && mark.t ? (it, i) => { if (i >= tt - mark.t) it.className = mark.cls; } : null);
+    group("dots", o, mark && mark.o ? (it, i) => { if (i >= o - mark.o) it.className = mark.cls; } : null);
+    picEl.setAttribute("aria-label", t(h ? "toPicAria" : "toPicAria2", words(h, tt, o)));
+  }
+  function boxText(p, id) {
+    if (id === cur() && !p.done[id]) return typed === "" ? "" : fmt(parseInt(typed, 10));
+    if (p.blanks.includes(id) && !p.done[id]) return "";
+    return fmt(p.cells[id]);
+  }
+  function boxClass(p, id) {
+    if (id === cur() && !p.done[id]) return "box ask";
+    if (p.done[id]) return "box " + p.done[id];
+    return p.blanks.includes(id) ? "box blank" : "box";
+  }
+  function col(p, id, hd, extra) {
+    const c = el("div", "col" + (extra ? " " + extra : "")), box = el("span", boxClass(p, id), boxText(p, id));
+    c.appendChild(el("span", "hd", hd));
+    if (id === cur() && !p.done[id]) { box.setAttribute("role", "textbox"); box.setAttribute("aria-label", p.ask(id)); box.dataset.a = p.cells[id]; }
+    c.appendChild(box);
+    return c;
+  }
+  function drawRead(p) {
+    drawPic(p.h, p.t, p.o);
+    picEl.className = "pic";
+    if (p.h) tblEl.appendChild(col(p, "h", t("toH")));
+    tblEl.appendChild(col(p, "t", t("toT")));
+    tblEl.appendChild(col(p, "o", t("toO")));
+    tblEl.appendChild(el("span", "eq", "="));
+    tblEl.appendChild(col(p, "n", t("toNum"), "num"));
+  }
+  function drawDraw(p) {
+    drawPic(0, drawn.t, drawn.o);
+    picEl.className = "pic " + (drawn.t + drawn.o ? "drawn" : "empty");
+    picEl.setAttribute("aria-label", t("toDrawAria", words(0, drawn.t, drawn.o)));
+    if (!answered) { picEl.dataset.a = "t".repeat(p.t) + "o".repeat(p.o); card.dataset.steps = "on"; }
+    [["t", "toT", drawn.t], ["o", "toO", drawn.o]].forEach(([id, hd, v]) => {
+      const c = el("div", "col"), box = el("span", "box " + (answered ? (p.done.d || "ask") : (drawn.t + drawn.o ? "live" : "blank")), answered || drawn.t + drawn.o ? fmt(v) : "");
+      c.appendChild(el("span", "hd", t(hd))); c.appendChild(box); tblEl.appendChild(c);
+    });
+  }
+  function drawGd(p) {
+    const id = cur(), other = p.blanks[1 - p.i];
+    sumEl.hidden = false;
+    sumEl.textContent = p.sumOf(id) + " = ";
+    const b = el("b", "", typed === "" ? "" : fmt(parseInt(typed, 10)));
+    if (!answered) { b.setAttribute("role", "textbox"); b.setAttribute("aria-label", p.ask(id)); b.dataset.a = p.cells[id]; }
+    sumEl.appendChild(b);
+    prevEl.hidden = !p.done[other];
+    prevEl.textContent = p.done[other] ? p.sumOf(other) + " = " + fmt(p.cells[other]) : "";
+    const d = digits(p.a), gone = p.op === "s", n = answered ? p.b : 0;
+    picEl.className = "pic";
+    if (answered && !gone) drawPic(0, d.t + (id === "t" ? n : 0), d.o + (id === "o" ? n : 0), { cls: "add", t: id === "t" ? n : 0, o: id === "o" ? n : 0 });
+    else drawPic(0, d.t, d.o, { cls: "gone", t: id === "t" ? n : 0, o: id === "o" ? n : 0 });
+  }
+  function draw() {
+    tblEl.textContent = "";
+    sumEl.hidden = true; sumEl.textContent = ""; prevEl.hidden = true;
+    delete picEl.dataset.a; delete card.dataset.steps;
+    tagEl.textContent = t(current.type === "d" ? "toTagDraw" : current.type === "g" ? "toTagGd" : "toTagRead");
+    if (current.type === "r") drawRead(current); else if (current.type === "d") drawDraw(current); else drawGd(current);
+  }
+  function render() {
+    if (!current) return;
+    Loopy.levels.render();
+    $("score").textContent = right + " / " + tried;
+    $("streak").textContent = streak;
+    levelBtns.forEach(b => b.setAttribute("aria-pressed", String(+b.dataset.level === level)));
+    const isDraw = current.type === "d";
+    padEl.classList.toggle("draw", isDraw);
+    goBtn.textContent = t(answered ? "next" : "check");
+    goBtn.disabled = !answered && (isDraw ? drawn.t + drawn.o === 0 : typed === "");
+    digitBtns.forEach(b => b.disabled = answered || isDraw);
+    drawBtns.forEach(b => b.disabled = answered || !isDraw);
+    $("k-erase").disabled = answered || (isDraw ? drawn.t + drawn.o === 0 : typed === "");
+    draw();
+  }
+
+  // Try again: a missed box comes back later (Loopy.retry). The note names the problem and the box, like "2:r:47:o";
+  // a problem's key is the note of its first box. It comes back with only that box empty. A box from another level waits.
+  const note = (p, id) => p.key.replace(/:[^:]*$/, ":" + id);
+  function ask() {
+    typed = ""; answered = false; drawn = { t: 0, o: 0 };
+    const id = cur();
+    // Each box is one question: the page marks it (the first one is marked by Loopy.retry.fresh already).
+    const q = note(current, id);
+    if (document.body.getAttribute("data-q") !== q) document.body.setAttribute("data-q", q);
+    // A box asked just now does not come back from Try again straight away: it waits like a whole problem does.
+    if (current.i > 0) { recent.push(q); while (recent.length > 12) recent.shift(); }
+    qEl.textContent = current.ask(id);
+    whereEl.textContent = current.sub(id, current.i);
+    card.className = "problem-card";
+    feedbackEl.className = "feedback";
+    feedbackEl.textContent = "";
+    render();
+    Loopy.speech.read();
+  }
+  function newRound() {
+    current = Loopy.retry.fresh("tens-ones", recent, makeProblem, rebuild, 12);
+    ask();
+  }
+  // Build the noted problem again from its key, with only the noted box empty. A problem from another level waits.
+  function rebuild(r) {
+    const m = /^([1-5]):([rdg]):(\d{1,3})(?::(\d):([sa]))?:([htond])$/.exec(r);
+    if (!m || +m[1] !== level) return null;
+    const n = +m[3], id = m[6];
+    if (m[2] === "r") return n >= 1 && n <= 999 && /^[hton]$/.test(id) && (id !== "h" || n >= 100) ? read(n, [id]) : null;
+    if (m[2] === "d") return n >= 11 && n <= 99 && id === "d" ? drawNum(n) : null;
+    if (!m[4] || !/^[ot]$/.test(id)) return null;
+    const b = +m[4], p = gd(n, b, m[5], [id]);
+    return b >= 1 && n >= 11 && n <= 99 && p.cells.o >= 0 && p.cells.t >= 0 && p.cells.o <= 99 && p.cells.t <= 99 && digits(p.cells.o).t === digits(n).t && digits(p.cells.t).o === digits(n).o ? p : null;
+  }
+
+  function press(d) {
+    if (answered) return;
+    if (current.type === "d") {
+      if (d !== "t" && d !== "o") return;
+      if (drawn.t + drawn.o >= 18) return;
+      drawn[d]++;
+      return render();
+    }
+    if (!/\d/.test(d) || typed.length >= maxLen(current, cur())) return;
+    if (typed === "0") typed = "";
+    typed += d;
+    render();
+  }
+  function erase() {
+    if (answered) return;
+    if (current.type === "d") { if (drawn.o) drawn.o--; else if (drawn.t) drawn.t--; }
+    else typed = typed.slice(0, -1);
+    render();
+  }
+  function check() {
+    if (answered) return;
+    const id = cur(), answer = current.cells[id], isDraw = current.type === "d";
+    if (isDraw ? drawn.t + drawn.o === 0 : typed === "") return;
+    answered = true; tried++;
+    const ok = isDraw ? drawn.t === current.t && drawn.o === current.o : parseInt(typed, 10) === answer;
+    if (ok) { right++; streak++; } else { streak = 0; }
+    const kind = kindOf(current, id);
+    const mine = isDraw ? fmt(drawn.t * 10 + drawn.o) : fmt(parseInt(typed, 10));
+    if (ok) Loopy.rewards.correct("tens-ones", streak, kind);
+    else Loopy.rewards.wrong("tens-ones", { q: isDraw ? current.ask(id) : current.type === "g" ? current.sumOf(id) : current.ask(id) + " " + fmt(current.n), a: fmt(answer), y: mine, k: kind, r: note(current, id) });
+    card.className = "problem-card " + (ok ? "good" : "bad");
+    feedbackEl.className = "feedback " + (ok ? "good" : "bad");
+    feedbackEl.innerHTML = "<strong></strong>";
+    feedbackEl.firstChild.textContent = ok ? (streak >= 3 ? t("correctRow", { n: streak }) : t("correct")) : t("notQuite");
+    const why = ok ? current.why(id) : isDraw ? t("toDrew", Object.assign({ m: mine }, words(0, drawn.t, drawn.o))) + " " + current.why(id) : t("toAnswerIs", { a: fmt(answer) }) + " " + current.why(id);
+    feedbackEl.appendChild(document.createTextNode(why));
+    render();
+    current.done[id] = ok ? "ok" : "fixed";
+  }
+  function go() {
+    if (!answered) return check();
+    if (current.i + 1 < current.blanks.length) { current.i++; ask(); } else newRound();
+  }
+
+  document.querySelectorAll("#pad [data-d]").forEach(b => b.addEventListener("click", () => press(b.dataset.d)));
+  $("k-erase").addEventListener("click", erase);
+  goBtn.addEventListener("click", go);
+  levelBtns.forEach(b => b.addEventListener("click", () => { level = +b.dataset.level; store.set("to.level.a" + age, level); recent = []; newRound(); }));
+  window.addEventListener("loopy:age", (e) => { age = e.detail; recent = []; loadForAge(); newRound(); });
+  $("reset").addEventListener("click", () => { right = 0; tried = 0; streak = 0; Loopy.recent.clear("tens-ones"); newRound(); });
+  document.addEventListener("keydown", (e) => {
+    if (e.target.tagName === "INPUT" || document.querySelector(".loopy-cheer.big")) return;
+    const k = e.key.toLowerCase();
+    if (e.key >= "0" && e.key <= "9") press(e.key);
+    else if (k === "t" || k === "z" || k === "-") press("t");
+    else if (k === "o" || k === "e" || k === ".") press("o");
+    else if (e.key === "Backspace") erase();
+    else if (e.key === "Enter") go();
+  });
+
+  // Read aloud: the question of the box being asked, with the legend or the dwarf's line.
+  Loopy.speech.question({ host: card, text: () => current.ask(cur()) + " " + current.sub(cur(), current.i) });
+
+  // Print worksheet: 20 pictures to read, numbers to draw, or giants and dwarfs pairs at the game's level.
+  const picFor = (h, tt, o) => {
+    const pic = el("div", "pic");
+    [["hund", h], ["lines", tt], ["dots", o]].forEach(([cls, n]) => { if (!n) return; const g = el("div", cls); for (let i = 0; i < n; i++) g.appendChild(el("i")); pic.appendChild(g); });
+    return pic;
+  };
+  Loopy.worksheet({
+    title: () => t("toName"),
+    level: () => [t("ageLabel", { n: age }), t("toLevel") + ": " + t("toL" + level)].join(" · "),
+    how: () => t(level === 3 ? "toHowDraw" : level === 4 ? "toHowGd" : "toHowRead"),
+    layout: "clock",
+    make: (n) => { const out = [], keys = []; for (let i = 0; i < 400 && out.length < n; i++) { const p = makeProblem(); if (!keys.includes(p.key)) { keys.push(p.key); out.push(p); } } return out; },
+    cell: (p) => {
+      const box = el("div", "ws-to");
+      if (p.type === "d") { box.appendChild(el("b", "", fmt(p.n))); box.appendChild(el("div", "ws-room")); return box; }
+      if (p.type === "g") {
+        ["o", "t"].forEach(id => { const line = el("span", "", p.sumOf(id) + " ="); line.appendChild(el("i", "ws-line")); box.appendChild(line); });
+        return box;
+      }
+      box.appendChild(picFor(p.h, p.t, p.o));
+      const table = el("table"), head = table.insertRow(), row = table.insertRow();
+      (p.h ? ["toH", "toT", "toO"] : ["toT", "toO"]).forEach(k => head.appendChild(el("th", "", t(k))));
+      head.appendChild(el("th", "ws-eq", "")); head.appendChild(el("th", "ws-n", t("toNum")));
+      for (let i = 0; i < (p.h ? 3 : 2); i++) row.insertCell();
+      row.insertCell().className = "ws-eq"; row.lastChild.textContent = "=";
+      row.insertCell().className = "ws-n";
+      box.appendChild(table);
+      return box;
+    },
+    answer: (p) => p.type === "d" ? fmt(p.t) + " — , " + fmt(p.o) + " •" : p.type === "g" ? fmt(p.cells.o) + ", " + fmt(p.cells.t) : (p.h ? fmt(p.h) + " · " : "") + fmt(p.t) + " · " + fmt(p.o) + " = " + fmt(p.n)
+  });
+
+  newRound();
+})();
+</script>
+</body>
+</html>
