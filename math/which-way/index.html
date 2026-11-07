@@ -1,0 +1,701 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'sha256-0ygD8mjhVg0hDnHQ8qtvJ/pTgDdzAbsqoKQOS0cNFdA='; style-src 'self' 'sha256-z2P7kGW5Z05eCTjTZdYpc0vThTlOE9vmt97pVSvi2I4=' 'sha256-+Yyd9YXCRiuDdDuXBlT9hmSuTFI5zU8H8Lyu9dQafo4=' 'sha256-RT1053JU5UiKvjrCUFx1rlhdFLMmgtuFJ9T8jnMeawQ=' 'sha256-eYA86R6ZGCsO97Lh3Pay0xPKr4Bdn0nHKwsOkHSubYg='; img-src 'self' data:; font-src 'self'; connect-src 'self' https://loopy-sync.loopy-1e2.workers.dev; worker-src 'self'; object-src 'none'; base-uri 'none'; form-action 'none'; manifest-src 'self'; upgrade-insecure-requests">
+<meta name="referrer" content="strict-origin-when-cross-origin">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<style>:root{color-scheme:light;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}body{margin:0}[hidden]{display:none!important}</style>
+<link rel="icon" href="../../icon.svg" type="image/svg+xml">
+<link rel="manifest" href="../../manifest.webmanifest">
+<link rel="apple-touch-icon" href="../../apple-touch-icon.png">
+<meta name="theme-color" content="#0a0a0c">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="loopy">
+<title data-t="wyName">Which Way?</title>
+<meta name="description" content="Which Way? on loopy: 23 + 29 with Tens first, Nearly round or Place by place. Name the way, say why, and fill in the steps. Free practice for ages 7 to 10, English and German.">
+<link rel="preload" href="../../fonts/lexend-latin.woff2" as="font" type="font/woff2" crossorigin>
+<style>
+/* Layout: a small times table grid on the card with one cell marked, the number pad below. Shared look with the other games. */
+:root {
+  --bg: #f3f6fb;
+  --card: #ffffff;
+  --ink: #1d2a3f;
+  --muted: #5d6b82;
+  --line: #d5dde9;
+  --accent: #2457c5;
+  --accent-ink: #ffffff;
+  --mark: #e2622b;
+  --good: #1f8a4c;
+  --good-bg: #e3f5ea;
+  --bad: #c23a3a;
+  --bad-bg: #fbe6e6;
+  --chip: #e6ecf6;
+  --key: #ffffff;
+  --font: "Lexend", "Segoe UI", "Helvetica Neue", Arial, sans-serif;
+}
+
+* { box-sizing: border-box; }
+body {
+  background: var(--bg); color: var(--ink); font-family: var(--font); font-size: 16px;
+  padding-left: max(16px, env(safe-area-inset-left, 0px));
+  padding-right: max(16px, env(safe-area-inset-right, 0px));
+  padding-block: 20px 32px;
+}
+.wrap { max-width: 520px; margin: 0 auto; display: flex; flex-direction: column; gap: 16px; }
+
+.top { display: flex; flex-wrap: wrap; gap: 12px; align-items: center; justify-content: space-between; }
+h1 { margin: 0; font-size: 1.6rem; font-weight: 700; text-wrap: balance; }
+.score { display: flex; flex-wrap: wrap; gap: 8px; font-variant-numeric: tabular-nums; }
+.pill { background: var(--card); border: 1px solid var(--line); border-radius: 999px; padding: 6px 14px; font-weight: 600; font-size: 1rem; white-space: nowrap; }
+.pill span { color: var(--muted); font-weight: 400; margin-right: 4px; }
+
+.settings { display: flex; flex-direction: column; gap: 8px; }
+.seg-label { font-size: 0.8rem; font-weight: 600; letter-spacing: 0.06em; text-transform: uppercase; color: var(--muted); margin: 0 0 4px 4px; }
+.seg { display: grid; grid-template-columns: repeat(2, 1fr); gap: 6px; background: var(--chip); padding: 5px; border-radius: 14px; }
+.seg button {
+  font: inherit; font-size: 0.95rem; font-weight: 600; color: var(--muted);
+  background: transparent; border: 0; border-radius: 10px; padding: 8px 4px; min-height: 44px; cursor: pointer;
+}
+.seg button:last-child { grid-column: 1 / -1; }
+.seg button[aria-pressed="true"] { background: var(--card); color: var(--ink); box-shadow: 0 1px 3px rgb(0 0 0 / 0.12); }
+
+.problem-card {
+  background: var(--card); border: 1px solid var(--line); border-radius: 24px;
+  padding: 20px 18px 18px; display: flex; flex-direction: column; align-items: center; gap: 14px;
+}
+.problem-card.good { border-color: var(--good); box-shadow: 0 0 0 2px var(--good) inset; }
+.problem-card.bad { border-color: var(--bad); box-shadow: 0 0 0 2px var(--bad) inset; }
+
+.feedback { min-height: 3.1em; text-align: center; font-size: 1.1rem; line-height: 1.45; margin: 0; max-width: 34ch; }
+.feedback strong { display: block; font-size: 1.45rem; }
+.feedback.good strong { color: var(--good); }
+.feedback.bad strong { color: var(--bad); }
+.feedback .hint { color: var(--muted); }
+
+.pad { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; }
+.pad button {
+  font: inherit; font-size: 2rem; font-weight: 700; font-variant-numeric: tabular-nums; color: var(--ink);
+  background: var(--key); border: 2px solid var(--line); border-radius: 18px; min-height: 72px; cursor: pointer;
+  transition: transform .08s ease, border-color .15s ease;
+  touch-action: manipulation; -webkit-tap-highlight-color: transparent;
+}
+.pad button:hover:not(:disabled) { border-color: var(--accent); }
+.pad button:active:not(:disabled) { transform: scale(0.96); }
+.pad button:disabled { opacity: 0.4; cursor: default; }
+.pad .erase { font-size: 1.15rem; color: var(--muted); }
+.pad .go { background: var(--accent); border-color: var(--accent); color: var(--accent-ink); font-size: 1.35rem; }
+.pad .go:hover:not(:disabled) { border-color: var(--accent); filter: brightness(1.08); }
+
+.foot { display: flex; justify-content: space-between; align-items: center; gap: 12px; flex-wrap: wrap; }
+.foot p { margin: 0; color: var(--muted); font-size: 0.9rem; }
+.reset { font: inherit; font-size: 0.95rem; color: var(--muted); background: transparent; border: 2px solid var(--line); border-radius: 14px; padding: 0 16px; min-height: 44px; cursor: pointer; }
+button:focus-visible { outline: 3px solid var(--mark); outline-offset: 3px; }
+
+@media (max-width: 420px) {
+  h1 { font-size: 1.35rem; }
+  .pad button { min-height: 64px; font-size: 1.8rem; }
+  .seg button { font-size: 0.85rem; }
+}
+@media (prefers-reduced-motion: reduce) {
+  * { transition: none !important; }
+}
+</style>
+<style>.home-link{display:inline-flex;align-items:center;min-height:40px;color:var(--muted);font-weight:600;text-decoration:none;font-size:0.95rem}.home-link:hover{color:var(--ink)}</style>
+<style>
+/* Phones and tablets: the game fills one screen; settings sit behind a button. */
+body { min-height: 100vh; min-height: 100dvh; padding-block: 12px 16px; }
+.wrap { gap: 12px; }
+.game-bar { display: flex; align-items: center; justify-content: space-between; gap: 8px; }
+.bar-right { display: flex; align-items: center; gap: 8px; }
+.top { gap: 8px 12px; }
+.play { display: flex; flex-direction: column; gap: 12px; -webkit-user-select: none; user-select: none; }
+@media (min-width: 600px) and (orientation: portrait) { .wrap { max-width: 640px; } }
+@media (orientation: landscape) and (min-width: 640px) {
+  .wrap { max-width: 1100px; }
+  .play { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; align-items: center; }
+}
+
+.problem-card { padding: 14px 14px 12px; gap: 8px; }
+.feedback { min-height: 2.9em; font-size: 1.05rem; }
+.feedback strong { font-size: 1.3rem; }
+.pad { gap: 8px; }
+.pad button { min-height: clamp(50px, 8vh, 92px); min-height: clamp(50px, 8dvh, 92px); }
+@media (min-width: 600px) and (orientation: portrait) {
+  .pad button { min-height: clamp(60px, 10dvh, 120px); font-size: 2.4rem; }
+}
+@media (orientation: landscape) and (min-width: 640px) {
+  .problem-card { height: 100%; justify-content: center; }
+  .pad button { min-height: clamp(44px, calc((100dvh - 150px) / 4.4), 130px); }
+}
+@media (max-height: 760px) and (orientation: portrait) {
+  .feedback { font-size: 0.95rem; line-height: 1.35; }
+  .feedback strong { font-size: 1.15rem; }
+}
+
+/* Portrait: the page is exactly one screen tall; the pad stays at the bottom and the card shrinks to fit. */
+@media (orientation: portrait) {
+  body { height: calc(100dvh - env(safe-area-inset-top, 0px) - env(safe-area-inset-bottom, 0px)); min-height: 0; display: flex; flex-direction: column; overflow: hidden; }
+  body:has(#settings-panel:not([hidden])) { height: auto; overflow: visible; }
+  .wrap { flex: 1 1 auto; min-height: 0; width: 100%; }
+  .play { flex: 1 1 auto; min-height: 0; }
+  .problem-card { flex: 1 1 auto; min-height: 0; justify-content: center; overflow: hidden; }
+  .feedback { flex: 0 1 auto; min-height: 0; overflow-y: auto; }
+}
+@media (orientation: landscape) and (min-width: 640px) {
+  body { height: calc(100dvh - env(safe-area-inset-top, 0px) - env(safe-area-inset-bottom, 0px)); min-height: 0; display: flex; flex-direction: column; overflow: hidden; }
+  body:has(#settings-panel:not([hidden])) { height: auto; overflow: visible; }
+  .wrap { flex: 1 1 auto; min-height: 0; width: 100%; }
+  .play { flex: 1 1 auto; min-height: 0; grid-template-rows: minmax(0, 1fr); }
+  .problem-card { min-height: 0; overflow: hidden; }
+  .feedback { flex: 0 1 auto; min-height: 0; overflow-y: auto; }
+}
+@media (max-height: 500px) {
+  .feedback { font-size: 0.9rem; line-height: 1.3; }
+  .feedback strong { font-size: 1.05rem; }
+}
+
+
+/* Which Way?: one sum, three ways to work it out (Tens first, Nearly round, Place by place), and one question about them.
+   The way on show sits in a card with the accent line; the steps of the Fill level are boxes like Tens and Ones. */
+.tag { margin: 0; font-size: 0.85rem; font-weight: 600; color: var(--muted); background: var(--chip); border-radius: 999px; padding: 4px 12px; }
+.sum { margin: 0; font-size: clamp(2rem, 11vw, 3.4rem); font-weight: 700; font-variant-numeric: tabular-nums; line-height: 1.1; letter-spacing: 0.02em; }
+.waycard { display: flex; flex-direction: column; gap: 2px; width: 100%; max-width: 440px; padding: 8px 14px; border: 2px solid var(--accent); box-shadow: 0 0 0 2px var(--accent) inset; border-radius: 16px; background: var(--card); color: var(--ink); text-align: left; }
+.waycard[hidden] { display: none; }
+.waycard b { font-size: clamp(1.05rem, 4.6vw, 1.3rem); }
+.waycard .st { font-size: clamp(0.95rem, 4.2vw, 1.2rem); color: var(--muted); font-weight: 600; font-variant-numeric: tabular-nums; }
+.waycard.quiet { border-color: var(--line); box-shadow: none; background: var(--chip); }
+/* The Fill level: each step on its own line, the answer a box. The box being filled has the accent line; filled boxes are plain. */
+.steps { display: flex; flex-direction: column; align-items: center; gap: 6px; margin: 0; padding: 0; list-style: none; width: 100%; font-size: clamp(1.25rem, 5.6vw, 1.9rem); font-weight: 700; font-variant-numeric: tabular-nums; line-height: 1.2; }
+.steps[hidden] { display: none; }
+.steps li { display: flex; align-items: center; gap: 0.3em; }
+.steps .box { display: inline-grid; place-items: center; min-width: 2em; height: 1.45em; padding: 0 0.3em; border: 2px solid var(--line); border-radius: 12px; background: var(--chip); color: var(--ink); }
+.steps .box.ask { border-color: var(--accent); box-shadow: 0 0 0 2px var(--accent) inset; background: var(--card); color: var(--accent); }
+.steps .box.ask:empty::after { content: "?"; color: var(--muted); }
+.steps .box.todo { color: var(--muted); }
+.steps .box.todo:empty::after { content: "?"; }
+.problem-card.good .steps .box.ask { border-color: var(--good); box-shadow: 0 0 0 2px var(--good) inset; color: var(--good); }
+.problem-card.bad .steps .box.ask { border-color: var(--bad); box-shadow: 0 0 0 2px var(--bad) inset; color: var(--bad); text-decoration: line-through; text-decoration-thickness: 0.08em; }
+.question { margin: 0; font-size: clamp(1.05rem, min(4.8vw, 3dvh), 1.5rem); font-weight: 700; line-height: 1.3; text-align: center; text-wrap: balance; }
+.where { margin: 0; font-size: 0.9rem; color: var(--muted); text-align: center; text-wrap: balance; }
+/* The three answers take the place of the number pad, with Next under them. Names are big and centred; sentences wrap, left aligned. */
+.pick { display: flex; flex-direction: column; gap: 8px; }
+.pick[hidden], .pad[hidden] { display: none; }
+.choices { display: grid; grid-template-columns: 1fr; gap: 8px; }
+.choices button {
+  font: inherit; font-size: clamp(0.98rem, 4.2vw, 1.2rem); font-weight: 600; line-height: 1.3; color: var(--ink); background: var(--key); border: 2px solid var(--line); border-radius: 16px;
+  min-height: 48px; padding: 8px 14px; text-align: left; cursor: pointer; touch-action: manipulation; -webkit-tap-highlight-color: transparent; transition: transform .08s ease, border-color .15s ease;
+}
+.choices.names button { font-size: clamp(1.2rem, 5vw, 1.5rem); font-weight: 700; text-align: center; min-height: clamp(52px, 8dvh, 80px); }
+.choices button:hover:not(:disabled) { border-color: var(--accent); }
+.choices button:active:not(:disabled) { transform: scale(0.97); }
+.choices button:disabled { cursor: default; }
+.choices button.right { border-color: var(--good); background: var(--good-bg); color: var(--good); }
+.choices button.wrong { border-color: var(--bad); background: var(--bad-bg); color: var(--bad); }
+.choices button.faded { opacity: 0.45; }
+.pick .go { font: inherit; font-size: 1.35rem; font-weight: 700; color: var(--accent-ink); background: var(--accent); border: 2px solid var(--accent); border-radius: 18px; min-height: clamp(50px, 7dvh, 72px); cursor: pointer; }
+.pick .go:disabled { opacity: 0.4; cursor: default; }
+/* Landscape: the answers fill the right column top to bottom, like the number pad does. */
+@media (orientation: landscape) and (min-width: 640px) {
+  .pick { height: 100%; min-height: 0; gap: 12px; }
+  .choices { flex: 1 1 auto; min-height: 0; grid-auto-rows: minmax(48px, 1fr); gap: 12px; }
+  .choices button { min-height: 48px; font-size: clamp(1rem, 1.8vw, 1.35rem); padding: 10px 18px; }
+  .choices.names button { font-size: clamp(1.3rem, 2.4vw, 1.9rem); }
+  .pick .go { flex: 0 0 auto; min-height: clamp(50px, 9dvh, 80px); }
+}
+/* Tablets upright: everything grows so the card has no empty bands. */
+@media (min-width: 600px) and (orientation: portrait) {
+  .problem-card { gap: 14px; }
+  .sum { font-size: clamp(3.4rem, 9vw, 5rem); }
+  .waycard { max-width: 520px; padding: 12px 20px; gap: 4px; }
+  .waycard b { font-size: 1.6rem; }
+  .waycard .st { font-size: 1.45rem; }
+  .steps { font-size: 2.3rem; gap: 10px; }
+  .question { font-size: 1.7rem; }
+  .where { font-size: 1.15rem; }
+  .feedback { font-size: 1.25rem; }
+  .feedback strong { font-size: 1.5rem; }
+  .choices { gap: 12px; }
+  .choices button { min-height: clamp(64px, 9dvh, 120px); font-size: 1.45rem; padding: 12px 20px; }
+  .choices.names button { min-height: clamp(72px, 10dvh, 130px); font-size: 1.8rem; }
+  .pick { gap: 12px; }
+  .pick .go { min-height: clamp(60px, 8dvh, 90px); font-size: 1.6rem; }
+}
+@media (max-height: 760px) and (orientation: portrait) {
+  .problem-card { gap: 6px; }
+  .sum { font-size: clamp(1.8rem, 9vw, 2.6rem); }
+  .waycard { padding: 6px 12px; }
+  .steps { font-size: clamp(1.15rem, 5vw, 1.5rem); gap: 4px; }
+  .choices { gap: 6px; }
+  .choices button { min-height: 44px; padding: 6px 12px; font-size: clamp(0.92rem, 3.9vw, 1.05rem); }
+  .choices.names button { min-height: 48px; font-size: 1.2rem; }
+  .pick .go { min-height: 48px; }
+  .question { font-size: 1rem; }
+  .where { font-size: 0.85rem; }
+}
+@media (max-height: 660px) and (orientation: portrait) { .tag { display: none; } .sum { font-size: 1.7rem; } .waycard b { font-size: 1rem; } .waycard .st { font-size: 0.9rem; } }
+@media (max-height: 500px) { .tag { display: none; } .sum { font-size: 1.6rem; } .question { font-size: 0.95rem; } .steps { font-size: 1.1rem; gap: 3px; } .waycard { padding: 4px 10px; } .waycard b { font-size: 0.95rem; } .waycard .st { font-size: 0.85rem; } }
+
+@media print {
+  .sheet-clock .ws-wy { display: flex; flex-direction: column; align-items: stretch; gap: 1.5mm; width: 100%; font-size: 9pt; }
+  .sheet-clock .ws-wy .sum { font-size: 14pt; text-align: center; letter-spacing: 0; }
+  .sheet-clock .ws-wy .way { display: flex; align-items: center; gap: 1.5mm; font-weight: 600; }
+  .sheet-clock .ws-wy .way i { display: inline-block; width: 4mm; height: 4mm; border: 0.3mm solid #000; border-radius: 0.8mm; flex: 0 0 auto; }
+  .sheet-clock .ws-wy .line { display: flex; align-items: flex-end; gap: 1mm; width: 100%; font-weight: 600; }
+  .sheet-clock .ws-wy i.ws-line { display: inline-block; flex: 1; min-width: 6mm; height: 4mm; border-bottom: 0.4mm solid #000; }
+  .sheet-clock .ws-wy .fill { font-size: 11pt; font-weight: 600; text-align: center; font-variant-numeric: tabular-nums; line-height: 1.6; }
+  .sheet-clock .ws-wy .fill i { display: inline-block; width: 9mm; border-bottom: 0.4mm solid #000; vertical-align: baseline; }
+}
+</style>
+<link rel="stylesheet" href="../../loopy.css">
+<script src="../../loopy.js"></script>
+</head>
+<body>
+
+<div class="wrap">
+  <header class="game-bar">
+    <a class="home-link" href="../../">&larr; loopy</a>
+    <div class="bar-right">
+      <span id="star-chip"></span>
+      <button type="button" id="settings-toggle" aria-controls="settings-panel"></button>
+    </div>
+  </header>
+  <section class="top" aria-labelledby="title">
+    <h1 id="title" data-t="wyName">Which Way?</h1>
+    <div class="score" aria-live="polite">
+      <div class="pill pill-score"><span data-t="score">Score</span><b id="score">0 / 0</b></div>
+      <div id="level"></div>
+      <div class="pill pill-streak"><span data-t="streak">Streak</span><b id="streak">0</b></div>
+      <div id="last5" data-game="which-way"></div>
+    </div>
+  </section>
+  <div class="settings-panel" id="settings-panel" hidden>
+    <div class="controls"><div id="age-picker"></div><div id="theme-picker"></div><button id="sound-toggle"></button><div id="lang-picker"></div></div>
+    <div>
+      <p class="seg-label" id="level-label" data-t="wyLevel">Level</p>
+      <div class="seg" role="group" aria-labelledby="level-label" id="level-seg">
+        <button type="button" data-level="1" data-t="wyL1">Name the way</button>
+        <button type="button" data-level="2" data-t="wyL2">Say why</button>
+        <button type="button" data-level="3" data-t="wyL3">True or not</button>
+        <button type="button" data-level="4" data-t="wyL4">Fill the steps</button>
+      </div>
+    </div>
+    <div class="panel-foot">
+      <p data-t="wyKbd">Keyboard works too: 1, 2 and 3 pick an answer, numbers, Backspace, Enter.</p>
+      <button type="button" class="reset" id="reset" data-t="resetScore">Reset score</button>
+    </div>
+  </div>
+
+  <main class="play">
+    <div class="problem-card" id="card">
+      <p class="tag" id="tag"></p>
+      <p class="sum" id="sum"></p>
+      <div class="waycard" id="waycard" hidden><b id="wayname"></b><span class="st" id="waysteps"></span></div>
+      <ol class="steps" id="steps" hidden></ol>
+      <p class="question" id="question"></p>
+      <p class="where" id="where"></p>
+      <p class="feedback" id="feedback"></p>
+    </div>
+
+    <div class="pick" id="pick">
+      <div class="choices" id="choices">
+        <button type="button" id="c1" data-i="0"></button>
+        <button type="button" id="c2" data-i="1"></button>
+        <button type="button" id="c3" data-i="2"></button>
+      </div>
+      <button type="button" class="go" id="next" data-t="next">Next</button>
+    </div>
+    <div class="pad" id="pad" hidden>
+      <button type="button" id="k1" data-d="1">1</button>
+      <button type="button" id="k2" data-d="2">2</button>
+      <button type="button" id="k3" data-d="3">3</button>
+      <button type="button" id="k4" data-d="4">4</button>
+      <button type="button" id="k5" data-d="5">5</button>
+      <button type="button" id="k6" data-d="6">6</button>
+      <button type="button" id="k7" data-d="7">7</button>
+      <button type="button" id="k8" data-d="8">8</button>
+      <button type="button" id="k9" data-d="9">9</button>
+      <button type="button" id="k-erase" class="erase" aria-label="Erase last digit" data-t-aria="eraseAria" data-t="erase">Erase</button>
+      <button type="button" id="k0" data-d="0">0</button>
+      <button type="button" id="k-go" class="go" data-t="check">Check</button>
+    </div>
+  </main>
+</div>
+<script>
+Loopy.addStrings({
+  en: {
+    wyName: "Which Way?", wyLevel: "Level",
+    wyL1: "Name the way", wyL2: "Say why", wyL3: "True or not", wyL4: "Fill the steps",
+    wyKbd: "Keyboard works too: 1, 2 and 3 pick an answer, numbers, Backspace, Enter.",
+    wyTens: "Tens first", wyRound: "Nearly round", wyPlace: "Place by place",
+    wyThen: ", then ", wyComma: ", ",
+    wyTagName: "🗺️ Name the way", wyTagWhy: "💬 Say why", wyTagTrue: "🔎 True or not", wyTagFill: "✏️ Fill the steps",
+    wyAskName: "Which way is this?", wySubName: "Look at the steps.",
+    wyAskWhy: "Why is {way} a good way here?", wySubWhy: "One reason fits. Two do not.",
+    wyAskTrue: "Which one is true here?", wySubTrue: "Look at the ones of {b}.",
+    wyAskFill: "Fill in the steps of {way}.", wySubFill: "One box at a time.",
+    wyStep: "Step {n} of {of}",
+    wyWhyName: "This is {way}: {steps}.", wyWhyWay: "{way}: {steps}. {reason}", wyWhyTrue: "{reason} {way}: {steps}.", wyWhyFill: "{way}: {steps}.",
+    wyAnswerIs: "The answer is {a}.",
+    // Reasons that fit a way. {a} + {b}: tens of b {tb}, ones of b {ob}, tens of a {ta}, ones of a {oa}; the round number {r} and how far {d}.
+    wyRTens1: "First I add the tens of {b}, that is {tb}, then the ones, {ob}.",
+    wyRTens2: "I split {b} into {tb} and {ob} and add them one after the other.",
+    wyRTens3: "{a} + {tb} is easy, and then only {ob} is left.",
+    wyRTens4: "Adding {tb} keeps the ones of {a}, so I only add {ob} at the end.",
+    wyRRound1: "{b} is nearly {r}, so I add {r} and take {d} away.",
+    wyRRound2: "{r} is easy to add, and then I fix it: {d} away.",
+    wyRRound3: "Because {b} is only {d} less than {r}.",
+    wyRRound4: "With {r} the sum is quick, and {d} back is one small step.",
+    wyRPlace1: "Tens with tens and ones with ones, then I put them together.",
+    wyRPlace2: "{ta} + {tb} and {oa} + {ob} are both small sums.",
+    wyRPlace3: "I add the tens, I add the ones, then I add the two answers.",
+    wyRPlace4: "Each place on its own is easy, and {ta} + {tb} and {oa} + {ob} are the two sums.",
+    // Reasons that fit no way.
+    wyRNo1: "Because {b} has no tens.", wyRNo2: "Because the ones are easier than the tens.", wyRNo3: "Because I take {b} away first.",
+    wyRNo4: "Because {a} and {b} are the same.", wyRNo5: "Because I only add the tens and leave the ones.", wyRNo6: "Because {b} is a round ten.",
+    // True or not: one of the three fits the sum.
+    wyTTens: "{b} is a round ten, so Tens first is one step.",
+    wyTRound: "{b} is 1 or 2 away from a ten, so Nearly round is easy.",
+    wyTPlace: "Both numbers have tens and ones, and the ones add up to less than 10, so Place by place is easy.",
+    wyBecause: "Because", wyHowPick: "Tick the way you would take and write why. Every way is right.",
+    wyHowFill: "Fill in the steps of the way."
+  },
+  de: {
+    wyName: "Welcher Weg?", wyLevel: "Stufe",
+    wyL1: "Wie heißt der Weg?", wyL2: "Sag, warum", wyL3: "Stimmt das?", wyL4: "Schritte ausfüllen",
+    wyKbd: "Tastatur geht auch: 1, 2 und 3 wählen eine Antwort, Zahlen, Rücktaste, Enter.",
+    wyTens: "Zehner zuerst", wyRound: "Fast rund", wyPlace: "Stellenweise",
+    wyThen: ", dann ", wyComma: ", ",
+    wyTagName: "🗺️ Wie heißt der Weg?", wyTagWhy: "💬 Sag, warum", wyTagTrue: "🔎 Stimmt das?", wyTagFill: "✏️ Schritte ausfüllen",
+    wyAskName: "Welcher Weg ist das?", wySubName: "Schau dir die Schritte an.",
+    wyAskWhy: "Warum ist {way} hier ein guter Weg?", wySubWhy: "Ein Grund passt. Zwei passen nicht.",
+    wyAskTrue: "Was stimmt hier?", wySubTrue: "Schau auf die Einer von {b}.",
+    wyAskFill: "Füll die Schritte von {way} aus.", wySubFill: "Ein Kästchen nach dem anderen.",
+    wyStep: "Schritt {n} von {of}",
+    wyWhyName: "Das ist {way}: {steps}.", wyWhyWay: "{way}: {steps}. {reason}", wyWhyTrue: "{reason} {way}: {steps}.", wyWhyFill: "{way}: {steps}.",
+    wyAnswerIs: "Die Antwort ist {a}.",
+    wyRTens1: "Zuerst rechne ich die Zehner von {b} dazu, also {tb}, dann die Einer, {ob}.",
+    wyRTens2: "Ich zerlege {b} in {tb} und {ob} und rechne sie nacheinander dazu.",
+    wyRTens3: "{a} + {tb} ist leicht, und dann bleibt nur noch {ob}.",
+    wyRTens4: "Bei + {tb} bleiben die Einer von {a} gleich, also rechne ich am Ende nur {ob} dazu.",
+    wyRRound1: "{b} ist fast {r}, also rechne ich {r} dazu und nehme {d} wieder weg.",
+    wyRRound2: "{r} ist leicht dazuzurechnen, und dann korrigiere ich: {d} weg.",
+    wyRRound3: "Weil {b} nur {d} weniger als {r} ist.",
+    wyRRound4: "Mit {r} geht die Aufgabe schnell, und {d} zurück ist ein kleiner Schritt.",
+    wyRPlace1: "Zehner mit Zehnern und Einer mit Einern, dann zusammen.",
+    wyRPlace2: "{ta} + {tb} und {oa} + {ob} sind beides kleine Aufgaben.",
+    wyRPlace3: "Ich rechne die Zehner, ich rechne die Einer, dann rechne ich die beiden Ergebnisse zusammen.",
+    wyRPlace4: "Jede Stelle für sich ist leicht, und {ta} + {tb} und {oa} + {ob} sind die zwei Aufgaben.",
+    wyRNo1: "Weil {b} keine Zehner hat.", wyRNo2: "Weil die Einer leichter sind als die Zehner.", wyRNo3: "Weil ich zuerst {b} wegnehme.",
+    wyRNo4: "Weil {a} und {b} gleich sind.", wyRNo5: "Weil ich nur die Zehner rechne und die Einer weglasse.", wyRNo6: "Weil {b} ein voller Zehner ist.",
+    wyTTens: "{b} ist ein voller Zehner, also ist Zehner zuerst nur ein Schritt.",
+    wyTRound: "{b} ist 1 oder 2 von einem Zehner entfernt, also ist Fast rund leicht.",
+    wyTPlace: "Beide Zahlen haben Zehner und Einer, und die Einer zusammen sind kleiner als 10, also ist Stellenweise leicht.",
+    wyBecause: "Weil", wyHowPick: "Kreuz den Weg an, den du nehmen würdest, und schreib, warum. Jeder Weg ist richtig.",
+    wyHowFill: "Füll die Schritte des Weges aus."
+  }
+});
+
+(function () {
+  const $ = (id) => document.getElementById(id);
+  const card = $("card"), tagEl = $("tag"), sumEl = $("sum"), wayCard = $("waycard"), wayNameEl = $("wayname"), wayStepsEl = $("waysteps"), stepsEl = $("steps"), qEl = $("question"), whereEl = $("where"), feedbackEl = $("feedback");
+  const padEl = $("pad"), pickEl = $("pick"), choicesEl = $("choices"), goBtn = $("k-go"), nextBtn = $("next");
+  const choiceBtns = [...document.querySelectorAll("#choices button")];
+  const levelBtns = [...document.querySelectorAll("#level-seg button")];
+  const digitBtns = [...document.querySelectorAll("#pad [data-d]")];
+  const t = Loopy.t, fmt = (n) => Loopy.num(n);
+  const randInt = (n) => Math.floor(Math.random() * n);
+  const rnd = (lo, hi) => lo + randInt(hi - lo + 1);
+  const pick = (arr) => arr[randInt(arr.length)];
+  const el = (tag, cls, text) => Loopy.el(tag, cls, text);
+  const shuffle = (arr) => { for (let i = arr.length - 1; i > 0; i--) { const j = randInt(i + 1); [arr[i], arr[j]] = [arr[j], arr[i]]; } return arr; };
+  const store = {
+    get(k, d, ok) { try { const v = JSON.parse(Loopy.store.get(k)); return ok.includes(v) ? v : d; } catch (e) { return d; } },
+    set(k, v) { Loopy.store.set(k, JSON.stringify(v)); }
+  };
+  let age = Loopy.getAge();
+  let level;
+  const levelForAge = (a) => a <= 7 ? 1 : a <= 8 ? 2 : a <= 9 ? 3 : 4;
+  function loadForAge() { level = store.get("wy.level.a" + age, levelForAge(age), [1, 2, 3, 4]); }
+  loadForAge();
+  Loopy.levels.init({ names: ["wyL1", "wyL2", "wyL3", "wyL4"],
+    get: () => level - 1, base: () => levelForAge(age) - 1,
+    set: (i) => { level = i + 1; store.set("wy.level.a" + age, level); render(); } });
+  let right = 0, tried = 0, streak = 0;
+  let current = null, typed = "", answered = false, recent = [], chosen = null;
+
+  // The three ways to add a + b, with the school's names. Nearly round rounds b up to the next ten when its ones are 5 or more.
+  const WAYS = ["tens", "round", "place"];
+  const WAY_KEY = { tens: "wyTens", round: "wyRound", place: "wyPlace" };
+  const wayName = (w) => t(WAY_KEY[w]);
+  const cap = (w) => w.charAt(0).toUpperCase() + w.slice(1);
+  function partsOf(a, b) {
+    const ta = a - a % 10, oa = a % 10, tb = b - b % 10, ob = b % 10;
+    const r = ob >= 5 ? tb + 10 : tb, d = Math.abs(b - r);
+    return { a, b, ta, oa, tb, ob, r, d, total: a + b };
+  }
+  // The steps of a way: each one is [left, sign, right, result].
+  function stepsOf(a, b, w) {
+    const p = partsOf(a, b);
+    if (w === "tens") return p.ob ? [[a, "+", p.tb, a + p.tb], [a + p.tb, "+", p.ob, p.total]] : [[a, "+", p.tb, p.total]];
+    if (w === "round") return p.r > b ? [[a, "+", p.r, a + p.r], [a + p.r, "−", p.d, p.total]] : p.r < b ? [[a, "+", p.r, a + p.r], [a + p.r, "+", p.d, p.total]] : [[a, "+", p.r, p.total]];
+    const T = p.ta + p.tb, O = p.oa + p.ob;
+    return [[p.ta, "+", p.tb, T], [p.oa, "+", p.ob, O], [T, "+", O, p.total]];
+  }
+  const stepText = (s) => fmt(s[0]) + " " + s[1] + " " + fmt(s[2]) + " = " + fmt(s[3]);
+  const stepsText = (a, b, w) => stepsOf(a, b, w).map(stepText).join(t(w === "place" ? "wyComma" : "wyThen"));
+  const sumText = (a, b) => fmt(a) + " + " + fmt(b);
+  const vars = (a, b) => { const p = partsOf(a, b), o = {}; for (const k in p) o[k] = fmt(p[k]); return o; };
+  const reason = (a, b, w, i) => t("wyR" + cap(w) + i, vars(a, b));
+  const noReason = (a, b, i) => t("wyRNo" + i, vars(a, b));
+  // True or not: which statement fits the sum. The maker only builds sums where exactly one does.
+  function trueWay(a, b) {
+    const p = partsOf(a, b);
+    if (p.ob === 0) return "tens";
+    if ([1, 2, 8, 9].includes(p.ob)) return p.oa + p.ob >= 10 ? "round" : null;
+    return p.oa >= 1 && p.oa + p.ob <= 9 ? "place" : null;
+  }
+  const statement = (a, b, w) => t("wyT" + cap(w), vars(a, b));
+
+  // Name the way: the steps are shown, the child picks the name.
+  function name(a, b, w) {
+    const choices = shuffle(WAYS.map(k => ({ k, text: wayName(k), ok: k === w })));
+    return { type: "n", a, b, w, choices, blanks: ["n"], i: 0, done: {}, key: "1:n:" + a + ":" + b + ":" + w + ":n",
+      ask: () => t("wyAskName"), sub: () => t("wySubName"),
+      why: () => t("wyWhyName", { way: wayName(w), steps: stepsText(a, b, w) }) };
+  }
+  // Say why: the way is shown, the child picks the reason that fits it. One other reason belongs to another way, one to none.
+  function why(a, b, w, ri) {
+    const other = pick(WAYS.filter(k => k !== w));
+    const choices = shuffle([{ k: w, text: reason(a, b, w, ri), ok: true }, { k: other, text: reason(a, b, other, rnd(1, 4)), ok: false }, { k: "no", text: noReason(a, b, rnd(1, 6)), ok: false }]);
+    return { type: "w", a, b, w, ri, choices, blanks: ["w"], i: 0, done: {}, key: "2:w:" + a + ":" + b + ":" + w + ":" + ri + ":w",
+      ask: () => t("wyAskWhy", { way: wayName(w) }), sub: () => t("wySubWhy"),
+      why: () => t("wyWhyWay", { way: wayName(w), steps: stepsText(a, b, w), reason: reason(a, b, w, ri) }) };
+  }
+  // True or not: three statements about the sum, one is true.
+  function truth(a, b) {
+    const w = trueWay(a, b);
+    const choices = shuffle(WAYS.map(k => ({ k, text: statement(a, b, k), ok: k === w })));
+    return { type: "t", a, b, w, choices, blanks: ["t"], i: 0, done: {}, key: "3:t:" + a + ":" + b + ":t",
+      ask: () => t("wyAskTrue"), sub: () => t("wySubTrue", { b: fmt(b) }),
+      why: () => t("wyWhyTrue", { reason: statement(a, b, w), way: wayName(w), steps: stepsText(a, b, w) }) };
+  }
+  // Fill the steps: the way is named, the results of its steps are boxes, one box per question.
+  function fill(a, b, w, blanks) {
+    const steps = stepsOf(a, b, w), cells = {};
+    steps.forEach((s, i) => { cells["s" + i] = s[3]; });
+    return { type: "f", a, b, w, steps, cells, blanks, i: 0, done: {}, key: "4:f:" + a + ":" + b + ":" + w + ":" + blanks[0],
+      ask: () => t("wyAskFill", { way: wayName(w) }), sub: (id) => t("wyStep", { n: fmt(+id.slice(1) + 1), of: fmt(steps.length) }),
+      why: () => t("wyWhyFill", { way: wayName(w), steps: stepsText(a, b, w) }) };
+  }
+  // A sum where all three ways make sense: both numbers have tens and ones, b ends in 7, 8 or 9, and the total stays under 100.
+  function anySum() {
+    for (let i = 0; i < 100; i++) {
+      const a = 10 * rnd(1, 7) + rnd(1, 9), b = 10 * rnd(1, 7) + pick([7, 8, 9]);
+      if (a + b <= 100) return [a, b];
+    }
+    return [23, 29];
+  }
+  // A sum with exactly one true statement: b round, or b 1 or 2 from a ten with ones that cross, or small ones that do not.
+  function trueSum() {
+    for (let i = 0; i < 200; i++) {
+      const kind = randInt(3);
+      const ob = kind === 0 ? 0 : kind === 1 ? pick([1, 2, 8, 9]) : rnd(3, 7);
+      const oa = kind === 0 ? rnd(1, 9) : kind === 1 ? rnd(Math.max(1, 10 - ob), 9) : rnd(1, 9 - ob);
+      const a = 10 * rnd(1, 7) + oa, b = 10 * rnd(1, 7) + ob;
+      if (a + b <= 100 && trueWay(a, b)) return [a, b];
+    }
+    return [47, 29];
+  }
+  const MAKE = {
+    1: () => { const [a, b] = anySum(); return name(a, b, pick(WAYS)); },
+    2: () => { const [a, b] = anySum(); return why(a, b, pick(WAYS), rnd(1, 4)); },
+    3: () => { const [a, b] = trueSum(); return truth(a, b); },
+    4: () => { const [a, b] = anySum(), w = pick(WAYS); return fill(a, b, w, stepsOf(a, b, w).map((s, i) => "s" + i)); }
+  };
+  function makeProblem() { return MAKE[level](); }
+
+  const cur = () => current.blanks[current.i];
+  const KINDS = { n: "wy-name", w: "wy-why", t: "wy-true", f: "wy-fill" };
+  const kindOf = (p) => KINDS[p.type];
+  const isPad = () => current.type === "f";
+
+  function drawSteps(p) {
+    stepsEl.textContent = "";
+    const id = cur();
+    p.steps.forEach((s, i) => {
+      const li = el("li", "", fmt(s[0]) + " " + s[1] + " " + fmt(s[2]) + " =");
+      const sid = "s" + i, box = el("span", "box");
+      if (p.done[sid]) box.textContent = fmt(s[3]);
+      else if (sid === id) {
+        box.classList.add("ask");
+        box.textContent = typed;
+        if (!answered) { box.setAttribute("role", "textbox"); box.setAttribute("aria-label", p.ask() + " " + p.sub(sid)); box.dataset.a = s[3]; }
+      } else box.classList.add("todo");
+      li.appendChild(box);
+      stepsEl.appendChild(li);
+    });
+  }
+  function draw() {
+    const p = current;
+    tagEl.textContent = t(p.type === "n" ? "wyTagName" : p.type === "w" ? "wyTagWhy" : p.type === "t" ? "wyTagTrue" : "wyTagFill");
+    sumEl.textContent = sumText(p.a, p.b);
+    wayCard.hidden = p.type === "t" || p.type === "f";
+    wayNameEl.hidden = p.type !== "w";
+    wayNameEl.textContent = p.type === "w" ? wayName(p.w) : "";
+    wayStepsEl.textContent = p.type === "n" || p.type === "w" ? stepsText(p.a, p.b, p.w) : "";
+    wayCard.classList.toggle("quiet", p.type === "n");
+    stepsEl.hidden = p.type !== "f";
+    if (p.type === "f") drawSteps(p);
+    choicesEl.classList.toggle("names", p.type === "n");
+    choiceBtns.forEach((b, i) => {
+      const c = p.choices ? p.choices[i] : null;
+      b.textContent = c ? c.text : "";
+      b.disabled = answered || !c;
+      b.dataset.correct = String(!!c && !answered && c.ok);
+      b.className = answered && chosen && c ? (c.ok ? "right" : b === chosen ? "wrong" : "faded") : "";
+    });
+  }
+  function render() {
+    if (!current) return;
+    Loopy.levels.render();
+    $("score").textContent = right + " / " + tried;
+    $("streak").textContent = streak;
+    levelBtns.forEach(b => b.setAttribute("aria-pressed", String(+b.dataset.level === level)));
+    const pad = isPad();
+    padEl.hidden = !pad; pickEl.hidden = pad;
+    goBtn.textContent = t(answered ? "next" : "check");
+    // The answers keep Check enabled under the covers, so a keyboard Enter and the play test still go on.
+    goBtn.disabled = pad && !answered && typed === "";
+    nextBtn.disabled = !answered;
+    digitBtns.forEach(b => b.disabled = answered || !pad);
+    $("k-erase").disabled = answered || !pad || typed === "";
+    draw();
+  }
+
+  // Try again: a missed question comes back later (Loopy.retry). The note names the problem and the box, like "4:f:23:29:round:s1".
+  const note = (p, id) => p.key.replace(/:[^:]*$/, ":" + id);
+  function ask() {
+    typed = ""; answered = false; chosen = null;
+    const id = cur();
+    const q = note(current, id);
+    if (document.body.getAttribute("data-q") !== q) document.body.setAttribute("data-q", q);
+    if (current.i > 0) { recent.push(q); while (recent.length > 12) recent.shift(); }
+    qEl.textContent = current.ask(id);
+    whereEl.textContent = current.sub(id);
+    card.className = "problem-card";
+    feedbackEl.className = "feedback";
+    feedbackEl.textContent = "";
+    render();
+    Loopy.speech.read();
+  }
+  function newRound() {
+    current = Loopy.retry.fresh("which-way", recent, makeProblem, rebuild, 12);
+    ask();
+  }
+  function rebuild(r) {
+    const m = /^([1-4]):([nwtf]):(\d{1,2}):(\d{1,2}):(.*)$/.exec(r);
+    if (!m || +m[1] !== level) return null;
+    const a = +m[3], b = +m[4], rest = m[5];
+    const okSum = a >= 11 && b >= 11 && a + b <= 100 && a % 10 >= 1;
+    if (!okSum) return null;
+    if (m[2] === "t") return rest === "t" && trueWay(a, b) ? truth(a, b) : null;
+    if (b % 10 < 7) return null;
+    const s = rest.split(":"), w = s[0];
+    if (!WAYS.includes(w)) return null;
+    if (m[2] === "n") return s[1] === "n" ? name(a, b, w) : null;
+    if (m[2] === "w") return /^[1-4]$/.test(s[1]) && s[2] === "w" ? why(a, b, w, +s[1]) : null;
+    return /^s[0-2]$/.test(s[1]) && +s[1].slice(1) < stepsOf(a, b, w).length ? fill(a, b, w, [s[1]]) : null;
+  }
+
+  function press(d) {
+    if (answered || !isPad() || typed.length >= 3) return;
+    if (typed === "0") typed = "";
+    typed += d;
+    render();
+  }
+  function erase() { if (answered || !isPad()) return; typed = typed.slice(0, -1); render(); }
+  function finish(ok, id, answer, mine) {
+    answered = true; tried++;
+    if (ok) { right++; streak++; } else { streak = 0; }
+    const kind = kindOf(current);
+    if (ok) Loopy.rewards.correct("which-way", streak, kind);
+    else Loopy.rewards.wrong("which-way", { q: sumText(current.a, current.b) + ": " + current.ask(id), a: answer, y: mine, k: kind, r: note(current, id) });
+    card.className = "problem-card " + (ok ? "good" : "bad");
+    feedbackEl.className = "feedback " + (ok ? "good" : "bad");
+    feedbackEl.innerHTML = "<strong></strong>";
+    feedbackEl.firstChild.textContent = ok ? (streak >= 3 ? t("correctRow", { n: streak }) : t("correct")) : t("notQuite");
+    feedbackEl.appendChild(document.createTextNode((ok || !isPad() ? "" : t("wyAnswerIs", { a: answer }) + " ") + current.why(id)));
+    render();
+    current.done[id] = ok ? "ok" : "fixed";
+    if (!isPad()) nextBtn.focus({ preventScroll: true });
+  }
+  function check() {
+    if (answered || !isPad() || typed === "") return;
+    const id = cur(), mine = parseInt(typed, 10);
+    finish(mine === current.cells[id], id, fmt(current.cells[id]), fmt(mine));
+  }
+  function choose(btn) {
+    if (answered || isPad() || btn.disabled) return;
+    chosen = btn;
+    const c = current.choices[+btn.dataset.i], rightOne = current.choices.find(x => x.ok);
+    finish(c.ok, cur(), rightOne.text, c.text);
+  }
+  function go() {
+    if (!answered) return check();
+    if (current.i + 1 < current.blanks.length) { current.i++; ask(); } else newRound();
+    // Keyboard play: the focused button may be gone or off, so focus moves to the first answer or key.
+    const a = document.activeElement;
+    if (a && a !== document.body && (a.disabled || a.offsetParent === null)) (isPad() ? digitBtns[0] : choiceBtns[0]).focus({ preventScroll: true });
+  }
+
+  digitBtns.forEach(b => b.addEventListener("click", () => press(b.dataset.d)));
+  $("k-erase").addEventListener("click", erase);
+  goBtn.addEventListener("click", go);
+  nextBtn.addEventListener("click", () => { if (answered) go(); });
+  choiceBtns.forEach(b => b.addEventListener("click", () => choose(b)));
+  levelBtns.forEach(b => b.addEventListener("click", () => { level = +b.dataset.level; store.set("wy.level.a" + age, level); recent = []; newRound(); }));
+  window.addEventListener("loopy:age", (e) => { age = e.detail; recent = []; loadForAge(); newRound(); });
+  $("reset").addEventListener("click", () => { right = 0; tried = 0; streak = 0; Loopy.recent.clear("which-way"); newRound(); });
+  document.addEventListener("keydown", (e) => {
+    if (e.target.tagName === "INPUT" || document.querySelector(".loopy-cheer.big")) return;
+    if (e.key >= "0" && e.key <= "9") { if (isPad()) press(e.key); else if (e.key >= "1" && e.key <= "3") choose(choiceBtns[+e.key - 1]); }
+    else if (e.key === "Backspace") erase();
+    else if (e.key === "Enter" && e.target.tagName !== "BUTTON") go();
+  });
+
+  // Read aloud: the sum, the way on show with its steps, and the question.
+  Loopy.speech.question({ host: card, text: () => sumText(current.a, current.b) + ". " + (current.type === "n" || current.type === "w" ? stepsText(current.a, current.b, current.w) + ". " : "") + current.ask(cur()) });
+
+  // Print worksheet: 20 sums with the three ways to tick and a line for why, or 20 sums with the steps to fill in.
+  Loopy.worksheet({
+    title: () => t("wyName"),
+    level: () => [t("ageLabel", { n: age }), t("wyLevel") + ": " + t("wyL" + level)].join(" · "),
+    how: () => t(level === 4 ? "wyHowFill" : "wyHowPick"),
+    layout: "clock",
+    make: (n) => { const out = [], keys = []; for (let i = 0; i < 400 && out.length < n; i++) { const p = makeProblem(); if (!keys.includes(p.key)) { keys.push(p.key); out.push(p); } } return out; },
+    cell: (p) => {
+      const box = el("div", "ws-wy");
+      box.appendChild(el("div", "sum", sumText(p.a, p.b)));
+      if (p.type === "f") {
+        const f = el("div", "fill");
+        p.steps.forEach((s, i) => { if (i) f.appendChild(document.createElement("br")); f.appendChild(document.createTextNode(fmt(s[0]) + " " + s[1] + " " + fmt(s[2]) + " = ")); f.appendChild(el("i", "")); });
+        box.appendChild(el("div", "way", wayName(p.w)));
+        box.appendChild(f);
+        return box;
+      }
+      WAYS.forEach(w => { const row = el("div", "way"); row.appendChild(el("i", "")); row.appendChild(document.createTextNode(wayName(w))); box.appendChild(row); });
+      for (let i = 0; i < 2; i++) { const line = el("span", "line", i === 0 ? t("wyBecause") : ""); line.appendChild(el("i", "ws-line")); box.appendChild(line); }
+      return box;
+    },
+    // Every way is right on the tick sheets (the line at the top says so), so the answer shows one of them.
+    answer: (p) => { const w = p.type === "f" ? p.w : "tens"; return wayName(w) + ": " + stepsText(p.a, p.b, w) + "."; }
+  });
+
+  newRound();
+})();
+</script>
+</body>
+</html>

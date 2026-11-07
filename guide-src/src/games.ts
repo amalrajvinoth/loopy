@@ -28,6 +28,7 @@ export const GAMES: Game[] = [
   g("math", "times-grid", "🔳", [7, 11], "Times Table Grid", "Einmaleins-Tabelle"),
   g("math", "tens-ones", "🔟", [6, 10], "Tens and Ones", "Zehner und Einer"),
   g("math", "enough-money", "🛒", [7, 10], "Is It Enough?", "Reicht das Geld?"),
+  g("math", "which-way", "🔀", [7, 10], "Which Way?", "Welcher Weg?"),
   g("languages", "sound-spell", "👂", [5, 8], "Sound Spell", "Anlaut und Endlaut"),
   g("languages", "word-match", "🖼️", [5, 10], "Word Match", "Bild und Wort"),
   g("languages", "spell-it", "✏️", [6, 10], "Spell It", "Wörter schreiben"),

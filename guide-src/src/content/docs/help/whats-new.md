@@ -8,6 +8,10 @@ loopy keeps getting new games. Here is what came lately!
 
 The big changes, newest first. Small fixes are not listed. See [the full list on GitHub](https://github.com/amalrajvinoth/loopy/blob/main/RELEASES.md).
 
+## 7 November 2026
+
+- **New game: Which Way?** 23 + 29 with Tens first, Nearly round or Place by place, the three ways from the grade 3 test, for ages 7 to 10. Name the way from its steps, pick the reason that fits, spot the true sentence about the sum, and fill in the steps. [How to play](/loopy/guide/games/math/which-way/).
+
 ## 6 November 2026
 
 - **New game: Is It Enough?** Count notes and coins up to 100 euros, then a small shop with price tags, for ages 7 to 10. Is the money enough for the helmet and the pads? How much is left, or missing? [How to play](/loopy/guide/games/math/enough-money/).
