@@ -8,6 +8,10 @@ loopy bekommt immer wieder neue Spiele. Das ist zuletzt dazugekommen!
 
 Die großen Änderungen, die neuesten zuerst. Kleine Korrekturen stehen nicht dabei. Die [ganze Liste steht auf GitHub](https://github.com/amalrajvinoth/loopy/blob/main/RELEASES.md) (auf Englisch).
 
+## 7. November 2026
+
+- **Neues Spiel: Welcher Weg?** 23 + 29 mit Zehner zuerst, Fast rund oder Stellenweise, die drei Wege aus der Klassenarbeit der 3. Klasse, für 7 bis 10 Jahre. Nenn den Weg an seinen Schritten, wähl den Grund, der passt, find den wahren Satz über die Aufgabe und füll die Schritte aus. [So wird gespielt](/loopy/guide/de/games/math/which-way/).
+
 ## 6. November 2026
 
 - **Neues Spiel: Reicht das Geld?** Zähl Scheine und Münzen bis 100 Euro, dann ein kleiner Laden mit Preisschildern, für 7 bis 10 Jahre. Reicht das Geld für den Helm und die Schoner? Wie viel bleibt übrig, wie viel fehlt? [So wird gespielt](/loopy/guide/de/games/math/enough-money/).
