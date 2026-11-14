@@ -17,6 +17,7 @@ listed = (ROOT / "guide-src" / "src" / "games.ts").read_text(encoding="utf-8")
 games = list(dict.fromkeys(re.findall(r'\{ subject: "[a-z]+", path: "([a-z]+/[a-z0-9-]+)/"', home)))
 pages = {g: f"games/{g}" for g in games}
 pages["mix/daily-mix"] = "games/todays-10"
+pages["mix/class-test"] = "games/math/class-test"
 
 bad = 0
 for game, page in pages.items():
@@ -25,7 +26,7 @@ for game, page in pages.items():
             print(f"{game}: no guide page {lang}{page}.mdx")
             bad += 1
     folder = game.split("/")[1]
-    if game != "mix/daily-mix" and not re.search(rf'g\("{game.split("/")[0]}", "{folder}"', listed):
+    if game != "mix/daily-mix" and not re.search(rf'g\("{game.split("/")[0]}", "{folder}"|path: "{game}/"', listed):
         print(f"{game}: missing in guide-src/src/games.ts")
         bad += 1
 if bad:
