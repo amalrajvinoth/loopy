@@ -12,7 +12,7 @@ import KidsBox from "~/components/KidsBox.astro";
   "Green is right. Tap Next for more!",
 ]} />
 
-A flag game. A flag shows, and the child picks its country from 4 answers. Older children then pick the country's capital too. Europe comes first, then the whole world. For ages 7 to 16.
+A flag game. A flag shows, and the child picks its country from 4 answers. Older children then pick the country's capital too. Europe comes first, then the whole world: every country is in, 194 flags. For ages 7 to 16.
 
 ## How to play
 
@@ -38,11 +38,21 @@ There is one try per question. Every right answer earns a star. A flag or capita
 | Age | Level | What comes up |
 | --- | --- | --- |
 | 8 and under | 1 | 12 well-known flags of Europe, like Germany, Italy and Spain |
-| 9 to 10 | 1 | All 29 flags of Europe |
-| 11 to 12 | 3 | All 66 flags of the world |
-| 13 and up | 4 | Flags of the world, with the capital question after each flag |
+| 9 to 10 | 1 | The 34 flags of Europe that most people know |
+| 11 to 12 | 3 | The 92 flags of the world that most people know |
+| 13 and up | 4 | Every country in the world (194 flags), with the capital question after each flag |
 
-Level 2 is the flags of Europe with their capitals. The level shows next to the score, like "Level 2 of 4". After 10 right in a row, or 18 of the last 20 right, the game goes up a level by itself. After 3 wrong in the last 5 it offers an easier one. See [Levels](/loopy/guide/playing/levels/).
+Each age starts with these, and the list grows from there (see below). Level 2 is the flags of Europe with their capitals. The level shows next to the score, like "Level 2 of 4". After 10 right in a row, or 18 of the last 20 right, the game goes up a level by itself. After 3 wrong in the last 5 it offers an easier one. See [Levels](/loopy/guide/playing/levels/).
+
+## Which flag comes next
+
+The flags are in order, from the best known to the least known. The game starts at the top and walks the list:
+
+- A flag your child has never seen comes first. Then the one that was shown longest ago. So every flag comes once before any comes back.
+- The game remembers which flags it showed, for each child, also for the next visit. The same dozen flags do not come back every time the game is opened.
+- When your child has been round every flag in play and got most of the last 20 right, the next 4 flags of the list join in. An 8-year-old starts with 12 flags of Europe. Lap by lap come Portugal, Greece, Turkey and Russia, then Norway, Czechia, Ireland and Finland, and so on, up to every country in Europe. A child who is still finding it hard goes round once more first.
+
+On a new device the walk starts at the top again.
 
 ## Settings
 

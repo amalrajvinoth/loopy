@@ -8,6 +8,10 @@ loopy bekommt immer wieder neue Spiele. Das ist zuletzt dazugekommen!
 
 Die großen Änderungen, die neuesten zuerst. Kleine Korrekturen stehen nicht dabei. Die [ganze Liste steht auf GitHub](https://github.com/amalrajvinoth/loopy/blob/main/RELEASES.md) (auf Englisch).
 
+## 15. November 2026
+
+- **Flaggen und Hauptstädte: jedes Land der Welt, und keine Wiederholungen mehr.** Jetzt 194 Flaggen mit ihren Hauptstädten, vorher 66. Die Flaggen sind geordnet, von der bekanntesten zur unbekanntesten, und das Spiel geht die Liste durch: Jede Flagge kommt einmal dran, bevor eine wiederkommt, und das Spiel merkt sich das für jedes Kind, auch für das nächste Mal. Wenn dein Kind einmal durch alle Flaggen ist und die meisten richtig hatte, kommen die nächsten 4 dazu. [So wird gespielt](/loopy/guide/de/games/geography/flags-capitals/).
+
 ## 8. November 2026
 
 - **Neues Spiel: Klassenarbeit.** Die 12 Aufgaben der Mathearbeit der 3. Klasse in der Reihenfolge des Blattes, mit Punkten von 20: Uhr, Striche und Punkte, Rechnen in Schritten, welcher Weg, Geld, Malkreuz. Dieselbe Arbeit zum Drucken für den Bleistift. [So wird gespielt](/loopy/guide/de/games/math/class-test/).

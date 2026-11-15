@@ -8,6 +8,10 @@ loopy keeps getting new games. Here is what came lately!
 
 The big changes, newest first. Small fixes are not listed. See [the full list on GitHub](https://github.com/amalrajvinoth/loopy/blob/main/RELEASES.md).
 
+## 15 November 2026
+
+- **Flags and Capitals: every country in the world, and no more repeats.** 194 flags with their capitals now, up from 66. The flags are in order from the best known to the least known, and the game walks that list. Every flag comes once before any comes back, remembered for each child from one visit to the next. Once your child has been round every flag and got most right, the next 4 flags join in. [How to play](/loopy/guide/games/geography/flags-capitals/).
+
 ## 8 November 2026
 
 - **New game: Class Test.** The 12 tasks of the grade 3 maths test in the paper's order, with points out of 20. Clock, lines and dots, sums in steps, which way, money, times table grid. Print the same test for a pencil. [How to play](/loopy/guide/games/math/class-test/).
