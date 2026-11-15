@@ -1,0 +1,864 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'sha256-zSlG7HiCK+9+ypfJGIj2X/wF7e8jB1Jo6Emp5uW6za8='; style-src 'self' 'sha256-z2P7kGW5Z05eCTjTZdYpc0vThTlOE9vmt97pVSvi2I4=' 'sha256-ZdHECxEPqw8d+m8OdsHD08wagxSKEQ6XOsIW2HJZSQk='; img-src 'self' data:; font-src 'self'; connect-src 'self' https://loopy-sync.loopy-1e2.workers.dev; worker-src 'self'; object-src 'none'; base-uri 'none'; form-action 'none'; manifest-src 'self'; upgrade-insecure-requests">
+<meta name="referrer" content="strict-origin-when-cross-origin">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<style>:root{color-scheme:light;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}body{margin:0}[hidden]{display:none!important}</style>
+<link rel="icon" href="../../icon.svg" type="image/svg+xml">
+<link rel="manifest" href="../../manifest.webmanifest">
+<link rel="apple-touch-icon" href="../../apple-touch-icon.png">
+<meta name="theme-color" content="#0a0a0c">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="loopy">
+<title data-t="ctName">Class Test</title>
+<meta name="description" content="Class Test on loopy: the 12 tasks of a grade 3 maths test in the paper's order, with points out of 20 and a version to print. Clock, lines and dots, sums in steps, which way, money, times table grid. Free practice for ages 7 to 10, English and German.">
+<link rel="preload" href="../../fonts/lexend-latin.woff2" as="font" type="font/woff2" crossorigin>
+<style>
+/* Class Test: the 12 tasks of the grade 3 paper in order, one card per task, the answers beside or below it,
+   a strip of 12 marks at the top of the card and a results card at the end. Same look as Today's 10. */
+:root {
+  --bg: #f3f6fb; --card: #ffffff; --ink: #1d2a3f; --muted: #5d6b82; --line: #d5dde9;
+  --accent: #2457c5; --accent-ink: #ffffff; --mark: #e2622b;
+  --good: #1f8a4c; --good-bg: #e3f5ea; --bad: #c23a3a; --bad-bg: #fbe6e6; --chip: #e6ecf6; --key: #ffffff;
+  --font: "Lexend", "Segoe UI", "Helvetica Neue", Arial, sans-serif;
+}
+* { box-sizing: border-box; }
+body {
+  background: var(--bg); color: var(--ink); font-family: var(--font); font-size: 16px;
+  padding-left: max(16px, env(safe-area-inset-left, 0px));
+  padding-right: max(16px, env(safe-area-inset-right, 0px));
+  min-height: 100vh; min-height: 100dvh; padding-block: 12px 16px;
+}
+.wrap { max-width: 520px; margin: 0 auto; display: flex; flex-direction: column; gap: 12px; }
+.game-bar { display: flex; align-items: center; justify-content: space-between; gap: 8px; }
+.bar-right { display: flex; align-items: center; gap: 8px; }
+.home-link { display: inline-flex; align-items: center; min-height: 40px; color: var(--muted); font-weight: 600; text-decoration: none; font-size: 0.95rem; }
+.home-link:hover { color: var(--ink); }
+.top { display: flex; flex-wrap: wrap; gap: 8px 12px; align-items: center; justify-content: space-between; }
+h1 { margin: 0; font-size: 1.6rem; font-weight: 700; text-wrap: balance; }
+.pill { background: var(--card); border: 1px solid var(--line); border-radius: 999px; padding: 6px 14px; font-weight: 600; white-space: nowrap; font-variant-numeric: tabular-nums; }
+
+.play { display: flex; flex-direction: column; gap: 12px; -webkit-user-select: none; user-select: none; }
+.problem-card {
+  background: var(--card); border: 1px solid var(--line); border-radius: 24px;
+  padding: 14px 14px 12px; display: flex; flex-direction: column; align-items: center; gap: 8px;
+}
+.problem-card.good { border-color: var(--good); box-shadow: 0 0 0 2px var(--good) inset; }
+.problem-card.bad { border-color: var(--bad); box-shadow: 0 0 0 2px var(--bad) inset; }
+.kind { align-self: center; background: var(--chip); color: var(--ink); font-size: 0.8rem; font-weight: 600; letter-spacing: 0.06em; text-transform: uppercase; padding: 4px 10px; border-radius: 999px; white-space: nowrap; max-width: 100%; overflow: hidden; text-overflow: ellipsis; }
+/* Twelve marks, one per task: green for right, red for wrong, the accent line for the one being played. */
+.strip { display: flex; gap: 4px; width: 100%; max-width: 360px; }
+.strip i { flex: 1 1 0; height: 8px; border-radius: 4px; background: var(--chip); border: 1px solid var(--line); }
+.strip i.now { background: var(--card); border: 2px solid var(--accent); }
+.strip i.good { background: var(--good); border-color: var(--good); }
+.strip i.bad { background: var(--bad); border-color: var(--bad); }
+.strip i.half { background: linear-gradient(90deg, var(--good) 50%, var(--bad) 50%); border-color: var(--line); }
+.where { margin: 0; font-size: 0.9rem; color: var(--muted); text-align: center; font-variant-numeric: tabular-nums; }
+/* The picture and the question sit together in the middle of the room; the feedback stays at the bottom. */
+.stage { display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 8px; flex: 0 1 auto; min-height: 0; width: 100%; container-type: inline-size; margin-top: auto; }
+.question { margin: 0; font-size: clamp(1.05rem, min(4.8vw, 3dvh), 1.4rem); font-weight: 700; line-height: 1.3; text-align: center; text-wrap: balance; }
+.question small { display: block; font-size: 0.85rem; font-weight: 400; color: var(--muted); margin-top: 2px; }
+.feedback { min-height: 2.9em; text-align: center; font-size: 1.05rem; line-height: 1.4; margin: auto 0 0; max-width: 36ch; }
+.feedback strong { display: block; font-size: 1.3rem; }
+.feedback.good strong { color: var(--good); }
+.feedback.bad strong { color: var(--bad); }
+.feedback:empty { min-height: 0; }
+
+/* The task pictures. A big sum, like Tens and Ones' giants and dwarfs. */
+.sum { font-size: clamp(2rem, min(10vw, 8dvh), 3.4rem); font-weight: 700; font-variant-numeric: tabular-nums; white-space: nowrap; letter-spacing: 0.02em; line-height: 1.1; }
+.sum.small { font-size: clamp(1.5rem, min(7vw, 6dvh), 2.4rem); }
+/* Sums in steps: each step on its own line, the result a box. The box being filled has the accent line. */
+.steps { display: flex; flex-direction: column; align-items: center; gap: 6px; margin: 0; padding: 0; list-style: none; width: 100%; font-size: clamp(1.25rem, 5.6vw, 1.9rem); font-weight: 700; font-variant-numeric: tabular-nums; line-height: 1.2; }
+.steps li { display: flex; align-items: center; gap: 0.3em; }
+.steps .box { display: inline-grid; place-items: center; min-width: 2em; height: 1.45em; padding: 0 0.3em; border: 2px solid var(--line); border-radius: 12px; background: var(--chip); color: var(--ink); }
+.steps .box.ask { border-color: var(--accent); box-shadow: 0 0 0 2px var(--accent) inset; background: var(--card); color: var(--accent); }
+.steps .box.ask:empty::after, .steps .box.todo:empty::after { content: "?"; color: var(--muted); }
+.steps .box.todo { color: var(--muted); }
+.steps .box.ok { border-color: var(--good); color: var(--good); background: var(--good-bg); }
+.steps .box.fixed { border-color: var(--bad); color: var(--ink); }
+.problem-card.good .steps .box.ask { border-color: var(--good); box-shadow: 0 0 0 2px var(--good) inset; color: var(--good); }
+.problem-card.bad .steps .box.ask { border-color: var(--bad); box-shadow: 0 0 0 2px var(--bad) inset; color: var(--bad); text-decoration: line-through; text-decoration-thickness: 0.08em; }
+/* The way on show (Which Way?): the name in bold and the steps under it. Quiet when the name is the question. */
+.waycard { display: flex; flex-direction: column; gap: 2px; width: 100%; max-width: 440px; padding: 8px 14px; border: 2px solid var(--accent); box-shadow: 0 0 0 2px var(--accent) inset; border-radius: 16px; background: var(--card); color: var(--ink); text-align: left; }
+.waycard b { font-size: clamp(1.05rem, 4.6vw, 1.3rem); }
+.waycard .st { font-size: clamp(0.95rem, 4.2vw, 1.2rem); color: var(--muted); font-weight: 600; font-variant-numeric: tabular-nums; }
+.waycard.quiet { border-color: var(--line); box-shadow: none; background: var(--chip); }
+/* The clock, the same as in What Time Is It?. */
+svg.clock { width: min(100%, 260px, 28dvh); height: auto; aspect-ratio: 1; display: block; }
+/* Lines and dots, the school picture: a line is a ten, a dot is a one. */
+.pic { display: flex; align-items: center; justify-content: center; gap: clamp(14px, 5vw, 32px); width: 100%; min-height: 48px; --ln: clamp(72px, 24vw, 120px); --dt: clamp(12px, 3.4vw, 18px); }
+.pic i { display: block; background: var(--ink); }
+.pic .lines { display: flex; flex-direction: column; gap: 5px; }
+.pic .lines i { width: var(--ln); height: 4px; border-radius: 2px; }
+.pic .dots { display: grid; grid-template-columns: repeat(5, var(--dt)); gap: 6px; }
+.pic .dots i { width: var(--dt); height: var(--dt); border-radius: 50%; }
+/* Notes and coins keep their paper and metal colours in every theme, like Is It Enough?. */
+.money { display: flex; flex-wrap: wrap; justify-content: center; align-items: center; gap: 6px; width: 100%; --mh: clamp(36px, 6dvh, 52px); }
+.money i { display: inline-grid; place-items: center; font-style: normal; font-weight: 700; font-variant-numeric: tabular-nums; color: #2b2112; height: var(--mh); font-size: clamp(0.95rem, 4vw, 1.2rem); line-height: 1; }
+.money .note { width: calc(var(--mh) * 1.9); border-radius: 6px; border: 2px solid rgb(0 0 0 / 0.3); box-shadow: inset 0 0 0 3px rgb(255 255 255 / 0.45); }
+.money .n5 { background: #bfc3cb; } .money .n10 { background: #eaa595; } .money .n20 { background: #a9c1ea; } .money .n50 { background: #f0c08a; }
+.money .coin { width: var(--mh); border-radius: 50%; font-size: clamp(0.85rem, 3.4vw, 1.05rem); }
+.money .c2 { background: #c9ced6; border: 4px solid #e2b84a; box-shadow: 0 0 0 1.5px #9a7420; }
+.money .c1 { background: #e2b84a; border: 4px solid #c9ced6; box-shadow: 0 0 0 1.5px #7d8592; }
+/* The shop problem in words. */
+.story { margin: 0; font-size: clamp(1.1rem, 4.8vw, 1.45rem); font-weight: 600; line-height: 1.4; text-align: center; max-width: 30ch; text-wrap: balance; }
+.story b { color: var(--accent); }
+/* The times table grid, like Times Table Grid. */
+.mg { border-collapse: separate; border-spacing: clamp(4px, 1.4cqw, 8px); margin: -4px auto; font-weight: 700; font-variant-numeric: tabular-nums; }
+.mg th, .mg td { width: clamp(52px, 18cqw, 88px); height: clamp(44px, 6.5dvh, 76px); padding: 0 4px; text-align: center; vertical-align: middle; border: 2px solid var(--line); border-radius: 14px; background: var(--chip); color: var(--ink); font-size: clamp(1.1rem, 5cqw, 1.9rem); line-height: 1; }
+.mg th { color: var(--muted); }
+.mg .corner { background: transparent; border-color: transparent; color: var(--muted); }
+.mg .todo { border-style: dashed; background: var(--card); color: var(--muted); }
+.mg .ask { border-style: solid; border-color: var(--accent); box-shadow: 0 0 0 2px var(--accent) inset; background: var(--card); color: var(--accent); }
+.mg .ask:empty::after, .mg .todo:empty::after { content: "?"; color: var(--muted); }
+.mg .ok { border-color: var(--good); color: var(--good); background: var(--good-bg); }
+.mg .fixed { border-color: var(--bad); color: var(--ink); }
+.problem-card.good .mg .ask { border-color: var(--good); box-shadow: 0 0 0 2px var(--good) inset; color: var(--good); }
+.problem-card.bad .mg .ask { border-color: var(--bad); box-shadow: 0 0 0 2px var(--bad) inset; color: var(--bad); text-decoration: line-through; text-decoration-thickness: 0.08em; }
+
+/* The answers: a column of choices with Next under it, or the number pad. */
+.side { display: flex; flex-direction: column; gap: 10px; }
+.pick { display: flex; flex-direction: column; gap: 8px; }
+.pick[hidden], .pad[hidden] { display: none; }
+.choices { display: grid; grid-template-columns: 1fr; gap: 8px; }
+.choices.two { grid-template-columns: repeat(2, 1fr); }
+.choices button {
+  font: inherit; font-size: clamp(0.98rem, 4.2vw, 1.2rem); font-weight: 600; line-height: 1.3; color: var(--ink); background: var(--key); border: 2px solid var(--line); border-radius: 16px;
+  min-height: 48px; padding: 8px 14px; text-align: left; cursor: pointer; touch-action: manipulation; -webkit-tap-highlight-color: transparent; transition: transform .08s ease, border-color .15s ease;
+}
+.choices.two button, .choices.names button { font-size: clamp(1.2rem, 5vw, 1.5rem); font-weight: 700; text-align: center; min-height: clamp(52px, 8dvh, 80px); font-variant-numeric: tabular-nums; }
+.choices button:hover:not(:disabled) { border-color: var(--accent); }
+.choices button:active:not(:disabled) { transform: scale(0.97); }
+.choices button:disabled { cursor: default; }
+.choices button.right { border-color: var(--good); background: var(--good-bg); color: var(--good); }
+.choices button.wrong { border-color: var(--bad); background: var(--bad-bg); color: var(--bad); }
+.choices button.faded { opacity: 0.45; }
+.next { font: inherit; font-size: 1.25rem; font-weight: 700; color: var(--accent-ink); background: var(--accent); border: 0; border-radius: 16px; min-height: clamp(52px, 7dvh, 72px); cursor: pointer; width: 100%; }
+.next:disabled { opacity: 0.4; cursor: default; }
+.pad { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; }
+.pad button {
+  font: inherit; font-size: 2rem; font-weight: 700; font-variant-numeric: tabular-nums; color: var(--ink);
+  background: var(--key); border: 2px solid var(--line); border-radius: 18px; min-height: 72px; cursor: pointer;
+  transition: transform .08s ease, border-color .15s ease;
+  touch-action: manipulation; -webkit-tap-highlight-color: transparent;
+}
+.pad button:hover:not(:disabled) { border-color: var(--accent); }
+.pad button:active:not(:disabled) { transform: scale(0.96); }
+.pad button:disabled { opacity: 0.4; cursor: default; }
+.pad .erase { font-size: 1.15rem; color: var(--muted); }
+.pad .go { background: var(--accent); border-color: var(--accent); color: var(--accent-ink); font-size: 1.35rem; }
+.pad .go:hover:not(:disabled) { border-color: var(--accent); filter: brightness(1.08); }
+.pad button { min-height: clamp(50px, 8vh, 92px); min-height: clamp(50px, 8dvh, 92px); }
+button:focus-visible, a:focus-visible { outline: 3px solid var(--mark); outline-offset: 3px; }
+
+/* Results after the twelfth task. */
+.results { background: var(--card); border: 3px solid var(--c5, #d9a400); border-radius: 28px; padding: 22px 18px; display: flex; flex-direction: column; align-items: center; gap: 12px; text-align: center; }
+.results h2 { margin: 0; font-family: "Fredoka", "Lexend", sans-serif; font-size: 2rem; }
+.big-score { font-size: clamp(2.6rem, 10dvh, 4.4rem); font-weight: 700; line-height: 1; font-variant-numeric: tabular-nums; }
+.big-score small { font-size: 0.4em; font-weight: 600; color: var(--muted); }
+.results p { margin: 0; font-size: 1.1rem; line-height: 1.45; max-width: 32ch; }
+.results .muted { color: var(--muted); }
+.results .practise a { color: var(--accent); font-weight: 700; }
+.got-stars { display: inline-flex; align-items: center; gap: 6px; font-weight: 700; font-size: 1.3rem; }
+.got-stars svg { width: 28px; height: 28px; fill: var(--c5, #d9a400); }
+.best { display: inline-flex; align-items: center; gap: 8px; background: var(--chip); border-radius: 999px; padding: 8px 16px; font-weight: 700; }
+.res-actions { display: flex; flex-wrap: wrap; gap: 10px; justify-content: center; width: 100%; }
+.res-actions .next, .res-actions .quiet { flex: 1 1 140px; display: inline-flex; align-items: center; justify-content: center; text-decoration: none; }
+.reset { font: inherit; font-size: 0.95rem; color: var(--muted); background: transparent; border: 2px solid var(--line); border-radius: 14px; padding: 0 16px; min-height: 44px; cursor: pointer; }
+.quiet { font: inherit; font-size: 1.15rem; font-weight: 700; color: var(--ink); background: transparent; border: 2px solid var(--line); border-radius: 16px; min-height: clamp(52px, 7dvh, 72px); cursor: pointer; }
+
+@media (max-width: 420px) { h1 { font-size: 1.35rem; } }
+@media (min-width: 600px) and (orientation: portrait) {
+  .wrap { max-width: 640px; }
+  .problem-card { gap: 12px; }
+  svg.clock { width: min(100%, 380px, 34dvh); }
+  .sum { font-size: clamp(3rem, 9vw, 4.6rem); }
+  .steps { font-size: 2.2rem; gap: 10px; }
+  .question { font-size: 1.6rem; }
+  .question small { font-size: 1.1rem; }
+  .story { font-size: 1.7rem; }
+  .waycard b { font-size: 1.5rem; } .waycard .st { font-size: 1.35rem; }
+  .pic { --ln: 150px; --dt: 22px; }
+  .money { --mh: 64px; gap: 10px; }
+  .choices { gap: 12px; }
+  .choices button { min-height: clamp(64px, 9dvh, 120px); font-size: 1.4rem; padding: 12px 20px; }
+  .choices.two button, .choices.names button { min-height: clamp(72px, 10dvh, 130px); font-size: 1.8rem; }
+  .pad button { min-height: clamp(60px, 10dvh, 120px); font-size: 2.4rem; }
+  .next { min-height: clamp(60px, 8dvh, 90px); font-size: 1.6rem; }
+}
+@media (orientation: landscape) and (min-width: 640px) {
+  .wrap { max-width: 1100px; }
+  .play { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; align-items: center; }
+  .problem-card { height: 100%; justify-content: center; }
+  .side { height: 100%; justify-content: center; }
+  .pick { height: 100%; min-height: 0; gap: 12px; }
+  .choices { flex: 1 1 auto; min-height: 0; grid-auto-rows: minmax(48px, 1fr); gap: 12px; }
+  .choices button { min-height: 48px; font-size: clamp(1rem, 1.8vw, 1.35rem); padding: 10px 18px; }
+  .choices.two button, .choices.names button { font-size: clamp(1.3rem, 2.4vw, 1.9rem); }
+  .next { flex: 0 0 auto; min-height: clamp(50px, 9dvh, 80px); }
+  .pad button { min-height: clamp(44px, calc((100dvh - 150px) / 4.4), 130px); }
+  svg.clock { width: min(100%, 360px, calc(100dvh - 300px)); }
+}
+/* One screen tall in portrait and landscape: the answers stay on screen and the top part shrinks. */
+@media (orientation: portrait), (orientation: landscape) and (min-width: 640px) {
+  body { height: calc(100dvh - env(safe-area-inset-top, 0px) - env(safe-area-inset-bottom, 0px)); min-height: 0; display: flex; flex-direction: column; overflow: hidden; }
+  body:has(#settings-panel:not([hidden])) { height: auto; overflow: visible; }
+  .wrap { flex: 1 1 auto; min-height: 0; width: 100%; }
+  .play { flex: 1 1 auto; min-height: 0; }
+  .problem-card { flex: 1 1 auto; min-height: 0; overflow: hidden; }
+  .feedback { flex: 0 1 auto; min-height: 0; overflow-y: auto; }
+  .results { flex: 0 1 auto; min-height: 0; overflow-y: auto; margin-block: auto; }
+}
+@media (orientation: landscape) and (min-width: 640px) { .play { grid-template-rows: minmax(0, 1fr); } }
+@media (max-height: 760px) and (orientation: portrait) {
+  .problem-card { gap: 6px; }
+  .sum { font-size: clamp(1.8rem, 9vw, 2.6rem); }
+  .steps { font-size: clamp(1.15rem, 5vw, 1.5rem); gap: 4px; }
+  .question { font-size: 1rem; }
+  .story { font-size: 1.05rem; }
+  .feedback { font-size: 0.95rem; line-height: 1.35; }
+  .feedback strong { font-size: 1.15rem; }
+  .choices { gap: 6px; }
+  .choices button { min-height: 44px; padding: 6px 12px; font-size: clamp(0.92rem, 3.9vw, 1.05rem); }
+  .choices.two button, .choices.names button { min-height: 48px; font-size: 1.2rem; }
+  .next { min-height: 48px; }
+  svg.clock { width: min(100%, 200px, 24dvh); }
+  .money { --mh: clamp(30px, 5dvh, 40px); gap: 4px; }
+  .mg th, .mg td { height: clamp(38px, 5.5dvh, 60px); }
+}
+@media (max-height: 660px) and (orientation: portrait) { .kind { display: none; } .where { font-size: 0.8rem; } .sum { font-size: 1.7rem; } .pic { --ln: 60px; --dt: 11px; } .pic .lines { gap: 3px; } .pic .lines i { height: 3px; } .pic .dots { gap: 4px; } }
+@media (max-height: 500px) {
+  .kind { display: none; } .top h1 { font-size: 1.2rem; }
+  .sum { font-size: 1.6rem; } .question { font-size: 0.95rem; } .steps { font-size: 1.1rem; gap: 3px; } .story { font-size: 1rem; }
+  .feedback { font-size: 0.9rem; line-height: 1.3; } .feedback strong { font-size: 1.05rem; }
+  svg.clock { width: min(100%, 150px, 40dvh); } .pic { --ln: 60px; --dt: 10px; } .money { --mh: 28px; gap: 3px; } .money i { font-size: 0.8rem; }
+  .mg th, .mg td { height: 36px; width: 48px; font-size: 1.1rem; }
+  .results { padding: 10px 14px; gap: 4px; } .results h2 { font-size: 1.3rem; } .results p { font-size: 0.95rem; } .results .muted { display: none; }
+  .big-score { font-size: 2.2rem; } .best { padding: 4px 12px; } .res-actions .next, .res-actions .quiet { min-height: 44px; font-size: 1rem; }
+}
+@media (prefers-reduced-motion: reduce) { * { transition: none !important; } }
+
+@media print {
+  /* The printed test: 12 cells with the task, its points and lines to write on. Answers on page 2. */
+  /* The task name sits on the box's number row, at the top; the task itself is centred in the room below. */
+  .sheet-clock .ws-ct { display: flex; flex-direction: column; align-items: stretch; justify-content: flex-start; gap: 1.2mm; width: 100%; height: 100%; box-sizing: border-box; padding: 1.1mm 2mm 1.5mm; font-size: 9pt; }
+  .sheet-clock .ws-ct::after { content: ""; margin-top: auto; }
+  .sheet-clock .ws-ct .pts { font-size: 7pt; color: #000; font-weight: 600; }
+  .sheet-clock .ws-ct .nm { font-weight: 700; font-size: 8pt; line-height: 1.2; padding-left: 4.5mm; margin-bottom: auto; }
+  .sheet-clock .ws-ct .sum { font-size: 13pt; text-align: center; letter-spacing: 0; white-space: normal; }
+  .sheet-clock .ws-ct .ways { display: flex; flex-wrap: wrap; gap: 0.8mm 3mm; }
+  .sheet-clock .ws-ct .fill { font-size: 10pt; font-weight: 600; text-align: center; font-variant-numeric: tabular-nums; line-height: 1.7; }
+  .sheet-clock .ws-ct .fill i { display: inline-block; width: 9mm; border-bottom: 0.4mm solid #000; vertical-align: baseline; }
+  .sheet-clock .ws-ct svg.clock { width: 24mm; height: 24mm; margin: 0 auto; --face: #fff; --rim: #000; --hour: #000; --minute: #000; }
+  .sheet-clock .ws-ct .pic { gap: 4mm; min-height: 0; justify-content: center; }
+  .sheet-clock .ws-ct .pic i { background: #000; }
+  .sheet-clock .ws-ct .pic .lines { gap: 0.9mm; }
+  .sheet-clock .ws-ct .pic .lines i { width: 10mm; height: 0.7mm; }
+  .sheet-clock .ws-ct .pic .dots { grid-template-columns: repeat(5, 2mm); gap: 0.8mm; }
+  .sheet-clock .ws-ct .pic .dots i { width: 2mm; height: 2mm; }
+  .sheet-clock .ws-ct .money { gap: 1mm; --mh: 5mm; }
+  .sheet-clock .ws-ct .money i { color: #000; font-size: 7pt; box-shadow: none; background: #fff; border: 0.3mm solid #000; }
+  .sheet-clock .ws-ct .way { display: flex; align-items: center; gap: 1.5mm; font-weight: 600; font-size: 8pt; }
+  .sheet-clock .ws-ct .way i { display: inline-block; width: 3.5mm; height: 3.5mm; border: 0.3mm solid #000; border-radius: 0.8mm; flex: 0 0 auto; }
+  .sheet-clock .ws-ct .line { display: flex; align-items: flex-end; gap: 1mm; width: 100%; font-weight: 600; font-size: 8pt; }
+  .sheet-clock .ws-ct i.ws-line { display: inline-block; flex: 1; min-width: 6mm; height: 4mm; border-bottom: 0.4mm solid #000; }
+  .sheet-clock .ws-ct .story { font-size: 8pt; font-weight: 400; text-align: left; max-width: none; }
+  .sheet-clock .ws-ct .story b { color: #000; }
+  .sheet-clock .ws-ct .mg { border-spacing: 0.8mm; margin: 0 auto; }
+  .sheet-clock .ws-ct .mg th, .sheet-clock .ws-ct .mg td { width: 8mm; height: 6mm; border: 0.3mm solid #000; border-radius: 1mm; background: #fff; color: #000; font-size: 9pt; box-shadow: none; }
+  .sheet-clock .ws-ct .mg .corner { border-color: transparent; }
+  .sheet-clock .ws-ct .mg .todo, .sheet-clock .ws-ct .mg .ask { border-style: dashed; }
+  .sheet-clock .ws-ct .mg .ask::after, .sheet-clock .ws-ct .mg .todo::after { content: none; }
+  .sheet-clock .ws-ct .steps { font-size: 10pt; gap: 1mm; }
+  .sheet-clock .ws-ct .waycard { border: 0.3mm solid #000; box-shadow: none; background: #fff; padding: 0.8mm 1.5mm; font-size: 7.5pt; line-height: 1.25; }
+  .sheet-clock .ws-ct .waycard b { font-size: 7.5pt; } .sheet-clock .ws-ct .waycard .st { font-size: 7.5pt; color: #000; }
+}
+</style>
+<link rel="stylesheet" href="../../loopy.css">
+<script src="../../loopy.js"></script>
+</head>
+<body>
+
+<div class="wrap">
+  <header class="game-bar">
+    <a class="home-link" href="../../">&larr; loopy</a>
+    <div class="bar-right">
+      <span id="star-chip"></span>
+      <button type="button" id="settings-toggle" aria-controls="settings-panel"></button>
+    </div>
+  </header>
+  <section class="top" aria-labelledby="title">
+    <h1 id="title" data-t="ctName">Class Test</h1>
+    <span class="pill" data-t="ctGrade">Grade 3 · 20 points</span>
+  </section>
+  <div class="settings-panel" id="settings-panel" hidden>
+    <div class="controls"><div id="age-picker"></div><div id="theme-picker"></div><button id="sound-toggle"></button><div id="lang-picker"></div></div>
+    <div class="print-row">
+      <button type="button" class="print-btn" id="print-test"><span data-t="ctPrint">Print the test</span></button>
+      <p data-t="ctPrintNote">The same 12 tasks on paper, with the points. Answers on page 2.</p>
+    </div>
+    <div class="panel-foot">
+      <p data-t="ctKbd">Keyboard works too: 1 to 4 pick an answer, numbers, Backspace, Enter.</p>
+      <button type="button" class="reset" id="restart" data-t="ctRestart">Start again</button>
+    </div>
+  </div>
+
+  <main class="play" id="play">
+    <div class="problem-card" id="card">
+      <span class="kind" id="kind"></span>
+      <div class="strip" id="strip" role="img"></div>
+      <p class="where" id="where"></p>
+      <div class="stage" id="stage"></div>
+      <p class="question" id="question"></p>
+      <p class="feedback" id="feedback"></p>
+    </div>
+    <div class="side">
+      <div class="pick" id="pick">
+        <div class="choices" id="choices"></div>
+        <button type="button" class="next" id="next" data-t="next">Next</button>
+      </div>
+      <div class="pad" id="pad" hidden>
+        <button type="button" id="k1" data-d="1">1</button>
+        <button type="button" id="k2" data-d="2">2</button>
+        <button type="button" id="k3" data-d="3">3</button>
+        <button type="button" id="k4" data-d="4">4</button>
+        <button type="button" id="k5" data-d="5">5</button>
+        <button type="button" id="k6" data-d="6">6</button>
+        <button type="button" id="k7" data-d="7">7</button>
+        <button type="button" id="k8" data-d="8">8</button>
+        <button type="button" id="k9" data-d="9">9</button>
+        <button type="button" id="k-erase" class="erase" aria-label="Erase last digit" data-t-aria="eraseAria" data-t="erase">Erase</button>
+        <button type="button" id="k0" data-d="0">0</button>
+        <button type="button" id="k-go" class="go" data-t="check">Check</button>
+      </div>
+    </div>
+  </main>
+
+  <section class="results" id="results" hidden aria-live="polite">
+    <h2 data-t="ctDone">Class Test done!</h2>
+    <div class="big-score" id="res-score"></div>
+    <div class="got-stars"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2.5l2.9 6 6.6.9-4.8 4.6 1.2 6.5L12 17.4l-5.9 3.1 1.2-6.5L2.5 9.4l6.6-.9z"/></svg><span id="res-stars"></span></div>
+    <div class="best" id="res-best"></div>
+    <p class="practise" id="res-practise"></p>
+    <div class="res-actions">
+      <button type="button" class="next" id="again" data-t="ctAgain">Play again</button>
+      <button type="button" class="quiet" id="print-again" data-t="ctPrint">Print the test</button>
+      <a class="quiet" href="../../" data-t="ctHome">Home</a>
+    </div>
+  </section>
+</div>
+<script>
+Loopy.addStrings({
+  en: {
+    ctName: "Class Test", ctGrade: "Grade 3 · 20 points", ctKbd: "Keyboard works too: 1 to 4 pick an answer, numbers, Backspace, Enter.", ctRestart: "Start again",
+    ctPrint: "Print the test", ctPrintNote: "The same 12 tasks on paper, with the points. Answers on page 2.",
+    ctTask: "Task {n} of 12 · {p} points so far", ctTaskOne: "Task {n} of 12 · 1 point so far", ctPart: "Part {n} of {of}.",
+    ctPts: "{n} points", ctPts1: "1 point", ctStrip: "Task {n} of 12",
+    ctDone: "Class Test done!", ctScore: "{p} of 20", ctPoints: "points", ctStars: "+{n} stars", ctStar: "+1 star",
+    ctBest: "Best so far: {p} of 20", ctNewBest: "New best: {p} of 20!", ctPerfect: "All 20 points! Nothing to practise.", ctPractise: "Practise next: {game}",
+    ctAgain: "Play again", ctHome: "Home", ctLevel: "Grade 3 · 20 points", ctHow: "The 12 tasks of the test. Write the answers on the lines.",
+    ctT1: "Read the clock", ctT2: "Lines and dots", ctT3: "To the ten", ctT4: "Place by place", ctT5: "Giants and dwarfs", ctT6: "Help with 10",
+    ctT7: "Take away in steps", ctT8: "Which way?", ctT9: "How much money?", ctT10: "Is it enough?", ctT11: "Times table grid", ctT12: "Easy sums first",
+    ctG1: "What Time Is It?", ctG2: "Tens and Ones", ctG3: "Step by Step", ctG8: "Which Way?", ctG9: "Is It Enough?", ctG11: "Times Table Grid",
+    ctAskClock: "What time is it?", ctSubClock: "Pick the time.", ctItIs: "It is {time}.", clockAsk: "Analog clock showing a time to read",
+    ctHourOn: "The short hand points to {h}.", ctHourPast: "The short hand is just past {h}.", ctOclock: "The long hand points to 12, so it is {h} o'clock.", ctMin: "The long hand points to {n}, which is {m} minutes.",
+    ctAskPic: "What number is this?", ctSubPic: "A line is a ten, a dot is a one.", ctWhyPic: "{t} lines are {t} tens and {o} dots are {o} ones: {n}.", ctPicAria: "{t} lines and {o} dots",
+    ctAskToTen: "First to the ten, then the rest.", ctAskPlace: "Tens with tens, ones with ones, then together.", ctAskHelpBack: "Take 10 away, then give {d} back.", ctAskHelpMore: "Take 10 away, then {d} more.",
+    ctAskSubTens: "First the tens, then the ones.", ctWhySteps: "{steps}.", ctThen: ", then ", ctComma: ", ",
+    ctAskDwarf: "The dwarf takes {u} away.", ctAskGiant: "The giant takes {u} away.", ctSubGd: "Which digit changes?",
+    ctOne: "1 one", ctOnes: "{n} ones", ctTen: "1 ten", ctTensN: "{n} tens",
+    ctWhyDwarf: "Only the ones change: {x} − {b} = {y}, so {r}.", ctWhyGiant: "Only the tens change: {xt} − {bt} = {yt}, so {r}.",
+    ctAskName: "Which way is this?", ctSubName: "Look at the steps.", ctAskWhy: "Why is {way} a good way here?", ctSubWhy: "One reason fits. Two do not.",
+    ctTens: "Tens first", ctRound: "Nearly round", ctPlace: "Place by place",
+    ctRTens: "First I add the tens of {b}, that is {tb}, then the ones, {ob}.", ctRRound: "{b} is nearly {r}, so I add {r} and take {d} away.", ctRPlace: "Tens with tens and ones with ones, then I put them together.",
+    ctRNo1: "Because {b} has no tens.", ctRNo2: "Because I take {b} away first.",
+    ctWhyName: "This is {way}: {steps}.", ctWhyWay: "{way}: {steps}. {reason}",
+    ctAskMoney: "How much money is it?", ctSubMoney: "Notes first, then the coins.", ctWhyMoney: "{sum} = {n}.", ctEuro: "€{n}", ctMoneyAria: "{list}",
+    ctStory: "{name} has {m}. The {i1} costs {p1} and the {i2} {p2}.", ctAskEnough: "Is the money enough?", ctYes: "Yes", ctNo: "No",
+    ctWhyYes: "{p1} + {p2} = {s}. {m} is enough for {s}, so yes.", ctWhyNo: "{p1} + {p2} = {s}. {m} is not enough for {s}, so no.",
+    ctI0: "helmet", ctI1: "ball", ctI2: "book", ctI3: "game", ctI4: "bag", ctI5: "lamp", ctI6: "cap", ctI7: "scooter",
+    ctAskCell: "Fill in the box.", ctAskFactor: "Which number is missing at the top?", ctSubGrid: "Times table grid: row times column.", ctGridAria: "Times table grid",
+    ctWhyCell: "{r} × {c} = {p}.", ctWhyFactor: "{r} × {c} = {p}, so the number is {c}.",
+    ctAskEasy: "Easy sums first: {s1} × {b} and {s2} × {b}.", ctSubEasy: "Then add them.", ctWhyEasy: "{s1} × {b} = {p1} and {s2} × {b} = {p2}, so {a} × {b} = {p1} + {p2} = {p}.",
+    ctAnswerIs: "The answer is {a}.", ctBecause: "Because", ctYesNo: "Yes / No"
+  },
+  de: {
+    ctName: "Klassenarbeit", ctGrade: "3. Klasse · 20 Punkte", ctKbd: "Tastatur geht auch: 1 bis 4 wählen eine Antwort, Zahlen, Rücktaste, Enter.", ctRestart: "Neu anfangen",
+    ctPrint: "Test drucken", ctPrintNote: "Dieselben 12 Aufgaben auf Papier, mit den Punkten. Lösungen auf Seite 2.",
+    ctTask: "Aufgabe {n} von 12 · {p} Punkte bisher", ctTaskOne: "Aufgabe {n} von 12 · 1 Punkt bisher", ctPart: "Teil {n} von {of}.",
+    ctPts: "{n} Punkte", ctPts1: "1 Punkt", ctStrip: "Aufgabe {n} von 12",
+    ctDone: "Klassenarbeit geschafft!", ctScore: "{p} von 20", ctPoints: "Punkte", ctStars: "+{n} Sterne", ctStar: "+1 Stern",
+    ctBest: "Bisher am besten: {p} von 20", ctNewBest: "Neue Bestleistung: {p} von 20!", ctPerfect: "Alle 20 Punkte! Es gibt nichts zu üben.", ctPractise: "Als Nächstes üben: {game}",
+    ctAgain: "Nochmal spielen", ctHome: "Startseite", ctLevel: "3. Klasse · 20 Punkte", ctHow: "Die 12 Aufgaben der Klassenarbeit. Schreib die Antworten auf die Linien.",
+    ctT1: "Uhr ablesen", ctT2: "Striche und Punkte", ctT3: "Verliebt in den Zehner", ctT4: "Stellenweise rechnen", ctT5: "Riesen und Zwerge", ctT6: "Aufgaben mit 10 helfen",
+    ctT7: "Schrittweise minus", ctT8: "Welcher Weg?", ctT9: "Wie viel Geld?", ctT10: "Reicht das Geld?", ctT11: "Malkreuz", ctT12: "Erst die leichten Aufgaben",
+    ctG1: "Wie spät ist es?", ctG2: "Zehner und Einer", ctG3: "Schrittweise rechnen", ctG8: "Welcher Weg?", ctG9: "Reicht das Geld?", ctG11: "Einmaleins-Tabelle",
+    ctAskClock: "Wie spät ist es?", ctSubClock: "Wähle die Uhrzeit.", ctItIs: "Es ist {time}.", clockAsk: "Analoguhr mit einer Uhrzeit zum Ablesen",
+    ctHourOn: "Der kurze Zeiger zeigt auf die {h}.", ctHourPast: "Der kurze Zeiger ist kurz nach der {h}.", ctOclock: "Der lange Zeiger zeigt auf die 12, also ist es {h} Uhr.", ctMin: "Der lange Zeiger zeigt auf die {n}, das sind {m} Minuten.",
+    ctAskPic: "Welche Zahl ist das?", ctSubPic: "Ein Strich ist ein Zehner, ein Punkt ein Einer.", ctWhyPic: "{t} Striche sind {t} Zehner und {o} Punkte sind {o} Einer: {n}.", ctPicAria: "{t} Striche und {o} Punkte",
+    ctAskToTen: "Erst bis zum Zehner, dann der Rest.", ctAskPlace: "Zehner mit Zehnern, Einer mit Einern, dann zusammen.", ctAskHelpBack: "Erst 10 weg, dann {d} wieder dazu.", ctAskHelpMore: "Erst 10 weg, dann noch {d} weg.",
+    ctAskSubTens: "Erst die Zehner, dann die Einer.", ctWhySteps: "{steps}.", ctThen: ", dann ", ctComma: ", ",
+    ctAskDwarf: "Der Zwerg nimmt {u} weg.", ctAskGiant: "Der Riese nimmt {u} weg.", ctSubGd: "Welche Ziffer ändert sich?",
+    ctOne: "1 Einer", ctOnes: "{n} Einer", ctTen: "1 Zehner", ctTensN: "{n} Zehner",
+    ctWhyDwarf: "Nur die Einer ändern sich: {x} − {b} = {y}, also {r}.", ctWhyGiant: "Nur die Zehner ändern sich: {xt} − {bt} = {yt}, also {r}.",
+    ctAskName: "Welcher Weg ist das?", ctSubName: "Schau dir die Schritte an.", ctAskWhy: "Warum ist {way} hier ein guter Weg?", ctSubWhy: "Ein Grund passt. Zwei passen nicht.",
+    ctTens: "Zehner zuerst", ctRound: "Fast rund", ctPlace: "Stellenweise",
+    ctRTens: "Zuerst rechne ich die Zehner von {b} dazu, also {tb}, dann die Einer, {ob}.", ctRRound: "{b} ist fast {r}, also rechne ich {r} dazu und nehme {d} wieder weg.", ctRPlace: "Zehner mit Zehnern und Einer mit Einern, dann zusammen.",
+    ctRNo1: "Weil {b} keine Zehner hat.", ctRNo2: "Weil ich zuerst {b} wegnehme.",
+    ctWhyName: "Das ist {way}: {steps}.", ctWhyWay: "{way}: {steps}. {reason}",
+    ctAskMoney: "Wie viel Geld ist das?", ctSubMoney: "Erst die Scheine, dann die Münzen.", ctWhyMoney: "{sum} = {n}.", ctEuro: "{n} €", ctMoneyAria: "{list}",
+    ctStory: "{name} hat {m}. {I1} kostet {p1} und {i2} {p2}.", ctAskEnough: "Reicht das Geld?", ctYes: "Ja", ctNo: "Nein",
+    ctWhyYes: "{p1} + {p2} = {s}. {m} reicht für {s}, also ja.", ctWhyNo: "{p1} + {p2} = {s}. {m} reicht nicht für {s}, also nein.",
+    ctI0: "der Helm", ctI1: "der Ball", ctI2: "das Buch", ctI3: "das Spiel", ctI4: "die Tasche", ctI5: "die Lampe", ctI6: "die Mütze", ctI7: "der Roller",
+    ctAskCell: "Füll das Kästchen aus.", ctAskFactor: "Welche Zahl fehlt oben?", ctSubGrid: "Malkreuz: Zeile mal Spalte.", ctGridAria: "Malkreuz",
+    ctWhyCell: "{r} · {c} = {p}.", ctWhyFactor: "{r} · {c} = {p}, also ist die Zahl {c}.",
+    ctAskEasy: "Erst die leichten Aufgaben: {s1} · {b} und {s2} · {b}.", ctSubEasy: "Dann zusammenzählen.", ctWhyEasy: "{s1} · {b} = {p1} und {s2} · {b} = {p2}, also {a} · {b} = {p1} + {p2} = {p}.",
+    ctAnswerIs: "Die Antwort ist {a}.", ctBecause: "Weil", ctYesNo: "Ja / Nein"
+  }
+});
+
+(function () {
+  const $ = (id) => document.getElementById(id);
+  const t = Loopy.t, num = Loopy.num, NS = "http://www.w3.org/2000/svg";
+  const card = $("card"), stage = $("stage"), kindEl = $("kind"), stripEl = $("strip"), whereEl = $("where"), qEl = $("question"), feedbackEl = $("feedback");
+  const pickEl = $("pick"), choicesEl = $("choices"), nextBtn = $("next"), padEl = $("pad"), goBtn = $("k-go"), eraseBtn = $("k-erase");
+  const digitBtns = [...document.querySelectorAll("#pad [data-d]")];
+  const el = (tag, cls, text) => Loopy.el(tag, cls, text);
+  const randInt = (lo, hi) => lo + Math.floor(Math.random() * (hi - lo + 1));
+  const pick = (arr) => arr[Math.floor(Math.random() * arr.length)];
+  const shuffle = (arr) => { const a = arr.slice(); for (let i = a.length - 1; i > 0; i--) { const j = randInt(0, i); [a[i], a[j]] = [a[j], a[i]]; } return a; };
+  const cap = (s) => s.charAt(0).toUpperCase() + s.slice(1);
+  const times = () => Loopy.lang === "de" ? "·" : "×";
+  const euro = (n) => t("ctEuro", { n: num(n) });
+  const best = () => { const v = parseInt(Loopy.store.get("ct.best"), 10); return v >= 0 && v <= 20 ? v : 0; };
+
+  let tasks = [], set = [], index = 0, answered = false, typed = "", streak = 0, results = [], points = 0, chosen = null, chosenBtn = null;
+
+  // The twelve tasks of the paper, in its order. Each task is a few questions with points: 20 in all.
+  // A note like "ct:5:68:5:o" names a question, so Try again can bring it back (rebuild).
+  const GAME = { 1: "../../math/what-time-is-it/", 2: "../../math/tens-ones/", 3: "../../math/step-by-step/", 4: "../../math/step-by-step/", 5: "../../math/tens-ones/", 6: "../../math/step-by-step/",
+    7: "../../math/step-by-step/", 8: "../../math/which-way/", 9: "../../math/enough-money/", 10: "../../math/enough-money/", 11: "../../math/times-grid/", 12: "../../math/times-grid/" };
+  const GNAME = { 1: "ctG1", 2: "ctG2", 3: "ctG3", 4: "ctG3", 5: "ctG2", 6: "ctG3", 7: "ctG3", 8: "ctG8", 9: "ctG9", 10: "ctG9", 11: "ctG11", 12: "ctG11" };
+  const stepText = (s) => num(s[0]) + " " + s[1] + " " + num(s[2]) + " = " + num(s[3]);
+  const stepsText = (steps, sep) => steps.map(stepText).join(t(sep || "ctThen"));
+  // A sum in steps: the steps before the asked one are shown done, the asked one is a box.
+  function stepTask(slot, a, b, sign, steps, askKey, askVars) {
+    const total = steps[steps.length - 1][3];
+    return { slot, a, b, qs: [{ note: "ct:" + slot + ":" + a + ":" + b, kind: sign === "+" ? "st-add" : "st-sub", pts: slot === 7 ? 2 : 1, mode: "pad", answer: total,
+      ask: () => t(askKey, askVars || {}), sub: () => "", why: () => t("ctWhySteps", { steps: stepsText(steps, slot === 4 ? "ctComma" : "ctThen") }),
+      log: () => num(a) + " " + sign + " " + num(b) }],
+      draw: (box, q, st) => { box.appendChild(el("div", "sum small", num(a) + " " + sign + " " + num(b))); box.appendChild(stepsList(steps, steps.length - 1, q, st)); },
+      sheet: (box) => { box.appendChild(el("div", "sum", num(a) + " " + sign + " " + num(b))); const f = el("div", "fill"); steps.forEach((s, i) => { if (i) f.appendChild(document.createElement("br")); f.appendChild(document.createTextNode(num(s[0]) + " " + s[1] + " " + num(s[2]) + " = ")); f.appendChild(el("i", "")); }); box.appendChild(f); },
+      answers: () => stepsText(steps, slot === 4 ? "ctComma" : "ctThen") };
+  }
+  function stepsList(steps, askI, q, st) {
+    const ol = el("ol", "steps");
+    steps.forEach((s, i) => {
+      const li = el("li", "", num(s[0]) + " " + s[1] + " " + num(s[2]) + " =");
+      const box = el("span", "box");
+      if (i < askI) box.textContent = num(s[3]);
+      else if (i === askI) { box.classList.add("ask"); fillAsk(box, q, st); }
+      else box.classList.add("todo");
+      li.appendChild(box);
+      ol.appendChild(li);
+    });
+    return ol;
+  }
+  // One line with a label and the box being typed in, like "= [?]".
+  function askLine(q, st, label) { const ol = el("ol", "steps"), li = el("li", "", label), box = el("span", "box ask"); fillAsk(box, q, st); li.appendChild(box); ol.appendChild(li); return ol; }
+  // The box being typed in: the typed digits, or the answer once it is answered. For a screen reader and the tests it carries the answer.
+  function fillAsk(box, q, st) {
+    if (st.answered) { box.textContent = st.ok ? num(q.answer) : st.typed; return; }
+    box.textContent = st.typed;
+    box.setAttribute("role", "textbox"); box.setAttribute("aria-label", q.ask()); box.dataset.a = q.answer;
+  }
+
+  // 1. Read the clock, to 5 minutes, four times to pick from (the same slips as Today's 10).
+  const fmtTime = (h, m) => h + ":" + String(m).padStart(2, "0");
+  const wrapH = (h) => ((h - 1 + 12) % 12) + 1;
+  function clockTask(h, m) {
+    const seen = new Set([fmtTime(h, m)]), out = [];
+    const add = (hh, mm) => { if (mm % 5 || mm < 0 || mm > 59 || seen.has(fmtTime(hh, mm))) return; seen.add(fmtTime(hh, mm)); out.push({ h: hh, m: mm }); };
+    const cands = [];
+    if (m !== 0) cands.push([m / 5 || 12, (h % 12) * 5]);
+    if (m >= 30) cands.push([wrapH(h + 1), m]);
+    cands.push([wrapH(h - 1), m], [h, (60 - m) % 60], [h, (m + 30) % 60]);
+    shuffle(cands).forEach(([hh, mm]) => { if (out.length < 3) add(hh, mm); });
+    while (out.length < 3) add(randInt(1, 12), randInt(0, 11) * 5);
+    const answer = fmtTime(h, m);
+    const choices = shuffle([{ h, m }, ...out]).map(c => ({ text: fmtTime(c.h, c.m), ok: c.h === h && c.m === m }));
+    const why = () => t(m === 0 ? "ctHourOn" : "ctHourPast", { h }) + " " + (m === 0 ? t("ctOclock", { h }) : t("ctMin", { n: m / 5, m }));
+    return { slot: 1, qs: [{ note: "ct:1:" + h + ":" + m, kind: "cl-5", pts: 2, mode: "pick", answer, choices, ask: () => t("ctAskClock"), sub: () => t("ctSubClock"), why, head: () => t("ctItIs", { time: answer }), log: () => "🕒" }],
+      draw: (box) => box.appendChild(clock(h, m)), sheet: (box) => { box.appendChild(clock(h, m)); line(box, ""); }, answers: () => answer };
+  }
+  const pt = (deg, r) => { const a = (deg - 90) * Math.PI / 180; return [200 + r * Math.cos(a), 200 + r * Math.sin(a)]; };
+  function svgEl(tag, attrs, parent) { const n = document.createElementNS(NS, tag); for (const k in attrs) n.setAttribute(k, attrs[k]); if (parent) parent.appendChild(n); return n; }
+  function clock(h, m) {
+    const svg = svgEl("svg", { viewBox: "0 0 400 400", class: "clock", role: "img", "aria-label": t("clockAsk") });
+    svgEl("circle", { cx: 200, cy: 200, r: 186, fill: "var(--face)", stroke: "var(--rim)", "stroke-width": 10 }, svg);
+    for (let i = 0; i < 60; i++) {
+      const major = i % 5 === 0, [x1, y1] = pt(i * 6, major ? 158 : 166), [x2, y2] = pt(i * 6, 176);
+      svgEl("line", { x1, y1, x2, y2, stroke: "#1d2a3f", "stroke-width": major ? 5 : 2, "stroke-linecap": "round" }, svg);
+    }
+    for (let n = 1; n <= 12; n++) {
+      const [x, y] = pt(n * 30, 128);
+      svgEl("text", { x, y, "text-anchor": "middle", "dominant-baseline": "central", "font-size": 38, "font-weight": 700, fill: "#1d2a3f", "font-family": "Lexend, sans-serif" }, svg).textContent = n;
+    }
+    const [hx, hy] = pt((h % 12) * 30 + m * 0.5, 92), [mx, my] = pt(m * 6, 150);
+    svgEl("line", { x1: 200, y1: 200, x2: hx, y2: hy, stroke: "var(--hour, #1d2a3f)", "stroke-width": 14, "stroke-linecap": "round" }, svg);
+    svgEl("line", { x1: 200, y1: 200, x2: mx, y2: my, stroke: "var(--minute, #2457c5)", "stroke-width": 8, "stroke-linecap": "round" }, svg);
+    svgEl("circle", { cx: 200, cy: 200, r: 11, fill: "#1d2a3f" }, svg);
+    return svg;
+  }
+
+  // 2. Lines and dots: read the picture, type the number.
+  function picTask(n) {
+    const tt = Math.floor(n / 10), o = n % 10;
+    return { slot: 2, qs: [{ note: "ct:2:" + n, kind: "to-num", pts: 2, mode: "pad", answer: n, ask: () => t("ctAskPic"), sub: () => t("ctSubPic"), why: () => t("ctWhyPic", { t: num(tt), o: num(o), n: num(n) }), log: () => t("ctT2") }],
+      draw: (box, q, st) => { box.appendChild(pic(tt, o)); box.appendChild(askLine(q, st, "=")); },
+      sheet: (box) => { box.appendChild(pic(tt, o)); line(box, "="); }, answers: () => num(n) };
+  }
+  function pic(tt, o) {
+    const p = el("div", "pic");
+    p.setAttribute("role", "img"); p.setAttribute("aria-label", t("ctPicAria", { t: num(tt), o: num(o) }));
+    const group = (cls, n) => { if (!n) return; const g = el("div", cls); for (let i = 0; i < n; i++) g.appendChild(el("i", "")); p.appendChild(g); };
+    group("lines", tt); group("dots", o);
+    return p;
+  }
+
+  // 3. To the ten: 57 + 6 is 57 + 3 = 60, then 60 + 3 = 63. 4. Place by place: 25 + 43 is 20 + 40, 5 + 3, 60 + 8.
+  // 6. Help with 10: 35 − 9 is 35 − 10 = 25, then 25 + 1 = 26. 7. Take away in steps: 98 − 57 is 98 − 50 = 48, then 48 − 7 = 41.
+  const toTen = (a, b) => { const c = 10 - a % 10, ten = a + c; return stepTask(3, a, b, "+", [[a, "+", c, ten], [ten, "+", b - c, a + b]], "ctAskToTen"); };
+  const place = (a, b) => { const ta = a - a % 10, tb = b - b % 10, T = ta + tb, O = a % 10 + b % 10; return stepTask(4, a, b, "+", [[ta, "+", tb, T], [a % 10, "+", b % 10, O], [T, "+", O, a + b]], "ctAskPlace"); };
+  const help = (a, b) => { const d = b - 10, x = a - 10; return stepTask(6, a, b, "−", [[a, "−", 10, x], d < 0 ? [x, "+", -d, a - b] : [x, "−", d, a - b]], d < 0 ? "ctAskHelpBack" : "ctAskHelpMore", { d: num(Math.abs(d)) }); };
+  const subTens = (a, b) => { const tb = b - b % 10, x = a - tb; return stepTask(7, a, b, "−", [[a, "−", tb, x], [x, "−", b % 10, a - b]], "ctAskSubTens"); };
+
+  // 5. Giants and dwarfs: the dwarf takes ones away (68 − 5), the giant tens (68 − 50). Only one digit changes.
+  function giants(a, b) {
+    const d = { t: Math.floor(a / 10), o: a % 10 }, ones = (n) => n === 1 ? t("ctOne") : t("ctOnes", { n: num(n) }), tens = (n) => n === 1 ? t("ctTen") : t("ctTensN", { n: num(n) });
+    const qOf = (id) => {
+      const bb = id === "o" ? b : 10 * b, r = a - bb;
+      return { note: "ct:5:" + a + ":" + b + ":" + id, kind: "to-gd", pts: 1, mode: "pad", answer: r, ask: () => t(id === "o" ? "ctAskDwarf" : "ctAskGiant", { u: id === "o" ? ones(b) : tens(b) }), sub: () => t("ctSubGd"),
+        why: () => id === "o" ? t("ctWhyDwarf", { x: num(d.o), b: num(b), y: num(d.o - b), r: num(r) }) : t("ctWhyGiant", { xt: tens(d.t), bt: tens(b), yt: tens(d.t - b), r: num(r) }), log: () => num(a) + " − " + num(bb), bb };
+    };
+    return { slot: 5, qs: [qOf("o"), qOf("t")],
+      draw: (box, q, st) => box.appendChild(askLine(q, st, num(a) + " − " + num(q.bb) + " =")),
+      sheet: (box) => { const f = el("div", "fill"); [b, 10 * b].forEach((bb, i) => { if (i) f.appendChild(document.createElement("br")); f.appendChild(document.createTextNode(num(a) + " − " + num(bb) + " = ")); f.appendChild(el("i", "")); }); box.appendChild(f); },
+      answers: () => num(a - b) + ", " + num(a - 10 * b) };
+  }
+
+  // 8. Which way? The steps of one way are shown: name it, then say why it fits (one reason of three).
+  const WAYS = ["tens", "round", "place"], WAY_KEY = { tens: "ctTens", round: "ctRound", place: "ctPlace" };
+  const wayName = (w) => t(WAY_KEY[w]);
+  function waySteps(a, b, w) {
+    const tb = b - b % 10, ob = b % 10, r = ob >= 5 ? tb + 10 : tb, d = Math.abs(b - r);
+    if (w === "tens") return [[a, "+", tb, a + tb], [a + tb, "+", ob, a + b]];
+    if (w === "round") return r > b ? [[a, "+", r, a + r], [a + r, "−", d, a + b]] : [[a, "+", r, a + r], [a + r, "+", d, a + b]];
+    const ta = a - a % 10, T = ta + tb, O = a % 10 + ob;
+    return [[ta, "+", tb, T], [a % 10, "+", ob, O], [T, "+", O, a + b]];
+  }
+  const wayText = (a, b, w) => stepsText(waySteps(a, b, w), w === "place" ? "ctComma" : "ctThen");
+  function reason(a, b, w) {
+    const tb = b - b % 10, ob = b % 10, r = ob >= 5 ? tb + 10 : tb;
+    return t("ctR" + cap(w), { a: num(a), b: num(b), tb: num(tb), ob: num(ob), r: num(r), d: num(Math.abs(b - r)) });
+  }
+  function wayTask(a, b, w) {
+    const other = pick(WAYS.filter(k => k !== w)), no = t("ctRNo" + randInt(1, 2), { b: num(b) });
+    const names = shuffle(WAYS.map(k => ({ k, text: wayName(k), ok: k === w })));
+    const reasons = shuffle([{ text: reason(a, b, w), ok: true }, { text: reason(a, b, other), ok: false }, { text: no, ok: false }]);
+    const sum = num(a) + " + " + num(b);
+    return { slot: 8, a, b, w, qs: [
+      { note: "ct:8:" + a + ":" + b + ":" + w + ":n", kind: "wy-name", pts: 1, mode: "pick", names: true, answer: wayName(w), choices: names, ask: () => t("ctAskName"), sub: () => t("ctSubName"), why: () => t("ctWhyName", { way: wayName(w), steps: wayText(a, b, w) }), log: () => sum },
+      { note: "ct:8:" + a + ":" + b + ":" + w + ":w", kind: "wy-why", pts: 1, mode: "pick", answer: reason(a, b, w), choices: reasons, ask: () => t("ctAskWhy", { way: wayName(w) }), sub: () => t("ctSubWhy"), why: () => t("ctWhyWay", { way: wayName(w), steps: wayText(a, b, w), reason: reason(a, b, w) }), log: () => sum + ": " + wayName(w) }],
+      draw: (box, q) => { box.appendChild(el("div", "sum", sum)); const wc = el("div", "waycard" + (q.names ? " quiet" : "")); if (!q.names) wc.appendChild(el("b", "", wayName(w))); wc.appendChild(el("span", "st", wayText(a, b, w))); box.appendChild(wc); },
+      sheet: (box) => { box.appendChild(el("div", "sum", sum)); const wc = el("div", "waycard"); wc.appendChild(el("span", "st", wayText(a, b, w))); box.appendChild(wc); const ways = el("div", "ways"); WAYS.forEach(k => { const row = el("div", "way"); row.appendChild(el("i", "")); row.appendChild(document.createTextNode(wayName(k))); ways.appendChild(row); }); box.appendChild(ways); line(box, t("ctBecause")); },
+      answers: () => wayName(w) + ". " + reason(a, b, w) };
+  }
+
+  // 9. How much money? Notes and coins up to 100 euros. 10. Is it enough? A shop problem in words, yes or no.
+  const PIECES = [50, 20, 10, 5, 2, 1];
+  function moneyTask(pieces) {
+    const total = pieces.reduce((s, v) => s + v, 0);
+    return { slot: 9, qs: [{ note: "ct:9:" + pieces.join(","), kind: "em-count", pts: 1, mode: "pad", answer: total, ask: () => t("ctAskMoney"), sub: () => t("ctSubMoney"), why: () => t("ctWhyMoney", { sum: pieces.map(num).join(" + "), n: euro(total) }), log: () => pieces.map(num).join(" + ") }],
+      draw: (box, q, st) => { box.appendChild(money(pieces)); box.appendChild(askLine(q, st, "=")); },
+      sheet: (box) => { box.appendChild(money(pieces)); line(box, "="); }, answers: () => euro(total) };
+  }
+  function money(pieces) {
+    const m = el("div", "money");
+    m.setAttribute("role", "img"); m.setAttribute("aria-label", pieces.map(v => euro(v)).join(", "));
+    pieces.forEach(v => { const i = el("i", (v >= 5 ? "note n" : "coin c") + v, num(v)); m.appendChild(i); });
+    return m;
+  }
+  const NAMES = ["Mia", "Samu", "Ida", "Leo", "Noah", "Lina"], PRICES = [[20, 40], [5, 15], [6, 15], [15, 35], [10, 25], [8, 20], [6, 12], [30, 60]];
+  function enoughTask(nameI, i1, p1, i2, p2, m) {
+    const s = p1 + p2, ok = m >= s, item = (i) => t("ctI" + i);
+    const story = () => t("ctStory", { name: NAMES[nameI], m: euro(m), i1: item(i1), I1: cap(item(i1)), p1: euro(p1), i2: item(i2), p2: euro(p2) });
+    const choices = [{ text: t("ctYes"), ok }, { text: t("ctNo"), ok: !ok }];
+    return { slot: 10, qs: [{ note: "ct:10:" + [nameI, i1, p1, i2, p2, m].join(":"), kind: "em-yn", pts: 2, mode: "pick", two: true, answer: t(ok ? "ctYes" : "ctNo"), choices, ask: () => t("ctAskEnough"), sub: () => "", why: () => t(ok ? "ctWhyYes" : "ctWhyNo", { p1: euro(p1), p2: euro(p2), s: euro(s), m: euro(m) }), log: () => story() }],
+      draw: (box) => { const p = el("p", "story"); p.append(story() + " "); box.appendChild(p); },
+      sheet: (box) => { box.appendChild(el("p", "story", story() + " " + t("ctAskEnough"))); line(box, t("ctYesNo")); line(box, t("ctBecause")); }, answers: () => t(ok ? "ctYes" : "ctNo") + ". " + t(ok ? "ctWhyYes" : "ctWhyNo", { p1: euro(p1), p2: euro(p2), s: euro(s), m: euro(m) }) };
+  }
+
+  // 11. Times table grid: one product to fill in, and one number at the top to find from its product.
+  // 12. Easy sums first: 3 × 4 from 1 × 4 and 2 × 4 (7 × 4 from 5 × 4 and 2 × 4).
+  function gridTask(r, cols) {
+    const ps = cols.map(c => r * c);
+    const qs = [
+      { note: "ct:11:" + r + ":" + cols.join(",") + ":p", kind: "tg-fill", pts: 1, mode: "pad", answer: ps[0], ask: () => t("ctAskCell"), sub: () => t("ctSubGrid"), why: () => t("ctWhyCell", { r: num(r), c: num(cols[0]), p: num(ps[0]) }), log: () => num(r) + " " + times() + " " + num(cols[0]) },
+      { note: "ct:11:" + r + ":" + cols.join(",") + ":f", kind: "tg-factor", pts: 1, mode: "pad", answer: cols[2], ask: () => t("ctAskFactor"), sub: () => t("ctSubGrid"), why: () => t("ctWhyFactor", { r: num(r), c: num(cols[2]), p: num(ps[2]) }), log: () => num(r) + " " + times() + " ? = " + num(ps[2]) }];
+    const table = (q, st, print) => {
+      const tb = el("table", "mg"); tb.setAttribute("aria-label", t("ctGridAria"));
+      const head = el("tr"), body = el("tr");
+      head.appendChild(el("th", "corner", times()));
+      body.appendChild(el("th", "", num(r)));
+      // The box of the question on show has the accent line; a box answered before shows its number; the other one waits.
+      const cell = (tag, me, value, done) => {
+        const c = el(tag, "");
+        if (q === me) { c.classList.add("ask"); fillAsk(c, q, st); }
+        else if (!print && st && done) { c.textContent = num(value); c.classList.add("ok"); }
+        else c.classList.add("todo");
+        return c;
+      };
+      cols.forEach((c, i) => {
+        head.appendChild(i === 2 ? cell("th", qs[1], c, st && st.done.f) : el("th", "", num(c)));
+        body.appendChild(i === 0 ? cell("td", qs[0], ps[0], st && st.done.p) : el("td", "", num(ps[i])));
+      });
+      tb.append(head, body);
+      return tb;
+    };
+    return { slot: 11, qs, draw: (box, q, st) => box.appendChild(table(q, st)), sheet: (box) => box.appendChild(table(null, null, true)), answers: () => num(ps[0]) + ", " + num(cols[2]) };
+  }
+  const SPLITS = { 3: [1, 2], 6: [5, 1], 7: [5, 2], 8: [5, 3], 9: [5, 4] };
+  function easyTask(a, b) {
+    const [s1, s2] = SPLITS[a], x = times(), steps = [[s1, x, b, s1 * b], [s2, x, b, s2 * b], [a, x, b, a * b]];
+    const vars = { s1: num(s1), s2: num(s2), b: num(b), a: num(a), p1: num(s1 * b), p2: num(s2 * b), p: num(a * b) };
+    const qs = [1, 2].map(i => ({ note: "ct:12:" + a + ":" + b + ":" + (i - 1), kind: "tg-split", pts: 1, mode: "pad", answer: steps[i][3], ask: () => t("ctAskEasy", vars), sub: () => t("ctSubEasy"), why: () => t("ctWhyEasy", vars), log: () => num(steps[i][0]) + " " + x + " " + num(b), i }));
+    return { slot: 12, qs, draw: (box, q, st) => { const ol = stepsList(steps, q.i, q, st); if (q.i === 2 && st.done[0]) ol.children[1].lastChild.classList.add("ok"); box.appendChild(ol); },
+      sheet: (box) => { const f = el("div", "fill"); steps.forEach((s, i) => { if (i) f.appendChild(document.createElement("br")); f.appendChild(document.createTextNode(num(s[0]) + " " + x + " " + num(b) + " = ")); f.appendChild(i ? el("i", "") : document.createTextNode(num(s[3]))); }); box.appendChild(f); },
+      answers: () => stepsText(steps, "ctComma") };
+  }
+  function line(box, label) { const l = el("span", "line", label); l.appendChild(el("i", "ws-line")); box.appendChild(l); }
+
+  // One fresh task per slot.
+  const MAKE = {
+    1: () => clockTask(randInt(1, 12), randInt(0, 11) * 5),
+    2: () => picTask(10 * randInt(1, 9) + randInt(1, 9)),
+    3: () => { const a = 10 * randInt(1, 8) + randInt(2, 9), c = 10 - a % 10; return toTen(a, c + randInt(1, Math.min(9 - c, 8))); },
+    4: () => { const oa = randInt(1, 8), ob = randInt(1, 9 - oa), ta = randInt(1, 7); return place(10 * ta + oa, 10 * randInt(1, 9 - ta) + ob); },
+    5: () => { const tt = randInt(2, 9), o = randInt(2, 9); return giants(10 * tt + o, randInt(1, Math.min(tt, o))); },
+    6: () => help(10 * randInt(2, 9) + randInt(1, 9), pick([8, 9, 9, 11, 12])),
+    7: () => { const ta = randInt(3, 9), oa = randInt(1, 9); return subTens(10 * ta + oa, 10 * randInt(1, ta - 1) + randInt(1, oa)); },
+    8: () => { let a, b; do { a = 10 * randInt(1, 7) + randInt(1, 9); b = 10 * randInt(1, 7) + pick([7, 8, 9]); } while (a + b > 100); return wayTask(a, b, pick(WAYS)); },
+    9: () => { let p; do { p = []; const n = randInt(3, 5); for (let i = 0; i < n; i++) p.push(pick(PIECES)); p.sort((x, y) => y - x); } while (p.reduce((s, v) => s + v, 0) > 100); return moneyTask(p); },
+    10: () => { const i1 = randInt(0, 7); let i2; do { i2 = randInt(0, 7); } while (i2 === i1); const p1 = randInt(PRICES[i1][0], PRICES[i1][1]), p2 = randInt(PRICES[i2][0], PRICES[i2][1]); let m; do { m = p1 + p2 + randInt(-12, 15); } while (m < 5 || m > 100 || m === p1 + p2); return enoughTask(randInt(0, NAMES.length - 1), i1, p1, i2, p2, m); },
+    11: () => { const cols = shuffle([2, 3, 4, 5, 6, 7, 8, 9]).slice(0, 3); return gridTask(randInt(2, 9), cols); },
+    12: () => easyTask(pick([3, 6, 7, 8, 9]), randInt(2, 9))
+  };
+  // Try again: the task a note names, with that question first, or null when the note makes no sense.
+  function rebuild(r) {
+    const m = /^ct:(\d{1,2}):([\d,:a-z]{1,40})$/.exec(r);
+    if (!m) return null;
+    const slot = +m[1], s = m[2].split(":"), n = s.map(Number), two = (x) => x >= 10 && x <= 99;
+    let task = null;
+    if (slot === 1 && s.length === 2 && n[0] >= 1 && n[0] <= 12 && n[1] >= 0 && n[1] <= 55 && n[1] % 5 === 0) task = clockTask(n[0], n[1]);
+    if (slot === 2 && s.length === 1 && two(n[0]) && n[0] % 10) task = picTask(n[0]);
+    if (slot === 3 && s.length === 2 && two(n[0]) && n[0] % 10 && n[1] > 10 - n[0] % 10 && n[1] <= 9 && n[0] + n[1] <= 100) task = toTen(n[0], n[1]);
+    if (slot === 4 && s.length === 2 && two(n[0]) && two(n[1]) && n[0] % 10 && n[1] % 10 && n[0] % 10 + n[1] % 10 <= 9 && n[0] + n[1] < 100) task = place(n[0], n[1]);
+    if (slot === 5 && s.length === 3 && two(n[0]) && n[1] >= 1 && n[1] <= Math.min(Math.floor(n[0] / 10), n[0] % 10) && /^[ot]$/.test(s[2])) task = giants(n[0], n[1]);
+    if (slot === 6 && s.length === 2 && two(n[0]) && n[0] >= 20 && [8, 9, 11, 12].includes(n[1]) && n[0] - n[1] >= 1) task = help(n[0], n[1]);
+    if (slot === 7 && s.length === 2 && two(n[0]) && two(n[1]) && n[1] % 10 && n[1] % 10 <= n[0] % 10 && n[0] - n[1] >= 1) task = subTens(n[0], n[1]);
+    if (slot === 8 && s.length === 4 && two(n[0]) && two(n[1]) && n[0] % 10 && n[1] % 10 >= 7 && n[0] + n[1] <= 100 && WAYS.includes(s[2]) && /^[nw]$/.test(s[3])) task = wayTask(n[0], n[1], s[2]);
+    if (slot === 9 && s.length === 1) { const p = s[0].split(",").map(Number); if (p.length >= 2 && p.length <= 6 && p.every(v => PIECES.includes(v)) && p.reduce((a, v) => a + v, 0) <= 100) task = moneyTask(p); }
+    if (slot === 10 && s.length === 6 && n[0] >= 0 && n[0] < NAMES.length && n[1] >= 0 && n[1] <= 7 && n[3] >= 0 && n[3] <= 7 && n[1] !== n[3] && n[2] >= 1 && n[2] <= 100 && n[4] >= 1 && n[4] <= 100 && n[5] >= 1 && n[5] <= 100) task = enoughTask(n[0], n[1], n[2], n[3], n[4], n[5]);
+    if (slot === 11 && s.length === 3 && n[0] >= 2 && n[0] <= 9 && /^[pf]$/.test(s[2])) { const c = s[1].split(",").map(Number); if (c.length === 3 && c.every(v => v >= 2 && v <= 9) && new Set(c).size === 3) task = gridTask(n[0], c); }
+    if (slot === 12 && s.length === 3 && SPLITS[n[0]] && n[1] >= 2 && n[1] <= 9 && /^[01]$/.test(s[2])) task = easyTask(n[0], n[1]);
+    if (!task) return null;
+    const i = task.qs.findIndex(q => q.note === r);
+    if (i < 0) return null;
+    task.qs = task.qs.slice(i).concat(task.qs.slice(0, i));
+    task.qs[0].again = true;
+    task.again = true;
+    return task;
+  }
+
+  function strip() {
+    stripEl.textContent = "";
+    tasks.forEach((tk, i) => {
+      const it = document.createElement("i"), rs = results.filter(x => x.task === tk);
+      if (rs.length === tk.qs.length) it.className = rs.every(x => x.ok) ? "good" : rs.some(x => x.ok) ? "half" : "bad";
+      else if (set[index] && set[index].task === tk) it.className = rs.length && !rs.every(x => x.ok) ? "bad" : "now";
+      else if (rs.length) it.className = rs.every(x => x.ok) ? "good" : "bad";
+      stripEl.appendChild(it);
+    });
+    stripEl.setAttribute("aria-label", t("ctStrip", { n: Math.min(taskIndex() + 1, 12) }));
+  }
+  const taskIndex = () => index < set.length ? tasks.indexOf(set[index].task) : 12;
+  const state = (q) => ({ typed, answered, ok: chosen === true, done: q.task.done || {} });
+
+  function show() {
+    const q = set[index], tk = q.task;
+    answered = false; typed = ""; chosen = null;
+    document.body.setAttribute("data-q", q.note);
+    card.className = "problem-card";
+    kindEl.textContent = t("ctT" + tk.slot) + " · " + (q.pts === 1 ? t("ctPts1") : t("ctPts", { n: num(q.pts) }));
+    whereEl.textContent = t(points === 1 ? "ctTaskOne" : "ctTask", { n: num(taskIndex() + 1), p: num(points) });
+    const parts = tk.qs.length > 1 ? t("ctPart", { n: num(tk.qs.indexOf(q) + 1), of: num(tk.qs.length) }) + " " : "";
+    qEl.textContent = q.ask();
+    const sub = parts + q.sub();
+    if (sub.trim()) qEl.appendChild(el("small", "", sub.trim()));
+    feedbackEl.className = "feedback"; feedbackEl.textContent = "";
+    choicesEl.className = "choices" + (q.two ? " two" : q.names ? " names" : "");
+    choicesEl.textContent = "";
+    if (q.mode === "pick") q.choices.forEach((c, i) => {
+      const b = document.createElement("button");
+      b.type = "button"; b.id = "c" + (i + 1); b.textContent = c.text; b.dataset.correct = String(c.ok); b.dataset.i = i;
+      b.addEventListener("click", () => choose(b));
+      choicesEl.appendChild(b);
+    });
+    render();
+    strip();
+    Loopy.speech.read();
+  }
+  function render() {
+    const q = set[index], pad = q.mode === "pad";
+    stage.textContent = "";
+    q.task.draw(stage, q, state(q));
+    padEl.hidden = !pad; pickEl.hidden = pad;
+    goBtn.textContent = t(answered ? "next" : "check");
+    goBtn.disabled = pad && !answered && typed === "";
+    nextBtn.disabled = !answered;
+    digitBtns.forEach(b => b.disabled = answered || !pad);
+    eraseBtn.disabled = answered || !pad || typed === "";
+    [...choicesEl.children].forEach(b => { b.disabled = answered; });
+  }
+  function press(d) { if (answered || set[index].mode !== "pad" || typed.length >= 3) return; if (typed === "0") typed = ""; typed += d; render(); }
+  function erase() { if (answered || set[index].mode !== "pad") return; typed = typed.slice(0, -1); render(); }
+  function finish(ok, mine) {
+    const q = set[index], tk = q.task;
+    answered = true; chosen = ok;
+    tk.done = tk.done || {}; tk.done[q.note.split(":").pop()] = ok ? "ok" : "fixed";
+    results.push({ task: tk, q, ok });
+    streak = ok ? streak + 1 : 0;
+    if (ok) points += q.pts;
+    if (q.again && Loopy.retry.hand) Loopy.retry.hand("class-test", q.note);
+    if (ok) Loopy.rewards.correct("class-test", streak, q.kind);
+    else Loopy.rewards.wrong("class-test", { q: t("ctT" + tk.slot) + ": " + q.log(), a: String(q.answer), y: mine, k: q.kind, r: q.note });
+    card.className = "problem-card " + (ok ? "good" : "bad");
+    feedbackEl.className = "feedback " + (ok ? "good" : "bad");
+    feedbackEl.innerHTML = "<strong></strong>";
+    feedbackEl.firstChild.textContent = ok ? (streak >= 3 ? t("correctRow", { n: streak }) : t("correct")) : (q.head ? q.head() : t("notQuite"));
+    feedbackEl.appendChild(document.createTextNode((ok || q.mode !== "pad" ? "" : t("ctAnswerIs", { a: num(q.answer) }) + " ") + q.why()));
+    whereEl.textContent = t(points === 1 ? "ctTaskOne" : "ctTask", { n: num(taskIndex() + 1), p: num(points) });
+    render();
+    [...choicesEl.children].forEach(b => { const c = q.choices ? q.choices[+b.dataset.i] : null; b.className = c ? (c.ok ? "right" : b === chosenBtn ? "wrong" : "faded") : ""; });
+    strip();
+    if (q.mode !== "pad") nextBtn.focus({ preventScroll: true });
+  }
+  function choose(btn) {
+    if (answered || btn.disabled) return;
+    chosenBtn = btn;
+    finish(btn.dataset.correct === "true", btn.textContent);
+  }
+  function check() {
+    if (answered || set[index].mode !== "pad" || typed === "") return;
+    const mine = parseInt(typed, 10);
+    finish(mine === set[index].answer, num(mine));
+  }
+  function go() {
+    if (!answered) return check();
+    index++;
+    if (index >= set.length) return done();
+    show();
+    const a = document.activeElement;
+    if (a && a !== document.body && (a.disabled || a.offsetParent === null)) (set[index].mode === "pad" ? digitBtns[0] : choicesEl.firstChild).focus({ preventScroll: true });
+  }
+
+  function done() {
+    $("play").hidden = true;
+    $("results").hidden = false;
+    index = set.length; strip();
+    const right = results.filter(r => r.ok).length, was = best();
+    $("res-score").textContent = "";
+    $("res-score").append(t("ctScore", { p: num(points) }), " ", el("small", "", t("ctPoints")));
+    $("res-stars").textContent = right === 1 ? t("ctStar") : t("ctStars", { n: num(right) });
+    if (points > was) { Loopy.store.set("ct.best", String(points)); $("res-best").textContent = t("ctNewBest", { p: num(points) }); }
+    else $("res-best").textContent = t("ctBest", { p: num(was) });
+    // One line of what to practise: the game behind the task with the most wrong answers.
+    const misses = {};
+    results.forEach(r => { if (!r.ok) misses[r.task.slot] = (misses[r.task.slot] || 0) + r.q.pts; });
+    const worst = Object.keys(misses).sort((a, b) => misses[b] - misses[a])[0];
+    const pr = $("res-practise");
+    pr.textContent = "";
+    if (!worst) pr.textContent = t("ctPerfect");
+    else {
+      const [before, after] = t("ctPractise").split("{game}");
+      const a = document.createElement("a");
+      a.href = GAME[worst]; a.textContent = t(GNAME[worst]);
+      pr.append(before, a, after);
+    }
+    $("again").focus({ preventScroll: true });
+    if (points >= 16) { Loopy.sound.play("cheer"); Loopy.rewards.confetti(90); }
+  }
+
+  // A fresh test: twelve fresh tasks, with any task from Try again put back in its place (opened from the Try
+  // again card, those come first).
+  function start() {
+    const fromCard = Loopy.retry.opened ? Loopy.retry.opened() : false;
+    tasks = []; for (let s = 1; s <= 12; s++) tasks.push(MAKE[s]());
+    const back = []; // the mistakes to replay, newest first
+    (Loopy.retry.list("class-test") || []).forEach(p => { if (back.length >= 12) return; let tk = null; try { tk = rebuild(p.r); } catch (e) { tk = null; } if (tk && !back.some(b => b.slot === tk.slot)) { back.push(tk); tasks[tk.slot - 1] = tk; } });
+    if (fromCard && back.length) tasks = back.concat(tasks.filter(tk => !tk.again));
+    set = []; tasks.forEach(tk => { tk.done = {}; tk.qs.forEach(q => { q.task = tk; set.push(q); }); });
+    index = 0; streak = 0; results = []; points = 0;
+    $("play").hidden = false;
+    $("results").hidden = true;
+    show();
+  }
+  function printTest() { Loopy.load("sheet").then(() => { Loopy.sheet.fill(); window.print(); }, () => {}); }
+
+  digitBtns.forEach(b => b.addEventListener("click", () => press(b.dataset.d)));
+  eraseBtn.addEventListener("click", erase);
+  goBtn.addEventListener("click", go);
+  nextBtn.addEventListener("click", () => { if (answered) go(); });
+  $("again").addEventListener("click", start);
+  $("restart").addEventListener("click", start);
+  $("print-test").addEventListener("click", printTest);
+  $("print-again").addEventListener("click", printTest);
+  window.addEventListener("loopy:age", start);
+  document.addEventListener("keydown", (e) => {
+    if (e.metaKey || e.ctrlKey || e.altKey || e.target.tagName === "INPUT" || document.querySelector(".loopy-cheer.big") || index >= set.length) return;
+    const q = set[index];
+    if (e.key >= "0" && e.key <= "9") { if (q.mode === "pad") press(e.key); else if (e.key >= "1" && e.key <= "4" && choicesEl.children[+e.key - 1]) choose(choicesEl.children[+e.key - 1]); }
+    else if (e.key === "Backspace") erase();
+    else if (e.key === "Enter" && e.target.tagName !== "BUTTON") { go(); e.preventDefault(); }
+  });
+
+  // Read aloud: the task, what is on the card and the question.
+  Loopy.speech.question({ host: card, text: () => { const q = set[index]; return q ? t("ctT" + q.task.slot) + ". " + (q.task.slot === 10 ? q.log() + " " : "") + q.ask() + " " + q.sub() : ""; } });
+
+  // Print the test: the same 12 tasks, 4 across, with the points. Page 2 has the answers.
+  Loopy.worksheet({
+    quiet: true,
+    title: () => t("ctName"), level: () => t("ctLevel"), how: () => t("ctHow"), layout: "clock",
+    make: () => tasks.slice(),
+    cell: (tk) => {
+      const box = el("div", "ws-ct");
+      const head = el("div", "nm", t("ctT" + tk.slot));
+      const pts = tk.qs.reduce((s, q) => s + q.pts, 0);
+      head.appendChild(el("span", "pts", " · " + (pts === 1 ? t("ctPts1") : t("ctPts", { n: num(pts) }))));
+      box.appendChild(head);
+      tk.sheet(box);
+      return box;
+    },
+    answer: (tk) => tk.answers()
+  });
+
+  start();
+})();
+</script>
+</body>
+</html>

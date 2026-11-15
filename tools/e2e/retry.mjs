@@ -24,8 +24,9 @@ const { chromium } = require("playwright-core");
 const GAMES = [], ONLY = process.env.GAME || "";
 for (const subject of fs.readdirSync(ROOT).sort()) {
   const dir = path.join(ROOT, subject);
-  if (!fs.statSync(dir).isDirectory() || /^[._]|^(docs|fonts|tools|src|help|progress|node_modules|mix|guide-src)$/.test(subject)) continue;
+  if (!fs.statSync(dir).isDirectory() || /^[._]|^(docs|fonts|tools|src|help|progress|node_modules|guide-src)$/.test(subject)) continue;
   for (const game of fs.readdirSync(dir).sort()) {
+    if (game === "daily-mix") continue; // Today's 10 hands its mistakes to the games they come from; Class Test replays its own
     const file = path.join(dir, game, "index.html");
     if (`${subject}/${game}/`.includes(ONLY) && fs.existsSync(file) && !/http-equiv="refresh"|location\.replace/.test(fs.readFileSync(file, "utf8"))) GAMES.push(`${subject}/${game}/`);
   }
@@ -80,10 +81,11 @@ async function open(game, fail) {
 }
 
 const asked = p => p.evaluate(() => window.__questions.length);
-// Open the game again from the Try again card. (A hash alone does not reload the page, so reload after it.)
+// Open the game again from the Try again card. (A hash alone does not load the page again, and a reload would
+// drop it, because loopy.js takes #retry off the address as soon as it has read it. A new query makes a real load.)
+let opens = 0;
 async function openRetry(p, game) {
-  await p.goto(BASE + game + "#retry");
-  await p.reload();
+  await p.goto(BASE + game + "?e2e=" + (++opens) + "#retry");
   await p.waitForFunction(() => window.__questions.length > 0);
 }
 const lastAnswer = p => p.evaluate(() => Loopy.rewards.last());

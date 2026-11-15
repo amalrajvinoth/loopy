@@ -8,6 +8,10 @@ loopy bekommt immer wieder neue Spiele. Das ist zuletzt dazugekommen!
 
 Die großen Änderungen, die neuesten zuerst. Kleine Korrekturen stehen nicht dabei. Die [ganze Liste steht auf GitHub](https://github.com/amalrajvinoth/loopy/blob/main/RELEASES.md) (auf Englisch).
 
+## 8. November 2026
+
+- **Neues Spiel: Klassenarbeit.** Die 12 Aufgaben der Mathearbeit der 3. Klasse in der Reihenfolge des Blattes, mit Punkten von 20: Uhr, Striche und Punkte, Rechnen in Schritten, welcher Weg, Geld, Malkreuz. Dieselbe Arbeit zum Drucken für den Bleistift. [So wird gespielt](/loopy/guide/de/games/math/class-test/).
+
 ## 7. November 2026
 
 - **Neues Spiel: Welcher Weg?** 23 + 29 mit Zehner zuerst, Fast rund oder Stellenweise, die drei Wege aus der Klassenarbeit der 3. Klasse, für 7 bis 10 Jahre. Nenn den Weg an seinen Schritten, wähl den Grund, der passt, find den wahren Satz über die Aufgabe und füll die Schritte aus. [So wird gespielt](/loopy/guide/de/games/math/which-way/).

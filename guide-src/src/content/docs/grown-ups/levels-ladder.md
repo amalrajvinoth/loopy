@@ -48,6 +48,7 @@ From the first step to the last. Today's 10 has no levels.
 | Tens and Ones | 5 | Read to 20 → Read to 100 → Draw it → Giants and dwarfs → Hundreds too |
 | Is It Enough? | 5 | Count the notes → Notes and coins → Enough for one thing? → Two things → Three things |
 | Which Way? | 4 | Name the way → Say why → True or not → Fill the steps |
+| Class Test | none | One test, 20 points, the same tasks for every age |
 | Sound Spell | 3 | Starting sounds, 3 choices → Both sounds, 3 choices → Both sounds, 4 choices |
 | Word Match | 3 | 3 words → 4 words → 4, tricky |
 | Spell It | 5 | 3 letters → 4 letters → 5 letters → 6 letters → 7 to 8 letters |

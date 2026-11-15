@@ -312,6 +312,10 @@ Is It Enough? shows three things as `chip` cards (emoji, price, name) with the 2
 
 Which Way? shows the way on show in a `card` box with the 2px `accent` line (the name in bold, the steps in `muted` under it); on the Name level the same box is quiet, `chip` with the `line` border, so the name is not given away. The Fill level lists the steps like Tens and Ones: each result a `chip` box with the 2px `line` border, the box being filled on `card` with the `accent` line, `good` or `bad` after the answer. The three answers are one column of `key` buttons in place of the number pad; names are big and centred, sentences wrap left aligned. The right one turns `good`, the one tapped `bad`, the rest fade.
 
+### The test strip
+
+Class Test keeps the look of Today's 10: the kind pill, one card, the answers under it. Instead of ten dots it has a strip of twelve bars in the card, one per task. A bar is `chip` for a task to come and the 2px `accent` line for the one on show. Once answered it is `good` or `bad`, or half and half when one part of a task was right and one wrong. The pictures inside the card come from the games the tasks belong to: the clock, lines and dots, step boxes, the way card, notes and coins, the grid. They keep the same colours and lines.
+
 ### Calendar pictures
 
 Calendar and Dates draws the week, a month grid or the twelve months. The boxes are `chip` with `ink` text. The day or month in the question is `accent` with `on-accent` text. No other colour. The grid is a table with the short day names on top, 3px apart, so the picture reads like a wall calendar.

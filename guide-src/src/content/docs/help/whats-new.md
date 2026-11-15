@@ -8,6 +8,10 @@ loopy keeps getting new games. Here is what came lately!
 
 The big changes, newest first. Small fixes are not listed. See [the full list on GitHub](https://github.com/amalrajvinoth/loopy/blob/main/RELEASES.md).
 
+## 8 November 2026
+
+- **New game: Class Test.** The 12 tasks of the grade 3 maths test in the paper's order, with points out of 20. Clock, lines and dots, sums in steps, which way, money, times table grid. Print the same test for a pencil. [How to play](/loopy/guide/games/math/class-test/).
+
 ## 7 November 2026
 
 - **New game: Which Way?** 23 + 29 with Tens first, Nearly round or Place by place, the three ways from the grade 3 test, for ages 7 to 10. Name the way from its steps, pick the reason that fits, spot the true sentence about the sum, and fill in the steps. [How to play](/loopy/guide/games/math/which-way/).
