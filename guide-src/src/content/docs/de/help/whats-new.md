@@ -8,6 +8,10 @@ loopy bekommt immer wieder neue Spiele. Das ist zuletzt dazugekommen!
 
 Die großen Änderungen, die neuesten zuerst. Kleine Korrekturen stehen nicht dabei. Die [ganze Liste steht auf GitHub](https://github.com/amalrajvinoth/loopy/blob/main/RELEASES.md) (auf Englisch).
 
+## 15. November 2026
+
+- **Flaggen und Hauptstädte: keine Wiederholungen mehr.** Die Flaggen sind geordnet, von der bekanntesten zur unbekanntesten, und das Spiel geht die Liste durch: Jede Flagge kommt einmal dran, bevor eine wiederkommt, und das Spiel merkt sich das für jedes Kind, auch für das nächste Mal. Wenn dein Kind einmal durch alle Flaggen ist und die meisten richtig hatte, kommen die nächsten 4 dazu. [So wird gespielt](/loopy/guide/de/games/geography/flags-capitals/).
+
 ## 7. November 2026
 
 - **Neues Spiel: Welcher Weg?** 23 + 29 mit Zehner zuerst, Fast rund oder Stellenweise, die drei Wege aus der Klassenarbeit der 3. Klasse, für 7 bis 10 Jahre. Nenn den Weg an seinen Schritten, wähl den Grund, der passt, find den wahren Satz über die Aufgabe und füll die Schritte aus. [So wird gespielt](/loopy/guide/de/games/math/which-way/).

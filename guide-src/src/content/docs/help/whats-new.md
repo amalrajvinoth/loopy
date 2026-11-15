@@ -8,6 +8,10 @@ loopy keeps getting new games. Here is what came lately!
 
 The big changes, newest first. Small fixes are not listed. See [the full list on GitHub](https://github.com/amalrajvinoth/loopy/blob/main/RELEASES.md).
 
+## 15 November 2026
+
+- **Flags and Capitals: no more repeats.** The flags are in order from the best known to the least known, and the game walks that list: every flag comes once before any comes back, remembered for each child from one visit to the next. Once your child has been round every flag and got most right, the next 4 flags join in. [How to play](/loopy/guide/games/geography/flags-capitals/).
+
 ## 7 November 2026
 
 - **New game: Which Way?** 23 + 29 with Tens first, Nearly round or Place by place, the three ways from the grade 3 test, for ages 7 to 10. Name the way from its steps, pick the reason that fits, spot the true sentence about the sum, and fill in the steps. [How to play](/loopy/guide/games/math/which-way/).

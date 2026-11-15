@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'sha256-h6eFXkyjQN/1joWUldtuGZV4tnNAm9K23ryS9K/AbGg='; style-src 'self' 'sha256-z2P7kGW5Z05eCTjTZdYpc0vThTlOE9vmt97pVSvi2I4=' 'sha256-0X+W/Xc6cVdheyH9D1zLVaD+jBRekL1aj7dPgq8HXXY=' 'sha256-RT1053JU5UiKvjrCUFx1rlhdFLMmgtuFJ9T8jnMeawQ=' 'sha256-QRjW6h1eEBfjgiNc/xEO4v7H8wSe9pcIz3IeMZUvK+s='; img-src 'self' data:; font-src 'self'; connect-src 'self' https://loopy-sync.loopy-1e2.workers.dev; worker-src 'self'; object-src 'none'; base-uri 'none'; form-action 'none'; manifest-src 'self'; upgrade-insecure-requests">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'sha256-kGuZQmOt/3PUf+JthdkmdLH86Ibp8ZYjzNluQZi1n/c='; style-src 'self' 'sha256-z2P7kGW5Z05eCTjTZdYpc0vThTlOE9vmt97pVSvi2I4=' 'sha256-0X+W/Xc6cVdheyH9D1zLVaD+jBRekL1aj7dPgq8HXXY=' 'sha256-RT1053JU5UiKvjrCUFx1rlhdFLMmgtuFJ9T8jnMeawQ=' 'sha256-QRjW6h1eEBfjgiNc/xEO4v7H8wSe9pcIz3IeMZUvK+s='; img-src 'self' data:; font-src 'self'; connect-src 'self' https://loopy-sync.loopy-1e2.workers.dev; worker-src 'self'; object-src 'none'; base-uri 'none'; form-action 'none'; manifest-src 'self'; upgrade-insecure-requests">
 <meta name="referrer" content="strict-origin-when-cross-origin">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <style>:root{color-scheme:light;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}body{margin:0}[hidden]{display:none!important}</style>
@@ -355,13 +355,25 @@ function nameOf(f, lang) {
 const randInt = (n) => Math.floor(Math.random() * n);
 const pick = (arr) => arr[randInt(arr.length)];
 const shuffle = (arr) => arr.slice().sort(() => Math.random() - 0.5);
-// Younger children get the well-known flags only: up to age 8 in Europe, up to age 10 in the rest of the world.
-// A region with fewer than 8 well-known flags (Asia, Africa, the Americas) shows all its flags, so they do not keep coming back.
-const levelFor = (region, age) => age > (region === "eu" ? 8 : 10) ? 2
-  : FLAGS.filter(f => (region === "world" || f.region === region) && f.level === 1).length < 8 ? 2 : 1;
+// The flags in order of difficulty, best known first: the well-known flags (level 1) before the rest, and inside
+// a level the first flag of every part of the world before the second ones, so World mixes the continents.
+// Inside a part of the world the order is the order in data.js.
+const PARTS = ["eu", "am", "as", "af", "oc"];
+const ORDER = (() => {
+  const at = {};
+  FLAGS.forEach(f => { const g = f.region + f.level; at[g] = (at[g] || 0) + 1; f.rank = f.level * 1000 + at[g] * 10 + PARTS.indexOf(f.region); });
+  return FLAGS.slice().sort((a, b) => a.rank - b.rank);
+})();
+const inRegion = (f, region) => region === "world" || f.region === region;
+// Younger children start with the well-known flags only: up to age 8 in Europe, up to age 10 in the rest of the world.
+const levelFor = (region, age) => age > (region === "eu" ? 8 : 10) ? 2 : 1;
+// The flags in play: the ones for the age, plus the next few of the list once the child has been round them all
+// (walk.more, see the walk below). Ordered from the best known to the least known.
+let moreFor = () => 0;
 function poolFor(region, age) {
-  const lv = levelFor(region, age);
-  return FLAGS.filter(f => (region === "world" || f.region === region) && f.level <= lv);
+  const lv = levelFor(region, age), base = ORDER.filter(f => inRegion(f, region) && f.level <= lv);
+  const rest = ORDER.filter(f => inRegion(f, region) && f.level > lv);
+  return base.concat(rest.slice(0, moreFor(region)));
 }
 // Flags that are easy to mix up are never offered as each other's wrong answer.
 const LOOKALIKE = { NLD: "LUX", LUX: "NLD" };
@@ -375,10 +387,16 @@ function others(f, region, age, need) {
   return near.concat(region === "world" ? far.concat(wider) : wider.concat(far)).slice(0, 3);
 }
 // One question: a flag, its four countries, and (when there is a capital) four capitals for the second step.
+// The flag is the next one in the walk: a flag never shown comes first, the best known of them, then the one
+// shown longest ago. One of the next three in line, so the order is not the same every time. avoid: the keys
+// not to use while something else is left (this visit's last few, or the flags already on a worksheet).
+// seenAt(code) says where a flag is in the walk's memory: -1 for never shown, higher for shown more lately.
+let seenAt = () => -1;
 function makeProblem(region, age, avoid) {
-  const list = poolFor(region, age);
-  let f = pick(list);
-  for (let tries = 0; tries < 40 && avoid && avoid.includes(f.code); tries++) f = pick(list);
+  const all = poolFor(region, age), open = all.filter(f => !(avoid || []).includes(f.code));
+  const list = open.length ? open : all;
+  const unseen = list.filter(f => seenAt(f.code) < 0), line = unseen.length ? unseen : list.slice().sort((a, b) => seenAt(a.code) - seenAt(b.code));
+  const f = pick(line.slice(0, 3));
   return { f, key: f.code, options: shuffle([f, ...others(f, region, age)]), caps: f.en.cap ? shuffle([f, ...others(f, region, age, true)]) : null };
 }
 
@@ -467,6 +485,44 @@ function drawFlag(svg, f) {
   let right = 0, tried = 0, streak = 0;
   let current = null, step = "flag", answered = false, recent = [];
 
+  // The walk: which flags were shown, oldest first, and how far past the age's flags each region has grown.
+  // Kept per child for the next visit too, so the flags go round and the same ones do not come back every time.
+  // Saved as { s: "DEU.FRA.ITA", m: { eu: [more, since] } }: more flags are in play in that region, since questions
+  // asked since they joined. Not in stars codes, to keep them short: on a new device the walk starts again.
+  const WALK_KEY = "fc-walk", SEEN = 80, GROW = 4, ENOUGH = 10, GOOD = 0.7;
+  const walk = { s: [], m: {} };
+  try {
+    const v = JSON.parse(Loopy.store.get(WALK_KEY));
+    if (typeof v.s === "string" && v.s.length < 400) v.s.split(".").forEach(c => { if (byCode[c] && !walk.s.includes(c)) walk.s.push(c); });
+    if (v.m && typeof v.m === "object") REGIONS.forEach(r => {
+      const a = v.m[r];
+      if (Array.isArray(a) && Number.isInteger(a[0]) && Number.isInteger(a[1]) && a[0] >= 0 && a[0] <= FLAGS.length && a[1] >= 0 && a[1] <= 999) walk.m[r] = [a[0], a[1]];
+    });
+    walk.s = walk.s.slice(-SEEN);
+  } catch (e) { /* nothing saved yet, or not ours */ }
+  seenAt = (code) => walk.s.indexOf(code);
+  moreFor = (r) => (walk.m[r] || [0])[0];
+  const saveWalk = () => Loopy.store.set(WALK_KEY, JSON.stringify({ s: walk.s.join("."), m: walk.m }));
+  // After a question: it goes to the end of the memory. Once the child has been round every flag in play
+  // (as many questions as flags), and most of the last 20 answers were right, the next GROW flags of the
+  // list join in. A child who is still struggling goes round once more first.
+  function remember(code) {
+    const i = walk.s.indexOf(code);
+    if (i >= 0) walk.s.splice(i, 1);
+    walk.s.push(code);
+    while (walk.s.length > SEEN) walk.s.shift();
+    const m = walk.m[region] || (walk.m[region] = [0, 0]);
+    m[1]++;
+    const pool = poolFor(region, age), left = ORDER.filter(f => inRegion(f, region) && !pool.includes(f)).length;
+    if (m[1] >= pool.length && left) {
+      const r = Loopy.recent ? Loopy.recent.get("flags-capitals") : [];
+      const doingWell = r.length < ENOUGH || r.reduce((a, b) => a + b, 0) / r.length >= GOOD;
+      if (doingWell) m[0] += Math.min(GROW, left);
+      m[1] = 0;
+    }
+    saveWalk();
+  }
+
   const nameOfCode = (f) => f[lang].name;
   function render() {
     Loopy.levels.render();
@@ -512,7 +568,10 @@ function drawFlag(svg, f) {
   }
 
   function newRound() {
-    current = Loopy.retry.fresh("flags-capitals", recent, () => makeProblem(region, age), rebuild, 12);
+    // This visit's last few flags stay out while something else is left: at most 12, fewer in a small region.
+    const keep = Math.max(1, Math.min(12, poolFor(region, age).length - 1));
+    current = Loopy.retry.fresh("flags-capitals", recent, () => makeProblem(region, age, recent), rebuild, keep);
+    remember(current.key);
     step = current.step === "cap" ? "cap" : "flag";
     if (step === "cap") document.body.setAttribute("data-q", current.key + ".cap");
     drawFlag(flagEl, current.f);

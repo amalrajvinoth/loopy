@@ -3,6 +3,8 @@
    Edit this file, then run python3 tools/build.py so the offline copy learns about the change. */
 // Each flag: [code, region, level, English name, German name, English capital, German capital, drawing].
 // Level 1 is the well-known flags for younger children, level 2 the rest.
+// Inside a region and level the flags are listed from the best known to the least known. That order matters:
+// the game walks the list from the top, so a new flag that is easy goes high up, a hard one at the end.
 // Region "oc" (Australia and New Zealand) only comes up in World.
 // The drawing is on a 30 × 20 grid (20 × 20 after "w 20"). Steps are split by ";":
 //   h / v colors...      equal stripes, across or down
@@ -31,22 +33,22 @@ const FLAGS = [
   ["POL", "eu", 1, "Poland", "Polen", "Warsaw", "Warschau", "h W #dc143c"],
   ["DNK", "eu", 1, "Denmark", "Dänemark", "Copenhagen", "Kopenhagen", "r 0 0 30 20 R;r 9.7 0 3.2 20 W;r 0 8.57 30 2.86 W"],
   ["SWE", "eu", 1, "Sweden", "Schweden", "Stockholm", "Stockholm", "r 0 0 30 20 #006aa7;r 9.4 0 3.75 20 #fecc00;r 0 8 30 4 #fecc00"],
-  ["NOR", "eu", 2, "Norway", "Norwegen", "Oslo", "Oslo", NORDIC("#ba0c2f", "W", "#00205b")],
-  ["ISL", "eu", 2, "Iceland", "Island", "Reykjavík", "Reykjavík", NORDIC("#02529c", "W", "#dc1e35")],
-  ["FIN", "eu", 2, "Finland", "Finnland", "Helsinki", "Helsinki", "r 0 0 30 20 W;r 8.33 0 5 20 #002f6c;r 0 7.27 30 5.45 #002f6c"],
-  ["IRL", "eu", 2, "Ireland", "Irland", "Dublin", "Dublin", "v #169b62 W #ff883e"],
   ["PRT", "eu", 2, "Portugal", "Portugal", "Lisbon", "Lissabon", "r 0 0 30 20 #da291c;r 0 0 12 20 #046a38;c 12 10 4.4 #ffe900;c 12 10 3.5 #da291c;r 10.5 7.6 3 3.9 W;c 12 9.1 0.55 #002f6c;c 12 10.5 0.55 #002f6c"],
   ["GRC", "eu", 2, "Greece", "Griechenland", "Athens", "Athen", "h #0d5eaf W #0d5eaf W #0d5eaf W #0d5eaf W #0d5eaf;r 0 0 11.11 11.11 #0d5eaf;r 4.44 0 2.22 11.11 W;r 0 4.44 11.11 2.22 W"],
   ["TUR", "eu", 2, "Turkey", "Türkei", "Ankara", "Ankara", "r 0 0 30 20 #e30a17;c 10.6 10 5 W;c 11.85 10 4 #e30a17;s 16.4 10 2.5 W -90"],
-  ["UKR", "eu", 2, "Ukraine", "Ukraine", "Kyiv", "Kiew", "h #0057b7 #ffd700"],
+  ["NOR", "eu", 2, "Norway", "Norwegen", "Oslo", "Oslo", NORDIC("#ba0c2f", "W", "#00205b")],
   ["CZE", "eu", 2, "Czechia", "Tschechien", "Prague", "Prag", "h W #d7141a;p 0,0 15,10 0,20 #11457e"],
+  ["IRL", "eu", 2, "Ireland", "Irland", "Dublin", "Dublin", "v #169b62 W #ff883e"],
+  ["FIN", "eu", 2, "Finland", "Finnland", "Helsinki", "Helsinki", "r 0 0 30 20 W;r 8.33 0 5 20 #002f6c;r 0 7.27 30 5.45 #002f6c"],
+  ["UKR", "eu", 2, "Ukraine", "Ukraine", "Kyiv", "Kiew", "h #0057b7 #ffd700"],
   ["HUN", "eu", 2, "Hungary", "Ungarn", "Budapest", "Budapest", "h #ce2939 W #477050"],
+  ["ISL", "eu", 2, "Iceland", "Island", "Reykjavík", "Reykjavík", NORDIC("#02529c", "W", "#dc1e35")],
   ["ROU", "eu", 2, "Romania", "Rumänien", "Bucharest", "Bukarest", "v #002b7f #fcd116 #ce1126"],
   ["BGR", "eu", 2, "Bulgaria", "Bulgarien", "Sofia", "Sofia", "h W #00966e #d62612"],
+  ["LUX", "eu", 2, "Luxembourg", "Luxemburg", "Luxembourg", "Luxemburg", "h #ed2939 W #00a1de"],
   ["EST", "eu", 2, "Estonia", "Estland", "Tallinn", "Tallinn", "h #0072ce K W"],
   ["LVA", "eu", 2, "Latvia", "Lettland", "Riga", "Riga", "r 0 0 30 20 #9e3039;r 0 8 30 4 W"],
   ["LTU", "eu", 2, "Lithuania", "Litauen", "Vilnius", "Vilnius", "h #fdb913 #006a44 #c1272d"],
-  ["LUX", "eu", 2, "Luxembourg", "Luxemburg", "Luxembourg", "Luxemburg", "h #ed2939 W #00a1de"],
   ["MKD", "eu", 2, "North Macedonia", "Nordmazedonien", "Skopje", "Skopje", "r 0 0 30 20 #d20000;" + MK_RAY + ";c 15 10 3.7 #d20000;c 15 10 3 #ffe600"],
   ["USA", "am", 1, "United States", "Vereinigte Staaten", "Washington, D.C.", "Washington, D.C.", "h #b22234 W #b22234 W #b22234 W #b22234 W #b22234 W #b22234 W #b22234;r 0 0 12 10.77 #3c3b6e;g 1 0.95 2 2.2 6 5 0.42 W;g 2 2.05 2 2.2 5 4 0.42 W"],
   ["CAN", "am", 1, "Canada", "Kanada", "Ottawa", "Ottawa", "r 0 0 30 20 W;r 0 0 7.5 20 #d80621;r 22.5 0 7.5 20 #d80621;p " + LEAF + " #d80621"],

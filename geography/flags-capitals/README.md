@@ -21,11 +21,23 @@ A flag game. A flag shows, and the child picks its country from 4 buttons. Older
 | 11 to 12 | All 66 flags of the world |
 | 13 and up | The world, with the capital question after each flag |
 
-Up to age 10, Asia, Africa and the Americas show all their flags, because they have only a few well-known ones.
-
 In World mode a small tag under the question says the part of the world, like "In Africa". The wrong answers come from the same part of the world when they can, so the choice is a real one.
 
 The level shows next to the score, like "Level 2 of 4". After 10 right in a row, or 18 of the last 20 right, the game goes up a level by itself. It says so, with a **Back a step** button. After 3 wrong in the last 5 it offers an easier one, once a visit. A level picked by hand in Settings is kept for that age. When the age goes up, a level the child reached is kept, never lost. The levels: flags of Europe, Europe with capitals, flags of the world, world with capitals.
+
+## Which flag comes next
+
+The flags are in order, from the best known to the least known. In `data.js` every part of the world lists its well-known flags first, then the rest, each from easy to hard. In World mode the first flag of every continent comes before the second ones, so the continents mix.
+
+The game walks that list from the top:
+
+- A flag the child has never seen comes first, the best known of them. Then the flag that was shown longest ago. So every flag in play comes once before any comes back.
+- It is one of the next three in line, picked at random, so the order is not the same every time.
+- The game remembers which flags it showed, for each child, and keeps that for the next visit. The same dozen flags do not come back every time the game is opened.
+- When the child has been round every flag in play, and most of the last 20 answers were right, the next 4 flags of the list join in. So the list grows with the child: an 8-year-old starts with 12 flags of Europe and, lap by lap, gets Portugal, Greece, Turkey and Norway, then Czechia, Ireland, Finland and Ukraine, and so on. A child who is still finding it hard goes round once more first.
+- A flag that was answered wrong still comes back in **Try again**, as in every game.
+
+What was shown is saved in the browser for each child (the key `fc-walk`), not in a stars code. On a new device the walk starts at the top again. **Reset score** does not clear it.
 
 ## Last 5
 
