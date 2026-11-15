@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'sha256-kGuZQmOt/3PUf+JthdkmdLH86Ibp8ZYjzNluQZi1n/c='; style-src 'self' 'sha256-z2P7kGW5Z05eCTjTZdYpc0vThTlOE9vmt97pVSvi2I4=' 'sha256-0X+W/Xc6cVdheyH9D1zLVaD+jBRekL1aj7dPgq8HXXY=' 'sha256-RT1053JU5UiKvjrCUFx1rlhdFLMmgtuFJ9T8jnMeawQ=' 'sha256-QRjW6h1eEBfjgiNc/xEO4v7H8wSe9pcIz3IeMZUvK+s='; img-src 'self' data:; font-src 'self'; connect-src 'self' https://loopy-sync.loopy-1e2.workers.dev; worker-src 'self'; object-src 'none'; base-uri 'none'; form-action 'none'; manifest-src 'self'; upgrade-insecure-requests">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'sha256-W0B4/zSjoUgG7HQdCmxpCTZL9B83jMm+aUoFUsQlb2s='; style-src 'self' 'sha256-z2P7kGW5Z05eCTjTZdYpc0vThTlOE9vmt97pVSvi2I4=' 'sha256-0X+W/Xc6cVdheyH9D1zLVaD+jBRekL1aj7dPgq8HXXY=' 'sha256-RT1053JU5UiKvjrCUFx1rlhdFLMmgtuFJ9T8jnMeawQ=' 'sha256-QRjW6h1eEBfjgiNc/xEO4v7H8wSe9pcIz3IeMZUvK+s='; img-src 'self' data:; font-src 'self'; connect-src 'self' https://loopy-sync.loopy-1e2.workers.dev; worker-src 'self'; object-src 'none'; base-uri 'none'; form-action 'none'; manifest-src 'self'; upgrade-insecure-requests">
 <meta name="referrer" content="strict-origin-when-cross-origin">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <style>:root{color-scheme:light;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}body{margin:0}[hidden]{display:none!important}</style>
@@ -343,9 +343,13 @@ const REGIONS = ["eu", "am", "as", "af", "world"];
 const byCode = {};
 FLAGS.forEach(f => { byCode[f.code] = f; });
 // English names that need "the" in a sentence, and German names in a sentence ("die Flagge der Schweiz").
-const EN_THE = ["GBR", "NLD", "USA", "PHL", "ARE"];
+const EN_THE = ["GBR", "NLD", "USA", "PHL", "ARE", "BHS", "DOM", "MDV", "MHL", "SLB", "COM", "SYC", "CAF", "COD", "COG", "GMB"];
 const DE_OF = { CHE: "der Schweiz", NLD: "der Niederlande", GBR: "des Vereinigten Königreichs", USA: "der Vereinigten Staaten",
-  TUR: "der Türkei", UKR: "der Ukraine", PHL: "der Philippinen", ARE: "der Vereinigten Arabischen Emirate" };
+  TUR: "der Türkei", UKR: "der Ukraine", PHL: "der Philippinen", ARE: "der Vereinigten Arabischen Emirate", SVK: "der Slowakei",
+  MNG: "der Mongolei", MDV: "der Malediven", SYC: "der Seychellen", COM: "der Komoren", BHS: "der Bahamas", DOM: "der Dominikanischen Republik",
+  CAF: "der Zentralafrikanischen Republik", COD: "der Demokratischen Republik Kongo", COG: "der Republik Kongo", CIV: "der Elfenbeinküste",
+  SLB: "der Salomonen", MHL: "der Marshallinseln", IRQ: "des Irak", IRN: "des Iran", LBN: "des Libanon", YEM: "des Jemen", SDN: "des Sudan",
+  SSD: "des Südsudan", TCD: "des Tschad", NER: "des Niger", VAT: "der Vatikanstadt", MDA: "der Republik Moldau" };
 // "of France" / "von Frankreich", for "the capital of ..." and "the flag of ...".
 function nameOf(f, lang) {
   if (lang === "de") return DE_OF[f.code] || "von " + f.de.name;
@@ -365,8 +369,9 @@ const ORDER = (() => {
   return FLAGS.slice().sort((a, b) => a.rank - b.rank);
 })();
 const inRegion = (f, region) => region === "world" || f.region === region;
-// Younger children start with the well-known flags only: up to age 8 in Europe, up to age 10 in the rest of the world.
-const levelFor = (region, age) => age > (region === "eu" ? 8 : 10) ? 2 : 1;
+// Younger children start with the well-known flags only (level 1): up to age 8 in Europe, up to age 10 in the rest of
+// the world. Then the flags most people know (level 2), and from age 13 every country (level 3).
+const levelFor = (region, age) => age > 12 ? 3 : age > (region === "eu" ? 8 : 10) ? 2 : 1;
 // The flags in play: the ones for the age, plus the next few of the list once the child has been round them all
 // (walk.more, see the walk below). Ordered from the best known to the least known.
 let moreFor = () => 0;
@@ -375,11 +380,13 @@ function poolFor(region, age) {
   const rest = ORDER.filter(f => inRegion(f, region) && f.level > lv);
   return base.concat(rest.slice(0, moreFor(region)));
 }
-// Flags that are easy to mix up are never offered as each other's wrong answer.
-const LOOKALIKE = { NLD: "LUX", LUX: "NLD" };
+// Flags that look the same, or nearly, are never offered as each other's wrong answer.
+const ALIKE = [["NLD", "LUX"], ["IDN", "MCO"], ["ROU", "TCD"], ["AUS", "NZL"], ["IRL", "CIV"], ["GIN", "MLI", "SEN"], ["HND", "SLV", "NIC"], ["SVK", "SVN"], ["NOR", "ISL"], ["QAT", "BHR"], ["AND", "MDA"]];
+const LOOKALIKE = {};
+ALIKE.forEach(g => g.forEach(c => { LOOKALIKE[c] = g.filter(o => o !== c); }));
 // Three wrong answers: from the same part of the world first, so the choice is a real one.
 function others(f, region, age, need) {
-  const ok = (o) => o !== f && o.code !== LOOKALIKE[f.code] && (!need || o.en.cap);
+  const ok = (o) => o !== f && !(LOOKALIKE[f.code] || []).includes(o.code) && (!need || o.en.cap);
   const pool = poolFor(region, age).filter(ok);
   const near = shuffle(pool.filter(o => o.region === f.region));
   const far = shuffle(pool.filter(o => o.region !== f.region));

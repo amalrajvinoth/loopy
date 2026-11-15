@@ -10,7 +10,7 @@ The big changes, newest first. Small fixes are not listed. See [the full list on
 
 ## 15 November 2026
 
-- **Flags and Capitals: no more repeats.** The flags are in order from the best known to the least known, and the game walks that list: every flag comes once before any comes back, remembered for each child from one visit to the next. Once your child has been round every flag and got most right, the next 4 flags join in. [How to play](/loopy/guide/games/geography/flags-capitals/).
+- **Flags and Capitals: every country in the world, and no more repeats.** 194 flags with their capitals now, up from 66. The flags are in order from the best known to the least known, and the game walks that list. Every flag comes once before any comes back, remembered for each child from one visit to the next. Once your child has been round every flag and got most right, the next 4 flags join in. [How to play](/loopy/guide/games/geography/flags-capitals/).
 
 ## 7 November 2026
 

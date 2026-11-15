@@ -10,7 +10,7 @@ Die großen Änderungen, die neuesten zuerst. Kleine Korrekturen stehen nicht da
 
 ## 15. November 2026
 
-- **Flaggen und Hauptstädte: keine Wiederholungen mehr.** Die Flaggen sind geordnet, von der bekanntesten zur unbekanntesten, und das Spiel geht die Liste durch: Jede Flagge kommt einmal dran, bevor eine wiederkommt, und das Spiel merkt sich das für jedes Kind, auch für das nächste Mal. Wenn dein Kind einmal durch alle Flaggen ist und die meisten richtig hatte, kommen die nächsten 4 dazu. [So wird gespielt](/loopy/guide/de/games/geography/flags-capitals/).
+- **Flaggen und Hauptstädte: jedes Land der Welt, und keine Wiederholungen mehr.** Jetzt 194 Flaggen mit ihren Hauptstädten, vorher 66. Die Flaggen sind geordnet, von der bekanntesten zur unbekanntesten, und das Spiel geht die Liste durch: Jede Flagge kommt einmal dran, bevor eine wiederkommt, und das Spiel merkt sich das für jedes Kind, auch für das nächste Mal. Wenn dein Kind einmal durch alle Flaggen ist und die meisten richtig hatte, kommen die nächsten 4 dazu. [So wird gespielt](/loopy/guide/de/games/geography/flags-capitals/).
 
 ## 7. November 2026
 
