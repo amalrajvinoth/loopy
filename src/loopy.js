@@ -37,7 +37,7 @@ document.documentElement.classList.add("loopy-building");
   Loopy.whole = function (n, max) { return typeof n === "number" && isFinite(n) && n >= 0 ? Math.min(Math.floor(n), max) : 0; };
   // Every game id, oldest first. Stars, the progress log, the last answers and backups keep only these.
   // A new game goes in here, the progress page list and the home page GAMES list.
-  Loopy.GAMES = ["plus-minus", "times-share", "clock", "sound-spell", "daily-mix", "make-10", "bigger-smaller", "pizza-fractions", "coins-change", "word-match", "spell-it", "quick-facts", "where-is-it", "equation-balance", "flags-capitals", "times-sprint", "percent-ratio", "sentence-builder", "sort-it", "graphs-data", "box-multiply", "step-by-step", "spelling-quiz", "shapes-angles", "word-detective", "word-trail", "my-words", "calendar-dates", "number-patterns", "word-forms", "read-answer", "times-grid", "tens-ones", "enough-money", "which-way"];
+  Loopy.GAMES = ["plus-minus", "times-share", "clock", "sound-spell", "daily-mix", "make-10", "bigger-smaller", "pizza-fractions", "coins-change", "word-match", "spell-it", "quick-facts", "where-is-it", "equation-balance", "flags-capitals", "times-sprint", "percent-ratio", "sentence-builder", "sort-it", "graphs-data", "box-multiply", "step-by-step", "spelling-quiz", "shapes-angles", "word-detective", "word-trail", "my-words", "calendar-dates", "number-patterns", "word-forms", "read-answer", "times-grid", "tens-ones", "enough-money", "which-way", "class-test"];
   Loopy.setLang = function (l) {
     if (LANGS.indexOf(l) === -1 || l === lang) return;
     try { localStorage.setItem(KEY, l); } catch (e) {}
@@ -1598,6 +1598,10 @@ document.documentElement.classList.add("loopy-building");
       document.body.setAttribute("data-q", q.key);
       return q;
     },
+    // A mix that builds its questions ahead (Class Test) asks once whether it was opened from the Try again card,
+    // and names the note it is about to ask, so the answer that follows marks it (what fresh does for the other games).
+    opened: function () { var f = first; first = false; return f; },
+    hand: function (game, note) { handed = { g: game, r: note }; },
     // rewards.correct: the mistake handed out last was answered right (every row of that problem counts it).
     fixed: function (game) {
       if (handed && handed.g === game) {

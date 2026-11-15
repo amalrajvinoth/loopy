@@ -12,6 +12,10 @@ Die großen Änderungen, die neuesten zuerst. Kleine Korrekturen stehen nicht da
 
 - **Flaggen und Hauptstädte: jedes Land der Welt, und keine Wiederholungen mehr.** Jetzt 194 Flaggen mit ihren Hauptstädten, vorher 66. Die Flaggen sind geordnet, von der bekanntesten zur unbekanntesten, und das Spiel geht die Liste durch: Jede Flagge kommt einmal dran, bevor eine wiederkommt, und das Spiel merkt sich das für jedes Kind, auch für das nächste Mal. Wenn dein Kind einmal durch alle Flaggen ist und die meisten richtig hatte, kommen die nächsten 4 dazu. [So wird gespielt](/loopy/guide/de/games/geography/flags-capitals/).
 
+## 8. November 2026
+
+- **Neues Spiel: Klassenarbeit.** Die 12 Aufgaben der Mathearbeit der 3. Klasse in der Reihenfolge des Blattes, mit Punkten von 20: Uhr, Striche und Punkte, Rechnen in Schritten, welcher Weg, Geld, Malkreuz. Dieselbe Arbeit zum Drucken für den Bleistift. [So wird gespielt](/loopy/guide/de/games/math/class-test/).
+
 ## 7. November 2026
 
 - **Neues Spiel: Welcher Weg?** 23 + 29 mit Zehner zuerst, Fast rund oder Stellenweise, die drei Wege aus der Klassenarbeit der 3. Klasse, für 7 bis 10 Jahre. Nenn den Weg an seinen Schritten, wähl den Grund, der passt, find den wahren Satz über die Aufgabe und füll die Schritte aus. [So wird gespielt](/loopy/guide/de/games/math/which-way/).
