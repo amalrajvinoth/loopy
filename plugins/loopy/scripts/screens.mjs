@@ -1,4 +1,4 @@
-// Screenshots of loopy pages at the 5 DESIGN.md screen sizes, in English and German, and a check
+// Screenshots of loopy pages at the 8 DESIGN.md screen sizes, in English and German, and a check
 // that nothing scrolls. Used by the ship-pr skill and the screens agent for before/after pictures.
 //
 //   node plugins/loopy/scripts/screens.mjs [pages...] [--out DIR] [--root DIR] [--theme black|sunny|...]
@@ -28,7 +28,7 @@ const require = createRequire(path.join(process.env.A11Y_DEPS || path.join(REPO,
 const { chromium } = require("playwright-core");
 
 // The screen sizes in DESIGN.md "Screens". plugins/loopy/scripts/drift.py checks they still match.
-const SIZES = [[360, 640], [390, 844], [844, 390], [820, 1180], [1180, 820]];
+const SIZES = [[360, 640], [390, 844], [430, 932], [844, 390], [820, 1180], [1180, 820], [1280, 800], [1920, 1080]];
 const LANGS = ["en", "de"];
 
 function changedPages() {

@@ -37,7 +37,7 @@ The first three, the play test and the Try again test are the GitHub check: any 
 
 ## 3. UI against DESIGN.md
 
-Only when a page, `src/loopy.css` or `src/loopy.js` changed. Serve the site (`python3 -m http.server 8000`) and take Playwright screenshots of every changed page at the five sizes in DESIGN.md "Screens": 360 × 640, 390 × 844, 844 × 390, 820 × 1180, 1180 × 820. Look at them. Also check the Black theme and one light theme (Sunny), and German.
+Only when a page, `src/loopy.css` or `src/loopy.js` changed. Serve the site (`python3 -m http.server 8000`) and take Playwright screenshots of every changed page at the eight sizes in DESIGN.md "Screens": 360 × 640, 390 × 844, 430 × 932, 844 × 390, 820 × 1180, 1180 × 820, 1280 × 800, 1920 × 1080. Look at them. Also check the Black theme and one light theme (Sunny), and German.
 
 Check:
 

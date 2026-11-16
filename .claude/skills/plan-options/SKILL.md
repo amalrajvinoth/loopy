@@ -9,7 +9,7 @@ description: Make a plan with numbered options and a recommendation, then wait f
 
 The owner asks "Plan for X" or "Brain-storm: X" and then picks a number. Nothing is built until they pick.
 
-1. **Look first.** Read the code, docs and open issues or pull requests that touch X. If X is about the screen, take screenshots of how it looks today (in loopy: the 5 sizes in DESIGN.md "Screens", English and German). Note what other open work already covers, so the plan does not repeat it.
+1. **Look first.** Read the code, docs and open issues or pull requests that touch X. If X is about the screen, take screenshots of how it looks today (in loopy: the 8 sizes in DESIGN.md "Screens", English and German). Note what other open work already covers, so the plan does not repeat it.
 2. **Write the plan file.** In a project with a shared folder, save it as `<shared folder>/<short-topic>/README.md`; otherwise as `docs/plans/<short-topic>.md` on a branch. It has:
    - one line on the goal;
    - numbered options, each with what changes, what the owner will notice, and the cost or risk in one line;

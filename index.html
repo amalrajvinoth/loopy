@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'sha256-ahem7o6xawVdC6sES7M3q4EOjGLnWUCls/i5pus4J38='; style-src 'self' 'sha256-GQkq82ruWYni6/VWurzasLQGAySMrx8V32bOmwyppt0='; img-src 'self' data:; font-src 'self'; connect-src 'self' https://loopy-sync.loopy-1e2.workers.dev; worker-src 'self'; object-src 'none'; base-uri 'none'; form-action 'none'; manifest-src 'self'; upgrade-insecure-requests">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'sha256-ahem7o6xawVdC6sES7M3q4EOjGLnWUCls/i5pus4J38='; style-src 'self' 'sha256-V2qWF9sN9vZ68rFxF3/rhfE3VaoPM6+CMD6CnwmdOns='; img-src 'self' data:; font-src 'self'; connect-src 'self' https://loopy-sync.loopy-1e2.workers.dev; worker-src 'self'; object-src 'none'; base-uri 'none'; form-action 'none'; manifest-src 'self'; upgrade-insecure-requests">
 <meta name="referrer" content="strict-origin-when-cross-origin">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <link rel="icon" href="icon.svg" type="image/svg+xml">
@@ -34,7 +34,7 @@ body {
   padding-right: max(16px, env(safe-area-inset-right, 0px));
   padding-block: max(28px, env(safe-area-inset-top, 0px)) 40px;
 }
-.wrap { max-width: 760px; margin: 0 auto; display: flex; flex-direction: column; gap: 28px; }
+.wrap { max-width: var(--home-col, 760px); margin: 0 auto; display: flex; flex-direction: column; gap: 28px; }
 header { text-align: center; display: flex; flex-direction: column; gap: 10px; align-items: center; }
 h1 { margin: 0; line-height: 0; color: var(--ink); }
 .wordmark { display: block; height: clamp(5rem, 24vw, 8rem); width: auto; overflow: visible; }
@@ -83,6 +83,12 @@ h1 { margin: 0; line-height: 0; color: var(--ink); }
 }
 /* Tablets and computers have room for a short line about the game too: at most two lines, so every tile in a row stays the same height. */
 @media (min-width: 700px) { .quiz.game p { display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; } }
+/* desktop: the column is 1100px wide (loopy.css --home-col), so the tiles get a bigger picture and name. */
+@media (orientation: landscape) and (min-width: 1600px) {
+  .quiz.game .pic { font-size: 3.4rem; }
+  .quiz.game h3 { font-size: 1.7rem; }
+  .quiz.game p { font-size: 1rem; }
+}
 .go { margin-top: auto; align-self: flex-start; background: var(--tone); color: var(--card); font-family: var(--display); font-weight: 700; font-size: 1.2rem; padding: 6px 16px; border-radius: 999px; }
 /* Today's 10: one big button above the shelf. */
 .wrap .today { --tone: var(--c5); min-height: 0; }

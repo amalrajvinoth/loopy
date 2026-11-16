@@ -8,6 +8,10 @@ loopy keeps getting new games. Here is what came lately!
 
 The big changes, newest first. Small fixes are not listed. See [the full list on GitHub](https://github.com/amalrajvinoth/loopy/blob/main/RELEASES.md).
 
+## 16 November 2026
+
+- **The games fill the screen.** On a tablet, a laptop or a monitor the sum, the flag, the word and the keys now grow with the screen. Before, they stopped at phone size with empty bands at the sides. On phones the sum and the keys are a step bigger. First in Plus and Minus, Flags and Capitals and Word Match. The home page is wider on big screens too. The other games follow.
+
 ## 15 November 2026
 
 - **Flags and Capitals: every country in the world, and no more repeats.** 194 flags with their capitals now, up from 66. The flags are in order from the best known to the least known, and the game walks that list. Every flag comes once before any comes back, remembered for each child from one visit to the next. Once your child has been round every flag and got most right, the next 4 flags join in. [How to play](/loopy/guide/games/geography/flags-capitals/).
