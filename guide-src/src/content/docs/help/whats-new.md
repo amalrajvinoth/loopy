@@ -10,6 +10,7 @@ The big changes, newest first. Small fixes are not listed. See [the full list on
 
 ## 16 November 2026
 
+- **Word Detective and Read and Answer fill the screen.** In Word Detective the case counter and the "Guess the 5-letter word" line moved above the card. So the letter grid has the whole card, and its tiles are much bigger. In Read and Answer the text and the question grow to fill the card, up to double size. No more empty bands. [Word Detective](/loopy/guide/games/languages/word-detective/), [Read and Answer](/loopy/guide/games/languages/read-answer/).
 - **Word lists with a meaning.** In My Words and Spelling Quiz, give each word its meaning in the other language. Put it in a third column of the CSV file, or in brackets after the word, like "Biene (the bee)". It shows in small text under the word. With your own list, Spelling Quiz shows no bee any more, and a word missed before the list was loaded stays out of Try again. [My Words](/loopy/guide/games/languages/my-words/), [Spelling Quiz](/loopy/guide/games/languages/spelling-quiz/).
 - **The games fill the screen.** On a tablet, a laptop or a monitor the sum, the flag, the word and the keys now grow with the screen. Before, they stopped at phone size with empty bands at the sides. On phones the sum and the keys are a step bigger. In every game. The home page is wider on big screens too.
 
