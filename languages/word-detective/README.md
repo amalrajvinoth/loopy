@@ -47,7 +47,8 @@ Open them with the gear button.
 - Age, colors, sound effects and the display language (EN/DE) are shared with the other games.
 - **Print worksheet.** See below.
 - The keyboard works too: type the letters, Backspace erases, Enter checks and goes on. On the screen, the ⌫ key erases and the wide blue key checks.
-- Clues, grid and keyboard share one screen. When open clues need the room, the grid's tiles get a little smaller. On the smallest phones with all three clues open, the card scrolls instead of cutting rows off.
+- The case counter ("Case 1 of 5" with five dots) and the line "Guess the 5-letter word in 6 tries" sit above the card. The card holds only the grid, and the tiles grow to fill it: as big as the card's width and height allow, with small gaps. On a phone on its side, the counter sits above the keyboard.
+- Clues, grid and keyboard share one screen. When open clues need the room, the grid's tiles get smaller, so nothing is cut off.
 
 ## Print a worksheet
 

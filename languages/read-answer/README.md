@@ -56,7 +56,9 @@ Tap **Settings**, then **Print worksheet**. The print window opens. Print it, or
 
 ## On a small phone
 
-The text bubble is the biggest thing on the card. On the smallest phones a four-sentence text can be a line longer than the bubble. Then the bubble scrolls, and a soft shadow at its bottom edge says there is more. After the answer the text folds to three lines, so the right answer always shows.
+The text and the question grow to fill the card, up to double size. So a short text on a tablet or a monitor is big and easy to read. The game picks the biggest size that fits without scrolling. After the answer the feedback needs room, so the text may get a step smaller, never bigger.
+
+On the smallest phones a long text can still be longer than the card. Then the text gets a little smaller first. If it still does not fit, the bubble scrolls, and a soft shadow at its bottom edge says there is more. On phones under 700px tall the text folds to three lines after the answer, so the right answer always shows.
 
 ## Example help text
 

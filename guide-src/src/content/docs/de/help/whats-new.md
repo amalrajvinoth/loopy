@@ -10,6 +10,7 @@ Die großen Änderungen, die neuesten zuerst. Kleine Korrekturen stehen nicht da
 
 ## 16. November 2026
 
+- **Wortdetektiv und Lesen und Antworten füllen den Bildschirm.** Im Wortdetektiv stehen der Fall-Zähler und die Zeile „Rate das Wort mit 5 Buchstaben“ jetzt über der Karte. So hat das Buchstabengitter die ganze Karte, und die Kästchen sind viel größer. In Lesen und Antworten wachsen der Text und die Frage, bis sie die Karte füllen, bis zur doppelten Größe. Keine leeren Ränder mehr. [Wortdetektiv](/loopy/guide/de/games/languages/word-detective/), [Lesen und Antworten](/loopy/guide/de/games/languages/read-answer/).
 - **Wortlisten mit Bedeutung.** In Meine Wörter und im Rechtschreib-Quiz bekommt jedes Wort seine Bedeutung in der anderen Sprache: eine dritte Spalte in der CSV-Datei oder Klammern nach dem Wort, wie „Biene (the bee)“. Sie steht klein unter dem Wort. Mit eurer eigenen Liste zeigt das Rechtschreib-Quiz keine Biene mehr, und ein Wort, das vor dem Laden der Liste falsch war, bleibt aus Nochmal versuchen draußen. [Meine Wörter](/loopy/guide/de/games/languages/my-words/), [Rechtschreib-Quiz](/loopy/guide/de/games/languages/spelling-quiz/).
 - **Die Spiele füllen den Bildschirm.** Auf einem Tablet, Laptop oder Monitor wachsen die Aufgabe, die Flagge, das Wort und die Tasten jetzt mit dem Bildschirm. Vorher blieben sie so groß wie auf dem Handy, mit leeren Rändern an den Seiten. Auf dem Handy sind die Aufgabe und die Tasten eine Stufe größer. In jedem Spiel. Die Startseite ist auf großen Bildschirmen auch breiter.
 
