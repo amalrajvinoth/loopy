@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'sha256-ncsBUTEJEQIW3KrFL2LVOBxSO/HysXuVmFKwKk4OmJY='; style-src 'self' 'sha256-z2P7kGW5Z05eCTjTZdYpc0vThTlOE9vmt97pVSvi2I4=' 'sha256-oLQF3jnCxf/mhP8dw8TD8Q631n/SdgEZHa5Z9K9C5do=' 'sha256-RT1053JU5UiKvjrCUFx1rlhdFLMmgtuFJ9T8jnMeawQ=' 'sha256-3N/IdsJeBV6Mb4ersz3sK5utyM+lW+FtTxs67hWvzZA='; img-src 'self' data:; font-src 'self'; connect-src 'self' https://loopy-sync.loopy-1e2.workers.dev; worker-src 'self'; object-src 'none'; base-uri 'none'; form-action 'none'; manifest-src 'self'; upgrade-insecure-requests">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'sha256-ncsBUTEJEQIW3KrFL2LVOBxSO/HysXuVmFKwKk4OmJY='; style-src 'self' 'sha256-z2P7kGW5Z05eCTjTZdYpc0vThTlOE9vmt97pVSvi2I4=' 'sha256-dNCllvh8mMZZz8VE0PqNjXQp+ehfV0jAk8gL5UM0mEQ=' 'sha256-RT1053JU5UiKvjrCUFx1rlhdFLMmgtuFJ9T8jnMeawQ=' 'sha256-X+A3xLpH4qsx+BqKHoXofkoaenRZCtAQazhu0kEyShI='; img-src 'self' data:; font-src 'self'; connect-src 'self' https://loopy-sync.loopy-1e2.workers.dev; worker-src 'self'; object-src 'none'; base-uri 'none'; form-action 'none'; manifest-src 'self'; upgrade-insecure-requests">
 <meta name="referrer" content="strict-origin-when-cross-origin">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <style>:root{color-scheme:light;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}body{margin:0}[hidden]{display:none!important}</style>
@@ -117,7 +117,6 @@ button:focus-visible { outline: 3px solid var(--mark); outline-offset: 3px; }
 
 @media (max-width: 420px) {
   h1 { font-size: 1.35rem; }
-  .pad button { min-height: 64px; font-size: 1.8rem; }
   .seg button { font-size: 0.85rem; }
 }
 @media (prefers-reduced-motion: reduce) {
@@ -128,32 +127,24 @@ button:focus-visible { outline: 3px solid var(--mark); outline-offset: 3px; }
 <style>.home-link{display:inline-flex;align-items:center;min-height:40px;color:var(--muted);font-weight:600;text-decoration:none;font-size:0.95rem}.home-link:hover{color:var(--ink)}</style>
 <style>
 /* Phones and tablets: the game fills one screen; settings sit behind a button. */
-body { min-height: 100vh; min-height: 100dvh; padding-block: 12px 16px; }
-.wrap { gap: 12px; }
+body { min-height: 100vh; min-height: 100dvh; padding-block: var(--page-pad-top) var(--page-pad-bottom); }
+.wrap { gap: var(--row-gap); max-width: var(--col); }
 .game-bar { display: flex; align-items: center; justify-content: space-between; gap: 8px; }
 .bar-right { display: flex; align-items: center; gap: 8px; }
 .top { gap: 8px 12px; }
-.play { display: flex; flex-direction: column; gap: 12px; -webkit-user-select: none; user-select: none; }
-@media (min-width: 600px) and (orientation: portrait) { .wrap { max-width: 640px; } }
+.play { display: flex; flex-direction: column; gap: var(--play-gap); -webkit-user-select: none; user-select: none; }
 @media (orientation: landscape) and (min-width: 640px) {
-  .wrap { max-width: 1100px; }
-  .play { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; align-items: center; }
+  .play { display: grid; grid-template-columns: 1fr 1fr; gap: var(--play-gap); align-items: center; }
 }
 
-.problem-card { padding: 14px 14px 12px; gap: 8px; }
-.vert { font-size: clamp(2.4rem, min(15vw, 8.5vh), 5rem); font-size: clamp(2.4rem, min(15vw, 8.5dvh), 5rem); }
+.problem-card { padding: var(--card-pad) var(--card-pad) calc(var(--card-pad) - 2px); gap: 8px; }
+.vert { font-size: var(--big); }
 .feedback { min-height: 2.9em; font-size: 1.05rem; }
 .feedback strong { font-size: 1.3rem; }
 .pad { gap: 8px; }
-.pad button { min-height: clamp(50px, 8vh, 92px); min-height: clamp(50px, 8dvh, 92px); }
-@media (min-width: 600px) and (orientation: portrait) {
-  .vert { font-size: clamp(3rem, 10dvh, 7rem); }
-  .pad button { min-height: clamp(60px, 10dvh, 120px); font-size: 2.4rem; }
-}
+.pad button { min-height: var(--key-h); font-size: var(--key-font); }
 @media (orientation: landscape) and (min-width: 640px) {
   .problem-card { height: 100%; justify-content: center; }
-  .vert { font-size: clamp(2.2rem, min(7vw, 13dvh), 7rem); }
-  .pad button { min-height: clamp(44px, calc((100dvh - 150px) / 4.4), 130px); }
 }
 /* Short phones: keep long explanations from pushing the number pad off screen. */
 @media (max-height: 760px) and (orientation: portrait) {
@@ -203,10 +194,10 @@ body { min-height: 100vh; min-height: 100dvh; padding-block: 12px 16px; }
 .choices { display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; }
 /* Three answers: one column, so no answer looks bigger than the others. */
 .choices.three { grid-template-columns: 1fr; }
-.choices.three button { min-height: clamp(48px, 7dvh, 80px); }
+.choices.three button { min-height: calc(var(--ans-h) * 0.8); }
 .choices button {
-  font: inherit; font-size: clamp(1.1rem, min(5.2vw, 3.4dvh), 1.8rem); font-weight: 700; color: var(--ink); line-height: 1.2;
-  background: var(--key); border: 2px solid var(--line); border-radius: 18px; min-height: clamp(56px, 9dvh, 96px); padding: 6px 10px; cursor: pointer;
+  font: inherit; font-size: max(var(--ans-floor), clamp(1.1rem, min(5.2vw, 3.4dvh), 1.8rem)); font-weight: 700; color: var(--ink); line-height: 1.2;
+  background: var(--key); border: 2px solid var(--line); border-radius: 18px; min-height: var(--ans-h); padding: 6px 10px; cursor: pointer;
   overflow-wrap: anywhere; hyphens: auto;
   transition: transform .08s ease, border-color .15s ease; touch-action: manipulation; -webkit-tap-highlight-color: transparent;
 }
@@ -219,13 +210,9 @@ body { min-height: 100vh; min-height: 100dvh; padding-block: 12px 16px; }
 .next { font: inherit; font-size: 1.25rem; font-weight: 700; color: var(--accent-ink); background: var(--accent); border: 0; border-radius: 16px; min-height: clamp(52px, 7dvh, 72px); cursor: pointer; width: 100%; }
 .seg.four { grid-template-columns: repeat(4, 1fr); }
 .seg button { padding-inline: 4px; }
-@media (min-width: 600px) and (orientation: portrait) {
-  .choices button { min-height: clamp(64px, 10dvh, 120px); }
-}
 @media (orientation: landscape) and (min-width: 640px) {
   .problem-card { height: 100%; justify-content: center; }
   .side { height: 100%; justify-content: center; }
-  .choices button { min-height: clamp(52px, 14dvh, 130px); }
 }
 /* After the answer the picture gets smaller, so the question and the reason have room. */
 @media (max-height: 900px), (max-width: 599px) {
@@ -248,6 +235,8 @@ body { min-height: 100vh; min-height: 100dvh; padding-block: 12px 16px; }
   .ws-qf .ws-opts { display: flex; flex-wrap: wrap; gap: 0.2mm 3mm; font-size: 8.5pt; line-height: 1.2; color: #333; }
   .ws-qf .ws-opts span::before { content: "○ "; }
 }
+/* Laptops and monitors: the game's own picture and keys grow with the screen (loopy.css --card-zoom, --side-zoom; 1 elsewhere). */
+.problem-card > * { zoom: var(--card-zoom); }
 </style>
 <link rel="stylesheet" href="../../loopy.css">
 <script src="../../loopy.js"></script>

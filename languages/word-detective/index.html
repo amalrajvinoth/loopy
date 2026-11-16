@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'sha256-muBtFPXJejAbMB/IjRmVxz9V7e/jmBquMHnOY0gRCNA='; style-src 'self' 'sha256-z2P7kGW5Z05eCTjTZdYpc0vThTlOE9vmt97pVSvi2I4=' 'sha256-gOaHZtTYUZEGik3rTQj/3FhZi971yU8aKZnCcIZNZE4=' 'sha256-RT1053JU5UiKvjrCUFx1rlhdFLMmgtuFJ9T8jnMeawQ=' 'sha256-VwdFkmXywwCddjr8dSJCFTjWOSJFUEfkGSHoG9d5+WY='; img-src 'self' data:; font-src 'self'; connect-src 'self' https://loopy-sync.loopy-1e2.workers.dev; worker-src 'self'; object-src 'none'; base-uri 'none'; form-action 'none'; manifest-src 'self'; upgrade-insecure-requests">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'sha256-muBtFPXJejAbMB/IjRmVxz9V7e/jmBquMHnOY0gRCNA='; style-src 'self' 'sha256-z2P7kGW5Z05eCTjTZdYpc0vThTlOE9vmt97pVSvi2I4=' 'sha256-gOaHZtTYUZEGik3rTQj/3FhZi971yU8aKZnCcIZNZE4=' 'sha256-RT1053JU5UiKvjrCUFx1rlhdFLMmgtuFJ9T8jnMeawQ=' 'sha256-Tn55h0X4hzcIHSzcBUO5H8iqbJ411kKQILpsBZqn758='; img-src 'self' data:; font-src 'self'; connect-src 'self' https://loopy-sync.loopy-1e2.workers.dev; worker-src 'self'; object-src 'none'; base-uri 'none'; form-action 'none'; manifest-src 'self'; upgrade-insecure-requests">
 <meta name="referrer" content="strict-origin-when-cross-origin">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <style>:root{color-scheme:light;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}body{margin:0}[hidden]{display:none!important}</style>
@@ -98,16 +98,14 @@ button:focus-visible { outline: 3px solid var(--mark); outline-offset: 3px; }
 <style>.home-link{display:inline-flex;align-items:center;min-height:40px;color:var(--muted);font-weight:600;text-decoration:none;font-size:0.95rem}.home-link:hover{color:var(--ink)}</style>
 <style>
 /* Phones and tablets: the game fills one screen; settings sit behind a button. */
-body { min-height: 100vh; min-height: 100dvh; padding-block: 12px 16px; }
-.wrap { gap: 12px; }
+body { min-height: 100vh; min-height: 100dvh; padding-block: var(--page-pad-top) var(--page-pad-bottom); }
+.wrap { gap: var(--row-gap); max-width: var(--col); }
 .game-bar { display: flex; align-items: center; justify-content: space-between; gap: 8px; }
 .bar-right { display: flex; align-items: center; gap: 8px; }
 .top { gap: 8px 12px; }
-.play { display: flex; flex-direction: column; gap: 12px; -webkit-user-select: none; user-select: none; }
-@media (min-width: 600px) and (orientation: portrait) { .wrap { max-width: 640px; } }
+.play { display: flex; flex-direction: column; gap: var(--play-gap); -webkit-user-select: none; user-select: none; }
 @media (orientation: landscape) and (min-width: 640px) {
-  .wrap { max-width: 1100px; }
-  .play { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; align-items: center; }
+  .play { display: grid; grid-template-columns: 1fr 1fr; gap: var(--play-gap); align-items: center; }
 }
 
 .problem-card { padding: 12px 14px 12px; gap: 8px; }
@@ -232,6 +230,9 @@ body { min-height: 100vh; min-height: 100dvh; padding-block: 12px 16px; }
 /* Tablets: the grid grows with the card, like Word Trail's, so the card has no empty bands. */
 @media (min-width: 600px) and (orientation: portrait) { .grid { --cell: clamp(26px, 8.2dvh, 96px); } }
 @media (orientation: landscape) and (min-width: 1000px) { .grid { --cell: clamp(22px, 10dvh, 84px); } }
+@media (orientation: landscape) and (min-width: 1600px) { .grid { --cell: clamp(22px, 10dvh, 108px); } }
+/* Laptops and monitors: the game's own picture and keys grow with the screen (loopy.css --card-zoom, --side-zoom; 1 elsewhere). */
+.pad { zoom: var(--side-zoom); }
 </style>
 <link rel="stylesheet" href="../../loopy.css">
 <script src="../../loopy.js"></script>

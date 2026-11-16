@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'sha256-qVhWdpce7FECIg4no7jpgtvRkHo/h7BSRavzlo/eK5Y='; style-src 'self' 'sha256-z2P7kGW5Z05eCTjTZdYpc0vThTlOE9vmt97pVSvi2I4=' 'sha256-szyiiYBKHrhKNCfFtGjz4zCGjbtUD63U2D+oZo26JY0=' 'sha256-RT1053JU5UiKvjrCUFx1rlhdFLMmgtuFJ9T8jnMeawQ=' 'sha256-b5GpSAYzPo0TvtyRiu0B+YF9vZJz6rcal1rjiDmWQYs='; img-src 'self' data:; font-src 'self'; connect-src 'self' https://loopy-sync.loopy-1e2.workers.dev; worker-src 'self'; object-src 'none'; base-uri 'none'; form-action 'none'; manifest-src 'self'; upgrade-insecure-requests">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'sha256-qVhWdpce7FECIg4no7jpgtvRkHo/h7BSRavzlo/eK5Y='; style-src 'self' 'sha256-z2P7kGW5Z05eCTjTZdYpc0vThTlOE9vmt97pVSvi2I4=' 'sha256-WAsK0knhlLqoyTj8RZ9je0D1wn+/EQeznNkZljdYXiY=' 'sha256-RT1053JU5UiKvjrCUFx1rlhdFLMmgtuFJ9T8jnMeawQ=' 'sha256-8smLYDVjRSve2HxIGqWTD7wHDI54L/Tka7JwySYZMMk='; img-src 'self' data:; font-src 'self'; connect-src 'self' https://loopy-sync.loopy-1e2.workers.dev; worker-src 'self'; object-src 'none'; base-uri 'none'; form-action 'none'; manifest-src 'self'; upgrade-insecure-requests">
 <meta name="referrer" content="strict-origin-when-cross-origin">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <style>:root{color-scheme:light;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}body{margin:0}[hidden]{display:none!important}</style>
@@ -144,7 +144,6 @@ button:focus-visible { outline: 3px solid var(--mark); outline-offset: 3px; }
 
 @media (max-width: 420px) {
   h1 { font-size: 1.35rem; }
-  .pad button { min-height: 64px; font-size: 1.8rem; }
   .seg button { font-size: 0.85rem; }
 }
 @media (prefers-reduced-motion: reduce) {
@@ -155,34 +154,30 @@ button:focus-visible { outline: 3px solid var(--mark); outline-offset: 3px; }
 <style>.home-link{display:inline-flex;align-items:center;min-height:40px;color:var(--muted);font-weight:600;text-decoration:none;font-size:0.95rem}.home-link:hover{color:var(--ink)}</style>
 <style>
 /* Phones and tablets: the game fills one screen; settings sit behind a button. */
-body { min-height: 100vh; min-height: 100dvh; padding-block: 12px 16px; }
-.wrap { gap: 12px; }
+body { min-height: 100vh; min-height: 100dvh; padding-block: var(--page-pad-top) var(--page-pad-bottom); }
+.wrap { gap: var(--row-gap); max-width: var(--col); }
 .game-bar { display: flex; align-items: center; justify-content: space-between; gap: 8px; }
 .bar-right { display: flex; align-items: center; gap: 8px; }
 .top { gap: 8px 12px; }
-.play { display: flex; flex-direction: column; gap: 12px; -webkit-user-select: none; user-select: none; }
-@media (min-width: 600px) and (orientation: portrait) { .wrap { max-width: 640px; } }
+.play { display: flex; flex-direction: column; gap: var(--play-gap); -webkit-user-select: none; user-select: none; }
 @media (orientation: landscape) and (min-width: 640px) {
-  .wrap { max-width: 1100px; }
-  .play { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; align-items: center; }
+  .play { display: grid; grid-template-columns: 1fr 1fr; gap: var(--play-gap); align-items: center; }
 }
 
 .problem-card { padding: 12px 14px 10px; gap: clamp(6px, 1.4dvh, 12px); }
 .feedback { min-height: 2.4em; font-size: 1.02rem; }
 .feedback strong { font-size: 1.2rem; }
 .pad { gap: 8px; }
-.pad button { min-height: clamp(50px, 8vh, 92px); min-height: clamp(50px, 8dvh, 92px); }
+.pad button { min-height: var(--key-h); font-size: var(--key-font); }
 @media (min-width: 600px) and (orientation: portrait) {
   .sum { font-size: clamp(2.4rem, 5dvh, 3.4rem); }
   .steps { max-width: 440px; }
   .step { font-size: clamp(1.3rem, 3dvh, 2rem); }
   .box { height: clamp(48px, 6dvh, 72px); font-size: clamp(1.4rem, 3.2dvh, 2.1rem); }
   .nl { max-width: 420px; }
-  .pad button { min-height: clamp(60px, 10dvh, 120px); font-size: 2.4rem; }
 }
 @media (orientation: landscape) and (min-width: 640px) {
   .problem-card { height: 100%; justify-content: center; }
-  .pad button { min-height: clamp(44px, calc((100dvh - 150px) / 4.4), 130px); }
   .nl { height: clamp(44px, 14dvh, 96px); }
   .feedback { min-height: 1.5em; }
 }
@@ -222,6 +217,8 @@ body { min-height: 100vh; min-height: 100dvh; padding-block: 12px 16px; }
   .feedback { font-size: 0.9rem; line-height: 1.3; }
   .feedback strong { font-size: 1.05rem; }
 }
+/* Laptops and monitors: the game's own picture and keys grow with the screen (loopy.css --card-zoom, --side-zoom; 1 elsewhere). */
+.problem-card > * { zoom: var(--card-zoom); }
 </style>
 <link rel="stylesheet" href="../../loopy.css">
 <script src="../../loopy.js"></script>
