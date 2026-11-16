@@ -47,8 +47,8 @@ typography:
   subject-title:  { fontFamily: Fredoka, fontSize: 1.6rem, fontWeight: 700 }
   card-title:     { fontFamily: Fredoka, fontSize: 1.6rem, fontWeight: 700 }
   cheer-title:    { fontFamily: Fredoka, fontSize: 1.8rem }
-  problem-number: { fontFamily: Lexend, fontSize: "clamp(2.4rem, min(15vw, 8.5dvh), 5rem)", fontWeight: 600, numbers: tabular }
-  pad-key:        { fontFamily: Lexend, fontSize: 2rem, fontWeight: 700, numbers: tabular }
+  problem-number: { fontFamily: Lexend, fontSize: "var(--big): clamp(2.6rem, min(19vw, 11dvh), 5.5rem) on phones, up to 13rem on a monitor", fontWeight: 600, numbers: tabular }
+  pad-key:        { fontFamily: Lexend, fontSize: "var(--key-font): 2rem on phones (1.8rem under 420px), 2.8rem on a tablet, 3rem on a monitor", fontWeight: 700, numbers: tabular }
   label-caps:     { fontFamily: Lexend, fontSize: 0.8rem, fontWeight: 600, letterSpacing: 0.06em, case: uppercase }
   wordmark:       { fontFamily: Nunito, note: "outlined into logo.svg, not loaded as a font" }
 
@@ -71,13 +71,20 @@ spacing:
   xl: 20px
   xxl: 28px
   gutter: 16px
+  # Size classes (src/loopy.css :root variables; width picks the class, S is also short). Column width / row gap / card padding / big number max / pad key max.
+  S:       { width: "to 379px",     col: 520px,  gap: 8px,  card: 10px, big: 11dvh,  key: 9.5dvh }
+  M:       { width: "380 to 414px", col: 520px,  gap: 10px, card: 12px, big: 5.5rem, key: 100px }
+  XL:      { width: "415 to 599px", col: 520px,  gap: 10px, card: 12px, big: 5.5rem, key: 100px }
+  tab:     { width: "600 to 1199px", col: "760px portrait, 1160px landscape", gap: 14px, card: 14px, big: 9rem, key: "150px portrait, 170px landscape" }
+  wide:    { width: "1200 to 1599px, landscape", col: 1400px, gap: 24px, card: 16px, big: 11rem, key: 190px }
+  desktop: { width: "1600px and up, landscape",  col: 1600px, gap: 28px, card: 16px, big: 13rem, key: 210px }
 
 components:
   game-card:      { background: "{colors.card}", border: "3px solid {tone}", shadow: "0 6px 0 {tone}", rounded: "{rounded.card}", padding: 20px }
   go-pill:        { background: "{tone}", text: "{colors.card}", font: Fredoka 700, rounded: "{rounded.pill}", padding: 6px 16px }
-  pad-key:        { background: "{colors.key}", border: "2px solid {colors.line}", rounded: "{rounded.key}", minHeight: "clamp(50px, 8dvh, 92px)" }
+  pad-key:        { background: "{colors.key}", border: "2px solid {colors.line}", rounded: "{rounded.key}", minHeight: "var(--key-h): clamp(50px, 9.5dvh, 100px) on phones, up to 210px on a monitor" }
   pad-go:         { background: "{colors.c1}", text: "{colors.on-accent}", rounded: "{rounded.key}" }
-  answer-button:  { background: "{colors.card}", border: "2px solid {colors.line}", rounded: "{rounded.key}", font: Lexend 700 2.1rem }
+  answer-button:  { background: "{colors.card}", border: "2px solid {colors.line}", rounded: "{rounded.key}", font: "Lexend 700, var(--ans-font): 1.15rem to 2rem on phones, 2.3rem on a monitor", minHeight: "var(--ans-h): clamp(52px, 10dvh, 110px) on phones, up to 210px on a monitor" }
   problem-card:   { background: "{colors.card}", border: "1px solid {colors.line}", rounded: "{rounded.card}" }
   chip-pill:      { background: "{colors.chip}", rounded: "{rounded.pill}" }
   settings-toggle: { background: "{colors.chip}", rounded: "{rounded.pill}", minHeight: 44px, open: "{colors.c1}" }
@@ -207,7 +214,7 @@ The "loopy" bunny logo sits at the top of the home page. Its letters hop one aft
 - Each game is a tile: card background, 3px border and a solid `0 6px 0` shadow in the tile's tone color, radius 24px.
 - On the tile, centered: a big picture (one emoji), the Fredoka title in the tone color, and a small uppercase tag with the ages. The picture lets a child who cannot read yet find the game.
 - The tiles sit under subject headings, games that fit the child's age first. The others follow under **For older kids** (with a muted line "Games for ages 10 and up. Try them any time.") and, for a teenager, **For younger kids**. The heading says what the group is, so nobody reads it as a fifth subject.
-- Three tiles per row at every size. On phones (under 600px) the tile is compact: picture 2rem, title `clamp(0.85rem, 3.7vw, 1.45rem)` in ink (the tone color is not readable enough at that size; the border and shadow keep the tone), tag 0.62rem, padding 10px 6px 8px, so 16 games fit in about 2.4 phone screens. From 600px wide it is roomier: picture 2.8rem, tag 0.78rem, padding 14px 10px 12px. From 700px wide the tile also shows a short muted line about the game, cut after two lines, so the tiles in a row stay the same height.
+- Three tiles per row at every size. On phones (under 600px) the tile is compact: picture 2rem, title `clamp(0.85rem, 3.7vw, 1.45rem)` in ink (the tone color is not readable enough at that size; the border and shadow keep the tone), tag 0.62rem, padding 10px 6px 8px, so 16 games fit in about 2.4 phone screens. From 600px wide it is roomier: picture 2.8rem, tag 0.78rem, padding 14px 10px 12px. From 700px wide the tile also shows a short muted line about the game, cut after two lines, so the tiles in a row stay the same height. On a monitor (1600px and wider) the home column is 1100px, so the tile gets a 3.4rem picture, a 1.7rem title and a 1rem line.
 - Pressed: the tile moves down 4px and the shadow shrinks to 2px. It looks like a button being pushed.
 - Tones cycle `c1`, `c2`, `c3`, `c4`, `c5`.
 - Order on the home page: the logo, "Who is playing?" (or, with one child, the child chip next to Settings), the ⚙ Settings button (age, colors, sound, language), **Today's 10**, the games by subject, then **My stars**, then "More games are on the way!" and three footer buttons: Grown-ups, Help and Guide.
@@ -429,12 +436,12 @@ The score row shows the last 5 answers in this game as dots. Next to it sit the 
 
 ## 5. Layout
 
-- One centered column. Games are 520px wide on phones, 640px on tablet portrait, and up to 1100px in landscape. The home page is 760px.
+- One centered column. Games are 520px wide on phones, 760px on tablet portrait, 1160px on a tablet in landscape, 1400px on a laptop and 1600px on a monitor (`--col`). The home page is 760px, 960px on a laptop and 1100px on a monitor (`--home-col`).
 - A 16px gutter on each side, more if the phone has a notch (`env(safe-area-inset-*)`).
-- Spacing steps: 4, 8, 12, 16, 20, 28px. Gaps inside a game are 8 to 12px. Home page sections are 28px apart.
+- Spacing steps: 4, 8, 12, 16, 20, 28px. Gaps inside a game are 8 to 12px on phones and up to 28px between the two columns on a monitor (`--row-gap`, `--play-gap`). Home page sections are 28px apart.
 - **One screen, no scrolling.** A game fills `100dvh`. Sizes use `clamp()` with `dvh`, so the pad and the problem grow or shrink with the screen.
 - **Portrait:** top bar, then the problem, then the feedback, then the number pad or answers at the bottom where thumbs reach.
-- **Landscape (640px wide or more):** two columns. The problem on the left, the pad or answers on the right.
+- **Landscape (640px wide or more):** two columns. The problem on the left, the pad or answers on the right. On a laptop or monitor the sum, the keys and the picture keep growing with the screen (see Screens), so the card is not left half empty.
 - The home page may scroll. Games may not.
 - Text in games cannot be selected by accident (`user-select: none` on the play area).
 
@@ -481,14 +488,19 @@ loopy is mostly flat. Depth comes from solid offset shadows, not blur.
 
 Test every page at these sizes:
 
-| Screen | Size | What changes |
-| --- | --- | --- |
-| Small phone | 360 × 640 | Smaller title and keys (under 420px). The settings button shows only the gear (under 380px) |
-| Phone | 390 × 844 | One column. Pad at the bottom |
-| Phone landscape | 844 × 390 | Two columns |
-| Tablet portrait | 820 × 1180 | One column up to 640px. Bigger keys and numbers |
-| Tablet landscape | 1180 × 820 | Two columns up to 1100px |
-| Print | A4 and US Letter | Only the worksheet prints, on two pages |
+| Class | Screen | Size | What changes |
+| --- | --- | --- | --- |
+| S | Small phone | 360 × 640 | Short: 6px page padding, 8px gaps, 10px card padding. Smaller title and keys (under 420px). The settings button shows only the gear (under 380px) |
+| M | Phone | 390 × 844 | One column, 520px. Pad at the bottom |
+| XL | Big phone | 430 × 932 | Same as M, with more height for the sum and the keys |
+| tab | Phone landscape | 844 × 390 | Two columns |
+| tab | Tablet portrait | 820 × 1180 | One column up to 760px. Bigger keys and numbers |
+| tab | Tablet landscape | 1180 × 820 | Two columns up to 1160px |
+| wide | Laptop | 1280 × 800 | Two columns up to 1400px. Sum up to 11rem, keys up to 190px. Home page 960px |
+| desktop | Monitor | 1920 × 1080 | Two columns up to 1600px. Sum up to 13rem, keys up to 210px. Home page 1100px |
+| | Print | A4 and US Letter | Only the worksheet prints, on two pages |
+
+The size classes are variables on `:root` in `src/loopy.css`: `--page-pad-top`, `--page-pad-bottom`, `--row-gap`, `--play-gap`, `--card-pad`, `--col`, `--home-col`, `--big` (the sum or the word), `--key-h` and `--key-font` (pad keys), `--ans-h` and `--ans-font` (answer buttons), `--q-font` (the question), `--pic-h` (a flag, map or picture) and `--pic-font` (an emoji picture). Width picks the class (S up to 379px, M 380 to 414, XL 415 to 599, tab 600 to 1199, wide 1200 to 1599, desktop 1600 and up); S is also "short" (under 700px tall), and wide and desktop count only in landscape. A game's layout rules read the variables instead of carrying their own numbers, so the main content is as big as the screen allows and the next spacing change is one file. (Plus and Minus, Flags and Capitals, Word Match and the home page use them; the other games follow.)
 
 - Short phones (under 760px tall) use smaller feedback text, so the pad stays on screen.
 - Buttons use `touch-action: manipulation`, so a double tap does not zoom.

@@ -8,6 +8,10 @@ loopy bekommt immer wieder neue Spiele. Das ist zuletzt dazugekommen!
 
 Die großen Änderungen, die neuesten zuerst. Kleine Korrekturen stehen nicht dabei. Die [ganze Liste steht auf GitHub](https://github.com/amalrajvinoth/loopy/blob/main/RELEASES.md) (auf Englisch).
 
+## 16. November 2026
+
+- **Die Spiele füllen den Bildschirm.** Auf einem Tablet, Laptop oder Monitor wachsen die Aufgabe, die Flagge, das Wort und die Tasten jetzt mit dem Bildschirm. Vorher blieben sie so groß wie auf dem Handy, mit leeren Rändern an den Seiten. Auf dem Handy sind die Aufgabe und die Tasten eine Stufe größer. Zuerst in Plus und Minus, Flaggen und Hauptstädte und Bild und Wort. Die Startseite ist auf großen Bildschirmen auch breiter. Die anderen Spiele folgen.
+
 ## 15. November 2026
 
 - **Flaggen und Hauptstädte: jedes Land der Welt, und keine Wiederholungen mehr.** Jetzt 194 Flaggen mit ihren Hauptstädten, vorher 66. Die Flaggen sind geordnet, von der bekanntesten zur unbekanntesten, und das Spiel geht die Liste durch: Jede Flagge kommt einmal dran, bevor eine wiederkommt, und das Spiel merkt sich das für jedes Kind, auch für das nächste Mal. Wenn dein Kind einmal durch alle Flaggen ist und die meisten richtig hatte, kommen die nächsten 4 dazu. [So wird gespielt](/loopy/guide/de/games/geography/flags-capitals/).

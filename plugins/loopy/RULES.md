@@ -8,7 +8,7 @@ Every session in the loopy repo starts with these. Add one with the add-rule ski
 - A game is a folder `<subject>/<game>/index.html` plus one line in the home page GAMES list. Its word list or other content lives next to the page in `words.js` or `data.js` (Word Match and Word Trail share `languages/words.js`), loaded right after `loopy.js`. A new game id goes in the `Loopy.GAMES` list in `src/loopy.js` and the progress page list. Do not change other games or the layout unless asked.
 - English (default) and German for every word: `Loopy.addStrings({en,de})`, `data-t`, `Loopy.t()`, `Loopy.num()`.
 - Difficulty follows the age picker. Right and wrong go through `Loopy.rewards.correct()` / `.wrong()`. Questions come from `Loopy.fresh()` (no repeat within 10).
-- One phone or tablet screen, no scrolling, portrait and landscape: 360×640, 390×844, 844×390, 820×1180, 1180×820. Settings behind ⚙. Follow DESIGN.md and keep it in sync.
+- One phone or tablet screen, no scrolling, portrait and landscape: 360×640, 390×844, 430×932, 844×390, 820×1180, 1180×820, 1280×800, 1920×1080. Settings behind ⚙. Spacing and sizes come from the size-class variables in `src/loopy.css` (`--col`, `--big`, `--key-h` and the rest; DESIGN.md "Screens"), not from numbers copied into a page. Follow DESIGN.md and keep it in sync.
 - Black is the default theme. Others: Sunny, Ocean, Candy, Forest, High contrast.
 - Everything that prints shows the real loopy logo (`Loopy.logo()`, not just the word) in a fitting place: top right on worksheets and the weekly card, top left on a printed page. A new print needs it too. (Owner's rule, 20 Oct 2026.)
 
