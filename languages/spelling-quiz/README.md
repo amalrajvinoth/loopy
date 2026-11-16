@@ -1,10 +1,10 @@
 # Spelling Quiz
 
-A spelling game: pick the right spelling out of 3 or 4. A grown-up can type in the week's spelling words from school, and the wrong spellings are made new every time. The words can be English or German.
+A spelling game: pick the right spelling out of 3 or 4. A grown-up can type in the week's spelling words from school, with a meaning for each if they like. The wrong spellings are made new every time. The words can be English or German.
 
 ## How to play
 
-1. Read the question: "Which spelling is right?" With Read aloud on, the game says the word.
+1. Read the question: "Which spelling is right?" With Read aloud on, the game says the word. With a list from a grown-up, the card has no bee. It shows the word's meaning under the question instead, when the list has one.
 2. Tap the word that is spelled right.
 3. Right: it turns green and you earn a star.
 4. Wrong: your pick turns red and the right spelling turns green. The card shows the right spelling with the tricky part underlined, like "fr<u>ie</u>nd".
@@ -15,6 +15,7 @@ A spelling game: pick the right spelling out of 3 or 4. A grown-up can type in t
 Open **Settings** and find **Your word list**.
 
 1. Type or paste the words, with commas between them: `friend, because, said, beautiful`. New lines or semicolons work too. A list with only spaces between the words is split at the spaces.
+   A meaning in brackets after a word shows under the question: `Biene (the bee), Wiese (the meadow)`. Up to 30 letters, letters only. loopy never looks a word up anywhere: the meaning comes from your list.
 2. Tap **Save list**. The card now says "Your list · 4 words".
 3. **Clear list** goes back to loopy's own words.
 
@@ -67,6 +68,7 @@ Open them with the gear button.
 - **Your word list.** See above.
 - **Level.** Grade 1 words up to grade 6 words and up. Remembered for each age.
 - **Read aloud.** The speaker button says the word, in the voice of the word language.
+- **Meaning under the question.** On or Off. On at the start. Shows the meaning from your list, when a word has one.
 - Age, colors, sound effects and the display language (EN/DE) are shared with the other games.
 - **Print worksheet.** See below.
 - The keyboard works too: 1 to 4 picks a spelling, Enter goes on.
@@ -75,7 +77,7 @@ Open them with the gear button.
 
 Tap **Settings**, then **Print worksheet**. The print window opens. Print it, or save it as a PDF.
 
-- Page 1 has 20 rows. Each row has the spellings of one word; circle the right one. With a list, every word of the list comes once before any comes again.
+- Page 1 has 20 rows. Each row has the spellings of one word; circle the right one. With a list, every word of the list comes once before any comes again. Its meaning stands under the row when **Meaning under the question** is on.
 - Page 2 has the answers.
 
 ## Example help text
@@ -86,7 +88,8 @@ Tap **Settings**, then **Print worksheet**. The print window opens. Print it, or
 
 ## For grown-ups
 
-- The grown-ups page shows each missed word with the spelling the child picked, under "Words from your list" or "Tricky spellings". Try again brings missed words back with new wrong spellings.
+- The grown-ups page shows each missed word with the spelling the child picked, under "Words from your list" or "Tricky spellings". Try again brings missed words back with new wrong spellings, but only while the word is still in play. A word missed before a list was loaded, or from a list that was cleared, stays out.
+- The list is saved as `sq.listEn` or `sq.listDe` for the child. It holds the words with commas between them, each meaning in brackets after its word. Lists saved before 16 November 2026 have no brackets and read the same.
 - Once in a while a made-up spelling can still be a real word. Tap the flag at the top of the game to tell us.
 - To change loopy's own words, edit the `WORDS` list in `words.js`, next to the game page, then run `python3 tools/build.py`. Leave out words with a common look-alike, or add the look-alike to `REAL`.
 - [My Words](../my-words/) reads the same `words.js` when a child has no list of their own. A word added here is read aloud there too.

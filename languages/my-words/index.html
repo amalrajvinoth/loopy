@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'sha256-J2IverJrPlDRCPKwr0WVPv2qrWtQvVZY7yPxQyQhwso='; style-src 'self' 'sha256-z2P7kGW5Z05eCTjTZdYpc0vThTlOE9vmt97pVSvi2I4=' 'sha256-uA6fxc0gl3P5//NKJxplasYAcMyveYOYRtV08rf1NdM=' 'sha256-RT1053JU5UiKvjrCUFx1rlhdFLMmgtuFJ9T8jnMeawQ=' 'sha256-Moa2uwVGoEEiU/ll4y7unye3G4gAs1zXR9/YgEHA02I='; img-src 'self' data:; font-src 'self'; connect-src 'self' https://loopy-sync.loopy-1e2.workers.dev; worker-src 'self'; object-src 'none'; base-uri 'none'; form-action 'none'; manifest-src 'self'; upgrade-insecure-requests">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'sha256-D9rjKd8KTeV840vUo+GuELxDNJpF9DSE7sPI0PiyO0E='; style-src 'self' 'sha256-z2P7kGW5Z05eCTjTZdYpc0vThTlOE9vmt97pVSvi2I4=' 'sha256-uA6fxc0gl3P5//NKJxplasYAcMyveYOYRtV08rf1NdM=' 'sha256-RT1053JU5UiKvjrCUFx1rlhdFLMmgtuFJ9T8jnMeawQ=' 'sha256-a0ITBDogAfTiPANy47V16GuNphB8av4TTOtC8Y5tTmo='; img-src 'self' data:; font-src 'self'; connect-src 'self' https://loopy-sync.loopy-1e2.workers.dev; worker-src 'self'; object-src 'none'; base-uri 'none'; form-action 'none'; manifest-src 'self'; upgrade-insecure-requests">
 <meta name="referrer" content="strict-origin-when-cross-origin">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <style>:root{color-scheme:light;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}body{margin:0}[hidden]{display:none!important}</style>
@@ -194,6 +194,9 @@ body { min-height: 100vh; min-height: 100dvh; padding-block: var(--page-pad-top)
 .say .gap { display: inline-block; min-width: 3ch; border-bottom: 3px solid var(--accent); vertical-align: -2px; }
 .say mark { background: transparent; color: var(--accent); font-weight: 700; }
 .say[hidden] { display: none; }
+/* The meaning from the grown-up's list, in the other language, as small text under the sentence. */
+.trans { margin: 0; text-align: center; color: var(--muted); font-size: clamp(0.95rem, 2.3dvh, 1.15rem); line-height: 1.3; max-width: 34ch; text-wrap: balance; }
+.trans[hidden] { display: none; }
 /* The boxes grow with the card: as wide as the card allows for the word's letters (--n), up to a cap by height. */
 .problem-card { container-type: inline-size; }
 .slots { display: flex; flex-wrap: wrap; justify-content: center; gap: 0.18em; font-weight: 700; line-height: 1.2;
@@ -248,6 +251,7 @@ body { min-height: 100vh; min-height: 100dvh; padding-block: var(--page-pad-top)
   .speak { min-height: 80px; font-size: 1.6rem; padding: 0 32px; gap: 14px; }
   .speak svg { width: 36px; height: 36px; }
   .say { font-size: 1.7rem; max-width: 40ch; }
+  .trans { font-size: 1.3rem; max-width: 40ch; }
   .slots { font-size: min(clamp(1.6rem, 10dvh, 7.5rem), calc(88cqw / var(--n, 6) / 1.25)); }
   .problem-card { gap: 22px; }
   .feedback { font-size: 1.25rem; }
@@ -287,6 +291,7 @@ body { min-height: 100vh; min-height: 100dvh; padding-block: var(--page-pad-top)
   .ws-mw .ws-blank { width: 62mm; margin-left: 0; height: 7mm; }
   .ws-mw .ws-say { font-size: 9pt; line-height: 1.25; color: #333; white-space: normal; }
   .ws-mw .ws-say .ws-gap { display: inline-block; min-width: 10mm; border-bottom: 0.3mm solid #000; }
+  .ws-mw .ws-trans { font-size: 9pt; line-height: 1.25; color: #555; white-space: normal; }
 }
 /* Laptops and monitors: the game's own picture and keys grow with the screen (loopy.css --card-zoom, --side-zoom; 1 elsewhere). */
 .problem-card > * { zoom: var(--card-zoom); }
@@ -327,7 +332,7 @@ body { min-height: 100vh; min-height: 100dvh; padding-block: var(--page-pad-top)
     </div>
     <div class="list-box">
       <label class="seg-label" for="word-list" data-t="mwList">Your word list</label>
-      <p class="list-help" id="list-help" data-t="mwListHelp">For grown-ups: type the words, one per line, or import a CSV file. A sentence after the word on the same line, after a comma, is read aloud too. Up to 50 words. Leave it empty and loopy picks words for the age.</p>
+      <p class="list-help" id="list-help" data-t="mwListHelp">For grown-ups: type the words, one per line, or import a CSV file. A sentence after the word on the same line, after a comma, is read aloud too. A meaning in brackets after the word shows under it. Up to 50 words. Leave it empty and loopy picks words for the age.</p>
       <textarea id="word-list" rows="4" autocomplete="off" autocapitalize="off" spellcheck="false" aria-describedby="list-help list-status"></textarea>
       <div class="list-row">
         <button type="button" class="save" id="list-save" data-t="mwSave">Save list</button>
@@ -336,6 +341,14 @@ body { min-height: 100vh; min-height: 100dvh; padding-block: var(--page-pad-top)
         <input type="file" id="list-file" accept=".csv,.txt,text/csv,text/plain" hidden>
       </div>
       <p class="list-status" id="list-status" role="status"></p>
+    </div>
+    <div>
+      <p class="seg-label" id="trans-label" data-t="mwTrans">Meaning under the word</p>
+      <div class="seg two" role="group" aria-labelledby="trans-label" id="trans-seg">
+        <button type="button" data-trans="on" data-t="readOn">On</button>
+        <button type="button" data-trans="off" data-t="readOff">Off</button>
+      </div>
+      <p class="seg-note" data-t="mwTransNote">Shows the meaning from your list as small text, like "Biene" with "the bee". Give it in a third column of the file, or in brackets after the word: Biene (the bee).</p>
     </div>
     <div>
       <p class="seg-label" id="level-label" data-t="mwLevel">Level</p>
@@ -358,6 +371,7 @@ body { min-height: 100vh; min-height: 100dvh; padding-block: var(--page-pad-top)
       <p class="src" id="src"></p>
       <button type="button" class="speak" id="speak"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 9v6h4l5 4V5L7 9H3zm13.5 3a4.5 4.5 0 0 0-2.5-4v8a4.5 4.5 0 0 0 2.5-4zM14 3.2v2.1a7 7 0 0 1 0 13.4v2.1a9 9 0 0 0 0-17.6z"/></svg><span data-t="mwHear">Hear the word</span></button>
       <p class="say" id="say" hidden></p>
+      <p class="trans" id="trans" hidden></p>
       <div class="slots" id="slots" role="group" aria-live="polite"></div>
       <div class="slots reveal" id="reveal" aria-hidden="true" hidden></div>
       <p class="feedback" id="feedback"><span class="hint"></span></p>
@@ -378,8 +392,10 @@ Loopy.addStrings({
     wordsNote: "The words to play with. loopy's own language is under Age, look and sound.",
     mwName: "My Words", mwWordsIn: "Words in", mwLevel: "Level",
     mwList: "Your word list",
-    mwListHelp: "For grown-ups: type the words, one per line, or import a CSV file. A sentence after the word on the same line, after a comma, is read aloud too. Up to 50 words. Leave it empty and loopy picks words for the age.",
-    mwPlaceholder: "friend, My friend is kind.\nbecause\nsaid",
+    mwListHelp: "For grown-ups: type the words, one per line, or import a CSV file. A sentence after the word on the same line, after a comma, is read aloud too. A meaning in brackets after the word shows under it. Up to 50 words. Leave it empty and loopy picks words for the age.",
+    mwPlaceholder: "friend (Freund), My friend is kind.\nbecause\nsaid",
+    mwTrans: "Meaning under the word", mwTransNote: "Shows the meaning from your list as small text, like \"Biene\" with \"the bee\". Give it in a third column of the file, or in brackets after the word: Biene (the bee).",
+    mwMeans: "{n} of them have a meaning.", mwLongTrans: "Meanings longer than 30 letters, or with numbers or signs, were left out.",
     mwSave: "Save list", mwImport: "Import a CSV file", mwClear: "Clear list",
     mwSaved: "{n} words saved. The game now uses your list.", mwSaved1: "1 word saved. Add a few more for a better mix.", mwSays: "{n} of them have a sentence.",
     mwLeftOut: "Left out (letters only, 2 to 20 long): {list}.", mwTooMany: "Only the first 50 words are kept.",
@@ -398,8 +414,10 @@ Loopy.addStrings({
     wordsNote: "Die Wörter zum Spielen. Die Sprache von loopy selbst steht unter Alter, Aussehen und Ton.",
     mwName: "Meine Wörter", mwWordsIn: "Wörter auf", mwLevel: "Stufe",
     mwList: "Eure Wortliste",
-    mwListHelp: "Für Erwachsene: Tippt die Wörter ein, eins pro Zeile, oder ladet eine CSV-Datei. Ein Satz nach dem Wort in derselben Zeile, nach einem Komma, wird mit vorgelesen. Bis zu 50 Wörter. Bleibt die Liste leer, wählt loopy Wörter für das Alter.",
-    mwPlaceholder: "Freund, Mein Freund ist nett.\nStraße\nfahren",
+    mwListHelp: "Für Erwachsene: Tippt die Wörter ein, eins pro Zeile, oder ladet eine CSV-Datei. Ein Satz nach dem Wort in derselben Zeile, nach einem Komma, wird mit vorgelesen. Eine Bedeutung in Klammern nach dem Wort steht darunter. Bis zu 50 Wörter. Bleibt die Liste leer, wählt loopy Wörter für das Alter.",
+    mwPlaceholder: "Freund (friend), Mein Freund ist nett.\nStraße\nfahren",
+    mwTrans: "Bedeutung unter dem Wort", mwTransNote: "Zeigt die Bedeutung aus eurer Liste als kleinen Text, etwa \"Biene\" mit \"the bee\". Sie steht in einer dritten Spalte der Datei oder in Klammern nach dem Wort: Biene (the bee).",
+    mwMeans: "{n} davon haben eine Bedeutung.", mwLongTrans: "Bedeutungen mit mehr als 30 Zeichen oder mit Zahlen und Sonderzeichen wurden weggelassen.",
     mwSave: "Liste speichern", mwImport: "CSV-Datei laden", mwClear: "Liste leeren",
     mwSaved: "{n} Wörter gespeichert. Das Spiel nimmt jetzt eure Liste.", mwSaved1: "1 Wort gespeichert. Mit ein paar mehr wird es abwechslungsreicher.", mwSays: "{n} davon haben einen Satz.",
     mwLeftOut: "Weggelassen (nur Buchstaben, 2 bis 20 lang): {list}.", mwTooMany: "Nur die ersten 50 Wörter bleiben.",
@@ -420,7 +438,7 @@ Loopy.addStrings({
 const EXTRA = { en: "abcdefghiklmnoprstuw", de: "abdefghiklmnorstuwz" };
 // The keyboard at levels 3 and 4. A letter the word needs that is not here (ß, é, an apostrophe) joins the last row.
 const KEYS = { en: ["qwertyuiop", "asdfghjkl", "zxcvbnm"], de: ["qwertzuiopü", "asdfghjklöä", "yxcvbnm"] };
-const MAX_WORDS = 50, MAX_SAY = 50, MAX_STORE = 4000, MAX_FILE = 200000;
+const MAX_WORDS = 50, MAX_SAY = 50, MAX_TRANS = 30, MAX_STORE = 4000, MAX_FILE = 200000;
 const randInt = (n) => Math.floor(Math.random() * n);
 const shuffle = (arr) => { const a = arr.slice(); for (let i = a.length - 1; i > 0; i--) { const j = randInt(i + 1); [a[i], a[j]] = [a[j], a[i]]; } return a; };
 const lower = (w) => w.toLocaleLowerCase("de");
@@ -439,6 +457,19 @@ function cleanSay(s) {
   const v = s.normalize("NFC").replace(/;/g, ",").replace(/\s+/g, " ").trim();
   return v.length > MAX_SAY ? null : v;
 }
+// The meaning of a word in the other language ("the bee"), up to 30 letters: letters, spaces, ' - and /.
+// "" when there is none, null when it is too long or has other signs in it.
+function cleanTrans(s) {
+  if (typeof s !== "string") return "";
+  const v = s.normalize("NFC").replace(/[’`]/g, "'").replace(/\s+/g, " ").trim();
+  if (!v) return "";
+  return v.length <= MAX_TRANS && /^[\p{L}'\-\/ ]+$/u.test(v) ? v : null;
+}
+// "Biene (the bee)" into the word and its meaning: [word, meaning]. The meaning is "" when there are no brackets.
+function splitTrans(s) {
+  const m = /^(.*?)\s*\(([^()]*)\)\s*$/.exec(s);
+  return m ? [m[1], m[2]] : [s, ""];
+}
 // One CSV line into its parts: tabs, semicolons or commas between them (the first kind found), quotes around a part allowed.
 function splitLine(line) {
   const sep = /\t/.test(line) ? "\t" : /;/.test(line) ? ";" : ",";
@@ -453,34 +484,66 @@ function splitLine(line) {
   parts.push(cur);
   return parts.map(p => p.trim());
 }
-// A pasted list or a CSV file: one word per line, with a sentence after it on the same line, or words with commas
-// between them. A first line like "word,sentence" is a heading and skipped. Returns { list, says, bad, cut, long }:
-// the good entries [word, sentence] (no doubles, at most 50), how many have a sentence, what was left out,
-// whether some words were cut, and whether a sentence was too long.
+// A pasted list or a CSV file: one word per line, with a sentence after it on the same line and a meaning after that,
+// or words with commas between them. A meaning can also stand in brackets after the word: "Biene (the bee)".
+// A first line like "word,sentence,meaning" is a heading: it is skipped, and it says which column holds what.
+// Returns { list, says, means, bad, cut, long, longTrans }: the good entries [word, sentence, meaning] (no doubles,
+// at most 50), how many have a sentence, how many a meaning, what was left out, whether some words were cut,
+// and whether a sentence or a meaning was too long.
 function parseList(text) {
-  const t = String(text || "").replace(/^﻿/, "").slice(0, MAX_FILE);
+  const t = String(text || "").replace(/^\ufeff/, "").slice(0, MAX_FILE);
   let lines = t.split(/\r\n|\r|\n/).map(l => l.trim()).filter(Boolean);
   // One line with only spaces between the words: split at the spaces.
-  if (lines.length === 1 && !/[,;\t]/.test(lines[0])) lines = lines[0].split(/\s+/);
+  if (lines.length === 1 && !/[,;\t]/.test(lines[0])) lines = lines[0].split(/\s+(?!\()(?![^(]*\))/);
   const list = [], bad = [], seen = new Set();
-  let says = 0, cut = false, long = false;
+  let says = 0, means = 0, cut = false, long = false, longTrans = false;
+  // A heading that names its columns says where the sentence and the meaning are. Without one, the sentence
+  // comes after the word, and a short last part with letters only ("the bee") after the sentence is the meaning.
+  let head = null;
   lines.forEach((line, li) => {
     const parts = splitLine(line);
-    if (li === 0 && lines.length > 1 && /^(word|words|wort|wörter|lernwort|lernwörter|spelling)$/i.test(parts[0])) return;
-    // "friend, My friend is kind." is a word and its sentence; "friend, because, said" is three words.
-    const items = parts.length >= 2 && parts.slice(1).some(p => /\s/.test(p)) ? [[parts[0], parts.slice(1).filter(Boolean).join(", ")]] : parts.map(p => [p, ""]);
-    items.forEach(([w0, s0]) => {
+    if (li === 0 && lines.length > 1 && /^(word|words|wort|wörter|lernwort|lernwörter|spelling)$/i.test(parts[0])) {
+      const say = parts.findIndex(p => /^(sentence|satz|example|beispiel|beispielsatz)$/i.test(p));
+      const trans = parts.findIndex(p => /^(meaning|translation|bedeutung|übersetzung|uebersetzung|english|englisch|german|deutsch|en|de)$/i.test(p));
+      if (say > 0 || trans > 0) head = { say, trans };
+      return;
+    }
+    const cols = parts.map(splitTrans);
+    let items;
+    // Without a heading, a short last part ("the bee", up to 3 words) after a sentence is the meaning. So is a longer
+    // one after a sentence that ends in . ! or ?. "because, I ran, because I was late" stays one sentence.
+    const lastOf = (rest) => {
+      if (rest.length < 2) return "";
+      const last = rest[rest.length - 1], before = rest[rest.length - 2];
+      return (last.split(" ").length <= 3 || /[.!?]$/.test(before)) ? cleanTrans(last) || "" : "";
+    };
+    if (head) {
+      // A heading with no meaning column over rows that have one more part: the last part is the meaning, as without a heading.
+      const spare = head.trans < 0 && head.say > 0 && parts.length > head.say + 1 ? lastOf(parts.slice(head.say)) : "";
+      items = [[cols[0][0], head.say > 0 ? parts[head.say] || "" : "", cols[0][1] || (head.trans > 0 ? parts[head.trans] || "" : spare)]];
+    } else if (parts.length >= 2 && cols.slice(1).some(c => /\s/.test(c[0]))) {
+      // "friend, My friend is kind." is a word and its sentence. "Biene, Die Biene fliegt., the bee" has a meaning too.
+      const rest = parts.slice(1).filter(Boolean);
+      const last = lastOf(rest);
+      items = [[cols[0][0], (last ? rest.slice(0, -1) : rest).join(", "), cols[0][1] || last]];
+    } else {
+      // "friend, because, said" is three words, each with a meaning in brackets if it likes.
+      items = cols.map(c => [c[0], "", c[1]]);
+    }
+    items.forEach(([w0, s0, t0]) => {
       const w = cleanWord(w0);
       if (!w) { if (w0 && bad.length < 5) bad.push(w0.slice(0, 24)); return; }
       if (seen.has(lower(w))) return;
       if (list.length >= MAX_WORDS) { cut = true; return; }
-      let s = cleanSay(s0);
+      let s = cleanSay(s0), tr = cleanTrans(t0);
       if (s === null) { long = true; s = ""; }
+      if (tr === null) { longTrans = true; tr = ""; }
       if (s) says++;
-      seen.add(lower(w)); list.push([w, s]);
+      if (tr) means++;
+      seen.add(lower(w)); list.push(tr ? [w, s, tr] : [w, s]);
     });
   });
-  return { list, says, bad, cut, long };
+  return { list, says, means, bad, cut, long, longTrans };
 }
 // The sentence with the word taken out: [before, after], or null when the word is not in it.
 function gapOf(say, word) {
@@ -499,23 +562,24 @@ function diff(right, wrong) {
   if (from >= to) { from = Math.max(0, p - 1); to = Math.min(right.length, from + 1); }
   return [right.slice(0, from), right.slice(from, to), right.slice(to)];
 }
-// One word to type: { word, say, lang, letters, tiles, key }. letters are lower case, one per box. tiles are the keys
-// at levels 1 and 2: the word's letters, each once, plus extras (8 keys for short words, 10 for longer ones).
-function makeProblem(word, say, lang) {
+// One word to type: { word, say, trans, lang, letters, tiles, key }. letters are lower case, one per box. tiles are
+// the keys at levels 1 and 2: the word's letters, each once, plus extras (8 keys for short words, 10 for longer ones).
+function makeProblem(word, say, lang, trans) {
   const letters = [...lower(word)];
   const need = [...new Set(letters)];
   const keys = Math.max(letters.length <= 4 ? 8 : 10, need.length + 2);
   const extra = shuffle([...EXTRA[lang]].filter(c => !need.includes(c))).slice(0, keys - need.length);
-  return { word, say, lang, letters, tiles: shuffle([...need, ...extra]), key: lang + ":" + lower(word) };
+  return { word, say, trans: trans || "", lang, letters, tiles: shuffle([...need, ...extra]), key: lang + ":" + lower(word) };
 }
 
 (function () {
   const $ = (id) => document.getElementById(id);
-  const card = $("card"), srcEl = $("src"), sayEl = $("say"), slotsEl = $("slots"), revealEl = $("reveal"), lettersEl = $("letters"),
+  const card = $("card"), srcEl = $("src"), sayEl = $("say"), transEl = $("trans"), slotsEl = $("slots"), revealEl = $("reveal"), lettersEl = $("letters"),
     feedbackEl = $("feedback"), goBtn = $("k-go"), eraseBtn = $("k-erase"), speakBtn = $("speak");
   const listEl = $("word-list"), statusEl = $("list-status"), fileEl = $("list-file");
   const wordsBtns = [...document.querySelectorAll("#words-seg button")];
   const levelBtns = [...document.querySelectorAll("#level-seg button")];
+  const transBtns = [...document.querySelectorAll("#trans-seg button")];
   const t = Loopy.t;
   const store = {
     // ok: the values this setting may have; anything else falls back to the default.
@@ -523,8 +587,9 @@ function makeProblem(word, say, lang) {
     set(k, v) { Loopy.store.set(k, JSON.stringify(v)); }
   };
   const still = window.matchMedia && matchMedia("(prefers-reduced-motion: reduce)").matches;
-  // The grown-up's list for each word language, saved for this child as [[word, sentence], ...]. Every entry is
-  // checked again when it is read back, so a broken or too long value gives a shorter list or none, never an error.
+  // The grown-up's list for each word language, saved for this child as [[word, sentence], ...], with a meaning as a
+  // third value when the word has one (lists saved before 16 November 2026 have two values and read the same).
+  // Every entry is checked again when it is read back, so a broken or too long value gives a shorter list or none, never an error.
   const LIST_KEY = { en: "mw.listEn", de: "mw.listDe" };
   function readList(l) {
     try {
@@ -534,23 +599,28 @@ function makeProblem(word, say, lang) {
       raw.forEach(e => {
         const w = Array.isArray(e) ? cleanWord(e[0]) : null;
         if (!w || seen.has(lower(w)) || out.length >= MAX_WORDS) return;
-        seen.add(lower(w)); out.push([w, cleanSay(e[1]) || ""]);
+        const tr = cleanTrans(e[2]) || "";
+        seen.add(lower(w)); out.push(tr ? [w, cleanSay(e[1]) || "", tr] : [w, cleanSay(e[1]) || ""]);
       });
       return out;
     } catch (e) { return []; }
   }
-  // Saves the list so it fits in the stars code (4,000 letters): the last sentences go first when it does not.
+  // Saves the list so it fits in the stars code (4,000 letters): the last sentences go first when it does not,
+  // then the last meanings.
   function writeList(l, list) {
     const copy = list.map(e => e.slice());
-    let json = JSON.stringify(copy), dropped = false;
+    let json = JSON.stringify(copy), dropped = false, droppedTrans = false;
     for (let i = copy.length - 1; i >= 0 && json.length > MAX_STORE; i--) { if (copy[i][1]) { copy[i][1] = ""; dropped = true; json = JSON.stringify(copy); } }
+    for (let i = copy.length - 1; i >= 0 && json.length > MAX_STORE; i--) { if (copy[i][2]) { copy[i].length = 2; droppedTrans = true; json = JSON.stringify(copy); } }
     Loopy.store.set(LIST_KEY[l], json);
-    return { list: copy, dropped };
+    return { list: copy, dropped, droppedTrans };
   }
 
   let age = Loopy.getAge();
   let wordsLang = store.get("mw.words", Loopy.lang === "de" ? "de" : "en", ["en", "de"]);
   let autoRead = store.get("mw.autoRead", true, [true, false]);
+  // Meaning under the word: on at the start; it only shows for a word that has one on the list.
+  let showTrans = store.get("mw.meaning", true, [true, false]);
   let mine = readList(wordsLang);
   // Opened from the grown-ups' page to practise (#practise=mw-mine): the game already plays the right words.
   if (/^mw-/.test(Loopy.log.hint || "")) Loopy.log.hint = "";
@@ -571,7 +641,7 @@ function makeProblem(word, say, lang) {
 
   const pool = () => mine.length ? mine : WORDS[wordsLang][gradeForAge(age) - 1].map(w => [w, ""]);
   const kind = () => mine.length ? "mw-mine" : "mw-loopy";
-  const make = () => { const p = pool(), e = p[randInt(p.length)]; return makeProblem(e[0], e[1], wordsLang); };
+  const make = () => { const p = pool(), e = p[randInt(p.length)]; return makeProblem(e[0], e[1], wordsLang, e[2]); };
 
   // Read the word aloud with the browser's own voice, in the language of the words, then its sentence.
   // Nothing is downloaded. If there is no voice for that language, the button hides and the card says so.
@@ -638,6 +708,13 @@ function makeProblem(word, say, lang) {
     else { mid.className = "gap"; mid.setAttribute("aria-label", "…"); }
     sayEl.append(g[0], mid, g[1]);
   }
+  // The meaning from the list under the sentence, in the other language, when the setting is on.
+  function drawTrans() {
+    const on = showTrans && !!current.trans;
+    transEl.hidden = !on;
+    transEl.textContent = on ? current.trans : "";
+    transEl.lang = wordsLang === "de" ? "en" : "de";
+  }
   function key(c) {
     const b = document.createElement("button");
     b.type = "button"; b.textContent = c; b.lang = wordsLang; b.dataset.k = c;
@@ -668,6 +745,7 @@ function makeProblem(word, say, lang) {
     $("streak").textContent = streak;
     wordsBtns.forEach(b => b.setAttribute("aria-pressed", String(b.dataset.words === wordsLang)));
     levelBtns.forEach(b => b.setAttribute("aria-pressed", String(+b.dataset.level === level)));
+    transBtns.forEach(b => b.setAttribute("aria-pressed", String((b.dataset.trans === "on") === showTrans)));
     readPill();
     speakBtn.hidden = !voiceOk();
     srcEl.textContent = mine.length ? t("mwMine", { n: Loopy.num(mine.length) }) : t("mwLoopy", { n: Loopy.num(age) });
@@ -679,18 +757,22 @@ function makeProblem(word, say, lang) {
     if (answered) { card.removeAttribute("data-tries"); card.removeAttribute("data-a"); }
     else { card.setAttribute("data-tries", "on"); card.setAttribute("data-a", current.letters.join("")); }
     drawSay();
+    drawTrans();
     drawSlots();
   }
   function stopReveal() { timers.forEach(clearTimeout); timers = []; }
   // Try again: a missed word comes back later (Loopy.retry). The note is the word language and the word ("en:friend").
-  // Its sentence comes from the list, if it is still there.
+  // Only a word that is still in play: with a grown-up's list, one on that list (with its sentence and meaning);
+  // with loopy's words, one of loopy's words of any grade. A word from before a list was loaded, or from a list
+  // that was cleared, stays out.
   function rebuild(r) {
     const m = /^(en|de):(.{2,20})$/.exec(r || "");
     if (!m || m[1] !== wordsLang) return null;
     const w = cleanWord(m[2]);
     if (!w) return null;
+    if (!mine.length) return WORDS[wordsLang].some(g => g.some(x => lower(x) === lower(w))) ? makeProblem(w, "", wordsLang) : null;
     const e = mine.find(x => lower(x[0]) === lower(w));
-    return makeProblem(w, e ? e[1] : "", wordsLang);
+    return e ? makeProblem(e[0], e[1], wordsLang, e[2]) : null;
   }
 
   function newRound() {
@@ -767,18 +849,20 @@ function makeProblem(word, say, lang) {
     if ((!ok || autoRead) && interacted && Loopy.sound.isOn()) speakAfterTone();
   }
 
-  // The word list in Settings: one line per word, the sentence after a comma.
-  function showList() { listEl.value = mine.map(e => e[1] ? e[0] + ", " + e[1] : e[0]).join("\n"); listEl.placeholder = t("mwPlaceholder"); listEl.lang = wordsLang; }
+  // The word list in Settings: one line per word, the meaning in brackets after it, the sentence after a comma.
+  function showList() { listEl.value = mine.map(e => e[0] + (e[2] ? " (" + e[2] + ")" : "") + (e[1] ? ", " + e[1] : "")).join("\n"); listEl.placeholder = t("mwPlaceholder"); listEl.lang = wordsLang; }
   function saveList(text) {
     const r = parseList(text);
     const w = writeList(wordsLang, r.list);
     mine = w.list;
     const msg = [mine.length === 0 ? t("mwEmpty") : mine.length === 1 ? t("mwSaved1") : t("mwSaved", { n: Loopy.num(mine.length) })];
-    const says = mine.filter(e => e[1]).length;
+    const says = mine.filter(e => e[1]).length, means = mine.filter(e => e[2]).length;
     if (says) msg.push(t("mwSays", { n: Loopy.num(says) }));
+    if (means) msg.push(t("mwMeans", { n: Loopy.num(means) }));
     if (r.bad.length) msg.push(t("mwLeftOut", { list: r.bad.join(", ") }));
     if (r.cut) msg.push(t("mwTooMany"));
     if (r.long || w.dropped) msg.push(t("mwLongSay"));
+    if (r.longTrans || w.droppedTrans) msg.push(t("mwLongTrans"));
     statusEl.textContent = msg.join(" ");
     showList();
     recent = [];
@@ -807,6 +891,7 @@ function makeProblem(word, say, lang) {
     wordsLang = b.dataset.words; store.set("mw.words", wordsLang); mine = readList(wordsLang); statusEl.textContent = ""; showList(); recent = []; newRound();
   }));
   levelBtns.forEach(b => b.addEventListener("click", () => { level = +b.dataset.level; store.set("mw.level.a" + age, level); recent = []; newRound(); }));
+  transBtns.forEach(b => b.addEventListener("click", () => { showTrans = b.dataset.trans === "on"; store.set("mw.meaning", showTrans); render(); }));
   // The Read aloud pill in Settings. The setting stays this game's own: it reads each new word, on at the start.
   const readPill = Loopy.speech.toggle({ isOn: () => autoRead, set: (on) => { autoRead = on; store.set("mw.autoRead", on); } });
   window.addEventListener("loopy:age", (e) => { age = e.detail; recent = []; loadForAge(); newRound(); });
@@ -840,7 +925,7 @@ function makeProblem(word, say, lang) {
     make: (n) => {
       const list = [];
       let bag = [];
-      while (list.length < n) { if (!bag.length) bag = shuffle(pool()); const e = bag.pop(); list.push(makeProblem(e[0], e[1], wordsLang)); }
+      while (list.length < n) { if (!bag.length) bag = shuffle(pool()); const e = bag.pop(); list.push(makeProblem(e[0], e[1], wordsLang, showTrans ? e[2] : "")); }
       return list;
     },
     cell: (q) => {
@@ -853,6 +938,7 @@ function makeProblem(word, say, lang) {
         if (g) say.append(g[0], part("ws-gap"), g[1]); else say.textContent = q.say;
         box.appendChild(say);
       }
+      if (q.trans) box.appendChild(part("ws-trans", q.trans));
       return box;
     },
     answer: (q) => q.word

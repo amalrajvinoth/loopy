@@ -1,6 +1,6 @@
 ---
 title: My Words
-description: Hear a word and type it, like a spelling test. Grown-ups add the week's words or import a CSV file. For ages 6 to 12.
+description: Hear a word and type it, like a spelling test. Grown-ups add the week's words or import a CSV file, with a meaning for each word if they like. For ages 6 to 12.
 sidebar:
   order: 8
 ---
@@ -16,7 +16,7 @@ A spelling game for ages 6 to 12, like a spelling test at school. loopy reads a 
 
 ## How to play
 
-1. Listen to the word. Tap **Hear the word** to hear it again. If the word has a sentence, loopy reads that too, and the card shows it with a gap: "My ___ is kind."
+1. Listen to the word. Tap **Hear the word** to hear it again. If the word has a sentence, loopy reads that too, and the card shows it with a gap: "My ___ is kind." If the word has a meaning, it shows in small text under that: "the bee".
 2. Type the word with the letter tiles or the keyboard. At levels 1 to 3 there is one box for each letter.
 3. **⌫** takes back the last letter.
 4. Tap **Check**. Right: the boxes turn green and you get a star.
@@ -36,19 +36,21 @@ This part is for grown-ups.
 A file or the box can look like this:
 
 ```
-word,sentence
-friend,My friend is kind.
+word,sentence,meaning
+friend,My friend is kind.,Freund
 because,I ran because I was late.
 said
 ```
 
 - One word per line. A sentence can follow the word on the same line, after a comma, a semicolon or a tab. It is read aloud with the word and shown with a gap. Up to 50 letters per sentence.
-- Words with commas between them on one line work too: `friend, because, said`.
-- A first line like `word,sentence` is a heading and is skipped. A file saved from Excel or Numbers works.
+- A meaning can follow the sentence, in a third column. That is the German meaning of an English word, or the English meaning of a German one. It shows in small text under the sentence. Up to 30 letters. loopy never looks a word up anywhere: the meaning comes from your file.
+- A meaning can also stand in brackets after the word: `Biene (the bee), Die Biene fliegt zur Blume.` The box in Settings shows it that way.
+- Words with commas between them on one line work too: `friend, because, said` or `Biene (the bee), Wiese (the meadow)`.
+- A first line like `word,sentence`, `word,sentence,meaning` or `word,meaning` is a heading and is skipped. It also says what each column holds. A file saved from Excel or Numbers works. Old files with a word and a sentence work as before.
 - Up to 50 words, each 2 to 20 letters. "don't", "ice-cream" and "ice cream" work too.
 - The game says what it left out, like numbers or a typing mistake with @.
 - Each child has their own list. There is one list for English and one for German: switch **Words in** to fill the other.
-- Every word on the list comes once before any word comes back.
+- Every word on the list comes once before any word comes back. A word missed before you loaded the list does not come back in Try again.
 - **Clear list** goes back to loopy's own words.
 - The list stays in this browser. It moves to another device with the [stars code](/loopy/guide/stars/move-stars/). The file is read on your device and never uploaded.
 
@@ -79,7 +81,8 @@ Tap ⚙ **Settings** in the game to choose:
 - **Your word list:** see above.
 - **Level:** **Letter tiles, first letter shown**, **Letter tiles**, **Keyboard** or **Keyboard, no boxes**. These are the four levels above.
 - **Read aloud:** the same pill as in every game, next to the sound button. Here it reads each new word, and it is on at the start. Turn it off and the child taps **Hear the word** instead. After a miss the word is always read out.
-- **Print worksheet:** 20 numbered lines to write on, like a spelling test, with each word's sentence and its gap under the line. The words are on page 2, for the grown-up to read out.
+- **Meaning under the word:** **On** or **Off**. On at the start. Shows the meaning from your list, when a word has one.
+- **Print worksheet:** 20 numbered lines to write on, like a spelling test. Under each line is the word's sentence with its gap, and its meaning when that is on. The words are on page 2, for the grown-up to read out.
 
 The voice is the one built into the device. Nothing is downloaded. If the device has no voice for that language, the **Hear the word** button hides and the card says so. Then a grown-up reads the word out.
 

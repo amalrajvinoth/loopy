@@ -1,6 +1,6 @@
 ---
 title: Meine Wörter
-description: Hör ein Wort und tippe es, wie bei einem Diktat. Eltern tragen die Lernwörter der Woche ein oder laden eine CSV-Datei. Für 6 bis 12 Jahre.
+description: Hör ein Wort und tippe es, wie bei einem Diktat. Eltern tragen die Lernwörter der Woche ein oder laden eine CSV-Datei, mit einer Bedeutung zu jedem Wort, wenn sie mögen. Für 6 bis 12 Jahre.
 sidebar:
   order: 8
 ---
@@ -16,7 +16,7 @@ Ein Rechtschreibspiel für 6 bis 12 Jahre, wie ein Diktat in der Schule. loopy l
 
 ## So wird gespielt
 
-1. Hör dir das Wort an. Mit **Wort anhören** hörst du es noch einmal. Hat das Wort einen Satz, liest loopy den auch vor, und die Karte zeigt ihn mit einer Lücke: „Mein ___ ist nett.“
+1. Hör dir das Wort an. Mit **Wort anhören** hörst du es noch einmal. Hat das Wort einen Satz, liest loopy den auch vor, und die Karte zeigt ihn mit einer Lücke: „Mein ___ ist nett.“ Hat das Wort eine Bedeutung, steht sie klein darunter: „the bee“.
 2. Tippe das Wort mit den Buchstaben-Tasten oder der Tastatur. Auf Stufe 1 bis 3 gibt es für jeden Buchstaben ein Kästchen.
 3. **⌫** nimmt den letzten Buchstaben zurück.
 4. Tippe auf **Prüfen**. Ist es richtig, werden die Kästchen grün und du bekommst einen Stern.
@@ -36,19 +36,21 @@ Dieser Teil ist für Erwachsene.
 Eine Datei oder das Feld kann so aussehen:
 
 ```
-Wort;Satz
-Freund;Mein Freund ist nett.
+Wort;Satz;Bedeutung
+Freund;Mein Freund ist nett.;friend
 Straße;Wir wohnen in einer ruhigen Straße.
 fahren
 ```
 
 - Ein Wort pro Zeile. Ein Satz nach dem Wort in derselben Zeile, nach einem Komma, einem Semikolon oder einem Tab, wird mit vorgelesen und mit einer Lücke gezeigt. Bis zu 50 Zeichen pro Satz.
-- Wörter mit Kommas dazwischen in einer Zeile gehen auch: `Freund, Straße, fahren`.
-- Eine erste Zeile wie `Wort;Satz` ist eine Überschrift und wird übersprungen. Eine Datei aus Excel oder Numbers geht.
+- Nach dem Satz kann eine Bedeutung stehen, in einer dritten Spalte: die englische Bedeutung eines deutschen Wortes oder die deutsche eines englischen. Sie steht klein unter dem Satz. Bis zu 30 Zeichen. loopy schlägt nirgends nach: Die Bedeutung kommt aus eurer Datei.
+- Die Bedeutung kann auch in Klammern nach dem Wort stehen: `Biene (the bee), Die Biene fliegt zur Blume.` So zeigt das Feld in den Einstellungen sie.
+- Wörter mit Kommas dazwischen in einer Zeile gehen auch: `Freund, Straße, fahren` oder `Biene (the bee), Wiese (the meadow)`.
+- Eine erste Zeile wie `Wort;Satz`, `Wort;Satz;Bedeutung` oder `Wort;Bedeutung` ist eine Überschrift und wird übersprungen. Sie sagt auch, was in welcher Spalte steht. Eine Datei aus Excel oder Numbers geht. Alte Dateien mit nur Wort und Satz gehen wie bisher.
 - Bis zu 50 Wörter, jedes 2 bis 20 Buchstaben lang. „Eis-Café“ und „zu Hause“ gehen auch.
 - Das Spiel sagt, was es weggelassen hat, etwa Zahlen oder einen Tippfehler mit @.
 - Jedes Kind hat seine eigene Liste. Es gibt eine Liste für Deutsch und eine für Englisch: Schaltet **Wörter auf** um, um die andere zu füllen.
-- Jedes Wort der Liste kommt einmal dran, bevor eines wiederkommt.
+- Jedes Wort der Liste kommt einmal dran, bevor eines wiederkommt. Ein Wort, das vor dem Laden der Liste falsch war, kommt in Nochmal versuchen nicht zurück.
 - **Liste leeren** geht zurück zu den Wörtern von loopy.
 - Die Liste bleibt in diesem Browser. Mit dem [Sterne-Code](/loopy/guide/de/stars/move-stars/) zieht sie auf ein anderes Gerät um. Die Datei wird auf eurem Gerät gelesen und nie hochgeladen.
 
@@ -79,7 +81,8 @@ Tippe im Spiel auf ⚙ **Einstellungen** und wähle:
 - **Eure Wortliste:** siehe oben.
 - **Stufe:** **Buchstaben-Tasten, erster Buchstabe**, **Buchstaben-Tasten**, **Tastatur** oder **Tastatur, ohne Kästchen**. Das sind die vier Stufen oben.
 - **Vorlesen:** dieselbe Schaltfläche wie in jedem Spiel, neben dem Ton-Knopf. Hier liest sie jedes neue Wort vor und ist am Anfang an. Schaltet sie aus, dann tippt das Kind auf **Wort anhören**. Nach einem Fehler wird das Wort immer vorgelesen.
-- **Arbeitsblatt drucken:** 20 nummerierte Linien zum Schreiben, wie bei einem Diktat, mit dem Satz und seiner Lücke unter der Linie. Die Wörter stehen auf Seite 2, zum Vorlesen für den Erwachsenen.
+- **Bedeutung unter dem Wort:** **An** oder **Aus**. Am Anfang an. Zeigt die Bedeutung aus eurer Liste, wenn ein Wort eine hat.
+- **Arbeitsblatt drucken:** 20 nummerierte Linien zum Schreiben, wie bei einem Diktat, mit dem Satz und seiner Lücke unter der Linie, und der Bedeutung, wenn sie an ist. Die Wörter stehen auf Seite 2, zum Vorlesen für den Erwachsenen.
 
 Die Stimme ist die des Geräts. Nichts wird heruntergeladen. Hat das Gerät keine Stimme für die Sprache, verschwindet der Knopf **Wort anhören** und die Karte sagt es. Dann liest ein Erwachsener das Wort vor.
 

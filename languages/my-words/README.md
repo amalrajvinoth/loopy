@@ -1,10 +1,10 @@
 # My Words
 
-A spelling test to play: loopy reads a word out loud, and the child types it. A grown-up types in the week's spelling words from school, or imports a CSV file, with an example sentence for each word if they like. The words can be English or German.
+A spelling test to play: loopy reads a word out loud, and the child types it. A grown-up types in the week's spelling words from school, or imports a CSV file. Each word can have an example sentence and a meaning. The words can be English or German.
 
 ## How to play
 
-1. Listen to the word. Tap **Hear the word** to hear it again. With a sentence on the list, loopy reads that too, and the card shows it with a gap: "My ___ is kind."
+1. Listen to the word. Tap **Hear the word** to hear it again. With a sentence on the list, loopy reads that too, and the card shows it with a gap: "My ___ is kind." With a meaning on the list, it shows in small text under that: "the bee".
 2. Type the word with the letter tiles or the keyboard. At levels 1 to 3 there is one box for each letter.
 3. **⌫** takes back the last letter.
 4. Tap **Check**. Right: the boxes turn green and you earn a star.
@@ -22,15 +22,18 @@ Open **Settings** and find **Your word list**.
 The file or the box can look like this:
 
 ```
-word,sentence
-friend,My friend is kind.
+word,sentence,meaning
+friend,My friend is kind.,Freund
 because,I ran because I was late.
 said
 ```
 
 - One word per line. A sentence can follow the word on the same line, after a comma, a semicolon or a tab. It is read aloud with the word and shown with a gap. Up to 50 letters per sentence.
-- Words with commas between them on one line, like `friend, because, said`, work too (the Spelling Quiz way).
-- A first line like `word,sentence` or `Wort;Satz` is a heading and skipped. Quotes around a part are fine. A file saved from Excel or Numbers works.
+- A meaning can follow the sentence, in a third column. That is the German meaning of an English word, or the English meaning of a German one. It shows in small text under the sentence. Up to 30 letters, letters only. loopy never looks a word up anywhere: the meaning comes from your file.
+- Without a heading, the last part of a line is the meaning when it is up to 3 words. It is also the meaning when the sentence before it ends with a full stop. A longer tail after a sentence with no full stop stays part of the sentence.
+- A meaning can also stand in brackets after the word: `Biene (the bee), Die Biene fliegt zur Blume.` That is how the box in Settings shows it.
+- Words with commas between them on one line, like `friend, because, said` or `Biene (the bee), Wiese (the meadow)`, work too (the Spelling Quiz way).
+- A first line like `word,sentence`, `Wort;Satz;Bedeutung` or `word,meaning` is a heading and skipped. It also says which column holds what. With `word,meaning`, the second column is the meaning, not a sentence. Quotes around a part are fine. A file saved from Excel or Numbers works. Old files with only a word and a sentence work as before.
 - Up to 50 words. Each word is 2 to 20 letters. A word can have a ' or a - in it, or one space. "don't", "ice-cream" and "ice cream" work.
 - Anything that is not a word (numbers, @ and so on) is left out, and the game says what it left out.
 - Each child has their own list. There is one list for English and one for German: switch **Words in** to fill the other one.
@@ -73,6 +76,7 @@ Open them with the gear button.
 - **Your word list.** See above.
 - **Level.** Letter tiles with the first letter, letter tiles, a keyboard, or a keyboard with no boxes. Remembered for each age.
 - **Read aloud.** The speaker pill next to the sound button. On at the start.
+- **Meaning under the word.** On or Off. On at the start. Shows the meaning from your list, when a word has one.
 - Age, colors, sound effects and the display language (EN/DE) are shared with the other games.
 - **Print worksheet.** See below.
 - The keyboard works too: type the letters, Backspace erases, Enter checks.
@@ -81,7 +85,7 @@ Open them with the gear button.
 
 Tap **Settings**, then **Print worksheet**. The print window opens. Print it, or save it as a PDF.
 
-- Page 1 has 20 numbered lines to write on, like a spelling test. Under a line, the word's sentence shows with a gap.
+- Page 1 has 20 numbered lines to write on, like a spelling test. Under a line, the word's sentence shows with a gap, and its meaning when **Meaning under the word** is on.
 - Page 2 has the words, for the grown-up to read out, and as the answers.
 - With a list, every word of the list comes once before any comes again.
 
@@ -93,6 +97,6 @@ Tap **Settings**, then **Print worksheet**. The print window opens. Print it, or
 
 ## For grown-ups
 
-- The grown-ups page shows each missed word with what the child typed, under "Typing words from your list" or "Typing spelling words". Try again brings missed words back.
-- The list is saved as `mw.listEn` or `mw.listDe` for the child, as pairs of word and sentence. A list with many long sentences is shortened so it fits in the stars code. The game says so when it saves.
+- The grown-ups page shows each missed word with what the child typed, under "Typing words from your list" or "Typing spelling words". Try again brings missed words back, but only while the word is still in play. A word missed before a list was loaded, or from a list that was cleared, stays out.
+- The list is saved as `mw.listEn` or `mw.listDe` for the child, as word, sentence and meaning. A list with many long sentences is shortened so it fits in the stars code. The last sentences go first, then the last meanings. The game says so when it saves. Lists saved before 16 November 2026 have no meanings and read the same.
 - My Words is not part of Today's 10, because each child can have their own words.

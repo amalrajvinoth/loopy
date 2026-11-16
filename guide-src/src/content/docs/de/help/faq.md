@@ -74,7 +74,7 @@ Ja. Jede Buchstabenfolge zählt als Versuch, damit ein Kind Laute ausprobieren k
 
 ## Kann mein Kind die Übungswörter aus der Schule üben?
 
-Ja, in zwei Spielen. Im [Rechtschreib-Quiz](/loopy/guide/de/games/languages/spelling-quiz/) wählt das Kind die richtige Schreibweise aus 3 oder 4. In [Meine Wörter](/loopy/guide/de/games/languages/my-words/) liest loopy das Wort vor und das Kind tippt es. In beiden Spielen: ⚙ **Einstellungen** öffnen, die Wörter in **Eure Wortliste** schreiben und auf **Liste speichern** tippen. Meine Wörter kann auch eine `.csv`-Datei laden: ein Wort pro Zeile, mit einem Satz nach dem Wort, wenn ihr mögt. Jedes Kind hat seine eigene Liste, auf Deutsch oder Englisch.
+Ja, in zwei Spielen. Im [Rechtschreib-Quiz](/loopy/guide/de/games/languages/spelling-quiz/) wählt das Kind die richtige Schreibweise aus 3 oder 4. In [Meine Wörter](/loopy/guide/de/games/languages/my-words/) liest loopy das Wort vor und das Kind tippt es. In beiden Spielen: ⚙ **Einstellungen** öffnen, die Wörter in **Eure Wortliste** schreiben und auf **Liste speichern** tippen. Meine Wörter kann auch eine `.csv`-Datei laden: ein Wort pro Zeile, mit einem Satz nach dem Wort, wenn ihr mögt. Eine Bedeutung danach, oder in Klammern nach dem Wort wie `Biene (the bee)`, steht klein unter dem Wort. Jedes Kind hat seine eigene Liste, auf Deutsch oder Englisch.
 
 ## Kann ich die Wörter in einem Spiel ändern?
 
