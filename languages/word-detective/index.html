@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'sha256-f7oR7HkF1GH+vLb7xF6j2wGR8BlFVqgv4u/oir/3Qvo='; style-src 'self' 'sha256-z2P7kGW5Z05eCTjTZdYpc0vThTlOE9vmt97pVSvi2I4=' 'sha256-gOaHZtTYUZEGik3rTQj/3FhZi971yU8aKZnCcIZNZE4=' 'sha256-RT1053JU5UiKvjrCUFx1rlhdFLMmgtuFJ9T8jnMeawQ=' 'sha256-O5NTZij/hDY+lZORV4Q0BR9peBBi5UlRbF9oNS0AkVs='; img-src 'self' data:; font-src 'self'; connect-src 'self' https://loopy-sync.loopy-1e2.workers.dev; worker-src 'self'; object-src 'none'; base-uri 'none'; form-action 'none'; manifest-src 'self'; upgrade-insecure-requests">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'sha256-8nkkKenLHUQubXloA4av1PFJlkHYfJscz5aTmndtx1I='; style-src 'self' 'sha256-z2P7kGW5Z05eCTjTZdYpc0vThTlOE9vmt97pVSvi2I4=' 'sha256-gOaHZtTYUZEGik3rTQj/3FhZi971yU8aKZnCcIZNZE4=' 'sha256-RT1053JU5UiKvjrCUFx1rlhdFLMmgtuFJ9T8jnMeawQ=' 'sha256-QfLsOv2Y/q/yPPetvB45reN7yfVtHbKTHtNYBrxQJGY='; img-src 'self' data:; font-src 'self'; connect-src 'self' https://loopy-sync.loopy-1e2.workers.dev; worker-src 'self'; object-src 'none'; base-uri 'none'; form-action 'none'; manifest-src 'self'; upgrade-insecure-requests">
 <meta name="referrer" content="strict-origin-when-cross-origin">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <style>:root{color-scheme:light;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}body{margin:0}[hidden]{display:none!important}</style>
@@ -131,7 +131,8 @@ body { min-height: 100vh; min-height: 100dvh; padding-block: var(--page-pad-top)
   .side { height: 100%; display: flex; flex-direction: column; justify-content: center; gap: 10px; }
 }
 
-/* Word Detective: the case strip and the "Guess..." line above the card, a clue, the letter grid that fills the card, then the keyboard. */
+/* Word Detective: the case strip and the "Guess..." line above the card (inside main, so every word sits in a landmark), a clue, the letter grid that fills the card, then the keyboard. */
+.strip { flex: 0 0 auto; }
 .strip { display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 2px 12px; width: 100%; min-height: 20px; }
 .strip:has(.case:only-child) { justify-content: flex-start; }
 .case { display: inline-flex; align-items: center; gap: 5px; font-weight: 600; font-size: 0.95rem; white-space: nowrap; }
@@ -303,11 +304,11 @@ body:has(#settings-panel:not([hidden])) .grid { height: 52dvh; }
     </div>
   </div>
 
-  <div class="strip" id="strip">
-    <div class="case" id="case"></div>
-    <p class="prompt" id="prompt"></p>
-  </div>
   <main class="play">
+    <div class="strip" id="strip">
+      <div class="case" id="case"></div>
+      <p class="prompt" id="prompt"></p>
+    </div>
     <div class="problem-card" id="card">
       <div class="clues" id="clues"></div>
       <div class="grid" id="grid" role="list"></div>
@@ -394,7 +395,7 @@ function marks(guess, answer) {
   const $ = (id) => document.getElementById(id);
   const card = $("card"), caseEl = $("case"), moreBtn = $("more"), cluesEl = $("clues"), promptEl = $("prompt"), gridEl = $("grid"),
     resultEl = $("result"), feedbackEl = $("feedback"), padEl = $("letters"), nextBtn = $("next"), sideEl = document.querySelector(".side"),
-    stripEl = $("strip"), wrapEl = document.querySelector(".wrap"), playEl = document.querySelector(".play");
+    stripEl = $("strip"), playEl = document.querySelector(".play");
   const wordsBtns = [...document.querySelectorAll("#words-seg button")];
   const levelBtns = [...document.querySelectorAll("#level-seg button")];
   const t = Loopy.t;
@@ -524,7 +525,7 @@ function marks(guess, answer) {
   function place() {
     const want = wide.matches ? sideEl : card, at = wide.matches ? padEl : gridEl;
     if (cluesEl.parentNode !== want) want.insertBefore(cluesEl, at);
-    const stripWant = wide.matches ? sideEl : wrapEl, stripAt = wide.matches ? cluesEl : playEl;
+    const stripWant = wide.matches ? sideEl : playEl, stripAt = wide.matches ? cluesEl : card;
     if (stripEl.parentNode !== stripWant) stripWant.insertBefore(stripEl, stripAt);
   }
   function render() {

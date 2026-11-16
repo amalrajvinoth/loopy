@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'sha256-beboR3PA//fR6x/5ZQ331rPb01POMoq1UZGfJpLb03c='; style-src 'self' 'sha256-z2P7kGW5Z05eCTjTZdYpc0vThTlOE9vmt97pVSvi2I4=' 'sha256-feiFDjVckSlKY3vxtWaFHyIxv/0vJasrggHW3bKZHdo=' 'sha256-RT1053JU5UiKvjrCUFx1rlhdFLMmgtuFJ9T8jnMeawQ=' 'sha256-pLBMM5zVz9spIHPa0nDhWwpuoMJdXb5QDJ7fUSZiSbc='; img-src 'self' data:; font-src 'self'; connect-src 'self' https://loopy-sync.loopy-1e2.workers.dev; worker-src 'self'; object-src 'none'; base-uri 'none'; form-action 'none'; manifest-src 'self'; upgrade-insecure-requests">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'sha256-911OzOc7Zt78z4y6NSKMiF+H4HSMfpAKXxxY8xQ/Rp4='; style-src 'self' 'sha256-z2P7kGW5Z05eCTjTZdYpc0vThTlOE9vmt97pVSvi2I4=' 'sha256-feiFDjVckSlKY3vxtWaFHyIxv/0vJasrggHW3bKZHdo=' 'sha256-RT1053JU5UiKvjrCUFx1rlhdFLMmgtuFJ9T8jnMeawQ=' 'sha256-pLBMM5zVz9spIHPa0nDhWwpuoMJdXb5QDJ7fUSZiSbc='; img-src 'self' data:; font-src 'self'; connect-src 'self' https://loopy-sync.loopy-1e2.workers.dev; worker-src 'self'; object-src 'none'; base-uri 'none'; form-action 'none'; manifest-src 'self'; upgrade-insecure-requests">
 <meta name="referrer" content="strict-origin-when-cross-origin">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <style>:root{color-scheme:light;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}body{margin:0}[hidden]{display:none!important}</style>
@@ -351,7 +351,12 @@ Loopy.addStrings({
     Loopy.nextButton(nextBtn, answered);
     fit();
   }
-  const moreHint = () => storyEl.classList.toggle("more", storyEl.scrollHeight > storyEl.clientHeight + 2 && storyEl.scrollTop + storyEl.clientHeight < storyEl.scrollHeight - 2);
+  // A bubble that scrolls can be focused and scrolled with the keyboard; one that fits is not in the tab order.
+  const moreHint = () => {
+    const scrolls = storyEl.scrollHeight > storyEl.clientHeight + 2;
+    storyEl.classList.toggle("more", scrolls && storyEl.scrollTop + storyEl.clientHeight < storyEl.scrollHeight - 2);
+    if (scrolls) storyEl.tabIndex = 0; else storyEl.removeAttribute("tabindex");
+  };
   storyEl.addEventListener("scroll", moreHint, { passive: true });
   // The text and the question grow to fill the card, up to double size (--fit in the CSS). The biggest step that
   // fits without scrolling wins; on a phone a long text may step down to 0.85 instead of scrolling.
