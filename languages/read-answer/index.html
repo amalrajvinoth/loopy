@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'sha256-911OzOc7Zt78z4y6NSKMiF+H4HSMfpAKXxxY8xQ/Rp4='; style-src 'self' 'sha256-z2P7kGW5Z05eCTjTZdYpc0vThTlOE9vmt97pVSvi2I4=' 'sha256-feiFDjVckSlKY3vxtWaFHyIxv/0vJasrggHW3bKZHdo=' 'sha256-RT1053JU5UiKvjrCUFx1rlhdFLMmgtuFJ9T8jnMeawQ=' 'sha256-pLBMM5zVz9spIHPa0nDhWwpuoMJdXb5QDJ7fUSZiSbc='; img-src 'self' data:; font-src 'self'; connect-src 'self' https://loopy-sync.loopy-1e2.workers.dev; worker-src 'self'; object-src 'none'; base-uri 'none'; form-action 'none'; manifest-src 'self'; upgrade-insecure-requests">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'sha256-UuNgPHb95hiZQExiEBLZEXgqlbllf1pFpzS3kgh7AUA='; style-src 'self' 'sha256-z2P7kGW5Z05eCTjTZdYpc0vThTlOE9vmt97pVSvi2I4=' 'sha256-feiFDjVckSlKY3vxtWaFHyIxv/0vJasrggHW3bKZHdo=' 'sha256-RT1053JU5UiKvjrCUFx1rlhdFLMmgtuFJ9T8jnMeawQ=' 'sha256-puzmSAkOMsZi5ZyYB3/u0nJnq9uVtgRRq2DXGvzlMuo='; img-src 'self' data:; font-src 'self'; connect-src 'self' https://loopy-sync.loopy-1e2.workers.dev; worker-src 'self'; object-src 'none'; base-uri 'none'; form-action 'none'; manifest-src 'self'; upgrade-insecure-requests">
 <meta name="referrer" content="strict-origin-when-cross-origin">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <style>:root{color-scheme:light;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}body{margin:0}[hidden]{display:none!important}</style>
@@ -137,6 +137,8 @@ body { min-height: 100vh; min-height: 100dvh; padding-block: var(--page-pad-top)
 .story .pic { font-size: calc(var(--fit, 1) * clamp(1.6rem, 5dvh, 2.8rem)); line-height: 1.1; flex: 0 0 auto; }
 /* A shadow at the bottom of the bubble says there is more text to scroll to (only on the smallest phones). */
 .story.more { box-shadow: inset 0 -22px 16px -16px var(--accent); }
+/* The bubble is a stop for the keyboard, so a long text can be scrolled with the arrow keys. */
+.story:focus-visible { outline: 3px solid var(--mark); outline-offset: 3px; }
 /* The text and the question grow with --fit, which the page sets (1 to 2) so they fill the card without scrolling. */
 .story p { margin: 0; font-size: calc(var(--fit, 1) * clamp(0.95rem, min(4vw, 2.7dvh), 1.35rem)); line-height: 1.42; color: var(--ink); text-wrap: pretty; }
 .question { margin: 0; font-size: calc(var(--fit, 1) * clamp(1.15rem, min(5vw, 3.4dvh), 1.7rem)); font-weight: 700; line-height: 1.3; text-align: center; max-width: 30ch; text-wrap: balance; }
@@ -260,7 +262,7 @@ body { min-height: 100vh; min-height: 100dvh; padding-block: var(--page-pad-top)
   <main class="play">
     <div class="problem-card" id="card">
       <span class="kind" id="kind"></span>
-      <div class="story">
+      <div class="story" tabindex="0">
         <div class="pic" id="pic" aria-hidden="true"></div>
         <p id="text"></p>
       </div>
@@ -351,12 +353,7 @@ Loopy.addStrings({
     Loopy.nextButton(nextBtn, answered);
     fit();
   }
-  // A bubble that scrolls can be focused and scrolled with the keyboard; one that fits is not in the tab order.
-  const moreHint = () => {
-    const scrolls = storyEl.scrollHeight > storyEl.clientHeight + 2;
-    storyEl.classList.toggle("more", scrolls && storyEl.scrollTop + storyEl.clientHeight < storyEl.scrollHeight - 2);
-    if (scrolls) storyEl.tabIndex = 0; else storyEl.removeAttribute("tabindex");
-  };
+  const moreHint = () => storyEl.classList.toggle("more", storyEl.scrollHeight > storyEl.clientHeight && storyEl.scrollTop + storyEl.clientHeight < storyEl.scrollHeight - 2);
   storyEl.addEventListener("scroll", moreHint, { passive: true });
   // The text and the question grow to fill the card, up to double size (--fit in the CSS). The biggest step that
   // fits without scrolling wins; on a phone a long text may step down to 0.85 instead of scrolling.
@@ -365,7 +362,7 @@ Loopy.addStrings({
   const FITS = [2, 1.8, 1.6, 1.45, 1.3, 1.2, 1.1, 1, 0.92, 0.85];
   const oneScreen = window.matchMedia("(orientation: portrait), (orientation: landscape) and (min-width: 640px)");
   let fitMax = 2;
-  const fits = (el) => el.scrollHeight <= el.clientHeight + 2;
+  const fits = (el) => el.scrollHeight <= el.clientHeight;
   function fit() {
     if (!oneScreen.matches || !$("settings-panel").hidden) { card.style.removeProperty("--fit"); moreHint(); return; }
     for (const f of FITS) {

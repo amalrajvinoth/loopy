@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'sha256-8nkkKenLHUQubXloA4av1PFJlkHYfJscz5aTmndtx1I='; style-src 'self' 'sha256-z2P7kGW5Z05eCTjTZdYpc0vThTlOE9vmt97pVSvi2I4=' 'sha256-gOaHZtTYUZEGik3rTQj/3FhZi971yU8aKZnCcIZNZE4=' 'sha256-RT1053JU5UiKvjrCUFx1rlhdFLMmgtuFJ9T8jnMeawQ=' 'sha256-QfLsOv2Y/q/yPPetvB45reN7yfVtHbKTHtNYBrxQJGY='; img-src 'self' data:; font-src 'self'; connect-src 'self' https://loopy-sync.loopy-1e2.workers.dev; worker-src 'self'; object-src 'none'; base-uri 'none'; form-action 'none'; manifest-src 'self'; upgrade-insecure-requests">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'sha256-J9XGYj+JUx4LHF2ITzrIA/uS99l4csgzeEfEz+ZpzxI='; style-src 'self' 'sha256-z2P7kGW5Z05eCTjTZdYpc0vThTlOE9vmt97pVSvi2I4=' 'sha256-gOaHZtTYUZEGik3rTQj/3FhZi971yU8aKZnCcIZNZE4=' 'sha256-RT1053JU5UiKvjrCUFx1rlhdFLMmgtuFJ9T8jnMeawQ=' 'sha256-zz1J/4XkB7felAlRQ1ypv8cBhKpyAuzyKNnOQC8cvPk='; img-src 'self' data:; font-src 'self'; connect-src 'self' https://loopy-sync.loopy-1e2.workers.dev; worker-src 'self'; object-src 'none'; base-uri 'none'; form-action 'none'; manifest-src 'self'; upgrade-insecure-requests">
 <meta name="referrer" content="strict-origin-when-cross-origin">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <style>:root{color-scheme:light;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}body{margin:0}[hidden]{display:none!important}</style>
@@ -132,7 +132,9 @@ body { min-height: 100vh; min-height: 100dvh; padding-block: var(--page-pad-top)
 }
 
 /* Word Detective: the case strip and the "Guess..." line above the card (inside main, so every word sits in a landmark), a clue, the letter grid that fills the card, then the keyboard. */
-.strip { flex: 0 0 auto; }
+.strip { flex: 0 0 auto; margin-bottom: calc(4px - var(--play-gap)); }
+.side { display: flex; flex-direction: column; gap: 8px; }
+@media (max-height: 700px) and (orientation: portrait) { .side { gap: 6px; } }
 .strip { display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 2px 12px; width: 100%; min-height: 20px; }
 .strip:has(.case:only-child) { justify-content: flex-start; }
 .case { display: inline-flex; align-items: center; gap: 5px; font-weight: 600; font-size: 0.95rem; white-space: nowrap; }
@@ -148,7 +150,9 @@ body { min-height: 100vh; min-height: 100dvh; padding-block: var(--page-pad-top)
 }
 .more:disabled { opacity: 0.45; cursor: default; }
 .strip .case { min-width: 0; }
-@media (max-width: 380px) { .case { font-size: 0.85rem; } .prompt { font-size: 0.85rem; } }
+/* Phones: a short counter ("Case 1/5" and smaller dots) and the line share one row. */
+@media (max-width: 599px) { .case { font-size: 0.85rem; gap: 4px; } .case i { width: 10px; height: 10px; } .prompt { font-size: 0.85rem; } .strip { gap: 2px 6px; } }
+@media (max-width: 379px) { .case, .prompt { font-size: 0.8rem; } }
 .clues { display: flex; flex-direction: column; gap: 6px; width: 100%; }
 .clue { display: flex; gap: 8px; align-items: flex-start; border: 2px solid var(--line); border-radius: 14px; padding: 6px 10px; background: var(--chip); text-align: left; font-size: 0.95rem; line-height: 1.3; }
 .clue .ic { font-size: 1.25rem; line-height: 1.1; flex: 0 0 auto; }
@@ -330,11 +334,11 @@ Loopy.addStrings({
     wdName: "Word Detective", wdWords: "Words in", wdLevel: "Level",
     wdL1: "3 letters", wdL2: "4 letters", wdL3: "5 letters", wdL4: "5, tricky", wdL5: "6 letters",
     wdKbd: "Keyboard works too: type the letters, Backspace erases, Enter checks and goes on.",
-    wdCase: "Case {n} of 5", wdCaseAria: "Case {n} of 5. {s} solved so far.",
+    wdCase: "Case {n} of 5", wdCaseShort: "Case {n}/5", wdCaseAria: "Case {n} of 5. {s} solved so far.",
     wdMore: "🔎 Clue", wdLeft: "{n} left", wdNoClues: "No clues left",
     wdMean: "What it means", wdHeard: "Heard at the scene", wdFirst: "First letter",
     wdFirstIs: "It starts with “{c}” and has {n} letters.",
-    wdGuess: "Guess the {n}-letter word in 6 tries.", wdGuessClue: "Guess the word in 6 tries.",
+    wdGuess: "Guess the {n}-letter word.", wdGuessClue: "Guess the word in 6 tries.",
     wdRow: "Try {n}: {l}", wdRowEmpty: "Try {n}: empty", wdRight: "right place", wdIn: "in the word", wdNot: "not in the word",
     wdFull: "Fill every box first.",
     wdClosed: "Case closed", wdOpen: "Not this time",
@@ -352,11 +356,11 @@ Loopy.addStrings({
     wdName: "Wortdetektiv", wdWords: "Wörter auf", wdLevel: "Stufe",
     wdL1: "3 Buchstaben", wdL2: "4 Buchstaben", wdL3: "5 Buchstaben", wdL4: "5, knifflig", wdL5: "6 Buchstaben",
     wdKbd: "Die Tastatur geht auch: Buchstaben tippen, Rücktaste löscht, Enter prüft und geht weiter.",
-    wdCase: "Fall {n} von 5", wdCaseAria: "Fall {n} von 5. Bisher {s} gelöst.",
+    wdCase: "Fall {n} von 5", wdCaseShort: "Fall {n}/5", wdCaseAria: "Fall {n} von 5. Bisher {s} gelöst.",
     wdMore: "🔎 Hinweis", wdLeft: "{n} übrig", wdNoClues: "Keine Hinweise mehr",
     wdMean: "Bedeutung", wdHeard: "Am Tatort gehört", wdFirst: "Erster Buchstabe",
     wdFirstIs: "Es fängt mit „{c}“ an und hat {n} Buchstaben.",
-    wdGuess: "Rate das Wort mit {n} Buchstaben in 6 Versuchen.", wdGuessClue: "Rate das Wort in 6 Versuchen.",
+    wdGuess: "Rate das Wort: {n} Buchstaben.", wdGuessClue: "Rate das Wort in 6 Versuchen.",
     wdRow: "Versuch {n}: {l}", wdRowEmpty: "Versuch {n}: leer", wdRight: "richtige Stelle", wdIn: "im Wort", wdNot: "nicht im Wort",
     wdFull: "Fülle erst jedes Kästchen.",
     wdClosed: "Fall gelöst", wdOpen: "Diesmal nicht",
@@ -464,7 +468,7 @@ function marks(guess, answer) {
   function drawCase() {
     caseEl.textContent = "";
     const n = Math.min(file.length + 1, CASES);
-    const label = document.createElement("span"); label.textContent = t("wdCase", { n }) + " ";
+    const label = document.createElement("span"); label.textContent = t(phone.matches ? "wdCaseShort" : "wdCase", { n }) + " ";
     caseEl.appendChild(label);
     for (let i = 0; i < CASES; i++) {
       const dot = document.createElement("i");
@@ -522,6 +526,8 @@ function marks(guess, answer) {
   }
   // Landscape on a phone or tablet: the case strip and the clues sit above the keyboard, so the grid keeps the card.
   const wide = window.matchMedia("(orientation: landscape) and (min-width: 640px)");
+  const phone = window.matchMedia("(max-width: 599px)");
+  phone.addEventListener("change", drawCase);
   function place() {
     const want = wide.matches ? sideEl : card, at = wide.matches ? padEl : gridEl;
     if (cluesEl.parentNode !== want) want.insertBefore(cluesEl, at);
