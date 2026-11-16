@@ -10,7 +10,7 @@ Die großen Änderungen, die neuesten zuerst. Kleine Korrekturen stehen nicht da
 
 ## 16. November 2026
 
-- **Die Spiele füllen den Bildschirm.** Auf einem Tablet, Laptop oder Monitor wachsen die Aufgabe, die Flagge, das Wort und die Tasten jetzt mit dem Bildschirm. Vorher blieben sie so groß wie auf dem Handy, mit leeren Rändern an den Seiten. Auf dem Handy sind die Aufgabe und die Tasten eine Stufe größer. Zuerst in Plus und Minus, Flaggen und Hauptstädte und Bild und Wort. Die Startseite ist auf großen Bildschirmen auch breiter. Die anderen Spiele folgen.
+- **Die Spiele füllen den Bildschirm.** Auf einem Tablet, Laptop oder Monitor wachsen die Aufgabe, die Flagge, das Wort und die Tasten jetzt mit dem Bildschirm. Vorher blieben sie so groß wie auf dem Handy, mit leeren Rändern an den Seiten. Auf dem Handy sind die Aufgabe und die Tasten eine Stufe größer. In jedem Spiel. Die Startseite ist auf großen Bildschirmen auch breiter.
 
 ## 15. November 2026
 

@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'sha256-w4iwDWLzFrSVdj8gv/5vUWz+vR8RTiupIliXeWT2+Ic='; style-src 'self' 'sha256-z2P7kGW5Z05eCTjTZdYpc0vThTlOE9vmt97pVSvi2I4=' 'sha256-B1/34nWPbkOgQvjShds4VMrIOiMhFRoP1nBsay1oDds='; img-src 'self' data:; font-src 'self'; connect-src 'self' https://loopy-sync.loopy-1e2.workers.dev; worker-src 'self'; object-src 'none'; base-uri 'none'; form-action 'none'; manifest-src 'self'; upgrade-insecure-requests">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'sha256-w4iwDWLzFrSVdj8gv/5vUWz+vR8RTiupIliXeWT2+Ic='; style-src 'self' 'sha256-z2P7kGW5Z05eCTjTZdYpc0vThTlOE9vmt97pVSvi2I4=' 'sha256-4Az89R3dJTNkuen8aqj0xnHbBPLd110Rj4Vt/GMj77Y='; img-src 'self' data:; font-src 'self'; connect-src 'self' https://loopy-sync.loopy-1e2.workers.dev; worker-src 'self'; object-src 'none'; base-uri 'none'; form-action 'none'; manifest-src 'self'; upgrade-insecure-requests">
 <meta name="referrer" content="strict-origin-when-cross-origin">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <style>:root{color-scheme:light;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}body{margin:0}[hidden]{display:none!important}</style>
@@ -42,9 +42,9 @@ body {
   background: var(--bg); color: var(--ink); font-family: var(--font); font-size: 16px;
   padding-left: max(16px, env(safe-area-inset-left, 0px));
   padding-right: max(16px, env(safe-area-inset-right, 0px));
-  min-height: 100vh; min-height: 100dvh; padding-block: 12px 16px;
+  min-height: 100vh; min-height: 100dvh; padding-block: var(--page-pad-top) var(--page-pad-bottom);
 }
-.wrap { max-width: 520px; margin: 0 auto; display: flex; flex-direction: column; gap: 12px; }
+.wrap { max-width: var(--col); margin: 0 auto; display: flex; flex-direction: column; gap: var(--row-gap); }
 .game-bar { display: flex; align-items: center; justify-content: space-between; gap: 8px; }
 .bar-right { display: flex; align-items: center; gap: 8px; }
 .top { display: flex; flex-wrap: wrap; gap: 8px 12px; align-items: center; justify-content: space-between; }
@@ -115,7 +115,6 @@ button:focus-visible { outline: 3px solid var(--mark); outline-offset: 3px; }
   h1 { font-size: 1.35rem; }
   .seg button { font-size: 0.85rem; }
 }
-@media (min-width: 600px) and (orientation: portrait) { .wrap { max-width: 640px; } }
 
 /* Portrait: the page is exactly one screen tall; the map takes the room that is left.
    With settings open, the page scrolls normally. */
@@ -130,7 +129,6 @@ button:focus-visible { outline: 3px solid var(--mark); outline-offset: 3px; }
 }
 /* Landscape: the map on the left, the question and answer on the right. */
 @media (orientation: landscape) and (min-width: 640px) {
-  .wrap { max-width: 1100px; }
   body { height: calc(100dvh - env(safe-area-inset-top, 0px) - env(safe-area-inset-bottom, 0px)); min-height: 0; display: flex; flex-direction: column; overflow: hidden; }
   body:has(#settings-panel:not([hidden])) { height: auto; overflow: visible; }
   .wrap { flex: 1 1 auto; min-height: 0; width: 100%; }
