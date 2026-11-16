@@ -10,6 +10,7 @@ Die großen Änderungen, die neuesten zuerst. Kleine Korrekturen stehen nicht da
 
 ## 16. November 2026
 
+- **Wortlisten mit Bedeutung.** In Meine Wörter und im Rechtschreib-Quiz bekommt jedes Wort seine Bedeutung in der anderen Sprache: eine dritte Spalte in der CSV-Datei oder Klammern nach dem Wort, wie „Biene (the bee)“. Sie steht klein unter dem Wort. Mit eurer eigenen Liste zeigt das Rechtschreib-Quiz keine Biene mehr, und ein Wort, das vor dem Laden der Liste falsch war, bleibt aus Nochmal versuchen draußen. [Meine Wörter](/loopy/guide/de/games/languages/my-words/), [Rechtschreib-Quiz](/loopy/guide/de/games/languages/spelling-quiz/).
 - **Die Spiele füllen den Bildschirm.** Auf einem Tablet, Laptop oder Monitor wachsen die Aufgabe, die Flagge, das Wort und die Tasten jetzt mit dem Bildschirm. Vorher blieben sie so groß wie auf dem Handy, mit leeren Rändern an den Seiten. Auf dem Handy sind die Aufgabe und die Tasten eine Stufe größer. In jedem Spiel. Die Startseite ist auf großen Bildschirmen auch breiter.
 
 ## 15. November 2026

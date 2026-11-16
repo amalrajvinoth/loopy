@@ -74,15 +74,15 @@ Yes, in Plus and Minus, Times and Share, What Time Is It?, Make 10, Bigger or Sm
 
 ## Can my child practise their own spelling words from school?
 
-Yes, in two games. In **Spelling Quiz** the child picks the right spelling out of 3 or 4. In **My Words** loopy reads the word aloud and the child types it. In either game, tap **Settings** and type or paste the words into **Your word list**: `friend, because, said`. Tap **Save list**. Each child has their own list, in English or German. The list stays in this browser and moves with the stars code.
+Yes, in two games. In **Spelling Quiz** the child picks the right spelling out of 3 or 4. In **My Words** loopy reads the word aloud and the child types it. In either game, tap **Settings** and type or paste the words into **Your word list**: `friend, because, said`. Tap **Save list**. A meaning in brackets after a word, like `Biene (the bee)`, shows in small text under the word. Each child has their own list, in English or German. The list stays in this browser and moves with the stars code.
 
 ## How do I import a CSV word list into My Words?
 
-Open **My Words**, tap **Settings** and tap **Import a CSV file**. Pick a `.csv` or `.txt` file from your device, with one word per line. A sentence after the word on the same line, after a comma or semicolon, is read aloud with the word and shown with a gap, like "My ___ is kind." A first line like `word,sentence` is skipped. Up to 50 words, each 2 to 20 letters. You can also type or paste the list into the box and tap **Save list**. The file is read on your device and never uploaded.
+Open **My Words**, tap **Settings** and tap **Import a CSV file**. Pick a `.csv` or `.txt` file from your device, with one word per line. A sentence after the word on the same line, after a comma or semicolon, is read aloud with the word. It shows with a gap, like "My ___ is kind." A meaning in a third column, like the English meaning of a German word, shows in small text under the sentence. Turn it off under **Meaning under the word** in Settings. A first line like `word,sentence,meaning` is skipped. Up to 50 words, each 2 to 20 letters. You can also type or paste the list into the box and tap **Save list**. The file is read on your device and never uploaded, and loopy never looks a word up anywhere.
 
 ```
-word,sentence
-friend,My friend is kind.
+word,sentence,meaning
+friend,My friend is kind.,Freund
 because,I ran because I was late.
 said
 ```

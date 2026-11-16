@@ -74,7 +74,7 @@ Yes. Any letters count as a try, so a child can try sounds. The tiles show which
 
 ## Can my child practise their own spelling words from school?
 
-Yes, in two games. In [Spelling Quiz](/loopy/guide/games/languages/spelling-quiz/) the child picks the right spelling out of 3 or 4. In [My Words](/loopy/guide/games/languages/my-words/) loopy reads the word aloud and the child types it. In either game, open ⚙ **Settings**, type the words into **Your word list** and tap **Save list**. My Words can also import a `.csv` file: one word per line, with a sentence after the word if you like. Each child has their own list, in English or German.
+Yes, in two games. In [Spelling Quiz](/loopy/guide/games/languages/spelling-quiz/) the child picks the right spelling out of 3 or 4. In [My Words](/loopy/guide/games/languages/my-words/) loopy reads the word aloud and the child types it. In either game, open ⚙ **Settings**, type the words into **Your word list** and tap **Save list**. My Words can also import a `.csv` file: one word per line, with a sentence after the word if you like. A meaning after that, or in brackets after the word like `Biene (the bee)`, shows in small text under the word. Each child has their own list, in English or German.
 
 ## Can I change the words in a game?
 
