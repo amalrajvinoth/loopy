@@ -1179,8 +1179,6 @@ document.documentElement.classList.add("loopy-building");
       var after = badgeFor(data.stars);
       if (after && after !== before) owed.push([after.name, Loopy.t("badgeText", { n: data.stars })]);
       EXTRA.forEach(function (b, i) { if (!had[i] && hasExtra(b)) owed.push([b.name, b.text]); });
-      var day = Loopy.daily ? Loopy.daily.answer() : null; // 10 right today in any game count as a day
-      if (day) owed.push([day.name, Loopy.t("dayStreakBadge", { n: day.days })]);
       // Ready for the next level: 10 in a row, or 18 of the last 20 right across visits (ripe, read once here).
       // A badge card that is showing at that moment (upOwed) only puts it off to the next right answer.
       var ripe = harder ? Loopy.levels.ripe(game) : 0, ready = harder && (streak % 10 === 0 || ripe);
@@ -1358,8 +1356,9 @@ document.documentElement.classList.add("loopy-building");
   };
 })();
 
-// Loopy day streak: finishing Today's 10, or 10 right answers in any game, on days in a row. Badges at 3, 7 and 30 days.
-// Kept in this browser's localStorage as { last: "2026-10-15", streak: 3, best: 5 }.
+// Loopy day streak: finishing Today's 10 on days in a row. Badges at 3, 7 and 30 days.
+// Only Today's 10 counts a day (since 17 Nov 2026; before, 10 right answers in any game counted too).
+// Kept in this browser's localStorage as { last: "2026-10-15", streak: 3, best: 5 }. A day counted before stays counted.
 (function () {
   var KEY = "loopy.daily", MAX = 100000;
   var DAY_BADGES = [{ days: 3, key: "d3", color: "--c2" }, { days: 7, key: "d7", color: "--c4" }, { days: 30, key: "d30", color: "--c3" }];
@@ -1392,14 +1391,7 @@ document.documentElement.classList.add("loopy-building");
   // A day as "2026-10-15" in local time. offset: days from today, e.g. -1 for yesterday.
   Loopy.dayKey = dayKey;
   Loopy.daily = {
-    BADGES: DAY_BADGES, GOAL: 10, clean: clean, // clean is used by Loopy.backup
-    // Right answers today in every game together, from the answer log.
-    today: function () { return Loopy.log ? Loopy.log.rightToday() : 0; },
-    // Loopy.rewards.correct calls this: 10 right today count as a day. Returns a new day badge, if one was just earned.
-    answer: function () {
-      if (data.last === dayKey(0) || this.today() < this.GOAL) return null;
-      return this.finish().badge;
-    },
+    BADGES: DAY_BADGES, clean: clean, // clean is used by Loopy.backup
     // streak: days in a row that are still alive (finished today or yesterday). doneToday: today's 10 is finished.
     get: function () {
       var alive = data.last === dayKey(0) || data.last === dayKey(-1);
@@ -1518,8 +1510,6 @@ document.documentElement.classList.add("loopy-building");
       });
       return out;
     },
-    // Right answers today in every game together, for the day streak.
-    rightToday: function () { var row = data.days[Loopy.dayKey(0)] || {}, n = 0; Object.keys(row).forEach(function (g) { n += row[g][0]; }); return n; },
     // The kind of a sum: "add" or "sub" with "-rg" when it needs carrying or regrouping,
     // "mul-7" or "div-7" for a times table fact, "mul-big" or "div-big" for bigger numbers.
     kind: function (op, a, b) {

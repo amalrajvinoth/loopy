@@ -36,7 +36,7 @@ Tap EN for English or DE for German. You find it on the home page and in each ga
 
 ## What are the badges for?
 
-Stars: every right answer earns one, and badges come at 10, 25, 50, 100 and so on up to 5,000 stars. Streaks: 10, 20 or 50 right in a row in any game. Explorer: 5, 10 or all games played. Brave: 10 in a row on a level above your child's age. Day badges: 3, 7 or 30 days in a row, where a day counts when Today's 10 is finished or 10 answers in any game are right. All badges are in **My stars** on the home page.
+Stars: every right answer earns one, and badges come at 10, 25, 50, 100 and so on up to 5,000 stars. Streaks: 10, 20 or 50 right in a row in any game. Explorer: 5, 10 or all games played. Brave: 10 in a row on a level above your child's age. Day badges: 3, 7 or 30 days in a row, where a day counts only when Today's 10 is finished. Right answers in the other games do not count a day. All badges are in **My stars** on the home page.
 
 ## Where are the stars saved? Can I lose them?
 

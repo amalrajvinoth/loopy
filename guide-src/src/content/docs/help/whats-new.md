@@ -8,6 +8,10 @@ loopy keeps getting new games. Here is what came lately!
 
 The big changes, newest first. Small fixes are not listed. See [the full list on GitHub](https://github.com/amalrajvinoth/loopy/blob/main/RELEASES.md).
 
+## 17 November 2026
+
+- **Only Today's 10 counts a day.** Before, 10 right answers in any game also counted as a day, so the Today's 10 card said "Done today!" after a round of another game. Now the day streak and the day badges grow only when Today's 10 is finished. Days counted before stay. [Today's 10](/loopy/guide/games/todays-10/).
+
 ## 16 November 2026
 
 - **Word Detective and Read and Answer fill the screen.** In Word Detective the case counter and the "Guess the 5-letter word" line moved above the card. So the letter grid has the whole card, and its tiles are much bigger. In Read and Answer the text and the question grow to fill the card, up to double size. No more empty bands. [Word Detective](/loopy/guide/games/languages/word-detective/), [Read and Answer](/loopy/guide/games/languages/read-answer/).
