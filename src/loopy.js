@@ -199,16 +199,21 @@ document.documentElement.classList.add("loopy-building");
 
   // Every save also asks Loopy.keep to copy to IndexedDB.
   var kept = function () { if (Loopy.keep) Loopy.keep.soon(); };
+  // True from the moment a switch to another child starts until the page has reloaded. Nothing is saved
+  // in that moment: a timer still running in the game (a round clock, a level ask) could otherwise write
+  // the old child's numbers under the new child's key.
+  var switching = false;
   Loopy.store = {
     get: function (k) { try { return localStorage.getItem(pre(data.on) + k); } catch (e) { return null; } },
-    set: function (k, v) { try { localStorage.setItem(pre(data.on) + k, String(v)); } catch (e) {} kept(); },
-    remove: function (k) { try { localStorage.removeItem(pre(data.on) + k); } catch (e) {} kept(); }
+    set: function (k, v) { if (switching) return; try { localStorage.setItem(pre(data.on) + k, String(v)); } catch (e) {} kept(); },
+    remove: function (k) { if (switching) return; try { localStorage.removeItem(pre(data.on) + k); } catch (e) {} kept(); }
   };
 
   function find(id) { return data.list.filter(function (k) { return k.id === id; })[0]; }
   function copy(k) { return { id: k.id, name: k.name, pic: k.pic }; }
   // Switching child reloads the page, so every part reads the new child's things from the start.
-  function use(id) { if (!find(id)) return; data.on = id; save(); location.reload(); }
+  // Saving is off from here until the reload (see switching above).
+  function use(id) { if (!find(id)) return; switching = true; data.on = id; save(); location.reload(); }
   function create(name, pic) {
     if (data.list.length >= MAX) return null;
     var id = data.next++;
