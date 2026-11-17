@@ -26,7 +26,7 @@ On a keyboard, **1** to **4** pick an answer, the digits type, **Backspace** era
 | 6 | Help with 10: 35 − 9 is 35 − 10 = 25, then 25 + 1 | Step by Step | 1 |
 | 7 | Take away in steps: 98 − 57 is 98 − 50 = 48, then 48 − 7 | Step by Step | 2 |
 | 8 | Which way is this, and why is it a good way | Which Way? | 1 + 1 |
-| 9 | How much money: notes and coins up to 100 euros | Is It Enough? | 1 |
+| 9 | How much money: notes and coins up to 100 euros. Every note and coin shows its € sign, and the hint says whether there are coins | Is It Enough? | 1 |
 | 10 | Is the money enough for the two things | Is It Enough? | 2 |
 | 11 | Times table grid: a product, and the number at the top from its product | Times Table Grid | 1 + 1 |
 | 12 | Easy sums first: 7 × 4 from 5 × 4 and 2 × 4 | Times Table Grid | 1 + 1 |

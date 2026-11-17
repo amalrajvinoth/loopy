@@ -10,6 +10,7 @@ The big changes, newest first. Small fixes are not listed. See [the full list on
 
 ## 17 November 2026
 
+- **Money in Class Test is easier to read.** Every note and coin in "How much money?" now shows its € sign, like in Is It Enough?, so a note no longer looks like a plain number card. The hint fits the task: "Only notes, no coins" when there are none. [Class Test](/loopy/guide/games/math/class-test/).
 - **A smaller top on phones.** On a phone the top of the home page is one row: the loopy logo, the child playing and ⚙ **Settings**. Before, with three or more children the names took half the screen. Tap the child to open **Who is playing?** and switch, or add a child. The same chip in every game opens it too, so a brother or sister can take over without going home. [Who is playing?](/loopy/guide/setup/kids-and-ages/#who-is-playing).
 - **Only Today's 10 counts a day.** Before, 10 right answers in any game also counted as a day, so the Today's 10 card said "Done today!" after a round of another game. Now the day streak and the day badges grow only when Today's 10 is finished. Days counted before stay. [Today's 10](/loopy/guide/games/todays-10/).
 

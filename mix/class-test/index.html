@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'sha256-zSlG7HiCK+9+ypfJGIj2X/wF7e8jB1Jo6Emp5uW6za8='; style-src 'self' 'sha256-z2P7kGW5Z05eCTjTZdYpc0vThTlOE9vmt97pVSvi2I4=' 'sha256-MfYxDx8zBoIHIor8T71WKfrMoL6/pPpHo7E+hvd3wYg='; img-src 'self' data:; font-src 'self'; connect-src 'self' https://loopy-sync.loopy-1e2.workers.dev; worker-src 'self'; object-src 'none'; base-uri 'none'; form-action 'none'; manifest-src 'self'; upgrade-insecure-requests">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'sha256-IOObUlQlOo8PlnC3dA0IZnBUNqGZsfcqLm6ie2mJ93s='; style-src 'self' 'sha256-z2P7kGW5Z05eCTjTZdYpc0vThTlOE9vmt97pVSvi2I4=' 'sha256-Gp7Ema4CQxtLY3sZBOlW9NOfPq/oicfpYQMubsSdI9w='; img-src 'self' data:; font-src 'self'; connect-src 'self' https://loopy-sync.loopy-1e2.workers.dev; worker-src 'self'; object-src 'none'; base-uri 'none'; form-action 'none'; manifest-src 'self'; upgrade-insecure-requests">
 <meta name="referrer" content="strict-origin-when-cross-origin">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <style>:root{color-scheme:light;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}body{margin:0}[hidden]{display:none!important}</style>
@@ -96,7 +96,7 @@ svg.clock { width: min(100%, 260px, 28dvh); height: auto; aspect-ratio: 1; displ
 .pic .lines i { width: var(--ln); height: 4px; border-radius: 2px; }
 .pic .dots { display: grid; grid-template-columns: repeat(5, var(--dt)); gap: 6px; }
 .pic .dots i { width: var(--dt); height: var(--dt); border-radius: 50%; }
-/* Notes and coins keep their paper and metal colours in every theme, like Is It Enough?. */
+/* Notes and coins keep their paper and metal colours in every theme, like Is It Enough?. Each shows its euro sign, like there, so a note does not look like a plain number card. */
 .money { display: flex; flex-wrap: wrap; justify-content: center; align-items: center; gap: 6px; width: 100%; --mh: clamp(36px, 6dvh, 52px); }
 .money i { display: inline-grid; place-items: center; font-style: normal; font-weight: 700; font-variant-numeric: tabular-nums; color: #2b2112; height: var(--mh); font-size: clamp(0.95rem, 4vw, 1.2rem); line-height: 1; }
 .money .note { width: calc(var(--mh) * 1.9); border-radius: 6px; border: 2px solid rgb(0 0 0 / 0.3); box-shadow: inset 0 0 0 3px rgb(255 255 255 / 0.45); }
@@ -226,12 +226,12 @@ button:focus-visible, a:focus-visible { outline: 3px solid var(--mark); outline-
   .money { --mh: clamp(30px, 5dvh, 40px); gap: 4px; }
   .mg th, .mg td { height: clamp(38px, 5.5dvh, 60px); }
 }
-@media (max-height: 660px) and (orientation: portrait) { .kind { display: none; } .where { font-size: 0.8rem; } .sum { font-size: 1.7rem; } .pic { --ln: 60px; --dt: 11px; } .pic .lines { gap: 3px; } .pic .lines i { height: 3px; } .pic .dots { gap: 4px; } }
+@media (max-height: 660px) and (orientation: portrait) { .kind { display: none; } .where { font-size: 0.8rem; } .sum { font-size: 1.7rem; } .pic { --ln: 60px; --dt: 11px; } .pic .lines { gap: 3px; } .pic .lines i { height: 3px; } .pic .dots { gap: 4px; } .money { --mh: clamp(26px, 4.2dvh, 36px); gap: 3px; } .money .coin { font-size: 0.7rem; border-width: 3px; } }
 @media (max-height: 500px) {
   .kind { display: none; } .top h1 { font-size: 1.2rem; }
   .sum { font-size: 1.6rem; } .question { font-size: 0.95rem; } .steps { font-size: 1.1rem; gap: 3px; } .story { font-size: 1rem; }
   .feedback { font-size: 0.9rem; line-height: 1.3; } .feedback strong { font-size: 1.05rem; }
-  svg.clock { width: min(100%, 150px, 40dvh); } .pic { --ln: 60px; --dt: 10px; } .money { --mh: 28px; gap: 3px; } .money i { font-size: 0.8rem; }
+  svg.clock { width: min(100%, 150px, 40dvh); } .pic { --ln: 60px; --dt: 10px; } .money { --mh: 28px; gap: 3px; } .money i { font-size: 0.8rem; } .money .coin { font-size: 0.7rem; border-width: 3px; }
   .mg th, .mg td { height: 36px; width: 48px; font-size: 1.1rem; }
   .results { padding: 10px 14px; gap: 4px; } .results h2 { font-size: 1.3rem; } .results p { font-size: 0.95rem; } .results .muted { display: none; }
   .big-score { font-size: 2.2rem; } .best { padding: 4px 12px; } .res-actions .next, .res-actions .quiet { min-height: 44px; font-size: 1rem; }
@@ -376,7 +376,7 @@ Loopy.addStrings({
     ctRTens: "First I add the tens of {b}, that is {tb}, then the ones, {ob}.", ctRRound: "{b} is nearly {r}, so I add {r} and take {d} away.", ctRPlace: "Tens with tens and ones with ones, then I put them together.",
     ctRNo1: "Because {b} has no tens.", ctRNo2: "Because I take {b} away first.",
     ctWhyName: "This is {way}: {steps}.", ctWhyWay: "{way}: {steps}. {reason}",
-    ctAskMoney: "How much money is it?", ctSubMoney: "Notes first, then the coins.", ctWhyMoney: "{sum} = {n}.", ctEuro: "€{n}", ctMoneyAria: "{list}",
+    ctAskMoney: "How much money is it?", ctSubMoney: "Notes first, then the coins.", ctSubNotes: "Only notes, no coins.", ctSubCoins: "Only coins.", ctWhyMoney: "{sum} = {n}.", ctEuro: "€{n}", ctMoneyAria: "{list}",
     ctStory: "{name} has {m}. The {i1} costs {p1} and the {i2} {p2}.", ctAskEnough: "Is the money enough?", ctYes: "Yes", ctNo: "No",
     ctWhyYes: "{p1} + {p2} = {s}. {m} is enough for {s}, so yes.", ctWhyNo: "{p1} + {p2} = {s}. {m} is not enough for {s}, so no.",
     ctI0: "helmet", ctI1: "ball", ctI2: "book", ctI3: "game", ctI4: "bag", ctI5: "lamp", ctI6: "cap", ctI7: "scooter",
@@ -409,7 +409,7 @@ Loopy.addStrings({
     ctRTens: "Zuerst rechne ich die Zehner von {b} dazu, also {tb}, dann die Einer, {ob}.", ctRRound: "{b} ist fast {r}, also rechne ich {r} dazu und nehme {d} wieder weg.", ctRPlace: "Zehner mit Zehnern und Einer mit Einern, dann zusammen.",
     ctRNo1: "Weil {b} keine Zehner hat.", ctRNo2: "Weil ich zuerst {b} wegnehme.",
     ctWhyName: "Das ist {way}: {steps}.", ctWhyWay: "{way}: {steps}. {reason}",
-    ctAskMoney: "Wie viel Geld ist das?", ctSubMoney: "Erst die Scheine, dann die Münzen.", ctWhyMoney: "{sum} = {n}.", ctEuro: "{n} €", ctMoneyAria: "{list}",
+    ctAskMoney: "Wie viel Geld ist das?", ctSubMoney: "Erst die Scheine, dann die Münzen.", ctSubNotes: "Nur Scheine, keine Münzen.", ctSubCoins: "Nur Münzen.", ctWhyMoney: "{sum} = {n}.", ctEuro: "{n} €", ctMoneyAria: "{list}",
     ctStory: "{name} hat {m}. {I1} kostet {p1} und {i2} {p2}.", ctAskEnough: "Reicht das Geld?", ctYes: "Ja", ctNo: "Nein",
     ctWhyYes: "{p1} + {p2} = {s}. {m} reicht für {s}, also ja.", ctWhyNo: "{p1} + {p2} = {s}. {m} reicht nicht für {s}, also nein.",
     ctI0: "der Helm", ctI1: "der Ball", ctI2: "das Buch", ctI3: "das Spiel", ctI4: "die Tasche", ctI5: "die Lampe", ctI6: "die Mütze", ctI7: "der Roller",
@@ -582,14 +582,14 @@ Loopy.addStrings({
   const PIECES = [50, 20, 10, 5, 2, 1];
   function moneyTask(pieces) {
     const total = pieces.reduce((s, v) => s + v, 0);
-    return { slot: 9, qs: [{ note: "ct:9:" + pieces.join(","), kind: "em-count", pts: 1, mode: "pad", answer: total, ask: () => t("ctAskMoney"), sub: () => t("ctSubMoney"), why: () => t("ctWhyMoney", { sum: pieces.map(num).join(" + "), n: euro(total) }), log: () => pieces.map(num).join(" + ") }],
+    return { slot: 9, qs: [{ note: "ct:9:" + pieces.join(","), kind: "em-count", pts: 1, mode: "pad", answer: total, ask: () => t("ctAskMoney"), sub: () => t(pieces.some(v => v >= 5) ? (pieces.some(v => v < 5) ? "ctSubMoney" : "ctSubNotes") : "ctSubCoins"), why: () => t("ctWhyMoney", { sum: pieces.map(num).join(" + "), n: euro(total) }), log: () => pieces.map(num).join(" + ") }],
       draw: (box, q, st) => { box.appendChild(money(pieces)); box.appendChild(askLine(q, st, "=")); },
       sheet: (box) => { box.appendChild(money(pieces)); line(box, "="); }, answers: () => euro(total) };
   }
   function money(pieces) {
     const m = el("div", "money");
     m.setAttribute("role", "img"); m.setAttribute("aria-label", pieces.map(v => euro(v)).join(", "));
-    pieces.forEach(v => { const i = el("i", (v >= 5 ? "note n" : "coin c") + v, num(v)); m.appendChild(i); });
+    pieces.forEach(v => { const i = el("i", (v >= 5 ? "note n" : "coin c") + v, euro(v)); m.appendChild(i); });
     return m;
   }
   const NAMES = ["Mia", "Samu", "Ida", "Leo", "Noah", "Lina"], PRICES = [[20, 40], [5, 15], [6, 15], [15, 35], [10, 25], [8, 20], [6, 12], [30, 60]];

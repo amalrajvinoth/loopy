@@ -212,6 +212,38 @@ function repeats(keys, whole) {
   return out;
 }
 
+// Money on screen (Class Test, Is It Enough?): every note and coin carries its € sign, so a note does not look like a
+// plain number card, and Class Test's hint speaks of coins only when there are some (issue #272).
+async function money(p, fail, game) {
+  const m = await p.evaluate(() => {
+    const m = document.querySelector(".money"); if (!m) return null;
+    const hint = document.querySelector("#question small, .question small");
+    return { plain: [...m.children].filter(i => !i.textContent.includes("€")).map(i => i.textContent), coins: !!m.querySelector(".coin"), notes: !!m.querySelector(".note"), hint: hint ? hint.textContent : "" };
+  });
+  if (!m) return;
+  if (m.plain.length) fail(`money without its € sign: ${m.plain.join(", ")}`);
+  const says = /coins|Münzen/.test(m.hint) && /then|dann/.test(m.hint);
+  if (game.includes("class-test") && says && !(m.coins && m.notes)) fail(`the hint "${m.hint}" speaks of notes and coins, but the screen shows ${m.coins ? "only coins" : "only notes"}`);
+}
+
+// Class Test reaches its money task (task 9) only after the 10 rounds played here, so the task is put first through
+// Try again: four notes and no coins, the case in issue #272. The hint must then say so, and every note its € sign.
+async function classTestMoney(run, fail) {
+  const ctx = await browser.newContext({ viewport: { width: 390, height: 844 }, reducedMotion: "reduce", serviceWorkers: "block" });
+  await ctx.addInitScript((l) => {
+    if (localStorage.getItem("loopy.e2e")) return;
+    localStorage.setItem("loopy.e2e", "1"); localStorage.setItem("loopy.lang", l); localStorage.setItem("loopy.sound", "off");
+    const day = new Date().toISOString().slice(0, 10);
+    localStorage.setItem("loopy.kid.1.loopy.log", JSON.stringify({ days: {}, wrong: [{ d: day, g: "class-test", q: "How much money?: 50 + 20 + 10 + 5", a: "85", y: "95", k: "em-count", r: "ct:9:50,20,10,5" }] }));
+  }, run.lang);
+  const p = await ctx.newPage();
+  p.on("pageerror", e => fail(`script error: ${e.message}`));
+  await p.goto(BASE + "mix/class-test/#retry");
+  await p.waitForFunction(() => document.querySelector(".money"), null, { timeout: 5000 }).catch(() => fail("Try again did not put the money task first"));
+  await money(p, fail, "mix/class-test/");
+  await ctx.close();
+}
+
 for (const game of GAMES) {
   const daily = game.startsWith("mix/");
   for (const run of RUNS) {
@@ -225,6 +257,7 @@ for (const game of GAMES) {
       for (let i = 0; i < rounds; i++) {
         // Counted before answering: a sprint game shows the next question by itself after Check.
         const n = await asked(p);
+        await money(p, fail, game);
         if (await answer(p)) marked++;
         if (i < rounds - 1) await next(p, n);
         else await closeCheer(p);
@@ -248,6 +281,7 @@ for (const game of GAMES) {
       rows.push(`| ${game} | ${run.age} | ${run.lang} | - | - | - | error |`);
     }
     if (p) await p.context().close();
+    if (game === "mix/class-test/") { try { await classTestMoney(run, fail); } catch (e) { fail(`money task: ${e.message.split("\n")[0]}`); } }
     console.error(`${where}: ${problems.length ? problems.length + " problem(s) so far" : "ok"} (${Math.round(performance.now() / 1000)}s)`);
   }
 }
