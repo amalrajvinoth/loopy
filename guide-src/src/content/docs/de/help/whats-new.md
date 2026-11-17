@@ -10,6 +10,7 @@ Die großen Änderungen, die neuesten zuerst. Kleine Korrekturen stehen nicht da
 
 ## 17. November 2026
 
+- **Oben weniger Platz auf dem Handy.** Auf dem Handy ist oben auf der Startseite nur noch eine Zeile: das loopy-Logo, das Kind, das spielt, und ⚙ **Einstellungen**. Vorher nahmen ab drei Kindern die Namen den halben Bildschirm ein. Tippe auf das Kind, dann öffnet sich **Wer spielt?** zum Wechseln oder zum Hinzufügen eines Kindes. Dasselbe geht in jedem Spiel, so kann ein Geschwisterkind weiterspielen, ohne zur Startseite zu gehen. [Wer spielt?](/loopy/guide/de/setup/kids-and-ages/#wer-spielt).
 - **Nur die 10 von heute zählen einen Tag.** Vorher zählten auch 10 richtige Antworten in irgendeinem Spiel als Tag, und die Karte Die 10 von heute sagte nach einer Runde in einem anderen Spiel „Heute geschafft!“. Jetzt wachsen die Tage-Serie und die Tage-Abzeichen nur, wenn die 10 von heute geschafft sind. Schon gezählte Tage bleiben. [Die 10 von heute](/loopy/guide/de/games/todays-10/).
 
 ## 16. November 2026

@@ -67,7 +67,7 @@ Open it with the Grown-ups button at the bottom of the home page.
 
 ## How it works
 
-- **Children.** A new device starts with one child and shows no names. To add a child, open **Settings** on the home page and tap **Add a child** under Kids, with a name, a picture and an age. Each child has their own age, stars, badges, streaks, progress, game levels and settings. With two or more, "Who is playing?" shows on the home page: tap a name to switch. Devices that already had Dio and Dia keep them. Theme, sound and language are shared.
+- **Children.** A new device starts with one child and shows no names. To add a child, open **Settings** on the home page and tap **Add a child** under Kids, with a name, a picture and an age. Each child has their own age, stars, badges, streaks, progress, game levels and settings. With two or more, "Who is playing?" shows on the home page: tap a name to switch. On a phone the top of the home page is one row, and the child next to ⚙ Settings opens "Who is playing?". The same chip in every game switches too. Devices that already had Dio and Dia keep them. Theme, sound and language are shared.
 - **Carry on.** The home page offers "Carry on" with the child's last game, at the level and settings they left it.
 - **Try again.** A wrong answer comes back. The home page shows "Try again" with this week's mistakes ("3 from this week · 52 − 17 · 7 × 8"); tap it and the game starts with those exact problems. Inside any game, every fifth question can be an old mistake. A mistake goes off the list once it is answered right twice. Today's 10 mistakes come back in the game they belong to.
 - **Age.** Pick the child's age. Each game gets easier or harder to match it. The age goes up by itself on each birthday.

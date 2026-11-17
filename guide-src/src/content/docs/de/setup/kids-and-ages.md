@@ -23,9 +23,11 @@ Auf einem Gerät gehen bis zu 6 Kinder.
 
 ## Wer spielt?
 
-Ab zwei Kindern steht oben auf der Startseite **Wer spielt?**. Tippe auf einen Namen, um zu wechseln. Die Seite öffnet sich dann neu für dieses Kind.
+Ab zwei Kindern steht auf einem Tablet oder Computer oben auf der Startseite **Wer spielt?**. Tippe auf einen Namen, um zu wechseln. Die Seite öffnet sich dann neu für dieses Kind.
 
-Im Spiel stehen Bild und Name des Kindes neben ⚙ **Einstellungen**. So sieht jeder, wer gerade dran ist.
+Auf dem Handy ist oben auf der Startseite nur eine kleine Zeile: das loopy-Logo, das Kind, das gerade spielt (Bild, Name und ein kleines ▾), und ⚙ **Einstellungen**. Tippe auf das Kind, dann öffnet sich **Wer spielt?** und du wählst, wer als Nächstes spielt. In derselben Box gibt es **Name oder Bild ändern** und **Kind hinzufügen**.
+
+Im Spiel stehen Bild und Name des Kindes neben ⚙ **Einstellungen**. So sieht jeder, wer gerade dran ist. Ab zwei Kindern kannst du auch dort darauf tippen und wechseln. So kann ein Geschwisterkind weiterspielen, ohne zur Startseite zurückzugehen.
 
 ## Was jedes Kind hat
 
