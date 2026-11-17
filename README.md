@@ -55,7 +55,7 @@ It works on phones, tablets and computers. There is no sign-up and no ads.
 | [Sort It](science/sort-it/) | See a thing and pick its group: mammal or bird, solid or liquid, fruit or vegetable, planet or star, with one line of why | [README](science/sort-it/README.md) |
 | [Where Is It?](geography/where-is-it/) | Continents, oceans, countries and capitals on a map, Europe first, then the world | [README](geography/where-is-it/README.md) |
 | [Flags and Capitals](geography/flags-capitals/) | See a flag, pick its country, then its capital, Europe first, then the world, every country in | [README](geography/flags-capitals/README.md) |
-| [Today's 10](mix/daily-mix/) | A daily mix of 10 problems from the games for your age, with a day streak (10 right answers in any game count as a day too) | [README](mix/daily-mix/README.md) |
+| [Today's 10](mix/daily-mix/) | A daily mix of 10 problems from the games for your age, with a day streak (only a finished Today's 10 counts a day) | [README](mix/daily-mix/README.md) |
 
 ## For grown-ups
 

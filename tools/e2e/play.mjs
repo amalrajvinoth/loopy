@@ -236,6 +236,11 @@ for (const game of GAMES) {
       if (gained !== rightCount) fail(`${rightCount} right answers but the star counter went up by ${gained}`);
       const bad = repeats(keys, daily);
       for (const b of bad) fail(`question repeated too soon: ${b}`);
+      // Only a finished Today's 10 counts a day for the day streak, never right answers in another game.
+      const todays10 = game === "mix/daily-mix/";
+      if (todays10) { await p.locator("#next").click(); await p.locator("#results").waitFor({ state: "visible", timeout: 5000 }); }
+      const doneToday = await p.evaluate(() => Loopy.daily.get().doneToday);
+      if (doneToday !== todays10) fail(todays10 ? "finishing Today's 10 did not count the day" : `${rightCount} right answers counted as a day, which only Today's 10 does`);
       const qs = keys.filter(k => k !== "\x00");
       rows.push(`| ${game} | ${run.age} | ${run.lang} | ${qs.length} | ${new Set(qs).size} | ${rightCount} | ${bad.length ? "repeats" : "pass"} |`);
     } catch (e) {

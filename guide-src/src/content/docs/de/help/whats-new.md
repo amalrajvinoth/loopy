@@ -8,6 +8,10 @@ loopy bekommt immer wieder neue Spiele. Das ist zuletzt dazugekommen!
 
 Die großen Änderungen, die neuesten zuerst. Kleine Korrekturen stehen nicht dabei. Die [ganze Liste steht auf GitHub](https://github.com/amalrajvinoth/loopy/blob/main/RELEASES.md) (auf Englisch).
 
+## 17. November 2026
+
+- **Nur die 10 von heute zählen einen Tag.** Vorher zählten auch 10 richtige Antworten in irgendeinem Spiel als Tag, und die Karte Die 10 von heute sagte nach einer Runde in einem anderen Spiel „Heute geschafft!“. Jetzt wachsen die Tage-Serie und die Tage-Abzeichen nur, wenn die 10 von heute geschafft sind. Schon gezählte Tage bleiben. [Die 10 von heute](/loopy/guide/de/games/todays-10/).
+
 ## 16. November 2026
 
 - **Wortdetektiv und Lesen und Antworten füllen den Bildschirm.** Im Wortdetektiv stehen der Fall-Zähler und die Zeile „Rate das Wort mit 5 Buchstaben“ jetzt über der Karte. So hat das Buchstabengitter die ganze Karte, und die Kästchen sind viel größer. In Lesen und Antworten wachsen der Text und die Frage, bis sie die Karte füllen, bis zur doppelten Größe. Keine leeren Ränder mehr. [Wortdetektiv](/loopy/guide/de/games/languages/word-detective/), [Lesen und Antworten](/loopy/guide/de/games/languages/read-answer/).

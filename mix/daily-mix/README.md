@@ -18,7 +18,7 @@ Every right answer earns a star, just like in the other games.
 
 - Finishing Today's 10 counts for that day. You can play again, but a day only counts once.
 - Finish it on days in a row to grow your day streak. Missing a day starts it again at 1.
-- 10 right answers in any game also count as a day, so a child who plays Spell It every day keeps the streak too. The home page shows "Today: 7 of 10" until the day is counted.
+- Only Today's 10 counts a day. Right answers in the other games earn stars, but they do not count a day or say "Done today". (Until 17 November 2026, 10 right answers in any game counted as a day too. A day counted that way stays counted.)
 - Day badges: **On a Roll** at 3 days, **Week Hero** at 7 days, **Month Master** at 30 days.
 - The day streak and day badges are shown in **My stars** on the home page.
 
