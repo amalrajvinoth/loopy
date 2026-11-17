@@ -1995,7 +1995,7 @@ Loopy.nextButton = function (btn, answered) {
   } catch (e) {}
   // The game is the page's folder, e.g. "plus-minus" for math/plus-minus/.
   var game = location.pathname.replace(/index\.html$/, "").split("/").filter(Boolean).pop() || "";
-  var bubble = null, target = null, fadeTimer = null;
+  var bubble = null, target = null, fadeTimer = null, words = "";
 
   function hide() {
     if (bubble) bubble.remove();
@@ -2010,10 +2010,13 @@ Loopy.nextButton = function (btn, answered) {
   //   2. inside the problem card's bottom edge, then 3. its top edge (the cards keep an empty band there);
   //   4. under a part of the side column, pointing up (Word Trail: between the words and Clue);
   //   5. a row of its own above the answers, by shrinking the card (portrait only, and only when the card
-  //      still shows everything), else over the side column's last button (Clue, Skip);
-  //   6. over the first row of keys, as a last resort. On the map it always sits inside the map's bottom edge.
+  //      and its explanation line still show everything), else over the side column's last button (Clue, Skip);
+  //   6. across the gap between the card and the keys, over the keys' top edges but not their numbers,
+  //      first as it is, then slimmer and with no arrow (look());
+  //   7. over the first row of keys, as a last resort. On the map it always sits inside the map's bottom edge.
   function place() {
     if (!bubble) return;
+    look(false);
     target.style.marginTop = "";
     var r = target.getBoundingClientRect();
     if (!r.width) { hide(); return; }
@@ -2026,7 +2029,8 @@ Loopy.nextButton = function (btn, answered) {
     var c = card ? card.getBoundingClientRect() : null;
     if (put(x, Math.max(r.top - 14, 70)) && clear()) return spot(1);
     if (c && put(c.left + c.width / 2, c.bottom - 12) && clear()) return spot(2);
-    if (c && put(c.left + c.width / 2, c.top + 12 + h) && clear()) return spot(3);
+    // At the card's top the arrow would point at the picture, not at the answers: no arrow, 👇 instead.
+    if (c && put(c.left + c.width / 2, c.top + 12 + h) && clear()) { look(false, true); return spot(3); }
     var side = document.querySelector(".side");
     if (side) for (var i = 0; i < side.children.length - 1; i++) {
       var kid = side.children[i], k = kid.getBoundingClientRect();
@@ -2035,7 +2039,9 @@ Loopy.nextButton = function (btn, answered) {
     if (card && !card.contains(target) && innerHeight > innerWidth) {
       target.style.marginTop = (h + 14) + "px";
       r = target.getBoundingClientRect();
-      if (card.scrollHeight <= card.clientHeight + 1 && put(x, r.top - 10) && clear()) return spot(5);
+      // The explanation line scrolls inside itself, so the card's own height does not show a cut line.
+      var fb = document.getElementById("feedback");
+      if (card.scrollHeight <= card.clientHeight + 1 && !(fb && fb.scrollHeight > fb.clientHeight + 1) && put(x, r.top - 10) && clear()) return spot(5);
       target.style.marginTop = "";
       r = target.getBoundingClientRect();
     }
@@ -2043,8 +2049,30 @@ Loopy.nextButton = function (btn, answered) {
     var tail = side && side.lastElementChild;
     while (tail && (tail === target || !tail.getClientRects().length)) tail = tail.previousElementSibling;
     if (tail && !tail.contains(target)) { var t = tail.getBoundingClientRect(); if (put(t.left + t.width / 2, t.top + 10 + h) && clear(tail)) return spot(5); }
+    // Across the gap between the card and the keys: over the keys' top edges, never over what a key says.
+    var key = card && !card.contains(target) && target.querySelector("button");
+    if (key) {
+      var top = ink(key)[0] ? ink(key)[0].top : r.top;
+      if (put(x, top - 14) && clear(null, target)) return spot(6);
+      look(true);
+      if (put(x, top) && clear(null, target)) return spot(6); // down to the number's own room: a short phone has no more
+      look(false);
+    }
     put(x, r.top + 10 + h);
-    spot(6);
+    spot(7);
+  }
+  // The usual bubble, the tight one (slimmer and with no arrow) or the plain one (the usual size with no
+  // arrow). With no arrow, 👇 points at the keys or answers instead.
+  function look(tight, plain) {
+    bubble.classList.toggle("tight", tight);
+    bubble.classList.toggle("plain", !!plain);
+    bubble.textContent = (tight || plain ? "👇 " : "👆 ") + words;
+  }
+  // Where a key's own words or number sit, without the room around them.
+  function ink(el) {
+    var range = document.createRange();
+    range.selectNodeContents(el);
+    return range.getClientRects();
   }
   // Which spot won, for the play test and the screenshots (data-spot on the bubble).
   function spot(n) { bubble.dataset.spot = n; }
@@ -2059,7 +2087,8 @@ Loopy.nextButton = function (btn, answered) {
   // True when the bubble, where it is now, lies over no words and no button: not the question, the
   // explanation line, the hand legend, the Last 5 and level pills, and not a key, an answer or a letter.
   // Every element with text of its own, and every control, is checked once.
-  function clear(except) {
+  // With keys set, a key in there counts only where its number is, so the bubble may lie over its edge.
+  function clear(except, keys) {
     var b = bubble.getBoundingClientRect(), all = document.body.getElementsByTagName("*");
     for (var i = 0; i < all.length; i++) {
       var el = all[i], hit = false;
@@ -2067,7 +2096,7 @@ Loopy.nextButton = function (btn, answered) {
       if (/^(BUTTON|A|INPUT|SELECT|SUMMARY)$/.test(el.tagName) || el.getAttribute("role") === "button") hit = true;
       for (var n = el.firstChild; n && !hit; n = n.nextSibling) hit = n.nodeType === 3 && /\S/.test(n.data);
       if (!hit) continue;
-      var rs = el.getClientRects();
+      var rs = keys && keys.contains(el) ? ink(el) : el.getClientRects();
       for (var j = 0; j < rs.length; j++) {
         var r = rs[j];
         if (r.width > 2 && r.height > 2 && r.bottom > b.top + 2 && r.top < b.bottom - 2 && r.right > b.left + 2 && r.left < b.right - 2 &&
@@ -2084,7 +2113,7 @@ Loopy.nextButton = function (btn, answered) {
     bubble = document.createElement("div");
     bubble.className = "loopy-hint";
     bubble.setAttribute("aria-hidden", "true"); // the game's own prompt says the same for screen readers
-    bubble.textContent = "👆 " + Loopy.t(pick[1]);
+    words = Loopy.t(pick[1]);
     document.body.appendChild(bubble);
     place();
     // The card can still settle after the first placement (fonts, pictures that size to the room), so look again.

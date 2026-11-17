@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'sha256-D9rjKd8KTeV840vUo+GuELxDNJpF9DSE7sPI0PiyO0E='; style-src 'self' 'sha256-z2P7kGW5Z05eCTjTZdYpc0vThTlOE9vmt97pVSvi2I4=' 'sha256-uA6fxc0gl3P5//NKJxplasYAcMyveYOYRtV08rf1NdM=' 'sha256-RT1053JU5UiKvjrCUFx1rlhdFLMmgtuFJ9T8jnMeawQ=' 'sha256-a0ITBDogAfTiPANy47V16GuNphB8av4TTOtC8Y5tTmo='; img-src 'self' data:; font-src 'self'; connect-src 'self' https://loopy-sync.loopy-1e2.workers.dev; worker-src 'self'; object-src 'none'; base-uri 'none'; form-action 'none'; manifest-src 'self'; upgrade-insecure-requests">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'sha256-W714ufFS7Ecr+v7onT9eJ7xtifWy4QLuCRdNS9mp43g='; style-src 'self' 'sha256-z2P7kGW5Z05eCTjTZdYpc0vThTlOE9vmt97pVSvi2I4=' 'sha256-uA6fxc0gl3P5//NKJxplasYAcMyveYOYRtV08rf1NdM=' 'sha256-RT1053JU5UiKvjrCUFx1rlhdFLMmgtuFJ9T8jnMeawQ=' 'sha256-a0ITBDogAfTiPANy47V16GuNphB8av4TTOtC8Y5tTmo='; img-src 'self' data:; font-src 'self'; connect-src 'self' https://loopy-sync.loopy-1e2.workers.dev; worker-src 'self'; object-src 'none'; base-uri 'none'; form-action 'none'; manifest-src 'self'; upgrade-insecure-requests">
 <meta name="referrer" content="strict-origin-when-cross-origin">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <style>:root{color-scheme:light;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}body{margin:0}[hidden]{display:none!important}</style>
@@ -656,6 +656,8 @@ function makeProblem(word, say, lang, trans) {
     if (!canSpeak) return false;
     try { const all = speechSynthesis.getVoices(); return !all.length || !!voiceFor(wordsLang); } catch (e) { return false; }
   }
+  // The word is only read by itself after a first tap, so the first-time hint sends the child to the speaker first.
+  if (voiceOk()) Loopy.addStrings({ en: { hintLetters: "Tap 🔊 to hear the word, then spell it!" }, de: { hintLetters: "Tippe 🔊 und hör das Wort, dann schreib es!" } });
   let talking = null, speakTimer = 0;
   function speak() {
     if (!canSpeak || !current) return;

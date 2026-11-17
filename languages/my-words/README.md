@@ -4,7 +4,7 @@ A spelling test to play: loopy reads a word out loud, and the child types it. A 
 
 ## How to play
 
-1. Listen to the word. Tap **Hear the word** to hear it again. With a sentence on the list, loopy reads that too, and the card shows it with a gap: "My ___ is kind." With a meaning on the list, it shows in small text under that: "the bee".
+1. Listen to the word. Tap **Hear the word** to hear it, as often as you like. The first time, a hint says so: "👆 Tap 🔊 to hear the word, then spell it!" With a sentence on the list, loopy reads that too, and the card shows it with a gap: "My ___ is kind." With a meaning on the list, it shows in small text under that: "the bee".
 2. Type the word with the letter tiles or the keyboard. At levels 1 to 3 there is one box for each letter.
 3. **⌫** takes back the last letter.
 4. Tap **Check**. Right: the boxes turn green and you earn a star.
