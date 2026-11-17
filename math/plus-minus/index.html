@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'sha256-Uu3fm7FTA8EDELdkjSs+uQQajq2GJf0UU9HeT/5eYK4='; style-src 'self' 'sha256-z2P7kGW5Z05eCTjTZdYpc0vThTlOE9vmt97pVSvi2I4=' 'sha256-NAQmYCBNogd3dp4JgKYxPIHsY9TsvkrQWvwJoW7sIcY=' 'sha256-RT1053JU5UiKvjrCUFx1rlhdFLMmgtuFJ9T8jnMeawQ=' 'sha256-/2P16KmY7+sbLmTpr/F+zUz0PhgVbMpgzXIboiI0sVE='; img-src 'self' data:; font-src 'self'; connect-src 'self' https://loopy-sync.loopy-1e2.workers.dev; worker-src 'self'; object-src 'none'; base-uri 'none'; form-action 'none'; manifest-src 'self'; upgrade-insecure-requests">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'sha256-Uu3fm7FTA8EDELdkjSs+uQQajq2GJf0UU9HeT/5eYK4='; style-src 'self' 'sha256-z2P7kGW5Z05eCTjTZdYpc0vThTlOE9vmt97pVSvi2I4=' 'sha256-NAQmYCBNogd3dp4JgKYxPIHsY9TsvkrQWvwJoW7sIcY=' 'sha256-RT1053JU5UiKvjrCUFx1rlhdFLMmgtuFJ9T8jnMeawQ=' 'sha256-Fq/LKngJGR0Iz5uMRRW3HYtW8qM/eyOPhy+SYDsAGMw='; img-src 'self' data:; font-src 'self'; connect-src 'self' https://loopy-sync.loopy-1e2.workers.dev; worker-src 'self'; object-src 'none'; base-uri 'none'; form-action 'none'; manifest-src 'self'; upgrade-insecure-requests">
 <meta name="referrer" content="strict-origin-when-cross-origin">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <style>:root{color-scheme:light;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}body{margin:0}[hidden]{display:none!important}</style>
@@ -170,6 +170,14 @@ body { min-height: 100vh; min-height: 100dvh; padding-block: var(--page-pad-top)
   .play { flex: 1 1 auto; min-height: 0; grid-template-rows: minmax(0, 1fr); }
   .problem-card { min-height: 0; overflow: hidden; }
   .feedback { flex: 0 1 auto; min-height: 0; overflow-y: auto; }
+}
+/* One screen: the sum sizes itself to the card's height (three rows and the line are 3.65em), so
+   both numbers and the answer always show. On an iPad in portrait the 9rem sum was taller than
+   the card and the top number was cut off. With Settings open the page scrolls and --big is used. */
+@media (orientation: portrait), (orientation: landscape) and (min-width: 640px) {
+  .problem-card { container-type: size; }
+  body:has(#settings-panel:not([hidden])) .problem-card { container-type: normal; }
+  .vert { font-size: clamp(2rem, calc((100cqh - 12px) / 3.7), var(--big)); }
 }
 /* After answering, shrink the sum so the reason has room. */
 .problem-card.good .vert, .problem-card.bad .vert { zoom: 0.7; }
