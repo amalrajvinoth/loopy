@@ -59,6 +59,6 @@ Tap **Settings**, then **Print worksheet**. The print window opens. Print it, or
 
 ## Example help text
 
-- After a right answer: "Right! 7 × 8 = 56."
+- After a right answer: "Correct! 7 × 8 = 56."
 - After a wrong answer: "Not quite: 7 × 8 = 56."
 - At the end: "Time's up! 14 right. You answered 16. Your best is 18. Can you beat it?"
