@@ -74,6 +74,11 @@ One per failure. Add new ones at the end (the heal skill step 3). Keep each to f
 - Cause: a change to `Loopy.levels` (`up`, `ripe`, the `loopy.levels` record or the birthday carry), `Loopy.recent` (keeps 20), or a game's level-up card; a badge card comes first at the first 10 in a row, so the level up waits for the next right answer.
 - Fix: run the test with `CHROME=` set to the browser; fix what it names in `src/loopy.js` or `src/loopy-levels.js`, never loosen the counts. Then `python3 tools/build.py` and `node tools/e2e/play.mjs` (it taps "Yay!" on the card). (23 Oct 2026)
 
+## Switch test fails
+- Looks like: `node tools/e2e/switch.mjs` fails, or CI "Switching the child mid-game: each child keeps their own stars, log and last game".
+- Cause: a change to `Loopy.store`, `Loopy.kids.use` (the `switching` guard that drops saves until the reload), the "Who is playing?" sheet (`.kid-switch`, `.kid-list .kid-row`), the child chip in the game bar, `Loopy.last` or `Loopy.log`; or Plus and Minus changed its ids (`top-num`, `bot-num`, `op-sign`, `#pad [data-d]`, `k-go`).
+- Fix: run the test; fix what it names in `src/loopy.js`, never save during a switch. Then `python3 tools/build.py` and `GAME=plus-minus node tools/e2e/play.mjs`. (17 Nov 2026)
+
 ## Live site check fails after a deploy
 - Looks like: CI "Pages" run, job "Live site check": "the live site still serves an older version, or a page does not answer".
 - Cause: Pages took longer than ten minutes (rare), the deploy job failed before it, or the guide folder is missing from the site.

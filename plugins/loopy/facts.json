@@ -21,6 +21,7 @@
     "checks.yml: After an update, phones save the new pages, never an old one",
     "checks.yml: Family sync keeps two devices in step, and sends nothing when it is off",
     "checks.yml: \"Levels follow the child: up by itself when ready, kept over the birthday\"",
+    "checks.yml: \"Switching the child mid-game: each child keeps their own stars, log and last game\"",
     "checks.yml: Install Astro and Starlight (exact versions from the lock file)",
     "checks.yml: Build the guide (this also writes each page's security policy)",
     "checks.yml: Every guide page's security policy matches its code",
@@ -63,6 +64,7 @@
     "tools/e2e/offline.mjs",
     "tools/e2e/play.mjs",
     "tools/e2e/retry.mjs",
+    "tools/e2e/switch.mjs",
     "tools/e2e/sync.mjs",
     "tools/guide_check.py",
     "tools/ralph/issue.py",
@@ -101,5 +103,5 @@
     "844 × 390"
   ],
   "games_lists": 1,
-  "learned_at": "000db75"
+  "learned_at": "9c6bd58"
 }

@@ -77,6 +77,16 @@ It serves the site as if `Loopy.syncHost` were `sync.test`. Requests to that add
 
 CI runs it with the Try again test.
 
+## Switch test
+
+`switch.mjs` checks that switching the child in the middle of a game keeps every child's own stars, answer log and "last game":
+
+```sh
+node tools/e2e/switch.mjs
+```
+
+Two children, Dio and Max, English. Dio gets 3 right in Plus and Minus. The test opens "Who is playing?" from the child chip in the top bar and picks Max. After the reload, Max plays with 0 stars and a fresh score. Dio still has 3 stars, and both children's Carry on cards point to Plus and Minus. Max gets 2 right: Max has 2, Dio still 3, and each child's answer log counts only their own answers. Last, a save started right after a switch must land under neither child, which is the guard in `Loopy.store`. CI runs it with the Try again test.
+
 ## Levels test
 
 `levels.mjs` checks that levels follow the child, in Make 10 and Times Tables Sprint:

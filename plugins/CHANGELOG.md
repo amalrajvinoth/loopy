@@ -4,6 +4,7 @@ Newest first. One line per change: date, plugin and version, what it learned, an
 
 | Date | Plugin | What changed | Learned from |
 | --- | --- | --- | --- |
+| 2026-11-17 | loopy 1.6.5 | ship-pr, RULES.md and heal know the switch test (`tools/e2e/switch.mjs`, CI "Switching the child mid-game"): each child keeps their own stars, log and last game when a sibling takes over inside a game. | Owner's question about switching mid-game, loopy project 17 Nov 2026 |
 | 2026-11-16 | loopy 1.6.4 | Eight screen sizes instead of five (430 × 932, 1280 × 800 and 1920 × 1080 added) in `screens.mjs`, the screens agent, RULES.md, improve-ui and plan-options; RULES.md says spacing comes from the size-class variables in `src/loopy.css`. | Owner's ask "adjust spacing in device categories", loopy project 16 Nov 2026 |
 | 2026-11-02 | loopy 1.6.3 | ship-pr's docs step says to regenerate the guide's game pictures (`npm run screens --prefix guide-src`) when a game looks different, so the guide never shows an old layout. | Second UI audit, finding 10, loopy project 2 Nov 2026 |
 | 2026-11-02 | loopy 1.6.2 | ship-pr and weekly-check know the Monday Forks and stars job (`forks.yml`: new forks and stars, comment on the "Forks and stars" issue); heal has a recipe for it. | Owner's ask "notify any new fork or download", loopy project 2 Nov 2026 |
