@@ -321,7 +321,7 @@ Which Way? shows the way on show in a `card` box with the 2px `accent` line (the
 
 ### The test strip
 
-Class Test keeps the look of Today's 10: the kind pill, one card, the answers under it. Instead of ten dots it has a strip of twelve bars in the card, one per task. A bar is `chip` for a task to come and the 2px `accent` line for the one on show. Once answered it is `good` or `bad`, or half and half when one part of a task was right and one wrong. The pictures inside the card come from the games the tasks belong to: the clock, lines and dots, step boxes, the way card, notes and coins, the grid. They keep the same colours and lines.
+Class Test keeps the look of Today's 10: the kind pill, one card, the answers under it. Instead of ten dots it has a strip of twelve bars in the card, one per task. A bar is `chip` for a task to come and the 2px `accent` line for the one on show. Once answered it is `good` or `bad`, or half and half when one part of a task was right and one wrong. The pictures inside the card come from the games the tasks belong to: the clock, lines and dots, step boxes, the way card, notes and coins, the grid. They keep the same colours and lines. Every note and coin shows its € sign, as in Is It Enough?, so a note does not look like a plain number card. The small line under "How much money is it?" fits the pieces. "Notes first, then the coins" shows only when both are on the card. Else it says "Only notes, no coins" or "Only coins". On short phones (under 660px tall) the money shrinks so it stays on one row and never runs into the question.
 
 ### Calendar pictures
 
