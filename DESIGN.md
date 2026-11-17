@@ -47,7 +47,7 @@ typography:
   subject-title:  { fontFamily: Fredoka, fontSize: 1.6rem, fontWeight: 700 }
   card-title:     { fontFamily: Fredoka, fontSize: 1.6rem, fontWeight: 700 }
   cheer-title:    { fontFamily: Fredoka, fontSize: 1.8rem }
-  problem-number: { fontFamily: Lexend, fontSize: "var(--big): clamp(2.6rem, min(19vw, 11dvh), 5.5rem) on phones, up to 13rem on a monitor", fontWeight: 600, numbers: tabular }
+  problem-number: { fontFamily: Lexend, fontSize: "var(--big): clamp(2.6rem, min(19vw, 11dvh), 5.5rem) on phones, up to 13rem on a monitor; the Plus and Minus sum is also capped by the card's height", fontWeight: 600, numbers: tabular }
   pad-key:        { fontFamily: Lexend, fontSize: "var(--key-font): 2rem on phones (1.8rem under 420px), 2.8rem on a tablet, 3rem on a monitor", fontWeight: 700, numbers: tabular }
   label-caps:     { fontFamily: Lexend, fontSize: 0.8rem, fontWeight: 600, letterSpacing: 0.06em, case: uppercase }
   wordmark:       { fontFamily: Nunito, note: "outlined into logo.svg, not loaded as a font" }
@@ -234,7 +234,7 @@ The "loopy" bunny logo sits at the top of the home page. Its letters hop one aft
 
 ### Problem card
 
-The question sits on a card with a 1px line border and radius 24px. After an answer the border turns green or red. In Plus and Minus the sum is written like a worksheet: the sign on the left, the digits on the right, a line, then the answer with a blinking orange cursor.
+The question sits on a card with a 1px line border and radius 24px. After an answer the border turns green or red. In Plus and Minus the sum is written like a worksheet: the sign on the left, the digits on the right, a line, then the answer with a blinking orange cursor. The sum is as big as the card allows: on one screen (portrait, or landscape from 640px) its size follows the card's height (container units, three rows and the line are 3.65em), up to `--big`. So on a tablet held upright, where the number pad takes almost half the screen, both numbers and the answer line always show. With Settings open the page scrolls and the sum is `--big`.
 
 Counting pictures sit under the problem on the card. Times and Share shows rows of dots in the five accents. Make 10 shows ten-frames: boxes of 2 rows of 5 on a chip background, radius about 30% of a box. Filled boxes are `c1`, empty boxes are the card color with a line border, and after an answer the missing part fills in `c4`. Make 20 shows two frames side by side; Make 100 shows ten frames, two across. The boxes size themselves to the room left on the card.
 

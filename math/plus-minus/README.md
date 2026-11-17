@@ -13,6 +13,8 @@ Practice adding and taking away.
 
 You can also type on a keyboard. Use the number keys, **Backspace** to erase and **Enter** to check.
 
+The sum is written in columns, like on paper. It is as big as the card allows, so on a phone, a tablet held upright or on its side, and a computer, both numbers and the answer line always show.
+
 ## Age levels
 
 The numbers grow with age.
