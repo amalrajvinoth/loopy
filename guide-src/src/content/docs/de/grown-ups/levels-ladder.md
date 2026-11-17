@@ -43,6 +43,7 @@ Von der ersten bis zur letzten Stufe. Die 10 von heute hat keine Stufen.
 | Schrittweise rechnen | 6 | Über den Zehner, bis 20 → Bis 100 → Bis 100 mit Übertrag → Bis 1.000 → Bis 1.000 mit Übertrag → Bis 10.000 |
 | Formen und Winkel | 5 | Formen, Ecken und Seiten → Linien und Symmetrie → Umfang und Fläche → Winkel → Dreiecke und Formeln |
 | Kalender und Datum | 4 | Wochentage → Der Monat → Tage und Wochen → Monate und Datum |
+| Messen | 5 | Ganze Zahlen → Halbe und Viertel → Kleine Einheiten und vergleichen → Einheit umwandeln → Zeit und unter null |
 | Zahlenmuster | 5 | Schritte von 1, 2 und 10 → Jeder Schritt, auch rückwärts → Verdoppeln und Quadratzahlen → Wachsende Schritte → Zwei Regeln gemischt |
 | Einmaleins-Tabelle | 5 | Die 2er-, 5er- und 10er-Reihe → Eine Zahl am Rand fehlt → Größere Tabelle → Leichte Aufgaben zuerst → Reihen bis 12 |
 | Zehner und Einer | 5 | Lesen bis 20 → Lesen bis 100 → Zeichne die Zahl → Riesen und Zwerge → Auch Hunderter |

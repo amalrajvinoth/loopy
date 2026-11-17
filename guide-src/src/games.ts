@@ -31,6 +31,7 @@ export const GAMES: Game[] = [
   g("math", "which-way", "🔀", [7, 10], "Which Way?", "Welcher Weg?"),
   // Class Test is a mix of maths tasks, so it lives in mix/ like Today's 10 and sits with the maths games.
   { path: "mix/class-test/", pic: "📝", ages: [7, 10], subject: "math", en: "Class Test", de: "Klassenarbeit", slug: "games/math/class-test" },
+  g("math", "measure-it", "📏", [7, 13], "Measure It", "Messen"),
   g("languages", "sound-spell", "👂", [5, 8], "Sound Spell", "Anlaut und Endlaut"),
   g("languages", "word-match", "🖼️", [5, 10], "Word Match", "Bild und Wort"),
   g("languages", "spell-it", "✏️", [6, 10], "Spell It", "Wörter schreiben"),
