@@ -43,6 +43,7 @@ From the first step to the last. Today's 10 has no levels.
 | Step by Step | 6 | Over the ten, to 20 → Up to 100 → Up to 100 with carrying → Up to 1,000 → Up to 1,000 with carrying → Up to 10,000 |
 | Shapes and Angles | 5 | Shapes, corners and sides → Lines and symmetry → Perimeter and area → Angles → Triangles and formulas |
 | Calendar and Dates | 4 | Days of the week → The month → Days and weeks → Months and dates |
+| Measure It | 5 | Whole numbers → Halves and quarters → Small units and compare → Change the unit → Time and below zero |
 | Number Patterns | 5 | Steps of 1, 2 and 10 → Any step, backwards too → Doubling and squares → Growing steps → Two rules mixed |
 | Times Table Grid | 5 | Tables of 2, 5 and 10 → A missing factor → Bigger grid → Split it → Tables to 12 |
 | Tens and Ones | 5 | Read to 20 → Read to 100 → Draw it → Giants and dwarfs → Hundreds too |

@@ -1,0 +1,826 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'sha256-jJtVsv4EAS++errWdorfVsKCWw/gK2qp7SHqhMg54eE='; style-src 'self' 'sha256-z2P7kGW5Z05eCTjTZdYpc0vThTlOE9vmt97pVSvi2I4=' 'sha256-KJ7/agHqFRkdRpUjFhdLsp5jgyqlL5h2S898qT/urws=' 'sha256-RT1053JU5UiKvjrCUFx1rlhdFLMmgtuFJ9T8jnMeawQ=' 'sha256-NrcJsG5x4N5ARP86BuULIL1BoVnnt/9oFvdi/Pf/8/k='; img-src 'self' data:; font-src 'self'; connect-src 'self' https://loopy-sync.loopy-1e2.workers.dev; worker-src 'self'; object-src 'none'; base-uri 'none'; form-action 'none'; manifest-src 'self'; upgrade-insecure-requests">
+<meta name="referrer" content="strict-origin-when-cross-origin">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<style>:root{color-scheme:light;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}body{margin:0}[hidden]{display:none!important}</style>
+<link rel="icon" href="../../icon.svg" type="image/svg+xml">
+<link rel="manifest" href="../../manifest.webmanifest">
+<link rel="apple-touch-icon" href="../../apple-touch-icon.png">
+<meta name="theme-color" content="#0a0a0c">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="loopy">
+<title data-t="miName">Measure It</title>
+<meta name="description" content="Measure It on loopy: read a ruler, a measuring jug, a kitchen scale and a thermometer, compare lengths and weights, and change units like cm to m. Free practice for ages 7 to 13, English and German.">
+<link rel="preload" href="../../fonts/lexend-latin.woff2" as="font" type="font/woff2" crossorigin>
+<style>
+/* Layout: a drawing of a ruler, jug, scale or thermometer and a question on the card; answers or a number pad below. Shared look with the other games. */
+:root {
+  --bg: #f3f6fb;
+  --card: #ffffff;
+  --ink: #1d2a3f;
+  --muted: #5d6b82;
+  --line: #d5dde9;
+  --accent: #2457c5;
+  --accent-ink: #ffffff;
+  --mark: #e2622b;
+  --good: #1f8a4c;
+  --good-bg: #e3f5ea;
+  --bad: #c23a3a;
+  --bad-bg: #fbe6e6;
+  --chip: #e6ecf6;
+  --key: #ffffff;
+  --font: "Lexend", "Segoe UI", "Helvetica Neue", Arial, sans-serif;
+}
+
+* { box-sizing: border-box; }
+body {
+  background: var(--bg); color: var(--ink); font-family: var(--font); font-size: 16px;
+  padding-left: max(16px, env(safe-area-inset-left, 0px));
+  padding-right: max(16px, env(safe-area-inset-right, 0px));
+  padding-block: 20px 32px;
+}
+.wrap { max-width: 520px; margin: 0 auto; display: flex; flex-direction: column; gap: 16px; }
+
+.top { display: flex; flex-wrap: wrap; gap: 12px; align-items: center; justify-content: space-between; }
+h1 { margin: 0; font-size: 1.6rem; font-weight: 700; text-wrap: balance; }
+.score { display: flex; flex-wrap: wrap; gap: 8px; font-variant-numeric: tabular-nums; }
+.pill { background: var(--card); border: 1px solid var(--line); border-radius: 999px; padding: 6px 14px; font-weight: 600; font-size: 1rem; white-space: nowrap; }
+.pill span { color: var(--muted); font-weight: 400; margin-right: 4px; }
+
+.settings { display: flex; flex-direction: column; gap: 8px; }
+.seg-label { font-size: 0.8rem; font-weight: 600; letter-spacing: 0.06em; text-transform: uppercase; color: var(--muted); margin: 0 0 4px 4px; }
+.seg { display: grid; grid-template-columns: repeat(2, 1fr); gap: 6px; background: var(--chip); padding: 5px; border-radius: 14px; }
+.seg button {
+  font: inherit; font-size: 0.95rem; font-weight: 600; color: var(--muted);
+  background: transparent; border: 0; border-radius: 10px; padding: 8px 4px; min-height: 44px; cursor: pointer;
+}
+.seg button:last-child { grid-column: 1 / -1; }
+.seg button[aria-pressed="true"] { background: var(--card); color: var(--ink); box-shadow: 0 1px 3px rgb(0 0 0 / 0.12); }
+
+.problem-card {
+  background: var(--card); border: 1px solid var(--line); border-radius: 24px;
+  padding: 20px 18px 18px; display: flex; flex-direction: column; align-items: center; gap: 14px;
+}
+.problem-card.good { border-color: var(--good); box-shadow: 0 0 0 2px var(--good) inset; }
+.problem-card.bad { border-color: var(--bad); box-shadow: 0 0 0 2px var(--bad) inset; }
+
+.feedback { min-height: 3.1em; text-align: center; font-size: 1.1rem; line-height: 1.45; margin: 0; max-width: 34ch; }
+.feedback strong { display: block; font-size: 1.45rem; }
+.feedback.good strong { color: var(--good); }
+.feedback.bad strong { color: var(--bad); }
+.feedback .hint { color: var(--muted); }
+
+.pad { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; }
+.pad button {
+  font: inherit; font-size: 1.6rem; font-weight: 700; color: var(--ink);
+  background: var(--key); border: 2px solid var(--line); border-radius: 18px; min-height: 56px; cursor: pointer;
+  transition: transform .08s ease, border-color .15s ease; touch-action: manipulation; -webkit-tap-highlight-color: transparent;
+}
+.pad button:hover:not(:disabled) { border-color: var(--accent); }
+.pad button:active:not(:disabled) { transform: scale(0.96); }
+.pad button:disabled { opacity: 0.4; cursor: default; }
+.pad .erase { font-size: 1.15rem; color: var(--muted); }
+.pad .go { background: var(--accent); border-color: var(--accent); color: var(--accent-ink); font-size: 1.35rem; }
+.pad .go:hover:not(:disabled) { border-color: var(--accent); filter: brightness(1.08); }
+
+.foot { display: flex; justify-content: space-between; align-items: center; gap: 12px; flex-wrap: wrap; }
+.foot p { margin: 0; color: var(--muted); font-size: 0.9rem; }
+.reset { font: inherit; font-size: 0.95rem; color: var(--muted); background: transparent; border: 2px solid var(--line); border-radius: 14px; padding: 0 16px; min-height: 44px; cursor: pointer; }
+button:focus-visible { outline: 3px solid var(--mark); outline-offset: 3px; }
+
+@media (max-width: 420px) {
+  h1 { font-size: 1.35rem; }
+  .seg button { font-size: 0.85rem; }
+}
+@media (prefers-reduced-motion: reduce) {
+  * { transition: none !important; }
+}
+</style>
+<style>.home-link{display:inline-flex;align-items:center;min-height:40px;color:var(--muted);font-weight:600;text-decoration:none;font-size:0.95rem}.home-link:hover{color:var(--ink)}</style>
+<style>
+/* Phones and tablets: the game fills one screen; settings sit behind a button. */
+body { min-height: 100vh; min-height: 100dvh; padding-block: var(--page-pad-top) var(--page-pad-bottom); }
+.wrap { gap: var(--row-gap); max-width: var(--col); }
+.game-bar { display: flex; align-items: center; justify-content: space-between; gap: 8px; }
+.bar-right { display: flex; align-items: center; gap: 8px; }
+.top { gap: 8px 12px; }
+.play { display: flex; flex-direction: column; gap: var(--play-gap); -webkit-user-select: none; user-select: none; }
+@media (orientation: landscape) and (min-width: 640px) {
+  .play { display: grid; grid-template-columns: 1fr 1fr; gap: var(--play-gap); align-items: center; }
+}
+
+.problem-card { padding: var(--card-pad) var(--card-pad) calc(var(--card-pad) - 2px); gap: 8px; }
+.feedback { min-height: 2.9em; font-size: 1.05rem; }
+.feedback strong { font-size: 1.3rem; }
+.pad { gap: 8px; }
+.pad button { min-height: var(--key-h); font-size: var(--key-font); }
+@media (max-height: 760px) and (orientation: portrait) {
+  .feedback { font-size: 0.95rem; line-height: 1.35; }
+  .feedback strong { font-size: 1.15rem; }
+}
+
+/* Portrait: the page is exactly one screen tall; the answers stay at the bottom and the card shrinks to fit. */
+@media (orientation: portrait) {
+  body { height: calc(100dvh - env(safe-area-inset-top, 0px) - env(safe-area-inset-bottom, 0px)); min-height: 0; display: flex; flex-direction: column; overflow: hidden; }
+  body:has(#settings-panel:not([hidden])) { height: auto; overflow: visible; }
+  .wrap { flex: 1 1 auto; min-height: 0; width: 100%; }
+  .play { flex: 1 1 auto; min-height: 0; }
+  .problem-card { flex: 1 1 auto; min-height: 0; justify-content: center; overflow: hidden; }
+  .feedback { flex: 0 1 auto; min-height: 0; overflow-y: auto; }
+}
+@media (orientation: landscape) and (min-width: 640px) {
+  body { height: calc(100dvh - env(safe-area-inset-top, 0px) - env(safe-area-inset-bottom, 0px)); min-height: 0; display: flex; flex-direction: column; overflow: hidden; }
+  body:has(#settings-panel:not([hidden])) { height: auto; overflow: visible; }
+  .wrap { flex: 1 1 auto; min-height: 0; width: 100%; }
+  .play { flex: 1 1 auto; min-height: 0; grid-template-rows: minmax(0, 1fr); }
+  .problem-card { min-height: 0; overflow: hidden; height: 100%; justify-content: center; }
+  .side { height: 100%; justify-content: center; }
+  .feedback { flex: 0 1 auto; min-height: 0; overflow-y: auto; }
+}
+@media (max-height: 500px) {
+  .feedback { font-size: 0.9rem; line-height: 1.3; }
+  .feedback strong { font-size: 1.05rem; }
+}
+
+/* Measure It: a chip with the topic, the drawing (ruler, jug, scale, thermometer), two values to compare or a sum
+   with a box, then the question. Four answers below on the reading levels, the number pad on the unit levels. */
+.tag { margin: 0; align-self: flex-start; font-size: 0.85rem; font-weight: 600; color: var(--muted); background: var(--chip); border-radius: 999px; padding: 4px 12px; }
+.pic { width: 100%; display: flex; justify-content: center; flex: 0 1 auto; min-height: 0; }
+.pic svg { display: block; width: 100%; max-width: 440px; height: auto; max-height: clamp(110px, 34dvh, 300px); }
+.pic svg.thermo { max-width: 170px; }
+.pic svg.scale { max-width: 300px; }
+.pic svg.jug { max-width: 240px; }
+/* The drawings take the theme's colors: lines in ink, the ruler and the scale's body on chip, the water in c1,
+   the needle and the thermometer's column in c2, the pencil in c5. */
+.mi-glass { fill: var(--card); stroke: var(--ink); stroke-width: 3; stroke-linejoin: round; stroke-linecap: round; }
+.mi-outline { fill: none; stroke: var(--ink); stroke-width: 3; stroke-linejoin: round; stroke-linecap: round; }
+.mi-body, .mi-ruler { fill: var(--chip); stroke: var(--ink); stroke-width: 3; stroke-linejoin: round; }
+.mi-tick { stroke: var(--ink); stroke-width: 1.5; }
+.mi-tick.big { stroke-width: 2.5; }
+.mi-num { fill: var(--ink); font-family: var(--font); font-size: 11px; font-weight: 700; text-anchor: middle; }
+.mi-num.left { text-anchor: start; }
+.mi-unit { fill: var(--muted); font-family: var(--font); font-size: 11px; font-weight: 600; text-anchor: start; }
+.mi-unit.mid { text-anchor: middle; }
+.mi-pencil { fill: var(--c5); stroke: var(--ink); stroke-width: 2.5; }
+.mi-tip { fill: var(--chip); stroke: var(--ink); stroke-width: 2.5; stroke-linejoin: round; }
+.mi-lead { fill: var(--ink); }
+.mi-eraser { fill: var(--c4); stroke: var(--ink); stroke-width: 2.5; }
+.mi-crayon { fill: var(--c2); stroke: var(--ink); stroke-width: 2.5; stroke-linejoin: round; }
+.mi-ribbon { fill: var(--c3); stroke: var(--ink); stroke-width: 2.5; }
+.mi-water { fill: var(--c1); opacity: 0.8; }
+.mi-needle { stroke: var(--c2); stroke-width: 5; stroke-linecap: round; }
+.mi-pin { fill: var(--ink); }
+.mi-bulb { fill: var(--c2); stroke: var(--ink); stroke-width: 3; }
+.mi-mercury { fill: var(--c2); }
+/* Two values to compare, side by side. */
+.vs { display: flex; align-items: center; justify-content: center; gap: 10px; flex-wrap: wrap; }
+.vs span { background: var(--chip); border-radius: 18px; padding: 8px 18px; font-size: clamp(1.3rem, min(7vw, 5dvh), 3rem); font-weight: 700; white-space: nowrap; }
+.vs i { font-style: normal; color: var(--muted); font-weight: 600; font-size: 1.1rem; }
+/* A sum with a box for the typed number: "3 m = [?] cm". */
+.eq { margin: 0; font-size: clamp(1.5rem, min(8.5vw, 5.5dvh), 3.4rem); font-weight: 700; font-variant-numeric: tabular-nums; line-height: 1.1; display: flex; align-items: center; gap: 0.35em; flex-wrap: wrap; justify-content: center; }
+.eq .pair { display: inline-flex; align-items: center; gap: 0.35em; white-space: nowrap; }
+.eq .ans { min-width: 2.2em; height: 1.5em; padding: 0 0.3em; display: grid; place-items: center; border: 2px solid var(--accent); box-shadow: 0 0 0 2px var(--accent) inset; border-radius: 14px; background: var(--card); color: var(--accent); }
+.eq .ans:empty::after { content: "?"; color: var(--muted); }
+.problem-card.good .eq .ans { border-color: var(--good); box-shadow: 0 0 0 2px var(--good) inset; color: var(--good); }
+.problem-card.bad .eq .ans { border-color: var(--bad); box-shadow: 0 0 0 2px var(--bad) inset; color: var(--bad); text-decoration: line-through; text-decoration-thickness: 0.08em; }
+.question { margin: 0; font-size: clamp(1.1rem, min(5vw, 3.2dvh), 1.8rem); font-weight: 700; line-height: 1.25; text-align: center; max-width: 32ch; text-wrap: balance; }
+.side { display: flex; flex-direction: column; gap: 10px; }
+.choices { display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; }
+.choices button {
+  font: inherit; font-size: max(var(--ans-floor), clamp(1.05rem, min(5vw, 3.2dvh), 1.7rem)); font-weight: 700; color: var(--ink); line-height: 1.2;
+  background: var(--key); border: 2px solid var(--line); border-radius: 18px; min-height: var(--ans-h); padding: 6px 10px; cursor: pointer;
+  overflow-wrap: anywhere; hyphens: auto;
+  transition: transform .08s ease, border-color .15s ease; touch-action: manipulation; -webkit-tap-highlight-color: transparent;
+}
+/* Three answers (two values and "The same"): the last one takes the whole row. */
+.choices button:last-child:nth-child(odd) { grid-column: 1 / -1; }
+.choices button:hover:not(:disabled) { border-color: var(--accent); }
+.choices button:active:not(:disabled) { transform: scale(0.96); }
+.choices button:disabled { cursor: default; }
+.choices button.right { border-color: var(--good); background: var(--good-bg); color: var(--good); }
+.choices button.wrong { border-color: var(--bad); background: var(--bad-bg); color: var(--bad); }
+.choices button.faded { opacity: 0.45; }
+.next { font: inherit; font-size: 1.25rem; font-weight: 700; color: var(--accent-ink); background: var(--accent); border: 0; border-radius: 16px; min-height: clamp(52px, 7dvh, 72px); cursor: pointer; width: 100%; }
+.choices[hidden], .pad[hidden], .next[hidden] { display: none; }
+/* Tablets: the drawing grows with the room, like in the other games. */
+@media (min-width: 600px) and (min-height: 700px) {
+  .pic svg { max-width: 560px; max-height: clamp(160px, 36dvh, 380px); }
+  .pic svg.ruler { max-width: 100%; }
+  .pic svg.thermo { max-width: 230px; }
+  .pic svg.scale { max-width: 460px; }
+  .pic svg.jug { max-width: 340px; }
+}
+/* One screen: the card is a size container, so the drawing takes the height the card has and no more. */
+@media (orientation: portrait), (orientation: landscape) and (min-width: 640px) {
+  body:not(:has(#settings-panel:not([hidden]))) .problem-card { container-type: size; }
+  .pic svg { max-height: clamp(70px, calc(100cqh - 150px), 440px); }
+}
+/* Phone on its side: the chip is hidden and the drawing goes after the answer, so until then it may take the room
+   the explanation keeps free. */
+@media (orientation: landscape) and (min-width: 640px) and (max-height: 500px) {
+  .feedback:empty { min-height: 0; }
+  .pic svg { max-height: clamp(70px, calc(100cqh - 64px), 440px); }
+}
+/* After the answer the drawing gets smaller, so the question and the reason have room. */
+@media (max-height: 900px), (max-width: 599px) {
+  .problem-card.good .pic svg, .problem-card.bad .pic svg { max-height: clamp(60px, calc(100cqh - 210px), 220px); }
+}
+@media (max-height: 700px) {
+  .question { font-size: clamp(1rem, min(4.6vw, 3dvh), 1.4rem); }
+  .problem-card.good .pic svg, .problem-card.bad .pic svg { display: none; }
+}
+@media (max-height: 500px) {
+  .tag { display: none; }
+  .question { font-size: 1rem; }
+}
+
+/* Worksheet cells (only printed): the small drawing or the sum, the question, then the answers to circle or a line. */
+@media print {
+  .sheet-grid li > div.ws-mi { align-items: flex-start; gap: 0.6mm; padding-right: 2mm; }
+  .ws-mi svg { display: block; width: 36mm; height: 18mm; }
+  .ws-mi svg.thermo { width: 14mm; height: 24mm; }
+  .ws-mi .ws-q { font-size: 9.5pt; font-weight: 600; line-height: 1.2; }
+  .ws-mi .ws-opts { display: flex; flex-wrap: wrap; gap: 0.2mm 3mm; font-size: 8.5pt; line-height: 1.2; color: #333; }
+  .ws-mi .ws-opts span::before { content: "○ "; }
+  .ws-mi .ws-line { display: inline-block; width: 22mm; border-bottom: 0.4mm solid #000; margin-left: 2mm; }
+  .ws-mi .mi-glass, .ws-mi .mi-tip { fill: #fff; stroke: #000; }
+  .ws-mi .mi-outline { stroke: #000; }
+  .ws-mi .mi-body, .ws-mi .mi-ruler, .ws-mi .mi-pencil, .ws-mi .mi-crayon, .ws-mi .mi-ribbon, .ws-mi .mi-eraser { fill: #eee; stroke: #000; }
+  .ws-mi .mi-tick, .ws-mi .mi-needle { stroke: #000; }
+  .ws-mi .mi-num, .ws-mi .mi-unit, .ws-mi .mi-lead, .ws-mi .mi-pin { fill: #000; }
+  .ws-mi .mi-water, .ws-mi .mi-mercury, .ws-mi .mi-bulb { fill: #999; opacity: 1; }
+  .ws-mi .mi-bulb { stroke: #000; }
+}
+/* Laptops and monitors: the game's own picture and keys grow with the screen (loopy.css --card-zoom, --side-zoom; 1 elsewhere). */
+.problem-card > * { zoom: var(--card-zoom); }
+</style>
+<link rel="stylesheet" href="../../loopy.css">
+<script src="../../loopy.js"></script>
+</head>
+<body>
+
+<div class="wrap">
+  <header class="game-bar">
+    <a class="home-link" href="../../">&larr; loopy</a>
+    <div class="bar-right">
+      <span id="star-chip"></span>
+      <button type="button" id="settings-toggle" aria-controls="settings-panel"></button>
+    </div>
+  </header>
+  <section class="top" aria-labelledby="title">
+    <h1 id="title" data-t="miName">Measure It</h1>
+    <div class="score" aria-live="polite">
+      <div class="pill pill-score"><span data-t="score">Score</span><b id="score">0 / 0</b></div>
+      <div id="level"></div>
+      <div class="pill pill-streak"><span data-t="streak">Streak</span><b id="streak">0</b></div>
+      <div id="last5" data-game="measure-it"></div>
+    </div>
+  </section>
+  <div class="settings-panel" id="settings-panel" hidden>
+    <div class="controls"><div id="age-picker"></div><div id="theme-picker"></div><button id="sound-toggle"></button><div id="lang-picker"></div></div>
+    <div>
+      <p class="seg-label" id="level-label" data-t="miLevel">Level</p>
+      <div class="seg" role="group" aria-labelledby="level-label" id="level-seg">
+        <button type="button" data-level="1" data-t="miL1">Whole numbers</button>
+        <button type="button" data-level="2" data-t="miL2">Halves and quarters</button>
+        <button type="button" data-level="3" data-t="miL3">Small units and compare</button>
+        <button type="button" data-level="4" data-t="miL4">Change the unit</button>
+        <button type="button" data-level="5" data-t="miL5">Time and below zero</button>
+      </div>
+    </div>
+    <div class="panel-foot">
+      <p data-t="miKbd">Keyboard works too: 1 to 4 picks an answer, numbers type, Backspace, Enter.</p>
+      <button type="button" class="reset" id="reset" data-t="resetScore">Reset score</button>
+    </div>
+  </div>
+
+  <main class="play">
+    <div class="problem-card" id="card">
+      <p class="tag" id="tag"></p>
+      <div class="pic" id="pic" aria-hidden="true"></div>
+      <p class="question" id="question"></p>
+      <p class="feedback" id="feedback"></p>
+    </div>
+    <div class="side">
+      <div class="choices" id="choices"></div>
+      <div class="pad" id="pad" hidden>
+        <button type="button" id="k1" data-d="1">1</button>
+        <button type="button" id="k2" data-d="2">2</button>
+        <button type="button" id="k3" data-d="3">3</button>
+        <button type="button" id="k4" data-d="4">4</button>
+        <button type="button" id="k5" data-d="5">5</button>
+        <button type="button" id="k6" data-d="6">6</button>
+        <button type="button" id="k7" data-d="7">7</button>
+        <button type="button" id="k8" data-d="8">8</button>
+        <button type="button" id="k9" data-d="9">9</button>
+        <button type="button" id="k-erase" class="erase" aria-label="Erase last digit" data-t-aria="eraseAria" data-t="erase">Erase</button>
+        <button type="button" id="k0" data-d="0">0</button>
+        <button type="button" id="k-go" class="go" data-t="check">Check</button>
+      </div>
+      <button type="button" class="next skip" id="next" data-t="skip">Skip</button>
+    </div>
+  </main>
+</div>
+
+<script>
+Loopy.addStrings({
+  en: {
+    miName: "Measure It", miLevel: "Level",
+    miL1: "Whole numbers", miL2: "Halves and quarters", miL3: "Small units and compare", miL4: "Change the unit", miL5: "Time and below zero",
+    miKbd: "Keyboard works too: 1 to 4 picks an answer, numbers type, Backspace, Enter.",
+    miTagLen: "📏 Length", miTagWt: "⚖️ Weight", miTagVol: "🥤 Litres", miTagTemp: "🌡️ Temperature", miTagTime: "⏱️ Time",
+    miObj: "the pencil|the crayon|the ribbon", miObjCap: "The pencil|The crayon|The ribbon",
+    miQLen: "How long is {o}?", miQLenMm: "How long is {o} in millimetres?",
+    miQJug: "How much water is in the jug?", miQScale: "What does the scale show?", miQTemp: "How warm is it?", miQCold: "How cold is it?",
+    miWhyRuler: "{o} reaches the {n} on the ruler. That is {a}.",
+    miWhyHalf: "{o} ends halfway between {n} and {m}. That is {a}.",
+    miWhyMm: "{o} ends {k} small marks after the {n}. Each small mark is 1 mm, so that is {a}.",
+    miWhyMm1: "{o} ends 1 small mark after the {n}. Each small mark is 1 mm, so that is {a}.",
+    miWhyJug: "The water reaches the {a} mark.", miWhyScale: "The needle points at {a}.", miWhyTemp: "The column in the thermometer reaches {a}.",
+    miQLonger: "Which is longer?", miQHeavier: "Which is heavier?", miQMore: "Which is more?", miQLongerTime: "Which takes longer?",
+    miQColder: "Which is colder?", miQWarmer: "Which is warmer?", miSame: "The same",
+    miWhyCmp: "{a} = {b}. {c} is more than {d}.", miWhyCmpSame: "{a} = {b}. They are the same.",
+    miWhyCold: "On the thermometer, {a} is below {b}, so {a} is colder.", miWhyWarm: "On the thermometer, {a} is above {b}, so {a} is warmer.",
+    miQHow: "How many {u}?",
+    miWhyUp: "1 {U} = {f} {u}, so {n} {N} = {a} {u}.", miWhyMix: "{n} {U} = {nf} {u}, and {nf} + {r} = {a}.", miWhyDown: "{f} {u} = 1 {U}, so {q} {u} = {a} {A}.",
+    miQTempUp: "It is {a}. It gets {n} degrees warmer. What does the thermometer show then?",
+    miQTempDown: "It is {a}. It gets {n} degrees colder. What does the thermometer show then?",
+    miWhyStepsUp: "Count {n} steps up from {a}: {list}.", miWhyStepsDown: "Count {n} steps down from {a}: {list}.",
+    miDay: "day|days", miWeek: "week|weeks",
+    miReadList: "{q} Is it {list}?", miSayConv: "{q}. That is how many {u}?", miSayMinus: "minus",
+    miSayUnits: "cm=centimetres;mm=millimetres;km=kilometres;m=metres;kg=kilograms;g=grams;ml=millilitres;l=litres;min=minutes;h=hours;s=seconds",
+    miSayFrac: "¼= and a quarter;½= and a half;¾= and three quarters", miSayFracLone: "¼=a quarter;½=a half;¾=three quarters",
+    miHow: "Read the picture or the sum. Circle the right answer, or write it on the line."
+  },
+  de: {
+    miName: "Messen", miLevel: "Stufe",
+    miL1: "Ganze Zahlen", miL2: "Halbe und Viertel", miL3: "Kleine Einheiten und vergleichen", miL4: "Einheit umwandeln", miL5: "Zeit und unter null",
+    miKbd: "Die Tastatur geht auch: 1 bis 4 wählt eine Antwort, Zahlen tippen, Rücktaste, Enter.",
+    miTagLen: "📏 Länge", miTagWt: "⚖️ Gewicht", miTagVol: "🥤 Liter", miTagTemp: "🌡️ Temperatur", miTagTime: "⏱️ Zeit",
+    miObj: "der Stift|der Wachsmalstift|das Band", miObjCap: "Der Stift|Der Wachsmalstift|Das Band",
+    miQLen: "Wie lang ist {o}?", miQLenMm: "Wie lang ist {o} in Millimetern?",
+    miQJug: "Wie viel Wasser ist im Messbecher?", miQScale: "Was zeigt die Waage?", miQTemp: "Wie warm ist es?", miQCold: "Wie kalt ist es?",
+    miWhyRuler: "{o} reicht bis zur {n} auf dem Lineal. Das sind {a}.",
+    miWhyHalf: "{o} endet genau zwischen {n} und {m}. Das sind {a}.",
+    miWhyMm: "{o} endet {k} kleine Striche nach der {n}. Jeder kleine Strich ist 1 mm, also {a}.",
+    miWhyMm1: "{o} endet 1 kleinen Strich nach der {n}. Jeder kleine Strich ist 1 mm, also {a}.",
+    miWhyJug: "Das Wasser reicht bis zur Marke {a}.", miWhyScale: "Der Zeiger zeigt auf {a}.", miWhyTemp: "Die Säule im Thermometer reicht bis {a}.",
+    miQLonger: "Was ist länger?", miQHeavier: "Was ist schwerer?", miQMore: "Was ist mehr?", miQLongerTime: "Was dauert länger?",
+    miQColder: "Was ist kälter?", miQWarmer: "Was ist wärmer?", miSame: "Gleich viel",
+    miWhyCmp: "{a} = {b}. {c} ist mehr als {d}.", miWhyCmpSame: "{a} = {b}. Das ist gleich viel.",
+    miWhyCold: "Auf dem Thermometer liegt {a} unter {b}, also ist {a} kälter.", miWhyWarm: "Auf dem Thermometer liegt {a} über {b}, also ist {a} wärmer.",
+    miQHow: "Wie viele {u}?",
+    miWhyUp: "1 {U} = {f} {u}, also {n} {N} = {a} {u}.", miWhyMix: "{n} {U} = {nf} {u}, und {nf} + {r} = {a}.", miWhyDown: "{f} {u} = 1 {U}, also {q} {u} = {a} {A}.",
+    miQTempUp: "Es ist {a}. Es wird {n} Grad wärmer. Was zeigt das Thermometer dann?",
+    miQTempDown: "Es ist {a}. Es wird {n} Grad kälter. Was zeigt das Thermometer dann?",
+    miWhyStepsUp: "Zähle von {a} aus {n} Schritte nach oben: {list}.", miWhyStepsDown: "Zähle von {a} aus {n} Schritte nach unten: {list}.",
+    miDay: "Tag|Tage", miWeek: "Woche|Wochen",
+    miReadList: "{q} Ist es {list}?", miSayConv: "{q}. Wie viele {u} sind das?", miSayMinus: "minus",
+    miSayUnits: "cm=Zentimeter;mm=Millimeter;km=Kilometer;m=Meter;kg=Kilogramm;g=Gramm;ml=Milliliter;l=Liter;min=Minuten;h=Stunden;s=Sekunden",
+    miSayFrac: "¼= und ein Viertel;½= und ein halb;¾= und drei Viertel", miSayFracLone: "¼=ein Viertel;½=ein halber;¾=drei Viertel",
+    miHow: "Lies das Bild oder die Aufgabe. Kreise die richtige Antwort ein oder schreib sie auf die Linie."
+  }
+});
+
+(function () {
+  const $ = (id) => document.getElementById(id);
+  const card = $("card"), tagEl = $("tag"), picEl = $("pic"), qEl = $("question"), choicesEl = $("choices"), padEl = $("pad"), feedbackEl = $("feedback");
+  const nextBtn = $("next"), goBtn = $("k-go");
+  const levelBtns = [...document.querySelectorAll("#level-seg button")];
+  const digitBtns = [...document.querySelectorAll("#pad [data-d]")];
+  const t = Loopy.t, lang = Loopy.lang === "de" ? "de" : "en", num = (n) => Loopy.num(n);
+  const randInt = (n) => Math.floor(Math.random() * n);
+  const pick = (arr) => arr[randInt(arr.length)];
+  const shuffle = (arr) => arr.slice().sort(() => Math.random() - 0.5);
+  const list = (key) => t(key).split("|");
+  const el = (tag, cls, text) => Loopy.el(tag, cls, text);
+  const inRange = (n, lo, hi) => Number.isInteger(n) && n >= lo && n <= hi;
+  const store = {
+    get(k, d, ok) { try { const v = JSON.parse(Loopy.store.get(k)); return ok.includes(v) ? v : d; } catch (e) { return d; } },
+    set(k, v) { Loopy.store.set(k, JSON.stringify(v)); }
+  };
+
+  let age = Loopy.getAge();
+  let level;
+  const levelForAge = (a) => a <= 7 ? 1 : a === 8 ? 2 : a === 9 ? 3 : a <= 11 ? 4 : 5;
+  function loadForAge() { level = store.get("mi.level.a" + age, levelForAge(age), [1, 2, 3, 4, 5]); }
+  loadForAge();
+  Loopy.levels.init({ names: ["miL1", "miL2", "miL3", "miL4", "miL5"],
+    get: () => level - 1, base: () => levelForAge(age) - 1,
+    set: (i) => { level = i + 1; store.set("mi.level.a" + age, level); render(); } });
+  let right = 0, tried = 0, streak = 0;
+  let current = null, typed = "", answered = false, recent = [];
+
+  // Numbers with units. Every value is kept as a whole number of the small unit (mm, ml, g, degrees), so a missed
+  // question can be built again from its key. On screen, halves and quarters show as ½ and ¼ ("7½ cm").
+  const FRAC = { 1: "¼", 2: "½", 3: "¾" };
+  const fq = (q4) => { const w = Math.floor(q4 / 4), f = q4 % 4; return (w || !f ? num(w) : "") + (f ? FRAC[f] : ""); };
+  const show = (v, big, per, uBig, uSmall) => big ? fq(Math.round(v * 4 / per)) + " " + uBig : num(v) + " " + uSmall;
+  const temp = (v) => (v < 0 ? "−" : "") + num(Math.abs(v)) + " °C";
+  // Wrong answers: values near the right one on the same scale, never the right one, never twice.
+  function others(all, answer, n) {
+    const out = [];
+    for (const x of shuffle(all)) { if (x !== answer && !out.includes(x) && out.length < n) out.push(x); }
+    return out;
+  }
+  const near = (v, step, lo, hi, extra) => [v - step, v + step, v - 2 * step, v + 2 * step, v - 3 * step, v + 3 * step].concat(extra || []).filter(x => x >= lo && x <= hi && x !== v);
+  const problem = (o) => Object.assign({ options: null }, o);
+
+  // The instruments by level: the jug and the scale have a top value, a small tick and a labelled tick (in ml or g),
+  // the thermometer a lowest and highest degree. The ruler is always 12 cm long.
+  const INST = {
+    jug: { 1: { max: 5000, tick: 1000, label: 1000, step: 1000, big: true }, 2: { max: 2000, tick: 250, label: 500, step: 250, big: true }, 3: { max: 1000, tick: 100, label: 200, step: 100 } },
+    scale: { 1: { max: 5000, tick: 500, label: 1000, step: 1000, big: true }, 2: { max: 4000, tick: 250, label: 1000, step: 250, big: true }, 3: { max: 1000, tick: 50, label: 200, step: 50 } },
+    thermo: { 1: { min: 0, max: 30, label: 5 }, 2: { min: 0, max: 40, label: 5 }, 5: { min: -10, max: 20, label: 5 } }
+  };
+  const OBJ = list("miObj"), OBJ_CAP = list("miObjCap");
+  // Reading an instrument (levels 1 to 3, and the thermometer below zero on level 5). fx = {inst, v, o} from a Try again key.
+  function makeRead(lv, fx) {
+    const inst = fx ? fx.inst : pick(lv === 5 ? ["thermo"] : ["ruler", "jug", "scale", "thermo"]);
+    if (inst === "ruler") {
+      if (lv > 3) return null;
+      const o = fx ? fx.o : randInt(3);
+      if (!inRange(o, 0, 2)) return null;
+      // Whole cm on level 1, halves on level 2, millimetres on level 3.
+      const v = fx ? fx.v : lv === 1 ? 10 * (3 + randInt(10)) : lv === 2 ? 5 + 10 * (3 + randInt(9)) : 10 * (3 + randInt(9)) + 1 + randInt(9);
+      if (!inRange(v, 1, 120) || (lv === 1 ? v % 10 !== 0 : lv === 2 ? v % 10 !== 5 : v % 10 === 0)) return null;
+      const mm = lv === 3, a = show(v, !mm, 10, "cm", "mm"), cm = Math.floor(v / 10);
+      const wrong = others(near(v, mm ? 1 : 10, 1, 120, mm ? [v + 10, v - 10, v + 9, v - 9] : [v + 5, v - 5]).map(x => show(x, !mm, 10, "cm", "mm")), a, 3);
+      const why = lv === 1 ? t("miWhyRuler", { o: OBJ_CAP[o], n: num(cm), a }) : lv === 2 ? t("miWhyHalf", { o: OBJ_CAP[o], n: num(cm), m: num(cm + 1), a })
+        : t(v % 10 === 1 ? "miWhyMm1" : "miWhyMm", { o: OBJ_CAP[o], k: num(v % 10), n: num(cm), a });
+      return problem({ kind: "read", key: lv + ":ruler:" + v + ":" + o, tag: "miTagLen", q: t(mm ? "miQLenMm" : "miQLen", { o: OBJ[o] }), answer: a, options: shuffle([a, ...wrong]), why, pic: { inst, v, o } });
+    }
+    const s = INST[inst] && INST[inst][lv];
+    if (!s) return null;
+    if (inst === "thermo") {
+      const v = fx ? fx.v : lv === 5 ? -10 + randInt(10) : s.min + randInt(s.max - s.min + 1);
+      if (!inRange(v, s.min, s.max) || (lv === 5 && v >= 0)) return null;
+      const a = temp(v), wrong = others(near(v, 1, s.min, s.max, [v + 5, v - 5, -v, v + 10, v - 10]).map(temp), a, 3);
+      return problem({ kind: lv === 5 ? "neg" : "read", key: lv + ":thermo:" + v, tag: "miTagTemp", q: t(v < 0 ? "miQCold" : "miQTemp"), answer: a, options: shuffle([a, ...wrong]), why: t("miWhyTemp", { a }), pic: { inst, v, s } });
+    }
+    const vol = inst === "jug", v = fx ? fx.v : s.step * (1 + randInt(s.max / s.step));
+    if (!inRange(v, s.step, s.max) || v % s.step) return null;
+    const fmt = (x) => show(x, s.big, 1000, vol ? "l" : "kg", vol ? "ml" : "g"), a = fmt(v);
+    const wrong = others(near(v, s.step, s.step, s.max).map(fmt), a, 3);
+    return problem({ kind: "read", key: lv + ":" + inst + ":" + v, tag: vol ? "miTagVol" : "miTagWt", q: t(vol ? "miQJug" : "miQScale"), answer: a, options: shuffle([a, ...wrong]), why: t(vol ? "miWhyJug" : "miWhyScale", { a }), pic: { inst, v, s } });
+  }
+
+  // Units that change into each other: f small units make one big unit. r: the small amounts used in "2 m 50 cm".
+  const CONV = {
+    len: { f: 100, U: "m", u: "cm", tag: "miTagLen", q: "miQLonger", r: [10, 20, 25, 30, 40, 50, 60, 70, 75, 80, 90], d: [10, 20, 50] },
+    km: { f: 1000, U: "km", u: "m", tag: "miTagLen", q: "miQLonger", r: [100, 200, 300, 400, 500, 600, 700, 800, 900, 250, 750], d: [100, 200, 500] },
+    mm: { f: 10, U: "cm", u: "mm", tag: "miTagLen", q: "miQLonger", r: [1, 2, 3, 4, 5, 6, 7, 8, 9], d: [2, 5] },
+    wt: { f: 1000, U: "kg", u: "g", tag: "miTagWt", q: "miQHeavier", r: [100, 200, 300, 400, 500, 600, 700, 800, 900, 250, 750], d: [100, 200, 500] },
+    vol: { f: 1000, U: "l", u: "ml", tag: "miTagVol", q: "miQMore", r: [100, 200, 300, 400, 500, 600, 700, 800, 900, 250, 750], d: [100, 200, 500] },
+    time: { f: 60, U: "h", u: "min", tag: "miTagTime", q: "miQLongerTime", r: [5, 10, 15, 20, 30, 40, 45, 50], d: [10, 20, 30], frac: true },
+    sec: { f: 60, U: "min", u: "s", tag: "miTagTime", q: "miQLongerTime", r: [5, 10, 15, 20, 30, 45], d: [10, 20, 30] },
+    day: { f: 24, U: "miDay", u: "h", tag: "miTagTime", r: [1, 2, 3, 6, 12] },
+    week: { f: 7, U: "miWeek", u: "miDay", tag: "miTagTime", r: [1, 2, 3, 4, 5, 6] }
+  };
+  const CATS = { 3: ["len", "km", "mm", "wt", "vol", "time", "sec"], 4: ["len", "km", "mm", "wt", "vol"], 5: ["time", "time", "sec", "day", "week"] };
+  // "day" or "days": the time words change with the number; the short units (cm, kg) do not.
+  const uname = (u, n) => u === "miDay" || u === "miWeek" ? list(u)[n === 1 ? 0 : 1] : u;
+  const val = (n, u) => num(n) + " " + uname(u, n);
+
+  // Which is longer, heavier, more (level 3) or colder (level 5). fx = {cat, n, d, flip} or {cat: "cold", a, b, w}.
+  function makeCmp(lv, fx) {
+    if (lv === 5) {
+      const a = fx ? fx.a : -10 + randInt(21), b = fx ? fx.b : -10 + randInt(21), w = fx ? fx.w : randInt(2);
+      if (!inRange(a, -10, 10) || !inRange(b, -10, 10) || a === b || !inRange(w, 0, 1)) return fx ? null : makeCmp(lv);
+      const cold = Math.min(a, b), warm = Math.max(a, b), ans = temp(w ? warm : cold);
+      return problem({ kind: "neg", key: "5:cmp:cold:" + a + ":" + b + ":" + w, tag: "miTagTemp", q: t(w ? "miQWarmer" : "miQColder"), answer: ans, options: [temp(a), temp(b)],
+        why: t(w ? "miWhyWarm" : "miWhyCold", { a: ans, b: temp(w ? cold : warm) }), pic: { vs: [temp(a), temp(b)] } });
+    }
+    const cat = fx ? fx.cat : pick(CATS[3]), c = CONV[cat];
+    if (!c || !c.d) return null;
+    const n = fx ? fx.n : 1 + randInt(3), k = fx ? fx.d : pick([-1, 0, 1]) * pick(c.d), flip = fx ? fx.flip : randInt(2);
+    if (!inRange(n, 1, 5) || !inRange(k, -c.f + 1, c.f) || (k && !c.d.includes(Math.abs(k))) || !inRange(flip, 0, 1)) return null;
+    const small = n * c.f + k, A = val(n, c.U), B = val(small, c.u), conv = val(n * c.f, c.u);
+    const answer = k === 0 ? t("miSame") : k < 0 ? A : B;
+    const why = k === 0 ? t("miWhyCmpSame", { a: A, b: conv }) : t("miWhyCmp", { a: A, b: conv, c: k < 0 ? conv : B, d: k < 0 ? B : conv });
+    const pair = flip ? [B, A] : [A, B];
+    return problem({ kind: "cmp", key: "3:cmp:" + cat + ":" + n + ":" + k + ":" + flip, tag: c.tag, q: t(c.q), answer, options: [...pair, t("miSame")], why, pic: { vs: pair } });
+  }
+
+  // Change the unit (level 4), and minutes, hours and days (level 5), typed on the pad. fx = {cat, dir, n, r}.
+  // dir 0: "3 m = ? cm"; 1: "2 m 50 cm = ? cm"; 2: "400 cm = ? m"; 3: "½ h = ? min".
+  function makeConv(lv, fx) {
+    const cat = fx ? fx.cat : pick(CATS[lv]), c = CONV[cat];
+    if (!c || !CATS[lv].includes(cat)) return null;
+    const dir = fx ? fx.dir : c.frac ? pick([0, 1, 1, 2, 3]) : pick([0, 1, 1, 2]);
+    if (!inRange(dir, 0, 3) || (dir === 3 && !c.frac)) return null;
+    const n = fx ? fx.n : dir === 3 ? 1 + randInt(3) : dir === 2 ? 2 + randInt(8) : 1 + randInt(dir === 1 ? 5 : 9), r = fx ? fx.r : dir === 1 ? pick(c.r) : 0;
+    if (!inRange(n, 1, 9) || (dir === 1 ? !c.r.includes(r) : r !== 0) || (dir === 3 && n > 3)) return null;
+    let left, answer, unit, why, qlog;
+    if (dir === 0) { left = val(n, c.U); answer = n * c.f; unit = uname(c.u, answer); why = t("miWhyUp", { U: uname(c.U, 1), N: uname(c.U, n), f: num(c.f), u: unit, n: num(n), a: num(answer) }); }
+    else if (dir === 1) { left = val(n, c.U) + " " + val(r, c.u); answer = n * c.f + r; unit = uname(c.u, answer); why = t("miWhyMix", { n: num(n), U: uname(c.U, n), nf: num(n * c.f), u: unit, r: num(r), a: num(answer) }); }
+    else if (dir === 2) { left = val(n * c.f, c.u); answer = n; unit = uname(c.U, n); why = t("miWhyDown", { f: num(c.f), u: uname(c.u, c.f), U: uname(c.U, 1), A: uname(c.U, n), q: num(n * c.f), a: num(n) }); }
+    else { left = FRAC[n] + " h"; answer = 15 * n; unit = "min"; why = t("miWhyUp", { U: "h", N: "h", f: num(60), u: "min", n: FRAC[n], a: num(answer) }); }
+    qlog = left + " = ? " + unit;
+    return problem({ kind: lv === 5 ? "time" : "conv", key: lv + ":conv:" + cat + ":" + dir + ":" + n + ":" + r, tag: c.tag, q: t("miQHow", { u: unit }), answer: num(answer), value: answer, unit, left, qlog, why, pic: { eq: true } });
+  }
+
+  // The thermometer goes up or down (level 5): "It is −3 °C. It gets 5 degrees warmer." fx = {a, n, up}.
+  function makeTempChange(fx) {
+    const a = fx ? fx.a : -8 + randInt(14), n = fx ? fx.n : 2 + randInt(8), up = fx ? fx.up : randInt(2), res = up ? a + n : a - n;
+    if (!inRange(a, -10, 10) || !inRange(n, 1, 12) || !inRange(up, 0, 1) || res < -10 || res > 12) return fx ? null : makeTempChange();
+    const ans = temp(res), wrong = others([res + 1, res - 1, res + 2, res - 2, -res, a, up ? a - n : a + n].filter(x => x >= -12 && x <= 14).map(temp), ans, 3);
+    const steps = [];
+    for (let i = 1; i <= n; i++) steps.push(temp(up ? a + i : a - i).replace(" °C", ""));
+    return problem({ kind: "neg", key: "5:step:" + a + ":" + n + ":" + up, tag: "miTagTemp", q: t(up ? "miQTempUp" : "miQTempDown", { a: temp(a), n: num(n) }), answer: ans, options: shuffle([ans, ...wrong]),
+      why: t(up ? "miWhyStepsUp" : "miWhyStepsDown", { n: num(n), a: temp(a), list: steps.join(", ") }), pic: { inst: "thermo", v: a, s: INST.thermo[5] } });
+  }
+
+  const MAKE = {
+    1: () => makeRead(1), 2: () => makeRead(2),
+    3: () => randInt(2) ? makeRead(3) : makeCmp(3),
+    4: () => makeConv(4),
+    5: () => { const r = randInt(20); return r < 8 ? makeConv(5) : r < 12 ? makeRead(5) : r < 17 ? makeTempChange() : makeCmp(5); }
+  };
+  function makeProblem() { let p = null; for (let i = 0; i < 50 && !p; i++) p = MAKE[level](); return p; }
+
+  // Try again: a missed question comes back later (Loopy.retry). The note is the page language and the
+  // question's key, like "en:2:ruler:75:0" or "de:4:conv:len:1:2:50". A question from another level or language waits.
+  const note = (p) => lang + ":" + p.key;
+  function rebuild(r) {
+    const m = /^(en|de):([1-5]):([a-z]+)((?::-?[a-z0-9]{1,6}){1,5})$/.exec(r);
+    if (!m || m[1] !== lang || +m[2] !== level) return null;
+    const lv = +m[2], type = m[3], x = m[4].slice(1).split(":"), N = (i) => (/^-?\d+$/.test(x[i]) ? Number(x[i]) : NaN);
+    let p = null;
+    if (type === "ruler" || type === "jug" || type === "scale" || type === "thermo") p = makeRead(lv, { inst: type, v: N(0), o: type === "ruler" ? N(1) : 0 });
+    else if (type === "cmp" && x[0] === "cold") p = makeCmp(5, { a: N(1), b: N(2), w: N(3) });
+    else if (type === "cmp") p = makeCmp(3, { cat: x[0], n: N(1), d: N(2), flip: N(3) });
+    else if (type === "conv") p = makeConv(lv, { cat: x[0], dir: N(1), n: N(2), r: N(3) });
+    else if (type === "step") p = makeTempChange({ a: N(0), n: N(1), up: N(2) });
+    return p && p.key === m[2] + ":" + m[3] + m[4] ? p : null;
+  }
+
+  // The drawings: SVG built in the page, colored by the theme through classes (no picture to download).
+  const NS = "http://www.w3.org/2000/svg";
+  function sv(parent, tag, attrs, text) {
+    const n = document.createElementNS(NS, tag);
+    Object.keys(attrs).forEach(k => n.setAttribute(k, attrs[k]));
+    if (text !== undefined) n.textContent = text;
+    parent.appendChild(n);
+    return n;
+  }
+  function svgRoot(w, h, cls) { const s = document.createElementNS(NS, "svg"); s.setAttribute("viewBox", "0 0 " + w + " " + h); s.setAttribute("class", cls); s.setAttribute("aria-hidden", "true"); return s; }
+  const r1 = (n) => Math.round(n * 10) / 10;
+  // A ruler of 12 cm with mm marks, and the pencil, crayon or ribbon lying on it from the 0.
+  function drawRuler(v, o) {
+    const s = svgRoot(300, 118, "ruler"), x0 = 20, w = v * 2;
+    if (o === 0) {
+      sv(s, "rect", { x: x0, y: 22, width: Math.max(w - 18, 4), height: 28, rx: 3, class: "mi-pencil" });
+      sv(s, "polygon", { points: (x0 + w - 18) + ",22 " + (x0 + w) + ",36 " + (x0 + w - 18) + ",50", class: "mi-tip" });
+      sv(s, "polygon", { points: (x0 + w - 6) + ",32 " + (x0 + w) + ",36 " + (x0 + w - 6) + ",40", class: "mi-lead" });
+      sv(s, "rect", { x: x0, y: 22, width: 14, height: 28, rx: 3, class: "mi-eraser" });
+    } else if (o === 1) {
+      sv(s, "rect", { x: x0, y: 24, width: Math.max(w - 12, 4), height: 24, rx: 5, class: "mi-crayon" });
+      sv(s, "polygon", { points: (x0 + w - 12) + ",24 " + (x0 + w) + ",32 " + (x0 + w) + ",40 " + (x0 + w - 12) + ",48", class: "mi-crayon" });
+    } else {
+      sv(s, "rect", { x: x0, y: 28, width: w, height: 18, rx: 2, class: "mi-ribbon" });
+    }
+    sv(s, "rect", { x: 8, y: 60, width: 284, height: 52, rx: 6, class: "mi-ruler" });
+    for (let i = 0; i <= 120; i++) {
+      const x = x0 + i * 2, h = i % 10 === 0 ? 18 : i % 5 === 0 ? 12 : 7;
+      sv(s, "line", { x1: x, y1: 61, x2: x, y2: 61 + h, class: "mi-tick" + (i % 10 === 0 ? " big" : "") });
+    }
+    for (let c = 0; c <= 12; c++) sv(s, "text", { x: x0 + c * 20, y: 101, class: "mi-num" }, String(c));
+    sv(s, "text", { x: 270, y: 76, class: "mi-unit" }, "cm");
+    return s;
+  }
+  // A measuring jug: the water up to its level, marks on the inside, the labelled ones with their number.
+  function drawJug(v, s) {
+    const g = svgRoot(170, 180, "jug"), yOf = (x) => 160 - 130 * x / s.max, xl = (y) => 40 - 8 * (y - 20) / 140, xr = (y) => 130 + 8 * (y - 20) / 140;
+    const big = s.max > 1000;
+    const yl = yOf(v);
+    sv(g, "polygon", { points: r1(xl(yl)) + "," + r1(yl) + " " + r1(xr(yl)) + "," + r1(yl) + " 138,160 32,160", class: "mi-water" });
+    sv(g, "path", { d: "M130,45 C168,45 168,115 130,115", class: "mi-outline" });
+    sv(g, "polygon", { points: "40,20 130,20 138,160 32,160", class: "mi-outline" });
+    sv(g, "polyline", { points: "28,10 40,20", class: "mi-outline" });
+    for (let x = s.tick; x <= s.max; x += s.tick) {
+      const y = r1(yOf(x)), major = x % s.label === 0, left = r1(xl(y));
+      sv(g, "line", { x1: left, y1: y, x2: left + (major ? 18 : 10), y2: y, class: "mi-tick" + (major ? " big" : "") });
+      if (major) sv(g, "text", { x: left + 22, y: y + 4, class: "mi-num left" }, big ? fq(x * 4 / 1000) : String(x));
+    }
+    sv(g, "text", { x: 108, y: 38, class: "mi-unit" }, big ? "l" : "ml");
+    return g;
+  }
+  // A kitchen scale: a round dial with the numbers around it and a needle.
+  function drawScale(v, s) {
+    const g = svgRoot(200, 160, "scale"), cx = 100, cy = 90, R = 56;
+    const ang = (x) => (-150 + 300 * x / s.max - 90) * Math.PI / 180, big = s.max > 1000;
+    const at = (x, r) => [r1(cx + r * Math.cos(ang(x))), r1(cy + r * Math.sin(ang(x)))];
+    sv(g, "rect", { x: 20, y: 6, width: 160, height: 14, rx: 7, class: "mi-body" });
+    sv(g, "rect", { x: 88, y: 18, width: 24, height: 14, class: "mi-body" });
+    sv(g, "rect", { x: 30, y: 120, width: 140, height: 32, rx: 10, class: "mi-body" });
+    sv(g, "circle", { cx, cy, r: R, class: "mi-glass" });
+    for (let x = 0; x <= s.max; x += s.tick) {
+      const major = x % s.label === 0, a = at(x, R - 1), b = at(x, R - (major ? 9 : 5));
+      sv(g, "line", { x1: a[0], y1: a[1], x2: b[0], y2: b[1], class: "mi-tick" + (major ? " big" : "") });
+      if (major) { const p = at(x, R - 18); sv(g, "text", { x: p[0], y: p[1] + 4, class: "mi-num" }, big ? fq(x * 4 / 1000) : String(x)); }
+    }
+    sv(g, "text", { x: cx, y: 141, class: "mi-unit mid" }, big ? "kg" : "g");
+    // The needle stops short of the numbers, so it never hides the one it points at.
+    const n = at(v, R - 26);
+    sv(g, "line", { x1: cx, y1: cy, x2: n[0], y2: n[1], class: "mi-needle" });
+    sv(g, "circle", { cx, cy, r: 5, class: "mi-pin" });
+    return g;
+  }
+  // A thermometer: the column from the bulb up to the degree, the scale beside it, below zero too.
+  function drawThermo(v, s) {
+    const g = svgRoot(110, 210, "thermo"), top = 24, bottom = 164, yOf = (d) => bottom - (bottom - top) * (d - s.min) / (s.max - s.min);
+    sv(g, "rect", { x: 38, y: 12, width: 24, height: 164, rx: 12, class: "mi-glass" });
+    sv(g, "rect", { x: 44, y: r1(yOf(v)), width: 12, height: r1(180 - yOf(v)), class: "mi-mercury" });
+    sv(g, "circle", { cx: 50, cy: 182, r: 18, class: "mi-bulb" });
+    for (let d = s.min; d <= s.max; d++) {
+      const y = r1(yOf(d)), major = d % s.label === 0;
+      sv(g, "line", { x1: 66, y1: y, x2: 66 + (major ? 12 : 6), y2: y, class: "mi-tick" + (major ? " big" : "") });
+      if (major) sv(g, "text", { x: 82, y: y + 4, class: "mi-num left" }, (d < 0 ? "−" : "") + Math.abs(d));
+    }
+    sv(g, "text", { x: 66, y: 12, class: "mi-unit" }, "°C");
+    return g;
+  }
+  function drawInto(host, p) {
+    host.textContent = "";
+    const s = p.pic;
+    if (s.inst === "ruler") host.appendChild(drawRuler(s.v, s.o));
+    else if (s.inst === "jug") host.appendChild(drawJug(s.v, s.s));
+    else if (s.inst === "scale") host.appendChild(drawScale(s.v, s.s));
+    else if (s.inst === "thermo") host.appendChild(drawThermo(s.v, s.s));
+    else if (s.vs) {
+      const row = el("div", "vs");
+      row.appendChild(el("span", "", s.vs[0]));
+      row.appendChild(el("i", "", t("orWord")));
+      row.appendChild(el("span", "", s.vs[1]));
+      host.appendChild(row);
+    } else if (s.eq) {
+      const row = el("p", "eq");
+      row.appendChild(el("span", "", p.left));
+      row.appendChild(el("span", "", "="));
+      const pair = el("span", "pair"), ans = el("span", "ans");
+      ans.setAttribute("role", "textbox"); ans.setAttribute("aria-label", t("yourAnswer")); ans.dataset.a = p.answer;
+      pair.appendChild(ans);
+      pair.appendChild(el("span", "", p.unit));
+      row.appendChild(pair);
+      host.appendChild(row);
+    }
+  }
+  function drawPic() {
+    drawInto(picEl, current);
+    const ans = picEl.querySelector(".ans");
+    if (ans) ans.textContent = typed === "" ? "" : num(parseInt(typed, 10));
+  }
+
+  const isPad = () => !current.options;
+  function render() {
+    Loopy.levels.render();
+    $("score").textContent = right + " / " + tried;
+    $("streak").textContent = streak;
+    levelBtns.forEach(b => b.setAttribute("aria-pressed", String(+b.dataset.level === level)));
+    const pad = isPad();
+    choicesEl.hidden = pad; padEl.hidden = !pad; nextBtn.hidden = pad;
+    if (pad) {
+      goBtn.textContent = t(answered ? "next" : "check");
+      goBtn.disabled = !answered && typed === "";
+      digitBtns.forEach(b => b.disabled = answered);
+      $("k-erase").disabled = answered || typed === "";
+      const ans = picEl.querySelector(".ans");
+      if (ans) ans.textContent = typed === "" ? "" : num(parseInt(typed, 10));
+    } else {
+      Loopy.nextButton(nextBtn, answered);
+    }
+  }
+
+  function newRound() {
+    current = Loopy.retry.fresh("measure-it", recent, makeProblem, rebuild, 12);
+    typed = ""; answered = false;
+    tagEl.textContent = t(current.tag);
+    drawPic();
+    qEl.textContent = current.q;
+    choicesEl.textContent = "";
+    if (current.options) current.options.forEach((a, i) => {
+      const b = document.createElement("button");
+      b.type = "button"; b.id = "choice-" + i; b.textContent = a;
+      b.dataset.correct = String(a === current.answer);
+      b.addEventListener("click", () => choose(b));
+      choicesEl.appendChild(b);
+    });
+    card.className = "problem-card";
+    feedbackEl.className = "feedback";
+    feedbackEl.textContent = "";
+    render();
+    Loopy.speech.read();
+  }
+  function finish(ok, given) {
+    answered = true; tried++;
+    if (ok) { right++; streak++; } else { streak = 0; }
+    const q = current.qlog || (current.q.length > 40 ? current.q.slice(0, 39) + "…" : current.q);
+    if (ok) Loopy.rewards.correct("measure-it", streak, "mi-" + current.kind);
+    else Loopy.rewards.wrong("measure-it", { q, a: current.answer, y: given, k: "mi-" + current.kind, r: note(current) });
+    card.className = "problem-card " + (ok ? "good" : "bad");
+    feedbackEl.className = "feedback " + (ok ? "good" : "bad");
+    feedbackEl.innerHTML = "<strong></strong>";
+    feedbackEl.firstChild.textContent = ok ? (streak >= 3 ? t("correctRow", { n: streak }) : t("correct")) : t("notQuite");
+    feedbackEl.appendChild(document.createTextNode((ok ? "" : t("qfAnswerIs", { a: current.answer }) + " ") + current.why));
+    render();
+  }
+  function choose(btn) {
+    if (answered || isPad()) return;
+    const ok = btn.dataset.correct === "true";
+    [...choicesEl.children].forEach(b => {
+      b.disabled = true;
+      if (b.dataset.correct === "true") b.classList.add("right");
+      else if (b === btn) b.classList.add("wrong");
+      else b.classList.add("faded");
+    });
+    finish(ok, btn.textContent);
+    nextBtn.focus({ preventScroll: true });
+  }
+  function press(d) {
+    if (answered || !isPad() || typed.length >= 4) return;
+    if (typed === "0") typed = "";
+    typed += d;
+    render();
+  }
+  function erase() { if (answered || !isPad()) return; typed = typed.slice(0, -1); render(); }
+  function check() {
+    if (answered || !isPad() || typed === "") return;
+    finish(parseInt(typed, 10) === current.value, num(parseInt(typed, 10)));
+  }
+  function go() { answered ? newRound() : check(); }
+  // "The answer is: {a}." is the same line as in Quick Facts.
+  Loopy.addStrings({ en: { qfAnswerIs: "The answer is: {a}." }, de: { qfAnswerIs: "Die Antwort ist: {a}." } });
+
+  digitBtns.forEach(b => b.addEventListener("click", () => press(b.dataset.d)));
+  $("k-erase").addEventListener("click", erase);
+  goBtn.addEventListener("click", go);
+  nextBtn.addEventListener("click", newRound);
+  levelBtns.forEach(b => b.addEventListener("click", () => { level = +b.dataset.level; store.set("mi.level.a" + age, level); recent = []; newRound(); }));
+  window.addEventListener("loopy:age", (e) => { age = e.detail; recent = []; loadForAge(); newRound(); });
+  $("reset").addEventListener("click", () => { right = 0; tried = 0; streak = 0; Loopy.recent.clear("measure-it"); newRound(); });
+  document.addEventListener("keydown", (e) => {
+    if (e.target.tagName === "INPUT" || document.querySelector(".loopy-cheer.big")) return;
+    if (isPad()) {
+      if (e.key >= "0" && e.key <= "9") press(e.key);
+      else if (e.key === "Backspace") erase();
+      else if (e.key === "Enter") go();
+      return;
+    }
+    if (e.key === "Enter" && answered && e.target.tagName !== "BUTTON") { newRound(); return; }
+    const n = parseInt(e.key, 10);
+    if (n >= 1 && n <= 4 && !answered) { const b = choicesEl.children[n - 1]; if (b) choose(b); }
+  });
+
+  // Read aloud: units and fractions in words, so "7½ cm" is heard as "7 and a half centimetres" and "−3 °C" as "minus 3 degrees".
+  const pairs = (key) => t(key).split(";").map(x => x.split("="));
+  function say(s) {
+    const frac = pairs("miSayFrac"), lone = pairs("miSayFracLone");
+    s = s.replace(/−/g, " " + t("miSayMinus") + " ");
+    s = s.replace(/(\d*)([¼½¾])/g, (m, n, f) => n ? n + frac.find(p => p[0] === f)[1] : lone.find(p => p[0] === f)[1]);
+    s = s.replace(/°C/g, lang === "de" ? "Grad" : "degrees");
+    pairs("miSayUnits").forEach(([u, w]) => { s = s.replace(new RegExp("(^|[^A-Za-z])" + u + "(?![A-Za-z])", "g"), "$1" + w); });
+    return s;
+  }
+  Loopy.speech.question({ host: card, text: () => {
+    if (isPad()) return say(t("miSayConv", { q: current.left, u: current.unit }));
+    const o = current.options;
+    return say(t("miReadList", { q: current.q, list: o.slice(0, -1).join(", ") + " " + t("orWord") + " " + o[o.length - 1] }));
+  } });
+
+  // Print worksheet: 20 questions at the game's level. A reading question prints its small drawing with the answers
+  // to circle; a unit question prints the sum with a line to write on.
+  const part = (cls, text) => { const n = document.createElement("span"); if (cls) n.className = cls; if (text) n.textContent = text; return n; };
+  Loopy.worksheet({
+    title: () => t("miName"),
+    level: () => [t("ageLabel", { n: age }), t("miLevel") + ": " + t("miL" + level)].join(" · "),
+    how: () => t("miHow"),
+    layout: "line",
+    make: (n) => { const out = [], keys = []; for (let i = 0; i < 400 && out.length < n; i++) { const p = makeProblem(); if (!keys.includes(p.key)) { keys.push(p.key); out.push(p); } } return out; },
+    cell: (p) => {
+      const box = document.createElement("div");
+      box.className = "ws-mi";
+      if (p.pic.inst) drawInto(box, p);
+      const q = part("ws-q", p.pic.eq ? p.left + " = " : p.q);
+      if (p.pic.eq) { q.appendChild(part("ws-line")); q.appendChild(document.createTextNode(" " + p.unit)); }
+      box.appendChild(q);
+      if (p.options) {
+        const opts = part("ws-opts");
+        p.options.forEach(a => opts.appendChild(part("", a)));
+        box.appendChild(opts);
+      }
+      return box;
+    },
+    answer: (p) => p.pic.eq ? p.left + " = " + p.answer + " " + p.unit : p.answer
+  });
+
+  newRound();
+})();
+</script>
+</body>
+</html>
