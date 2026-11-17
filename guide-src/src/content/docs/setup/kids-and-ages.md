@@ -23,9 +23,11 @@ You can add up to 6 children on one device.
 
 ## Who is playing?
 
-With two or more children, **Who is playing?** shows at the top of the home page. Tap a name to switch. The page opens again for that child.
+With two or more children, **Who is playing?** shows at the top of the home page on a tablet or a computer. Tap a name to switch. The page opens again for that child.
 
-In a game, the child's picture and name sit next to ⚙ **Settings**, so everyone can see whose turn it is.
+On a phone the top of the home page is one small row. It holds the loopy logo, the child playing (picture, name and a small ▾) and ⚙ **Settings**. Tap the child to open **Who is playing?** and pick who plays next. The same box has **Change name or picture** and **Add a child**.
+
+In a game, the child's picture and name sit next to ⚙ **Settings**, so everyone can see whose turn it is. With two or more children, tap it there too to switch. So a brother or sister can take over without going back to the home page.
 
 ## What each child has
 

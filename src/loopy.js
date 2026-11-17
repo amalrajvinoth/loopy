@@ -140,6 +140,7 @@ document.documentElement.classList.add("loopy-building");
   Loopy.addStrings({
     en: {
       kidsGroup: "Who is playing?", kidN: "Player {n}", kidAdd: "Add a child", kidEditAria: "Change name or picture",
+      kidSwitch: "Who is playing? Now: {name}", kidPlaying: "{name} is playing",
       kidNew: "New child", kidEdit: "Change {name}", kidName: "Name", kidNameHint: "Name or nickname", kidPic: "Picture",
       kidSave: "Save", kidCancel: "Cancel", kidRemove: "Remove",
       kidSure: "Tap again to remove {name} and all their stars", kidStars: "{name}'s stars",
@@ -148,6 +149,7 @@ document.documentElement.classList.add("loopy-building");
     },
     de: {
       kidsGroup: "Wer spielt?", kidN: "Kind {n}", kidAdd: "Kind hinzufügen", kidEditAria: "Name oder Bild ändern",
+      kidSwitch: "Wer spielt? Gerade: {name}", kidPlaying: "{name} spielt",
       kidNew: "Neues Kind", kidEdit: "{name} ändern", kidName: "Name", kidNameHint: "Name oder Spitzname", kidPic: "Bild",
       kidSave: "Speichern", kidCancel: "Abbrechen", kidRemove: "Entfernen",
       kidSure: "Nochmal tippen: {name} mit allen Sternen entfernen", kidStars: "Sterne von {name}",
@@ -389,6 +391,58 @@ document.documentElement.classList.add("loopy-building");
     }
   }
 
+  // The "Who is playing?" sheet: one row per child, the child playing marked, then "Change name or
+  // picture" and "Add a child". The child chip opens it on phones (home) and on every game page, so a
+  // brother or sister can take over without going to the home page first. Tapping a child switches.
+  function switcher() {
+    var dlg = el("dialog", "kid-dialog kid-switch");
+    dlg.setAttribute("aria-labelledby", "kid-switch-title");
+    var form = el("form");
+    form.method = "dialog";
+    var h = el("h2", "", Loopy.t("kidsGroup"));
+    h.id = "kid-switch-title";
+    form.appendChild(h);
+    var list = el("div", "kid-list");
+    list.setAttribute("role", "group");
+    list.setAttribute("aria-label", Loopy.t("kidsGroup"));
+    data.list.forEach(function (k) {
+      var on = k.id === data.on, b = el("button", "kid-row");
+      b.type = "button";
+      b.setAttribute("aria-pressed", String(on));
+      b.setAttribute("aria-label", on ? Loopy.t("kidPlaying", { name: Loopy.kids.label(k) }) : Loopy.kids.label(k));
+      b.appendChild(el("span", "kid-pic", k.pic)).setAttribute("aria-hidden", "true");
+      b.appendChild(el("span", "kid-row-name", Loopy.kids.label(k))).setAttribute("aria-hidden", "true");
+      if (on) b.appendChild(el("span", "kid-row-on", "✓")).setAttribute("aria-hidden", "true");
+      b.addEventListener("click", function () { if (on) dlg.close(); else use(k.id); });
+      list.appendChild(b);
+    });
+    form.appendChild(list);
+    var foot = el("div", "kid-foot kid-switch-foot");
+    var change = el("button", "kid-btn quiet", "✎ " + Loopy.t("kidEditAria"));
+    change.type = "button";
+    change.addEventListener("click", function () { dlg.close(); open(find(data.on)); });
+    foot.appendChild(change);
+    if (data.list.length < MAX) {
+      var add = el("button", "kid-btn quiet", "+ " + Loopy.t("kidAdd"));
+      add.type = "button";
+      add.addEventListener("click", function () { dlg.close(); open(null); });
+      foot.appendChild(add);
+    }
+    var no = el("button", "kid-btn quiet", Loopy.t("kidCancel"));
+    no.type = "button";
+    no.addEventListener("click", function () { dlg.close(); });
+    foot.appendChild(no);
+    form.appendChild(foot);
+    dlg.appendChild(form);
+    // A tap on the dark part outside the sheet closes it, like Esc.
+    dlg.addEventListener("click", function (e) { if (e.target === dlg) dlg.close(); });
+    dlg.addEventListener("close", function () { dlg.remove(); });
+    document.body.appendChild(dlg);
+    dlg.showModal();
+    var now = list.querySelector('[aria-pressed="true"]');
+    if (now) now.focus();
+  }
+
   // The "Kids" part of Settings: one row per child with ✎, then "Add a child".
   function settings() {
     var box = document.getElementById("kid-settings");
@@ -420,21 +474,28 @@ document.documentElement.classList.add("loopy-building");
     box.appendChild(el("p", "kid-note", Loopy.t(data.list.length < 2 ? "kidsOne" : "kidsMany")));
   }
   // The child playing, next to ⚙ Settings on every page: their picture and name. A child with no
-  // name (one child on a new device) shows only the picture. Tapping it changes the name or picture.
-  // On the home page with two or more children the "Who is playing?" row shows this already.
+  // name (one child on a new device) shows only the picture. With one child, tapping it changes the
+  // name or picture. With two or more children it gets a small ▾ and opens the "Who is playing?" sheet.
+  // On the home page the chip is for phones (under 600px); tablets and up show the whole
+  // "Who is playing?" row instead, and the home page's own style hides the chip there (.kid-chip.many).
   function chip() {
     var gear = document.getElementById("settings-toggle");
-    if (!gear || (!gear.closest(".bar-right") && data.list.length > 1)) return;
-    var k = find(data.on), can = typeof HTMLDialogElement === "function";
+    if (!gear) return;
+    var k = find(data.on), can = typeof HTMLDialogElement === "function", many = data.list.length > 1;
     var b = el(can ? "button" : "span", "kid-chip");
     b.appendChild(el("span", "kid-pic", k.pic)).setAttribute("aria-hidden", "true");
     if (k.name) b.appendChild(el("span", "kid-chip-name", k.name));
     else b.classList.add("pic-only");
+    if (many) {
+      b.classList.add("many");
+      b.innerHTML += '<svg class="kid-caret" viewBox="0 0 24 24" aria-hidden="true"><path d="M6 9l6 6 6-6"/></svg>';
+    }
     if (can) {
       b.type = "button";
-      b.setAttribute("aria-label", k.name ? Loopy.t("kidChange", { name: k.name }) : Loopy.t("kidEditAria"));
+      var name = Loopy.kids.label(k);
+      b.setAttribute("aria-label", many ? Loopy.t("kidSwitch", { name: name }) : k.name ? Loopy.t("kidChange", { name: k.name }) : Loopy.t("kidEditAria"));
       b.setAttribute("aria-haspopup", "dialog");
-      b.addEventListener("click", function () { open(find(data.on)); });
+      b.addEventListener("click", function () { if (many) switcher(); else open(find(data.on)); });
     } else if (!k.name) b.hidden = true;
     if (!gear.closest(".bar-right")) {
       // Home: the chip and ⚙ Settings side by side under the tagline.

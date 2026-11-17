@@ -26,7 +26,7 @@ Jedes Spiel hat Stufen von leicht bis schwer. Das Alter wählt den Start. Nach 1
 
 ## Können Geschwister ein Gerät teilen?
 
-Ja. Öffne auf der Startseite die ⚙ Einstellungen und tippe auf **Kind hinzufügen**. Jedes Kind hat eigene Sterne, Stufen und ein letztes Spiel. Mehr unter [Einstellungen auf der Startseite](/loopy/guide/de/settings/home-settings/).
+Ja. Öffne auf der Startseite die ⚙ Einstellungen und tippe auf **Kind hinzufügen**. Jedes Kind hat eigene Sterne, Stufen und ein letztes Spiel. Zum Wechseln tippe auf der Startseite unter **Wer spielt?** auf einen Namen. Auf dem Handy und in jedem Spiel öffnet das Kind neben ⚙ **Einstellungen** diese Box. Mehr unter [Einstellungen auf der Startseite](/loopy/guide/de/settings/home-settings/).
 
 ## Wo werden die Sterne gespeichert? Können sie verloren gehen?
 
