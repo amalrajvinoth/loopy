@@ -484,6 +484,8 @@ button.next.skip {
   background: transparent; color: var(--muted) !important; border: 2px solid var(--line); font-size: 1.05rem;
 }
 button.next.skip:hover { color: var(--ink) !important; }
+/* A game with no Skip shows no dead Next before an answer. It keeps its place, so nothing jumps. */
+#next:disabled { visibility: hidden; }
 
 /* "+1" star: flies from the answer to the star counter after each right answer. */
 .loopy-plus {
@@ -513,5 +515,9 @@ button.next.skip:hover { color: var(--ink) !important; }
 .loopy-hint.fade { opacity: 0; transition: opacity .6s ease; animation: none; }
 /* Short screens: a slimmer bubble, so it can have a row of its own without crowding the card. */
 @media (max-height: 700px) { .loopy-hint { font-size: 1.05rem; padding: 7px 14px; border-radius: 16px; } }
+/* No room for the arrow between the card and the keys: slimmer and without it (place() in loopy.js, spot 6). */
+.loopy-hint.tight { font-size: 1.05rem; line-height: 1.2; padding: 4px 14px; border-radius: 14px; animation: none; } /* no bob: there is no room for it */
+/* At the card's top edge (spot 3) an arrow would point at the picture, so the bubble has none there either. */
+.loopy-hint.tight::after, .loopy-hint.plain::after { display: none; }
 @media (prefers-reduced-motion: reduce) { .loopy-hint { animation: none; } }
 @media print { .loopy-hint, .loopy-plus { display: none; } }
