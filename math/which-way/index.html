@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'sha256-0ygD8mjhVg0hDnHQ8qtvJ/pTgDdzAbsqoKQOS0cNFdA='; style-src 'self' 'sha256-z2P7kGW5Z05eCTjTZdYpc0vThTlOE9vmt97pVSvi2I4=' 'sha256-0kADUUlI6TuYYnrvBl14zf00qovcIXmyyyPIX5tKzZ4=' 'sha256-RT1053JU5UiKvjrCUFx1rlhdFLMmgtuFJ9T8jnMeawQ=' 'sha256-mTDHX10GSDwZ/00tE1WUYc+6JI0GPSiIwGIwyD4vAag='; img-src 'self' data:; font-src 'self'; connect-src 'self' https://loopy-sync.loopy-1e2.workers.dev; worker-src 'self'; object-src 'none'; base-uri 'none'; form-action 'none'; manifest-src 'self'; upgrade-insecure-requests">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'sha256-C/OFGs99I0zhSHj9oYSfIQcg8HNVG6MQAa8H52wGH+M='; style-src 'self' 'sha256-z2P7kGW5Z05eCTjTZdYpc0vThTlOE9vmt97pVSvi2I4=' 'sha256-0kADUUlI6TuYYnrvBl14zf00qovcIXmyyyPIX5tKzZ4=' 'sha256-RT1053JU5UiKvjrCUFx1rlhdFLMmgtuFJ9T8jnMeawQ=' 'sha256-j6V58X4Oo6Dw3QxapnQton1TVd98eFwkR0sxiPXRzk8='; img-src 'self' data:; font-src 'self'; connect-src 'self' https://loopy-sync.loopy-1e2.workers.dev; worker-src 'self'; object-src 'none'; base-uri 'none'; form-action 'none'; manifest-src 'self'; upgrade-insecure-requests">
 <meta name="referrer" content="strict-origin-when-cross-origin">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <style>:root{color-scheme:light;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}body{margin:0}[hidden]{display:none!important}</style>
@@ -182,6 +182,12 @@ body { min-height: 100vh; min-height: 100dvh; padding-block: var(--page-pad-top)
   min-height: 48px; padding: 8px 14px; text-align: left; cursor: pointer; touch-action: manipulation; -webkit-tap-highlight-color: transparent; transition: transform .08s ease, border-color .15s ease;
 }
 .choices.names button { font-size: clamp(1.2rem, 5vw, 1.5rem); font-weight: 700; text-align: center; min-height: clamp(52px, 8dvh, 80px); }
+/* Pick first: each way is a card with its picture, its name and a one-line rule. */
+.choices.ways button { display: flex; align-items: center; gap: 12px; min-height: clamp(52px, 8dvh, 80px); }
+.choices.ways .ic { font-size: 1.6rem; line-height: 1; flex: 0 0 auto; }
+.choices.ways b { display: block; font-size: clamp(1.05rem, 4.4vw, 1.3rem); }
+.choices.ways small { display: block; font-size: clamp(0.82rem, 3.6vw, 0.95rem); font-weight: 600; color: var(--muted); }
+.choices button.right small, .choices button.wrong small { color: inherit; }
 .choices button:hover:not(:disabled) { border-color: var(--accent); }
 .choices button:active:not(:disabled) { transform: scale(0.97); }
 .choices button:disabled { cursor: default; }
@@ -196,6 +202,7 @@ body { min-height: 100vh; min-height: 100dvh; padding-block: var(--page-pad-top)
   .choices { flex: 1 1 auto; min-height: 0; grid-auto-rows: minmax(48px, 1fr); gap: 12px; }
   .choices button { min-height: 48px; font-size: clamp(1rem, 1.8vw, 1.35rem); padding: 10px 18px; }
   .choices.names button { font-size: clamp(1.3rem, 2.4vw, 1.9rem); }
+  .choices.ways .ic { font-size: clamp(1.6rem, 3vw, 2.4rem); } .choices.ways b { font-size: clamp(1.1rem, 2vw, 1.6rem); } .choices.ways small { font-size: clamp(0.85rem, 1.5vw, 1.15rem); }
   .pick .go { flex: 0 0 auto; min-height: clamp(50px, 9dvh, 80px); }
 }
 /* Tablets upright: everything grows so the card has no empty bands. */
@@ -213,6 +220,7 @@ body { min-height: 100vh; min-height: 100dvh; padding-block: var(--page-pad-top)
   .choices { gap: 12px; }
   .choices button { min-height: clamp(64px, 9dvh, 120px); font-size: 1.45rem; padding: 12px 20px; }
   .choices.names button { min-height: clamp(72px, 10dvh, 130px); font-size: 1.8rem; }
+  .choices.ways .ic { font-size: 2.2rem; } .choices.ways b { font-size: 1.6rem; } .choices.ways small { font-size: 1.15rem; }
   .pick { gap: 12px; }
   .pick .go { min-height: clamp(60px, 8dvh, 90px); font-size: 1.6rem; }
 }
@@ -224,6 +232,7 @@ body { min-height: 100vh; min-height: 100dvh; padding-block: var(--page-pad-top)
   .choices { gap: 6px; }
   .choices button { min-height: 44px; padding: 6px 12px; font-size: clamp(0.92rem, 3.9vw, 1.05rem); }
   .choices.names button { min-height: 48px; font-size: 1.2rem; }
+  .choices.ways button { min-height: 48px; gap: 8px; } .choices.ways .ic { font-size: 1.3rem; } .choices.ways b { font-size: 1rem; } .choices.ways small { font-size: 0.8rem; }
   .pick .go { min-height: 48px; }
   .question { font-size: 1rem; }
   .where { font-size: 0.85rem; }
@@ -273,9 +282,10 @@ body { min-height: 100vh; min-height: 100dvh; padding-block: var(--page-pad-top)
       <p class="seg-label" id="level-label" data-t="wyLevel">Level</p>
       <div class="seg" role="group" aria-labelledby="level-label" id="level-seg">
         <button type="button" data-level="1" data-t="wyL1">Name the way</button>
-        <button type="button" data-level="2" data-t="wyL2">Say why</button>
-        <button type="button" data-level="3" data-t="wyL3">True or not</button>
-        <button type="button" data-level="4" data-t="wyL4">Fill the steps</button>
+        <button type="button" data-level="2" data-t="wyL2">Pick first</button>
+        <button type="button" data-level="3" data-t="wyL3">Say why</button>
+        <button type="button" data-level="4" data-t="wyL4">True or not</button>
+        <button type="button" data-level="5" data-t="wyL5">Fill the steps</button>
       </div>
     </div>
     <div class="panel-foot">
@@ -323,12 +333,16 @@ body { min-height: 100vh; min-height: 100dvh; padding-block: var(--page-pad-top)
 Loopy.addStrings({
   en: {
     wyName: "Which Way?", wyLevel: "Level",
-    wyL1: "Name the way", wyL2: "Say why", wyL3: "True or not", wyL4: "Fill the steps",
+    wyL1: "Name the way", wyL2: "Pick first", wyL3: "Say why", wyL4: "True or not", wyL5: "Fill the steps",
     wyKbd: "Keyboard works too: 1, 2 and 3 pick an answer, numbers, Backspace, Enter.",
-    wyTens: "Tens first", wyRound: "Nearly round", wyPlace: "Place by place",
+    wyTens: "Tens first", wyRound: "Nearly round", wyPlace: "Place by place", wyGiants: "Giants and dwarfs", wyToten: "To the ten", wyHelp: "Help with 10",
+    // The one-line rule of each way, on the Pick first cards.
+    wyRuleTens: "first the tens, then the ones", wyRuleRound: "nearly a ten: add the ten, then fix it", wyRulePlace: "tens with tens, ones with ones",
+    wyRuleGiants: "the ones stay under 10", wyRuleToten: "the ones go over the ten", wyRuleHelp: "add 9 or 11",
     wyThen: ", then ", wyComma: ", ",
-    wyTagName: "🗺️ Name the way", wyTagWhy: "💬 Say why", wyTagTrue: "🔎 True or not", wyTagFill: "✏️ Fill the steps",
+    wyTagName: "🗺️ Name the way", wyTagPick: "🤔 Pick first", wyTagWhy: "💬 Say why", wyTagTrue: "🔎 True or not", wyTagFill: "✏️ Fill the steps",
     wyAskName: "Which way is this?", wySubName: "Look at the steps.",
+    wyAskPick: "Which way helps you here?", wySubPick: "Only the sum. Pick the way first.",
     wyAskWhy: "Why is {way} a good way here?", wySubWhy: "One reason fits. Two do not.",
     wyAskTrue: "Which one is true here?", wySubTrue: "Look at the ones of {b}.",
     wyAskFill: "Fill in the steps of {way}.", wySubFill: "One box at a time.",
@@ -348,6 +362,19 @@ Loopy.addStrings({
     wyRPlace2: "{ta} + {tb} and {oa} + {ob} are both small sums.",
     wyRPlace3: "I add the tens, I add the ones, then I add the two answers.",
     wyRPlace4: "Each place on its own is easy, and {ta} + {tb} and {oa} + {ob} are the two sums.",
+    // The three ways for a one-digit number: the ones of a {oa}, the ten above a {nt} and what is missing to it {c}, how far b is from 10 {h}.
+    wyRGiants1: "{oa} + {b} stays under 10, so only the ones change.",
+    wyRGiants2: "The tens of {a} stay. I only do {oa} + {b}.",
+    wyRGiants3: "Because {oa} + {b} does not go over the ten.",
+    wyRGiants4: "The dwarf does the ones, the giant keeps the tens of {a}.",
+    wyRToten1: "{oa} + {b} goes over the ten, so I fill the ten first.",
+    wyRToten2: "{a} needs {c} to reach {nt}, then I add the rest.",
+    wyRToten3: "Because {a} is nearly {nt}, and {b} is more than {c}.",
+    wyRToten4: "First to {nt}, then the rest of {b}. Two easy steps.",
+    wyRHelp1: "{b} is {h} away from 10, so I add 10 and fix it by {h}.",
+    wyRHelp2: "Adding 10 is easy, and then I fix it by {h}.",
+    wyRHelp3: "Because {b} is almost 10, and 10 is easy to add.",
+    wyRHelp4: "10 helps: {a} + 10 first, then I fix the {h}.",
     // Reasons that fit no way.
     wyRNo1: "Because {b} has no tens.", wyRNo2: "Because the ones are easier than the tens.", wyRNo3: "Because I take {b} away first.",
     wyRNo4: "Because {a} and {b} are the same.", wyRNo5: "Because I only add the tens and leave the ones.", wyRNo6: "Because {b} is a round ten.",
@@ -355,17 +382,24 @@ Loopy.addStrings({
     wyTTens: "{b} is a round ten, so Tens first is one step.",
     wyTRound: "{b} is 1 or 2 away from a ten, so Nearly round is easy.",
     wyTPlace: "Both numbers have tens and ones, and the ones add up to less than 10, so Place by place is easy.",
+    wyTGiants: "{oa} + {b} stays under 10, so Giants and dwarfs is easy.",
+    wyTToten: "{oa} + {b} goes over the ten, so To the ten helps.",
+    wyTHelp: "{b} is {h} away from 10, so Help with 10 is quick.",
     wyBecause: "Because", wyHowPick: "Tick the way you would take and write why. Every way is right.",
+    wyHowBest: "Tick the way that helps most and write why.",
     wyHowFill: "Fill in the steps of the way."
   },
   de: {
     wyName: "Welcher Weg?", wyLevel: "Stufe",
-    wyL1: "Wie heißt der Weg?", wyL2: "Sag, warum", wyL3: "Stimmt das?", wyL4: "Schritte ausfüllen",
+    wyL1: "Wie heißt der Weg?", wyL2: "Erst wählen", wyL3: "Sag, warum", wyL4: "Stimmt das?", wyL5: "Schritte ausfüllen",
     wyKbd: "Tastatur geht auch: 1, 2 und 3 wählen eine Antwort, Zahlen, Rücktaste, Enter.",
-    wyTens: "Zehner zuerst", wyRound: "Fast rund", wyPlace: "Stellenweise",
+    wyTens: "Schrittweise", wyRound: "Hilfsaufgabe", wyPlace: "Stellenweise", wyGiants: "Riesen und Zwerge", wyToten: "Verliebt in den Zehner", wyHelp: "Aufgaben mit 10 helfen",
+    wyRuleTens: "erst die Zehner, dann die Einer", wyRuleRound: "fast ein Zehner: Zehner dazu, dann korrigieren", wyRulePlace: "Zehner mit Zehnern, Einer mit Einern",
+    wyRuleGiants: "die Einer bleiben unter 10", wyRuleToten: "die Einer gehen über den Zehner", wyRuleHelp: "plus 9 oder plus 11",
     wyThen: ", dann ", wyComma: ", ",
-    wyTagName: "🗺️ Wie heißt der Weg?", wyTagWhy: "💬 Sag, warum", wyTagTrue: "🔎 Stimmt das?", wyTagFill: "✏️ Schritte ausfüllen",
+    wyTagName: "🗺️ Wie heißt der Weg?", wyTagPick: "🤔 Erst wählen", wyTagWhy: "💬 Sag, warum", wyTagTrue: "🔎 Stimmt das?", wyTagFill: "✏️ Schritte ausfüllen",
     wyAskName: "Welcher Weg ist das?", wySubName: "Schau dir die Schritte an.",
+    wyAskPick: "Welcher Rechenweg hilft dir hier?", wySubPick: "Nur die Aufgabe. Wähle zuerst den Weg.",
     wyAskWhy: "Warum ist {way} hier ein guter Weg?", wySubWhy: "Ein Grund passt. Zwei passen nicht.",
     wyAskTrue: "Was stimmt hier?", wySubTrue: "Schau auf die Einer von {b}.",
     wyAskFill: "Füll die Schritte von {way} aus.", wySubFill: "Ein Kästchen nach dem anderen.",
@@ -384,12 +418,28 @@ Loopy.addStrings({
     wyRPlace2: "{ta} + {tb} und {oa} + {ob} sind beides kleine Aufgaben.",
     wyRPlace3: "Ich rechne die Zehner, ich rechne die Einer, dann rechne ich die beiden Ergebnisse zusammen.",
     wyRPlace4: "Jede Stelle für sich ist leicht, und {ta} + {tb} und {oa} + {ob} sind die zwei Aufgaben.",
+    wyRGiants1: "{oa} + {b} bleibt unter 10, also ändern sich nur die Einer.",
+    wyRGiants2: "Die Zehner von {a} bleiben. Ich rechne nur {oa} + {b}.",
+    wyRGiants3: "Weil {oa} + {b} nicht über den Zehner geht.",
+    wyRGiants4: "Der Zwerg rechnet die Einer, der Riese behält die Zehner von {a}.",
+    wyRToten1: "{oa} + {b} geht über den Zehner, also fülle ich erst den Zehner.",
+    wyRToten2: "{a} braucht {c} bis {nt}, dann rechne ich den Rest dazu.",
+    wyRToten3: "Weil {a} fast {nt} ist und {b} mehr als {c}.",
+    wyRToten4: "Erst bis {nt}, dann der Rest von {b}. Zwei leichte Schritte.",
+    wyRHelp1: "{b} ist {h} von 10 entfernt, also rechne ich 10 dazu und korrigiere um {h}.",
+    wyRHelp2: "Plus 10 ist leicht, und dann korrigiere ich um {h}.",
+    wyRHelp3: "Weil {b} fast 10 ist und 10 leicht dazuzurechnen ist.",
+    wyRHelp4: "Die 10 hilft: erst {a} + 10, dann korrigiere ich um {h}.",
     wyRNo1: "Weil {b} keine Zehner hat.", wyRNo2: "Weil die Einer leichter sind als die Zehner.", wyRNo3: "Weil ich zuerst {b} wegnehme.",
     wyRNo4: "Weil {a} und {b} gleich sind.", wyRNo5: "Weil ich nur die Zehner rechne und die Einer weglasse.", wyRNo6: "Weil {b} ein voller Zehner ist.",
-    wyTTens: "{b} ist ein voller Zehner, also ist Zehner zuerst nur ein Schritt.",
-    wyTRound: "{b} ist 1 oder 2 von einem Zehner entfernt, also ist Fast rund leicht.",
+    wyTTens: "{b} ist ein voller Zehner, also ist Schrittweise nur ein Schritt.",
+    wyTRound: "{b} ist 1 oder 2 von einem Zehner entfernt, also ist die Hilfsaufgabe leicht.",
     wyTPlace: "Beide Zahlen haben Zehner und Einer, und die Einer zusammen sind kleiner als 10, also ist Stellenweise leicht.",
+    wyTGiants: "{oa} + {b} bleibt unter 10, also ist Riesen und Zwerge leicht.",
+    wyTToten: "{oa} + {b} geht über den Zehner, also hilft Verliebt in den Zehner.",
+    wyTHelp: "{b} ist {h} von 10 entfernt, also geht Aufgaben mit 10 helfen schnell.",
     wyBecause: "Weil", wyHowPick: "Kreuz den Weg an, den du nehmen würdest, und schreib, warum. Jeder Weg ist richtig.",
+    wyHowBest: "Kreuz den Weg an, der am meisten hilft, und schreib, warum.",
     wyHowFill: "Füll die Schritte des Weges aus."
   }
 });
@@ -413,28 +463,42 @@ Loopy.addStrings({
   };
   let age = Loopy.getAge();
   let level;
-  const levelForAge = (a) => a <= 7 ? 1 : a <= 8 ? 2 : a <= 9 ? 3 : 4;
-  function loadForAge() { level = store.get("wy.level.a" + age, levelForAge(age), [1, 2, 3, 4]); }
+  const levelForAge = (a) => a <= 7 ? 1 : a <= 8 ? 2 : a <= 9 ? 3 : a <= 10 ? 4 : 5;
+  // Pick first came in as level 2 on 17 Nov 2026. A level saved before then (wy.level, 1 to 4) moves up by one from 2,
+  // so a child at Say why stays at Say why. The new key is wy.lv; the old one is left as it was.
+  function loadForAge() {
+    const old = store.get("wy.level.a" + age, 0, [1, 2, 3, 4]);
+    level = store.get("wy.lv.a" + age, old ? (old >= 2 ? old + 1 : old) : levelForAge(age), [1, 2, 3, 4, 5]);
+  }
   loadForAge();
-  Loopy.levels.init({ names: ["wyL1", "wyL2", "wyL3", "wyL4"],
+  Loopy.levels.init({ names: ["wyL1", "wyL2", "wyL3", "wyL4", "wyL5"],
     get: () => level - 1, base: () => levelForAge(age) - 1,
-    set: (i) => { level = i + 1; store.set("wy.level.a" + age, level); render(); } });
+    set: (i) => { level = i + 1; store.set("wy.lv.a" + age, level); render(); } });
   let right = 0, tried = 0, streak = 0;
   let current = null, typed = "", answered = false, recent = [], chosen = null;
 
-  // The three ways to add a + b, with the school's names. Nearly round rounds b up to the next ten when its ones are 5 or more.
-  const WAYS = ["tens", "round", "place"];
-  const WAY_KEY = { tens: "wyTens", round: "wyRound", place: "wyPlace" };
+  // The six ways to add a + b, with the school's names and pictures. Two groups: for a two-digit b, Tens first, Nearly round
+  // and Place by place; for a one-digit b (or 11), Giants and dwarfs, To the ten and Help with 10.
+  // Nearly round rounds b up to the next ten when its ones are 5 or more.
+  const TWO = ["tens", "round", "place"], ONE = ["giants", "toten", "help"], WAYS = TWO.concat(ONE);
+  const WAY_KEY = { tens: "wyTens", round: "wyRound", place: "wyPlace", giants: "wyGiants", toten: "wyToten", help: "wyHelp" };
+  const WAY_ICON = { tens: "🪜", round: "🛟", place: "🧮", giants: "👫", toten: "💞", help: "🔟" };
   const wayName = (w) => t(WAY_KEY[w]);
+  const wayLabel = (w) => WAY_ICON[w] + " " + wayName(w);
   const cap = (w) => w.charAt(0).toUpperCase() + w.slice(1);
+  const groupOf = (b) => b <= 9 || b === 11 ? ONE : TWO;
   function partsOf(a, b) {
     const ta = a - a % 10, oa = a % 10, tb = b - b % 10, ob = b % 10;
     const r = ob >= 5 ? tb + 10 : tb, d = Math.abs(b - r);
-    return { a, b, ta, oa, tb, ob, r, d, total: a + b };
+    // For a one-digit b: what a needs to reach its next ten (c), that ten (nt), and how far b is from 10 (h).
+    return { a, b, ta, oa, tb, ob, r, d, c: 10 - oa, nt: ta + 10, h: Math.abs(b - 10), total: a + b };
   }
   // The steps of a way: each one is [left, sign, right, result].
   function stepsOf(a, b, w) {
     const p = partsOf(a, b);
+    if (w === "giants") return [[p.oa, "+", b, p.oa + b], [a, "+", b, p.total]];
+    if (w === "toten") return [[a, "+", p.c, p.nt], [p.nt, "+", b - p.c, p.total]];
+    if (w === "help") return [[a, "+", 10, a + 10], [a + 10, b < 10 ? "−" : "+", p.h, p.total]];
     if (w === "tens") return p.ob ? [[a, "+", p.tb, a + p.tb], [a + p.tb, "+", p.ob, p.total]] : [[a, "+", p.tb, p.total]];
     if (w === "round") return p.r > b ? [[a, "+", p.r, a + p.r], [a + p.r, "−", p.d, p.total]] : p.r < b ? [[a, "+", p.r, a + p.r], [a + p.r, "+", p.d, p.total]] : [[a, "+", p.r, p.total]];
     const T = p.ta + p.tb, O = p.oa + p.ob;
@@ -446,9 +510,11 @@ Loopy.addStrings({
   const vars = (a, b) => { const p = partsOf(a, b), o = {}; for (const k in p) o[k] = fmt(p[k]); return o; };
   const reason = (a, b, w, i) => t("wyR" + cap(w) + i, vars(a, b));
   const noReason = (a, b, i) => t("wyRNo" + i, vars(a, b));
-  // True or not: which statement fits the sum. The maker only builds sums where exactly one does.
+  // True or not, and Pick first: which way fits the sum. The maker only builds sums where exactly one does.
+  // One-digit b: 9 and 11 are for Help with 10; ones that stay under 10 for Giants and dwarfs; ones that cross for To the ten.
   function trueWay(a, b) {
     const p = partsOf(a, b);
+    if (groupOf(b) === ONE) return b === 9 || b === 11 ? "help" : p.oa + b <= 9 ? "giants" : p.oa + b >= 11 ? "toten" : null;
     if (p.ob === 0) return "tens";
     if ([1, 2, 8, 9].includes(p.ob)) return p.oa + p.ob >= 10 ? "round" : null;
     return p.oa >= 1 && p.oa + p.ob <= 9 ? "place" : null;
@@ -457,24 +523,25 @@ Loopy.addStrings({
 
   // Name the way: the steps are shown, the child picks the name.
   function name(a, b, w) {
-    const choices = shuffle(WAYS.map(k => ({ k, text: wayName(k), ok: k === w })));
+    const choices = shuffle(groupOf(b).map(k => ({ k, text: wayLabel(k), ok: k === w })));
     return { type: "n", a, b, w, choices, blanks: ["n"], i: 0, done: {}, key: "1:n:" + a + ":" + b + ":" + w + ":n",
       ask: () => t("wyAskName"), sub: () => t("wySubName"),
       why: () => t("wyWhyName", { way: wayName(w), steps: stepsText(a, b, w) }) };
   }
   // Say why: the way is shown, the child picks the reason that fits it. One other reason belongs to another way, one to none.
   function why(a, b, w, ri) {
-    const other = pick(WAYS.filter(k => k !== w));
-    const choices = shuffle([{ k: w, text: reason(a, b, w, ri), ok: true }, { k: other, text: reason(a, b, other, rnd(1, 4)), ok: false }, { k: "no", text: noReason(a, b, rnd(1, 6)), ok: false }]);
-    return { type: "w", a, b, w, ri, choices, blanks: ["w"], i: 0, done: {}, key: "2:w:" + a + ":" + b + ":" + w + ":" + ri + ":w",
+    const other = pick(groupOf(b).filter(k => k !== w));
+    // "Because b has no tens" is true for a one-digit b, so that one stays out of the one-digit group.
+    const choices = shuffle([{ k: w, text: reason(a, b, w, ri), ok: true }, { k: other, text: reason(a, b, other, rnd(1, 4)), ok: false }, { k: "no", text: noReason(a, b, rnd(groupOf(b) === ONE ? 2 : 1, 6)), ok: false }]);
+    return { type: "w", a, b, w, ri, choices, blanks: ["w"], i: 0, done: {}, key: "3:w:" + a + ":" + b + ":" + w + ":" + ri + ":w",
       ask: () => t("wyAskWhy", { way: wayName(w) }), sub: () => t("wySubWhy"),
       why: () => t("wyWhyWay", { way: wayName(w), steps: stepsText(a, b, w), reason: reason(a, b, w, ri) }) };
   }
   // True or not: three statements about the sum, one is true.
   function truth(a, b) {
     const w = trueWay(a, b);
-    const choices = shuffle(WAYS.map(k => ({ k, text: statement(a, b, k), ok: k === w })));
-    return { type: "t", a, b, w, choices, blanks: ["t"], i: 0, done: {}, key: "3:t:" + a + ":" + b + ":t",
+    const choices = shuffle(groupOf(b).map(k => ({ k, text: statement(a, b, k), ok: k === w })));
+    return { type: "t", a, b, w, choices, blanks: ["t"], i: 0, done: {}, key: "4:t:" + a + ":" + b + ":t",
       ask: () => t("wyAskTrue"), sub: () => t("wySubTrue", { b: fmt(b) }),
       why: () => t("wyWhyTrue", { reason: statement(a, b, w), way: wayName(w), steps: stepsText(a, b, w) }) };
   }
@@ -482,10 +549,32 @@ Loopy.addStrings({
   function fill(a, b, w, blanks) {
     const steps = stepsOf(a, b, w), cells = {};
     steps.forEach((s, i) => { cells["s" + i] = s[3]; });
-    return { type: "f", a, b, w, steps, cells, blanks, i: 0, done: {}, key: "4:f:" + a + ":" + b + ":" + w + ":" + blanks[0],
+    return { type: "f", a, b, w, steps, cells, blanks, i: 0, done: {}, key: "5:f:" + a + ":" + b + ":" + w + ":" + blanks[0],
       ask: () => t("wyAskFill", { way: wayName(w) }), sub: (id) => t("wyStep", { n: fmt(+id.slice(1) + 1), of: fmt(steps.length) }),
       why: () => t("wyWhyFill", { way: wayName(w), steps: stepsText(a, b, w) }) };
   }
+  // Pick first: only the sum is shown, the three ways of its group are cards with a rule, and one of them fits best.
+  function pickFirst(a, b) {
+    const w = trueWay(a, b);
+    const choices = shuffle(groupOf(b).map(k => ({ k, text: wayName(k), icon: WAY_ICON[k], sub: t("wyRule" + cap(k)), ok: k === w })));
+    return { type: "p", a, b, w, choices, blanks: ["p"], i: 0, done: {}, key: "2:p:" + a + ":" + b + ":p",
+      ask: () => t("wyAskPick"), sub: () => t("wySubPick"),
+      why: () => t("wyWhyTrue", { reason: statement(a, b, w), way: wayName(w), steps: stepsText(a, b, w) }) };
+  }
+  // A sum with a one-digit b made for one way: Giants and dwarfs keeps the ones under 10 (32 + 4), To the ten crosses it
+  // (38 + 5, never exactly to the ten), Help with 10 adds 9 or 11.
+  function oneSumFor(w) {
+    for (let i = 0; i < 200; i++) {
+      let a, b;
+      if (w === "help") { b = pick([9, 11]); a = 10 * rnd(1, 8) + rnd(1, 8); }
+      else if (w === "giants") { const oa = rnd(1, 7); b = rnd(2, 9 - oa); a = 10 * rnd(1, 8) + oa; }
+      else { const oa = rnd(3, 8); b = rnd(11 - oa, 8); a = 10 * rnd(1, 8) + oa; }
+      if (a + b <= 100 && trueWay(a, b) === w) return [a, b];
+    }
+    return w === "help" ? [23, 9] : w === "giants" ? [32, 4] : [38, 5];
+  }
+  // Half the sums have a one-digit second number, half a two-digit one, like on the worksheet.
+  const oneDigit = () => randInt(2) === 0;
   // A sum where all three ways make sense: both numbers have tens and ones, b ends in 7, 8 or 9, and the total stays under 100.
   function anySum() {
     for (let i = 0; i < 100; i++) {
@@ -501,20 +590,29 @@ Loopy.addStrings({
       const ob = kind === 0 ? 0 : kind === 1 ? pick([1, 2, 8, 9]) : rnd(3, 7);
       const oa = kind === 0 ? rnd(1, 9) : kind === 1 ? rnd(Math.max(1, 10 - ob), 9) : rnd(1, 9 - ob);
       const a = 10 * rnd(1, 7) + oa, b = 10 * rnd(1, 7) + ob;
-      if (a + b <= 100 && trueWay(a, b)) return [a, b];
+      // 11 belongs to Help with 10, not to the two-digit ways.
+      if (a + b <= 100 && b !== 11 && trueWay(a, b)) return [a, b];
     }
     return [47, 29];
   }
+  // A sum and a way that fits it: a one-digit sum made for one of its three ways, or a two-digit sum with any of its three.
+  function sumAndWay() {
+    if (oneDigit()) { const w = pick(ONE); const [a, b] = oneSumFor(w); return [a, b, w]; }
+    const [a, b] = anySum(); return [a, b, pick(TWO)];
+  }
+  // A sum where exactly one way fits best.
+  const bestSum = () => oneDigit() ? oneSumFor(pick(ONE)) : trueSum();
   const MAKE = {
-    1: () => { const [a, b] = anySum(); return name(a, b, pick(WAYS)); },
-    2: () => { const [a, b] = anySum(); return why(a, b, pick(WAYS), rnd(1, 4)); },
-    3: () => { const [a, b] = trueSum(); return truth(a, b); },
-    4: () => { const [a, b] = anySum(), w = pick(WAYS); return fill(a, b, w, stepsOf(a, b, w).map((s, i) => "s" + i)); }
+    1: () => { const [a, b, w] = sumAndWay(); return name(a, b, w); },
+    2: () => { const [a, b] = bestSum(); return pickFirst(a, b); },
+    3: () => { const [a, b, w] = sumAndWay(); return why(a, b, w, rnd(1, 4)); },
+    4: () => { const [a, b] = bestSum(); return truth(a, b); },
+    5: () => { const [a, b, w] = sumAndWay(); return fill(a, b, w, stepsOf(a, b, w).map((s, i) => "s" + i)); }
   };
   function makeProblem() { return MAKE[level](); }
 
   const cur = () => current.blanks[current.i];
-  const KINDS = { n: "wy-name", w: "wy-why", t: "wy-true", f: "wy-fill" };
+  const KINDS = { n: "wy-name", p: "wy-pick", w: "wy-why", t: "wy-true", f: "wy-fill" };
   const kindOf = (p) => KINDS[p.type];
   const isPad = () => current.type === "f";
 
@@ -536,19 +634,26 @@ Loopy.addStrings({
   }
   function draw() {
     const p = current;
-    tagEl.textContent = t(p.type === "n" ? "wyTagName" : p.type === "w" ? "wyTagWhy" : p.type === "t" ? "wyTagTrue" : "wyTagFill");
+    tagEl.textContent = t(p.type === "n" ? "wyTagName" : p.type === "p" ? "wyTagPick" : p.type === "w" ? "wyTagWhy" : p.type === "t" ? "wyTagTrue" : "wyTagFill");
     sumEl.textContent = sumText(p.a, p.b);
-    wayCard.hidden = p.type === "t" || p.type === "f";
+    wayCard.hidden = p.type === "t" || p.type === "f" || p.type === "p";
     wayNameEl.hidden = p.type !== "w";
-    wayNameEl.textContent = p.type === "w" ? wayName(p.w) : "";
+    wayNameEl.textContent = p.type === "w" ? wayLabel(p.w) : "";
     wayStepsEl.textContent = p.type === "n" || p.type === "w" ? stepsText(p.a, p.b, p.w) : "";
     wayCard.classList.toggle("quiet", p.type === "n");
     stepsEl.hidden = p.type !== "f";
     if (p.type === "f") drawSteps(p);
     choicesEl.classList.toggle("names", p.type === "n");
+    choicesEl.classList.toggle("ways", p.type === "p");
     choiceBtns.forEach((b, i) => {
       const c = p.choices ? p.choices[i] : null;
       b.textContent = c ? c.text : "";
+      // Pick first: the picture, the name and the rule of the way.
+      if (c && c.icon) {
+        b.textContent = "";
+        b.appendChild(el("span", "ic", c.icon)).setAttribute("aria-hidden", "true");
+        const txt = el("span", ""); txt.appendChild(el("b", "", c.text)); txt.appendChild(el("small", "", c.sub)); b.appendChild(txt);
+      }
       b.disabled = answered || !c;
       b.dataset.correct = String(!!c && !answered && c.ok);
       b.className = answered && chosen && c ? (c.ok ? "right" : b === chosen ? "wrong" : "faded") : "";
@@ -591,16 +696,20 @@ Loopy.addStrings({
     current = Loopy.retry.fresh("which-way", recent, makeProblem, rebuild, 12);
     ask();
   }
+  const TYPE_LEVEL = { n: 1, p: 2, w: 3, t: 4, f: 5 };
   function rebuild(r) {
-    const m = /^([1-4]):([nwtf]):(\d{1,2}):(\d{1,2}):(.*)$/.exec(r);
-    if (!m || +m[1] !== level) return null;
+    const m = /^([1-5]):([npwtf]):(\d{1,2}):(\d{1,2}):(.*)$/.exec(r);
+    // The kind of question says the level (a note from before Pick first carries an older number).
+    if (!m || TYPE_LEVEL[m[2]] !== level) return null;
     const a = +m[3], b = +m[4], rest = m[5];
-    const okSum = a >= 11 && b >= 11 && a + b <= 100 && a % 10 >= 1;
+    const okSum = a >= 11 && b >= 2 && a + b <= 100 && a % 10 >= 1 && (groupOf(b) === ONE || b >= 11);
     if (!okSum) return null;
     if (m[2] === "t") return rest === "t" && trueWay(a, b) ? truth(a, b) : null;
-    if (b % 10 < 7) return null;
+    if (m[2] === "p") return rest === "p" && trueWay(a, b) ? pickFirst(a, b) : null;
     const s = rest.split(":"), w = s[0];
-    if (!WAYS.includes(w)) return null;
+    if (!groupOf(b).includes(w)) return null;
+    // A one-digit sum must fit its way; a two-digit b ends in 7, 8 or 9, so all three ways make sense.
+    if (groupOf(b) === ONE ? trueWay(a, b) !== w : b % 10 < 7) return null;
     if (m[2] === "n") return s[1] === "n" ? name(a, b, w) : null;
     if (m[2] === "w") return /^[1-4]$/.test(s[1]) && s[2] === "w" ? why(a, b, w, +s[1]) : null;
     return /^s[0-2]$/.test(s[1]) && +s[1].slice(1) < stepsOf(a, b, w).length ? fill(a, b, w, [s[1]]) : null;
@@ -652,7 +761,7 @@ Loopy.addStrings({
   goBtn.addEventListener("click", go);
   nextBtn.addEventListener("click", () => { if (answered) go(); });
   choiceBtns.forEach(b => b.addEventListener("click", () => choose(b)));
-  levelBtns.forEach(b => b.addEventListener("click", () => { level = +b.dataset.level; store.set("wy.level.a" + age, level); recent = []; newRound(); }));
+  levelBtns.forEach(b => b.addEventListener("click", () => { level = +b.dataset.level; store.set("wy.lv.a" + age, level); recent = []; newRound(); }));
   window.addEventListener("loopy:age", (e) => { age = e.detail; recent = []; loadForAge(); newRound(); });
   $("reset").addEventListener("click", () => { right = 0; tried = 0; streak = 0; Loopy.recent.clear("which-way"); newRound(); });
   document.addEventListener("keydown", (e) => {
@@ -669,7 +778,7 @@ Loopy.addStrings({
   Loopy.worksheet({
     title: () => t("wyName"),
     level: () => [t("ageLabel", { n: age }), t("wyLevel") + ": " + t("wyL" + level)].join(" · "),
-    how: () => t(level === 4 ? "wyHowFill" : "wyHowPick"),
+    how: () => t(level === 5 ? "wyHowFill" : level === 2 || level === 4 ? "wyHowBest" : "wyHowPick"),
     layout: "clock",
     make: (n) => { const out = [], keys = []; for (let i = 0; i < 400 && out.length < n; i++) { const p = makeProblem(); if (!keys.includes(p.key)) { keys.push(p.key); out.push(p); } } return out; },
     cell: (p) => {
@@ -682,12 +791,12 @@ Loopy.addStrings({
         box.appendChild(f);
         return box;
       }
-      WAYS.forEach(w => { const row = el("div", "way"); row.appendChild(el("i", "")); row.appendChild(document.createTextNode(wayName(w))); box.appendChild(row); });
+      groupOf(p.b).forEach(w => { const row = el("div", "way"); row.appendChild(el("i", "")); row.appendChild(document.createTextNode(wayName(w))); box.appendChild(row); });
       for (let i = 0; i < 2; i++) { const line = el("span", "line", i === 0 ? t("wyBecause") : ""); line.appendChild(el("i", "ws-line")); box.appendChild(line); }
       return box;
     },
     // Every way is right on the tick sheets (the line at the top says so), so the answer shows one of them.
-    answer: (p) => { const w = p.type === "f" ? p.w : "tens"; return wayName(w) + ": " + stepsText(p.a, p.b, w) + "."; }
+    answer: (p) => { const w = p.type === "f" || p.type === "p" || p.type === "t" ? p.w : groupOf(p.b)[0]; return wayName(w) + ": " + stepsText(p.a, p.b, w) + "."; }
   });
 
   newRound();

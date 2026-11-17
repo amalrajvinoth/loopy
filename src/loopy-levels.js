@@ -179,11 +179,16 @@
       at: function (v, a) { return index(val(v, "em.level.a{age}", a), [1, 2, 3, 4, 5], this.base(a)); },
       names: { en: ["Count the notes", "Notes and coins", "Enough for one thing?", "Two things", "Three things"],
         de: ["Scheine zählen", "Scheine und Münzen", "Reicht es für eins?", "Zwei Sachen", "Drei Sachen"] } },
-    "which-way": { keys: ["wy.level.a{age}"], of: 4,
-      base: function (a) { return a <= 7 ? 0 : a <= 8 ? 1 : a <= 9 ? 2 : 3; },
-      at: function (v, a) { return index(val(v, "wy.level.a{age}", a), [1, 2, 3, 4], this.base(a)); },
-      names: { en: ["Name the way", "Say why", "True or not", "Fill the steps"],
-        de: ["Wie heißt der Weg?", "Sag, warum", "Stimmt das?", "Schritte ausfüllen"] } },
+    // wy.lv (1 to 5) since Pick first came in on 17 Nov 2026; a level saved before (wy.level, 1 to 4) moves up by one from 2.
+    "which-way": { keys: ["wy.lv.a{age}", "wy.level.a{age}"], of: 5,
+      base: function (a) { return a <= 7 ? 0 : a <= 8 ? 1 : a <= 9 ? 2 : a <= 10 ? 3 : 4; },
+      at: function (v, a) {
+        var lv = val(v, "wy.lv.a{age}", a), old = val(v, "wy.level.a{age}", a);
+        if (lv === null && old !== null && old >= 2) old = old + 1;
+        return index(lv !== null ? lv : old, [1, 2, 3, 4, 5], this.base(a));
+      },
+      names: { en: ["Name the way", "Pick first", "Say why", "True or not", "Fill the steps"],
+        de: ["Wie heißt der Weg?", "Erst wählen", "Sag, warum", "Stimmt das?", "Schritte ausfüllen"] } },
     "shapes-angles": { keys: ["sh.level.a{age}"], of: 5,
       base: function (a) { return a <= 8 ? 0 : a === 9 ? 1 : a === 10 ? 2 : a <= 12 ? 3 : 4; },
       at: function (v, a) { return index(val(v, "sh.level.a{age}", a), [1, 2, 3, 4, 5], this.base(a)); },
