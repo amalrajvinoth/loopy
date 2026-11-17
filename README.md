@@ -40,7 +40,7 @@ It works on phones, tablets and computers. There is no sign-up and no ads.
 | [Tens and Ones](math/tens-ones/) | The place value picture from school: a line is a ten, a dot is a one. Read the picture into the table, draw a number yourself, and see with giants and dwarfs which digit changes in 68 − 5 and 68 − 50 | [README](math/tens-ones/README.md) |
 | [Is It Enough?](math/enough-money/) | Count notes and coins up to 100 euros, then a small shop: is the money enough for the helmet and the pads, how much is left or missing | [README](math/enough-money/README.md) |
 | [Which Way?](math/which-way/) | 23 + 29 with Tens first, Nearly round or Place by place: name the way, say why it fits, spot the true sentence, fill in the steps | [README](math/which-way/README.md) |
-| [Class Test](mix/class-test/) | The 12 tasks of a grade 3 maths test in the paper's order, 20 points, with a test to print | [README](mix/class-test/README.md) |
+| [Class Test](mix/class-test/) | Two grade 3 papers with points, in the paper's order: the 12-task maths test and Addition to 100 with the six ways to add. Both print | [README](mix/class-test/README.md) |
 | [Measure It](math/measure-it/) | Read a ruler, a measuring jug, a kitchen scale and a thermometer. Compare lengths, weights and amounts. Change units: cm and m, g and kg, ml and l, minutes and hours, and below zero | [README](math/measure-it/README.md) |
 | [Sound Spell](languages/sound-spell/) | Starting and ending sounds of English and German words | [README](languages/sound-spell/README.md) |
 | [Word Match](languages/word-match/) | About 270 words for animals, food, home and school, in English or German | [README](languages/word-match/README.md) |

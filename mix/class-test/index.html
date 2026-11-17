@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'sha256-IOObUlQlOo8PlnC3dA0IZnBUNqGZsfcqLm6ie2mJ93s='; style-src 'self' 'sha256-z2P7kGW5Z05eCTjTZdYpc0vThTlOE9vmt97pVSvi2I4=' 'sha256-Gp7Ema4CQxtLY3sZBOlW9NOfPq/oicfpYQMubsSdI9w='; img-src 'self' data:; font-src 'self'; connect-src 'self' https://loopy-sync.loopy-1e2.workers.dev; worker-src 'self'; object-src 'none'; base-uri 'none'; form-action 'none'; manifest-src 'self'; upgrade-insecure-requests">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'sha256-QzxXVaSBxFx2/6P8VctD65/dXp4NzMf7xQUI8xvIWM4='; style-src 'self' 'sha256-z2P7kGW5Z05eCTjTZdYpc0vThTlOE9vmt97pVSvi2I4=' 'sha256-ojCtVuOFoXF4kkoq9TUfrPaa9/m99CPN6VCFMABSrj4='; img-src 'self' data:; font-src 'self'; connect-src 'self' https://loopy-sync.loopy-1e2.workers.dev; worker-src 'self'; object-src 'none'; base-uri 'none'; form-action 'none'; manifest-src 'self'; upgrade-insecure-requests">
 <meta name="referrer" content="strict-origin-when-cross-origin">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <style>:root{color-scheme:light;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}body{margin:0}[hidden]{display:none!important}</style>
@@ -15,7 +15,7 @@
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="apple-mobile-web-app-title" content="loopy">
 <title data-t="ctName">Class Test</title>
-<meta name="description" content="Class Test on loopy: the 12 tasks of a grade 3 maths test in the paper's order, with points out of 20 and a version to print. Clock, lines and dots, sums in steps, which way, money, times table grid. Free practice for ages 7 to 10, English and German.">
+<meta name="description" content="Class Test on loopy: two grade 3 maths papers in the paper's order, with points and a version to print. The class test: clock, lines and dots, sums in steps, which way, money, times table grid. Addition to 100: the six ways to add, from Giants and dwarfs to Nearly round. Free practice for ages 7 to 10, English and German.">
 <link rel="preload" href="../../fonts/lexend-latin.woff2" as="font" type="font/woff2" crossorigin>
 <style>
 /* Class Test: the 12 tasks of the grade 3 paper in order, one card per task, the answers beside or below it,
@@ -58,12 +58,26 @@ h1 { margin: 0; font-size: 1.6rem; font-weight: 700; text-wrap: balance; }
 .strip i.bad { background: var(--bad); border-color: var(--bad); }
 .strip i.half { background: linear-gradient(90deg, var(--good) 50%, var(--bad) 50%); border-color: var(--line); }
 .where { margin: 0; font-size: 0.9rem; color: var(--muted); text-align: center; font-variant-numeric: tabular-nums; }
+/* The paper picker in Settings: the same segment control as the level picker in Which Way?. */
+.seg-label { font-size: 0.8rem; font-weight: 600; letter-spacing: 0.06em; text-transform: uppercase; color: var(--muted); margin: 0 0 4px 4px; }
+.seg { display: grid; grid-template-columns: repeat(2, 1fr); gap: 6px; background: var(--chip); padding: 5px; border-radius: 14px; }
+.seg button { font: inherit; font-size: 0.95rem; font-weight: 600; color: var(--muted); background: transparent; border: 0; border-radius: 10px; padding: 8px 4px; min-height: 44px; cursor: pointer; }
+.seg button[aria-pressed="true"] { background: var(--card); color: var(--ink); box-shadow: 0 1px 3px rgb(0 0 0 / 0.12); }
+.paper-row { margin-bottom: 12px; }
+/* Jumps on the number line (Addition to 100, task 8), drawn like the Rechenstrich in Step by Step. */
+.nl { display: block; width: 100%; max-width: 360px; height: clamp(44px, 8dvh, 80px); min-height: 32px; flex: 0 1 auto; overflow: visible; }
+.nl text { font-family: var(--font); font-weight: 700; font-size: 15px; fill: var(--ink); }
+.nl .rail { stroke: var(--line); stroke-width: 3; stroke-linecap: round; }
+.nl .done { stroke: var(--good); fill: none; stroke-width: 3; } .nl .done-t { fill: var(--good); }
+.nl .now { stroke: var(--accent); fill: none; stroke-width: 3; stroke-dasharray: 6 5; } .nl .now-t { fill: var(--accent); }
+.nl .todo { stroke: var(--muted); fill: none; stroke-width: 2; stroke-dasharray: 3 5; opacity: 0.7; } .nl .todo-t { fill: var(--muted); }
+.nl .dot { fill: var(--ink); } .nl .dot.done { fill: var(--good); } .nl .dot.now { fill: var(--accent); } .nl .dot.todo { fill: var(--muted); opacity: 0.7; }
 /* The picture and the question sit together in the middle of the room; the feedback stays at the bottom. */
 .stage { display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 8px; flex: 0 1 auto; min-height: 0; width: 100%; container-type: inline-size; margin-top: auto; }
 .question { margin: 0; font-size: clamp(1.05rem, min(4.8vw, 3dvh), 1.4rem); font-weight: 700; line-height: 1.3; text-align: center; text-wrap: balance; }
 .question small { display: block; font-size: 0.85rem; font-weight: 400; color: var(--muted); margin-top: 2px; }
-.feedback { min-height: 2.9em; text-align: center; font-size: 1.05rem; line-height: 1.4; margin: auto 0 0; max-width: 36ch; }
-.feedback strong { display: block; font-size: 1.3rem; }
+.feedback { min-height: 2.9em; text-align: center; font-size: 1.05rem; line-height: 1.3; margin: auto 0 0; max-width: 36ch; }
+.feedback strong { display: block; font-size: 1.2rem; }
 .feedback.good strong { color: var(--good); }
 .feedback.bad strong { color: var(--bad); }
 .feedback:empty { min-height: 0; }
@@ -272,6 +286,12 @@ button:focus-visible, a:focus-visible { outline: 3px solid var(--mark); outline-
   .sheet-clock .ws-ct .steps { font-size: 10pt; gap: 1mm; }
   .sheet-clock .ws-ct .waycard { border: 0.3mm solid #000; box-shadow: none; background: #fff; padding: 0.8mm 1.5mm; font-size: 7.5pt; line-height: 1.25; }
   .sheet-clock .ws-ct .waycard b { font-size: 7.5pt; } .sheet-clock .ws-ct .waycard .st { font-size: 7.5pt; color: #000; }
+  /* Addition to 100: 11 cells in three rows, and the six ways above them in a smaller line. */
+  html.ct-paper2 .sheet-grid { grid-template-rows: repeat(3, 41mm); }
+  html.ct-paper2 .sheet-how { font-size: 9pt; font-weight: 500; }
+  .sheet-clock .ws-ct .nl { height: 16mm; max-width: 100%; } .sheet-clock .ws-ct .nl text { fill: #000; font-size: 7pt; }
+  .sheet-clock .ws-ct .nl .rail, .sheet-clock .ws-ct .nl .todo, .sheet-clock .ws-ct .nl .now, .sheet-clock .ws-ct .nl .done { stroke: #000; stroke-dasharray: none; opacity: 1; }
+  .sheet-clock .ws-ct .nl .dot { fill: #000; opacity: 1; }
 }
 /* Laptops and monitors: the game's own picture and keys grow with the screen (loopy.css --card-zoom, --side-zoom; 1 elsewhere). */
 .problem-card > * { zoom: var(--card-zoom); }
@@ -292,13 +312,20 @@ button:focus-visible, a:focus-visible { outline: 3px solid var(--mark); outline-
   </header>
   <section class="top" aria-labelledby="title">
     <h1 id="title" data-t="ctName">Class Test</h1>
-    <span class="pill" data-t="ctGrade">Grade 3 · 20 points</span>
+    <span class="pill" id="grade">Grade 3 · 20 points</span>
   </section>
   <div class="settings-panel" id="settings-panel" hidden>
     <div class="controls"><div id="age-picker"></div><div id="theme-picker"></div><button id="sound-toggle"></button><div id="lang-picker"></div></div>
+    <div class="paper-row">
+      <div class="seg-label" data-t="ctPaper">Paper</div>
+      <div class="seg" id="paper-seg" role="group">
+        <button type="button" data-paper="1" data-t="ctP1">Grade 3 test</button>
+        <button type="button" data-paper="2" data-t="ctP2">Addition to 100</button>
+      </div>
+    </div>
     <div class="print-row">
       <button type="button" class="print-btn" id="print-test"><span data-t="ctPrint">Print the test</span></button>
-      <p data-t="ctPrintNote">The same 12 tasks on paper, with the points. Answers on page 2.</p>
+      <p id="print-note">The same 12 tasks on paper, with the points. Answers on page 2.</p>
     </div>
     <div class="panel-foot">
       <p data-t="ctKbd">Keyboard works too: 1 to 4 pick an answer, numbers, Backspace, Enter.</p>
@@ -355,11 +382,27 @@ Loopy.addStrings({
   en: {
     ctName: "Class Test", ctGrade: "Grade 3 · 20 points", ctKbd: "Keyboard works too: 1 to 4 pick an answer, numbers, Backspace, Enter.", ctRestart: "Start again",
     ctPrint: "Print the test", ctPrintNote: "The same 12 tasks on paper, with the points. Answers on page 2.",
-    ctTask: "Task {n} of 12 · {p} points so far", ctTaskOne: "Task {n} of 12 · 1 point so far", ctPart: "Part {n} of {of}.",
-    ctPts: "{n} points", ctPts1: "1 point", ctStrip: "Task {n} of 12",
-    ctDone: "Class Test done!", ctScore: "{p} of 20", ctPoints: "points", ctStars: "+{n} stars", ctStar: "+1 star",
-    ctBest: "Best so far: {p} of 20", ctNewBest: "New best: {p} of 20!", ctPerfect: "All 20 points! Nothing to practise.", ctPractise: "Practise next: {game}",
+    ctPaper: "Paper", ctP1: "Grade 3 test", ctP2: "Addition to 100", ctGrade2: "To 100 · 25 points", ctLevel2: "Addition to 100 · 25 points",
+    ctPrintNote2: "The same 11 tasks on paper, with the six ways at the top. Answers on page 2.",
+    ctHow2: "The 11 tasks of the worksheet. 👫 Giants and dwarfs: 32 + 4 is 2 + 4 = 6, so 36. 💞 To the ten: 38 + 5 is 38 + 2 = 40, then 40 + 3 = 43. 🔟 Help with 10: 23 + 9 is 23 + 10 = 33, then 33 − 1 = 32. 🧮 Place by place: 24 + 33 is 20 + 30 = 50, 4 + 3 = 7, 50 + 7 = 57. 🪜 Tens first: 49 + 25 is 49 + 20 = 69, then 69 + 5 = 74. 🛟 Nearly round: 23 + 29 is 23 + 30 = 53, then 53 − 1 = 52.",
+    ctTask: "Task {n} of {of} · {p} points so far", ctTaskOne: "Task {n} of {of} · 1 point so far", ctPart: "Part {n} of {of}.",
+    ctPts: "{n} points", ctPts1: "1 point", ctStrip: "Task {n} of {of}",
+    ctDone: "Class Test done!", ctScore: "{p} of {of}", ctPoints: "points", ctStars: "+{n} stars", ctStar: "+1 star",
+    ctBest: "Best so far: {p} of {of}", ctNewBest: "New best: {p} of {of}!", ctPerfect: "All {of} points! Nothing to practise.", ctPractise: "Practise next: {game}",
     ctAgain: "Play again", ctHome: "Home", ctLevel: "Grade 3 · 20 points", ctHow: "The 12 tasks of the test. Write the answers on the lines.",
+    ctA1: "Giants and dwarfs", ctA2: "To the ten", ctA3: "Help with 10", ctA4: "How do you work it out?", ctA5: "Make your own sum", ctA6: "Place by place",
+    ctA7: "Tens first", ctA8: "Jumps on the number line", ctA9: "Helper sum first", ctA10: "Nearly round", ctA11: "Which way helps?",
+    ctAskDwarfAdd: "The dwarf adds the ones first.", ctAskGiantAdd: "Now the whole sum. The tens stay.",
+    ctWhyDwarfAdd: "The dwarf does the ones: {o} + {b} = {s}.", ctWhyGiantAdd: "Only the ones change: {o} + {b} = {s}, so {a} + {b} = {r}.",
+    ctAskHelp9: "Add 10, then take 1 away.", ctAskHelp11: "Add 10, then 1 more.",
+    ctAskRound: "{b} is nearly {r}: add {r}, then fix it.", ctAskJump: "Where does the jump land?", ctSubJump: "Jump +{d} from {from}.", ctWhyJump: "{from} + {d} = {to}.",
+    ctAskPair1: "The helper sum first.", ctAskPair2: "{b2} is 1 less than {b1}, so the answer is 1 less too.", ctWhyPair: "{a} + {b1} = {s1}, so {a} + {b2} = {s2}.",
+    ctAskHow: "How do you work it out?", ctSubHow: "Pick the way, like on the paper.", ctWhyHow: "{reason} {way}: {steps}.",
+    ctAskMake: "Make a sum for {way}.", ctSubMake: "Which second number fits?", ctWhyMake: "{a} + {b}: {reason}",
+    ctAskWhich: "Which way helps you here?", ctSubWhich: "One way is quickest.", ctAskSumNow: "Now work it out with {way}.",
+    ctGiants: "Giants and dwarfs", ctToten: "To the ten", ctHelp: "Help with 10",
+    ctTGiants: "{o} + {b} stays under 10, so Giants and dwarfs is easy.", ctTToten: "{o} + {b} goes over the ten, so To the ten helps.", ctTHelp: "{b} is 1 away from 10, so Help with 10 is quick.",
+    ctTTens: "{b} is a round ten, so Tens first is one step.", ctTRound: "{b} is nearly {r}, so Nearly round is easy.", ctTPlace: "{o} + {ob} stays under 10, so Place by place is easy.",
     ctT1: "Read the clock", ctT2: "Lines and dots", ctT3: "To the ten", ctT4: "Place by place", ctT5: "Giants and dwarfs", ctT6: "Help with 10",
     ctT7: "Take away in steps", ctT8: "Which way?", ctT9: "How much money?", ctT10: "Is it enough?", ctT11: "Times table grid", ctT12: "Easy sums first",
     ctG1: "What Time Is It?", ctG2: "Tens and Ones", ctG3: "Step by Step", ctG8: "Which Way?", ctG9: "Is It Enough?", ctG11: "Times Table Grid",
@@ -388,11 +431,27 @@ Loopy.addStrings({
   de: {
     ctName: "Klassenarbeit", ctGrade: "3. Klasse · 20 Punkte", ctKbd: "Tastatur geht auch: 1 bis 4 wählen eine Antwort, Zahlen, Rücktaste, Enter.", ctRestart: "Neu anfangen",
     ctPrint: "Test drucken", ctPrintNote: "Dieselben 12 Aufgaben auf Papier, mit den Punkten. Lösungen auf Seite 2.",
-    ctTask: "Aufgabe {n} von 12 · {p} Punkte bisher", ctTaskOne: "Aufgabe {n} von 12 · 1 Punkt bisher", ctPart: "Teil {n} von {of}.",
-    ctPts: "{n} Punkte", ctPts1: "1 Punkt", ctStrip: "Aufgabe {n} von 12",
-    ctDone: "Klassenarbeit geschafft!", ctScore: "{p} von 20", ctPoints: "Punkte", ctStars: "+{n} Sterne", ctStar: "+1 Stern",
-    ctBest: "Bisher am besten: {p} von 20", ctNewBest: "Neue Bestleistung: {p} von 20!", ctPerfect: "Alle 20 Punkte! Es gibt nichts zu üben.", ctPractise: "Als Nächstes üben: {game}",
+    ctPaper: "Blatt", ctP1: "Klassenarbeit 3", ctP2: "Addition bis 100", ctGrade2: "Bis 100 · 25 Punkte", ctLevel2: "Addition bis 100 · 25 Punkte",
+    ctPrintNote2: "Dieselben 11 Aufgaben auf Papier, mit den sechs Rechenwegen oben. Lösungen auf Seite 2.",
+    ctHow2: "Die 11 Aufgaben vom Arbeitsblatt. 👫 Riesen und Zwerge: 32 + 4 ist 2 + 4 = 6, also 36. 💞 Verliebt in den Zehner: 38 + 5 ist 38 + 2 = 40, dann 40 + 3 = 43. 🔟 Aufgaben mit 10 helfen: 23 + 9 ist 23 + 10 = 33, dann 33 − 1 = 32. 🧮 Stellenweise: 24 + 33 ist 20 + 30 = 50, 4 + 3 = 7, 50 + 7 = 57. 🪜 Schrittweise: 49 + 25 ist 49 + 20 = 69, dann 69 + 5 = 74. 🛟 Hilfsaufgabe: 23 + 29 ist 23 + 30 = 53, dann 53 − 1 = 52.",
+    ctTask: "Aufgabe {n} von {of} · {p} Punkte bisher", ctTaskOne: "Aufgabe {n} von {of} · 1 Punkt bisher", ctPart: "Teil {n} von {of}.",
+    ctPts: "{n} Punkte", ctPts1: "1 Punkt", ctStrip: "Aufgabe {n} von {of}",
+    ctDone: "Klassenarbeit geschafft!", ctScore: "{p} von {of}", ctPoints: "Punkte", ctStars: "+{n} Sterne", ctStar: "+1 Stern",
+    ctBest: "Bisher am besten: {p} von {of}", ctNewBest: "Neue Bestleistung: {p} von {of}!", ctPerfect: "Alle {of} Punkte! Es gibt nichts zu üben.", ctPractise: "Als Nächstes üben: {game}",
     ctAgain: "Nochmal spielen", ctHome: "Startseite", ctLevel: "3. Klasse · 20 Punkte", ctHow: "Die 12 Aufgaben der Klassenarbeit. Schreib die Antworten auf die Linien.",
+    ctA1: "Riesen und Zwerge", ctA2: "Verliebt in den Zehner", ctA3: "Aufgaben mit 10 helfen", ctA4: "Wie rechnest du?", ctA5: "Eigene Aufgabe finden", ctA6: "Stellenweise",
+    ctA7: "Schrittweise", ctA8: "Sprünge am Rechenstrich", ctA9: "Erst die Hilfsaufgabe", ctA10: "Hilfsaufgabe", ctA11: "Welcher Rechenweg hilft?",
+    ctAskDwarfAdd: "Der Zwerg rechnet zuerst die Einer.", ctAskGiantAdd: "Jetzt die ganze Aufgabe. Die Zehner bleiben.",
+    ctWhyDwarfAdd: "Der Zwerg rechnet die Einer: {o} + {b} = {s}.", ctWhyGiantAdd: "Nur die Einer ändern sich: {o} + {b} = {s}, also {a} + {b} = {r}.",
+    ctAskHelp9: "Erst 10 dazu, dann 1 wieder weg.", ctAskHelp11: "Erst 10 dazu, dann noch 1 dazu.",
+    ctAskRound: "{b} ist fast {r}: {r} dazu, dann korrigieren.", ctAskJump: "Wo landet der Sprung?", ctSubJump: "Sprung +{d} von {from}.", ctWhyJump: "{from} + {d} = {to}.",
+    ctAskPair1: "Erst die Hilfsaufgabe.", ctAskPair2: "{b2} ist 1 weniger als {b1}, also ist das Ergebnis auch 1 weniger.", ctWhyPair: "{a} + {b1} = {s1}, also {a} + {b2} = {s2}.",
+    ctAskHow: "Wie rechnest du?", ctSubHow: "Wähle den Weg, wie auf dem Blatt.", ctWhyHow: "{reason} {way}: {steps}.",
+    ctAskMake: "Finde eine Aufgabe für {way}.", ctSubMake: "Welche zweite Zahl passt?", ctWhyMake: "{a} + {b}: {reason}",
+    ctAskWhich: "Welcher Rechenweg hilft dir hier?", ctSubWhich: "Ein Weg geht am schnellsten.", ctAskSumNow: "Jetzt rechne mit {way}.",
+    ctGiants: "Riesen und Zwerge", ctToten: "Verliebt in den Zehner", ctHelp: "Aufgaben mit 10 helfen",
+    ctTGiants: "{o} + {b} bleibt unter 10, also ist Riesen und Zwerge leicht.", ctTToten: "{o} + {b} geht über den Zehner, also hilft Verliebt in den Zehner.", ctTHelp: "{b} ist 1 von 10 entfernt, also geht Aufgaben mit 10 helfen schnell.",
+    ctTTens: "{b} ist ein voller Zehner, also ist Schrittweise ein Schritt.", ctTRound: "{b} ist fast {r}, also ist die Hilfsaufgabe leicht.", ctTPlace: "{o} + {ob} bleibt unter 10, also ist Stellenweise leicht.",
     ctT1: "Uhr ablesen", ctT2: "Striche und Punkte", ctT3: "Verliebt in den Zehner", ctT4: "Stellenweise rechnen", ctT5: "Riesen und Zwerge", ctT6: "Aufgaben mit 10 helfen",
     ctT7: "Schrittweise minus", ctT8: "Welcher Weg?", ctT9: "Wie viel Geld?", ctT10: "Reicht das Geld?", ctT11: "Malkreuz", ctT12: "Erst die leichten Aufgaben",
     ctG1: "Wie spät ist es?", ctG2: "Zehner und Einer", ctG3: "Schrittweise rechnen", ctG8: "Welcher Weg?", ctG9: "Reicht das Geld?", ctG11: "Einmaleins-Tabelle",
@@ -405,7 +464,7 @@ Loopy.addStrings({
     ctOne: "1 Einer", ctOnes: "{n} Einer", ctTen: "1 Zehner", ctTensN: "{n} Zehner",
     ctWhyDwarf: "Nur die Einer ändern sich: {x} − {b} = {y}, also {r}.", ctWhyGiant: "Nur die Zehner ändern sich: {xt} − {bt} = {yt}, also {r}.",
     ctAskName: "Welcher Weg ist das?", ctSubName: "Schau dir die Schritte an.", ctAskWhy: "Warum ist {way} hier ein guter Weg?", ctSubWhy: "Ein Grund passt. Zwei passen nicht.",
-    ctTens: "Zehner zuerst", ctRound: "Fast rund", ctPlace: "Stellenweise",
+    ctTens: "Schrittweise", ctRound: "Hilfsaufgabe", ctPlace: "Stellenweise",
     ctRTens: "Zuerst rechne ich die Zehner von {b} dazu, also {tb}, dann die Einer, {ob}.", ctRRound: "{b} ist fast {r}, also rechne ich {r} dazu und nehme {d} wieder weg.", ctRPlace: "Zehner mit Zehnern und Einer mit Einern, dann zusammen.",
     ctRNo1: "Weil {b} keine Zehner hat.", ctRNo2: "Weil ich zuerst {b} wegnehme.",
     ctWhyName: "Das ist {way}: {steps}.", ctWhyWay: "{way}: {steps}. {reason}",
@@ -433,7 +492,12 @@ Loopy.addStrings({
   const cap = (s) => s.charAt(0).toUpperCase() + s.slice(1);
   const times = () => Loopy.lang === "de" ? "·" : "×";
   const euro = (n) => t("ctEuro", { n: num(n) });
-  const best = () => { const v = parseInt(Loopy.store.get("ct.best"), 10); return v >= 0 && v <= 20 ? v : 0; };
+  // Two papers: 1 the grade 3 class test (12 tasks, 20 points), 2 the worksheet "Addition to 100" (11 tasks, 25 points).
+  // The paper is saved per child (ct.paper); each has its own best score (ct.best, ct.best2).
+  let paper = Loopy.store.get("ct.paper") === "2" ? 2 : 1;
+  const COUNT = () => paper === 2 ? 11 : 12, TOTAL = () => paper === 2 ? 25 : 20, BEST_KEY = () => paper === 2 ? "ct.best2" : "ct.best";
+  const best = () => { const v = parseInt(Loopy.store.get(BEST_KEY()), 10); return v >= 0 && v <= TOTAL() ? v : 0; };
+  const tname = (tk) => t((tk.paper === 2 ? "ctA" : "ctT") + tk.slot);
 
   let tasks = [], set = [], index = 0, answered = false, typed = "", streak = 0, results = [], points = 0, chosen = null, chosenBtn = null;
 
@@ -642,6 +706,189 @@ Loopy.addStrings({
   }
   function line(box, label) { const l = el("span", "line", label); l.appendChild(el("i", "ws-line")); box.appendChild(l); }
 
+  // ---- Paper 2: "Addition to 100", the six ways to add from the grade 3 worksheet. Notes start with "ca:".
+  const ICON = { giants: "👫", toten: "💞", help: "🔟", tens: "🪜", place: "🧮", round: "🛟" };
+  const WKEY = { giants: "ctGiants", toten: "ctToten", help: "ctHelp", tens: "ctTens", round: "ctRound", place: "ctPlace" };
+  const wname = (w) => t(WKEY[w]), wlabel = (w) => ICON[w] + " " + wname(w);
+  const ONE = ["giants", "toten", "help"], TWO = ["tens", "round", "place"];
+  // The way a sum calls for, like Which Way? decides it: a one-digit b by its ones, a two-digit b by how round it is.
+  function bestWay(a, b) {
+    const oa = a % 10, ob = b % 10;
+    if (b === 9 || b === 11) return "help";
+    if (b < 10) return oa + b < 10 ? "giants" : "toten";
+    if (ob === 0) return "tens";
+    if (ob >= 8 || ob <= 2) return "round";
+    return oa + ob <= 9 ? "place" : null;
+  }
+  const roundTo = (b) => b % 10 >= 5 ? b - b % 10 + 10 : b - b % 10;
+  function statement(a, b, w) {
+    const o = num(a % 10), r = num(roundTo(b));
+    return t("ctT" + cap(w), { o, b: num(b), r, ob: num(b % 10) });
+  }
+  // The steps of a way, as [from, sign, by, to] rows.
+  function ways2(a, b, w) {
+    const oa = a % 10, ob = b % 10, tb = b - ob, r = roundTo(b), d = Math.abs(b - r);
+    if (w === "giants") return [[oa, "+", b, oa + b], [a, "+", b, a + b]];
+    if (w === "toten") { const c = 10 - oa; return [[a, "+", c, a + c], [a + c, "+", b - c, a + b]]; }
+    if (w === "help") return [[a, "+", 10, a + 10], [a + 10, b > 10 ? "+" : "−", 1, a + b]];
+    if (w === "tens") return ob ? [[a, "+", tb, a + tb], [a + tb, "+", ob, a + b]] : [[a, "+", b, a + b]];
+    if (w === "round") return [[a, "+", r, a + r], [a + r, r > b ? "−" : "+", d, a + b]];
+    const ta = a - oa, T = ta + tb, O = oa + ob;
+    return [[ta, "+", tb, T], [oa, "+", ob, O], [T, "+", O, a + b]];
+  }
+  const sep2 = (w) => w === "place" ? "ctComma" : "ctThen";
+  // A sum in steps, one question per step (1 point each). ask(i) and why(i) give the words for step i.
+  function stepsTask2(slot, a, b, w, ask, why) {
+    const steps = ways2(a, b, w), sum = num(a) + " + " + num(b);
+    const qs = steps.map((st, i) => ({ note: "ca:" + slot + ":" + a + ":" + b + ":" + i, kind: "st-add", pts: 1, mode: "pad", answer: st[3], i,
+      ask: () => ask(i), sub: () => "", why: () => why ? why(i) : t("ctWhySteps", { steps: stepsText(steps, sep2(w)) }), log: () => sum }));
+    return { slot, paper: 2, a, b, w, qs,
+      draw: (box, q, st) => { box.appendChild(el("div", "sum small", sum)); box.appendChild(stepsList(steps, q.i, q, st)); },
+      sheet: (box) => { box.appendChild(el("div", "sum", sum)); const f = el("div", "fill"); steps.forEach((st, i) => { if (i) f.appendChild(document.createElement("br")); f.appendChild(document.createTextNode(num(st[0]) + " " + st[1] + " " + num(st[2]) + " = ")); f.appendChild(el("i", "")); }); box.appendChild(f); },
+      answers: () => stepsText(steps, sep2(w)) };
+  }
+  // 1. Giants and dwarfs: the dwarf adds the ones (2 + 4 = 6), then the whole sum (32 + 4 = 36).
+  const giantsAdd = (a, b) => stepsTask2(1, a, b, "giants", (i) => t(i ? "ctAskGiantAdd" : "ctAskDwarfAdd"),
+    (i) => t(i ? "ctWhyGiantAdd" : "ctWhyDwarfAdd", { o: num(a % 10), b: num(b), s: num(a % 10 + b), a: num(a), r: num(a + b) }));
+  // 2. To the ten: 38 + 5 is 38 + 2 = 40, then 40 + 3 = 43.
+  const toTen2 = (a, b) => stepsTask2(2, a, b, "toten", () => t("ctAskToTen"));
+  // 3. Help with 10: 23 + 9 is 23 + 10 = 33, then 33 − 1 = 32; 23 + 11 is 33 + 1.
+  const help2 = (a, b) => stepsTask2(3, a, b, "help", () => t(b === 9 ? "ctAskHelp9" : "ctAskHelp11"));
+  // 6. Place by place, 7. Tens first, 10. Nearly round: the steps of the way.
+  const place2 = (a, b) => stepsTask2(6, a, b, "place", () => t("ctAskPlace"));
+  const tens2 = (a, b) => stepsTask2(7, a, b, "tens", () => t("ctAskSubTens"));
+  const round2 = (a, b) => stepsTask2(10, a, b, "round", () => t("ctAskRound", { b: num(b), r: num(roundTo(b)) }));
+  // 9. The helper sum first: 24 + 20 = 44, so 24 + 19 = 43.
+  function pairs(a, b1) {
+    const b2 = b1 - 1, steps = [[a, "+", b1, a + b1], [a, "+", b2, a + b2]], sum = num(a) + " + " + num(b2), v = { a: num(a), b1: num(b1), b2: num(b2), s1: num(a + b1), s2: num(a + b2) };
+    const qs = steps.map((st, i) => ({ note: "ca:9:" + a + ":" + b1 + ":" + i, kind: "st-add", pts: 1, mode: "pad", answer: st[3], i,
+      ask: () => t(i ? "ctAskPair2" : "ctAskPair1", v), sub: () => "", why: () => t("ctWhyPair", v), log: () => num(st[0]) + " + " + num(st[2]) }));
+    return { slot: 9, paper: 2, a, b: b2, qs,
+      draw: (box, q, st) => { box.appendChild(el("div", "sum small", sum)); box.appendChild(stepsList(steps, q.i, q, st)); },
+      sheet: (box) => { box.appendChild(el("div", "sum", sum)); const f = el("div", "fill"); steps.forEach((st, i) => { if (i) f.appendChild(document.createElement("br")); f.appendChild(document.createTextNode(num(st[0]) + " + " + num(st[2]) + " = ")); f.appendChild(el("i", "")); }); box.appendChild(f); },
+      answers: () => stepsText(steps, "ctComma") };
+  }
+  // 8. Jumps on the number line: 49 + 25 drawn as +20 and +5. Where does each jump land?
+  function jumps(a, b) {
+    const steps = ways2(a, b, "tens"), sum = num(a) + " + " + num(b);
+    const qs = steps.map((st, i) => ({ note: "ca:8:" + a + ":" + b + ":" + i, kind: "st-add", pts: 1, mode: "pad", answer: st[3], i,
+      ask: () => t("ctAskJump"), sub: () => t("ctSubJump", { d: num(st[2]), from: num(st[0]) }), why: () => t("ctWhyJump", { from: num(st[0]), d: num(st[2]), to: num(st[3]) }), log: () => sum }));
+    const line = (askI, st, print) => {
+      const svg = svgEl("svg", { class: "nl", viewBox: "0 0 320 100" }), pts = [a].concat(steps.map(x => x[3]));
+      const lo = Math.min(...pts), hi = Math.max(...pts), span = Math.max(hi - lo, 5), x = (v) => 24 + (v - lo) / span * 272;
+      const cls = (i) => print ? "todo" : i < askI || (i === askI && st && st.answered && st.ok) ? "done" : i === askI ? "now" : "todo";
+      svgEl("line", { class: "rail", x1: 8, y1: 70, x2: 312, y2: 70 }, svg);
+      steps.forEach((s, i) => {
+        const x1 = x(s[0]), x2 = x(s[3]), h = 18 + 40 * Math.min(1, s[2] / Math.max(10, span * 0.6)), c = cls(i);
+        svgEl("path", { class: c, d: "M" + x1 + " 70 Q" + ((x1 + x2) / 2) + " " + (70 - h * 1.8) + " " + x2 + " 70" }, svg);
+        svgEl("text", { class: c + "-t", x: (x1 + x2) / 2, y: 70 - h - 4, "text-anchor": "middle" }, svg).textContent = "+" + num(s[2]);
+      });
+      // Labels under the dots; two dots close together push their labels apart.
+      const lx = pts.map(x);
+      for (let i = 1; i < lx.length; i++) { const gap = lx[i] - lx[i - 1]; if (gap < 30) { const push = (30 - gap) / 2; lx[i] += push; lx[i - 1] -= push; } }
+      pts.forEach((v, i) => {
+        const c = i === 0 ? "" : cls(i - 1), known = i === 0 || (!print && (i - 1 < askI || (i - 1 === askI && st && st.answered && st.ok)));
+        svgEl("circle", { class: "dot " + c, cx: x(v), cy: 70, r: 5 }, svg);
+        svgEl("text", { class: c ? c + "-t" : "", x: lx[i], y: 92, "text-anchor": "middle" }, svg).textContent = known ? num(v) : print ? "" : "?";
+      });
+      return svg;
+    };
+    return { slot: 8, paper: 2, a, b, qs,
+      draw: (box, q, st) => { box.appendChild(el("div", "sum small", sum)); box.appendChild(line(q.i, st)); box.appendChild(askLine(q, st, num(steps[q.i][0]) + " + " + num(steps[q.i][2]) + " =")); },
+      sheet: (box) => { box.appendChild(el("div", "sum", sum)); box.appendChild(line(-1, null, true)); },
+      answers: () => stepsText(steps, "ctThen") };
+  }
+  // A pick between ways, numbered like on the paper: "1 · Giants and dwarfs".
+  const wayChoices = (list, w) => list.map((k, i) => ({ k, text: num(i + 1) + " · " + wlabel(k), ok: k === w }));
+  // 4. How do you work it out? Three sums with a one-digit second number, one for each small way. The child picks 1, 2 or 3.
+  function howTask(fixed) {
+    const sums = ONE.map(w => fixed && fixed.w === w ? fixed : oneSum(w));
+    const qs = sums.map(x => ({ note: "ca:4:" + x.a + ":" + x.b, kind: "wy-pick", pts: 1, mode: "pick", names: true, a: x.a, b: x.b, w: x.w, answer: wname(x.w), choices: wayChoices(ONE, x.w),
+      ask: () => t("ctAskHow"), sub: () => t("ctSubHow"), why: () => t("ctWhyHow", { reason: statement(x.a, x.b, x.w), way: wname(x.w), steps: stepsText(ways2(x.a, x.b, x.w)) }), log: () => num(x.a) + " + " + num(x.b) }));
+    return { slot: 4, paper: 2, qs,
+      draw: (box, q) => box.appendChild(el("div", "sum", num(q.a) + " + " + num(q.b))),
+      sheet: (box) => { const ways = el("div", "ways"); ONE.forEach((k, i) => ways.appendChild(el("div", "way", num(i + 1) + " " + wlabel(k)))); box.appendChild(ways); sums.forEach(x => line(box, num(x.a) + " + " + num(x.b) + " =")); },
+      answers: () => sums.map(x => num(x.a) + " + " + num(x.b) + ": " + wname(x.w) + " (" + num(x.a + x.b) + ")").join(t("ctComma")) };
+  }
+  // A sum made for one small way: the ones stay under 10 (giants), cross the ten (toten), or b is 9 or 11 (help).
+  function oneSum(w) {
+    for (let i = 0; i < 100; i++) {
+      const oa = randInt(1, 8), a = 10 * randInt(1, 8) + oa;
+      const b = w === "help" ? pick([9, 11]) : w === "giants" ? randInt(2, 9 - oa) : randInt(11 - oa, 8);
+      if (b >= 2 && b <= 11 && a + b <= 100 && bestWay(a, b) === w) return { a, b, w };
+    }
+    return w === "help" ? { a: 23, b: 9, w } : w === "giants" ? { a: 32, b: 4, w } : { a: 38, b: 5, w };
+  }
+  // 5. Make your own sum: "43 + ?" and three numbers to pick from; one fits the named way.
+  function makeTask(fixed) {
+    const parts = ONE.map(w => fixed && fixed.w === w ? fixed : makeSum(w));
+    const qs = parts.map(x => ({ note: "ca:5:" + x.a + ":" + x.n.join(",") + ":" + x.w, kind: "wy-pick", pts: 1, mode: "pick", names: true, a: x.a, w: x.w, answer: num(x.n[ONE.indexOf(x.w)]),
+      choices: shuffle(x.n.map((b, i) => ({ text: num(b), ok: ONE[i] === x.w }))),
+      ask: () => t("ctAskMake", { way: wlabel(x.w) }), sub: () => t("ctSubMake"), why: () => t("ctWhyMake", { a: num(x.a), b: num(x.n[ONE.indexOf(x.w)]), reason: statement(x.a, x.n[ONE.indexOf(x.w)], x.w) }), log: () => num(x.a) + " + ?" }));
+    return { slot: 5, paper: 2, qs,
+      draw: (box, q) => box.appendChild(el("div", "sum", num(q.a) + " + ?")),
+      sheet: (box) => parts.forEach(x => line(box, wlabel(x.w) + ": " + num(x.a) + " +")),
+      answers: () => parts.map(x => wname(x.w) + ": " + num(x.a) + " + " + num(x.n[ONE.indexOf(x.w)])).join(t("ctComma")) };
+  }
+  // For 4x + ?: n holds the giants, toten and help numbers in that order (for ones 3 to 7 all three exist).
+  function makeSum(w, a, n) {
+    if (!a) { const oa = randInt(3, 7); a = 10 * randInt(1, 8) + oa; n = [randInt(2, 9 - oa), randInt(11 - oa, 8), pick([9, 11])]; }
+    return { a, n, w };
+  }
+  // 11. Which way helps you with 57 + 39? Pick the way (1 point), then work it out (1 point).
+  function whichTask(a, b) {
+    const w = bestWay(a, b), steps = ways2(a, b, w), sum = num(a) + " + " + num(b);
+    const qs = [
+      { note: "ca:11:" + a + ":" + b + ":p", kind: "wy-pick", pts: 1, mode: "pick", names: true, answer: wname(w), choices: wayChoices(TWO, w), ask: () => t("ctAskWhich"), sub: () => t("ctSubWhich"), why: () => t("ctWhyHow", { reason: statement(a, b, w), way: wname(w), steps: stepsText(steps, sep2(w)) }), log: () => sum },
+      { note: "ca:11:" + a + ":" + b + ":s", kind: "st-add", pts: 1, mode: "pad", answer: a + b, i: steps.length - 1, ask: () => t("ctAskSumNow", { way: wname(w) }), sub: () => "", why: () => t("ctWhySteps", { steps: stepsText(steps, sep2(w)) }), log: () => sum }];
+    return { slot: 11, paper: 2, a, b, w, qs,
+      draw: (box, q, st) => { box.appendChild(el("div", q.mode === "pad" ? "sum small" : "sum", sum)); if (q.mode === "pad") box.appendChild(stepsList(steps, q.i, q, st)); },
+      sheet: (box) => { box.appendChild(el("div", "sum", sum)); const ways = el("div", "ways"); TWO.forEach(k => { const row = el("div", "way"); row.appendChild(el("i", "")); row.appendChild(document.createTextNode(wlabel(k))); ways.appendChild(row); }); box.appendChild(ways); line(box, t("ctBecause")); line(box, "="); },
+      answers: () => wname(w) + ". " + statement(a, b, w) + " " + stepsText(steps, sep2(w)) };
+  }
+  // A two-digit sum for one big way: a round ten (tens), nearly a ten (round), or small ones that stay under 10 (place).
+  function twoSum(w) {
+    for (let i = 0; i < 100; i++) {
+      const oa = randInt(1, 8), a = 10 * randInt(1, 6) + oa;
+      const b = w === "tens" ? 10 * randInt(2, 5) : w === "round" ? 10 * randInt(1, 4) + pick([8, 9, 1, 2]) : 10 * randInt(1, 4) + randInt(1, Math.max(1, 9 - oa));
+      if (a + b <= 100 && bestWay(a, b) === w) return [a, b];
+    }
+    return w === "tens" ? [49, 20] : w === "round" ? [57, 39] : [24, 33];
+  }
+  const MAKE2 = {
+    1: () => { const x = oneSum("giants"); return giantsAdd(x.a, x.b); },
+    2: () => { const x = oneSum("toten"); return toTen2(x.a, x.b); },
+    3: () => { const x = oneSum("help"); return help2(x.a, x.b); },
+    4: () => howTask(null),
+    5: () => makeTask(null),
+    6: () => { const [a, b] = twoSum("place"); return place2(a, b); },
+    7: () => { let a, b; do { a = 10 * randInt(1, 6) + randInt(1, 9); b = 10 * randInt(1, 3) + randInt(1, 9); } while (a + b > 100); return tens2(a, b); },
+    8: () => { let a, b; do { a = 10 * randInt(1, 6) + randInt(1, 9); b = 10 * randInt(1, 3) + randInt(1, 9); } while (a + b > 100); return jumps(a, b); },
+    9: () => { const a = 10 * randInt(1, 6) + randInt(1, 9); return pairs(a, 10 * randInt(2, Math.min(4, Math.floor((100 - a) / 10)))); },
+    10: () => { const [a, b] = twoSum("round"); return round2(a, b); },
+    11: () => { const [a, b] = twoSum(pick(TWO)); return whichTask(a, b); }
+  };
+  // Try again for paper 2: the task a "ca:" note names.
+  function rebuild2(r) {
+    const m = /^ca:(\d{1,2}):([\d,:a-z]{1,40})$/.exec(r);
+    if (!m) return null;
+    const slot = +m[1], s = m[2].split(":"), n = s.map(Number), two = (x) => x >= 11 && x <= 99 && x % 10 > 0, step = (k) => /^[0-2]$/.test(s[k]);
+    const sum = (w) => s.length === 3 && two(n[0]) && n[1] >= 1 && n[0] + n[1] <= 100 && bestWay(n[0], n[1]) === w && step(2);
+    let task = null;
+    if (slot === 1 && sum("giants")) task = giantsAdd(n[0], n[1]);
+    if (slot === 2 && sum("toten")) task = toTen2(n[0], n[1]);
+    if (slot === 3 && sum("help")) task = help2(n[0], n[1]);
+    if (slot === 4 && s.length === 2 && two(n[0]) && ONE.includes(bestWay(n[0], n[1])) && n[0] + n[1] <= 100) task = howTask({ a: n[0], b: n[1], w: bestWay(n[0], n[1]) });
+    if (slot === 5 && s.length === 3 && two(n[0]) && ONE.includes(s[2])) { const c = s[1].split(",").map(Number); if (c.length === 3 && c.every((b, i) => b >= 2 && b <= 11 && bestWay(n[0], b) === ONE[i])) task = makeTask(makeSum(s[2], n[0], c)); }
+    if (slot === 6 && sum("place")) task = place2(n[0], n[1]);
+    if (slot === 7 && sum("tens") || slot === 7 && s.length === 3 && two(n[0]) && two(n[1]) && n[0] + n[1] <= 100 && step(2)) task = tens2(n[0], n[1]);
+    if (slot === 8 && s.length === 3 && two(n[0]) && two(n[1]) && n[0] + n[1] <= 100 && step(2)) task = jumps(n[0], n[1]);
+    if (slot === 9 && s.length === 3 && two(n[0]) && n[1] >= 20 && n[1] % 10 === 0 && n[0] + n[1] <= 100 && step(2)) task = pairs(n[0], n[1]);
+    if (slot === 10 && sum("round")) task = round2(n[0], n[1]);
+    if (slot === 11 && s.length === 3 && two(n[0]) && n[1] >= 10 && n[0] + n[1] <= 100 && TWO.includes(bestWay(n[0], n[1])) && /^[ps]$/.test(s[2])) task = whichTask(n[0], n[1]);
+    return task;
+  }
+
   // One fresh task per slot.
   const MAKE = {
     1: () => clockTask(randInt(1, 12), randInt(0, 11) * 5),
@@ -659,6 +906,7 @@ Loopy.addStrings({
   };
   // Try again: the task a note names, with that question first, or null when the note makes no sense.
   function rebuild(r) {
+    if (/^ca:/.test(r)) return rotate(rebuild2(r), r);
     const m = /^ct:(\d{1,2}):([\d,:a-z]{1,40})$/.exec(r);
     if (!m) return null;
     const slot = +m[1], s = m[2].split(":"), n = s.map(Number), two = (x) => x >= 10 && x <= 99;
@@ -675,6 +923,10 @@ Loopy.addStrings({
     if (slot === 10 && s.length === 6 && n[0] >= 0 && n[0] < NAMES.length && n[1] >= 0 && n[1] <= 7 && n[3] >= 0 && n[3] <= 7 && n[1] !== n[3] && n[2] >= 1 && n[2] <= 100 && n[4] >= 1 && n[4] <= 100 && n[5] >= 1 && n[5] <= 100) task = enoughTask(n[0], n[1], n[2], n[3], n[4], n[5]);
     if (slot === 11 && s.length === 3 && n[0] >= 2 && n[0] <= 9 && /^[pf]$/.test(s[2])) { const c = s[1].split(",").map(Number); if (c.length === 3 && c.every(v => v >= 2 && v <= 9) && new Set(c).size === 3) task = gridTask(n[0], c); }
     if (slot === 12 && s.length === 3 && SPLITS[n[0]] && n[1] >= 2 && n[1] <= 9 && /^[01]$/.test(s[2])) task = easyTask(n[0], n[1]);
+    return rotate(task, r);
+  }
+  // The missed question comes first in its task.
+  function rotate(task, r) {
     if (!task) return null;
     const i = task.qs.findIndex(q => q.note === r);
     if (i < 0) return null;
@@ -693,9 +945,9 @@ Loopy.addStrings({
       else if (rs.length) it.className = rs.every(x => x.ok) ? "good" : "bad";
       stripEl.appendChild(it);
     });
-    stripEl.setAttribute("aria-label", t("ctStrip", { n: Math.min(taskIndex() + 1, 12) }));
+    stripEl.setAttribute("aria-label", t("ctStrip", { n: Math.min(taskIndex() + 1, COUNT()), of: num(COUNT()) }));
   }
-  const taskIndex = () => index < set.length ? tasks.indexOf(set[index].task) : 12;
+  const taskIndex = () => index < set.length ? tasks.indexOf(set[index].task) : COUNT();
   const state = (q) => ({ typed, answered, ok: chosen === true, done: q.task.done || {} });
 
   function show() {
@@ -703,8 +955,8 @@ Loopy.addStrings({
     answered = false; typed = ""; chosen = null;
     document.body.setAttribute("data-q", q.note);
     card.className = "problem-card";
-    kindEl.textContent = t("ctT" + tk.slot) + " · " + (q.pts === 1 ? t("ctPts1") : t("ctPts", { n: num(q.pts) }));
-    whereEl.textContent = t(points === 1 ? "ctTaskOne" : "ctTask", { n: num(taskIndex() + 1), p: num(points) });
+    kindEl.textContent = tname(tk) + " · " + (q.pts === 1 ? t("ctPts1") : t("ctPts", { n: num(q.pts) }));
+    whereEl.textContent = t(points === 1 ? "ctTaskOne" : "ctTask", { n: num(taskIndex() + 1), of: num(COUNT()), p: num(points) });
     const parts = tk.qs.length > 1 ? t("ctPart", { n: num(tk.qs.indexOf(q) + 1), of: num(tk.qs.length) }) + " " : "";
     qEl.textContent = q.ask();
     const sub = parts + q.sub();
@@ -745,13 +997,13 @@ Loopy.addStrings({
     if (ok) points += q.pts;
     if (q.again && Loopy.retry.hand) Loopy.retry.hand("class-test", q.note);
     if (ok) Loopy.rewards.correct("class-test", streak, q.kind);
-    else Loopy.rewards.wrong("class-test", { q: t("ctT" + tk.slot) + ": " + q.log(), a: String(q.answer), y: mine, k: q.kind, r: q.note });
+    else Loopy.rewards.wrong("class-test", { q: tname(tk) + ": " + q.log(), a: String(q.answer), y: mine, k: q.kind, r: q.note });
     card.className = "problem-card " + (ok ? "good" : "bad");
     feedbackEl.className = "feedback " + (ok ? "good" : "bad");
     feedbackEl.innerHTML = "<strong></strong>";
     feedbackEl.firstChild.textContent = ok ? (streak >= 3 ? t("correctRow", { n: streak }) : t("correct")) : (q.head ? q.head() : t("notQuite"));
     feedbackEl.appendChild(document.createTextNode((ok || q.mode !== "pad" ? "" : t("ctAnswerIs", { a: num(q.answer) }) + " ") + q.why()));
-    whereEl.textContent = t(points === 1 ? "ctTaskOne" : "ctTask", { n: num(taskIndex() + 1), p: num(points) });
+    whereEl.textContent = t(points === 1 ? "ctTaskOne" : "ctTask", { n: num(taskIndex() + 1), of: num(COUNT()), p: num(points) });
     render();
     [...choicesEl.children].forEach(b => { const c = q.choices ? q.choices[+b.dataset.i] : null; b.className = c ? (c.ok ? "right" : b === chosenBtn ? "wrong" : "faded") : ""; });
     strip();
@@ -782,34 +1034,40 @@ Loopy.addStrings({
     index = set.length; strip();
     const right = results.filter(r => r.ok).length, was = best();
     $("res-score").textContent = "";
-    $("res-score").append(t("ctScore", { p: num(points) }), " ", el("small", "", t("ctPoints")));
+    const of = num(TOTAL());
+    $("res-score").append(t("ctScore", { p: num(points), of }), " ", el("small", "", t("ctPoints")));
     $("res-stars").textContent = right === 1 ? t("ctStar") : t("ctStars", { n: num(right) });
-    if (points > was) { Loopy.store.set("ct.best", String(points)); $("res-best").textContent = t("ctNewBest", { p: num(points) }); }
-    else $("res-best").textContent = t("ctBest", { p: num(was) });
+    if (points > was) { Loopy.store.set(BEST_KEY(), String(points)); $("res-best").textContent = t("ctNewBest", { p: num(points), of }); }
+    else $("res-best").textContent = t("ctBest", { p: num(was), of });
     // One line of what to practise: the game behind the task with the most wrong answers.
     const misses = {};
     results.forEach(r => { if (!r.ok) misses[r.task.slot] = (misses[r.task.slot] || 0) + r.q.pts; });
     const worst = Object.keys(misses).sort((a, b) => misses[b] - misses[a])[0];
     const pr = $("res-practise");
     pr.textContent = "";
-    if (!worst) pr.textContent = t("ctPerfect");
+    if (!worst) pr.textContent = t("ctPerfect", { of });
     else {
       const [before, after] = t("ctPractise").split("{game}");
-      const a = document.createElement("a");
-      a.href = GAME[worst]; a.textContent = t(GNAME[worst]);
+      const a = document.createElement("a"), wy = paper === 2 && [4, 5, 11].includes(+worst);
+      a.href = paper === 2 ? (wy ? GAME[8] : GAME[3]) : GAME[worst]; a.textContent = t(paper === 2 ? (wy ? "ctG8" : "ctG3") : GNAME[worst]);
       pr.append(before, a, after);
     }
     $("again").focus({ preventScroll: true });
-    if (points >= 16) { Loopy.sound.play("cheer"); Loopy.rewards.confetti(90); }
+    if (points >= TOTAL() - 4) { Loopy.sound.play("cheer"); Loopy.rewards.confetti(90); }
   }
 
   // A fresh test: twelve fresh tasks, with any task from Try again put back in its place (opened from the Try
   // again card, those come first).
   function start() {
     const fromCard = Loopy.retry.opened ? Loopy.retry.opened() : false;
-    tasks = []; for (let s = 1; s <= 12; s++) tasks.push(MAKE[s]());
+    const notes = Loopy.retry.list("class-test") || [];
+    // From the Try again card, the paper of the newest mistake opens.
+    if (fromCard && notes.length && /^c[ta]:/.test(notes[0].r || "")) setPaper(/^ca:/.test(notes[0].r) ? 2 : 1);
+    renderPaper();
+    const make = paper === 2 ? MAKE2 : MAKE, own = paper === 2 ? /^ca:/ : /^ct:/;
+    tasks = []; for (let s = 1; s <= COUNT(); s++) tasks.push(make[s]());
     const back = []; // the mistakes to replay, newest first
-    (Loopy.retry.list("class-test") || []).forEach(p => { if (back.length >= 12) return; let tk = null; try { tk = rebuild(p.r); } catch (e) { tk = null; } if (tk && !back.some(b => b.slot === tk.slot)) { back.push(tk); tasks[tk.slot - 1] = tk; } });
+    notes.forEach(p => { if (back.length >= COUNT() || !own.test(p.r || "")) return; let tk = null; try { tk = rebuild(p.r); } catch (e) { tk = null; } if (tk && !back.some(b => b.slot === tk.slot)) { back.push(tk); tasks[tk.slot - 1] = tk; } });
     if (fromCard && back.length) tasks = back.concat(tasks.filter(tk => !tk.again));
     set = []; tasks.forEach(tk => { tk.done = {}; tk.qs.forEach(q => { q.task = tk; set.push(q); }); });
     index = 0; streak = 0; results = []; points = 0;
@@ -818,6 +1076,14 @@ Loopy.addStrings({
     show();
   }
   function printTest() { Loopy.load("sheet").then(() => { Loopy.sheet.fill(); window.print(); }, () => {}); }
+  function setPaper(n) { paper = n; Loopy.store.set("ct.paper", String(n)); }
+  function renderPaper() {
+    document.documentElement.classList.toggle("ct-paper2", paper === 2);
+    $("grade").textContent = t(paper === 2 ? "ctGrade2" : "ctGrade");
+    $("print-note").textContent = t(paper === 2 ? "ctPrintNote2" : "ctPrintNote");
+    [...document.querySelectorAll("#paper-seg button")].forEach(b => b.setAttribute("aria-pressed", String(+b.dataset.paper === paper)));
+  }
+  [...document.querySelectorAll("#paper-seg button")].forEach(b => b.addEventListener("click", () => { if (+b.dataset.paper !== paper) { setPaper(+b.dataset.paper); start(); } }));
 
   digitBtns.forEach(b => b.addEventListener("click", () => press(b.dataset.d)));
   eraseBtn.addEventListener("click", erase);
@@ -837,16 +1103,16 @@ Loopy.addStrings({
   });
 
   // Read aloud: the task, what is on the card and the question.
-  Loopy.speech.question({ host: card, text: () => { const q = set[index]; return q ? t("ctT" + q.task.slot) + ". " + (q.task.slot === 10 ? q.log() + " " : "") + q.ask() + " " + q.sub() : ""; } });
+  Loopy.speech.question({ host: card, text: () => { const q = set[index]; return q ? tname(q.task) + ". " + (q.task.slot === 10 && q.task.paper !== 2 ? q.log() + " " : "") + q.ask() + " " + q.sub() : ""; } });
 
   // Print the test: the same 12 tasks, 4 across, with the points. Page 2 has the answers.
   Loopy.worksheet({
     quiet: true,
-    title: () => t("ctName"), level: () => t("ctLevel"), how: () => t("ctHow"), layout: "clock",
+    title: () => t("ctName"), level: () => t(paper === 2 ? "ctLevel2" : "ctLevel"), how: () => t(paper === 2 ? "ctHow2" : "ctHow"), layout: "clock",
     make: () => tasks.slice(),
     cell: (tk) => {
       const box = el("div", "ws-ct");
-      const head = el("div", "nm", t("ctT" + tk.slot));
+      const head = el("div", "nm", tname(tk));
       const pts = tk.qs.reduce((s, q) => s + q.pts, 0);
       head.appendChild(el("span", "pts", " · " + (pts === 1 ? t("ctPts1") : t("ctPts", { n: num(pts) }))));
       box.appendChild(head);

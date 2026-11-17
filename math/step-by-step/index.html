@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'sha256-qVhWdpce7FECIg4no7jpgtvRkHo/h7BSRavzlo/eK5Y='; style-src 'self' 'sha256-z2P7kGW5Z05eCTjTZdYpc0vThTlOE9vmt97pVSvi2I4=' 'sha256-WAsK0knhlLqoyTj8RZ9je0D1wn+/EQeznNkZljdYXiY=' 'sha256-RT1053JU5UiKvjrCUFx1rlhdFLMmgtuFJ9T8jnMeawQ=' 'sha256-8smLYDVjRSve2HxIGqWTD7wHDI54L/Tka7JwySYZMMk='; img-src 'self' data:; font-src 'self'; connect-src 'self' https://loopy-sync.loopy-1e2.workers.dev; worker-src 'self'; object-src 'none'; base-uri 'none'; form-action 'none'; manifest-src 'self'; upgrade-insecure-requests">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'sha256-8uSyfvtOeWn+kFkqssVDP2RiVqrhaV+ABOQe3+cQU/k='; style-src 'self' 'sha256-z2P7kGW5Z05eCTjTZdYpc0vThTlOE9vmt97pVSvi2I4=' 'sha256-BzEguYd8VkeOno5oJ+GwISRUH28ZPNKWVGEmYdqggxA=' 'sha256-RT1053JU5UiKvjrCUFx1rlhdFLMmgtuFJ9T8jnMeawQ=' 'sha256-JAuLiLHA4UsHd1b20cV6v/iM+UCe96OUQwFijhXyPKI='; img-src 'self' data:; font-src 'self'; connect-src 'self' https://loopy-sync.loopy-1e2.workers.dev; worker-src 'self'; object-src 'none'; base-uri 'none'; form-action 'none'; manifest-src 'self'; upgrade-insecure-requests">
 <meta name="referrer" content="strict-origin-when-cross-origin">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <style>:root{color-scheme:light;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}body{margin:0}[hidden]{display:none!important}</style>
@@ -119,6 +119,9 @@ h1 { margin: 0; font-size: 1.6rem; font-weight: 700; text-wrap: balance; }
 .nl .todo-t { fill: var(--muted); }
 .nl .dot { fill: var(--ink); } .nl .dot.done { fill: var(--good); stroke: none; } .nl .dot.now { fill: var(--accent); stroke: none; } .nl .dot.todo { fill: var(--muted); stroke: none; opacity: 0.7; }
 
+/* The way of the sum on screen, styled like the kind tag in Tens and Ones and Which Way?. */
+.way-chip { display: inline-flex; align-items: center; gap: 6px; margin: 0; font-size: 0.85rem; font-weight: 600; color: var(--muted); background: var(--chip); border-radius: 999px; padding: 4px 12px; line-height: 1.3; text-align: center; }
+.way-chip i { font-style: normal; }
 .feedback { min-height: 2.6em; text-align: center; font-size: 1.1rem; line-height: 1.45; margin: 0; max-width: 34ch; }
 .feedback strong { display: block; font-size: 1.3rem; }
 .feedback.good strong { color: var(--good); }
@@ -191,6 +194,7 @@ body { min-height: 100vh; min-height: 100dvh; padding-block: var(--page-pad-top)
   .box { height: 36px; font-size: 1.15rem; border-radius: 12px; }
   .split button { min-height: 40px; font-size: 1rem; }
   .stage { font-size: 0.75rem; }
+  .way-chip { font-size: 0.78rem; padding: 2px 10px; }
   .problem-card.good .sum, .problem-card.bad .sum { font-size: 1.4rem; }
   /* While picking the split, the empty step lines wait, so the question fits. */
   .problem-card.splitting .steps { display: none; }
@@ -272,14 +276,16 @@ body { min-height: 100vh; min-height: 100dvh; padding-block: var(--page-pad-top)
     </div>
     <div>
       <p class="seg-label" id="way-label" data-t="stWay">Way</p>
-      <div class="seg" role="group" aria-labelledby="way-label" id="way-seg">
-        <button type="button" id="way-tens" data-way="tens" data-t="stWayTens">Tens first</button>
-        <button type="button" id="way-place" data-way="place" data-t="stWayPlace">Place by place</button>
-        <button type="button" id="way-round" data-way="round" data-t="stWayRound">Nearly round</button>
-        <button type="button" id="way-toten" data-way="toten" data-t="stWayToTen">To the ten</button>
-        <button type="button" id="way-help" data-way="help" data-t="stWayHelp">Help with 10</button>
+      <div class="seg two" role="group" aria-labelledby="way-label" id="way-seg">
+        <button type="button" id="way-mix" data-way="mix">🔀 Mix</button>
+        <button type="button" id="way-tens" data-way="tens">🪜 Tens first</button>
+        <button type="button" id="way-place" data-way="place">🧮 Place by place</button>
+        <button type="button" id="way-round" data-way="round">🛟 Nearly round</button>
+        <button type="button" id="way-toten" data-way="toten">💞 To the ten</button>
+        <button type="button" id="way-help" data-way="help">🔟 Help with 10</button>
+        <button type="button" id="way-giants" data-way="giants">👫 Giants and dwarfs</button>
       </div>
-      <p class="seg-note" id="way-note" data-t="stWayNote">Over the ten has its own way. Place by place, To the ten and Help with 10 are for sums up to 100. Split first works with Tens first.</p>
+      <p class="seg-note" id="way-note" data-t="stWayNote">Mix picks a way for each sum. Over the ten has its own way. Place by place, To the ten, Help with 10 and Giants and dwarfs are for sums up to 100. Split first works with Tens first.</p>
     </div>
     <div>
       <p class="seg-label" id="split-label" data-t="stSplit">Split first</p>
@@ -297,6 +303,7 @@ body { min-height: 100vh; min-height: 100dvh; padding-block: var(--page-pad-top)
   <main class="play">
     <div class="problem-card" id="card">
       <div class="stage" id="stage" hidden><span id="stage-split" data-t="stStageSplit">Split</span><span id="stage-steps" data-t="stStageSteps">Steps</span><span id="stage-answer" data-t="stStageAnswer">Answer</span></div>
+      <div class="way-chip" id="way-chip"><i aria-hidden="true">🪜</i><span>Tens first</span></div>
       <div class="sum" id="sum" aria-live="polite">47 + 25</div>
       <div class="split" id="split" hidden></div>
       <div class="steps" id="steps" aria-live="polite"></div>
@@ -328,7 +335,8 @@ Loopy.addStrings({
     problems: "Problems", adding: "Adding", takingAway: "Taking away",
     stMode: "Mode", stModeSteps: "Steps: fill every box", stModeQuick: "Quick: one box is missing",
     stWay: "Way", stWayTens: "Tens first", stWayPlace: "Place by place", stWayRound: "Nearly round", stWayToTen: "To the ten", stWayHelp: "Help with 10",
-    stWayNote: "Over the ten has its own way. Place by place, To the ten and Help with 10 are for sums up to 100. Split first works with Tens first.",
+    stWayGiants: "Giants and dwarfs", stWayMix: "Mix", stWayTen: "Over the ten",
+    stWayNote: "Mix picks a way for each sum. Over the ten has its own way. Place by place, To the ten, Help with 10 and Giants and dwarfs are for sums up to 100. Split first works with Tens first.",
     stSplit: "Split first", stSplitOff: "Off: the split is shown", stSplitOn: "On: pick the split yourself",
     stStageSplit: "Split", stStageSteps: "Steps", stStageAnswer: "Answer",
     stStepOf: "Step {n} of {m}: {q} = ?", stMissing: "Which number is missing? {q} = ?", stPickSplit: "How do you split {n}?",
@@ -336,6 +344,7 @@ Loopy.addStrings({
     stFirstPlace: "First the {place}: {s}.", stNowPlace: "Now the {place}: {s}.", stLast: "Last step: {s}.",
     stMakeTen: "First make 10: {s}.", stRest: "Then the rest: {s}.", stDownTen: "First go down to 10: {s}.",
     stToTenUp: "First up to the ten: {s}.", stToTenDown: "First down to the ten: {s}.", stHelpTen: "10 helps: {s}.",
+    stDwarf: "The dwarf does the ones: {s}.", stGiant: "Only the ones change, the tens stay: {s}.",
     stPlace: "{place}: {s}.", stTogether: "Put them together: {s}.",
     stRoundEasy: "{r} is easy: {s}.", stRoundMore: "{r} is {d} more than {b}. Fix it: {s}.", stRoundLess: "{r} is {d} less than {b}. Fix it: {s}.",
     stDone: "{q} = {a}.",
@@ -347,8 +356,9 @@ Loopy.addStrings({
     stName: "Schrittweise rechnen", stLevel: "Stufe", stLvTen: "Über den Zehner, bis 20", stUpTo: "Bis {n}", stLvCarry: "Bis {n} mit Übertrag",
     problems: "Aufgaben", adding: "Plus", takingAway: "Minus",
     stMode: "Modus", stModeSteps: "Schritte: jedes Feld füllen", stModeQuick: "Schnell: ein Feld fehlt",
-    stWay: "Weg", stWayTens: "Zehner zuerst", stWayPlace: "Stellenweise", stWayRound: "Fast rund", stWayToTen: "Zum Zehner", stWayHelp: "10 hilft",
-    stWayNote: "Über den Zehner hat seinen eigenen Weg. Stellenweise, Zum Zehner (verliebt in den Zehner) und 10 hilft (Aufgaben mit 10 helfen) gibt es bis 100. Zuerst zerlegen geht mit Zehner zuerst.",
+    stWay: "Rechenweg", stWayTens: "Schrittweise", stWayPlace: "Stellenweise", stWayRound: "Hilfsaufgabe", stWayToTen: "Verliebt in den Zehner", stWayHelp: "Aufgaben mit 10 helfen",
+    stWayGiants: "Riesen und Zwerge", stWayMix: "Gemischt", stWayTen: "Über den Zehner",
+    stWayNote: "Gemischt wählt für jede Aufgabe einen Weg. Über den Zehner hat seinen eigenen Weg. Stellenweise, Verliebt in den Zehner, Aufgaben mit 10 helfen und Riesen und Zwerge gibt es bis 100. Zuerst zerlegen geht mit Schrittweise.",
     stSplit: "Zuerst zerlegen", stSplitOff: "Aus: die Zerlegung steht da", stSplitOn: "An: selbst zerlegen",
     stStageSplit: "Zerlegen", stStageSteps: "Schritte", stStageAnswer: "Ergebnis",
     stStepOf: "Schritt {n} von {m}: {q} = ?", stMissing: "Welche Zahl fehlt? {q} = ?", stPickSplit: "Wie zerlegst du {n}?",
@@ -356,6 +366,7 @@ Loopy.addStrings({
     stFirstPlace: "Zuerst die {place}: {s}.", stNowPlace: "Jetzt die {place}: {s}.", stLast: "Letzter Schritt: {s}.",
     stMakeTen: "Erst bis 10: {s}.", stRest: "Dann der Rest: {s}.", stDownTen: "Erst runter bis 10: {s}.",
     stToTenUp: "Erst bis zum Zehner: {s}.", stToTenDown: "Erst runter bis zum Zehner: {s}.", stHelpTen: "Die 10 hilft: {s}.",
+    stDwarf: "Der Zwerg rechnet die Einer: {s}.", stGiant: "Nur die Einer ändern sich, die Zehner bleiben: {s}.",
     stPlace: "{place}: {s}.", stTogether: "Zusammen: {s}.",
     stRoundEasy: "{r} ist leicht: {s}.", stRoundMore: "{r} ist {d} mehr als {b}. Korrigiere: {s}.", stRoundLess: "{r} ist {d} weniger als {b}. Korrigiere: {s}.",
     stDone: "{q} = {a}.",
@@ -374,10 +385,16 @@ const LEVELS = [
   { max: 1000, rg: "no" }, { max: 1000, rg: "mix" }, { max: 10000, rg: "mix" }
 ];
 const levelForAge = (age) => age <= 6 ? 0 : age <= 10 ? age - 6 : 5;
-const WAYS = ["tens", "place", "round", "toten", "help"];
-// Which ways a level allows: over the ten has its own; place by place, to the ten and help with 10 need sums up to 100.
-const waysAt = (lv) => lv === 0 ? ["ten"] : lv <= 2 ? WAYS : ["tens", "round"];
-const wayAt = (lv, way) => waysAt(lv).includes(way) ? way : waysAt(lv)[0];
+const WAYS = ["mix", "tens", "place", "round", "toten", "help", "giants"];
+// The picture and the name of each way, as the school books show them (German: Schrittweise, Stellenweise,
+// Hilfsaufgabe, Verliebt in den Zehner, Aufgaben mit 10 helfen, Riesen und Zwerge).
+const WAY_ICON = { mix: "🔀", tens: "🪜", place: "🧮", round: "🛟", toten: "💞", help: "🔟", giants: "👫", ten: "🎯" };
+const WAY_NAME = { mix: "stWayMix", tens: "stWayTens", place: "stWayPlace", round: "stWayRound", toten: "stWayToTen", help: "stWayHelp", giants: "stWayGiants", ten: "stWayTen" };
+// Which ways a level allows: over the ten has its own; place by place, to the ten, help with 10 and giants and dwarfs
+// need sums up to 100. Mix picks one of the others for each sum.
+const waysAt = (lv) => lv === 0 ? ["ten"] : lv <= 2 ? WAYS : ["mix", "tens", "round"];
+const wayAt = (lv, way) => waysAt(lv).includes(way) ? way : waysAt(lv)[1] || waysAt(lv)[0];
+const realWays = (lv) => waysAt(lv).filter(w => w !== "mix");
 
 const digitSum = (n) => String(n).split("").reduce((t, d) => t + +d, 0);
 const needsRegroup = (op, a, b) => op === "add" ? digitSum(a) + digitSum(b) !== digitSum(a + b) : digitSum(a - b) + digitSum(b) !== digitSum(a);
@@ -411,6 +428,11 @@ function stepsFor(op, a, b, way) {
     const c1 = op === "add" ? 10 - digit(a, 0) : digit(a, 0), ten = a + s * c1;
     return chain([{ from: a, d: s * c1, to: ten, kind: "toten" }, { from: ten, d: s * (b - c1), to: total, kind: "rest" }]);
   }
+  // Giants and dwarfs: 32 + 4 is "2 + 4 = 6", then "32 + 4 = 36". Only the ones change; the tens stay (German "Riesen und Zwerge").
+  if (way === "giants") {
+    const o = digit(a, 0);
+    return [{ from: o, d: s * b, to: o + s * b, kind: "dwarf", fromStep: -1, dStep: -1 }, { from: a, d: s * b, to: total, kind: "giant", fromStep: -1, dStep: -1 }];
+  }
   // Nearly round: 47 + 29 is 47 + 30, then − 1. Help with 10 is the same with 8, 9, 11 or 12: 35 − 9 is 35 − 10, then + 1.
   if (way === "round" || way === "help") {
     const unit = way === "help" ? 10 : b >= 100 ? 100 : 10, r = Math.round(b / unit) * unit, d = b - r;
@@ -422,10 +444,12 @@ function stepsFor(op, a, b, way) {
 }
 
 // One random sum for a level, way and kind of problem. Never negative, never zero.
-function makeSum(lv, way, opMode, avoid) {
+function makeSum(lv, wayPick, opMode, avoid) {
   const L = LEVELS[lv], max = L.max;
   for (let tries = 0; tries < 5000; tries++) {
     const op = opMode === "mix" ? (Math.random() < 0.5 ? "add" : "sub") : opMode;
+    // Mix: a way of its own for each sum, so the sums come like on a worksheet.
+    const way = wayPick === "mix" ? pick(realWays(lv)) : wayPick;
     let a, b;
     if (way === "ten") {
       if (op === "add") { a = randInt(5, 9); b = randInt(11 - a, 9); }
@@ -441,6 +465,12 @@ function makeSum(lv, way, opMode, avoid) {
       b = randInt(2, 9);
       a = op === "add" ? randInt(11, max - b) : randInt(b + 11, max);
       if (digit(a, 0) === 0 || (op === "add" ? digit(a, 0) + b <= 10 : digit(a, 0) >= b)) continue;
+    } else if (way === "giants") {
+      // A one-digit b that stays inside the ten: 32 + 4 (2 + 4 = 6), 68 − 5 (8 − 5 = 3).
+      b = randInt(2, 8);
+      a = randInt(11, Math.min(max, 99));
+      const o = digit(a, 0);
+      if (o === 0 || (op === "add" ? o + b > 9 : o <= b)) continue;
     } else if (way === "help") {
       // b is 8, 9, 11 or 12, so 10 does the work: 35 − 9 is 35 − 10 + 1.
       b = pick([8, 9, 11, 12]);
@@ -485,6 +515,8 @@ function explain(st, sum) {
   if (st.kind === "round") return t("stRoundEasy", { r: num(st.r), s });
   if (st.kind === "help") return t("stHelpTen", { s });
   if (st.kind === "toten") return t(sum.op === "add" ? "stToTenUp" : "stToTenDown", { s });
+  if (st.kind === "dwarf") return t("stDwarf", { s });
+  if (st.kind === "giant") return t("stGiant", { s });
   if (st.kind === "fix") return t(st.more ? "stRoundMore" : "stRoundLess", { r: num(st.r), d: num(st.off), b: num(st.b), s });
   if (st.last && st.n > 0) return t("stLast", { s });
   return t(st.n ? "stNowPlace" : "stFirstPlace", { place: place(st.place), s });
@@ -520,7 +552,8 @@ function splitChips(sum) {
   function loadForAge() {
     lv = store.get("st.lv.a" + age, levelForAge(age), [0, 1, 2, 3, 4, 5]);
     opMode = store.get("st.op.a" + age, age <= 6 ? "add" : "mix", ["add", "sub", "mix"]);
-    way = store.get("st.way.a" + age, "tens", WAYS);
+    // Ages 7 and 8 (grade 2 and 3) practise all the ways, so Mix is their start; a way picked by hand is kept.
+    way = store.get("st.way.a" + age, levelForAge(age) >= 1 && levelForAge(age) <= 2 ? "mix" : "tens", WAYS);
     mode = store.get("st.mode", "steps", ["steps", "quick"]);
     splitFirst = store.get("st.split", "off", ["off", "on"]);
     // Opened from the grown-ups' page to practise one kind: set it for this visit, without saving.
@@ -549,7 +582,10 @@ function splitChips(sum) {
     segs.lv.forEach((b, i) => { b.setAttribute("aria-pressed", String(i === lv)); b.textContent = levelName(i); });
     segs.op.forEach(b => b.setAttribute("aria-pressed", String(b.dataset.op === opMode)));
     segs.mode.forEach(b => b.setAttribute("aria-pressed", String(b.dataset.mode === mode)));
-    segs.way.forEach(b => { b.setAttribute("aria-pressed", String(b.dataset.way === curWay())); b.disabled = !waysAt(lv).includes(b.dataset.way); });
+    segs.way.forEach(b => { b.setAttribute("aria-pressed", String(b.dataset.way === curWay())); b.disabled = !waysAt(lv).includes(b.dataset.way); b.textContent = WAY_ICON[b.dataset.way] + " " + t(WAY_NAME[b.dataset.way]); });
+    // The chip names the way of the sum on screen, with the school's picture, so the words and the steps join up.
+    $("way-chip").firstChild.textContent = WAY_ICON[sum.way];
+    $("way-chip").lastChild.textContent = t(WAY_NAME[sum.way]);
     segs.split.forEach(b => b.setAttribute("aria-pressed", String(b.dataset.split === splitFirst)));
     const onSplit = pos.type === "split";
     goBtn.textContent = t(answered ? "next" : "check");
@@ -591,7 +627,7 @@ function splitChips(sum) {
   const SVG = "http://www.w3.org/2000/svg";
   function drawLine() {
     nlEl.textContent = "";
-    const show = sum.answer <= 100 && sum.a <= 100 && sum.way !== "place" && pos.type !== "split";
+    const show = sum.answer <= 100 && sum.a <= 100 && sum.way !== "place" && sum.way !== "giants" && pos.type !== "split";
     // An <svg> has no hidden property, so set the attribute itself.
     nlEl.toggleAttribute("hidden", !show);
     if (!show) return;
@@ -667,7 +703,7 @@ function splitChips(sum) {
   // and the step (s for the split). A sum bigger than the level allows waits.
   const note = () => sum.op + " " + sum.a + " " + sum.b + " " + sum.way + " " + (pos.type === "split" ? "s" : pos.i);
   function rebuild(r) {
-    const m = /^(add|sub) (\d{1,5}) (\d{1,5}) (ten|tens|place|round|toten|help) (s|\d)$/.exec(r);
+    const m = /^(add|sub) (\d{1,5}) (\d{1,5}) (ten|tens|place|round|toten|help|giants) (s|\d)$/.exec(r);
     if (!m) return null;
     const op = m[1], a = +m[2], b = +m[3], w = m[4], answer = op === "add" ? a + b : a - b;
     if (answer <= 0 || Math.max(a, b, answer) > LEVELS[lv].max) return null;
@@ -780,30 +816,31 @@ function splitChips(sum) {
     }
   });
 
-  // Read aloud: the step on screen, "What is 47 plus 20?", or "How do you split 25?"
+  // Read aloud: the way, then the step on screen, "Tens first. What is 47 plus 20?", or "How do you split 25?"
   Loopy.speech.question({ host: card, text: () => {
     if (pos.type === "split") return t("stPickSplit", { n: sum.b });
     const st = sum.steps[pos.i];
-    return t("whatIs", { q: st.from + " " + t(st.d < 0 ? "minus" : "plus") + " " + Math.abs(st.d) });
+    return (pos.i === 0 ? t(WAY_NAME[sum.way]) + ". " : "") + t("whatIs", { q: st.from + " " + t(st.d < 0 ? "minus" : "plus") + " " + Math.abs(st.d) });
   } });
 
   // Print worksheet: 20 sums at the same level and way. Page 2 has the steps and the answers.
   Loopy.worksheet({
     title: () => t("stName"),
-    level: () => [t("ageLabel", { n: age }), levelName(lv), t("problems") + ": " + t({ add: "adding", sub: "takingAway", mix: "both" }[opMode])].join(" · "),
+    level: () => [t("ageLabel", { n: age }), levelName(lv), t("problems") + ": " + t({ add: "adding", sub: "takingAway", mix: "both" }[opMode]), t("stWay") + ": " + t(WAY_NAME[curWay()])].join(" · "),
     how: () => t("stHow"),
     layout: "line",
     make: (n) => { const list = [], keys = []; while (list.length < n) { const p = makeSum(lv, curWay(), opMode, keys); keys.push(p.key + ":0"); list.push(p); } return list; },
     cell: (p) => {
       const box = document.createElement("span"), s = document.createElement("span"), blank = document.createElement("span");
-      s.className = "ws-sl"; s.textContent = num(p.a) + sign(p.op) + num(p.b) + " =";
+      // With Mix, each sum carries the picture of its way, so the child knows which steps to write.
+      s.className = "ws-sl"; s.textContent = (curWay() === "mix" ? WAY_ICON[p.way] + " " : "") + num(p.a) + sign(p.op) + num(p.b) + " =";
       blank.className = "ws-blank";
       box.appendChild(s); box.appendChild(blank);
       return box;
     },
     // The answer with its steps; long ones (big numbers, three steps) keep only the numbers in between, so page 2 fits.
     answer: (p) => {
-      const head = num(p.a) + sign(p.op) + num(p.b) + " = " + num(p.answer), full = head + " (" + p.steps.map(done).join(", ") + ")";
+      const head = (curWay() === "mix" ? WAY_ICON[p.way] + " " : "") + num(p.a) + sign(p.op) + num(p.b) + " = " + num(p.answer), full = head + " (" + p.steps.map(done).join(", ") + ")";
       return full.length <= 44 ? full : head + " (" + p.steps.slice(0, -1).map(st => num(st.to)).join(", ") + ")";
     }
   });

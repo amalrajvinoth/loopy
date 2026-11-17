@@ -48,7 +48,7 @@ Von der ersten bis zur letzten Stufe. Die 10 von heute hat keine Stufen.
 | Einmaleins-Tabelle | 5 | Die 2er-, 5er- und 10er-Reihe → Eine Zahl am Rand fehlt → Größere Tabelle → Leichte Aufgaben zuerst → Reihen bis 12 |
 | Zehner und Einer | 5 | Lesen bis 20 → Lesen bis 100 → Zeichne die Zahl → Riesen und Zwerge → Auch Hunderter |
 | Reicht das Geld? | 5 | Scheine zählen → Scheine und Münzen → Reicht es für eins? → Zwei Sachen → Drei Sachen |
-| Welcher Weg? | 4 | Wie heißt der Weg? → Sag, warum → Stimmt das? → Schritte ausfüllen |
+| Welcher Weg? | 5 | Wie heißt der Weg? → Erst wählen → Sag, warum → Stimmt das? → Schritte ausfüllen |
 | Klassenarbeit | keine | Ein Test, 20 Punkte, dieselben Aufgaben für jedes Alter |
 | Anlaut und Endlaut | 3 | Anlaute, 3 Antworten → Beide Laute, 3 Antworten → Beide Laute, 4 Antworten |
 | Bild und Wort | 3 | 3 Wörter → 4 Wörter → 4, knifflig |
