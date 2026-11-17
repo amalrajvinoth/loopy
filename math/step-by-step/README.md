@@ -7,7 +7,7 @@ German name: Schrittweise rechnen.
 
 ## How to play
 
-1. Look at the sum on top, like 47 + 25.
+1. Look at the sum on top, like 47 + 25. The chip above it names the way. It has the picture from the school books: 🪜 **Tens first**, 💞 **To the ten**, 👫 **Giants and dwarfs** and so on. In German it says the school's words: Schrittweise, Verliebt in den Zehner, Riesen und Zwerge.
 2. Under it, each step has its own line: "47 + 20 =" and then "67 + 5 =". The second number is already split into tens and ones for you.
 3. Tap the numbers to write the answer of the step with the blue box, then tap **Check**.
 4. A right box turns green and the next step comes by itself. The last box is the answer of the whole sum.
@@ -44,15 +44,17 @@ Tap **Settings** to choose:
 - **Level:** the six levels above. The level is remembered for each age.
 - **Problems:** Adding, Taking away, or Both.
 - **Mode:** **Steps** (fill every box, the default) or **Quick** (all the boxes are filled except one; find the missing number). In Quick the number before the missing one is hidden, so you have to work it out.
-- **Way:** how the sum is split.
-  - **Tens first** (the default): 47 + 25 is 47 + 20 = 67, then 67 + 5 = 72.
-  - **Place by place:** tens with tens, ones with ones, then put them together: 40 + 20 = 60, 7 + 5 = 12, 60 + 12 = 72. For sums up to 100.
-  - **Nearly round:** for numbers close to a ten or a hundred: 47 + 29 is 47 + 30 = 77, then 77 − 1 = 76.
+- **Way:** how the sum is split. Each way has its picture, and the chip on the card shows which way the sum on screen follows.
+  - **Mix** (the start for ages 7 and 8): every sum picks its own way from the ones below. So the sums come like on a worksheet, and the chip says which way.
+  - **Tens first**: 47 + 25 is 47 + 20 = 67, then 67 + 5 = 72. The start for other ages. In German books: "Schrittweise addieren".
+  - **Place by place:** tens with tens, ones with ones, then put them together: 40 + 20 = 60, 7 + 5 = 12, 60 + 12 = 72. For sums up to 100. In German books: "Stellenweise addieren".
+  - **Nearly round:** for numbers close to a ten or a hundred: 47 + 29 is 47 + 30 = 77, then 77 − 1 = 76. In German books: "Hilfsaufgabe".
   - **To the ten:** a one-digit number that crosses the ten: 57 + 6 is 57 + 3 = 60, then 60 + 3 = 63. Taking away: 63 − 6 is 63 − 3 = 60, then 60 − 3 = 57. In German books this is "verliebt in den Zehner". For sums up to 100.
   - **Help with 10:** the second number is 8, 9, 11 or 12, so 10 does the work: 35 − 9 is 35 − 10 = 25, then 25 + 1 = 26. In German books: "Aufgaben mit 10 helfen". For sums up to 100.
+  - **Giants and dwarfs:** a one-digit number that stays inside the ten. The dwarf does the ones, the giant keeps the tens. 32 + 4 is 2 + 4 = 6, then 32 + 4 = 36. Taking away: 38 − 5 is 8 − 5 = 3, then 38 − 5 = 33. In German books: "Riesen und Zwerge". For sums up to 100. No number line, because nothing jumps.
   - Level 1 (over the ten) has its own way: first make 10, then the rest.
 - **Split first:** Off (the split is shown, the default) or On. When it is on, the child first picks the right split of the second number from three chips, like "20 + 5", "2 + 5" or "2 + 50". Then come the steps. Three pills at the top show where you are: Split, Steps, Answer. It works with Tens first.
-- **Read aloud:** On or Off. When it is on, a speaker button sits in the corner of the card. It reads the step on screen, for example "What is 47 plus 20?". It starts on for ages 5 to 7 and off from 8. If the device has no voice, the button and the setting do not show.
+- **Read aloud:** On or Off. When it is on, a speaker button sits in the corner of the card. It reads the way and the step on screen, for example "Tens first. What is 47 plus 20?". It starts on for ages 5 to 7 and off from 8. If the device has no voice, the button and the setting do not show.
 
 Changing a setting starts a new sum.
 
@@ -64,7 +66,7 @@ A wrong box comes back later as a question of its own: the same sum, with the st
 
 Tap **Settings**, then **Print worksheet**. The print window opens. Print it, or save it as a PDF.
 
-- Page 1 has 20 sums at the game's level and way, like "47 + 25 = ____", with room to write the steps.
+- Page 1 has 20 sums at the game's level and way, like "47 + 25 = ____", with room to write the steps. With Mix, each sum carries the picture of its way, like "👫 32 + 4 = ____".
 - Page 2 has the answers with the steps, like "47 + 25 = 72 (47 + 20 = 67, 67 + 5 = 72)". With big numbers it shows only the numbers in between, like "4,347 + 225 = 4,572 (4,547, 4,567)", so the page fits.
 
 ## How it is different from Plus and Minus
@@ -77,4 +79,18 @@ Plus and Minus asks only for the answer and explains it column by column, the wa
 - Over the ten: "First make 10: 8 + 2 = 10." Then "Then the rest: 10 + 5 = 15."
 - Place by place: "Ones: 7 + 5 = 12." Then "Put them together: 60 + 12 = 72."
 - Nearly round: "30 is 1 more than 29. Fix it: 77 − 1 = 76."
+- Giants and dwarfs: "The dwarf does the ones: 2 + 4 = 6." Then "Only the ones change, the tens stay: 32 + 4 = 36."
 - Split first: "Yes, 25 is 20 + 5."
+
+## The school's names
+
+The ways are the six from the German grade 3 worksheet "Addition bis 100", with the same pictures. The chip on the card uses them, so the child meets the same words at school and here.
+
+| On loopy | In German books | Example |
+| --- | --- | --- |
+| 👫 Giants and dwarfs | Riesen und Zwerge | 32 + 4: do 2 + 4 = 6, the tens stay |
+| 💞 To the ten | Verliebt in den Zehner | 38 + 4 = 38 + 2 + 2 |
+| 🔟 Help with 10 | Aufgaben mit 10 helfen | 23 + 9 = 23 + 10 − 1 |
+| 🧮 Place by place | Stellenweise addieren | 24 + 33: 20 + 30 = 50, 4 + 3 = 7, 50 + 7 = 57 |
+| 🪜 Tens first | Schrittweise addieren | 49 + 25: 49 + 20 = 69, 69 + 5 = 74 |
+| 🛟 Nearly round | Hilfsaufgabe | 23 + 29 = 23 + 30 − 1 |
