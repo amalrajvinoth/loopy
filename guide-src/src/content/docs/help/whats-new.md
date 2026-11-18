@@ -8,6 +8,10 @@ loopy keeps getting new games. Here is what came lately!
 
 The big changes, newest first. Small fixes are not listed. See [the full list on GitHub](https://github.com/amalrajvinoth/loopy/blob/main/RELEASES.md).
 
+## 18 November 2026
+
+- **What Time Is It? says when a clock is pretend.** On the 24-hour level a child played an "afternoon" clock in the morning, and the right answer looked wrong. Now the question says "Pretend it is afternoon". A badge with a sunrise or a sunset sits over the clock. Past the half hour the help text says "between 4 and 5", not "just past 4". [How to play](/loopy/guide/games/math/what-time-is-it/).
+
 ## 17 November 2026
 
 - **Class Test has a second paper: Addition to 100.** Pick it under **Paper** in Settings. It follows the grade 3 worksheet about the six ways to add, task by task: 11 tasks, 25 points. Sums in steps for each way, "How do you work it out?" with 1, 2 or 3, make your own sum, jumps on the number line, and "Which way helps you with 57 + 39?". Each paper keeps its own best score. The printed sheet has the six ways at the top. [How to play](/loopy/guide/games/math/class-test/).
