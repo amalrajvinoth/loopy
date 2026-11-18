@@ -2,10 +2,10 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'sha256-/F0CxYqt4PszUut0fFMKaL/pI9kgA+F3v32bV3xOl/Y='; style-src 'self' 'sha256-z2P7kGW5Z05eCTjTZdYpc0vThTlOE9vmt97pVSvi2I4=' 'sha256-KbWx+vI+EaDtTXGjPmL2lfYaQ7DrdqBM3nMuP05COU0=' 'sha256-RT1053JU5UiKvjrCUFx1rlhdFLMmgtuFJ9T8jnMeawQ=' 'sha256-y8eTBh1u56UziXNgsoi1PT0s9j3HYiNSaVcVNIuVYOg='; img-src 'self' data:; font-src 'self'; connect-src 'self' https://loopy-sync.loopy-1e2.workers.dev; worker-src 'self'; object-src 'none'; base-uri 'none'; form-action 'none'; manifest-src 'self'; upgrade-insecure-requests">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'sha256-/F0CxYqt4PszUut0fFMKaL/pI9kgA+F3v32bV3xOl/Y='; style-src 'self' 'sha256-iKqZfY0yOsyVHa/qlTmRsjSUAon+EdDi9RLwucVWFNA=' 'sha256-KbWx+vI+EaDtTXGjPmL2lfYaQ7DrdqBM3nMuP05COU0=' 'sha256-RT1053JU5UiKvjrCUFx1rlhdFLMmgtuFJ9T8jnMeawQ=' 'sha256-3EMx0Uw/IkGstuL+u94r/YSCQCMd75GTe7zFt5oTMAo='; img-src 'self' data:; font-src 'self'; connect-src 'self' https://loopy-sync.loopy-1e2.workers.dev; worker-src 'self'; object-src 'none'; base-uri 'none'; form-action 'none'; manifest-src 'self'; upgrade-insecure-requests">
 <meta name="referrer" content="strict-origin-when-cross-origin">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<style>:root{color-scheme:light;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}body{margin:0}[hidden]{display:none!important}</style>
+<style>:root{color-scheme:light;padding-top:var(--safe-top);padding-bottom:var(--safe-bottom)}body{margin:0}[hidden]{display:none!important}</style>
 <link rel="icon" href="../../icon.svg" type="image/svg+xml">
 <link rel="manifest" href="../../manifest.webmanifest">
 <link rel="apple-touch-icon" href="../../apple-touch-icon.png">
@@ -131,7 +131,7 @@ body { min-height: 100vh; min-height: 100dvh; padding-block: var(--page-pad-top)
 /* Portrait: the page is exactly one screen tall; the pad stays at the bottom
    and the top part shrinks to fit. With settings open, the page scrolls normally. */
 @media (orientation: portrait) {
-  body { height: calc(100dvh - env(safe-area-inset-top, 0px) - env(safe-area-inset-bottom, 0px)); min-height: 0; display: flex; flex-direction: column; overflow: hidden; }
+  body { height: calc(100dvh - var(--safe-top) - var(--safe-bottom)); min-height: 0; display: flex; flex-direction: column; overflow: hidden; }
   body:has(#settings-panel:not([hidden])) { height: auto; overflow: visible; }
   .wrap { flex: 1 1 auto; min-height: 0; width: 100%; }
   .play { flex: 1 1 auto; min-height: 0; }
@@ -139,7 +139,7 @@ body { min-height: 100vh; min-height: 100dvh; padding-block: var(--page-pad-top)
   .feedback { flex: 0 1 auto; min-height: 0; overflow-y: auto; }
 }
 @media (orientation: landscape) and (min-width: 640px) {
-  body { height: calc(100dvh - env(safe-area-inset-top, 0px) - env(safe-area-inset-bottom, 0px)); min-height: 0; display: flex; flex-direction: column; overflow: hidden; }
+  body { height: calc(100dvh - var(--safe-top) - var(--safe-bottom)); min-height: 0; display: flex; flex-direction: column; overflow: hidden; }
   body:has(#settings-panel:not([hidden])) { height: auto; overflow: visible; }
   .wrap { flex: 1 1 auto; min-height: 0; width: 100%; }
   .play { flex: 1 1 auto; min-height: 0; grid-template-rows: minmax(0, 1fr); }

@@ -440,7 +440,7 @@ The score row shows the last 5 answers in this game as dots. Next to it sit the 
 ## 5. Layout
 
 - One centered column. Games are 520px wide on phones, 760px on tablet portrait, 1160px on a tablet in landscape, 1400px on a laptop and 1600px on a monitor (`--col`). The home page is 760px, 960px on a laptop and 1100px on a monitor (`--home-col`).
-- A 16px gutter on each side, more if the phone has a notch (`env(safe-area-inset-*)`).
+- A 16px gutter on each side, more if the phone has a notch (`env(safe-area-inset-*)`). The top and bottom bars of the phone are `--safe-top` and `--safe-bottom` in `src/loopy.css`: a game pads the page by them (html padding, body height), a scrolling page adds `--safe-bottom` under its last line. In a home screen app on a phone or tablet `--safe-bottom` keeps a floor of 24px (or `safe-area-max-inset-bottom` where the browser knows it), because Chrome on Android draws the app under the gesture bar and can report its height as 0.
 - Spacing steps: 4, 8, 12, 16, 20, 28px. Gaps inside a game are 8 to 12px on phones and up to 28px between the two columns on a monitor (`--row-gap`, `--play-gap`). Home page sections are 28px apart.
 - **One screen, no scrolling.** A game fills `100dvh`. Sizes use `clamp()` with `dvh`, so the pad and the problem grow or shrink with the screen.
 - **Portrait:** top bar, then the problem, then the feedback, then the number pad or answers at the bottom where thumbs reach.
@@ -507,7 +507,7 @@ The size classes are variables on `:root` in `src/loopy.css`: `--page-pad-top`, 
 
 - Short phones (under 760px tall) use smaller feedback text, so the pad stays on screen.
 - Buttons use `touch-action: manipulation`, so a double tap does not zoom.
-- "Add to Home Screen" opens loopy full screen. The status bar is black.
+- "Add to Home Screen" opens loopy full screen. The status bar is black. The keys and the last line stay above the phone's bottom bar (`--safe-bottom`, see Layout).
 - **Family sync** (home page Settings, inside the For grown-ups fold, before Use like an app). It shows only when loopy has a sync server (`Loopy.syncHost`). A `c1` uppercase heading, then a muted line that says what it does. Off: an outline "Join with a code" pill and a solid "Turn on" pill, right-aligned like the Kids box buttons. Join opens a text box in the `key` style (2px `line` border, 12px radius, capital letters) with a "Join" pill. On: the family code in Fredoka 1.35rem `ink` with wide letter spacing. Under it its QR code, black on white, up to 200px, with a muted line on how to scan it. Then an outline "Turn off" and a solid "Sync now", and under them on the left a red outline "Turn off everywhere" pill (tap twice, like removing a child). A muted line says when it last synced or why it waits; screen readers read it out. A link with `#family=` opens a box like the Kids box: "Join this family?" with "Not now" and "Join".
 - **Use like an app** (home page Settings, the last part of the For grown-ups fold): a `c1` uppercase heading, one pill styled like Print worksheet ("Add loopy to the home screen" with an add-square icon, or "Install loopy on this computer" with a screen icon) and a muted line. When the browser offers its own install box, the pill opens it. Otherwise it opens a box like the Kids box with three numbered steps for the device, each with a 40px icon tile (`chip` background, `c1` icon). On Apple devices with stars, the box also shows the stars code with a Copy pill. The part is hidden when loopy runs from the home screen.
 
