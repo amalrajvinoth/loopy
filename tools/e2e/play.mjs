@@ -215,7 +215,7 @@ function repeats(keys, whole) {
 // Word games: the words follow loopy's language. A "Words in" pick saved before the fix, or one made under the other
 // loopy language, must not keep the words in the other language. A pick made under this loopy language holds.
 const WORDS_IN = { "languages/my-words/": "mw", "languages/sentence-builder/": "sb", "languages/sound-spell/": "ss", "languages/spell-it/": "si",
-  "languages/spelling-quiz/": "sq", "languages/word-match/": "wm", "languages/word-trail/": "wt" };
+  "languages/spelling-quiz/": "sq", "languages/word-detective/": "wd", "languages/word-match/": "wm", "languages/word-trail/": "wt" };
 async function wordsFollowLanguage(game, run, fail) {
   const key = WORDS_IN[game], other = run.lang === "de" ? "en" : "de";
   const ctx = await browser.newContext({ viewport: { width: 390, height: 844 }, reducedMotion: "reduce", serviceWorkers: "block" });

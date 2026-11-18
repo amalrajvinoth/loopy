@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'sha256-oDsLnssOREdvQWxRPHEiz0XI1UivYe0ExpYL5tHnMvg='; style-src 'self' 'sha256-z2P7kGW5Z05eCTjTZdYpc0vThTlOE9vmt97pVSvi2I4=' 'sha256-gOaHZtTYUZEGik3rTQj/3FhZi971yU8aKZnCcIZNZE4=' 'sha256-RT1053JU5UiKvjrCUFx1rlhdFLMmgtuFJ9T8jnMeawQ=' 'sha256-yj4bQzMm2DlYsSYWbQuPoIxgEWBkK83V6rV6N4LlrwU='; img-src 'self' data:; font-src 'self'; connect-src 'self' https://loopy-sync.loopy-1e2.workers.dev; worker-src 'self'; object-src 'none'; base-uri 'none'; form-action 'none'; manifest-src 'self'; upgrade-insecure-requests">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'sha256-ecpSx+02ibrNtK/c2zuixc14TUsTG+gCkBAhJxmG1kw='; style-src 'self' 'sha256-z2P7kGW5Z05eCTjTZdYpc0vThTlOE9vmt97pVSvi2I4=' 'sha256-tnJsa9R6C51kJMjmOPnAuWQXZQNnMHFisS5uil93cWg=' 'sha256-RT1053JU5UiKvjrCUFx1rlhdFLMmgtuFJ9T8jnMeawQ=' 'sha256-yj4bQzMm2DlYsSYWbQuPoIxgEWBkK83V6rV6N4LlrwU='; img-src 'self' data:; font-src 'self'; connect-src 'self' https://loopy-sync.loopy-1e2.workers.dev; worker-src 'self'; object-src 'none'; base-uri 'none'; form-action 'none'; manifest-src 'self'; upgrade-insecure-requests">
 <meta name="referrer" content="strict-origin-when-cross-origin">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <style>:root{color-scheme:light;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}body{margin:0}[hidden]{display:none!important}</style>
@@ -61,7 +61,8 @@ h1 { margin: 0; font-size: 1.6rem; font-weight: 700; text-wrap: balance; }
 .seg-note { margin: 4px 0 0 4px; font-size: 0.85rem; line-height: 1.35; color: var(--muted); }
 .seg { display: grid; grid-template-columns: repeat(3, 1fr); gap: 6px; background: var(--chip); padding: 5px; border-radius: 14px; }
 .seg.two { grid-template-columns: repeat(2, 1fr); }
-.seg.five { grid-template-columns: repeat(5, 1fr); }
+/* Five levels: on a narrow phone they wrap into rows instead of running past the card (the German "6 Buchstaben" did), like Make 10. */
+.seg.five { grid-template-columns: repeat(auto-fit, minmax(96px, 1fr)); }
 .seg button {
   font: inherit; font-size: 0.95rem; font-weight: 600; color: var(--muted);
   background: transparent; border: 0; border-radius: 10px; padding: 8px 6px; min-height: 44px; cursor: pointer;
@@ -294,7 +295,7 @@ body:has(#settings-panel:not([hidden])) .grid { height: 52dvh; }
         <button type="button" data-words="en">English</button>
         <button type="button" data-words="de">Deutsch</button>
       </div>
-      <p class="seg-note" data-t="wordsNote">The words to play with. loopy's own language is under Age, look and sound.</p>
+      <p class="seg-note" data-t="wordsNote">The words follow loopy's language. Pick the other one here to practise it.</p>
     </div>
     <div>
       <p class="seg-label" id="level-label" data-t="wdLevel">Level</p>
@@ -334,7 +335,7 @@ body:has(#settings-panel:not([hidden])) .grid { height: 52dvh; }
 <script>
 Loopy.addStrings({
   en: {
-    wordsNote: "The words to play with. loopy's own language is under Age, look and sound.",
+    wordsNote: "The words follow loopy's language. Pick the other one here to practise it.",
     wdName: "Word Detective", wdWords: "Words in", wdLevel: "Level",
     wdL1: "3 letters", wdL2: "4 letters", wdL3: "5 letters", wdL4: "5, tricky", wdL5: "6 letters",
     wdKbd: "Keyboard works too: type the letters, Backspace erases, Enter checks and goes on.",
@@ -356,7 +357,7 @@ Loopy.addStrings({
     wdHow: "Read the clue. Write the word in the boxes, one letter in each."
   },
   de: {
-    wordsNote: "Die Wörter zum Spielen. Die Sprache von loopy selbst steht unter Alter, Aussehen und Ton.",
+    wordsNote: "Die Wörter folgen der Sprache von loopy. Wähle hier die andere, um sie zu üben.",
     wdName: "Wortdetektiv", wdWords: "Wörter auf", wdLevel: "Stufe",
     wdL1: "3 Buchstaben", wdL2: "4 Buchstaben", wdL3: "5 Buchstaben", wdL4: "5, knifflig", wdL5: "6 Buchstaben",
     wdKbd: "Die Tastatur geht auch: Buchstaben tippen, Rücktaste löscht, Enter prüft und geht weiter.",
@@ -414,7 +415,11 @@ function marks(guess, answer) {
   };
 
   let age = Loopy.getAge();
-  let wordsLang = store.get("wd.words", Loopy.lang === "de" ? "de" : "en", ["en", "de"]);
+  // The words follow loopy's language. A pick under "Words in" is for practising the other language: it is
+  // kept with the loopy language it was made under (wd.wordsUi) and holds until that language changes.
+  // A pick saved before wd.wordsUi existed has no language with it, so the words follow loopy's language again.
+  const uiLang = Loopy.lang === "de" ? "de" : "en";
+  let wordsLang = store.get("wd.wordsUi", "", ["en", "de"]) === uiLang ? store.get("wd.words", uiLang, ["en", "de"]) : uiLang;
   let level;
   // The level is remembered per age: 3 letters up to 6, 4 at 7 to 8, 5 at 9 to 10, harder 5 at 11 to 12, then 6.
   const levelForAge = (a) => a <= 6 ? 1 : a <= 8 ? 2 : a <= 10 ? 3 : a <= 12 ? 4 : 5;
@@ -663,7 +668,7 @@ function marks(guess, answer) {
   nextBtn.addEventListener("click", next);
   wide.addEventListener("change", place);
   moreBtn.addEventListener("click", () => { if (clues < CLUES && !answered) { clues++; drawClues(); Loopy.speech.read(); } });
-  wordsBtns.forEach(b => b.addEventListener("click", () => { wordsLang = b.dataset.words; store.set("wd.words", wordsLang); recent = []; file = []; summary = false; newCase(); }));
+  wordsBtns.forEach(b => b.addEventListener("click", () => { wordsLang = b.dataset.words; store.set("wd.words", wordsLang); store.set("wd.wordsUi", uiLang); recent = []; file = []; summary = false; newCase(); }));
   levelBtns.forEach(b => b.addEventListener("click", () => { level = +b.dataset.level; store.set("wd.level.a" + age, level); recent = []; newCase(); }));
   window.addEventListener("loopy:age", (e) => { age = e.detail; recent = []; loadForAge(); newCase(); });
   $("reset").addEventListener("click", () => { right = 0; tried = 0; streak = 0; file = []; summary = false; Loopy.recent.clear("word-detective"); newCase(); });
