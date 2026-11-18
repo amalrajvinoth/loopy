@@ -244,6 +244,33 @@ async function classTestMoney(run, fail) {
   await ctx.close();
 }
 
+// Word Detective: the words follow loopy's language (issue #291). A "Words in" pick saved before the fix, or one
+// made under the other loopy language, must not keep the clues and keys in the other language. A pick made under
+// this loopy language holds.
+async function wordDetectiveWords(run, fail) {
+  const other = run.lang === "de" ? "en" : "de";
+  const ctx = await browser.newContext({ viewport: { width: 390, height: 844 }, reducedMotion: "reduce", serviceWorkers: "block" });
+  await ctx.addInitScript(([l, o]) => {
+    if (localStorage.getItem("loopy.e2e")) return;
+    localStorage.setItem("loopy.e2e", "1"); localStorage.setItem("loopy.lang", l); localStorage.setItem("loopy.sound", "off");
+    localStorage.setItem("loopy.kid.1.wd.words", JSON.stringify(o));
+  }, [run.lang, other]);
+  const p = await ctx.newPage();
+  p.on("pageerror", e => fail(`script error: ${e.message}`));
+  const words = async () => {
+    await p.waitForSelector("#card[data-a]");
+    return p.evaluate(() => ({ pick: document.querySelector('#words-seg [aria-pressed="true"]').dataset.words, umlaut: !!document.querySelector('#letters [data-k="ü"]') }));
+  };
+  await p.goto(BASE + "languages/word-detective/");
+  let w = await words();
+  if (w.pick !== run.lang || w.umlaut !== (run.lang === "de")) fail(`words saved as ${other} before the fix still win over loopy's language ${run.lang}`);
+  await p.evaluate(([l, o]) => { localStorage.setItem("loopy.kid.1.wd.words", JSON.stringify(o)); localStorage.setItem("loopy.kid.1.wd.wordsUi", JSON.stringify(l)); }, [run.lang, other]);
+  await p.reload();
+  w = await words();
+  if (w.pick !== other || w.umlaut !== (other === "de")) fail(`a "Words in" pick of ${other} made under loopy's language ${run.lang} did not hold`);
+  await ctx.close();
+}
+
 for (const game of GAMES) {
   const daily = game.startsWith("mix/");
   for (const run of RUNS) {
@@ -282,6 +309,7 @@ for (const game of GAMES) {
     }
     if (p) await p.context().close();
     if (game === "mix/class-test/") { try { await classTestMoney(run, fail); } catch (e) { fail(`money task: ${e.message.split("\n")[0]}`); } }
+    if (game === "languages/word-detective/") { try { await wordDetectiveWords(run, fail); } catch (e) { fail(`words language: ${e.message.split("\n")[0]}`); } }
     console.error(`${where}: ${problems.length ? problems.length + " problem(s) so far" : "ok"} (${Math.round(performance.now() / 1000)}s)`);
   }
 }

@@ -41,7 +41,7 @@ They stay there next time you play. **Reset score** in Settings clears them.
 
 Open them with the gear button.
 
-- **Words in.** English or German. The game starts with the site language. Switch it to learn words in the other language. The keyboard follows: QWERTY for English, QWERTZ with ä, ö and ü for German.
+- **Words in.** English or German. The words follow loopy's language (EN/DE under Age, look and sound). Pick the other one here to learn words in that language. The pick holds until loopy's language changes; then the words follow the new language again. The keyboard follows the words: QWERTY for English, QWERTZ with ä, ö and ü for German.
 - **Level.** 3 letters, 4 letters, 5 letters, 5 tricky, or 6 letters. Remembered for each age.
 - **Read aloud.** A speaker button on the card reads the open clues out loud, and the word with its sentence once the case is closed. It is on by itself for ages 7 and under.
 - Age, colors, sound effects and the display language (EN/DE) are shared with the other games.
