@@ -44,7 +44,7 @@ They stay there next time you play. **Reset score** in Settings clears them.
 
 Open them with the gear button.
 
-- **Words in.** English or German. The game starts with the site language. Switch it to learn words in the other language.
+- **Words in.** English or German. The words follow loopy's language. Pick the other one to practise it; the pick holds until loopy's language changes.
 - **Topic.** Mix, or one of the 15 topics. Remembered for each child.
 - **Level.** 4 × 4 straight, 5 × 5 one bend, 6 × 6 bends, 6 × 6 with 5 words, or 6 × 6 long words. Remembered for each age.
 - **Read aloud.** A speaker button on the card reads the words to find. At levels 4 and 5, where the list hides the words, it reads the topic and how many letters the next word has. It is on by itself for ages 7 and under.

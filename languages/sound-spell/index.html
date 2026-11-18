@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'sha256-6BsmZv8ltrkHFq+g5ZCTBKSKf93yOl20/oOYKGpQE0I='; style-src 'self' 'sha256-z2P7kGW5Z05eCTjTZdYpc0vThTlOE9vmt97pVSvi2I4=' 'sha256-VXDBEYH7xkqTh9KsB3EbYm/tUacaCYyH+AoJJ1sPv54=' 'sha256-RT1053JU5UiKvjrCUFx1rlhdFLMmgtuFJ9T8jnMeawQ=' 'sha256-8WtB19CtF5fZ2xTqCS6O3oi2DxQaSjCHEF6exgl8jM8='; img-src 'self' data:; font-src 'self'; connect-src 'self' https://loopy-sync.loopy-1e2.workers.dev; worker-src 'self'; object-src 'none'; base-uri 'none'; form-action 'none'; manifest-src 'self'; upgrade-insecure-requests">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'sha256-IbBYX87yGM2bF3BR06uxWDZhUU4ss5Gj+4lXD9CsVDU='; style-src 'self' 'sha256-z2P7kGW5Z05eCTjTZdYpc0vThTlOE9vmt97pVSvi2I4=' 'sha256-VXDBEYH7xkqTh9KsB3EbYm/tUacaCYyH+AoJJ1sPv54=' 'sha256-RT1053JU5UiKvjrCUFx1rlhdFLMmgtuFJ9T8jnMeawQ=' 'sha256-8WtB19CtF5fZ2xTqCS6O3oi2DxQaSjCHEF6exgl8jM8='; img-src 'self' data:; font-src 'self'; connect-src 'self' https://loopy-sync.loopy-1e2.workers.dev; worker-src 'self'; object-src 'none'; base-uri 'none'; form-action 'none'; manifest-src 'self'; upgrade-insecure-requests">
 <meta name="referrer" content="strict-origin-when-cross-origin">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <style>:root{color-scheme:light;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}body{margin:0}[hidden]{display:none!important}</style>
@@ -263,7 +263,7 @@ body { min-height: 100vh; min-height: 100dvh; padding-block: var(--page-pad-top)
         <button type="button" id="words-en" data-words="en">English</button>
         <button type="button" id="words-de" data-words="de">Deutsch</button>
       </div>
-      <p class="seg-note" data-t="wordsNote">The words to play with. loopy's own language is under Age, look and sound.</p>
+      <p class="seg-note" data-t="wordsNote">The words follow loopy's language. Pick the other one here to practise it.</p>
     </div>
     <div class="panel-foot">
       <p data-t="ssKbd">Keyboard works too: 1 to 4 picks an answer, Enter goes on.</p>
@@ -288,7 +288,7 @@ body { min-height: 100vh; min-height: 100dvh; padding-block: var(--page-pad-top)
 <script>
 Loopy.addStrings({
   en: {
-    wordsNote: "The words to play with. loopy's own language is under Age, look and sound.",
+    wordsNote: "The words follow loopy's language. Pick the other one here to practise it.",
     ssName: "Sound Spell", ssMode: "Sounds", ssStart: "Starting", ssEnd: "Ending",
     ssLv1: "Starting sounds, 3 choices", ssLv2: "Both sounds, 3 choices", ssLv3: "Both sounds, 4 choices", ssWords: "Words in",
     ssHear: "Hear the word",
@@ -300,7 +300,7 @@ Loopy.addStrings({
     ssLangEn: "English", ssLangDe: "German"
   },
   de: {
-    wordsNote: "Die Wörter zum Spielen. Die Sprache von loopy selbst steht unter Alter, Aussehen und Ton.",
+    wordsNote: "Die Wörter folgen der Sprache von loopy. Wähle hier die andere, um sie zu üben.",
     ssName: "Anlaut und Endlaut", ssMode: "Laute", ssStart: "Anlaut", ssEnd: "Endlaut",
     ssLv1: "Anlaute, 3 Antworten", ssLv2: "Beide Laute, 3 Antworten", ssLv3: "Beide Laute, 4 Antworten", ssWords: "Wörter auf",
     ssHear: "Wort anhören",
@@ -365,7 +365,11 @@ function makeProblem(lang, modeSetting, age, choices, avoid) {
 
   let age = window.Loopy ? Loopy.getAge() : 8;
   let modeSetting, choices;
-  let wordsLang = store.get("ss.words", Loopy.lang === "de" ? "de" : "en", ["en", "de"]);
+  // The words follow loopy's language. A pick under "Words in" is for practising the other language: it is
+  // kept with the loopy language it was made under (ss.wordsUi) and holds until that language changes.
+  // A pick saved before ss.wordsUi existed has no language with it, so the words follow loopy's language again.
+  const uiLang = Loopy.lang === "de" ? "de" : "en";
+  let wordsLang = store.get("ss.wordsUi", "", ["en", "de"]) === uiLang ? store.get("ss.words", uiLang, ["en", "de"]) : uiLang;
   let autoRead = store.get("ss.autoRead", true, [true, false]);
   // Settings are remembered per age, so each age starts at the right level.
   function loadForAge() {
@@ -482,7 +486,7 @@ function makeProblem(lang, modeSetting, age, choices, avoid) {
   speakBtn.addEventListener("click", speak);
   nextBtn.addEventListener("click", newRound);
   modeBtns.forEach(b => b.addEventListener("click", () => { modeSetting = b.dataset.mode; store.set("ss.mode.a" + age, modeSetting); newRound(); }));
-  wordsBtns.forEach(b => b.addEventListener("click", () => { wordsLang = b.dataset.words; store.set("ss.words", wordsLang); recent = []; newRound(); }));
+  wordsBtns.forEach(b => b.addEventListener("click", () => { wordsLang = b.dataset.words; store.set("ss.words", wordsLang); store.set("ss.wordsUi", uiLang); recent = []; newRound(); }));
   // The Read aloud pill in Settings. The setting stays this game's own: it reads words, not a question.
   const readPill = Loopy.speech.toggle({ isOn: () => autoRead, set: (on) => { autoRead = on; store.set("ss.autoRead", on); } });
   window.addEventListener("loopy:age", (e) => { age = e.detail; recent = []; loadForAge(); newRound(); });
