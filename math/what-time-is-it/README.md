@@ -20,7 +20,7 @@ You can also use a keyboard. Press **1** to **4** to pick an answer, and **Enter
 | 7 | Quarter hours, like 3:15 and 3:45 |
 | 8 | Every 5 minutes, like 3:25 |
 | 9 | Every minute, like 3:27 |
-| 10 and up | 24-hour time: the question says morning or afternoon, and the answers look like 07:30 or 15:27 |
+| 10 and up | 24-hour time. The question says "Pretend it is morning" or "Pretend it is afternoon". A badge over the clock says it too. The answers look like 07:30 or 15:27. The half of the day belongs to the question, not to the real time |
 
 The wrong answers are the mistakes kids often make, like mixing up the two hands.
 
@@ -52,3 +52,4 @@ Tap **Settings**, then **Print worksheet**. The print window opens. Print it, or
 
 The game explains how to read the clock.
 For example: "The short hand is just past 3. The long hand points to 5, which is 25 minutes."
+Past the half hour it says where the short hand really is. For example: "The short hand is between 4 and 5, so the hour is still 4."

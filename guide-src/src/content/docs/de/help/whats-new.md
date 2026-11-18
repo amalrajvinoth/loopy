@@ -8,6 +8,10 @@ loopy bekommt immer wieder neue Spiele. Das ist zuletzt dazugekommen!
 
 Die großen Änderungen, die neuesten zuerst. Kleine Korrekturen stehen nicht dabei. Die [ganze Liste steht auf GitHub](https://github.com/amalrajvinoth/loopy/blob/main/RELEASES.md) (auf Englisch).
 
+## 18. November 2026
+
+- **Wie spät ist es? sagt, wenn eine Uhr nur gedacht ist.** Auf der Stufe 24-Stunden-Zeit hat ein Kind am Vormittag eine „Nachmittag“-Uhr gespielt, und die richtige Antwort sah falsch aus. Jetzt sagt die Frage „Stell dir vor, es ist Nachmittag“. Ein Schild mit Sonnenaufgang oder Sonnenuntergang steht über der Uhr. Nach der halben Stunde sagt die Hilfe „zwischen der 4 und der 5“ statt „kurz nach der 4“. [So wird gespielt](/loopy/guide/de/games/math/what-time-is-it/).
+
 ## 17. November 2026
 
 - **Die Klassenarbeit hat ein zweites Blatt: Addition bis 100.** Wähle es unter **Blatt** in den Einstellungen. Es folgt dem Arbeitsblatt der 3. Klasse über die sechs Rechenwege, Aufgabe für Aufgabe: 11 Aufgaben, 25 Punkte. Rechnen in Schritten für jeden Weg, „Wie rechnest du?“ mit 1, 2 oder 3, eigene Aufgabe finden, Sprünge am Rechenstrich und „Welcher Rechenweg hilft dir bei 57 + 39?“. Jedes Blatt hat seine eigene Bestleistung. Auf dem gedruckten Blatt stehen die sechs Rechenwege oben. [So wird gespielt](/loopy/guide/de/games/math/class-test/).

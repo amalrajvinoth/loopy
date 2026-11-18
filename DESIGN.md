@@ -148,6 +148,7 @@ There are five color themes and one high contrast theme. Black is the default. T
 - `--line` is white, `--muted` is #e6e6e6, and the other accents are bright: `c2` #ffb066, `c3` and `good` #5cf2a0, `c4` #ffa6f0, `c5` #ffe500, `bad` #ff9b9b. Text on an accent is black.
 - Buttons, pills, the level picker, the language and age pickers and the star counter get a 2px white edge (an inside outline, so nothing moves).
 - The clock face stays white, so the hands use mid colors that stand out on white and black: `--hour` #3d84ff and `--minute` #e65c00.
+- In What Time Is It? the 24-hour level shows a day badge between the prompt and the clock: a `chip` pill with a 2px `line` border, bold `ink` text (1.15rem; 1rem on short phones), a 🌅 for "Morning" or a 🌇 for "Afternoon". It says the half of the day belongs to the question ("Pretend it is afternoon"), not to the real time. On a phone on its side it takes the hand legend's row.
 - Theme swatches have a grey edge; the chosen one gets a white edge and a white ring.
 
 ### Roles
