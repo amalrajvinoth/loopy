@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'sha256-+XBqGiBOzBElSzj3Rq13huH1pMOhF5rj3tFCmHdydmA='; style-src 'self' 'sha256-iKqZfY0yOsyVHa/qlTmRsjSUAon+EdDi9RLwucVWFNA=' 'sha256-yIY3WhYpVuUv74kYBAmFiijciUrCFF8NsJNlqVhSGsk=' 'sha256-RT1053JU5UiKvjrCUFx1rlhdFLMmgtuFJ9T8jnMeawQ=' 'sha256-OqtlLmk/+xpcia1cKdN8oqNUWnLGJPg81fharWt3RJQ='; img-src 'self' data:; font-src 'self'; connect-src 'self' https://loopy-sync.loopy-1e2.workers.dev; worker-src 'self'; object-src 'none'; base-uri 'none'; form-action 'none'; manifest-src 'self'; upgrade-insecure-requests">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'sha256-PjGhPeeo/X4viffFvTyLumB2DOn3W46eqgtrYofLdI8='; style-src 'self' 'sha256-iKqZfY0yOsyVHa/qlTmRsjSUAon+EdDi9RLwucVWFNA=' 'sha256-yIY3WhYpVuUv74kYBAmFiijciUrCFF8NsJNlqVhSGsk=' 'sha256-RT1053JU5UiKvjrCUFx1rlhdFLMmgtuFJ9T8jnMeawQ=' 'sha256-OqtlLmk/+xpcia1cKdN8oqNUWnLGJPg81fharWt3RJQ='; img-src 'self' data:; font-src 'self'; connect-src 'self' https://loopy-sync.loopy-1e2.workers.dev; worker-src 'self'; object-src 'none'; base-uri 'none'; form-action 'none'; manifest-src 'self'; upgrade-insecure-requests">
 <meta name="referrer" content="strict-origin-when-cross-origin">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <style>:root{color-scheme:light;padding-top:var(--safe-top);padding-bottom:var(--safe-bottom)}body{margin:0}[hidden]{display:none!important}</style>
@@ -292,7 +292,7 @@ body { min-height: 100vh; min-height: 100dvh; padding-block: var(--page-pad-top)
         <button type="button" data-words="en">English</button>
         <button type="button" data-words="de">Deutsch</button>
       </div>
-      <p class="seg-note" data-t="wordsNote">The words to play with. loopy's own language is under Age, look and sound.</p>
+      <p class="seg-note" data-t="wordsNote">The words follow loopy's language. Pick the other one here to practise it.</p>
     </div>
     <div class="list-box">
       <label class="seg-label" for="word-list" data-t="sqList">Your word list</label>
@@ -347,7 +347,7 @@ body { min-height: 100vh; min-height: 100dvh; padding-block: var(--page-pad-top)
 <script>
 Loopy.addStrings({
   en: {
-    wordsNote: "The words to play with. loopy's own language is under Age, look and sound.",
+    wordsNote: "The words follow loopy's language. Pick the other one here to practise it.",
     sqName: "Spelling Quiz", sqAsk: "Which spelling is right?", sqWordsIn: "Words in", sqLevel: "Level",
     sqList: "Your word list", sqListHelp: "For grown-ups: type or paste the words to practise, with commas between them. A meaning in brackets after a word shows under the question. Up to 50 words. Leave it empty and loopy picks words for the age.",
     sqPlaceholder: "friend (Freund), because, said, beautiful", sqSave: "Save list", sqClear: "Clear list",
@@ -364,7 +364,7 @@ Loopy.addStrings({
     sqHow: "Circle the right spelling in each row."
   },
   de: {
-    wordsNote: "Die Wörter zum Spielen. Die Sprache von loopy selbst steht unter Alter, Aussehen und Ton.",
+    wordsNote: "Die Wörter folgen der Sprache von loopy. Wähle hier die andere, um sie zu üben.",
     sqName: "Rechtschreib-Quiz", sqAsk: "Welches Wort ist richtig geschrieben?", sqWordsIn: "Wörter auf", sqLevel: "Stufe",
     sqList: "Eure Wortliste", sqListHelp: "Für Erwachsene: Tippt oder kopiert die Übungswörter hier hinein, mit Kommas dazwischen. Eine Bedeutung in Klammern nach dem Wort steht unter der Frage. Bis zu 50 Wörter. Bleibt die Liste leer, wählt loopy Wörter für das Alter.",
     sqPlaceholder: "Freund (friend), Straße, fahren, plötzlich", sqSave: "Liste speichern", sqClear: "Liste leeren",
@@ -532,7 +532,11 @@ function makeQuestion(word, lang, n, extra, trans) {
   function readList(l) { try { const v = Loopy.store.get(LIST_KEY[l]); return typeof v === "string" && v.length <= 4000 ? parseList(v) : parseList(""); } catch (e) { return parseList(""); } }
 
   let age = Loopy.getAge();
-  let wordsLang = store.get("sq.words", Loopy.lang === "de" ? "de" : "en", ["en", "de"]);
+  // The words follow loopy's language. A pick under "Words in" is for practising the other language: it is
+  // kept with the loopy language it was made under (sq.wordsUi) and holds until that language changes.
+  // A pick saved before sq.wordsUi existed has no language with it, so the words follow loopy's language again.
+  const uiLang = Loopy.lang === "de" ? "de" : "en";
+  let wordsLang = store.get("sq.wordsUi", "", ["en", "de"]) === uiLang ? store.get("sq.words", uiLang, ["en", "de"]) : uiLang;
   // Meaning under the question: on at the start; it only shows for a word that has one on the list.
   let showTrans = store.get("sq.meaning", true, [true, false]);
   let saved = readList(wordsLang);
@@ -664,7 +668,7 @@ function makeQuestion(word, lang, n, extra, trans) {
 
   nextBtn.addEventListener("click", newRound);
   wordsBtns.forEach(b => b.addEventListener("click", () => {
-    wordsLang = b.dataset.words; store.set("sq.words", wordsLang); saved = readList(wordsLang); mine = saved.words; meanings = saved.trans; statusEl.textContent = ""; showList(); recent = []; newRound();
+    wordsLang = b.dataset.words; store.set("sq.words", wordsLang); store.set("sq.wordsUi", uiLang); saved = readList(wordsLang); mine = saved.words; meanings = saved.trans; statusEl.textContent = ""; showList(); recent = []; newRound();
   }));
   levelBtns.forEach(b => b.addEventListener("click", () => { level = +b.dataset.level; store.set("sq.level.a" + age, level); recent = []; newRound(); }));
   transBtns.forEach(b => b.addEventListener("click", () => { showTrans = b.dataset.trans === "on"; store.set("sq.meaning", showTrans); render(); }));

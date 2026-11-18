@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'sha256-sx9XLRuIAWxaSswJd1qcLYHCQPhrfzstpz+AlOEvf60='; style-src 'self' 'sha256-iKqZfY0yOsyVHa/qlTmRsjSUAon+EdDi9RLwucVWFNA=' 'sha256-fxxbfD70r2kClz53OCvwR31gD5lQcKEGyA3WrTYbRt8=' 'sha256-RT1053JU5UiKvjrCUFx1rlhdFLMmgtuFJ9T8jnMeawQ=' 'sha256-H0Xzv/wCFY+9+06FfK6tjmL7iwItqdn1jnY9o+KCcoM='; img-src 'self' data:; font-src 'self'; connect-src 'self' https://loopy-sync.loopy-1e2.workers.dev; worker-src 'self'; object-src 'none'; base-uri 'none'; form-action 'none'; manifest-src 'self'; upgrade-insecure-requests">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'sha256-KCe802Grc09jCNQRYzvGYARKnpu5HFbGLUi8nTVuEDs='; style-src 'self' 'sha256-iKqZfY0yOsyVHa/qlTmRsjSUAon+EdDi9RLwucVWFNA=' 'sha256-fxxbfD70r2kClz53OCvwR31gD5lQcKEGyA3WrTYbRt8=' 'sha256-RT1053JU5UiKvjrCUFx1rlhdFLMmgtuFJ9T8jnMeawQ=' 'sha256-H0Xzv/wCFY+9+06FfK6tjmL7iwItqdn1jnY9o+KCcoM='; img-src 'self' data:; font-src 'self'; connect-src 'self' https://loopy-sync.loopy-1e2.workers.dev; worker-src 'self'; object-src 'none'; base-uri 'none'; form-action 'none'; manifest-src 'self'; upgrade-insecure-requests">
 <meta name="referrer" content="strict-origin-when-cross-origin">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <style>:root{color-scheme:light;padding-top:var(--safe-top);padding-bottom:var(--safe-bottom)}body{margin:0}[hidden]{display:none!important}</style>
@@ -254,7 +254,7 @@ body { min-height: 100vh; min-height: 100dvh; padding-block: var(--page-pad-top)
         <button type="button" data-words="en">English</button>
         <button type="button" data-words="de">Deutsch</button>
       </div>
-      <p class="seg-note" data-t="wordsNote">The words to play with. loopy's own language is under Age, look and sound.</p>
+      <p class="seg-note" data-t="wordsNote">The words follow loopy's language. Pick the other one here to practise it.</p>
     </div>
     <div>
       <p class="seg-label" id="topic-label" data-t="wmTopic">Topic</p>
@@ -296,7 +296,7 @@ body { min-height: 100vh; min-height: 100dvh; padding-block: var(--page-pad-top)
 <script>
 Loopy.addStrings({
   en: {
-    wordsNote: "The words to play with. loopy's own language is under Age, look and sound.",
+    wordsNote: "The words follow loopy's language. Pick the other one here to practise it.",
     wmName: "Word Match", wmWords: "Words in", wmTopic: "Topic", wmAll: "All", wmAnimals: "Animals", wmFood: "Food", wmHome: "Home", wmSchool: "School",
     wmChoices: "Choices", wmThree: "3 words", wmFour: "4 words", wmTricky: "4, tricky",
     wmHear: "Hear the word",
@@ -306,7 +306,7 @@ Loopy.addStrings({
     wmHow: "Look at each picture. Circle the word that goes with it."
   },
   de: {
-    wordsNote: "Die Wörter zum Spielen. Die Sprache von loopy selbst steht unter Alter, Aussehen und Ton.",
+    wordsNote: "Die Wörter folgen der Sprache von loopy. Wähle hier die andere, um sie zu üben.",
     wmName: "Bild und Wort", wmWords: "Wörter auf", wmTopic: "Thema", wmAll: "Alle", wmAnimals: "Tiere", wmFood: "Essen", wmHome: "Zuhause", wmSchool: "Schule",
     wmChoices: "Auswahl", wmThree: "3 Wörter", wmFour: "4 Wörter", wmTricky: "4, knifflig",
     wmHear: "Wort anhören",
@@ -365,7 +365,11 @@ function makeProblem(lang, topic, age, level, avoid) {
   };
 
   let age = Loopy.getAge();
-  let wordsLang = store.get("wm.words", Loopy.lang === "de" ? "de" : "en", ["en", "de"]);
+  // The words follow loopy's language. A pick under "Words in" is for practising the other language: it is
+  // kept with the loopy language it was made under (wm.wordsUi) and holds until that language changes.
+  // A pick saved before wm.wordsUi existed has no language with it, so the words follow loopy's language again.
+  const uiLang = Loopy.lang === "de" ? "de" : "en";
+  let wordsLang = store.get("wm.wordsUi", "", ["en", "de"]) === uiLang ? store.get("wm.words", uiLang, ["en", "de"]) : uiLang;
   let topic = store.get("wm.topic", "all", ["all", ...TOPICS]);
   // Opened from the grown-ups' page to practise one topic: set it for this visit, without saving.
   { const m = /^wm-([a-z]+)$/.exec(Loopy.log.hint || ""); if (m && TOPICS.includes(m[1])) { topic = m[1]; Loopy.log.hint = ""; } }
@@ -481,7 +485,7 @@ function makeProblem(lang, topic, age, level, avoid) {
   document.addEventListener("keydown", () => { interacted = true; }, { once: true });
   speakBtn.addEventListener("click", speak);
   nextBtn.addEventListener("click", newRound);
-  wordsBtns.forEach(b => b.addEventListener("click", () => { wordsLang = b.dataset.words; store.set("wm.words", wordsLang); newRound(); }));
+  wordsBtns.forEach(b => b.addEventListener("click", () => { wordsLang = b.dataset.words; store.set("wm.words", wordsLang); store.set("wm.wordsUi", uiLang); newRound(); }));
   topicBtns.forEach(b => b.addEventListener("click", () => { topic = b.dataset.topic; store.set("wm.topic", topic); recent = []; newRound(); }));
   levelBtns.forEach(b => b.addEventListener("click", () => { level = +b.dataset.level; store.set("wm.level.a" + age, level); newRound(); }));
   // The Read aloud pill in Settings. The setting stays this game's own: it reads words, not a question.

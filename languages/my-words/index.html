@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'sha256-W714ufFS7Ecr+v7onT9eJ7xtifWy4QLuCRdNS9mp43g='; style-src 'self' 'sha256-iKqZfY0yOsyVHa/qlTmRsjSUAon+EdDi9RLwucVWFNA=' 'sha256-uA6fxc0gl3P5//NKJxplasYAcMyveYOYRtV08rf1NdM=' 'sha256-RT1053JU5UiKvjrCUFx1rlhdFLMmgtuFJ9T8jnMeawQ=' 'sha256-RTcTanGuQck/Cl+4zNduM3E7QA1BP42nfnGTIkaxu2Q='; img-src 'self' data:; font-src 'self'; connect-src 'self' https://loopy-sync.loopy-1e2.workers.dev; worker-src 'self'; object-src 'none'; base-uri 'none'; form-action 'none'; manifest-src 'self'; upgrade-insecure-requests">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'sha256-ioWp0gCU0bj9U9rSw9WEMqyRq5jm508kvH+1Pi0uI2w='; style-src 'self' 'sha256-iKqZfY0yOsyVHa/qlTmRsjSUAon+EdDi9RLwucVWFNA=' 'sha256-uA6fxc0gl3P5//NKJxplasYAcMyveYOYRtV08rf1NdM=' 'sha256-RT1053JU5UiKvjrCUFx1rlhdFLMmgtuFJ9T8jnMeawQ=' 'sha256-RTcTanGuQck/Cl+4zNduM3E7QA1BP42nfnGTIkaxu2Q='; img-src 'self' data:; font-src 'self'; connect-src 'self' https://loopy-sync.loopy-1e2.workers.dev; worker-src 'self'; object-src 'none'; base-uri 'none'; form-action 'none'; manifest-src 'self'; upgrade-insecure-requests">
 <meta name="referrer" content="strict-origin-when-cross-origin">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <style>:root{color-scheme:light;padding-top:var(--safe-top);padding-bottom:var(--safe-bottom)}body{margin:0}[hidden]{display:none!important}</style>
@@ -328,7 +328,7 @@ body { min-height: 100vh; min-height: 100dvh; padding-block: var(--page-pad-top)
         <button type="button" data-words="en">English</button>
         <button type="button" data-words="de">Deutsch</button>
       </div>
-      <p class="seg-note" data-t="wordsNote">The words to play with. loopy's own language is under Age, look and sound.</p>
+      <p class="seg-note" data-t="wordsNote">The words follow loopy's language. Pick the other one here to practise it.</p>
     </div>
     <div class="list-box">
       <label class="seg-label" for="word-list" data-t="mwList">Your word list</label>
@@ -389,7 +389,7 @@ body { min-height: 100vh; min-height: 100dvh; padding-block: var(--page-pad-top)
 <script>
 Loopy.addStrings({
   en: {
-    wordsNote: "The words to play with. loopy's own language is under Age, look and sound.",
+    wordsNote: "The words follow loopy's language. Pick the other one here to practise it.",
     mwName: "My Words", mwWordsIn: "Words in", mwLevel: "Level",
     mwList: "Your word list",
     mwListHelp: "For grown-ups: type the words, one per line, or import a CSV file. A sentence after the word on the same line, after a comma, is read aloud too. A meaning in brackets after the word shows under it. Up to 50 words. Leave it empty and loopy picks words for the age.",
@@ -411,7 +411,7 @@ Loopy.addStrings({
     mwHow: "A grown-up reads each word out loud. Write it on the line. The words are on page 2."
   },
   de: {
-    wordsNote: "Die Wörter zum Spielen. Die Sprache von loopy selbst steht unter Alter, Aussehen und Ton.",
+    wordsNote: "Die Wörter folgen der Sprache von loopy. Wähle hier die andere, um sie zu üben.",
     mwName: "Meine Wörter", mwWordsIn: "Wörter auf", mwLevel: "Stufe",
     mwList: "Eure Wortliste",
     mwListHelp: "Für Erwachsene: Tippt die Wörter ein, eins pro Zeile, oder ladet eine CSV-Datei. Ein Satz nach dem Wort in derselben Zeile, nach einem Komma, wird mit vorgelesen. Eine Bedeutung in Klammern nach dem Wort steht darunter. Bis zu 50 Wörter. Bleibt die Liste leer, wählt loopy Wörter für das Alter.",
@@ -434,10 +434,10 @@ Loopy.addStrings({
   }
 });
 
-// Extra letters for the tiles at levels 1 and 2: common letters, so the extras look like real choices.
-const EXTRA = { en: "abcdefghiklmnoprstuw", de: "abdefghiklmnorstuwz" };
+// Extra letters for the tiles at levels 1 and 2: common letters, so the extras look like real choices. German adds ä, ö and ü.
+const EXTRA = { en: "abcdefghiklmnoprstuw", de: "abdefghiklmnorstuwzäöü" };
 // The keyboard at levels 3 and 4. A letter the word needs that is not here (ß, é, an apostrophe) joins the last row.
-const KEYS = { en: ["qwertyuiop", "asdfghjkl", "zxcvbnm"], de: ["qwertzuiopü", "asdfghjklöä", "yxcvbnm"] };
+const KEYS = { en: ["qwertyuiop", "asdfghjkl", "zxcvbnm"], de: ["qwertzuiopü", "asdfghjklöä", "yxcvbnmß"] };
 const MAX_WORDS = 50, MAX_SAY = 50, MAX_TRANS = 30, MAX_STORE = 4000, MAX_FILE = 200000;
 const randInt = (n) => Math.floor(Math.random() * n);
 const shuffle = (arr) => { const a = arr.slice(); for (let i = a.length - 1; i > 0; i--) { const j = randInt(i + 1); [a[i], a[j]] = [a[j], a[i]]; } return a; };
@@ -617,7 +617,11 @@ function makeProblem(word, say, lang, trans) {
   }
 
   let age = Loopy.getAge();
-  let wordsLang = store.get("mw.words", Loopy.lang === "de" ? "de" : "en", ["en", "de"]);
+  // The words follow loopy's language. A pick under "Words in" is for practising the other language: it is
+  // kept with the loopy language it was made under (mw.wordsUi) and holds until that language changes.
+  // A pick saved before mw.wordsUi existed has no language with it, so the words follow loopy's language again.
+  const uiLang = Loopy.lang === "de" ? "de" : "en";
+  let wordsLang = store.get("mw.wordsUi", "", ["en", "de"]) === uiLang ? store.get("mw.words", uiLang, ["en", "de"]) : uiLang;
   let autoRead = store.get("mw.autoRead", true, [true, false]);
   // Meaning under the word: on at the start; it only shows for a word that has one on the list.
   let showTrans = store.get("mw.meaning", true, [true, false]);
@@ -725,7 +729,7 @@ function makeProblem(word, say, lang, trans) {
     return b;
   }
   // Levels 1 and 2: the word's letters and a few extra, as tiles. Levels 3 and 4: a keyboard, plus any letter the word
-  // needs that is not on it (ß, é, an apostrophe, a space), in the last row.
+  // needs that is not on it (é, an apostrophe, a space), in the last row.
   function drawKeys() {
     lettersEl.textContent = "";
     lettersEl.classList.toggle("kbd", !tiles());
@@ -890,7 +894,7 @@ function makeProblem(word, say, lang, trans) {
   eraseBtn.addEventListener("click", erase);
   goBtn.addEventListener("click", () => { answered ? newRound() : check(); });
   wordsBtns.forEach(b => b.addEventListener("click", () => {
-    wordsLang = b.dataset.words; store.set("mw.words", wordsLang); mine = readList(wordsLang); statusEl.textContent = ""; showList(); recent = []; newRound();
+    wordsLang = b.dataset.words; store.set("mw.words", wordsLang); store.set("mw.wordsUi", uiLang); mine = readList(wordsLang); statusEl.textContent = ""; showList(); recent = []; newRound();
   }));
   levelBtns.forEach(b => b.addEventListener("click", () => { level = +b.dataset.level; store.set("mw.level.a" + age, level); recent = []; newRound(); }));
   transBtns.forEach(b => b.addEventListener("click", () => { showTrans = b.dataset.trans === "on"; store.set("mw.meaning", showTrans); render(); }));
