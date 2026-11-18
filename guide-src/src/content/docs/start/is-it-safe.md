@@ -15,7 +15,7 @@ This page is for grown-ups. It says in plain words what loopy keeps, and where.
 - loopy uses no outside services. Even the fonts are stored on the loopy site, so the browser only talks to loopy.
 - The one exception is [Family sync](/loopy/guide/stars/family-sync/), and only if a grown-up turns it on. It sends a copy of the stars, locked on your device first, so the server can't read it.
 - A grown-up can leave their own email under **Stay in touch** in ⚙ Settings, to hear about new games. Only when they tap **Save**. It holds nothing about the child, and **Remove** deletes it. The [privacy note](/loopy/privacy/) says what is kept, where and for how long.
-- Once a night the sync server counts how many families have Family sync on. Counts only, no names, no ids.
+- Once a night the sync server counts how many families have Family sync on. Counts only, no names, no ids. Every Monday those counts are posted to an [issue on GitHub](https://github.com/amalrajvinoth/loopy/issues?q=is%3Aissue+label%3Ausage). Anyone can see them. Still counts only: how many families, how many saved this week, and how many grown-ups left an email. Never who.
 
 ## Where the data lives
 

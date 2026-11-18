@@ -95,9 +95,9 @@ One per failure. Add new ones at the end (the heal skill step 3). Keep each to f
 - Fix: download the reports kept with the run and open the page's HTML report; it lists what cost the points. Size: `python3 tools/review.py` (100 KB per page). Fix in `src/`, rebuild, and run the workflow again (Actions → Lighthouse → Run workflow) after the merge. (25 Oct 2026)
 
 ## Family sync usage job is red
-- Looks like: the hand-run "Family sync usage" job fails in "Count families and grown-ups": `test -n "$id"` fails, wrangler says "Authentication error", or `tools/sync-usage.mjs` throws on JSON.
-- Cause: a missing or expired Cloudflare secret, the `loopy-sync` database renamed, or wrangler's `--json` output changed shape.
-- Fix: ask the owner to check `CLOUDFLARE_API_TOKEN` and `CLOUDFLARE_ACCOUNT_ID` (sync/README.md). For a shape change, run `npx wrangler d1 execute loopy-sync --remote --json --command "SELECT 1"` and fit `query()` in `tools/sync-usage.mjs` to it. It must keep printing counts only: the log is public. (1 Nov 2026)
+- Looks like: the Monday (or hand-run) "Family sync usage" job fails in "Count families and grown-ups": `test -n "$id"` fails, wrangler says "Authentication error", or `tools/sync-usage.mjs` throws on JSON. Or it fails in "Find the issue that keeps the counts" / "Keep the counts in the issue, and comment when something is new": `gh` says 403 or "could not resolve to an Issue".
+- Cause: a missing or expired Cloudflare secret, the `loopy-sync` database renamed, or wrangler's `--json` output changed shape. For the issue steps: the workflow lost `issues: write`, or the open issue titled "Family sync and grown-ups" lost its `usage` label (the job finds it by label and title; a closed one is fine, the job makes a new one).
+- Fix: ask the owner to check `CLOUDFLARE_API_TOKEN` and `CLOUDFLARE_ACCOUNT_ID` (sync/README.md). For a shape change, run `npx wrangler d1 execute loopy-sync --remote --json --command "SELECT 1"` and fit `query()` in `tools/sync-d1.mjs` to it, then `node tools/sync-usage.test.mjs`. It must keep printing counts only: the issue and the log are public. (1 Nov 2026, Monday issue 18 Nov 2026)
 
 ## Forks and stars job is red
 - Looks like: the Monday "Forks and stars" run fails in "New forks and stars since the last run": `gh api` or `gh issue` says "Resource not accessible by integration" (HTTP 403).

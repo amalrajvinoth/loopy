@@ -14,7 +14,7 @@ Ja. Es gibt keine Werbung, keine Anmeldung und nichts zu kaufen.
 
 ## Sammelt loopy Daten über mein Kind?
 
-Nein. Es gibt keine Konten, keine Werbung, kein Tracking und keine Analyse. Sterne und Einstellungen bleiben in diesem Browser auf diesem Gerät. Sogar die Schriften kommen von der loopy-Seite. Die einzige Ausnahme ist der [Familien-Sync](/loopy/guide/de/stars/family-sync/), wenn ein Erwachsener ihn einschaltet: Seine Kopie wird vorher auf deinem Gerät verschlossen, sodass der Server sie nicht lesen kann. Ein Erwachsener kann außerdem unter **In Kontakt bleiben** die eigene E-Mail hinterlassen; nichts über das Kind steht darin. Mehr unter [Ist es sicher?](/loopy/guide/de/start/is-it-safe/) und im [Datenschutzhinweis](/loopy/privacy/).
+Nein. Es gibt keine Konten, keine Werbung, kein Tracking und keine Analyse. Sterne und Einstellungen bleiben in diesem Browser auf diesem Gerät. Sogar die Schriften kommen von der loopy-Seite. Die einzige Ausnahme ist der [Familien-Sync](/loopy/guide/de/stars/family-sync/), wenn ein Erwachsener ihn einschaltet: Seine Kopie wird vorher auf deinem Gerät verschlossen, sodass der Server sie nicht lesen kann. Ein Erwachsener kann außerdem unter **In Kontakt bleiben** die eigene E-Mail hinterlassen; nichts über das Kind steht darin. Der Server zählt, wie viele Familien den Familien-Sync nutzen und wie viele Erwachsene eine E-Mail hinterlassen haben; diese Zahlen stehen jeden Montag auf GitHub. Nur Zahlen, nie wer. Mehr unter [Ist es sicher?](/loopy/guide/de/start/is-it-safe/) und im [Datenschutzhinweis](/loopy/privacy/).
 
 ## Für welches Alter ist loopy?
 

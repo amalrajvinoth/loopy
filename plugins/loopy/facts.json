@@ -6,6 +6,7 @@
     "checks.yml: Nothing is loaded from other websites",
     "checks.yml: Every game has a page in the guide, in English and German",
     "checks.yml: The Family sync server answers right (sync/, with a stand-in database)",
+    "checks.yml: The Family sync usage report prints counts only (tools/sync-usage.mjs)",
     "checks.yml: Install the minifiers (exact versions, checked by hash)",
     "checks.yml: loopy.js and loopy.css match their sources in src/",
     "checks.yml: The Claude Code plugins match the repo",
@@ -48,7 +49,9 @@
     "pages.yml: The live site serves what was just deployed",
     "sync-usage.yml: Family sync usage",
     "sync-usage.yml: Not set up yet",
+    "sync-usage.yml: Find the issue that keeps the counts",
     "sync-usage.yml: Count families and grown-ups",
+    "sync-usage.yml: Keep the counts in the issue, and comment when something is new",
     "sync.yml: Family sync server",
     "sync.yml: Not set up yet",
     "sync.yml: The server answers right",
@@ -103,5 +106,5 @@
     "844 × 390"
   ],
   "games_lists": 1,
-  "learned_at": "9c6bd58"
+  "learned_at": "ba8fe4b"
 }

@@ -24,9 +24,10 @@ description: Finish a loopy change and open its pull request with every check, s
    node tools/e2e/switch.mjs      # switching the child mid-game: each child keeps their own stars, log and last game
    node tools/e2e/offline.mjs     # after an update the offline copy saves the new pages, never an old one (when src/sw.js changed)
    node sync/test.mjs             # the Family sync server answers right (when sync/ changed)
+   node tools/sync-usage.test.mjs # the Monday usage report prints counts only (when tools/sync-*.mjs changed)
    node tools/e2e/sync.mjs        # Family sync keeps two devices in step and sends nothing when off (when src/loopy-sync.js, sync/ or the home page changed)
    ```
-   The **Family sync usage** job (Actions → Family sync usage → Run workflow) is not a check: it prints how many families use sync, counts only (`tools/sync-usage.mjs`, `sync/README.md`).
+   The **Family sync usage** job (`.github/workflows/sync-usage.yml`, Mondays 05:23 UTC and by hand) is not a check: it counts families and grown-ups (`tools/sync-usage.mjs`, counts only), keeps the numbers in the "Family sync and grown-ups" issue (steps "Find the issue that keeps the counts" and "Keep the counts in the issue, and comment when something is new") and comments there when a family turned sync on, went quiet, or a grown-up joined the list. `tools/sync-families.mjs` is the owner's own per-family table, never run on GitHub (`sync/README.md`).
    The **Forks and stars** job (`.github/workflows/forks.yml`, Mondays and by hand) is not a check either: it lists new forks and counts new stars in its Summary, keeps the counts in the "Forks and stars" issue and comments there when they go up, so the owner gets an email.
    CI runs the a11y check and the play test in two halves at once (`SHARD=1/2`, `SHARD=2/2`). On a pull request it skips them, and the guide job, when `tools/ci_changes.py` says no file they read changed (docs, `.claude/`, `plugins/`). A new file type or folder the pages read must not match its DOCS list. "All checks" fails if any job failed.
    When `guide-src/` changed (or a game looks different), build and check the guide too (the CI "guide" job does the same):

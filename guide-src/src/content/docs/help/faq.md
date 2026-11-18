@@ -14,7 +14,7 @@ Yes. There are no ads, no sign-up and nothing to buy.
 
 ## Does loopy collect data about my child?
 
-No. There are no accounts, no ads, no tracking and no analytics. Stars and settings stay in this browser on this device. Even the fonts come from the loopy site. The one exception is [Family sync](/loopy/guide/stars/family-sync/), if a grown-up turns it on. Its copy is locked on your device first, so the server can't read it. A grown-up can also leave their own email under **Stay in touch**; nothing about the child is in it. See [Is it safe?](/loopy/guide/start/is-it-safe/) and the [privacy note](/loopy/privacy/).
+No. There are no accounts, no ads, no tracking and no analytics. Stars and settings stay in this browser on this device. Even the fonts come from the loopy site. The one exception is [Family sync](/loopy/guide/stars/family-sync/), if a grown-up turns it on. Its copy is locked on your device first, so the server can't read it. A grown-up can also leave their own email under **Stay in touch**; nothing about the child is in it. The server counts how many families use Family sync and how many grown-ups left an email. Those counts are posted on GitHub every Monday. Counts only, never who. See [Is it safe?](/loopy/guide/start/is-it-safe/) and the [privacy note](/loopy/privacy/).
 
 ## Which ages is loopy for?
 

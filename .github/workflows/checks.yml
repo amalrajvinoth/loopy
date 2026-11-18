@@ -53,6 +53,8 @@ jobs:
         run: python3 tools/guide_check.py
       - name: The Family sync server answers right (sync/, with a stand-in database)
         run: node sync/test.mjs
+      - name: The Family sync usage report prints counts only (tools/sync-usage.mjs)
+        run: node tools/sync-usage.test.mjs
       - name: Install the minifiers (exact versions, checked by hash)
         run: |
           python3 -m venv "$RUNNER_TEMP/venv"
