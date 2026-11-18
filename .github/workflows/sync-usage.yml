@@ -1,13 +1,19 @@
-# How many families use Family sync? Run this by hand: Actions tab, "Family sync usage", "Run workflow".
+# How many families use Family sync? Every Monday this counts them and keeps the numbers in one
+# "Family sync and grown-ups" issue, assigned to the owner. When a family turned sync on, a family went quiet
+# for 30 days, or a grown-up joined the Stay in touch list, it adds a comment there, so the owner gets an
+# email, like the Forks and stars job. Run it any time: Actions tab, "Family sync usage", "Run workflow".
 # It reads the two D1 databases (sync/README.md) and prints counts only: no family ids, no names, no emails.
-# The job log is public, like the rest of this repo, so it must stay that way.
+# The issue, the job log and the Summary are public, like the rest of this repo, so it must stay that way.
 name: Family sync usage
 
 on:
+  schedule:
+    - cron: "23 5 * * 1" # Mondays, 05:23 UTC, after Forks and stars and before the owner's Monday check
   workflow_dispatch:
 
 permissions:
   contents: read
+  issues: write
 
 jobs:
   count:
@@ -28,9 +34,31 @@ jobs:
         with:
           node-version: 22
           package-manager-cache: false
+      - name: Find the issue that keeps the counts
+        id: issue
+        if: env.CLOUDFLARE_API_TOKEN != '' && env.CLOUDFLARE_ACCOUNT_ID != ''
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          set -eu
+          R="$GITHUB_REPOSITORY"
+          gh label create usage --repo "$R" --color 0E8A16 --description "Who uses loopy: forks, stars and clones" --force >/dev/null
+          number=$(gh issue list --repo "$R" --label usage --state open --json number,title \
+                     --jq '[.[] | select(.title == "Family sync and grown-ups")][0].number // empty')
+          last=""
+          if [ -n "$number" ]; then
+            last=$(gh issue view "$number" --repo "$R" --json body --jq '.body' \
+                     | sed -n 's/.*<!-- loopy-sync-counts \(.*\) -->.*/\1/p' | head -1)
+          fi
+          echo "number=$number" >> "$GITHUB_OUTPUT"
+          echo "last=$last" >> "$GITHUB_OUTPUT"
+          echo "Issue: ${number:-none yet}. Last counts: ${last:-none yet}."
       - name: Count families and grown-ups
         if: env.CLOUDFLARE_API_TOKEN != '' && env.CLOUDFLARE_ACCOUNT_ID != ''
         working-directory: sync
+        env:
+          LAST: ${{ steps.issue.outputs.last }}
+          OUT: ${{ runner.temp }}/report
         run: |
           w() { npx --yes "$WRANGLER" "$@"; }
           find_id() { w d1 list --json | node -e 'let s="";process.stdin.on("data",d=>s+=d).on("end",()=>{const d=JSON.parse(s).find(x=>x.name===process.argv[1]);process.stdout.write(d?d.uuid:"")})' "$1"; }
@@ -40,3 +68,27 @@ jobs:
           gid=$(find_id loopy-grownups)
           if [ -n "$gid" ]; then sed -i "s/GROWNUPS_ID/$gid/" wrangler.toml; export HAS_GROWNUPS=1; fi
           node ../tools/sync-usage.mjs | tee -a "$GITHUB_STEP_SUMMARY"
+      - name: Keep the counts in the issue, and comment when something is new
+        if: env.CLOUDFLARE_API_TOKEN != '' && env.CLOUDFLARE_ACCOUNT_ID != ''
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          OWNER: ${{ github.repository_owner }}
+          NUMBER: ${{ steps.issue.outputs.number }}
+          OUT: ${{ runner.temp }}/report
+        run: |
+          set -eu
+          R="$GITHUB_REPOSITORY"
+          if [ -z "$NUMBER" ]; then
+            NUMBER=$(gh issue create --repo "$R" --title "Family sync and grown-ups" --label usage --assignee "$OWNER" \
+                       --body-file "$OUT/body.md" | grep -oE '[0-9]+$')
+            echo "Made issue #$NUMBER to keep the counts. It gets a comment when they change."
+          else
+            gh issue edit "$NUMBER" --repo "$R" --body-file "$OUT/body.md" >/dev/null
+            echo "Updated the counts in issue #$NUMBER."
+          fi
+          if [ "$(cat "$OUT/news")" = "1" ]; then
+            gh issue comment "$NUMBER" --repo "$R" --body-file "$OUT/report.md"
+            echo "Something is new, so the report went to issue #$NUMBER as a comment."
+          else
+            echo "Nothing new, so no comment on issue #$NUMBER."
+          fi

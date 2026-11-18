@@ -10,6 +10,7 @@ The big changes, newest first. Small fixes are not listed. See [the full list on
 
 ## 18 November 2026
 
+- **Who uses Family sync, every Monday.** A job on GitHub counts the families with Family sync on and the grown-ups on the Stay in touch list. It writes the numbers into one public issue, next to Forks and stars. Now and last week side by side, and a weekly trend. When a family turns sync on, goes quiet, or a grown-up joins the list, the issue gets a comment. Counts only: no names, no family codes, no emails. [Is it safe?](/loopy/guide/start/is-it-safe/).
 - **What Time Is It? says when a clock is pretend.** On the 24-hour level a child played an "afternoon" clock in the morning, and the right answer looked wrong. Now the question says "Pretend it is afternoon". A badge with a sunrise or a sunset sits over the clock. Past the half hour the help text says "between 4 and 5", not "just past 4". [How to play](/loopy/guide/games/math/what-time-is-it/).
 
 ## 17 November 2026

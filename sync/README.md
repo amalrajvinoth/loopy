@@ -33,11 +33,20 @@ SELECT * FROM stats ORDER BY day DESC;
 
 ## See how many families use it
 
-Three ways, all counts only. Nobody can see who: the server has no names, no family codes and no IP addresses.
+Four ways, all counts only on GitHub. Nobody can see who: the server has no names, no family codes and no IP addresses.
 
-1. **One click on GitHub.** Actions tab, **Family sync usage**, **Run workflow**, then open the run. The **Summary** shows families with sync on, how many saved in the last day, week and month, the size of all copies, how many grown-ups are on the Stay in touch list, and the last 14 nightly rows. The job is `.github/workflows/sync-usage.yml` and the report is `tools/sync-usage.mjs`. It uses the same two secrets as the deploy job. The log is public, so it prints no emails and no ids.
-2. **In a browser.** `https://loopy-sync.loopy-1e2.workers.dev/stats` lists the nightly rows.
-3. **In the Cloudflare dashboard.** The two SQL queries above, in the D1 Console.
+1. **The Monday issue.** Every Monday at 05:23 UTC the **Family sync usage** job (`.github/workflows/sync-usage.yml`, report in `tools/sync-usage.mjs`) counts families and grown-ups and writes the latest numbers into one open issue titled **Family sync and grown-ups** (label `usage`, assigned to the owner), next to the **Forks and stars** issue. The table has a Now and a Last week column: families with sync on, saved in the last day, week and month, quiet for 30 days, the size of all copies, grown-ups on the Stay in touch list by language, and one number a week for the last 8 weeks. When a family turned sync on, a family went quiet, or a grown-up joined the list, the job adds the report as a comment, so the owner gets an email. Nothing new, no comment. The issue text keeps last week's counts in a hidden line (`<!-- loopy-sync-counts ... -->`); close the issue any time and the next run opens a new one. Run it any time: Actions tab, **Family sync usage**, **Run workflow**. The Summary of the run shows the same report. It uses the same two secrets as the deploy job. The issue, the log and the Summary are public, so they print no emails and no ids. `node tools/sync-usage.test.mjs` tests the report with a stand-in database.
+2. **One row per family, on your own screen.** `tools/sync-families.mjs` prints, for each family, a 6-letter handle made from the random id, the last save in your time zone, the days since, and the size of the locked copy; then how many saved today, this week, this month or longer ago; then the Stay in touch list (email, language, saved). Run it from the repo root on your own computer, never on GitHub, because the emails are personal:
+
+   ```sh
+   cd ~/personal/work/loopy
+   npx --yes wrangler@4.149.0 login      # once; it opens the browser
+   node tools/sync-families.mjs
+   ```
+
+   There is no column for children, stars or games, on purpose: the server cannot open a locked copy.
+3. **In a browser.** `https://loopy-sync.loopy-1e2.workers.dev/stats` lists the nightly rows.
+4. **In the Cloudflare dashboard.** The SQL queries above, in the D1 Console.
 
 ## What the server answers
 
@@ -61,7 +70,9 @@ Requests are plain `GET` and `POST` with `text/plain`, so the browser sends them
 | `grownups.sql` | The table `grownups` in `loopy-grownups` (EU) |
 | `wrangler.toml` | Cloudflare settings. `DATABASE_ID` and `GROWNUPS_ID` are filled in by the deploy job |
 | `test.mjs`, `fake-d1.mjs` | Tests with a stand-in database: `node sync/test.mjs` (CI runs it on every change) |
-| `../tools/sync-usage.mjs` | The usage report the **Family sync usage** job prints (counts only) |
+| `../tools/sync-usage.mjs` | The Monday report the **Family sync usage** job posts to the **Family sync and grown-ups** issue (counts only); `../tools/sync-usage.test.mjs` tests it |
+| `../tools/sync-families.mjs` | One row per family and the Stay in touch list, for the owner's own screen |
+| `../tools/sync-d1.mjs` | The D1 query helper both scripts share |
 
 The browser side is `src/loopy-sync.js` and the Family sync part of ⚙ Settings in `index.html`. `tools/e2e/sync.mjs` tests both with this server and two browser profiles.
 

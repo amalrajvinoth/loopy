@@ -12,7 +12,7 @@ Yes. Loopy is free. There are no ads, no sign-up and nothing to buy.
 
 ## Does Loopy collect data about my child?
 
-No. There are no accounts, no ads, no tracking and no analytics. Stars and settings are saved only in this browser on this device. Even the fonts are stored on the Loopy site, so your browser only talks to Loopy. The one exception is Family sync, and only if a grown-up turns it on. It sends a copy of the stars. That copy is locked on your device first, so the server can't read it. A grown-up can also leave their own email under **Stay in touch** in Settings; nothing about the child is in it. See the [privacy note](https://amalrajvinoth.github.io/loopy/privacy/).
+No. There are no accounts, no ads, no tracking and no analytics. Stars and settings are saved only in this browser on this device. Even the fonts are stored on the Loopy site, so your browser only talks to Loopy. The one exception is Family sync, and only if a grown-up turns it on. It sends a copy of the stars. That copy is locked on your device first, so the server can't read it. A grown-up can also leave their own email under **Stay in touch** in Settings; nothing about the child is in it. The server counts how many families use Family sync and how many grown-ups left an email. Those counts are posted on GitHub every Monday. Counts only, never who. See the [privacy note](https://amalrajvinoth.github.io/loopy/privacy/).
 
 ## Which ages is Loopy for?
 
