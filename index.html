@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'sha256-89+TELuIl//rhEm5dFR7tTv/3ulQxE2gdMdo6gjY1bY='; style-src 'self' 'sha256-tEw4Ztt4YtTZya/APmaOAmNUfQcSFFCrOzKHplGLsxM='; img-src 'self' data:; font-src 'self'; connect-src 'self' https://loopy-sync.loopy-1e2.workers.dev; worker-src 'self'; object-src 'none'; base-uri 'none'; form-action 'none'; manifest-src 'self'; upgrade-insecure-requests">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'sha256-89+TELuIl//rhEm5dFR7tTv/3ulQxE2gdMdo6gjY1bY='; style-src 'self' 'sha256-1/GC/MnQz13Obavh6DoJvshm/X7LfVuZ48YuqVlqVKs='; img-src 'self' data:; font-src 'self'; connect-src 'self' https://loopy-sync.loopy-1e2.workers.dev; worker-src 'self'; object-src 'none'; base-uri 'none'; form-action 'none'; manifest-src 'self'; upgrade-insecure-requests">
 <meta name="referrer" content="strict-origin-when-cross-origin">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <link rel="icon" href="icon.svg" type="image/svg+xml">
@@ -32,7 +32,7 @@ body {
   margin: 0; background: var(--bg); color: var(--ink); font-family: var(--font); font-size: 16px;
   padding-left: max(16px, env(safe-area-inset-left, 0px));
   padding-right: max(16px, env(safe-area-inset-right, 0px));
-  padding-block: max(28px, env(safe-area-inset-top, 0px)) 40px;
+  padding-block: max(28px, var(--safe-top)) calc(40px + var(--safe-bottom));
 }
 .wrap { max-width: var(--home-col, 760px); margin: 0 auto; display: flex; flex-direction: column; gap: 28px; }
 header { text-align: center; display: flex; flex-direction: column; gap: 10px; align-items: center; }

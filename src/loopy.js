@@ -2087,7 +2087,9 @@ Loopy.nextButton = function (btn, answered) {
     bubble.style.left = x + "px";
     bubble.style.top = top + "px";
     var b = bubble.getBoundingClientRect();
-    return b.top >= 0 && b.bottom <= innerHeight;
+    // The html padding is the phone's own top and bottom bar (--safe-top and --safe-bottom); the bubble stays off them.
+    var cs = getComputedStyle(document.documentElement);
+    return b.top >= (parseFloat(cs.paddingTop) || 0) && b.bottom <= innerHeight - (parseFloat(cs.paddingBottom) || 0);
   }
   // True when the bubble, where it is now, lies over no words and no button: not the question, the
   // explanation line, the hand legend, the Last 5 and level pills, and not a key, an answer or a letter.

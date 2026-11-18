@@ -56,6 +56,16 @@
    answer buttons and the picture on every screen size. --ans-floor is a floor for answer text that a game sizes
    itself: 0 on phones and tablets, bigger on a laptop or a monitor. --card-zoom and --side-zoom scale a game's own
    problem picture and its own keyboard or answer list on a laptop or a monitor (1 everywhere else). Widths over 1200px count only in landscape. */
+/* Safe areas. --safe-top and --safe-bottom are the parts of the screen the phone itself covers: the notch or
+   status bar at the top, the home indicator or gesture bar at the bottom. Every one-screen game pads the page by
+   them (html padding, body height), and the scrolling pages add --safe-bottom under their last line. In a home
+   screen app on a phone or tablet the bottom keeps a floor: Chrome on Android (135 and newer) draws the app under
+   the gesture bar and can report its height as 0 or late, which hid the last row of keys. safe-area-max-inset-bottom
+   is the bar's full height where the browser knows it (Chrome 135+); 24px is the gesture bar on most phones. */
+:root { --safe-top: env(safe-area-inset-top, 0px); --safe-bottom: env(safe-area-inset-bottom, 0px); }
+@media (display-mode: standalone) and (pointer: coarse), (display-mode: fullscreen) and (pointer: coarse) {
+  :root { --safe-bottom: max(env(safe-area-inset-bottom, 0px), env(safe-area-max-inset-bottom, 0px), 24px); }
+}
 :root {
   --page-pad-top: 8px; --page-pad-bottom: 12px;
   --row-gap: 10px; --play-gap: 10px; --card-pad: 12px;
@@ -88,7 +98,7 @@
   :root {
     --row-gap: 12px; --play-gap: 20px; --card-pad: 14px; --col: 1160px;
     --big: clamp(2.2rem, min(8vw, 17dvh), 9rem);
-    --key-h: clamp(44px, calc((100dvh - 140px) / 4.2), 170px);
+    --key-h: clamp(44px, calc((100dvh - var(--safe-top) - var(--safe-bottom) - 140px) / 4.2), 170px);
     --ans-h: clamp(52px, 16dvh, 170px);
     --pic-h: clamp(70px, 42dvh, 460px);
   }
@@ -98,7 +108,7 @@
   :root {
     --play-gap: 24px; --card-pad: 16px; --col: 1400px; --home-col: 960px;
     --big: clamp(2.2rem, min(8vw, 18dvh), 11rem);
-    --key-h: clamp(44px, calc((100dvh - 140px) / 4.2), 190px); --key-font: 2.6rem;
+    --key-h: clamp(44px, calc((100dvh - var(--safe-top) - var(--safe-bottom) - 140px) / 4.2), 190px); --key-font: 2.6rem;
     --ans-h: clamp(52px, 17dvh, 190px); --ans-font: 2rem; --q-font: 2rem; --ans-floor: 1.7rem;
     --pic-h: clamp(70px, 46dvh, 520px); --pic-font: clamp(3.5rem, 30dvh, 16rem);
     --card-zoom: 1.25; --side-zoom: 1.2;
@@ -109,7 +119,7 @@
   :root {
     --play-gap: 28px; --col: 1600px; --home-col: 1100px;
     --big: clamp(2.2rem, min(8vw, 20dvh), 13rem);
-    --key-h: clamp(44px, calc((100dvh - 140px) / 4.2), 210px); --key-font: 3rem;
+    --key-h: clamp(44px, calc((100dvh - var(--safe-top) - var(--safe-bottom) - 140px) / 4.2), 210px); --key-font: 3rem;
     --ans-h: clamp(52px, 18dvh, 210px); --ans-font: 2.3rem; --q-font: 2.3rem; --ans-floor: 2rem;
     --pic-h: clamp(70px, 50dvh, 600px); --pic-font: clamp(3.5rem, 34dvh, 18rem);
     --card-zoom: 1.45; --side-zoom: 1.35;
