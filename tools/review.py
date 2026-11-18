@@ -92,6 +92,20 @@ def check_page(path, text):
             add("must", f"{rel(path)}:{line}", "`style=` attribute breaks the security policy; use a class")
         if re.search(r"\son[a-z]+\s*=", tag):
             add("must", f"{rel(path)}:{line}", "`on...=` handler breaks the security policy; use addEventListener")
+    # The phone's top and bottom bars are --safe-top and --safe-bottom in src/loopy.css (issue #293): a page that
+    # reads env() itself misses the floor the home screen app needs, so its keys can sit under the gesture bar.
+    for m in re.finditer(r"env\(safe-area-inset-(top|bottom)", text):
+        line = text.count("\n", 0, m.start()) + 1
+        add("should", f"{rel(path)}:{line}", f"reads `env(safe-area-inset-{m.group(1)})` itself; use `var(--safe-{m.group(1)})` "
+            "so the home screen app keeps the bottom row above the phone's bar")
+    # A German letter keyboard needs the German letters (issue #294): the three qwertz rows carry ü, ö, ä and ß,
+    # and a letter pad's German extras carry ä, ö and ü.
+    if "qwertzuiop" in text and not all(c in text for c in "üöäß"):
+        add("must", rel(path), "has a German keyboard (qwertz rows) without ü, ö, ä or ß; the rows are "
+            "`qwertzuiopü`, `asdfghjklöä`, `yxcvbnmß` (ß needs `text-transform: none` where keys are uppercase)")
+    m = re.search(r"EXTRA\s*=\s*\{[^}]*de:\s*\"([^\"]*)\"", text)
+    if m and not all(c in m.group(1) for c in "äöü"):
+        add("must", rel(path), "the German letter pad extras (`EXTRA.de`) have no ä, ö or ü")
 
 
 # ---------- Base: the branch this change is compared with ----------
