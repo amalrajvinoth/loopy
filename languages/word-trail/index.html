@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'sha256-EuuR5b2KSHY35t8L5x1C6gLRzTmPTaluaQ/tnYDIKE0='; style-src 'self' 'sha256-z2P7kGW5Z05eCTjTZdYpc0vThTlOE9vmt97pVSvi2I4=' 'sha256-ptR/t8XtrY3tRAPd2OgyAtrrb0d/wWltLcF5jYlsIAY=' 'sha256-RT1053JU5UiKvjrCUFx1rlhdFLMmgtuFJ9T8jnMeawQ=' 'sha256-idgP7MX07MxDQx+QDfYu81MW8LXsoMG1OirNEDyzJBA='; img-src 'self' data:; font-src 'self'; connect-src 'self' https://loopy-sync.loopy-1e2.workers.dev; worker-src 'self'; object-src 'none'; base-uri 'none'; form-action 'none'; manifest-src 'self'; upgrade-insecure-requests">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'sha256-RBEiBG68CfvJMmqE0Bxlh1NmLLaJlcz5Y2WQnECtvsY='; style-src 'self' 'sha256-z2P7kGW5Z05eCTjTZdYpc0vThTlOE9vmt97pVSvi2I4=' 'sha256-ptR/t8XtrY3tRAPd2OgyAtrrb0d/wWltLcF5jYlsIAY=' 'sha256-RT1053JU5UiKvjrCUFx1rlhdFLMmgtuFJ9T8jnMeawQ=' 'sha256-idgP7MX07MxDQx+QDfYu81MW8LXsoMG1OirNEDyzJBA='; img-src 'self' data:; font-src 'self'; connect-src 'self' https://loopy-sync.loopy-1e2.workers.dev; worker-src 'self'; object-src 'none'; base-uri 'none'; form-action 'none'; manifest-src 'self'; upgrade-insecure-requests">
 <meta name="referrer" content="strict-origin-when-cross-origin">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <style>:root{color-scheme:light;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}body{margin:0}[hidden]{display:none!important}</style>
@@ -278,7 +278,7 @@ body { min-height: 100vh; min-height: 100dvh; padding-block: var(--page-pad-top)
         <button type="button" data-words="en">English</button>
         <button type="button" data-words="de">Deutsch</button>
       </div>
-      <p class="seg-note" data-t="wordsNote">The words to play with. loopy's own language is under Age, look and sound.</p>
+      <p class="seg-note" data-t="wordsNote">The words follow loopy's language. Pick the other one here to practise it.</p>
     </div>
     <div>
       <p class="seg-label" id="topic-label" data-t="wtTopic">Topic</p>
@@ -325,7 +325,7 @@ body { min-height: 100vh; min-height: 100dvh; padding-block: var(--page-pad-top)
 <script>
 Loopy.addStrings({
   en: {
-    wordsNote: "The words to play with. loopy's own language is under Age, look and sound.",
+    wordsNote: "The words follow loopy's language. Pick the other one here to practise it.",
     wtName: "Word Trail", wtWords: "Words in", wtTopic: "Topic", wtMix: "Mix", wtLevel: "Level",
     wtL1: "4 × 4, straight", wtL2: "5 × 5, one bend", wtL3: "6 × 6, bends", wtL4: "6 × 6, 5 words", wtL5: "6 × 6, long words",
     wtKbd: "Keyboard works too: arrows move, Space or Enter picks a letter, Enter checks, Backspace goes back.",
@@ -341,7 +341,7 @@ Loopy.addStrings({
     "wtT-jobs": "Jobs", "wtT-town": "In town", "wtT-feelings": "Feelings", "wtT-science": "Science", "wtT-verbs": "Doing words"
   },
   de: {
-    wordsNote: "Die Wörter zum Spielen. Die Sprache von loopy selbst steht unter Alter, Aussehen und Ton.",
+    wordsNote: "Die Wörter folgen der Sprache von loopy. Wähle hier die andere, um sie zu üben.",
     wtName: "Wortpfad", wtWords: "Wörter auf", wtTopic: "Thema", wtMix: "Gemischt", wtLevel: "Stufe",
     wtL1: "4 × 4, gerade", wtL2: "5 × 5, ein Knick", wtL3: "6 × 6, mit Knicken", wtL4: "6 × 6, 5 Wörter", wtL5: "6 × 6, lange Wörter",
     wtKbd: "Die Tastatur geht auch: Pfeile bewegen, Leertaste oder Enter wählt einen Buchstaben, Enter prüft, Rücktaste geht zurück.",
@@ -493,7 +493,11 @@ function makeGrid(lang, lv, topic, avoid, must) {
   const themeName = (id) => id === "mix" ? t("wtMix") : t("wtT-" + id);
 
   let age = Loopy.getAge();
-  let wordsLang = store.get("wt.words", Loopy.lang === "de" ? "de" : "en", ["en", "de"]);
+  // The words follow loopy's language. A pick under "Words in" is for practising the other language: it is
+  // kept with the loopy language it was made under (wt.wordsUi) and holds until that language changes.
+  // A pick saved before wt.wordsUi existed has no language with it, so the words follow loopy's language again.
+  const uiLang = Loopy.lang === "de" ? "de" : "en";
+  let wordsLang = store.get("wt.wordsUi", "", ["en", "de"]) === uiLang ? store.get("wt.words", uiLang, ["en", "de"]) : uiLang;
   let topic = store.get("wt.topic", "mix", TOPICS);
   let level;
   // The level is remembered per age: 4 × 4 up to 7, 5 × 5 at 8 to 9, 6 × 6 at 10 to 11, five words at 12 to 13, then long words.
@@ -797,7 +801,7 @@ function makeGrid(lang, lv, topic, avoid, must) {
   nextBtn.addEventListener("click", next);
   moreBtn.addEventListener("click", clue);
   eraseBtn.addEventListener("click", () => { if (trail.length) { trail.pop(); render(); } });
-  wordsBtns.forEach(b => b.addEventListener("click", () => { wordsLang = b.dataset.words; store.set("wt.words", wordsLang); recent = []; grid = null; newQuestion(); }));
+  wordsBtns.forEach(b => b.addEventListener("click", () => { wordsLang = b.dataset.words; store.set("wt.words", wordsLang); store.set("wt.wordsUi", uiLang); recent = []; grid = null; newQuestion(); }));
   levelBtns.forEach(b => b.addEventListener("click", () => { level = +b.dataset.level; store.set("wt.level.a" + age, level); recent = []; grid = null; newQuestion(); }));
   window.addEventListener("loopy:age", (e) => { age = e.detail; recent = []; grid = null; loadForAge(); newQuestion(); });
   window.addEventListener("resize", () => { if (grid) drawTrail(); });

@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'sha256-uiTe2lQ40tNLZ64D2Ud0R6Jr8mYfkgd/3JgpsMYWhkc='; style-src 'self' 'sha256-z2P7kGW5Z05eCTjTZdYpc0vThTlOE9vmt97pVSvi2I4=' 'sha256-tnJsa9R6C51kJMjmOPnAuWQXZQNnMHFisS5uil93cWg=' 'sha256-RT1053JU5UiKvjrCUFx1rlhdFLMmgtuFJ9T8jnMeawQ=' 'sha256-zz1J/4XkB7felAlRQ1ypv8cBhKpyAuzyKNnOQC8cvPk='; img-src 'self' data:; font-src 'self'; connect-src 'self' https://loopy-sync.loopy-1e2.workers.dev; worker-src 'self'; object-src 'none'; base-uri 'none'; form-action 'none'; manifest-src 'self'; upgrade-insecure-requests">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'sha256-ecpSx+02ibrNtK/c2zuixc14TUsTG+gCkBAhJxmG1kw='; style-src 'self' 'sha256-z2P7kGW5Z05eCTjTZdYpc0vThTlOE9vmt97pVSvi2I4=' 'sha256-tnJsa9R6C51kJMjmOPnAuWQXZQNnMHFisS5uil93cWg=' 'sha256-RT1053JU5UiKvjrCUFx1rlhdFLMmgtuFJ9T8jnMeawQ=' 'sha256-yj4bQzMm2DlYsSYWbQuPoIxgEWBkK83V6rV6N4LlrwU='; img-src 'self' data:; font-src 'self'; connect-src 'self' https://loopy-sync.loopy-1e2.workers.dev; worker-src 'self'; object-src 'none'; base-uri 'none'; form-action 'none'; manifest-src 'self'; upgrade-insecure-requests">
 <meta name="referrer" content="strict-origin-when-cross-origin">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <style>:root{color-scheme:light;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}body{margin:0}[hidden]{display:none!important}</style>
@@ -224,7 +224,11 @@ body:has(#settings-panel:not([hidden])) .grid { height: 52dvh; }
 .pad button.y { background: var(--wd-y); border-color: var(--wd-y); color: var(--wd-y-ink); }
 .pad button.x { background: var(--chip); border-color: var(--chip); color: var(--muted); }
 .pad .wide { flex: 1.5 1 0; font-size: 1.25rem; text-transform: none; }
+/* ß has no everyday capital, so it stays ß on its key and in the grid. */
+.pad button.sz, .grid .cell.sz { text-transform: none; }
 .pad .go { flex: 2.5 1 0; font-size: 0.95rem; background: var(--accent); border-color: var(--accent); color: var(--accent-ink); }
+/* Small phones: the German last row has 9 letters (with ß), so Check gets a smaller word. */
+@media (max-width: 379px) { .pad .go { font-size: 0.85rem; } }
 .next { font: inherit; font-size: 1.25rem; font-weight: 700; color: var(--accent-ink); background: var(--accent); border: 0; border-radius: 16px; min-height: clamp(52px, 7dvh, 72px); cursor: pointer; width: 100%; }
 
 /* Short phones: smaller cells and keys, a one-line clue. */
@@ -375,10 +379,10 @@ Loopy.addStrings({
     wdHow: "Lies den Hinweis. Schreibe das Wort in die Kästchen, einen Buchstaben pro Kästchen."
   }
 });
-// Keyboard rows per language. The last row gets Erase at the start and Check at the end.
+// Keyboard rows per language: QWERTY, or QWERTZ with ä, ö, ü and ß. The last row gets Erase at the start and Check at the end.
 const KEYS = {
   en: ["qwertyuiop", "asdfghjkl", "zxcvbnm"],
-  de: ["qwertzuiopü", "asdfghjklöä", "yxcvbnm"]
+  de: ["qwertzuiopü", "asdfghjklöä", "yxcvbnmß"]
 };
 const LENS = [3, 4, 5, 5, 6], TRIES = 6, CASES = 5;
 const randInt = (n) => Math.floor(Math.random() * n);
@@ -496,7 +500,7 @@ function marks(guess, answer) {
       for (let i = 0; i < current.letters.length; i++) {
         const cell = document.createElement("div"); cell.className = "cell";
         const c = guess ? guess.g[i] : cur ? typed[i] : "";
-        if (c) cell.textContent = c;
+        if (c) { cell.textContent = c; if (c === "ß") cell.classList.add("sz"); }
         if (guess) { cell.classList.add(guess.m[i]); names.push(c + " " + t({ g: "wdRight", y: "wdIn", x: "wdNot" }[guess.m[i]])); }
         row.appendChild(cell);
       }
@@ -513,7 +517,7 @@ function marks(guess, answer) {
       const row = document.createElement("div"); row.className = "krow";
       if (li === KEYS[wordsLang].length - 1) row.appendChild(key("k-erase", "wide", "⌫", t("wdEraseAria"), erase));
       [...line].forEach(c => {
-        const b = key("", best[c] || "", c, "", () => add(c));
+        const b = key("", [best[c] || "", c === "ß" ? "sz" : ""].filter(Boolean).join(" "), c, "", () => add(c));
         b.dataset.k = c; b.lang = wordsLang;
         b.disabled = answered || typed.length >= current.letters.length;
         row.appendChild(b);

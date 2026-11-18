@@ -40,7 +40,7 @@ They stay there next time you play. **Reset score** in Settings clears them.
 
 Open them with the gear button.
 
-- **Words in.** English or German. The game starts with the site language. Switch it to learn the other language: with the site in German and the words in English, a German-speaking child learns English words.
+- **Words in.** English or German. The words follow loopy's language. Pick the other one to practise it; the pick holds until loopy's language changes. Switch it to learn the other language: with the site in German and the words in English, a German-speaking child learns English words.
 - **Topic.** All, Animals, Food, Home or School.
 - **Choices.** 3 words, 4 words, or 4 tricky words from the same topic.
 - **Read aloud.** The same pill as in every game, next to the sound button. Here it reads the word after each answer. On by default. Turn it off for quiet play. The **Hear the word** button still works.

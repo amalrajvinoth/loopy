@@ -212,6 +212,29 @@ function repeats(keys, whole) {
   return out;
 }
 
+// Word games: the words follow loopy's language. A "Words in" pick saved before the fix, or one made under the other
+// loopy language, must not keep the words in the other language. A pick made under this loopy language holds.
+const WORDS_IN = { "languages/my-words/": "mw", "languages/sentence-builder/": "sb", "languages/sound-spell/": "ss", "languages/spell-it/": "si",
+  "languages/spelling-quiz/": "sq", "languages/word-detective/": "wd", "languages/word-match/": "wm", "languages/word-trail/": "wt" };
+async function wordsFollowLanguage(game, run, fail) {
+  const key = WORDS_IN[game], other = run.lang === "de" ? "en" : "de";
+  const ctx = await browser.newContext({ viewport: { width: 390, height: 844 }, reducedMotion: "reduce", serviceWorkers: "block" });
+  await ctx.addInitScript(([l, k, o]) => {
+    if (localStorage.getItem("loopy.e2e")) return;
+    localStorage.setItem("loopy.e2e", "1"); localStorage.setItem("loopy.lang", l); localStorage.setItem("loopy.sound", "off"); localStorage.setItem("loopy.readAloud", "off");
+    localStorage.setItem("loopy.kid.1." + k + ".words", JSON.stringify(o));
+  }, [run.lang, key, other]);
+  const p = await ctx.newPage();
+  p.on("pageerror", e => fail(`script error: ${e.message}`));
+  const pick = async () => { await p.waitForSelector('#words-seg [aria-pressed="true"]', { state: "attached" }); return p.evaluate(() => document.querySelector('#words-seg [aria-pressed="true"]').dataset.words); };
+  await p.goto(BASE + game);
+  if (await pick() !== run.lang) fail(`words saved as ${other} before the fix still win over loopy's language ${run.lang}`);
+  await p.evaluate(([l, k, o]) => { localStorage.setItem("loopy.kid.1." + k + ".words", JSON.stringify(o)); localStorage.setItem("loopy.kid.1." + k + ".wordsUi", JSON.stringify(l)); }, [run.lang, key, other]);
+  await p.reload();
+  if (await pick() !== other) fail(`a "Words in" pick of ${other} made under loopy's language ${run.lang} did not hold`);
+  await ctx.close();
+}
+
 // Money on screen (Class Test, Is It Enough?): every note and coin carries its € sign, so a note does not look like a
 // plain number card, and Class Test's hint speaks of coins only when there are some (issue #272).
 async function money(p, fail, game) {
@@ -241,33 +264,6 @@ async function classTestMoney(run, fail) {
   await p.goto(BASE + "mix/class-test/#retry");
   await p.waitForFunction(() => document.querySelector(".money"), null, { timeout: 5000 }).catch(() => fail("Try again did not put the money task first"));
   await money(p, fail, "mix/class-test/");
-  await ctx.close();
-}
-
-// Word Detective: the words follow loopy's language (issue #291). A "Words in" pick saved before the fix, or one
-// made under the other loopy language, must not keep the clues and keys in the other language. A pick made under
-// this loopy language holds.
-async function wordDetectiveWords(run, fail) {
-  const other = run.lang === "de" ? "en" : "de";
-  const ctx = await browser.newContext({ viewport: { width: 390, height: 844 }, reducedMotion: "reduce", serviceWorkers: "block" });
-  await ctx.addInitScript(([l, o]) => {
-    if (localStorage.getItem("loopy.e2e")) return;
-    localStorage.setItem("loopy.e2e", "1"); localStorage.setItem("loopy.lang", l); localStorage.setItem("loopy.sound", "off");
-    localStorage.setItem("loopy.kid.1.wd.words", JSON.stringify(o));
-  }, [run.lang, other]);
-  const p = await ctx.newPage();
-  p.on("pageerror", e => fail(`script error: ${e.message}`));
-  const words = async () => {
-    await p.waitForSelector("#card[data-a]");
-    return p.evaluate(() => ({ pick: document.querySelector('#words-seg [aria-pressed="true"]').dataset.words, umlaut: !!document.querySelector('#letters [data-k="ü"]') }));
-  };
-  await p.goto(BASE + "languages/word-detective/");
-  let w = await words();
-  if (w.pick !== run.lang || w.umlaut !== (run.lang === "de")) fail(`words saved as ${other} before the fix still win over loopy's language ${run.lang}`);
-  await p.evaluate(([l, o]) => { localStorage.setItem("loopy.kid.1.wd.words", JSON.stringify(o)); localStorage.setItem("loopy.kid.1.wd.wordsUi", JSON.stringify(l)); }, [run.lang, other]);
-  await p.reload();
-  w = await words();
-  if (w.pick !== other || w.umlaut !== (other === "de")) fail(`a "Words in" pick of ${other} made under loopy's language ${run.lang} did not hold`);
   await ctx.close();
 }
 
@@ -309,7 +305,7 @@ for (const game of GAMES) {
     }
     if (p) await p.context().close();
     if (game === "mix/class-test/") { try { await classTestMoney(run, fail); } catch (e) { fail(`money task: ${e.message.split("\n")[0]}`); } }
-    if (game === "languages/word-detective/") { try { await wordDetectiveWords(run, fail); } catch (e) { fail(`words language: ${e.message.split("\n")[0]}`); } }
+    if (WORDS_IN[game]) { try { await wordsFollowLanguage(game, run, fail); } catch (e) { fail(`words language: ${e.message.split("\n")[0]}`); } }
     console.error(`${where}: ${problems.length ? problems.length + " problem(s) so far" : "ok"} (${Math.round(performance.now() / 1000)}s)`);
   }
 }

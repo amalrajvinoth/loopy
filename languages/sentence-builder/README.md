@@ -39,7 +39,7 @@ They stay there next time you play. **Reset score** in Settings clears them.
 
 Open them with the gear button.
 
-- **Sentences in.** English or German. The game starts with the site language. Switch it to practise sentences in the other language.
+- **Sentences in.** English or German. The sentences follow loopy's language. Pick the other one to practise it; the pick holds until loopy's language changes.
 - **Sentences.** 3 words, 4 to 5 words, 6 words with questions, or 7 to 8 words with a comma. Remembered for each age.
 - **Read aloud.** Reads the sentence to build, in the language of the sentences, and reads it again after the answer. On by itself for ages 5 to 7.
 - Age, colors, sound effects and the display language (EN/DE) are shared with the other games.
