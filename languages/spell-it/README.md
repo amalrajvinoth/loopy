@@ -29,7 +29,7 @@ The level shows next to the score, like "Level 2 of 5". After 10 right in a row,
 
 356 English and 238 German words, all with pictures: animals, food, things at home, numbers and more.
 
-German words are nouns, so they start with a capital letter. The child does not need to type the capital: the first box shows it by itself. German words can have ä, ö, ü and ß; those keys only show up when the word needs them.
+German words are nouns, so they start with a capital letter. The child does not need to type the capital: the first box shows it by itself. German words can have ä, ö, ü and ß. The keys ä, ö and ü are on the German pad like any other letter; ß shows up when the word needs it.
 
 ## Last 5
 
@@ -40,7 +40,7 @@ They stay there next time you play. **Reset score** in Settings clears them.
 
 Open them with the gear button.
 
-- **Words in.** English or German. The game starts with the site language. Switch it to practise spelling in the other language.
+- **Words in.** English or German. The words follow loopy's language. Pick the other one to practise it; the pick holds until loopy's language changes.
 - **Word length.** 3 letters, 4 letters, 5 letters, or 6 to 8. Remembered for each age.
 - **Read aloud.** The same pill as in every game, next to the sound button. Here it reads each new word. On by default. Turn it off to spell from the picture only. The **Hear the word** button still works, and a wrong answer is always read out.
 - Age, colors, sound effects and the display language (EN/DE) are shared with the other games.

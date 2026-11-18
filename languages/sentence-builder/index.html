@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'sha256-sm1mtfgcB3mHILYaSgSQB+iH7xoM1G310b83HLDW4oQ='; style-src 'self' 'sha256-z2P7kGW5Z05eCTjTZdYpc0vThTlOE9vmt97pVSvi2I4=' 'sha256-hItKl7w7cvvM6CygH5ybX/pWpj2rszkYmmff5dsH8JM=' 'sha256-RT1053JU5UiKvjrCUFx1rlhdFLMmgtuFJ9T8jnMeawQ=' 'sha256-RZ7OO5bcS23ADZC6UVgQjQh+R7kffLJIQa9tfoFdsF4='; img-src 'self' data:; font-src 'self'; connect-src 'self' https://loopy-sync.loopy-1e2.workers.dev; worker-src 'self'; object-src 'none'; base-uri 'none'; form-action 'none'; manifest-src 'self'; upgrade-insecure-requests">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'sha256-BMzGjoYwhJmoloi4RjfCR3Q7cLVbDyhNS6SXz1R6A3U='; style-src 'self' 'sha256-z2P7kGW5Z05eCTjTZdYpc0vThTlOE9vmt97pVSvi2I4=' 'sha256-hItKl7w7cvvM6CygH5ybX/pWpj2rszkYmmff5dsH8JM=' 'sha256-RT1053JU5UiKvjrCUFx1rlhdFLMmgtuFJ9T8jnMeawQ=' 'sha256-RZ7OO5bcS23ADZC6UVgQjQh+R7kffLJIQa9tfoFdsF4='; img-src 'self' data:; font-src 'self'; connect-src 'self' https://loopy-sync.loopy-1e2.workers.dev; worker-src 'self'; object-src 'none'; base-uri 'none'; form-action 'none'; manifest-src 'self'; upgrade-insecure-requests">
 <meta name="referrer" content="strict-origin-when-cross-origin">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <style>:root{color-scheme:light;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}body{margin:0}[hidden]{display:none!important}</style>
@@ -232,7 +232,7 @@ body { min-height: 100vh; min-height: 100dvh; padding-block: var(--page-pad-top)
         <button type="button" data-words="en">English</button>
         <button type="button" data-words="de">Deutsch</button>
       </div>
-      <p class="seg-note" data-t="wordsNote">The sentences to play with. loopy's own language is under Age, look and sound.</p>
+      <p class="seg-note" data-t="wordsNote">The sentences follow loopy's language. Pick the other one here to practise it.</p>
     </div>
     <div>
       <p class="seg-label" id="level-label" data-t="sbLevel">Sentences</p>
@@ -269,7 +269,7 @@ body { min-height: 100vh; min-height: 100dvh; padding-block: var(--page-pad-top)
 <script>
 Loopy.addStrings({
   en: {
-    wordsNote: "The sentences to play with. loopy's own language is under Age, look and sound.",
+    wordsNote: "The sentences follow loopy's language. Pick the other one here to practise it.",
     sbName: "Sentence Builder", sbWords: "Sentences in", sbLevel: "Sentences",
     sbL1: "3 words", sbL2: "4 to 5 words", sbL3: "6 words, with questions", sbL4: "7 to 8 words, with a comma",
     sbEraseAria: "Erase the last word",
@@ -282,7 +282,7 @@ Loopy.addStrings({
     sbHow: "Read the words. Write them as a sentence on the line, in the right order."
   },
   de: {
-    wordsNote: "Die Sätze zum Spielen. Die Sprache von loopy selbst steht unter Alter, Aussehen und Ton.",
+    wordsNote: "Die Sätze folgen der Sprache von loopy. Wähle hier die andere, um sie zu üben.",
     sbName: "Satzbau", sbWords: "Sätze auf", sbLevel: "Sätze",
     sbL1: "3 Wörter", sbL2: "4 bis 5 Wörter", sbL3: "6 Wörter, mit Fragen", sbL4: "7 bis 8 Wörter, mit Komma",
     sbEraseAria: "Letztes Wort löschen",
@@ -340,7 +340,11 @@ function problemFor(s, level) {
   const still = window.matchMedia && matchMedia("(prefers-reduced-motion: reduce)").matches;
 
   let age = Loopy.getAge();
-  let wordsLang = store.get("sb.words", Loopy.lang === "de" ? "de" : "en", ["en", "de"]);
+  // The words follow loopy's language. A pick under "Words in" is for practising the other language: it is
+  // kept with the loopy language it was made under (sb.wordsUi) and holds until that language changes.
+  // A pick saved before sb.wordsUi existed has no language with it, so the words follow loopy's language again.
+  const uiLang = Loopy.lang === "de" ? "de" : "en";
+  let wordsLang = store.get("sb.wordsUi", "", ["en", "de"]) === uiLang ? store.get("sb.words", uiLang, ["en", "de"]) : uiLang;
   let level;
   // The level is remembered per age: 3 words up to age 7, 4 to 5 words at 8 and 9, questions at 10, commas from 11.
   const levelForAge = (a) => a <= 7 ? 1 : a <= 9 ? 2 : a === 10 ? 3 : 4, LEVELS = [1, 2, 3, 4];
@@ -494,7 +498,7 @@ function problemFor(s, level) {
 
   eraseBtn.addEventListener("click", erase);
   goBtn.addEventListener("click", () => { answered ? newRound() : check(); });
-  wordsBtns.forEach(b => b.addEventListener("click", () => { wordsLang = b.dataset.words; store.set("sb.words", wordsLang); recent = []; newRound(); }));
+  wordsBtns.forEach(b => b.addEventListener("click", () => { wordsLang = b.dataset.words; store.set("sb.words", wordsLang); store.set("sb.wordsUi", uiLang); recent = []; newRound(); }));
   levelBtns.forEach(b => b.addEventListener("click", () => { level = +b.dataset.level; store.set("sb.level.a" + age, level); recent = []; newRound(); }));
   window.addEventListener("loopy:age", (e) => { age = e.detail; recent = []; loadForAge(); newRound(); });
   $("reset").addEventListener("click", () => { right = 0; tried = 0; streak = 0; Loopy.recent.clear("sentence-builder"); newRound(); });

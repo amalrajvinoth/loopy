@@ -64,7 +64,7 @@ They stay there next time you play. **Reset score** in Settings clears them.
 
 Open them with the gear button.
 
-- **Words in.** English or German. The game starts with the site language.
+- **Words in.** English or German. The words follow loopy's language. Pick the other one to practise it; the pick holds until loopy's language changes.
 - **Your word list.** See above.
 - **Level.** Grade 1 words up to grade 6 words and up. Remembered for each age.
 - **Read aloud.** The speaker button says the word, in the voice of the word language.

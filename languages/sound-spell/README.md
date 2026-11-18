@@ -28,7 +28,7 @@ They stay there next time you play. **Reset score** in Settings clears them.
 Open them with the gear button.
 
 - **Sounds.** Starting, Ending or Both.
-- **Words in.** English or German. The game starts with the site language, and you can switch at any time.
+- **Words in.** English or German. The words follow loopy's language. Pick the other one to practise it; the pick holds until loopy's language changes.
 - **Read aloud.** The same pill as in every game, next to the sound button. Here it reads each new word. On by default. Turn it off for quiet play. The **Hear the word** button still works.
 - Age, colors, sound effects and the display language (EN/DE) are shared with the other games.
 - **Print worksheet.** See below.
