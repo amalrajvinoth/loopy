@@ -13,6 +13,15 @@ Every session in the loopy repo starts with these. Add one with the add-rule ski
 - Black is the default theme. Others: Sunny, Ocean, Candy, Forest, High contrast.
 - Everything that prints shows the real loopy logo (`Loopy.logo()`, not just the word) in a fitting place: top right on worksheets and the weekly card, top left on a printed page. A new print needs it too. (Owner's rule, 20 Oct 2026.)
 
+## Games
+- Nothing dead, nothing covered: Next shows only after an answer (its place stays empty where there is no Skip), the first-time hint covers no key or word and names the game's real first tap, and every game says "Correct!" and "Not quite." through the shared strings. (PR #273.)
+- The main content fills the card and nothing is cut off: a sum, grid, text or picture grows with the card in container units up to `--big`, and is checked at the eight sizes fresh, after a wrong answer with the longest explanation and with Settings open; the tablet held upright overflows first. (PRs #266 and #276.)
+- A helper line names only what is on the card, every note and coin shows its currency sign, and a picture borrowed from another game keeps that game's look. (PR #274.)
+- When a question assumes something that is not true right now, the screen says "Pretend it is …", a badge shows it and Read aloud says it first. (What Time Is It? 24-hour level, PR #288.)
+- A day in the day streak is a finished Today's 10, nothing else; right answers in other games earn stars only. (PR #269.)
+- With a grown-up's word list: no picture that does not fit the words, the meaning comes only from the list, Try again replays only words still in play. (PR #264.)
+- On phones the home page top is one 44px row; the child chip in every page opens "Who is playing?" with two or more children. Once a switch starts nothing is saved until the reload, so a late timer never writes under the wrong child. (PRs #271 and #278.)
+
 ## Safety
 - No outside requests. No `style=` attributes, no `on*=` handlers (a hook blocks them). `tools/csp.py` and `tools/check_external.py` must pass.
 - Saved data is never lost or reset: a changed key or format needs a migration, and old stars codes still import. Per-child data goes through `Loopy.store`. Validate everything read from storage. (Owner's rule, 16 Oct 2026.)
