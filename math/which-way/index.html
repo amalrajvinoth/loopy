@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'sha256-C/OFGs99I0zhSHj9oYSfIQcg8HNVG6MQAa8H52wGH+M='; style-src 'self' 'sha256-iKqZfY0yOsyVHa/qlTmRsjSUAon+EdDi9RLwucVWFNA=' 'sha256-0kADUUlI6TuYYnrvBl14zf00qovcIXmyyyPIX5tKzZ4=' 'sha256-RT1053JU5UiKvjrCUFx1rlhdFLMmgtuFJ9T8jnMeawQ=' 'sha256-8LSka8R+7snSsiUi9D/DxPV05u9xRBnNZj45syosAYk='; img-src 'self' data:; font-src 'self'; connect-src 'self' https://loopy-sync.loopy-1e2.workers.dev; worker-src 'self'; object-src 'none'; base-uri 'none'; form-action 'none'; manifest-src 'self'; upgrade-insecure-requests">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'sha256-ouBlJbTtiJaUvsDDUzKahVHj6lVpK790GDOPPkvBz3I='; style-src 'self' 'sha256-iKqZfY0yOsyVHa/qlTmRsjSUAon+EdDi9RLwucVWFNA=' 'sha256-0kADUUlI6TuYYnrvBl14zf00qovcIXmyyyPIX5tKzZ4=' 'sha256-RT1053JU5UiKvjrCUFx1rlhdFLMmgtuFJ9T8jnMeawQ=' 'sha256-8LSka8R+7snSsiUi9D/DxPV05u9xRBnNZj45syosAYk='; img-src 'self' data:; font-src 'self'; connect-src 'self' https://loopy-sync.loopy-1e2.workers.dev; worker-src 'self'; object-src 'none'; base-uri 'none'; form-action 'none'; manifest-src 'self'; upgrade-insecure-requests">
 <meta name="referrer" content="strict-origin-when-cross-origin">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <style>:root{color-scheme:light;padding-top:var(--safe-top);padding-bottom:var(--safe-bottom)}body{margin:0}[hidden]{display:none!important}</style>
@@ -702,7 +702,8 @@ Loopy.addStrings({
     // The kind of question says the level (a note from before Pick first carries an older number).
     if (!m || TYPE_LEVEL[m[2]] !== level) return null;
     const a = +m[3], b = +m[4], rest = m[5];
-    const okSum = a >= 11 && b >= 2 && a + b <= 100 && a % 10 >= 1 && (groupOf(b) === ONE || b >= 11);
+    // b is one digit, 11, or two digits from 10 up: trueSum() makes sums like 61 + 10, so 10 counts too (Try again lost them before).
+    const okSum = a >= 11 && b >= 2 && a + b <= 100 && a % 10 >= 1 && (groupOf(b) === ONE || b >= 10);
     if (!okSum) return null;
     if (m[2] === "t") return rest === "t" && trueWay(a, b) ? truth(a, b) : null;
     if (m[2] === "p") return rest === "p" && trueWay(a, b) ? pickFirst(a, b) : null;

@@ -471,6 +471,9 @@ loopy is mostly flat. Depth comes from solid offset shadows, not blur.
 - Show a 3px focus ring in `c2` (or `ink`) with `:focus-visible`. Run `node tools/a11y/check.mjs` to check it in every theme.
 - Respect `prefers-reduced-motion`. Turn off hops, bounces and confetti.
 - Explain every answer in one plain sentence.
+- Let the main content fill the card. A sum, grid, text or picture grows with the card in container units, up to `--big`. The card's height caps it. So nothing is cut off on a tablet held upright, and nothing sits small in an empty card on a monitor.
+- Say when a question is pretend. "Pretend it is afternoon", a badge, and Read aloud says it first.
+- Make a helper line match the card. Name only what the child can see. Show the currency sign on every note and coin.
 - Give green and red a second signal too, like a word or a line-through.
 - Put settings behind the ⚙ button.
 - Use the shared back button and Last 5 pill. Do not make your own.
@@ -481,6 +484,10 @@ loopy is mostly flat. Depth comes from solid offset shadows, not blur.
 - Don't add `style=` attributes or `on*=` handlers. They break the security policy. Run `python3 tools/csp.py` after you change a page.
 - Don't load anything from another website. No CDN, no Google Fonts, no images from elsewhere.
 - Don't make a game page scroll.
+- Don't show a button that does nothing. Next comes after the answer; before it, its place stays empty.
+- Don't let the first-time hint cover a key, a number or a word.
+- Don't read `env(safe-area-inset-*)` in a page. Use `--safe-top` and `--safe-bottom`.
+- Don't count a day for anything but a finished Today's 10.
 - Don't use green or red for anything except right and wrong.
 - Don't use yellow for anything except rewards and Today's 10.
 - Don't add new fonts, sound files or a new shared script.
