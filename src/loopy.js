@@ -2019,7 +2019,8 @@ Loopy.nextButton = function (btn, answered) {
   // Where the bubble may sit. Each spot is tried in turn and the first one that lies over no words and no
   // button wins, so the bubble never hides an answer, a key or a letter a child needs to see:
   //   1. just above the answers (the usual place);
-  //   2. inside the problem card's bottom edge, then 3. its top edge (the cards keep an empty band there);
+  //   2. inside the problem card's bottom edge, then 3. its top edge (the cards keep an empty band there), or
+  //      under a card that fits its content and sits mid-column, with the hand pointing sideways;
   //   4. under a part of the side column, pointing up (Word Trail: between the words and Clue);
   //   5. a row of its own above the answers, by shrinking the card (portrait only, and only when the card
   //      and its explanation line still show everything), else over the side column's last button (Clue, Skip);
@@ -2043,6 +2044,10 @@ Loopy.nextButton = function (btn, answered) {
     if (c && put(c.left + c.width / 2, c.bottom - 12) && clear()) return spot(2);
     // At the card's top the arrow would point at the picture, not at the answers: no arrow, 👇 instead.
     if (c && put(c.left + c.width / 2, c.top + 12 + h) && clear()) { look(false, true); return spot(3); }
+    // Under a card that fits its content and sits mid-column (a phone on its side): no arrow, the hand points
+    // at the answers beside it.
+    if (c && put(c.left + c.width / 2, c.bottom + 12 + h) && clear()) { look(false, true); return spot(3); }
+    if (c) { look(true); if (put(c.left + c.width / 2, c.bottom + 8 + bubble.offsetHeight) && clear()) return spot(3); look(false); }
     var side = document.querySelector(".side");
     if (side) for (var i = 0; i < side.children.length - 1; i++) {
       var kid = side.children[i], k = kid.getBoundingClientRect();
@@ -2074,11 +2079,17 @@ Loopy.nextButton = function (btn, answered) {
     spot(7);
   }
   // The usual bubble, the tight one (slimmer and with no arrow) or the plain one (the usual size with no
-  // arrow). With no arrow, 👇 points at the keys or answers instead.
+  // arrow). With no arrow, a hand points at the keys or answers instead: down, or sideways when they sit
+  // beside the bubble (a phone on its side).
   function look(tight, plain) {
     bubble.classList.toggle("tight", tight);
     bubble.classList.toggle("plain", !!plain);
-    bubble.textContent = (tight || plain ? "👇 " : "👆 ") + words;
+    var hand = "👆";
+    if (tight || plain) {
+      var b = bubble.getBoundingClientRect(), t = target.getBoundingClientRect();
+      hand = t.left >= b.right - 2 ? "👉" : t.right <= b.left + 2 ? "👈" : "👇";
+    }
+    bubble.textContent = hand + " " + words;
   }
   // Where a key's own words or number sit, without the room around them.
   function ink(el) {
@@ -2152,6 +2163,38 @@ Loopy.nextButton = function (btn, answered) {
   };
   // Wait until the page shows (loopy.js hides it while the shared parts build).
   function start() { setTimeout(show, 350); }
+  if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", start);
+  else start();
+})();
+
+// The card fits its content (<main class="play fit">, see src/loopy.css): the answer grid, the number pad or the
+// letter tiles may grow into the spare room, up to a cap per row. CSS cannot count a grid's rows, so this writes
+// the row count (--rows) and the row gap (--rgap) on each grid: at the start, when the screen turns, and whenever
+// a new question swaps the buttons.
+(function () {
+  var SEL = ".play.fit .choices, .play.fit .pad, .play.fit .letters:not(.kbd)";
+  var play, queued = false;
+  function count() {
+    queued = false;
+    var grids = play.querySelectorAll(SEL);
+    for (var i = 0; i < grids.length; i++) {
+      var el = grids[i], cs = getComputedStyle(el);
+      if (cs.display !== "grid") continue;
+      // The resolved value lists every row that is laid out, "84px 84px 84px".
+      var rows = cs.gridTemplateRows.split(" ").filter(function (t) { return /px/.test(t); }).length || 1;
+      el.style.setProperty("--rows", rows);
+      el.style.setProperty("--rgap", /px/.test(cs.rowGap) ? cs.rowGap : "0px");
+    }
+  }
+  function soon() { if (!queued) { queued = true; requestAnimationFrame(count); } }
+  // loopy.js loads in the head, before the page's markup.
+  function start() {
+    play = document.querySelector(".play.fit");
+    if (!play) return;
+    count();
+    window.addEventListener("resize", soon);
+    new MutationObserver(soon).observe(play, { childList: true, subtree: true, attributes: true, attributeFilter: ["class", "hidden"] });
+  }
   if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", start);
   else start();
 })();
