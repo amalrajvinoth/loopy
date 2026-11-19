@@ -10,6 +10,7 @@ Die großen Änderungen, die neuesten zuerst. Kleine Korrekturen stehen nicht da
 
 ## 19. November 2026
 
+- **Große, gleich große Tasten auf der Buchstaben-Tastatur.** Im Wortdetektiv und in Meine Wörter sind jetzt alle Tasten gleich groß, in jeder Reihe, und die Buchstaben sind größer. Vorher war die untere deutsche Reihe gequetscht, und das ß sah klein aus. Jetzt ist das ß so hoch wie die anderen Buchstaben. Die Taste ⌫ füllt das Ende der unteren Reihe. Im Wortdetektiv steht **Prüfen** unter der Tastatur neben Hinweis. [So wird gespielt](/loopy/guide/de/games/languages/word-detective/).
 - **Welcher Weg? bringt jede verpasste Aufgabe zurück.** Eine Aufgabe mit einem glatten Zehner wie 61 + 10, die bei **Erst wählen** oder **Stimmt das?** falsch war, kam bei **Nochmal versuchen** nicht zurück. Jetzt kommt sie zurück, wie jeder andere Fehler. [So geht's](/loopy/guide/de/games/math/which-way/).
 
 ## 18. November 2026

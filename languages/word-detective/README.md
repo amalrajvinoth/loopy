@@ -30,7 +30,7 @@ The level shows next to the score, like "Level 2 of 5". After 10 right in a row,
 
 240 English and 240 German words, 48 at each level. Each word has a picture, a short meaning and a silly sentence. The German list is its own list with its own jokes, not a translation.
 
-German words keep their capital letter in the clues and on the result card. In the grid all letters are capitals, so the child does not need to think about it. The German keyboard has ä, ö and ü.
+German words keep their capital letter in the clues and on the result card. In the grid all letters are capitals, so the child does not need to think about it. The German keyboard has ä, ö, ü and ß. The ß stays small, because it has no everyday capital, and is drawn a step bigger so it matches the other letters.
 
 ## Last 5
 
@@ -46,7 +46,8 @@ Open them with the gear button.
 - **Read aloud.** A speaker button on the card reads the open clues out loud, and the word with its sentence once the case is closed. It is on by itself for ages 7 and under.
 - Age, colors, sound effects and the display language (EN/DE) are shared with the other games.
 - **Print worksheet.** See below.
-- The keyboard works too: type the letters, Backspace erases, Enter checks and goes on. On the screen, the ⌫ key erases and the wide blue key checks.
+- The keyboard works too: type the letters, Backspace erases, Enter checks and goes on. On the screen, the ⌫ key at the start of the bottom row erases. **Check** is the blue button under the keyboard, next to Clue.
+- Every key is the same size, in every row. The keyboard splits its width by its longest row (10 keys in English, 11 in German), and the letters grow with the keys. The ⌫ key takes what the bottom row has left, so the row ends where the rows above end.
 - The case counter ("Case 1 of 5" with five dots) and the line "Guess the 5-letter word" sit above the card, on one line. The card holds only the grid, and the tiles grow to fill it: as big as the card's width and height allow, with small gaps. On a phone on its side, the counter sits above the keyboard.
 - Clues, grid and keyboard share one screen. When open clues need the room, the grid's tiles get smaller, so nothing is cut off.
 
