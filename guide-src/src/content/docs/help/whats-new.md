@@ -10,6 +10,7 @@ The big changes, newest first. Small fixes are not listed. See [the full list on
 
 ## 19 November 2026
 
+- **The stars at the top of the home page.** Next to the child playing and ⚙ Settings, the home page now shows the child's stars, like every game does. On a phone it is part of the one top row. With two or more children the counter carries the child's picture. Tap it to jump to **My stars**. Switch the child, and the number changes with them. [Kids and ages](/loopy/guide/setup/kids-and-ages/)
 - **Big, equal keys on the letter keyboard.** In Word Detective and My Words every key is now the same size, in every row, and the letters are bigger. Before, the German bottom row was squeezed and the ß looked small. Now the ß is as tall as the other letters. The ⌫ key fills the end of the bottom row. In Word Detective **Check** sits under the keyboard next to Clue. [How to play](/loopy/guide/games/languages/word-detective/).
 - **Which Way? brings back every missed sum.** A sum with a round ten like 61 + 10, missed on **Pick first** or **True or not**, did not come back in **Try again**. Now it does, like every other mistake. [How to play](/loopy/guide/games/math/which-way/).
 

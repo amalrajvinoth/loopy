@@ -26,7 +26,7 @@ Each game has levels from easy to hard. The age picks the start. After 10 right 
 
 ## Can brothers and sisters share one device?
 
-Yes. Open ⚙ Settings on the home page and tap **Add a child**. Each child has their own stars, levels and last game. To switch, tap a name under **Who is playing?** on the home page. On a phone, and in every game, tap the child next to ⚙ **Settings** to open it. See [Settings on the home page](/loopy/guide/settings/home-settings/).
+Yes. Open ⚙ Settings on the home page and tap **Add a child**. Each child has their own stars, levels and last game. To switch, tap a name under **Who is playing?** on the home page. On a phone, and in every game, tap the child next to ⚙ **Settings** to open it. The child's stars sit next to them at the top of the home page, like in every game. See [Settings on the home page](/loopy/guide/settings/home-settings/).
 
 ## Where are the stars saved? Can I lose them?
 

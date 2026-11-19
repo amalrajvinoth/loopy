@@ -9,6 +9,7 @@
 //      the page for Max: 0 stars, a fresh score, the chip says Max, and Max's "last game" is Plus and Minus too.
 //   3. Max gets 2 right: Max has 2 stars, Dio still 3, and each child's log counts only their own answers.
 //   4. A save started right after a switch lands under neither child (the guard in Loopy.store).
+//   5. The home page's top row shows the stars of the child playing, and switching there changes the number.
 import http from "node:http";
 import fs from "node:fs";
 import path from "node:path";
@@ -133,6 +134,25 @@ await page.waitForTimeout(300);
 check((await saved(1, "loopy.probe", false)) === null && (await saved(2, "loopy.probe", false)) === null, "the late save was dropped for both children");
 check((await stars(1)) === 3 && (await stars(2)) === 2, "both children keep their stars after the switch back");
 check((await chipName()) === "Dio", "the top bar says Dio again");
+
+console.log("5. The home page's top row shows the stars of the child playing");
+await page.goto(BASE);
+await page.waitForTimeout(300);
+const homeStars = () => page.evaluate(() => {
+  const a = document.querySelector(".kid-set-row a.star-chip[href='#stars']");
+  return a ? { n: +a.querySelector("[data-loopy-stars]").textContent, label: a.getAttribute("aria-label"), row: a.getBoundingClientRect().top } : null;
+});
+let home = await homeStars();
+check(home && home.n === 3, "the top row counter shows Dio's 3 stars");
+check(home && home.label === "Dio's stars: 3", "its name for screen readers says whose stars and how many");
+const logoTop = await page.evaluate(() => document.querySelector("h1").getBoundingClientRect().top);
+check(home && Math.abs(home.row - logoTop) < 8, "it sits in the one top row with the logo");
+await page.click(".kid-set-row .kid-chip");
+await Promise.all([page.waitForEvent("load"), page.locator(".kid-switch .kid-list .kid-row").nth(1).click()]);
+await page.waitForTimeout(300);
+home = await homeStars();
+check(home && home.n === 2 && home.label === "Max's stars: 2", "after switching to Max the top row shows Max's 2 stars");
+check((await page.evaluate(() => document.querySelectorAll("[data-loopy-stars]").length)) === 2, "the My stars shelf shows the same number");
 
 check(errors.length === 0, "no page errors" + (errors.length ? ": " + errors.join("; ") : ""));
 await ctx.close();
