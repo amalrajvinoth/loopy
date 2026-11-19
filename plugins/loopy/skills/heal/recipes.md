@@ -118,3 +118,8 @@ One per failure. Add new ones at the end (the heal skill step 3). Keep each to f
 - Looks like: `play.mjs` says `words saved as en before the fix still win over loopy's language de` or `a "Words in" pick of en made under loopy's language de did not hold`.
 - Cause: a word game reads `<game>.words` without checking `<game>.wordsUi` against `Loopy.lang`, or saves a new pick without `wordsUi` (PRs #292 and #296).
 - Fix: a pick counts only while `wordsUi` equals the current loopy language; save both keys together; keep the old `words` key readable. The German keyboard and words then follow by themselves. (18 Nov 2026)
+
+## Try again test: the missed question does not come first
+- Looks like: `retry.mjs` says `opened with #retry, the first question is "…", not the missed "…"`, or CI "A mistake comes back in every game until it is fixed", often only now and then.
+- Cause: the game's `rebuild(note)` returns null for a note its own `makeProblem` can produce, so `Loopy.retry.fresh` skips the mistake (Which Way? rejected b = 10 in `okSum`, PR #302); or the note's format changed and old notes no longer parse.
+- Fix: seed the note from the log (`Loopy.rewards.wrong(game, { …, r: note })`), reopen with `#retry` and read `window.__questions[0]`; make `rebuild` accept every sum `makeProblem` makes, never loosen the test. Keep old note formats readable. (19 Nov 2026)

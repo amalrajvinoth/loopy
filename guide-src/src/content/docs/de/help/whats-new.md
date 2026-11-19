@@ -8,6 +8,10 @@ loopy bekommt immer wieder neue Spiele. Das ist zuletzt dazugekommen!
 
 Die großen Änderungen, die neuesten zuerst. Kleine Korrekturen stehen nicht dabei. Die [ganze Liste steht auf GitHub](https://github.com/amalrajvinoth/loopy/blob/main/RELEASES.md) (auf Englisch).
 
+## 19. November 2026
+
+- **Welcher Weg? bringt jede verpasste Aufgabe zurück.** Eine Aufgabe mit einem glatten Zehner wie 61 + 10, die bei **Erst wählen** oder **Stimmt das?** falsch war, kam bei **Nochmal versuchen** nicht zurück. Jetzt kommt sie zurück, wie jeder andere Fehler. [So geht's](/loopy/guide/de/games/math/which-way/).
+
 ## 18. November 2026
 
 - **Deutsche Tastaturen mit ß, und Wörter in der Sprache von loopy.** Im Wortdetektiv und in Meine Wörter hat die deutsche Tastatur jetzt eine ß-Taste, also alle deutschen Buchstaben: ä, ö, ü und ß. Die deutschen Buchstabenfelder in Wörter schreiben und Meine Wörter mischen ä, ö und ü unter die anderen Buchstaben. In jedem Wortspiel folgen die Wörter jetzt der Sprache von loopy. Eine Wahl unter **Wörter auf** ist zum Üben der anderen Sprache und gilt, bis sich die Sprache von loopy ändert. [So wird gespielt](/loopy/guide/de/games/languages/spell-it/).

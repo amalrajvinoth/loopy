@@ -8,6 +8,10 @@ loopy keeps getting new games. Here is what came lately!
 
 The big changes, newest first. Small fixes are not listed. See [the full list on GitHub](https://github.com/amalrajvinoth/loopy/blob/main/RELEASES.md).
 
+## 19 November 2026
+
+- **Which Way? brings back every missed sum.** A sum with a round ten like 61 + 10, missed on **Pick first** or **True or not**, did not come back in **Try again**. Now it does, like every other mistake. [How to play](/loopy/guide/games/math/which-way/).
+
 ## 18 November 2026
 
 - **German keyboards with ß, and words in loopy's language.** In Word Detective and My Words the German keyboard has a ß key now, so it has every German letter: ä, ö, ü and ß. The German letter pads in Spell It and My Words mix ä, ö and ü in with the other letters. In every word game the words now follow loopy's language. A pick under **Words in** is for practising the other language and holds until loopy's language changes. [How to play](/loopy/guide/games/languages/spell-it/).
