@@ -106,6 +106,14 @@ def check_page(path, text):
     m = re.search(r"EXTRA\s*=\s*\{[^}]*de:\s*\"([^\"]*)\"", text)
     if m and not all(c in m.group(1) for c in "äöü"):
         add("must", rel(path), "the German letter pad extras (`EXTRA.de`) have no ä, ö or ü")
+    # A day in the day streak is a finished Today's 10, nothing else (issue #268): only mix/daily-mix calls finish().
+    if "daily.finish(" in text and rel(path) != "mix/daily-mix/index.html":
+        add("must", rel(path), "calls `Loopy.daily.finish()`; only a finished Today's 10 counts a day, other games earn stars only")
+    # Every game says the same two words after an answer (PR #273): "Correct!" and "Not quite." come from loopy.js.
+    for m in re.finditer(r"\b(correct|notQuite)\s*:\s*\"", text):
+        line = text.count("\n", 0, m.start()) + 1
+        add("should", f"{rel(path)}:{line}", f"defines its own `{m.group(1)}` string; every game uses the shared "
+            "\"Correct!\" / \"Not quite.\" from src/loopy.js")
 
 
 # ---------- Base: the branch this change is compared with ----------
@@ -425,6 +433,11 @@ def main():
         check_page(p, text)
         check_strings(p, text)
     check_strings(ROOT / "src/loopy.js", (ROOT / "src/loopy.js").read_text(encoding="utf-8"))
+    core = (ROOT / "src/loopy.js").read_text(encoding="utf-8")
+    at = core.find("Loopy.rewards = {")
+    rewards = block(core, core.find("{", at)) if at >= 0 else ""
+    if "daily." in rewards:
+        add("must", "src/loopy.js", "`Loopy.rewards` touches `Loopy.daily`; a right answer earns stars, never a day (only a finished Today's 10 counts a day, PR #269)")
 
     for g in games:
         page = ROOT / g / "index.html"

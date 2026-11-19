@@ -103,3 +103,18 @@ One per failure. Add new ones at the end (the heal skill step 3). Keep each to f
 - Looks like: the Monday "Forks and stars" run fails in "New forks and stars since the last run": `gh api` or `gh issue` says "Resource not accessible by integration" (HTTP 403).
 - Cause: the Actions token may list forks, read the totals and write issues, but not list who starred (403) nor read traffic (both tried 2 November 2026; plain requests without a token get 401 on the runner). So stars are counted against the count kept in the "Forks and stars" issue's text, and a 403 means a new endpoint was added, or `issues: write` or `actions: read` was taken out of the job's `permissions`. Clone counts are optional and never fail the job.
 - Fix: keep to the endpoints the job uses; put the permissions back in `forks.yml`. Run it again: Actions → Forks and stars → Run workflow. (2 Nov 2026)
+
+## Play test: a day counted that should not, or Today's 10 did not count
+- Looks like: `play.mjs` says `N right answers counted as a day, which only Today's 10 does` or `finishing Today's 10 did not count the day`.
+- Cause: something calls `Loopy.daily.finish()` outside Today's 10, or `Loopy.rewards.correct` touches `Loopy.daily` again (that path was removed in PR #269); or Today's 10 no longer calls `finish()` at its tenth answer.
+- Fix: only `mix/daily-mix/index.html` calls `Loopy.daily.finish()`; a right answer in any other game earns stars, never a day. Keep the saved `loopy.daily` format. (17 Nov 2026)
+
+## Play test: money without its € sign, or the hint speaks of pieces that are not there
+- Looks like: `play.mjs` says `money without its € sign: 50, 20` or `the hint "Notes first, then the coins" speaks of notes and coins, but the screen shows only notes`.
+- Cause: a note or coin drawn with its bare value, or a helper line that does not look at what is on the card (Class Test, PR #274).
+- Fix: every piece shows "€50" (English) or "50 €" (German), on screen and on the printed test; the line under the question picks "Notes first, then the coins", "Only notes, no coins" or "Only coins" from the pieces. (17 Nov 2026)
+
+## Play test: an old "Words in" pick wins over loopy's language
+- Looks like: `play.mjs` says `words saved as en before the fix still win over loopy's language de` or `a "Words in" pick of en made under loopy's language de did not hold`.
+- Cause: a word game reads `<game>.words` without checking `<game>.wordsUi` against `Loopy.lang`, or saves a new pick without `wordsUi` (PRs #292 and #296).
+- Fix: a pick counts only while `wordsUi` equals the current loopy language; save both keys together; keep the old `words` key readable. The German keyboard and words then follow by themselves. (18 Nov 2026)
