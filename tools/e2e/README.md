@@ -58,7 +58,15 @@ Right after an update, the site's servers can still hand out an old file for a f
 
 ## Family sync test
 
-`sync.mjs` checks Family sync with two browser profiles, one for each device:
+`hello.mjs` checks the first visit: the welcome sheet on a browser with nothing from loopy, and the family code row under My stars:
+
+```sh
+node tools/e2e/hello.mjs
+```
+
+A new browser gets the sheet "Hi! Who is playing?". The test names the child Mia, picks 🦄 and age 7, taps Later on the grown-ups step and Let's play!. Then it checks that the one child was renamed (not doubled), the age is 7 and the top row says Mia. A second visit shows no sheet but the family code row; Not now hides it for the day, and a set family code removes it. A browser that already has stars never gets the sheet and keeps its stars. A `#family=` or `#load=` link shows neither. A German browser starts in German until a language is saved. CI runs it with the switch test.
+
+`sync.mjs` checks Family sync with two browser profiles, one for each device (and, at the end, the family code row's Turn on and Join with a code on two more):
 
 ```sh
 node tools/e2e/sync.mjs

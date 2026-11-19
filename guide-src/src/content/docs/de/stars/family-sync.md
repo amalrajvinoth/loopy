@@ -10,7 +10,11 @@ Er ist aus, bis ein Erwachsener ihn einschaltet. Dann läuft er von selbst: kein
 
 ## Einschalten
 
-1. Öffne auf der Startseite ⚙ **Einstellungen**.
+Der schnellste Weg: Solange kein Familien-Code gesetzt ist, zeigt die Startseite eine Zeile unter **Meine Sterne**, „Sterne auf allen Geräten behalten“. Tippe dort auf **Einschalten**. In einem ganz neuen Browser bietet es auch der [erste Besuch](/loopy/guide/de/start/first-visit/) an, als **Familien-Code erstellen**.
+
+Oder in den Einstellungen:
+
+1. Öffne auf der Startseite ⚙ **Einstellungen**, dann **Für Erwachsene**.
 2. Scroll zu **Familien-Sync**.
 3. Tippe auf **Einschalten**.
 
@@ -21,7 +25,8 @@ loopy zeigt euren Familien-Code, zum Beispiel `7K2M-QX9D-4HPT-W3RA`, und einen Q
 Auf dem anderen Handy, Tablet oder Computer:
 
 - **Scanne den QR-Code** mit der Kamera. loopy öffnet sich und fragt "Dieser Familie beitreten?". Tippe auf **Beitreten**.
-- **Oder tippe den Code ein:** Öffne ⚙ **Einstellungen**, dann **Familien-Sync**, dann **Mit Code beitreten**. Tippe den Code ein und dann auf **Beitreten**.
+- **Oder schicke den Link:** Tippe auf dem ersten Gerät neben dem Code auf **Link teilen**. Das öffnet das Teilen-Menü des Handys (oder kopiert den Link), sodass du ihn per Nachricht schicken kannst. Öffne den Link auf dem anderen Gerät und tippe auf **Beitreten**.
+- **Oder tippe den Code ein:** Tippe auf dem anderen Gerät auf **Mit Code beitreten**, in der Zeile unter Meine Sterne oder unter ⚙ **Einstellungen**, **Familien-Sync**. Tippe den Code ein und dann auf **Beitreten**.
 
 Die Sterne von den anderen Geräten kommen hierher, und die Sterne von hier kommen dorthin. Nichts geht verloren: Für jedes Kind gewinnt die größere Zahl, wie bei einem [Sterne-Code](/loopy/guide/de/stars/move-stars/).
 
