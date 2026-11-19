@@ -503,9 +503,11 @@ document.documentElement.classList.add("loopy-building");
       b.addEventListener("click", function () { if (many) switcher(); else open(find(data.on)); });
     } else if (!k.name) b.hidden = true;
     if (!gear.closest(".bar-right")) {
-      // Home: the chip and ⚙ Settings side by side under the tagline.
-      var row = el("div", "kid-set-row");
+      // Home: the star counter (when the page has one before ⚙), the chip and ⚙ Settings side by side
+      // under the tagline, in the order of the game bar. On phones this is the one top row.
+      var row = el("div", "kid-set-row"), star = gear.previousElementSibling;
       gear.parentNode.insertBefore(row, gear);
+      if (star && star.classList.contains("star-chip")) row.appendChild(star);
       row.appendChild(b);
       row.appendChild(gear);
     } else gear.parentNode.insertBefore(b, gear);
@@ -1164,6 +1166,8 @@ document.documentElement.classList.add("loopy-building");
 
   function updateChips() {
     document.querySelectorAll("[data-loopy-stars]").forEach(function (n) { n.textContent = data.stars; });
+    // The counter's name for screen readers says whose stars and how many: "Dio's stars: 12".
+    document.querySelectorAll(".star-chip[data-stars-label]").forEach(function (c) { c.setAttribute("aria-label", c.getAttribute("data-stars-label") + ": " + data.stars); });
   }
 
   // "+1" star: flies from where the child tapped (or the feedback line) to the star counter,
@@ -1269,24 +1273,27 @@ document.documentElement.classList.add("loopy-building");
     }
   };
 
-  // Star counter chip: <span id="star-chip"></span> becomes a star with the total.
+  // Star counter chip: <span id="star-chip"></span> becomes a star with the total. The home page has
+  // two: a link in the top row (<a class="star-chip" href="#stars">, next to the child chip) that jumps
+  // to the My stars shelf, and the one on the shelf. Every chip shows the same number.
   function build() {
-    var chip = document.getElementById("star-chip");
-    if (chip) {
-      chip.className = "star-chip";
-      chip.setAttribute("aria-label", Loopy.t("starsEarned"));
+    var many = Loopy.kids.list().length > 1, k = many ? Loopy.kids.current() : null;
+    document.querySelectorAll("#star-chip, .star-chip").forEach(function (chip) {
+      chip.classList.add("star-chip");
+      chip.setAttribute("data-stars-label", Loopy.t("starsEarned"));
       chip.innerHTML = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="' + STAR_PATH + '"/></svg><b data-loopy-stars></b>';
       // With more than one child, the chip shows whose stars they are. In the top bar the child's
       // picture is already on the name chip next to Settings, so only the name for screen readers.
-      if (Loopy.kids.list().length > 1) {
-        var k = Loopy.kids.current(), pic = document.createElement("span");
+      // (The home page's own style hides the picture on phones for the same reason.)
+      if (many) {
+        var pic = document.createElement("span");
         pic.className = "kid-pic";
         pic.setAttribute("aria-hidden", "true");
         pic.textContent = k.pic;
         if (!chip.closest(".game-bar")) chip.insertBefore(pic, chip.firstChild);
-        chip.setAttribute("aria-label", Loopy.t("kidStars", { name: Loopy.kids.label(k) }));
+        chip.setAttribute("data-stars-label", Loopy.t("kidStars", { name: Loopy.kids.label(k) }));
       }
-    }
+    });
     updateChips();
   }
   if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", build);
