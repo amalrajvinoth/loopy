@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'sha256-ecpSx+02ibrNtK/c2zuixc14TUsTG+gCkBAhJxmG1kw='; style-src 'self' 'sha256-iKqZfY0yOsyVHa/qlTmRsjSUAon+EdDi9RLwucVWFNA=' 'sha256-tnJsa9R6C51kJMjmOPnAuWQXZQNnMHFisS5uil93cWg=' 'sha256-RT1053JU5UiKvjrCUFx1rlhdFLMmgtuFJ9T8jnMeawQ=' 'sha256-Rp8Iy7nAMEHVdMcdDohIRSjS8yNxAxCXzSrw2gh7/Vo='; img-src 'self' data:; font-src 'self'; connect-src 'self' https://loopy-sync.loopy-1e2.workers.dev; worker-src 'self'; object-src 'none'; base-uri 'none'; form-action 'none'; manifest-src 'self'; upgrade-insecure-requests">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'sha256-8C5mMo091dna48dkW3dfSlfeZkzU3jZSt8B+sFitkSs='; style-src 'self' 'sha256-iKqZfY0yOsyVHa/qlTmRsjSUAon+EdDi9RLwucVWFNA=' 'sha256-tnJsa9R6C51kJMjmOPnAuWQXZQNnMHFisS5uil93cWg=' 'sha256-RT1053JU5UiKvjrCUFx1rlhdFLMmgtuFJ9T8jnMeawQ=' 'sha256-groA4+QlUiGKy5SxnZ+kPCvtamF35StzhAuIgHHewfI='; img-src 'self' data:; font-src 'self'; connect-src 'self' https://loopy-sync.loopy-1e2.workers.dev; worker-src 'self'; object-src 'none'; base-uri 'none'; form-action 'none'; manifest-src 'self'; upgrade-insecure-requests">
 <meta name="referrer" content="strict-origin-when-cross-origin">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <style>:root{color-scheme:light;padding-top:var(--safe-top);padding-bottom:var(--safe-bottom)}body{margin:0}[hidden]{display:none!important}</style>
@@ -144,12 +144,15 @@ body { min-height: 100vh; min-height: 100dvh; padding-block: var(--page-pad-top)
 .case i.ok { background: var(--good); border-color: var(--good); }
 .case i.no { background: var(--bad); border-color: var(--bad); }
 .case i.now { border-color: var(--accent); box-shadow: 0 0 0 2px var(--accent) inset; }
-/* One Clue button, a full-width outline pill under the keyboard, where Next appears after the answer (the same place as in Word Trail). */
-.more {
+/* Under the keyboard: the Clue button (outline pill) and Check (filled pill) share one row, half the width each.
+   Next appears in the same place after the answer (as in Word Trail). */
+.acts { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; width: 100%; }
+.more, .acts .go {
   width: 100%; font: inherit; font-weight: 700; font-size: 0.95rem; color: var(--ink); background: transparent;
   border: 2px solid var(--accent); border-radius: 999px; min-height: 44px; padding: 0 12px; cursor: pointer; white-space: nowrap;
 }
-.more:disabled { opacity: 0.45; cursor: default; }
+.acts .go { font-size: 1.15rem; background: var(--accent); color: var(--accent-ink); }
+.more:disabled, .acts .go:disabled { opacity: 0.45; cursor: default; }
 .strip .case { min-width: 0; }
 /* Phones: a short counter ("Case 1/5" and smaller dots) and the line share one row. */
 @media (max-width: 599px) { .case { font-size: 0.85rem; gap: 4px; } .case i { width: 10px; height: 10px; } .prompt { font-size: 0.85rem; } .strip { gap: 2px 6px; } }
@@ -211,11 +214,15 @@ body:has(#settings-panel:not([hidden])) .grid { height: 52dvh; }
 .stars { display: flex; align-items: center; justify-content: center; gap: 6px; font-weight: 700; font-size: 1.15rem; }
 .stars svg { width: 24px; height: 24px; fill: var(--mark); }
 
-.pad { display: flex; flex-direction: column; gap: 6px; width: 100%; }
-.pad .krow { display: flex; gap: 5px; justify-content: center; }
+/* Every key is the same size: the keyboard measures itself (container units) and splits its width by the longest row,
+   10 keys in English and 11 in German (--n from the keyboard's lang). Shorter rows are centred. The letter grows with the key. */
+.pad { display: flex; flex-direction: column; gap: 5px; width: 100%; container-type: inline-size; --n: 10; --kgap: 4px; }
+.pad[lang="de"] { --n: 11; }
+.pad .krow { display: flex; gap: var(--kgap); justify-content: center; }
 .pad button {
-  flex: 1 1 0; min-width: 0; min-height: clamp(36px, 6dvh, 54px); border-radius: 9px; border: 2px solid var(--line);
-  background: var(--key); color: var(--ink); font: inherit; font-weight: 700; font-size: 1.05rem; text-transform: uppercase; padding: 0; cursor: pointer;
+  --kw: calc((100cqw - (var(--n) - 1) * var(--kgap)) / var(--n));
+  flex: 0 0 var(--kw); min-width: 0; min-height: clamp(44px, 6dvh, 56px); border-radius: 9px; border: 2px solid var(--line);
+  background: var(--key); color: var(--ink); font: inherit; font-weight: 700; font-size: clamp(1.1rem, calc(var(--kw) * 0.72), 1.6rem); text-transform: uppercase; padding: 0; cursor: pointer;
   touch-action: manipulation; -webkit-tap-highlight-color: transparent;
 }
 .pad button:active:not(:disabled) { transform: scale(0.95); }
@@ -223,23 +230,22 @@ body:has(#settings-panel:not([hidden])) .grid { height: 52dvh; }
 .pad button.g { background: var(--good); border-color: var(--good); color: var(--on-accent, #fff); }
 .pad button.y { background: var(--wd-y); border-color: var(--wd-y); color: var(--wd-y-ink); }
 .pad button.x { background: var(--chip); border-color: var(--chip); color: var(--muted); }
-.pad .wide { flex: 1.5 1 0; font-size: 1.25rem; text-transform: none; }
-/* ß has no everyday capital, so it stays ß on its key and in the grid. */
+/* Erase takes whatever the bottom row has left (two keys wide in German, three in English), so the row ends flush with the rows above. */
+.pad .wide { flex: 1 1 var(--kw); font-size: 1.25rem; text-transform: none; }
+/* ß has no everyday capital, so it stays ß on its key and in the grid, drawn a step bigger to match the capitals. */
 .pad button.sz, .grid .cell.sz { text-transform: none; }
-.pad .go { flex: 2.5 1 0; font-size: 0.95rem; background: var(--accent); border-color: var(--accent); color: var(--accent-ink); }
-/* Small phones: the German last row has 9 letters (with ß), so Check gets a smaller word. */
-@media (max-width: 379px) { .pad .go { font-size: 0.85rem; } }
+.pad button.sz { font-size: clamp(1.25rem, calc(var(--kw) * 0.82), 1.8rem); }
+.grid .cell.sz { font-size: calc(var(--cell) * 0.64); }
 .next { font: inherit; font-size: 1.25rem; font-weight: 700; color: var(--accent-ink); background: var(--accent); border: 0; border-radius: 16px; min-height: clamp(52px, 7dvh, 72px); cursor: pointer; width: 100%; }
 
 /* Short phones: smaller cells and keys, a one-line clue. */
 @media (max-height: 700px) and (orientation: portrait) {
   .grid { --ggap: 4px; }
-  .more { min-height: 40px; }
+  .more, .acts .go { min-height: 40px; }
   .clue { font-size: 0.85rem; padding: 4px 8px; }
   .clue b { display: none; }
-  .pad button { min-height: 40px; font-size: 0.95rem; }
+  .pad button { min-height: 40px; }
   .pad { gap: 4px; }
-  .pad .krow { gap: 4px; }
   .word { font-size: 1.6rem; }
   .mean, .quote { font-size: 0.9rem; }
   .problem-card { gap: 6px; padding: 10px 12px; }
@@ -248,12 +254,14 @@ body:has(#settings-panel:not([hidden])) .grid { height: 52dvh; }
 @media (orientation: landscape) and (min-width: 640px) {
   .grid { --ggap: 4px; }
   .pad button { min-height: clamp(34px, 9dvh, 54px); }
+  /* The strip sits in the side column here, so it keeps the column's own gap (its negative margin is for the portrait page). */
+  .side .strip { margin-bottom: 0; }
 }
-@media (min-width: 700px) { .more { min-height: 54px; font-size: 1.1rem; } }
+@media (min-width: 700px) { .more { min-height: 54px; font-size: 1.1rem; } .acts .go { min-height: 54px; font-size: 1.3rem; } }
 /* A phone on its side: the side column holds the case strip, the clues and the keys, so everything there is a step tighter. */
 @media (orientation: landscape) and (min-width: 640px) and (max-height: 500px) {
   .side { gap: 6px; }
-  .more { min-height: 44px; }
+  .more, .acts .go { min-height: 44px; }
   .clue { font-size: 0.85rem; padding: 4px 8px; }
   .clue b { display: none; }
 }
@@ -262,7 +270,7 @@ body:has(#settings-panel:not([hidden])) .grid { height: 52dvh; }
 @media (orientation: landscape) and (min-width: 1000px) { .grid { --ggap: 8px; } }
 @media (orientation: landscape) and (min-width: 1600px) { .grid { --ggap: 10px; } }
 /* Laptops and monitors: the game's own picture and keys grow with the screen (loopy.css --card-zoom, --side-zoom; 1 elsewhere). */
-.pad { zoom: var(--side-zoom); }
+.pad, .acts { zoom: var(--side-zoom); }
 </style>
 <link rel="stylesheet" href="../../loopy.css">
 <script src="../../loopy.js"></script>
@@ -326,7 +334,10 @@ body:has(#settings-panel:not([hidden])) .grid { height: 52dvh; }
     </div>
     <div class="side">
       <div class="pad" id="letters"></div>
-      <button type="button" class="more" id="more"></button>
+      <div class="acts" id="acts">
+        <button type="button" class="more" id="more"></button>
+        <button type="button" class="go" id="k-go"></button>
+      </div>
       <button type="button" class="next" id="next" hidden></button>
     </div>
   </main>
@@ -402,7 +413,7 @@ function marks(guess, answer) {
 
 (function () {
   const $ = (id) => document.getElementById(id);
-  const card = $("card"), caseEl = $("case"), moreBtn = $("more"), cluesEl = $("clues"), promptEl = $("prompt"), gridEl = $("grid"),
+  const card = $("card"), caseEl = $("case"), moreBtn = $("more"), actsEl = $("acts"), goBtn = $("k-go"), cluesEl = $("clues"), promptEl = $("prompt"), gridEl = $("grid"),
     resultEl = $("result"), feedbackEl = $("feedback"), padEl = $("letters"), nextBtn = $("next"), sideEl = document.querySelector(".side"),
     stripEl = $("strip"), playEl = document.querySelector(".play");
   const wordsBtns = [...document.querySelectorAll("#words-seg button")];
@@ -470,7 +481,7 @@ function marks(guess, answer) {
     const left = CLUES - clues;
     moreBtn.textContent = t("wdMore") + " · " + (left ? t("wdLeft", { n: left }) : t("wdNoClues"));
     moreBtn.disabled = !left || answered;
-    moreBtn.hidden = answered;
+    actsEl.hidden = answered;
     promptEl.textContent = clues ? t("wdGuessClue") : t("wdGuess", { n: current.letters.length });
     promptEl.hidden = answered || clues > 0;
   }
@@ -513,6 +524,7 @@ function marks(guess, answer) {
     const best = {};
     rows.forEach(r => r.g.forEach((c, i) => { const m = r.m[i]; if (m === "g" || (m === "y" && best[c] !== "g") || !best[c]) best[c] = m; }));
     padEl.textContent = "";
+    padEl.lang = wordsLang;
     KEYS[wordsLang].forEach((line, li) => {
       const row = document.createElement("div"); row.className = "krow";
       if (li === KEYS[wordsLang].length - 1) row.appendChild(key("k-erase", "wide", "⌫", t("wdEraseAria"), erase));
@@ -522,9 +534,10 @@ function marks(guess, answer) {
         b.disabled = answered || typed.length >= current.letters.length;
         row.appendChild(b);
       });
-      if (li === KEYS[wordsLang].length - 1) { const go = key("k-go", "wide go", t("wdCheck"), "", check); go.disabled = answered || typed.length < current.letters.length; row.appendChild(go); }
       padEl.appendChild(row);
     });
+    goBtn.textContent = t("wdCheck");
+    goBtn.disabled = answered || typed.length < current.letters.length;
   }
   function key(id, cls, text, aria, fn) {
     const b = document.createElement("button");
@@ -638,7 +651,7 @@ function marks(guess, answer) {
     const solved = file.filter(c => c.ok).length, quick = file.every(c => c.ok && c.tries <= 3);
     const rank = quick ? "wdSuper" : solved === CASES ? "wdDetective" : "wdRookie";
     resultEl.textContent = "";
-    gridEl.hidden = true; cluesEl.hidden = true; promptEl.hidden = true; moreBtn.disabled = true; moreBtn.hidden = true;
+    gridEl.hidden = true; cluesEl.hidden = true; promptEl.hidden = true; moreBtn.disabled = true; actsEl.hidden = true;
     card.classList.remove("good", "bad");
     resultEl.appendChild(el("h2", "big", t("wdFileDone")));
     const list = el("div", "file");
@@ -667,6 +680,7 @@ function marks(guess, answer) {
 
   nextBtn.addEventListener("click", next);
   wide.addEventListener("change", place);
+  goBtn.addEventListener("click", check);
   moreBtn.addEventListener("click", () => { if (clues < CLUES && !answered) { clues++; drawClues(); Loopy.speech.read(); } });
   wordsBtns.forEach(b => b.addEventListener("click", () => { wordsLang = b.dataset.words; store.set("wd.words", wordsLang); store.set("wd.wordsUi", uiLang); recent = []; file = []; summary = false; newCase(); }));
   levelBtns.forEach(b => b.addEventListener("click", () => { level = +b.dataset.level; store.set("wd.level.a" + age, level); recent = []; newCase(); }));

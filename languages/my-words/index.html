@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'sha256-ioWp0gCU0bj9U9rSw9WEMqyRq5jm508kvH+1Pi0uI2w='; style-src 'self' 'sha256-iKqZfY0yOsyVHa/qlTmRsjSUAon+EdDi9RLwucVWFNA=' 'sha256-uA6fxc0gl3P5//NKJxplasYAcMyveYOYRtV08rf1NdM=' 'sha256-RT1053JU5UiKvjrCUFx1rlhdFLMmgtuFJ9T8jnMeawQ=' 'sha256-RTcTanGuQck/Cl+4zNduM3E7QA1BP42nfnGTIkaxu2Q='; img-src 'self' data:; font-src 'self'; connect-src 'self' https://loopy-sync.loopy-1e2.workers.dev; worker-src 'self'; object-src 'none'; base-uri 'none'; form-action 'none'; manifest-src 'self'; upgrade-insecure-requests">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'sha256-LG1vla+GtqtiF7IkCcoDXeGKhI49rhu703/H5KlUpDc='; style-src 'self' 'sha256-iKqZfY0yOsyVHa/qlTmRsjSUAon+EdDi9RLwucVWFNA=' 'sha256-uA6fxc0gl3P5//NKJxplasYAcMyveYOYRtV08rf1NdM=' 'sha256-RT1053JU5UiKvjrCUFx1rlhdFLMmgtuFJ9T8jnMeawQ=' 'sha256-zOI/Dfu6iLqXhRR2R6oi77XJwf6cvvvruJS0xlRLSj0='; img-src 'self' data:; font-src 'self'; connect-src 'self' https://loopy-sync.loopy-1e2.workers.dev; worker-src 'self'; object-src 'none'; base-uri 'none'; form-action 'none'; manifest-src 'self'; upgrade-insecure-requests">
 <meta name="referrer" content="strict-origin-when-cross-origin">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <style>:root{color-scheme:light;padding-top:var(--safe-top);padding-bottom:var(--safe-bottom)}body{margin:0}[hidden]{display:none!important}</style>
@@ -221,10 +221,13 @@ body { min-height: 100vh; min-height: 100dvh; padding-block: var(--page-pad-top)
   background: var(--key); border: 2px solid var(--line); border-radius: 18px; min-height: clamp(50px, 8dvh, 92px); cursor: pointer;
   transition: transform .08s ease, border-color .15s ease; touch-action: manipulation; -webkit-tap-highlight-color: transparent;
 }
-.letters.kbd { display: flex; flex-direction: column; gap: 6px; }
-.letters.kbd .krow { display: flex; gap: 5px; justify-content: center; }
-.letters.kbd button { flex: 1 1 0; min-width: 0; min-height: clamp(44px, 6.5dvh, 60px); border-radius: 9px; padding: 0; font-size: clamp(1.05rem, 2.6dvh, 1.5rem); }
-.letters.kbd button.space { flex: 2.5 1 0; font-size: 0.9rem; font-weight: 600; color: var(--muted); }
+/* Every key is the same size: the keyboard measures itself (container units) and splits its width by the longest row,
+   10 keys in English and 11 in German (--n from the keyboard's lang). Shorter rows are centred; the letter grows with the key. */
+.letters.kbd { display: flex; flex-direction: column; gap: 5px; container-type: inline-size; --n: 10; --kgap: 4px; }
+.letters.kbd[lang="de"] { --n: 11; }
+.letters.kbd .krow { display: flex; flex-wrap: wrap; gap: var(--kgap); justify-content: center; }
+.letters.kbd button { --kw: calc((100cqw - (var(--n) - 1) * var(--kgap)) / var(--n)); flex: 0 0 var(--kw); min-width: 0; min-height: clamp(44px, 6.5dvh, 60px); border-radius: 9px; padding: 0; font-size: clamp(1.1rem, calc(var(--kw) * 0.72), 1.6rem); }
+.letters.kbd button.space { flex: 0 0 calc(var(--kw) * 3 + var(--kgap) * 2); font-size: 0.9rem; font-weight: 600; color: var(--muted); }
 .letters button:hover:not(:disabled), .actions button:hover:not(:disabled) { border-color: var(--accent); }
 .letters button:active:not(:disabled), .actions button:active:not(:disabled) { transform: scale(0.96); }
 .letters button:disabled, .actions button:disabled { opacity: 0.4; cursor: default; }
@@ -261,19 +264,17 @@ body { min-height: 100vh; min-height: 100dvh; padding-block: var(--page-pad-top)
   .side { height: 100%; justify-content: center; }
   .letters button, .actions button { min-height: clamp(44px, 15dvh, 120px); }
   .letters.kbd button { min-height: clamp(36px, 9dvh, 64px); }
-  .letters.kbd .krow { gap: 4px; }
 }
 @media (orientation: landscape) and (min-width: 1000px) {
-  .letters.kbd button { min-height: clamp(44px, 10dvh, 84px); font-size: 1.5rem; }
+  .letters.kbd button { min-height: clamp(44px, 10dvh, 84px); }
   .say { font-size: 1.4rem; }
 }
 /* Short phones: smaller keys, so the boxes and the explanation have room. */
 @media (max-height: 700px) and (orientation: portrait) {
   .speak { min-height: 44px; font-size: 0.95rem; padding: 0 16px; }
   .speak svg { width: 22px; height: 22px; }
-  .letters.kbd button { min-height: 40px; font-size: 1rem; }
+  .letters.kbd button { min-height: 40px; }
   .letters.kbd { gap: 4px; }
-  .letters.kbd .krow { gap: 4px; }
   .letters button, .actions button { min-height: clamp(44px, 6.5dvh, 60px); }
   .say { font-size: 0.95rem; }
   .problem-card { gap: 6px; }
@@ -733,6 +734,7 @@ function makeProblem(word, say, lang, trans) {
   function drawKeys() {
     lettersEl.textContent = "";
     lettersEl.classList.toggle("kbd", !tiles());
+    lettersEl.lang = wordsLang;
     lettersEl.classList.toggle("five", tiles() && current.tiles.length > 8);
     if (tiles()) { current.tiles.forEach(c => lettersEl.appendChild(key(c))); return; }
     const on = KEYS[wordsLang].join("");

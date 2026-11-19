@@ -8,6 +8,10 @@ loopy bekommt immer wieder neue Spiele. Das ist zuletzt dazugekommen!
 
 Die großen Änderungen, die neuesten zuerst. Kleine Korrekturen stehen nicht dabei. Die [ganze Liste steht auf GitHub](https://github.com/amalrajvinoth/loopy/blob/main/RELEASES.md) (auf Englisch).
 
+## 19. November 2026
+
+- **Große, gleich große Tasten auf der Buchstaben-Tastatur.** Im Wortdetektiv und in Meine Wörter sind jetzt alle Tasten gleich groß, in jeder Reihe, und die Buchstaben sind größer. Vorher war die untere deutsche Reihe gequetscht, und das ß sah klein aus. Jetzt ist das ß so hoch wie die anderen Buchstaben. Die Taste ⌫ füllt das Ende der unteren Reihe. Im Wortdetektiv steht **Prüfen** unter der Tastatur neben Hinweis. [So wird gespielt](/loopy/guide/de/games/languages/word-detective/).
+
 ## 18. November 2026
 
 - **Deutsche Tastaturen mit ß, und Wörter in der Sprache von loopy.** Im Wortdetektiv und in Meine Wörter hat die deutsche Tastatur jetzt eine ß-Taste, also alle deutschen Buchstaben: ä, ö, ü und ß. Die deutschen Buchstabenfelder in Wörter schreiben und Meine Wörter mischen ä, ö und ü unter die anderen Buchstaben. In jedem Wortspiel folgen die Wörter jetzt der Sprache von loopy. Eine Wahl unter **Wörter auf** ist zum Üben der anderen Sprache und gilt, bis sich die Sprache von loopy ändert. [So wird gespielt](/loopy/guide/de/games/languages/spell-it/).

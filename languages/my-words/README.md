@@ -55,7 +55,7 @@ The level sets how much help the child gets. It does not change the words.
 
 The level shows next to the score, like "Level 3 of 4". After 10 right in a row, or 18 of the last 20 right, the game goes up a level by itself. It says so, with a **Back a step** button. After 3 wrong in the last 5 it offers an easier one, once a visit. A level picked by hand in Settings is kept for that age. When the age goes up, a level the child reached is kept, never lost.
 
-The keyboard is QWERTY for English and QWERTZ with ä, ö, ü and ß for German. A letter the word needs that is not on it, like é or an apostrophe, joins the last row. A word with a space gets a space key.
+The keyboard is QWERTY for English and QWERTZ with ä, ö, ü and ß for German. Every key is the same size, in every row, and the letters grow with the keys. A letter the word needs that is not on it, like é or an apostrophe, joins the last row. A word with a space gets a space key.
 
 ## Reading aloud
 
