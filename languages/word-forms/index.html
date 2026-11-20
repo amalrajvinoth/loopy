@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'sha256-8xBbhe/+p9orKrvrrsE897N8boBat1ckXOMP3zbdOxM='; style-src 'self' 'sha256-iKqZfY0yOsyVHa/qlTmRsjSUAon+EdDi9RLwucVWFNA=' 'sha256-ym/QHAICRTUqhrQ7cHKsNvUkF0CumccGqoHPhDjKK/4=' 'sha256-RT1053JU5UiKvjrCUFx1rlhdFLMmgtuFJ9T8jnMeawQ=' 'sha256-FuPVUdNpirvmlYnl6UoNOAYpPUmA40mPEkW0E8pVEEA='; img-src 'self' data:; font-src 'self'; connect-src 'self' https://loopy-sync.loopy-1e2.workers.dev; worker-src 'self'; object-src 'none'; base-uri 'none'; form-action 'none'; manifest-src 'self'; upgrade-insecure-requests">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'sha256-EZk4LIW+m85b+klM9hOxgNHVWi5ow2MMW+ZGexUX0QM='; style-src 'self' 'sha256-iKqZfY0yOsyVHa/qlTmRsjSUAon+EdDi9RLwucVWFNA=' 'sha256-ym/QHAICRTUqhrQ7cHKsNvUkF0CumccGqoHPhDjKK/4=' 'sha256-RT1053JU5UiKvjrCUFx1rlhdFLMmgtuFJ9T8jnMeawQ=' 'sha256-FuPVUdNpirvmlYnl6UoNOAYpPUmA40mPEkW0E8pVEEA='; img-src 'self' data:; font-src 'self'; connect-src 'self' https://loopy-sync.loopy-1e2.workers.dev; worker-src 'self'; object-src 'none'; base-uri 'none'; form-action 'none'; manifest-src 'self'; upgrade-insecure-requests">
 <meta name="referrer" content="strict-origin-when-cross-origin">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <style>:root{color-scheme:light;padding-top:var(--safe-top);padding-bottom:var(--safe-bottom)}body{margin:0}[hidden]{display:none!important}</style>
@@ -315,7 +315,6 @@ Loopy.addStrings({
     for (const x of cands) { if (x && x !== answer && !out.includes(x) && out.length < n) out.push(x); }
     return out;
   }
-  const cap = (s) => s.charAt(0).toUpperCase() + s.slice(1);
   const noUmlaut = (s) => s.replace(/ä/g, "a").replace(/ö/g, "o").replace(/ü/g, "u").replace(/Ä/g, "A").replace(/Ö/g, "O").replace(/Ü/g, "U");
   const umlaut = (s) => s.replace(/au/, "äu").replace(/a(?!u)([^aeiouäöü]*)$/, "ä$1").replace(/o([^aeiouäöü]*)$/, "ö$1").replace(/u([^aeiouäöü]*)$/, "ü$1");
   function wrongPlural(s, p) {
@@ -359,7 +358,7 @@ Loopy.addStrings({
 
   // One question of each kind, from the word with number i in the list. The key is "kind:i" (plus ":s" or ":c" for comparing).
   function qPlural(i) {
-    const [pic, art, s, p, hard] = W.nouns[i];
+    const [pic, art, s, p] = W.nouns[i];
     const q = lang === "de" ? t("wfQPlural", { art, s }) : t("wfQPlural", { s });
     let why;
     if (lang === "de") why = t(p === s ? "wfWhySame" : noUmlaut(p) !== p && noUmlaut(s) === s ? "wfWhyOdd" : "wfWhyS", { s, p });
@@ -372,13 +371,13 @@ Loopy.addStrings({
     return problem("plural", "plural:" + i, pic, q, "", p, wrongPlural(s, p), why);
   }
   function qPast(i) {
-    const [pic, v, p, hard] = W.verbs[i];
+    const [pic, v, p] = W.verbs[i];
     const q = t("wfQPast", { v });
     const regular = lang === "de" ? /te$/.test(p) && !["brachte", "dachte", "kannte", "wusste", "hatte"].includes(p) : p === v + "ed" || p === v + "d" || p === v.slice(0, -1) + "ied" || p === v + v.slice(-1) + "ed";
     return problem("past", "past:" + i, pic, q, "", p, wrongPast(v, p), t(regular ? "wfWhyEd" : "wfWhyIrr", { v, p }));
   }
   function qComp(i, askSup) {
-    const [pic, a, c, s, hard] = W.adjs[i];
+    const [pic, a, c, s] = W.adjs[i];
     const q = askSup ? a + ", " + c + ", ___" : a + ", ___, " + s;
     const irregular = lang === "de" ? ["gut", "viel", "gern", "hoch", "nah"].includes(a) : ["good", "bad", "far", "little", "many"].includes(a);
     const why = t(irregular ? "wfWhyCompIrr" : c.startsWith("more ") || c.startsWith("mehr ") ? "wfWhyMore" : "wfWhyEr", { a, c, s });
@@ -390,7 +389,7 @@ Loopy.addStrings({
   }
   function qArt(i) {
     const [pic, art, n] = W.nouns[i];
-    const q = t("wfQArt", { n }), hard = W.nouns[i][4];
+    const q = t("wfQArt", { n });
     if (lang === "de") return problem("art", "art:" + i, pic, q, t("wfSubArt"), art, others(["der", "die", "das"], art, 2), t("wfWhyA", { art, n }));
     const vowel = /^[aeiou]/.test(n), why = art === "an" && !vowel ? "wfWhyAnH" : art === "a" && vowel ? "wfWhyAU" : art === "an" ? "wfWhyAn" : "wfWhyA";
     return problem("art", "art:" + i, pic, q, t("wfSubArt"), art, [art === "a" ? "an" : "a"], t(why, { n }));

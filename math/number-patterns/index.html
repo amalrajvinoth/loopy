@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'sha256-AsPrCSh9VXp1nn3XTvvaMoBeBWmqyEd3KU56wHpK+L0='; style-src 'self' 'sha256-iKqZfY0yOsyVHa/qlTmRsjSUAon+EdDi9RLwucVWFNA=' 'sha256-DyknVH2qkLuapMKucNR3xQwBRLW1mNXVZGUtDFedX4I=' 'sha256-RT1053JU5UiKvjrCUFx1rlhdFLMmgtuFJ9T8jnMeawQ=' 'sha256-K5yNOVobc28u3zvqYCXCeTxJiGVmx62rJ9MHvvXK4ZE='; img-src 'self' data:; font-src 'self'; connect-src 'self' https://loopy-sync.loopy-1e2.workers.dev; worker-src 'self'; object-src 'none'; base-uri 'none'; form-action 'none'; manifest-src 'self'; upgrade-insecure-requests">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'sha256-W/tvRkti67TppVN+194qRQ+xXYXbaL8ADMzqlblHkiY='; style-src 'self' 'sha256-iKqZfY0yOsyVHa/qlTmRsjSUAon+EdDi9RLwucVWFNA=' 'sha256-DyknVH2qkLuapMKucNR3xQwBRLW1mNXVZGUtDFedX4I=' 'sha256-RT1053JU5UiKvjrCUFx1rlhdFLMmgtuFJ9T8jnMeawQ=' 'sha256-K5yNOVobc28u3zvqYCXCeTxJiGVmx62rJ9MHvvXK4ZE='; img-src 'self' data:; font-src 'self'; connect-src 'self' https://loopy-sync.loopy-1e2.workers.dev; worker-src 'self'; object-src 'none'; base-uri 'none'; form-action 'none'; manifest-src 'self'; upgrade-insecure-requests">
 <meta name="referrer" content="strict-origin-when-cross-origin">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <style>:root{color-scheme:light;padding-top:var(--safe-top);padding-bottom:var(--safe-bottom)}body{margin:0}[hidden]{display:none!important}</style>
@@ -393,7 +393,7 @@ Loopy.addStrings({
   // Level 5: two rules that take turns, double and add, Fibonacci, squares plus a number.
   function make5() {
     const type = pick(["two", "two", "dplus", "dminus", "fib", "sqplus"]);
-    let p = null;
+    let p;
     // The two steps differ, so the row never stays flat (2, 2, 2, 2).
     if (type === "two") { const s1 = 2 + randInt(7); p = build("two", [1 + randInt(12), s1, pick([1, 2, 3].filter(x => x !== s1))], pick([5, 5, 4, 3])); }
     else if (type === "dplus") p = build("dplus", [1 + randInt(4), 1 + randInt(3)], pick([4, 4, 3]));
