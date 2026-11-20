@@ -14,7 +14,7 @@ guide: the guide build and check. Needed when the guide, the tools it uses or a 
 
 When in doubt it says true: a missing pattern costs ten minutes, never a skipped check.
 """
-import re, subprocess, sys
+import pathlib, re, subprocess, sys
 
 # Files no page, test or guide build reads.
 DOCS = re.compile(r"""^(
@@ -42,7 +42,12 @@ CONTENT = {"languages/words.js": ["languages/word-match/", "languages/word-trail
 OWN_CONTENT = re.compile(r"^([a-z]+/[a-z0-9-]+/)(words|data)\.js$")
 
 
-def lighthouse_pages(changes):
+ROOT = pathlib.Path(__file__).resolve().parents[1]
+
+
+def lighthouse_pages(changes, exists=lambda page: (ROOT / page / "index.html").is_file()):
+    """The site paths to score. A page counts only when it is there at HEAD (the script runs on the checkout):
+    a deleted page is not scored, even when its data.js went with it, and a data file whose page stays still counts."""
     pages = [""]
     for status, path in changes:
         if path.endswith("index.html") and status[0] != "D" and not path.startswith(("guide-src/", "docs/", "help/privacy")):
@@ -51,7 +56,7 @@ def lighthouse_pages(changes):
                 pages.append(page)
         own = OWN_CONTENT.match(path)
         for page in CONTENT.get(path, []) + ([own.group(1)] if own else []):
-            if page not in pages:
+            if page not in pages and exists(page):
                 pages.append(page)
     if any(SHARED.match(path) for _, path in changes):
         pages += [p for p in SAMPLE if p not in pages]
