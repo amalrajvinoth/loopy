@@ -31,13 +31,15 @@ GUIDE_ONLY = re.compile(r"^guide-src/")
 GUIDE = re.compile(r"^(guide-src/.* | icon\.svg | tools/(csp|check_external|ci_changes)\.py | tools/a11y/.* | \.github/workflows/.*)$", re.X)
 
 
-# Lighthouse on a pull request: the home page, every page the change touches, and, when a shared file changed
-# (src/, fonts, the built loopy.js or loopy.css), three pages that between them load every shared part. At most LIGHTHOUSE_MAX pages.
-LIGHTHOUSE_MAX = 6
+# Lighthouse on a pull request: the home page, every page the change touches (its own index.html, or its words.js or
+# data.js next to it) and, when a shared file changed (src/, fonts, the built loopy.js or loopy.css), three pages that
+# between them load every shared part. No page a change touches is left out: a change to every page scores every page
+# (about three runs of eight seconds each per page).
 SHARED = re.compile(r"^(src/.*|fonts/.*|loopy.*\.js|loopy\.css|print\.css|sw\.js)$")
 SAMPLE = ["math/make-10/", "languages/word-detective/", "progress/"]
-# A content file two pages share, and the pages that load it (a game's own words.js or data.js sits next to its page).
+# A content file two pages share, and the pages that load it.
 CONTENT = {"languages/words.js": ["languages/word-match/", "languages/word-trail/"]}
+OWN_CONTENT = re.compile(r"^([a-z]+/[a-z0-9-]+/)(words|data)\.js$")
 
 
 def lighthouse_pages(changes):
@@ -47,12 +49,13 @@ def lighthouse_pages(changes):
             page = path[:-len("index.html")]
             if page not in pages:
                 pages.append(page)
-        for page in CONTENT.get(path, []):
+        own = OWN_CONTENT.match(path)
+        for page in CONTENT.get(path, []) + ([own.group(1)] if own else []):
             if page not in pages:
                 pages.append(page)
     if any(SHARED.match(path) for _, path in changes):
         pages += [p for p in SAMPLE if p not in pages]
-    return pages[:LIGHTHOUSE_MAX]
+    return pages
 
 
 def needs(changes):
