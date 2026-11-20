@@ -7,7 +7,7 @@
 //   - @media print (print only, not "screen, print" or "not print"): paper is black on white in every theme
 //     (all of src/print.css is inside one);
 //   - fill, stroke and stop-color: an SVG picture (coins, pizzas, shapes, a ruler) keeps its own colours;
-//   - rgb(0 0 0 / a) and rgb(255 255 255 / a): a translucent shade or glow over the theme's own colours (shadows);
+//   - rgb(0 0 0 / a) and rgb(255 255 255 / a) with a under 1: a translucent shade or glow over the theme's own colours (shadows);
 //   - currentColor, transparent, inherit and the other keywords: they are not colours of their own.
 // Anything else that is a picture (a bank note, a shop shelf) sits between /* stylelint-disable loopy/no-hard-colour
 // -- why */ and /* stylelint-enable loopy/no-hard-colour */, so the exception is written down next to the colours.
@@ -33,7 +33,9 @@ const NAMED = new Set(("aliceblue antiquewhite aqua aquamarine azure beige bisqu
   + "rosybrown royalblue saddlebrown salmon sandybrown seagreen seashell sienna silver skyblue slateblue slategray slategrey snow "
   + "springgreen steelblue tan teal thistle tomato turquoise violet wheat white whitesmoke yellow yellowgreen").split(" "));
 const COLOUR = /#[0-9a-f]{3,8}\b|\b(?:rgba?|hsla?|hwb|lab|lch|oklab|oklch|color)\((?![^)]*\bfrom\b)[^)]*\)|\b[a-z]+\b/gi;
-const SHADE = /^rgba?\(\s*(?:0\s*,?\s*0\s*,?\s*0|255\s*,?\s*255\s*,?\s*255)\s*[/,]\s*[\d.%]+\s*\)$/i;
+const SHADE = /^rgba?\(\s*(?:0\s*,?\s*0\s*,?\s*0|255\s*,?\s*255\s*,?\s*255)\s*[/,]\s*([\d.]+%?)\s*\)$/i;
+// A shade is black or white with an alpha under 1 (or under 100%); rgb(0 0 0 / 1) is plain black and fails.
+const isShade = (m) => { const a = SHADE.exec(m); return !!a && parseFloat(a[1]) < (a[1].endsWith("%") ? 100 : 1); };
 // A name counts only in a property that takes a colour, so a font called Tan or an animation called red-flash passes.
 const COLOUR_PROPS = /color|background|border|outline|shadow|text-decoration|column-rule/i;
 const isColour = (m, prop) => m.startsWith("#") || m.includes("(") || (COLOUR_PROPS.test(prop) && NAMED.has(m.toLowerCase()));
@@ -56,7 +58,7 @@ const rule = (primary) => (root, result) => {
       .replace(/var\(\s*--[\w-]+\s*\)/g, "var()")  // and variable names such as var(--red)
       .replace(/"[^"]*"|'[^']*'|url\([^)]*\)/g, "\"\"");  // strings and file names are not colours
     for (const m of value.matchAll(COLOUR)) {
-      if (!isColour(m[0], decl.prop) || SHADE.test(m[0])) continue;
+      if (!isColour(m[0], decl.prop) || isShade(m[0])) continue;
       report({ message: messages.found(m[0], decl.prop), node: decl, result, ruleName });
       return;
     }

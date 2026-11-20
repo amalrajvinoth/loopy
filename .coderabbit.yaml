@@ -17,6 +17,9 @@ reviews:
     enabled: true
     drafts: true    # the loopy PRs start as drafts; the review should be in before one is marked ready
     base_branches: [".*"]    # stacked PRs target a branch, not main; without this only PRs against main are reviewed
+    # CodeRabbit pauses itself after a few reviewed pushes on a busy branch. A loopy PR gets review fixes, merges
+    # from the branch under it and picture refreshes in a row, so the pause came too early (PR #316, 20 Nov 2026).
+    auto_pause_after_reviewed_commits: 20
   # The owner wants fixes on, not just comments: "Fix comments" (the checkbox under a review, or
   # "@coderabbitai fix comments"), "Fix Failing CI" and the merge-conflict resolver. The "Autofix" switch
   # that keeps doing this by itself is per pull request, in CodeRabbit's first comment; it is not a setting here.
