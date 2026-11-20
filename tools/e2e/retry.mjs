@@ -19,7 +19,7 @@ import { fileURLToPath } from "node:url";
 const HERE = path.dirname(fileURLToPath(import.meta.url));
 const ROOT = path.resolve(HERE, "../..");
 const require = createRequire(path.join(process.env.A11Y_DEPS || path.join(ROOT, "tools/a11y"), "package.json"));
-const { chromium } = require("playwright-core");
+import { launch, ENGINE, body } from "./engine.mjs";
 
 const GAMES = [], ONLY = process.env.GAME || "";
 for (const subject of fs.readdirSync(ROOT).sort()) {
@@ -41,20 +41,11 @@ const server = http.createServer((req, res) => {
   if (fs.existsSync(file) && fs.statSync(file).isDirectory()) file = path.join(file, "index.html");
   if (!fs.existsSync(file)) { res.writeHead(404); return res.end(); }
   res.writeHead(200, { "Content-Type": TYPES[path.extname(file)] || "application/octet-stream" });
-  fs.createReadStream(file).pipe(res);
+  res.end(body(file));
 });
 await new Promise(r => server.listen(0, "127.0.0.1", r));
 const ORIGIN = `http://127.0.0.1:${server.address().port}`, BASE = ORIGIN + "/loopy/";
 
-async function launch() {
-  const tries = [];
-  if (process.env.CHROME) tries.push({ executablePath: process.env.CHROME });
-  for (const p of ["/opt/pw-browsers/chromium-1194/chrome-linux/chrome", "/usr/bin/google-chrome", "/usr/bin/chromium", "/usr/bin/chromium-browser"])
-    if (fs.existsSync(p)) tries.push({ executablePath: p });
-  tries.push({ channel: "chrome" });
-  for (const t of tries) { try { return await chromium.launch(t); } catch (e) { /* try the next one */ } }
-  throw new Error("No Chrome or Chromium found. Set CHROME=/path/to/chrome.");
-}
 const browser = await launch();
 const problems = [], rows = [];
 

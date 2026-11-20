@@ -13,8 +13,16 @@ One per failure. Add new ones at the end (the heal skill step 3). Keep each to f
 - Fix: `python3 tools/build.py` (it runs `tools/csp.py`). Never hand-edit the meta line.
 
 ## Missing minifiers
-- Looks like: `Missing minifiers. Run: python3 -m pip install ...`
-- Fix: `python3 -m pip install --require-hashes --no-binary :all: -r tools/requirements.txt` (session start does it).
+- Looks like: `Missing minifiers. Run: npm ci --prefix tools/build --ignore-scripts` (or `Node.js is not installed`).
+- Fix: `npm ci --prefix tools/build --ignore-scripts` (session start does it). The minifier is esbuild, pinned in `tools/build/package-lock.json`; Dependabot updates it. A minifier error names a real mistake in `src/` (an unclosed brace, a bad selector): fix the source.
+
+## Type check fails
+- Looks like: CI step "The shared script and its parts type-check against src/loopy.d.ts" is red; `src/loopy.js(123,4): error TS2339: Property 'x' does not exist on type 'Loopy'`.
+- Fix: a new `Loopy` member or a changed signature goes in `src/loopy.d.ts` too. A DOM slip (`.value` on an `Element`) gets a JSDoc cast, `/** @type {HTMLInputElement} */ (el)`, never a behaviour change to make the checker happy. Run `node tools/build/node_modules/typescript/bin/tsc -p tools/build` until it is quiet.
+
+## A browser test is red in WebKit only
+- Looks like: "play test (part 1 of 2, webkit)" or "accessibility (part 2 of 2, webkit)" red while the chromium job of the same part is green.
+- Fix: Safari does something differently. Read the failing page and age in the job's table, run `ENGINE=webkit node tools/e2e/play.mjs` with `GAME=<id>` (once: `node tools/a11y/node_modules/playwright-core/cli.js install --with-deps webkit`), and fix the page for both engines (`dvh` units, `:has()`, `<dialog>` focus, speech and audio timing are the usual suspects). Never drop the WebKit run. If WebKit itself could not install (the step before the test is red), re-run the job once; a second time, pin the Playwright download to the version in `tools/a11y/package-lock.json`.
 
 ## Something loads from outside
 - Looks like: `check_external.py` lists a URL.
@@ -128,3 +136,31 @@ One per failure. Add new ones at the end (the heal skill step 3). Keep each to f
 - Looks like: `retry.mjs` says `opened with #retry, the first question is "…", not the missed "…"`, or CI "A mistake comes back in every game until it is fixed", often only now and then.
 - Cause: the game's `rebuild(note)` returns null for a note its own `makeProblem` can produce, so `Loopy.retry.fresh` skips the mistake (Which Way? rejected b = 10 in `okSum`, PR #302); or the note's format changed and old notes no longer parse.
 - Fix: seed the note from the log (`Loopy.rewards.wrong(game, { …, r: note })`), reopen with `#retry` and read `window.__questions[0]`; make `rebuild` accept every sum `makeProblem` makes, never loosen the test. Keep old note formats readable. (19 Nov 2026)
+
+## Picture test is red
+- Looks like: job "picture test" red; `home-390x844-de.png: 1.42% of the pixels changed (allowed 0.3%)`, with the artifact `pictures-that-changed` (the new picture and a `-diff.png`).
+- Cause: a shared CSS or script change moved something on the home page or one of the six games. Look at the diff picture first.
+- Fix: a slip (a cut-off row, a moved button) is fixed in the source. A change that is meant to look like this gets new saved pictures: put the label "refresh pictures" on the pull request (the Refresh pictures workflow takes them with the pinned Chromium, commits `tools/e2e/pictures/`, starts the checks again and takes the label off), or Actions → "Refresh pictures" → Run workflow with the branch. `UPDATE=1 node tools/e2e/pictures.mjs` locally gives pictures from the local Chromium, which differ from the pinned build by 0.5 to 7%, so the label is the way; from a fork (the workflow cannot push there) `ENGINE=pinned UPDATE=1 node tools/e2e/pictures.mjs` on Linux, the runner's system, takes them with the same build, then commit `tools/e2e/pictures/`; or the maintainer copies the branch into this repository and runs Refresh pictures. Never raise `MAX_SHARE`. After Dependabot bumps playwright-core, a refresh is expected. The artifact `pictures-that-changed` cannot be downloaded from the cloud session (the proxy blocks the store). (20 Nov 2026)
+
+## Size budget is red
+- Looks like: step "Every page stays in its size budget" red; `must | math/x/index.html | page is 103 KB sent ... (budget 100 KB)` or `must | loopy.js | grew by 2.4 KB sent`.
+- Looks like, but is not: every file "grew" by its whole size (`loopy.js | grew by 23.2 KB`, fifty `suggest` rows). Then the check had nothing to compare with: the step must fetch the PR's base branch (`github.base_ref`) and pass it as `--base origin/<branch>`; review.py falls back to that tip when the shallow clone has no shared history.
+- Fix: make it smaller: move data a page alone uses into its `data.js`, share repeated code, drop an unused string. When the growth is the point of the change (a new shared part every page needs), add a line `Size budget: <why>` to the pull request body; the check then lets it through once and the finding stays a "should". (20 Nov 2026)
+
+## Lighthouse budgets are red
+- Looks like: job "Lighthouse budgets" red; `categories:performance failure for minScore assertion` or `cumulative-layout-shift failure` on one URL, with the artifact `lighthouse-pull-request` (the reports). A `resource-summary:total:size` line is a warning, not red: Lighthouse counts headers, icon, manifest and the lazy parts too (the progress page is 101 KB that way); the 100 KB gate is `review.py --budget`.
+- Fix: open the report for that URL. A performance failure on a local server is almost always work on load (a long script before first paint, a big picture, a font not preloaded) or a layout shift (`cumulative-layout-shift`, the report's "Avoid large layout shifts" names the element): fix the page, never lower `minScore`. Seen once: the progress page waited for `Loopy.load("levels")` before its first render, so the sections below "Game by game" jumped down when the part arrived (CLS 0.14, score 94); the part now comes with the page in a script tag and the page is drawn once. Re-run once before anything else when every URL is a few points under: the runner can be slow. (20 Nov 2026)
+
+## WebKit run is red, every page "Can't find variable: Loopy"
+- Looks like: only the `webkit` jobs are red; the log says `loads from another website: https://127.0.0.1:PORT/loopy/loopy.js`, `Error performing TLS handshake` and `Can't find variable: Loopy` on every page, while the Chromium jobs are green.
+- Cause: WebKit honours the page's `upgrade-insecure-requests` even on http://127.0.0.1 and asks the plain-http test server for https. `body()` in `tools/e2e/engine.mjs` drops the directive for WebKit; a test with its own file reading that does not go through `body()` brings the failure back.
+- Fix: serve files with `res.end(body(file))` from `engine.mjs`, never `fs.createReadStream(file).pipe(res)`. (20 Nov 2026)
+
+## WebKit accessibility run is red, Chromium's is green
+- Looks like: only the `webkit` accessibility jobs are red, with the same axe rule on one control in every game, such as `label-content-name-mismatch on #read-toggle (Elements must have their visible text as part of their accessible name)`.
+- Cause: WebKit's accessibility tree differs a little from Chromium's (visible text, pseudo-element content, names from `aria-label`), so axe sees another name or text. The Read aloud pill had an `aria-label` that did not hold its On/Off tag.
+- Fix: give the control one name that is also what it shows (drop the `aria-label` when the visible text already names it; state goes in `aria-pressed`, decoration is `aria-hidden`). Never turn the rule off. (20 Nov 2026)
+
+## Style lint is red
+- Looks like: step "The styles use only CSS every current browser has (Baseline)" red; `math/x/index.html 88:12 ✖ Property "text-box-trim" is not a widely available baseline feature (plugin/use-baseline)`, `"#fff" in color: use a theme variable (loopy/no-hard-colour)` or `Unexpected unknown property "colour" (property-no-unknown)`.
+- Fix: a typo is fixed. A CSS feature Safari or Firefox does not have yet gets a fallback that works without it, or goes; the ignore list in `tools/lint/stylelint.config.json` is only for properties whose fallback is the browser's own look (user-select, accent-color, resize, zoom, text-wrap). A written-out colour becomes the theme variable it stands for (`var(--on-accent)` for text on a coloured button); only a picture (a note, a coin) keeps its colours, between `/* stylelint-disable loopy/no-hard-colour -- why */` and `/* stylelint-enable loopy/no-hard-colour */`. Warnings (a selector twice) do not turn the check red; merge the two blocks when you touch that page. (20 Nov 2026)

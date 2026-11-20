@@ -1,6 +1,7 @@
 /* loopy worksheet print styles. loopy.js links this file with media="print" on game pages that have a
    worksheet, so it never holds up the page on screen. Edit this file, then run: python3 tools/build.py */
 @media print {
+  /* stylelint-disable-next-line plugin/use-baseline -- every browser prints with @page margins; web-features still lists it as limited */
   @page { margin: 12mm; }
   /* Only on game pages with a worksheet (loopy.js adds .loopy-print); other pages print as they are. */
   html.loopy-print, .loopy-print body {

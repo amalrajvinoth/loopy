@@ -39,7 +39,7 @@ typography:
     fontWeight: 600-700
     use: home page headings, game card titles, cheer pop-ups, Help page, How it's going page, results screens
   body:
-    fontFamily: "Lexend, Segoe UI, Helvetica Neue, Arial, sans-serif"
+    fontFamily: "Lexend, Lexend Fallback (Arial stretched to Lexend's width while Lexend loads, so nothing moves), Segoe UI, Helvetica Neue, Arial, sans-serif"
     fontWeight: 400-700
     fontSize: 16px
     use: everything else, including game titles (Lexend 700)

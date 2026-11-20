@@ -1,0 +1,59 @@
+# Refresh the saved pictures of the picture test (tools/e2e/pictures.mjs) on a branch, when a change is meant to look
+# different. Two ways: put the label "refresh pictures" on the pull request, or Actions → Refresh pictures → Run
+# workflow with the branch (the second works once this file is on main). It takes the pictures with the same pinned
+# Chromium build the check uses, commits them to the branch and starts the checks again (a push by this token starts
+# no workflow by itself), then takes the label off. Only for branches in this repository: on a pull request from a
+# fork the token cannot push, so the label does nothing there; the contributor saves the pictures on their machine
+# (UPDATE=1 ENGINE=pinned node tools/e2e/pictures.mjs on Linux, the runner's system; tools/e2e/README.md) and commits them.
+name: Refresh pictures
+
+on:
+  workflow_dispatch:
+    inputs:
+      branch:
+        description: The branch of the pull request whose pictures should be saved as they are now
+        required: true
+        type: string
+  pull_request:
+    types: [labeled]
+
+permissions:
+  contents: write
+  actions: write
+  pull-requests: write
+
+jobs:
+  refresh:
+    if: github.event_name == 'workflow_dispatch' || (github.event.label.name == 'refresh pictures' && github.event.pull_request.head.repo.full_name == github.repository)
+    runs-on: ubuntu-latest
+    env:
+      BRANCH: ${{ inputs.branch || github.event.pull_request.head.ref }}
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          ref: ${{ inputs.branch || github.event.pull_request.head.ref }}
+      - name: Install the checker (exact versions from the lock file, no browser download)
+        run: |
+          mkdir -p "$RUNNER_TEMP/a11y"
+          cp tools/a11y/package.json tools/a11y/package-lock.json "$RUNNER_TEMP/a11y/"
+          npm ci --prefix "$RUNNER_TEMP/a11y" --ignore-scripts --no-audit --no-fund
+      - name: Install the pinned Chromium build
+        run: node "$RUNNER_TEMP/a11y/node_modules/playwright-core/cli.js" install chromium-headless-shell
+      - name: Take the pictures as the pages are now
+        run: UPDATE=1 node tools/e2e/pictures.mjs --out "$RUNNER_TEMP/pictures-out"
+        env:
+          A11Y_DEPS: ${{ runner.temp }}/a11y
+          ENGINE: pinned
+      - name: Commit them to the branch and start the checks again
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          if [ "${{ github.event_name }}" = pull_request ]; then
+            gh pr edit "${{ github.event.pull_request.number }}" --repo "$GITHUB_REPOSITORY" --remove-label "refresh pictures" || true
+          fi
+          git add tools/e2e/pictures
+          if git diff --cached --quiet; then echo "The saved pictures already match."; exit 0; fi
+          git -c user.name="github-actions[bot]" -c user.email="41898282+github-actions[bot]@users.noreply.github.com" \
+            commit -m "Refresh the saved pictures of the picture test"
+          git push origin "HEAD:$BRANCH"
+          gh workflow run checks.yml --repo "$GITHUB_REPOSITORY" --ref "$BRANCH"

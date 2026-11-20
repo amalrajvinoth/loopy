@@ -1,0 +1,80 @@
+# yaml-language-server: $schema=https://coderabbit.ai/integrations/schema.v2.json
+# CodeRabbit reviews every pull request against the loopy rules, as a second pair of eyes next to the loopy-review
+# skill. The app is installed on the repository by the owner; nothing here runs on the site or in the checks.
+# Free for public repositories. Docs: https://docs.coderabbit.ai/reference/configuration
+language: en-GB
+# At most 250 characters (CodeRabbit's limit).
+tone_instructions: >-
+  Plain English, short sentences, one finding per comment, with the fix. No praise, no summary. The site is for
+  children: be strict about anything a child could see or lose (saved stars, German text, a cut-off screen).
+reviews:
+  profile: chill
+  high_level_summary: false
+  poem: false
+  review_status: false
+  collapse_walkthrough: true
+  auto_review:
+    enabled: true
+    drafts: true    # the loopy PRs start as drafts; the review should be in before one is marked ready
+    base_branches: [".*"]    # stacked PRs target a branch, not main; without this only PRs against main are reviewed
+    # CodeRabbit pauses itself after a few reviewed pushes on a busy branch. A loopy PR gets review fixes, merges
+    # from the branch under it and picture refreshes in a row, so the pause came too early (PR #316, 20 Nov 2026).
+    auto_pause_after_reviewed_commits: 20
+  # The owner wants fixes on, not just comments: "Fix comments" (the checkbox under a review, or
+  # "@coderabbitai fix comments"), "Fix Failing CI" and the merge-conflict resolver. The "Autofix" switch
+  # that keeps doing this by itself is per pull request, in CodeRabbit's first comment; it is not a setting here.
+  finishing_touches:
+    autofix:
+      enabled: true
+    fix_ci:
+      enabled: true
+    resolve_merge_conflict:
+      enabled: true
+  path_filters:
+    - "!loopy.js"
+    - "!loopy.css"
+    - "!loopy-*.js"
+    - "!sw.js"
+    - "!print.css"
+    - "!AGENTS.md"
+    - "!CLAUDE.md"
+    - "!.claude/**"
+    - "!tools/e2e/pictures/**"
+    - "!**/package-lock.json"
+    - "!docs/screenshots/**"
+    - "!guide/**"
+  path_instructions:
+    - path: "**/*.html"
+      instructions: >-
+        loopy rules (plugins/loopy/RULES.md). No style= attributes, no on*= handlers, nothing loaded from another
+        website. Every word on screen has English and German through Loopy.addStrings, data-t or Loopy.t(); in
+        German nothing stays English. Right and wrong go through Loopy.rewards.correct() and .wrong(); questions
+        come from Loopy.fresh() and Loopy.retry.fresh; each wrong answer logs a short rebuild note. Spacing and
+        sizes come from the size-class variables in loopy.css (--col, --big, --key-h, --safe-top, --safe-bottom),
+        never numbers copied into a page or raw env(safe-area-inset-*). Colours come from the theme variables,
+        except print styles (black on white) and pictures such as coins and notes. Next shows only after an answer.
+        The main content fills the card at 360x640 up to 1920x1080 with nothing cut off and no scrolling. Settings
+        are behind the gear. Everything that prints shows Loopy.logo(). A new game is also listed in Loopy.GAMES,
+        the progress page, the home page, the stars code list, the Help page and has a README, a guide page in
+        English and German, a levels ladder and a RELEASES.md row.
+    - path: "src/**"
+      instructions: >-
+        Saved data is never lost or reset: a changed key or format needs a migration, old stars codes still import,
+        per-child data goes through Loopy.store, and everything read from storage is validated. A new Loopy member
+        goes in src/loopy.d.ts too. Watch loopy.js size and work on load: the budget is 2 KB growth per pull request.
+        Speech: never cancel idle speechSynthesis, never speak at the same time as a ding. Only src/ is edited; the
+        built root copies come from python3 tools/build.py.
+    - path: "**/README.md"
+      instructions: >-
+        Plain English a parent can read: short sentences, simple words. Every change people can see also updates
+        the guide (EN and DE), FAQ.md, the Help page and RELEASES.md in the same pull request.
+    - path: "tools/**"
+      instructions: >-
+        Checks and tests only; nothing here ships to the site. A test never loosens its own compare or budget to go
+        green. Node scripts use playwright-core through tools/e2e/engine.mjs (launch() and body()).
+    - path: ".github/**"
+      instructions: >-
+        Actions are pinned to a commit SHA. New workflows need the least permissions that work. Dependabot watches
+        every package.json folder.
+chat:
+  auto_reply: true

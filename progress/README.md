@@ -63,4 +63,4 @@ The color theme, the reading font and the language (EN or DE) are behind the ⚙
 > **Practise next**
 > 7 times table. Missed 9 times this week in Times and Share and Times Tables Sprint. Practise the 7 times table. [Practise →]
 
-The level line comes from `loopy-levels.js`, the shared list of every game's levels, which this page loads first (`Loopy.load("levels")`). To say that a level moved, the page keeps one small per-child key, `loopy.levels`: for each game the level it last saw, the level before, and the day it changed. The stars code carries it. Nothing in a game's own settings changes.
+The level line comes from `loopy-levels.js`, the shared list of every game's levels, which this page loads with its own script tag, right after `loopy.js`, so the page is drawn once and nothing jumps. To say that a level moved, the page keeps one small per-child key, `loopy.levels`: for each game the level it last saw, the level before, and the day it changed. The stars code carries it. Nothing in a game's own settings changes.

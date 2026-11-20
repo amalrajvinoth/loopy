@@ -13,6 +13,17 @@ node tools/e2e/play.mjs
 
 If it cannot find Chrome, point it there: `CHROME=/path/to/chrome node tools/e2e/play.mjs`.
 
+### In Safari's engine too
+
+The children play on iPhones and iPads. So the GitHub check runs the play test and the accessibility check a second time in WebKit, the engine behind Safari. Locally:
+
+```sh
+node tools/a11y/node_modules/playwright-core/cli.js install --with-deps webkit   # once (about 90 MB)
+ENGINE=webkit node tools/e2e/play.mjs
+```
+
+Every test in this folder reads `ENGINE` through `engine.mjs`. A test that is red in WebKit only means Safari does something differently; fix the page for both engines.
+
 It takes a few minutes, prints a table with one row per game and age, and fails if it finds a problem.
 
 ## What it does
@@ -45,6 +56,20 @@ For each game, as an 8-year-old in English, it answers a question wrong on purpo
 ## Add a new game
 
 Nothing to add here: the test finds every `<subject>/<game>/index.html` by itself. In the game, make the next question with `Loopy.retry.fresh` (which calls `Loopy.fresh`), give each question a `key` that is the same for the same question, log a rebuild note with each wrong answer and rebuild from it (see the README's "Build a game"), and keep the usual ids: `score`, `next` (or `k-go` for a pad), and `choices`, `answers`, `pad`, `letters` or `map` for the answers.
+
+## Picture test
+
+`pictures.mjs` takes a picture of the home page and six games (Plus and Minus, Make 10, What Time Is It?, Word Detective, Flags and Capitals, Quick Facts) at the eight DESIGN.md sizes (360×640 to 1920×1080), in English and in German, 112 pictures (about 10 MB), and compares each with the saved picture in `pictures/`. From a fork the Refresh pictures workflow cannot push. Take the pictures on Linux, the system the runner uses (a Mac or Windows draws text a little differently, more than the 0.3% line allows): `ENGINE=pinned UPDATE=1 node tools/e2e/pictures.mjs` on a Linux machine or in a container (once: `node tools/a11y/node_modules/playwright-core/cli.js install chromium-headless-shell`), then commit `pictures/` with the change. Or ask the maintainer to copy the branch into this repository and run Refresh pictures there. A CSS change that moves a button or cuts off a row goes red before merge.
+
+```sh
+node tools/e2e/pictures.mjs                 # compare; the new pictures and a -diff.png for each change go to pictures-out/
+ENGINE=pinned UPDATE=1 node tools/e2e/pictures.mjs    # save the pictures as they are now (from a fork: on Linux, then commit tools/e2e/pictures/ with the change)
+PAGE=math/make-10/ node tools/e2e/pictures.mjs
+```
+
+The pictures come out the same every run: the games get the same random numbers, the clock is fixed, animations are off, the welcome sheet is already seen, and the fonts are loaded first. A picture fails when more than 0.3% of its pixels changed; anti-aliasing never gets there, a moved button does.
+
+CI runs it in Playwright's own pinned Chromium build (`ENGINE=pinned`), so an update of the runner's Chrome cannot change a picture. When a change is meant to look different, refresh the saved pictures on the runner: put the label "refresh pictures" on the pull request, or Actions → "Refresh pictures" → Run workflow with the branch. It commits `tools/e2e/pictures/`, starts the checks again and takes the label off. A refresh is also expected after Dependabot updates `playwright-core`. Pictures taken with another Chromium (`UPDATE=1` on a laptop) differ from the pinned build's by a few percent, so the saved pictures always come from the runner.
 
 ## Offline copy test
 

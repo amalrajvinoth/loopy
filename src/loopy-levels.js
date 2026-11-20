@@ -1,5 +1,5 @@
 /* loopy: every game's levels in one list, for the grown-ups page. Loaded with Loopy.load("levels")
-   only when a page asks for it, so games start without it. The games themselves keep their ladders
+   only when a page asks for it (the progress page puts it in a script tag), so games start without it. The games themselves keep their ladders
    in their own page (Loopy.levels.init); this list mirrors them, so change both together. */
 // Each game: keys  the saved settings that decide the level, with {age} standing for the child's age
 //            of    how many levels there are

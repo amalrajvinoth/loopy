@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'sha256-knBAvwZtmQRuaS0W8dZb9s0/U2tAU9XB0mXEKGKveD8='; style-src 'self' 'sha256-NibHH8JLEgZJQTTchi0cr0AnRVel5jf2vhYeljx/srY='; img-src 'self' data:; font-src 'self'; connect-src 'self' https://loopy-sync.loopy-1e2.workers.dev; worker-src 'self'; object-src 'none'; base-uri 'none'; form-action 'none'; manifest-src 'self'; upgrade-insecure-requests">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'sha256-6GP7IhpkCHqbZ5Xuq71ARiLrRu3YZZqWGPYX0873Lws='; style-src 'self' 'sha256-JJTcs6UsHWgVSKUySfFu3EotUA5xPRvf2JGwvDltwg0='; img-src 'self' data:; font-src 'self'; connect-src 'self' https://loopy-sync.loopy-1e2.workers.dev; worker-src 'self'; object-src 'none'; base-uri 'none'; form-action 'none'; manifest-src 'self'; upgrade-insecure-requests">
 <meta name="referrer" content="strict-origin-when-cross-origin">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <link rel="icon" href="../icon.svg" type="image/svg+xml">
@@ -24,7 +24,7 @@
   --c1: #2457c5; --c2: #e2622b; --c3: #1f8a4c; --c4: #b0359c; --c5: #d9a400; --chip: #fdeccc;
   --good: #1f8a4c; --bad: #c92a2a;
   --display: "Fredoka", "Lexend", "Segoe UI", Arial, sans-serif;
-  --font: "Lexend", "Segoe UI", "Helvetica Neue", Arial, sans-serif;
+  --font: "Lexend", "Lexend Fallback", "Segoe UI", "Helvetica Neue", Arial, sans-serif;
 }
 * { box-sizing: border-box; }
 body {
@@ -139,6 +139,7 @@ section[hidden] { display: none; }
 .brand-logo svg { height: 28px; width: auto; overflow: visible; }
 /* The loopy logo at the top of a printed page; only on paper. */
 .print-head { display: none; }
+/* stylelint-disable-next-line loopy/no-hard-colour -- paper is black on white */
 .print-head svg { height: 12mm; width: auto; overflow: visible; color: #000; }
 .week-foot { display: flex; gap: 8px; flex-wrap: wrap; align-items: center; margin-top: -8px; }
 .week-foot[hidden] { display: none; }
@@ -147,8 +148,10 @@ section[hidden] { display: none; }
 .sum-btns { display: flex; gap: 8px; flex-wrap: wrap; }
 .sheet-row { display: flex; gap: 8px 14px; flex-wrap: wrap; align-items: center; }
 /* The card as a picture to print (home screen app on iPhone): black on white, like on paper. */
+/* stylelint-disable loopy/no-hard-colour -- paper colours, whatever the theme */
 .week.paper { --ink: #000; --muted: #444; --chip: #fff; --card: #fff; --c1: #000; --line: #999; box-shadow: none; color: #000; background: #fff; }
 .week.paper .stat div { border: 1px solid #999; }
+/* stylelint-enable loopy/no-hard-colour */
 /* Printing: black on white, whatever the theme. Browsers leave out background colours when printing,
    so the light text of the dark themes would print white on white, a blank page. Buttons stay off paper.
    The weekly card's Print button prints only the card; the practice sheet prints through print.css. */
@@ -167,6 +170,7 @@ section[hidden] { display: none; }
 </style>
 <link rel="stylesheet" href="../loopy.css">
 <script src="../loopy.js"></script>
+<script src="../loopy-levels.js"></script>
 </head>
 <body>
 <main class="wrap">
@@ -1122,7 +1126,9 @@ Loopy.addStrings({
     $("clear-msg").textContent = t("prCleared");
     render();
   });
-  Loopy.load("levels").catch(() => {}).then(render);
+  // The levels list came with the page (the script tag in the head), so the page is drawn once, complete: a
+  // render after a late load pushed the sections below "Game by game" down (a layout shift Lighthouse flagged).
+  render();
 })();
 </script>
 </body>

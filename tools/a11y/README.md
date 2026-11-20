@@ -13,6 +13,8 @@ node tools/a11y/check.mjs
 
 If it cannot find Chrome, point it there: `CHROME=/path/to/chrome node tools/a11y/check.mjs`.
 
+`ENGINE=webkit node tools/a11y/check.mjs` runs the same check in WebKit, the engine behind Safari on iPhone and iPad; the GitHub check runs both. Install WebKit once with `node tools/a11y/node_modules/playwright-core/cli.js install --with-deps webkit`.
+
 `SHARD=1/2` checks every other page, starting with the first, and `SHARD=2/2` the rest. CI runs both halves at once to save time. Without `SHARD` it checks every page.
 
 The two packages are only for this check. No page loads them, and `node_modules` is not committed.

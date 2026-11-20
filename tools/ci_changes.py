@@ -2,6 +2,7 @@
 """Which of the long CI checks does a change need?
 
     python3 tools/ci_changes.py BASE HEAD     prints site=true|false and guide=true|false
+    python3 tools/ci_changes.py --pages BASE HEAD     prints the pages Lighthouse scores for this change, one site path per line
 
 CI writes the answer into the job outputs. The fast safety checks (csp, check_external,
 guide_check, build --check, plugins) always run, whatever this says.
@@ -13,7 +14,7 @@ guide: the guide build and check. Needed when the guide, the tools it uses or a 
 
 When in doubt it says true: a missing pattern costs ten minutes, never a skipped check.
 """
-import re, subprocess, sys
+import pathlib, re, subprocess, sys
 
 # Files no page, test or guide build reads.
 DOCS = re.compile(r"""^(
@@ -30,6 +31,38 @@ GUIDE_ONLY = re.compile(r"^guide-src/")
 GUIDE = re.compile(r"^(guide-src/.* | icon\.svg | tools/(csp|check_external|ci_changes)\.py | tools/a11y/.* | \.github/workflows/.*)$", re.X)
 
 
+# Lighthouse on a pull request: the home page, every page the change touches (its own index.html, or its words.js or
+# data.js next to it) and, when a shared file changed (src/, fonts, the built loopy.js or loopy.css), three pages that
+# between them load every shared part. No page a change touches is left out: a change to every page scores every page
+# (about three runs of eight seconds each per page).
+SHARED = re.compile(r"^(src/.*|fonts/.*|loopy.*\.js|loopy\.css|print\.css|sw\.js)$")
+SAMPLE = ["math/make-10/", "languages/word-detective/", "progress/"]
+# A content file two pages share, and the pages that load it.
+CONTENT = {"languages/words.js": ["languages/word-match/", "languages/word-trail/"]}
+OWN_CONTENT = re.compile(r"^([a-z]+/[a-z0-9-]+/)(words|data)\.js$")
+
+
+ROOT = pathlib.Path(__file__).resolve().parents[1]
+
+
+def lighthouse_pages(changes, exists=lambda page: (ROOT / page / "index.html").is_file()):
+    """The site paths to score. A page counts only when it is there at HEAD (the script runs on the checkout):
+    a deleted page is not scored, even when its data.js went with it, and a data file whose page stays still counts."""
+    pages = [""]
+    for status, path in changes:
+        if path.endswith("index.html") and status[0] != "D" and not path.startswith(("guide-src/", "docs/", "help/privacy")):
+            page = path[:-len("index.html")]
+            if page not in pages:
+                pages.append(page)
+        own = OWN_CONTENT.match(path)
+        for page in CONTENT.get(path, []) + ([own.group(1)] if own else []):
+            if page not in pages and exists(page):
+                pages.append(page)
+    if any(SHARED.match(path) for _, path in changes):
+        pages += [p for p in SAMPLE if p not in pages]
+    return pages
+
+
 def needs(changes):
     """changes: (status, path) pairs from git diff --name-status. Returns (site, guide)."""
     site = guide = False
@@ -41,12 +74,17 @@ def needs(changes):
     return site, guide
 
 
-def main(base, head):
+def main(base, head, pages=False):
     out = subprocess.run(["git", "diff", "--name-status", "-M", base, head], capture_output=True, text=True, check=True).stdout
     changes = []
     for line in out.splitlines():
         parts = line.split("\t")
-        changes += [(parts[0], p) for p in parts[1:]]  # a rename names the old and the new path
+        # A rename names the old path, then the new one. The old path is gone at HEAD (no page to score), so it
+        # counts as deleted; the new path keeps the rename status (the guide needs a run for either).
+        changes += [("D" if parts[0][0] == "R" and i == 0 and len(parts) > 2 else parts[0], p) for i, p in enumerate(parts[1:])]
+    if pages:
+        print("\n".join(lighthouse_pages(changes)))
+        return
     site, guide = needs(changes)
     for status, path in changes:
         print(f"{status}\t{path}", file=sys.stderr)
@@ -55,6 +93,7 @@ def main(base, head):
 
 
 if __name__ == "__main__":
-    if len(sys.argv) != 3:
+    args = [a for a in sys.argv[1:] if a != "--pages"]
+    if len(args) != 2:
         sys.exit(__doc__)
-    main(sys.argv[1], sys.argv[2])
+    main(args[0], args[1], pages="--pages" in sys.argv)

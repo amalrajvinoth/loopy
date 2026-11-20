@@ -204,7 +204,15 @@ Before a pull request is ready, review it with `.claude/skills/loopy-review/SKIL
 npm ci --prefix tools/a11y --ignore-scripts   # once
 node tools/a11y/check.mjs                     # keyboard and screen reader
 node tools/e2e/play.mjs                       # plays every game, no repeated questions
+ENGINE=webkit node tools/e2e/play.mjs         # the same in WebKit, the engine behind Safari on iPhone and iPad (CI runs both)
+ENGINE=pinned node tools/e2e/pictures.mjs     # the home page and six games still look the same at the eight sizes (pictures in tools/e2e/pictures/; once: node tools/a11y/node_modules/playwright-core/cli.js install chromium-headless-shell)
+python3 tools/review.py --budget              # the size budgets as a check: 100 KB per page, loopy.js grows by at most 2 KB
+node tools/lint/check.mjs                     # the styles: Baseline CSS only (30 months in every browser), theme colours in pages, nothing broken or doubled (once: npm ci --prefix tools/lint --ignore-scripts)
 ```
+
+The GitHub check also scores the pages a change touches with Lighthouse ([tools/lighthouse/](tools/lighthouse/lighthouserc.json): every score 95 or more, no layout shift; the 100 KB size line warns, `tools/review.py --budget` is the size gate). When a change is meant to look different, refresh the saved pictures: put the label "refresh pictures" on the pull request, or Actions → "Refresh pictures" with your branch. `.mcp.json` gives Claude Code two browser tools for bug hunting (Chrome DevTools MCP and Playwright MCP); they run only on the developer's machine. On GitHub, CodeRabbit reviews every pull request against the loopy rules in `.coderabbit.yaml` (it runs only where the repository owner has installed the CodeRabbit GitHub app; on a fork without it there is no review).
+
+For the WebKit run, install the engine once: `node tools/a11y/node_modules/playwright-core/cli.js install --with-deps webkit`.
 
 More in [tools/a11y/README.md](tools/a11y/README.md) and [tools/e2e/README.md](tools/e2e/README.md). After a big change is merged, add a line to [RELEASES.md](RELEASES.md).
 
@@ -217,13 +225,15 @@ Pages load `loopy.js` and `loopy.css`. These are small copies of `src/loopy.js` 
 After editing anything in `src/`, run:
 
 ```sh
-python3 -m pip install --require-hashes --no-binary :all: -r tools/requirements.txt   # once
+npm ci --prefix tools/build --ignore-scripts   # once: the minifier (esbuild) and the type checker, exact versions from the lock file
 python3 tools/build.py
 ```
 
+The scripts and styles are minified with esbuild (it shortens names and folds constants, so `loopy.js` is about 14% smaller than with a whitespace-only minifier). `src/loopy.d.ts` describes everything `Loopy.*` offers; `node tools/build/node_modules/typescript/bin/tsc -p tools/build` checks `src/` against it and fails on a wrong call before any browser test runs. When you add a member to `Loopy`, add it there too.
+
 The build also runs `tools/csp.py`, then writes `sw.js`, the offline helper. `sw.js` holds the list of files to keep offline and a hash of all of them. Any change to a page, script, style, font or icon changes the hash, so visitors get the new version and their offline copy is replaced. Commit the small files and `sw.js` with your change. The GitHub check runs `python3 tools/build.py --check` and fails if they do not match `src/`.
 
-The "Easier to read" font (Atkinson Hyperlegible Next, 13 KB) is only loaded by a page when that setting is on, so the sizes below do not change. The offline helper saves it with the other fonts, so it also works offline. The fonts keep only the letters loopy uses (English and German). To rebuild them, for example after adding a letter to the list in `tools/build.py`, install `fonttools` and `brotli` and run `python3 tools/build.py --fonts`.
+The "Easier to read" font (Atkinson Hyperlegible Next, 13 KB) is only loaded by a page when that setting is on, so the sizes below do not change. The offline helper saves it with the other fonts, so it also works offline. The fonts keep only the letters loopy uses (English and German). To rebuild them, for example after adding a letter to the list in `tools/build.py`, install `fonttools` and `brotli` and run `python3 tools/build.py --fonts`. Until Lexend has arrived a page shows Arial stretched to Lexend's width (the `Lexend Fallback` rules in `src/loopy.css`, numbers printed by that same command), so the text keeps its lines and nothing jumps when the real font lands.
 
 Page sizes, sent over the network with `loopy.js`, `loopy.css` and the two fonts. 61 KB of that is shared, and the browser keeps it after the first page. A game's own `words.js` or `data.js` is counted in:
 

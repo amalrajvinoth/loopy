@@ -72,7 +72,7 @@
   // fonts inside, into an SVG <foreignObject>, then drawn on a canvas and saved as a PNG.
   // Every file it reads comes from loopy itself. Resolves to a PNG data: URL, or null if the browser can't.
   function copyPage() {
-    var root = document.documentElement, body = document.body.cloneNode(true);
+    var root = document.documentElement, body = /** @type {HTMLElement} */ (document.body.cloneNode(true));
     body.querySelectorAll("script, noscript, dialog, .loopy-confetti").forEach(function (n) { n.remove(); });
     // Typed text lives in the input, not in the copy.
     var from = document.body.querySelectorAll("input"), to = body.querySelectorAll("input");

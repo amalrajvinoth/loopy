@@ -14,6 +14,7 @@ on:
 
 permissions:
   contents: read
+  pull-requests: read   # the size budget step reads the pull request on a dispatched run
 
 # A new push to a pull request stops its older run. Runs on main are never stopped.
 concurrency:
@@ -55,20 +56,47 @@ jobs:
         run: node sync/test.mjs
       - name: The Family sync usage report prints counts only (tools/sync-usage.mjs)
         run: node tools/sync-usage.test.mjs
-      - name: Install the minifiers (exact versions, checked by hash)
-        run: |
-          python3 -m venv "$RUNNER_TEMP/venv"
-          "$RUNNER_TEMP/venv/bin/pip" install --require-hashes --no-binary :all: -r tools/requirements.txt
+      - name: Install the minifier and the type checker (exact versions from the lock file)
+        run: npm ci --prefix tools/build --ignore-scripts --no-audit --no-fund
       - name: loopy.js and loopy.css match their sources in src/
-        run: '"$RUNNER_TEMP/venv/bin/python" tools/build.py --check'
+        run: python3 tools/build.py --check
+      - name: The shared script and its parts type-check against src/loopy.d.ts
+        run: node tools/build/node_modules/typescript/bin/tsc -p tools/build
+      - name: Install Stylelint (exact versions from the lock file)
+        run: npm ci --prefix tools/lint --ignore-scripts --no-audit --no-fund
+      - name: The styles use only CSS every browser has had for 30 months (Baseline) and theme colours, and nothing is broken or doubled
+        run: node tools/lint/check.mjs
       - name: The Claude Code plugins match the repo
         run: |
           python3 plugins/sync.py --check
           python3 plugins/loopy/scripts/drift.py
           python3 plugins/test_hooks.py
+      # On a pull request the base is the commit the merge was made against (base.sha), not the branch, which may
+      # have moved on. The run a picture refresh dispatches (refresh-pictures.yml) has no pull request in its
+      # context, so it looks the pull request up by branch; without one (a push to main) there is nothing to gate.
+      - name: Every page stays in its size budget (100 KB sent; loopy.js and loopy.css grow by at most 2 KB)
+        if: github.event_name != 'push'
+        env:
+          GH_TOKEN: ${{ github.token }}
+          PR_BODY: ${{ github.event.pull_request.body }}
+          BASE: ${{ github.event.pull_request.base.sha }}
+        run: |
+          if [ -z "$BASE" ]; then
+            if gh pr view "$GITHUB_REF_NAME" --repo "$GITHUB_REPOSITORY" --json baseRefOid,body > "$RUNNER_TEMP/pr.json"; then
+              BASE=$(python3 -c 'import json, sys; print(json.load(open(sys.argv[1]))["baseRefOid"])' "$RUNNER_TEMP/pr.json")
+              PR_BODY=$(python3 -c 'import json, sys; print(json.load(open(sys.argv[1]))["body"])' "$RUNNER_TEMP/pr.json")
+              export PR_BODY
+            else
+              echo "No open pull request for $GITHUB_REF_NAME: comparing with main."
+              BASE=main
+            fi
+          fi
+          git fetch --no-tags --depth=1 origin "$BASE"
+          python3 tools/review.py --budget --base "$([ "$BASE" = main ] && echo origin/main || echo "$BASE")"
 
+  # The browser tests run twice: in Chromium and in WebKit, the engine behind Safari on iPhone and iPad.
   accessibility:
-    name: accessibility (part ${{ matrix.part }} of 2)
+    name: accessibility (part ${{ matrix.part }} of 2, ${{ matrix.engine }})
     needs: changes
     if: needs.changes.outputs.site == 'true'
     runs-on: ubuntu-latest
@@ -76,6 +104,7 @@ jobs:
       fail-fast: false
       matrix:
         part: [1, 2]
+        engine: [chromium, webkit]
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
       - name: Install the checker (exact versions from the lock file, no browser download)
@@ -83,14 +112,18 @@ jobs:
           mkdir -p "$RUNNER_TEMP/a11y"
           cp tools/a11y/package.json tools/a11y/package-lock.json "$RUNNER_TEMP/a11y/"
           npm ci --prefix "$RUNNER_TEMP/a11y" --ignore-scripts --no-audit --no-fund
+      - name: Install WebKit, the engine behind Safari (only for the WebKit run)
+        if: matrix.engine == 'webkit'
+        run: node "$RUNNER_TEMP/a11y/node_modules/playwright-core/cli.js" install --with-deps webkit
       - name: Every page works with a keyboard and a screen reader
         run: node tools/a11y/check.mjs
         env:
           A11Y_DEPS: ${{ runner.temp }}/a11y
           SHARD: ${{ matrix.part }}/2
+          ENGINE: ${{ matrix.engine }}
 
   play:
-    name: play test (part ${{ matrix.part }} of 2)
+    name: play test (part ${{ matrix.part }} of 2, ${{ matrix.engine }})
     needs: changes
     if: needs.changes.outputs.site == 'true'
     runs-on: ubuntu-latest
@@ -98,6 +131,7 @@ jobs:
       fail-fast: false
       matrix:
         part: [1, 2]
+        engine: [chromium, webkit]
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
       - name: Install the checker (exact versions from the lock file, no browser download)
@@ -105,11 +139,15 @@ jobs:
           mkdir -p "$RUNNER_TEMP/a11y"
           cp tools/a11y/package.json tools/a11y/package-lock.json "$RUNNER_TEMP/a11y/"
           npm ci --prefix "$RUNNER_TEMP/a11y" --ignore-scripts --no-audit --no-fund
+      - name: Install WebKit, the engine behind Safari (only for the WebKit run)
+        if: matrix.engine == 'webkit'
+        run: node "$RUNNER_TEMP/a11y/node_modules/playwright-core/cli.js" install --with-deps webkit
       - name: Every game plays, and no question comes back too soon
         run: node tools/e2e/play.mjs
         env:
           A11Y_DEPS: ${{ runner.temp }}/a11y
           SHARD: ${{ matrix.part }}/2
+          ENGINE: ${{ matrix.engine }}
 
   retry:
     name: Try again test
@@ -148,6 +186,80 @@ jobs:
         env:
           A11Y_DEPS: ${{ runner.temp }}/a11y
 
+  # The home page and six games must still look the same: pictures at four sizes, English and German, compared
+  # with tools/e2e/pictures/. Playwright's own pinned Chromium, so the runner's Chrome updates cannot move a pixel.
+  pictures:
+    name: picture test
+    needs: changes
+    if: needs.changes.outputs.site == 'true'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - name: Install the checker (exact versions from the lock file, no browser download)
+        run: |
+          mkdir -p "$RUNNER_TEMP/a11y"
+          cp tools/a11y/package.json tools/a11y/package-lock.json "$RUNNER_TEMP/a11y/"
+          npm ci --prefix "$RUNNER_TEMP/a11y" --ignore-scripts --no-audit --no-fund
+      - name: Install the pinned Chromium build the pictures were taken with
+        run: node "$RUNNER_TEMP/a11y/node_modules/playwright-core/cli.js" install chromium-headless-shell
+      - name: The home page and six games still look the same
+        run: node tools/e2e/pictures.mjs --out "$RUNNER_TEMP/pictures-out"
+        env:
+          A11Y_DEPS: ${{ runner.temp }}/a11y
+          ENGINE: pinned
+      - name: Keep the new pictures and the diffs (only when a picture changed)
+        if: failure()
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        with:
+          name: pictures-that-changed
+          path: ${{ runner.temp }}/pictures-out
+          retention-days: 14
+
+  # Lighthouse on the pages this change touches (tools/ci_changes.py --pages), served with gzip like GitHub Pages,
+  # with budgets: every score 95 or more, no layout shift; the 100 KB size line is a warning here and a gate in review.py --budget (tools/lighthouse/lighthouserc.json).
+  lighthouse:
+    name: Lighthouse budgets
+    needs: changes
+    if: needs.changes.outputs.site == 'true'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          fetch-depth: 2
+      - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
+        with:
+          node-version: 22
+          package-manager-cache: false
+      - name: Install Lighthouse CI (exact versions from the lock file)
+        run: npm ci --prefix tools/lighthouse --ignore-scripts --no-audit --no-fund
+      - name: Which pages this change touches
+        id: pages
+        run: |
+          if [ "${{ github.event_name }}" = pull_request ]; then
+            python3 tools/ci_changes.py --pages HEAD^1 HEAD > "$RUNNER_TEMP/pages.txt"
+          else
+            printf '%s\n' "" math/make-10/ languages/word-detective/ progress/ > "$RUNNER_TEMP/pages.txt"
+          fi
+          cat "$RUNNER_TEMP/pages.txt"
+      - name: Score them on a phone, with the budgets
+        run: |
+          node tools/lighthouse/serve.mjs 8787 &
+          sleep 1
+          urls=""
+          while IFS= read -r page; do urls="$urls --url=http://127.0.0.1:8787/loopy/$page"; done < "$RUNNER_TEMP/pages.txt"
+          lhci=tools/lighthouse/node_modules/.bin/lhci
+          # shellcheck disable=SC2086
+          "$lhci" collect --config=tools/lighthouse/lighthouserc.json $urls
+          "$lhci" assert --config=tools/lighthouse/lighthouserc.json
+      - name: Keep the reports
+        if: always()
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        with:
+          name: lighthouse-pull-request
+          path: .lighthouseci
+          include-hidden-files: true # the folder starts with a dot
+          retention-days: 14
+
   # The loopy guide (guide-src/): it builds, every page passes the same safety checks as the games,
   # links work, and no page has an error in Chrome. See guide-src/README.md.
   guide:
@@ -183,7 +295,7 @@ jobs:
   # A job that was skipped because the change does not need it counts as passed.
   all:
     name: All checks
-    needs: [changes, checks, accessibility, play, retry, guide]
+    needs: [changes, checks, accessibility, play, retry, pictures, lighthouse, guide]
     if: always()
     runs-on: ubuntu-latest
     steps:

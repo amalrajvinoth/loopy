@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'sha256-RBEiBG68CfvJMmqE0Bxlh1NmLLaJlcz5Y2WQnECtvsY='; style-src 'self' 'sha256-iKqZfY0yOsyVHa/qlTmRsjSUAon+EdDi9RLwucVWFNA=' 'sha256-ptR/t8XtrY3tRAPd2OgyAtrrb0d/wWltLcF5jYlsIAY=' 'sha256-RT1053JU5UiKvjrCUFx1rlhdFLMmgtuFJ9T8jnMeawQ=' 'sha256-qyPRD2JdWeyexoRNPdzSJbsdQedMHNwzBwLokIbfeos='; img-src 'self' data:; font-src 'self'; connect-src 'self' https://loopy-sync.loopy-1e2.workers.dev; worker-src 'self'; object-src 'none'; base-uri 'none'; form-action 'none'; manifest-src 'self'; upgrade-insecure-requests">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'sha256-RBEiBG68CfvJMmqE0Bxlh1NmLLaJlcz5Y2WQnECtvsY='; style-src 'self' 'sha256-iKqZfY0yOsyVHa/qlTmRsjSUAon+EdDi9RLwucVWFNA=' 'sha256-TsRdcKdaxeo5vPHObICGQDXi1Af7L2GI/zl6jL/Vt7E=' 'sha256-RT1053JU5UiKvjrCUFx1rlhdFLMmgtuFJ9T8jnMeawQ=' 'sha256-oMgrrIUOMei2K/9c4uul+ajBCMTl13TIRIFoGE2xaM8='; img-src 'self' data:; font-src 'self'; connect-src 'self' https://loopy-sync.loopy-1e2.workers.dev; worker-src 'self'; object-src 'none'; base-uri 'none'; form-action 'none'; manifest-src 'self'; upgrade-insecure-requests">
 <meta name="referrer" content="strict-origin-when-cross-origin">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <style>:root{color-scheme:light;padding-top:var(--safe-top);padding-bottom:var(--safe-bottom)}body{margin:0}[hidden]{display:none!important}</style>
@@ -34,7 +34,7 @@
   --bad-bg: #fbe6e6;
   --chip: #e6ecf6;
   --key: #ffffff;
-  --font: "Lexend", "Segoe UI", "Helvetica Neue", Arial, sans-serif;
+  --font: "Lexend", "Lexend Fallback", "Segoe UI", "Helvetica Neue", Arial, sans-serif;
 }
 
 * { box-sizing: border-box; }
@@ -205,7 +205,7 @@ body { min-height: 100vh; min-height: 100dvh; padding-block: var(--page-pad-top)
 .wd.ok { color: var(--muted); text-decoration: line-through; text-decoration-thickness: 2px; }
 .wd.w1 { border-color: var(--c3); } .wd.w2 { border-color: var(--c4); } .wd.w3 { border-color: var(--c2); } .wd.w4 { border-color: var(--c1); } .wd.w5 { border-color: var(--c5); }
 .wd.no { border-color: var(--bad); color: var(--bad); }
-.sr { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
+.sr { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
 .row2 { display: flex; gap: 8px; width: 100%; }
 .more {
   flex: 1 1 0; font: inherit; font-weight: 700; font-size: 0.95rem; color: var(--ink); background: transparent;
