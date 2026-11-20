@@ -4,7 +4,7 @@
   "description": "Stylelint for the styles: src/loopy.css, src/print.css and every page's <style> block, with the Baseline plugin (only CSS every browser has had for 30 months). Only used while checking, never shipped.",
   "type": "module",
   "dependencies": {
-    "stylelint": "17.16.0",
+    "stylelint": "18.0.0",
     "stylelint-plugin-use-baseline": "1.4.8",
     "postcss-html": "2.0.1"
   }
