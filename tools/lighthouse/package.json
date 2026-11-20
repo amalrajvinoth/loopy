@@ -1,0 +1,9 @@
+{
+  "name": "loopy-lighthouse",
+  "private": true,
+  "description": "Lighthouse CI for the checks workflow (the pages a pull request touches, with budgets). Only used while checking, never shipped.",
+  "type": "module",
+  "dependencies": {
+    "@lhci/cli": "0.16.1"
+  }
+}

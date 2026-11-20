@@ -57,6 +57,20 @@ For each game, as an 8-year-old in English, it answers a question wrong on purpo
 
 Nothing to add here: the test finds every `<subject>/<game>/index.html` by itself. In the game, make the next question with `Loopy.retry.fresh` (which calls `Loopy.fresh`), give each question a `key` that is the same for the same question, log a rebuild note with each wrong answer and rebuild from it (see the README's "Build a game"), and keep the usual ids: `score`, `next` (or `k-go` for a pad), and `choices`, `answers`, `pad`, `letters` or `map` for the answers.
 
+## Picture test
+
+`pictures.mjs` takes a picture of the home page and six games (Plus and Minus, Make 10, What Time Is It?, Word Detective, Flags and Capitals, Quick Facts) at three sizes (a phone upright, a phone on its side, a tablet upright), in English and German, and compares each with the saved picture in `pictures/`. A CSS change that moves a button or cuts off a row goes red before merge.
+
+```sh
+node tools/e2e/pictures.mjs                 # compare; the new pictures and a -diff.png for each change go to pictures-out/
+UPDATE=1 node tools/e2e/pictures.mjs        # save the pictures as they are now
+PAGE=math/make-10/ node tools/e2e/pictures.mjs
+```
+
+The pictures come out the same every run: the games get the same random numbers, the clock is fixed, animations are off, the welcome sheet is already seen, and the fonts are loaded first. A picture fails when more than 0.3% of its pixels changed; anti-aliasing never gets there, a moved button does.
+
+CI runs it in Playwright's own pinned Chromium build (`ENGINE=pinned`), so an update of the runner's Chrome cannot change a picture. When a change is meant to look different, refresh the saved pictures on the runner: Actions → "Refresh pictures" → Run workflow with the branch. It commits `tools/e2e/pictures/` and starts the checks again. A refresh is also expected after Dependabot updates `playwright-core`.
+
 ## Offline copy test
 
 `offline.mjs` checks that after an update every phone saves the new pages, never an old one:

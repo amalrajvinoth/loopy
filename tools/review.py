@@ -3,6 +3,10 @@
 
     python3 tools/review.py                 # compares with origin/main (or main)
     python3 tools/review.py --base <ref>    # compares with another branch or commit
+    python3 tools/review.py --budget        # only the size budgets, as a check: exit 1 when a page sends more than
+                                            # PAGE_BUDGET or loopy.js/loopy.css grew by more than SHARED_GROWTH_GATE
+                                            # since main. CI runs it on every pull request; a line "Size budget: <why>"
+                                            # in the pull request body (env PR_BODY) lets a change through on purpose.
 
 It also compares this change with main for three more things:
     saved data   every key a child already has is still read, or moved to its new name
@@ -15,9 +19,9 @@ It prints a table of findings and does not change any file:
     should    makes a game different from the others
     suggest   small differences worth a look
 
-It exits with 1 if there is a "must" finding. It is not part of the GitHub check (yet).
+It exits with 1 if there is a "must" finding. Only --budget is part of the GitHub check.
 """
-import gzip, pathlib, re, subprocess, sys
+import gzip, os, pathlib, re, subprocess, sys
 
 ROOT = pathlib.Path(__file__).resolve().parent.parent
 sys.path.insert(0, str(ROOT / "tools"))
@@ -219,6 +223,7 @@ def check_storage(base, now, before):
 FONTS_ON_PAGE = ["fonts/lexend-latin.woff2", "fonts/fredoka-latin.woff2"]
 PAGE_BUDGET = 100 * 1024     # a page with loopy.js, loopy.css and its two fonts, as sent over the network
 SHARED_GROWTH = 1024         # every page pays for loopy.js and loopy.css
+SHARED_GROWTH_GATE = 2048    # --budget: red when loopy.js or loopy.css grew by more than this since main
 PAGE_GROWTH = 2048
 OFFLINE_GROWTH = 50 * 1024   # the offline copy every visitor's browser keeps
 BIG_FILE = 50 * 1024
@@ -269,8 +274,9 @@ def check_size(base):
             sizes.append((path, b, a))
         grew = (a or 0) - (b or 0)
         if path in ("loopy.js", "loopy.css") and grew > SHARED_GROWTH:
-            add("should", path, f"grew by {grew / 1024:.1f} KB sent; every page pays for this. Move code only one "
-                "page uses into that page, or make it smaller")
+            add("must" if BUDGET and grew > SHARED_GROWTH_GATE else "should", path,
+                f"grew by {grew / 1024:.1f} KB sent; every page pays for this. Move code only one "
+                "page uses into that page, or make it smaller" + (f" (budget: at most {SHARED_GROWTH_GATE // 1024} KB more per pull request)" if BUDGET else ""))
         elif path.endswith((".html", "/words.js", "/data.js")) and grew > PAGE_GROWTH:
             add("suggest", path, f"grew by {grew / 1024:.1f} KB sent. Look for repeated data or code to share")
         elif path.endswith((".woff2", ".png", ".svg")) and (b is None and before and a > BIG_FILE or grew > BIG_FILE):
@@ -281,7 +287,7 @@ def check_size(base):
             total = (a or 0) + own(now, path) + shared(now)
             was = (b or 0) + own(before, path) + shared(before) if b is not None else None
             if total > PAGE_BUDGET and (was is None or was <= PAGE_BUDGET or total > was):
-                add("should", path, f"page is {total / 1024:.0f} KB sent with its data files, loopy.js, loopy.css and fonts "
+                add("must" if BUDGET else "should", path, f"page is {total / 1024:.0f} KB sent with its data files, loopy.js, loopy.css and fonts "
                     f"(budget {PAGE_BUDGET // 1024} KB)")
     if before:
         grew = sum(map(len, now.values())) - sum(map(len, before.values()))
@@ -412,11 +418,21 @@ GAME_PARTS = [
 README_PARTS = ["How to play", "Age levels", "Settings", "Print a worksheet", "Example help text"]
 
 
+BUDGET = "--budget" in sys.argv
+BUDGET_NOTE = re.compile(r"size budget:\s*\S", re.I)
+
+
 def main():
     asked = sys.argv[sys.argv.index("--base") + 1] if "--base" in sys.argv[:-1] else None
     base = find_base(asked)
     if base is None:
         print(f"Note: no `{asked or 'origin/main'}` to compare with, so saved data and size were not compared.\n")
+    if BUDGET:
+        check_size(base)
+        if BUDGET_NOTE.search(os.environ.get("PR_BODY", "")):
+            print("The pull request body has a \"Size budget:\" line, so a page over budget is allowed this time.\n")
+            findings[:] = [(("should" if level == "must" else level), where, what) for level, where, what in findings]
+        return report(base)
     now = code_files(lambda path: (ROOT / path).read_text(encoding="utf-8") if (ROOT / path).exists() else None)
     if base:
         check_storage(base, now, code_files(lambda path: base_text(base, path)))
@@ -462,6 +478,11 @@ def main():
             if h not in heads:
                 add("should", rel(rd), f"no \"## {h}\" section")
 
+    return report(base)
+
+
+def report(base):
+    """Print the size table and the findings; exit code 1 for a "must"."""
     order = {"must": 0, "should": 1, "suggest": 2}
     findings.sort(key=lambda f: (order[f[0]], f[1]))
     if sizes:
@@ -474,7 +495,8 @@ def main():
             print(f"| `{path}` | {kb(b)} | {'gone' if a is None else kb(a)} | {change} |")
         print()
     if not findings:
-        print("No findings. All games follow the same rules, saved data is kept, sizes are in budget, and the docs keep up.")
+        print("Sizes are in budget." if BUDGET else
+              "No findings. All games follow the same rules, saved data is kept, sizes are in budget, and the docs keep up.")
         return 0
     print("| Level | Where | Finding |")
     print("| --- | --- | --- |")

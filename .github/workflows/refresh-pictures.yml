@@ -1,0 +1,47 @@
+# Refresh the saved pictures of the picture test (tools/e2e/pictures.mjs) on a branch, when a change is meant to look
+# different. Run it by hand: Actions → Refresh pictures → Run workflow, with the branch of the pull request. It takes
+# the pictures with the same pinned Chromium build the check uses, commits them to the branch and starts the checks
+# again (a push by this token starts no workflow by itself).
+name: Refresh pictures
+
+on:
+  workflow_dispatch:
+    inputs:
+      branch:
+        description: The branch of the pull request whose pictures should be saved as they are now
+        required: true
+        type: string
+
+permissions:
+  contents: write
+  actions: write
+
+jobs:
+  refresh:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          ref: ${{ inputs.branch }}
+      - name: Install the checker (exact versions from the lock file, no browser download)
+        run: |
+          mkdir -p "$RUNNER_TEMP/a11y"
+          cp tools/a11y/package.json tools/a11y/package-lock.json "$RUNNER_TEMP/a11y/"
+          npm ci --prefix "$RUNNER_TEMP/a11y" --ignore-scripts --no-audit --no-fund
+      - name: Install the pinned Chromium build
+        run: node "$RUNNER_TEMP/a11y/node_modules/playwright-core/cli.js" install chromium-headless-shell
+      - name: Take the pictures as the pages are now
+        run: UPDATE=1 node tools/e2e/pictures.mjs --out "$RUNNER_TEMP/pictures-out"
+        env:
+          A11Y_DEPS: ${{ runner.temp }}/a11y
+          ENGINE: pinned
+      - name: Commit them to the branch and start the checks again
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          git add tools/e2e/pictures
+          if git diff --cached --quiet; then echo "The saved pictures already match."; exit 0; fi
+          git -c user.name="github-actions[bot]" -c user.email="41898282+github-actions[bot]@users.noreply.github.com" \
+            commit -m "Refresh the saved pictures of the picture test"
+          git push origin "HEAD:${{ inputs.branch }}"
+          gh workflow run checks.yml --repo "$GITHUB_REPOSITORY" --ref "${{ inputs.branch }}"

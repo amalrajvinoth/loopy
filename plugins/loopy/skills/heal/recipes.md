@@ -136,3 +136,16 @@ One per failure. Add new ones at the end (the heal skill step 3). Keep each to f
 - Looks like: `retry.mjs` says `opened with #retry, the first question is "…", not the missed "…"`, or CI "A mistake comes back in every game until it is fixed", often only now and then.
 - Cause: the game's `rebuild(note)` returns null for a note its own `makeProblem` can produce, so `Loopy.retry.fresh` skips the mistake (Which Way? rejected b = 10 in `okSum`, PR #302); or the note's format changed and old notes no longer parse.
 - Fix: seed the note from the log (`Loopy.rewards.wrong(game, { …, r: note })`), reopen with `#retry` and read `window.__questions[0]`; make `rebuild` accept every sum `makeProblem` makes, never loosen the test. Keep old note formats readable. (19 Nov 2026)
+
+## Picture test is red
+- Looks like: job "picture test" red; `home-390x844-de.png: 1.42% of the pixels changed (allowed 0.3%)`, with the artifact `pictures-that-changed` (the new picture and a `-diff.png`).
+- Cause: a shared CSS or script change moved something on the home page or one of the six games. Look at the diff picture first.
+- Fix: a slip (a cut-off row, a moved button) is fixed in the source. A change that is meant to look like this gets new saved pictures: Actions → "Refresh pictures" → Run workflow with the pull request's branch (it commits `tools/e2e/pictures/` and starts the checks again), or `UPDATE=1 node tools/e2e/pictures.mjs` locally and commit. Never raise `MAX_SHARE`. After Dependabot bumps playwright-core, a refresh is expected. (20 Nov 2026)
+
+## Size budget is red
+- Looks like: step "Every page stays in its size budget" red; `must | math/x/index.html | page is 103 KB sent ... (budget 100 KB)` or `must | loopy.js | grew by 2.4 KB sent`.
+- Fix: make it smaller: move data a page alone uses into its `data.js`, share repeated code, drop an unused string. When the growth is the point of the change (a new shared part every page needs), add a line `Size budget: <why>` to the pull request body; the check then lets it through once and the finding stays a "should". (20 Nov 2026)
+
+## Lighthouse budgets are red
+- Looks like: job "Lighthouse budgets" red; `categories:performance failure for minScore assertion` or `resource-summary:total:size failure for maxNumericValue assertion` on one URL, with the artifact `lighthouse-pull-request` (the reports).
+- Fix: open the report for that URL. A size failure is the same as the size budget above. A performance failure on a local server is almost always work on load (a long script before first paint, a big picture, a font not preloaded) or a layout shift (`cumulative-layout-shift`): fix the page, never lower `minScore`. Re-run once before anything else when every URL is a few points under: the runner can be slow. (20 Nov 2026)

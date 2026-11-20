@@ -14,7 +14,7 @@ loopy heals in three layers:
 
 ## Steps
 
-1. **Collect what fails.** Locally, run the checks in the `ship-pr` skill step 3. On a pull request, read the failing check's log on the latest commit, and whether it conflicts with main.
+1. **Collect what fails.** Locally, run the checks in the `ship-pr` skill step 3. On a pull request, read the failing check's log on the latest commit, and whether it conflicts with main. For a layout, speed or console failure, open the real page with the browser tools in `.mcp.json` when they are available (Chrome DevTools MCP for a trace, the console and the accessibility tree; Playwright MCP for WebKit) instead of guessing from the source.
 2. **Match each failure to a recipe** in `recipes.md` by its "Looks like" line. Follow the recipe.
 3. **No recipe?** Find the root cause (never skip, disable or loosen a check to get green; a "flake" needs proof: the same test passing on a re-run of the same commit). Fix it. Then add a recipe at the end of `recipes.md`: Looks like (the exact error text to match), Cause, Fix, and the date. Keep it to four lines.
 4. **Same failure twice?** If a recipe was used before for the same cause, make it permanent instead: a hook, a check in `tools/`, or a step in a skill, so it cannot happen again. Say so in the PR.
