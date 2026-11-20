@@ -76,7 +76,9 @@ interface LoopyRewards {
 }
 
 interface LoopyLevels {
-  init(opts: { game: string; levels?: any[]; max?: number; [option: string]: any }): any;
+  /** The game's ladder: one name per level (a string key for Loopy.t or a function), get() the level the saved
+   *  settings mean, set(i) saves level i, base() the level the age picker starts at. */
+  init(opts: { names: (string | (() => string))[]; get: () => number; set: (i: number) => void; base?: () => number; [option: string]: any }): any;
   render(): void;
   harder(game?: string): any;
   up(game: string): void;
@@ -134,7 +136,8 @@ interface LoopyRecent {
 }
 
 interface LoopySpeech {
-  question(o: { text?: string; lang?: string; [option: string]: any } | string): void;
+  /** The Read aloud pill: host gets the button, text() is read on a tap, lang() the voice's language. */
+  question(o: { host: HTMLElement; text: () => string; lang?: () => string; inline?: boolean; [option: string]: any }): void;
   toggle(o?: any): void;
   read(): void;
   [member: string]: any;
@@ -154,7 +157,8 @@ interface LoopyKeep {
 }
 
 interface LoopyBackup {
-  exportCode(only?: any, light?: boolean): any;
+  /** light: true or 1 leaves out old history for a shorter code, 2 leaves out more (the QR code). */
+  exportCode(only?: any, light?: boolean | 1 | 2): any;
   importCode(code: string, opts?: any): any;
   peek(code: string): any;
   link(code: string): string;
