@@ -1,11 +1,12 @@
+# yaml-language-server: $schema=https://coderabbit.ai/integrations/schema.v2.json
 # CodeRabbit reviews every pull request against the loopy rules, as a second pair of eyes next to the loopy-review
 # skill. The app is installed on the repository by the owner; nothing here runs on the site or in the checks.
 # Free for public repositories. Docs: https://docs.coderabbit.ai/reference/configuration
 language: en-GB
+# At most 250 characters (CodeRabbit's limit).
 tone_instructions: >-
-  Plain English, short sentences, one finding per comment, with the fix. Say what a child or parent would notice.
-  No praise, no summary of what the code does. The site is for children: be strict about anything a child could
-  see or lose (saved stars, German text, a cut-off screen).
+  Plain English, short sentences, one finding per comment, with the fix. No praise, no summary. The site is for
+  children: be strict about anything a child could see or lose (saved stars, German text, a cut-off screen).
 reviews:
   profile: chill
   request_changes_workflow: false
@@ -15,7 +16,7 @@ reviews:
   collapse_walkthrough: true
   auto_review:
     enabled: true
-    drafts: false
+    drafts: true    # the loopy PRs start as drafts; the review should be in before one is marked ready
   path_filters:
     - "!loopy.js"
     - "!loopy.css"
