@@ -251,7 +251,7 @@ def served(base):
     return now, before
 
 
-SCRIPT_SRC = re.compile(r'<script src="((?![^"]*loopy)[^"]+\.js)"></script>')  # not loopy.js: the shared files are counted once
+SCRIPT_SRC = re.compile(r'<script src="((?![^"]*loopy\.js")[^"]+\.js)"></script>')  # not loopy.js itself (the shared files are counted once); a part a page loads by tag, like the progress page's loopy-levels.js, counts
 
 
 def own_scripts(path, data):

@@ -59,7 +59,7 @@ Nothing to add here: the test finds every `<subject>/<game>/index.html` by itsel
 
 ## Picture test
 
-`pictures.mjs` takes a picture of the home page and six games (Plus and Minus, Make 10, What Time Is It?, Word Detective, Flags and Capitals, Quick Facts) at three sizes (a phone upright, a phone on its side, a tablet upright), in English and German, and compares each with the saved picture in `pictures/`. A CSS change that moves a button or cuts off a row goes red before merge.
+`pictures.mjs` takes a picture of the home page and six games (Plus and Minus, Make 10, What Time Is It?, Word Detective, Flags and Capitals, Quick Facts) at the eight DESIGN.md sizes in English (360×640 to 1920×1080) and in German at three of them (a phone upright, a phone on its side, a tablet upright, where longer words break a row first), 77 pictures, and compares each with the saved picture in `pictures/`. From a fork the Refresh pictures workflow cannot push, so save the pictures on your machine: `UPDATE=1 ENGINE=pinned node tools/e2e/pictures.mjs` (once: `node tools/a11y/node_modules/playwright-core/cli.js install chromium-headless-shell`) and commit `pictures/`. A CSS change that moves a button or cuts off a row goes red before merge.
 
 ```sh
 node tools/e2e/pictures.mjs                 # compare; the new pictures and a -diff.png for each change go to pictures-out/

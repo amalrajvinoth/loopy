@@ -205,7 +205,7 @@ npm ci --prefix tools/a11y --ignore-scripts   # once
 node tools/a11y/check.mjs                     # keyboard and screen reader
 node tools/e2e/play.mjs                       # plays every game, no repeated questions
 ENGINE=webkit node tools/e2e/play.mjs         # the same in WebKit, the engine behind Safari on iPhone and iPad (CI runs both)
-node tools/e2e/pictures.mjs                   # the home page and six games still look the same (pictures in tools/e2e/pictures/)
+ENGINE=pinned node tools/e2e/pictures.mjs     # the home page and six games still look the same at the eight sizes (pictures in tools/e2e/pictures/; once: node tools/a11y/node_modules/playwright-core/cli.js install chromium-headless-shell)
 python3 tools/review.py --budget              # the size budgets as a check: 100 KB per page, loopy.js grows by at most 2 KB
 node tools/lint/check.mjs                     # the styles: Baseline CSS only (30 months in every browser), theme colours in pages, nothing broken or doubled (once: npm ci --prefix tools/lint --ignore-scripts)
 ```

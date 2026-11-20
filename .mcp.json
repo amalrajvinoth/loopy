@@ -1,13 +1,25 @@
 {
-  "//": "Browser tools for Claude Code in this repo, both free and local. Chrome DevTools MCP opens a real Chrome: a performance trace with Core Web Vitals, the console, the network, the accessibility tree. Playwright MCP does the same in WebKit (Safari's engine) and Firefox. Neither runs at build or test time and nothing a page loads changes. Pinned versions; Dependabot does not watch this file, so bump them by hand now and then.",
+  "//": "Browser tools for Claude Code in this repo, both free and local. Chrome DevTools MCP opens a real Chrome: a performance trace with Core Web Vitals, the console, the network, the accessibility tree. Playwright MCP opens WebKit (Safari's engine, --browser webkit; firefox for Firefox), for the bugs only Safari shows; it needs the engine once: npx playwright install webkit. Neither runs at build or test time and nothing a page loads changes. Pinned versions; Dependabot does not watch this file, so bump them by hand now and then.",
   "mcpServers": {
     "chrome-devtools": {
       "command": "npx",
-      "args": ["-y", "chrome-devtools-mcp@1.13.0", "--headless", "--isolated"]
+      "args": [
+        "-y",
+        "chrome-devtools-mcp@1.13.0",
+        "--headless",
+        "--isolated"
+      ]
     },
     "playwright": {
       "command": "npx",
-      "args": ["-y", "@playwright/mcp@0.0.86", "--headless", "--isolated"]
+      "args": [
+        "-y",
+        "@playwright/mcp@0.0.86",
+        "--browser",
+        "webkit",
+        "--headless",
+        "--isolated"
+      ]
     }
   }
 }

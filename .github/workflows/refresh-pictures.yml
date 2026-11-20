@@ -2,7 +2,9 @@
 # different. Two ways: put the label "refresh pictures" on the pull request, or Actions → Refresh pictures → Run
 # workflow with the branch (the second works once this file is on main). It takes the pictures with the same pinned
 # Chromium build the check uses, commits them to the branch and starts the checks again (a push by this token starts
-# no workflow by itself), then takes the label off.
+# no workflow by itself), then takes the label off. Only for branches in this repository: on a pull request from a
+# fork the token cannot push, so the label does nothing there; the contributor saves the pictures on their machine
+# (UPDATE=1 ENGINE=pinned node tools/e2e/pictures.mjs, tools/e2e/README.md) and commits them.
 name: Refresh pictures
 
 on:
@@ -22,7 +24,7 @@ permissions:
 
 jobs:
   refresh:
-    if: github.event_name == 'workflow_dispatch' || github.event.label.name == 'refresh pictures'
+    if: github.event_name == 'workflow_dispatch' || (github.event.label.name == 'refresh pictures' && github.event.pull_request.head.repo.full_name == github.repository)
     runs-on: ubuntu-latest
     env:
       BRANCH: ${{ inputs.branch || github.event.pull_request.head.ref }}

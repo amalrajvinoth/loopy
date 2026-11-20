@@ -14,6 +14,7 @@ on:
 
 permissions:
   contents: read
+  pull-requests: read   # the size budget step reads the pull request on a dispatched run
 
 # A new push to a pull request stops its older run. Runs on main are never stopped.
 concurrency:
@@ -70,14 +71,28 @@ jobs:
           python3 plugins/sync.py --check
           python3 plugins/loopy/scripts/drift.py
           python3 plugins/test_hooks.py
+      # On a pull request the base is the commit the merge was made against (base.sha), not the branch, which may
+      # have moved on. The run a picture refresh dispatches (refresh-pictures.yml) has no pull request in its
+      # context, so it looks the pull request up by branch; without one (a push to main) there is nothing to gate.
       - name: Every page stays in its size budget (100 KB sent; loopy.js and loopy.css grow by at most 2 KB)
-        if: github.event_name == 'pull_request'
+        if: github.event_name != 'push'
         env:
+          GH_TOKEN: ${{ github.token }}
           PR_BODY: ${{ github.event.pull_request.body }}
-          BASE: ${{ github.base_ref }}
+          BASE: ${{ github.event.pull_request.base.sha }}
         run: |
+          if [ -z "$BASE" ]; then
+            if gh pr view "$GITHUB_REF_NAME" --repo "$GITHUB_REPOSITORY" --json baseRefOid,body > "$RUNNER_TEMP/pr.json"; then
+              BASE=$(python3 -c 'import json, sys; print(json.load(open(sys.argv[1]))["baseRefOid"])' "$RUNNER_TEMP/pr.json")
+              PR_BODY=$(python3 -c 'import json, sys; print(json.load(open(sys.argv[1]))["body"])' "$RUNNER_TEMP/pr.json")
+              export PR_BODY
+            else
+              echo "No open pull request for $GITHUB_REF_NAME: comparing with main."
+              BASE=main
+            fi
+          fi
           git fetch --no-tags --depth=1 origin "$BASE"
-          python3 tools/review.py --budget --base "origin/$BASE"
+          python3 tools/review.py --budget --base "$([ "$BASE" = main ] && echo origin/main || echo "$BASE")"
 
   # The browser tests run twice: in Chromium and in WebKit, the engine behind Safari on iPhone and iPad.
   accessibility:
