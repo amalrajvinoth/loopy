@@ -223,7 +223,9 @@
       syBad: "That is not a family code. It has 16 letters and numbers.", syNone: "No family has this code. Check it on the other device.",
       syNoNet: "loopy can't reach the sync server. Try again with internet.",
       syAskTitle: "Join this family?", syAskText: "Stars from the family's other devices are added here, and stars here are added there. Nothing is taken away.",
-      syAskNo: "Not now", syAskYes: "Join" },
+      syAskNo: "Not now", syAskYes: "Join",
+      syShare: "Share the link", syShareText: "Open this link on your other device and the stars are there too:",
+      syShared: "Link copied! Send it to the other device.", syShareNo: "Copying did not work. Scan the QR code instead." },
     de: { syHead: "Familien-Sync", syOff: "Halte die Sterne auf allen Geräten deiner Familie gleich, ganz von selbst. Alles wird auf diesem Gerät verschlossen, bevor es gesendet wird, und der Server kann es nicht lesen. Kein Konto.",
       syOn: "Einschalten", syJoin: "Mit Code beitreten", syJoinGo: "Beitreten", syCodeLabel: "Familien-Code von deinem anderen Gerät",
       syIs: "An. Euer Familien-Code:", syScan: "Scanne das auf deinem anderen Gerät oder tippe den Code dort unter Familien-Sync, Mit Code beitreten ein.",
@@ -234,8 +236,60 @@
       syBad: "Das ist kein Familien-Code. Er hat 16 Buchstaben und Zahlen.", syNone: "Keine Familie hat diesen Code. Prüfe ihn auf dem anderen Gerät.",
       syNoNet: "loopy erreicht den Sync-Server nicht. Versuche es mit Internet noch einmal.",
       syAskTitle: "Dieser Familie beitreten?", syAskText: "Sterne von den anderen Geräten der Familie kommen hierher, und Sterne von hier kommen dorthin. Nichts geht verloren.",
-      syAskNo: "Nicht jetzt", syAskYes: "Beitreten" }
+      syAskNo: "Nicht jetzt", syAskYes: "Beitreten",
+      syShare: "Link teilen", syShareText: "Öffne diesen Link auf deinem anderen Gerät, dann sind die Sterne auch dort:",
+      syShared: "Link kopiert! Schicke ihn an das andere Gerät.", syShareNo: "Kopieren ging nicht. Scanne stattdessen den QR-Code." }
   });
+
+  // The family link (loopy/#family=CODE): the QR code and Share carry it. Opening it asks "Join this family?".
+  function familyLink(code) { return Loopy.root + "#family=" + code.replace(/-/g, ""); }
+  // A promise of the QR code of the family link as an <svg class="sync-qr">, or null.
+  function qrSvg(code) {
+    return Loopy.load("backup").then(function () {
+      var q = Loopy.backup.qr(familyLink(code), 10);
+      if (!q) return null;
+      var ns = "http://www.w3.org/2000/svg", svg = document.createElementNS(ns, "svg"), back = document.createElementNS(ns, "rect"), path = document.createElementNS(ns, "path"), span = q.n + 8;
+      svg.setAttribute("viewBox", "-4 -4 " + span + " " + span);
+      svg.setAttribute("class", "sync-qr");
+      svg.setAttribute("role", "img");
+      svg.setAttribute("aria-label", Loopy.t("syScan"));
+      [["x", -4], ["y", -4], ["width", span], ["height", span], ["fill", "#fff"]].forEach(function (a) { back.setAttribute(a[0], a[1]); });
+      path.setAttribute("d", q.path); path.setAttribute("fill", "#000"); path.setAttribute("shape-rendering", "crispEdges");
+      svg.append(back, path);
+      return svg;
+    }, function () { return null; });
+  }
+  // Share the family link: the phone's own share sheet where there is one, else the clipboard. Nothing
+  // leaves the device but what the grown-up sends. A promise of "shared", "copied" or "no".
+  function share() {
+    if (!st) return Promise.resolve("no");
+    var text = Loopy.t("syShareText"), url = familyLink(st.c);
+    if (navigator.share) {
+      return navigator.share({ text: text, url: url }).then(function () { return "shared"; }, function (e) {
+        // Cancelled, or the share sheet could not open: then the clipboard, unless it was a cancel.
+        return e && e.name === "AbortError" ? "shared" : copy();
+      });
+    }
+    return copy();
+    function copy() {
+      if (!navigator.clipboard || !navigator.clipboard.writeText) return Promise.resolve("no");
+      return navigator.clipboard.writeText(text + " " + url).then(function () { return "copied"; }, function () { return "no"; });
+    }
+  }
+  // A Share pill: after a tap, msg says what happened (nothing for the share sheet, which speaks for itself).
+  function sharePill(msg) {
+    var b = Loopy.el("button", "kid-btn quiet", Loopy.t("syShare"));
+    b.type = "button";
+    b.addEventListener("click", function () {
+      b.disabled = true;
+      share().then(function (r) {
+        b.disabled = false;
+        if (r === "copied") msg.textContent = Loopy.t("syShared");
+        else if (r === "no") msg.textContent = Loopy.t("syShareNo");
+      });
+    });
+    return b;
+  }
 
   function settings(box) {
     var t = Loopy.t, el = Loopy.el, body = el("div"), msg = el("p");
@@ -283,23 +337,12 @@
       }
       var code = el("p", "sync-code", st.c), now = btn(t("syNow")), stop = btn(t("syStop"), "kid-btn quiet"), forget = btn(t("syForget"), "kid-btn danger"), sure = false;
       var end = el("div", "kid-foot");
-      row.append(stop, now);
+      // Share sends the family link to the other device (the share sheet, or the clipboard).
+      row.append(stop, sharePill(msg), now);
       end.append(forget);
       body.append(el("p", "", t("syIs")), code, row, end);
       shown(status === "off" ? "idle" : status);
-      Loopy.load("backup").then(function () {
-        var q = Loopy.backup.qr(Loopy.root + "#family=" + st.c.replace(/-/g, ""), 10);
-        if (!q || !code.isConnected) return;
-        var ns = "http://www.w3.org/2000/svg", svg = document.createElementNS(ns, "svg"), back = document.createElementNS(ns, "rect"), path = document.createElementNS(ns, "path"), span = q.n + 8;
-        svg.setAttribute("viewBox", "-4 -4 " + span + " " + span);
-        svg.setAttribute("class", "sync-qr");
-        svg.setAttribute("role", "img");
-        svg.setAttribute("aria-label", t("syScan"));
-        [["x", -4], ["y", -4], ["width", span], ["height", span], ["fill", "#fff"]].forEach(function (a) { back.setAttribute(a[0], a[1]); });
-        path.setAttribute("d", q.path); path.setAttribute("fill", "#000"); path.setAttribute("shape-rendering", "crispEdges");
-        svg.append(back, path);
-        code.after(svg, el("p", "", t("syScan")));
-      }, function () {});
+      qrSvg(st.c).then(function (svg) { if (svg && code.isConnected) code.after(svg, el("p", "", t("syScan"))); });
       now.addEventListener("click", function () { loaded.then(Loopy.sync.now); });
       stop.addEventListener("click", function () { Loopy.sync.off(false).then(draw); });
       forget.addEventListener("click", function () {
@@ -357,6 +400,55 @@
     draw();
     fromLink();
     window.addEventListener("hashchange", fromLink);
+  }
+
+  // ---- the small family code part (the welcome sheet and the row under My stars, see loopy-hello.js) ----
+  // panel(box, "create") turns sync on with a new code and shows the code, its QR code and Share. panel(box,
+  // "join") shows the Join box; a right code shows the same. A promise of "on" (new family), "ok" (joined),
+  // "changed" (joined and the family's stars came here: the page reloads) or "off" (the server could not
+  // be reached, or sync was on already: the box says why, the caller shows its buttons again).
+  function panel(box, mode) {
+    var t = Loopy.t, el = Loopy.el, msg = el("p", "sync-msg");
+    msg.setAttribute("aria-live", "polite");
+    box.replaceChildren(msg);
+    function on(r) {
+      var code = el("p", "sync-code", st.c), row = el("div", "kid-foot");
+      msg.textContent = "";
+      row.appendChild(sharePill(msg));
+      box.replaceChildren(el("p", "sync-line", t("syIs")), code, row, msg);
+      return qrSvg(st.c).then(function (svg) { if (svg && code.isConnected) code.after(svg, el("p", "sync-line", t("syScan"))); return r; });
+    }
+    if (st) return on("on");
+    if (mode === "join") return new Promise(function (resolve) {
+      var line = el("div", "sync-join"), input = el("input"), ok = el("button", "kid-btn", t("syJoinGo"));
+      ok.type = "button";
+      input.autocomplete = "off"; input.spellcheck = false; input.setAttribute("autocapitalize", "characters");
+      input.placeholder = "XXXX-XXXX-XXXX-XXXX";
+      input.setAttribute("aria-label", t("syCodeLabel"));
+      line.append(input, ok);
+      box.prepend(line);
+      input.focus();
+      function go() {
+        ok.disabled = true;
+        msg.textContent = t("syBusy");
+        Loopy.sync.join(input.value).then(function (r) {
+          ok.disabled = false;
+          if (r === "bad") { msg.textContent = t("syBad"); input.focus(); }
+          else if (r === "none") { msg.textContent = t("syNone"); input.focus(); }
+          else if (r === "offline") msg.textContent = t("syNoNet");
+          else if (r === "changed") { msg.textContent = t("syBusy"); location.reload(); resolve("changed"); }
+          else on("ok").then(resolve);
+        });
+      }
+      ok.addEventListener("click", go);
+      input.addEventListener("keydown", function (e) { if (e.key === "Enter") { e.preventDefault(); go(); } });
+    });
+    msg.textContent = t("syBusy");
+    return Loopy.sync.create().then(function (made) {
+      if (made) return on("on");
+      msg.textContent = t("syNoNet");
+      return "off";
+    }, function () { msg.textContent = t("syNoNet"); return "off"; });
   }
 
   // ---- "Stay in touch": a grown-up's email, a part of ⚙ Settings on the home page above Family sync ----
@@ -495,6 +587,10 @@
     now: function () { return Loopy.syncPage === "home" ? home() : round(true); },
     // Fills the Family sync part of ⚙ Settings on the home page (box: an empty element).
     settings: settings,
+    // The small family code part for the welcome sheet and the row under My stars (see above).
+    panel: panel,
+    // Share the family link with the phone's share sheet or the clipboard.
+    share: share,
     // Fills the "Stay in touch" part of ⚙ Settings on the home page (box: an empty element).
     touch: touchPart
   };

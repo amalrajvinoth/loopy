@@ -38,7 +38,7 @@ Open **Move my stars to another device** on the home page. Scan the QR code, sen
 
 ## Can the stars stay the same on all our devices?
 
-Yes, with Family sync. Open ⚙ **Settings** on the home page and tap **Turn on**. On the other device, scan the QR code. New stars then go to every family device by themselves: every child's stars, badges, answers, levels and game choices. Colors, sound, language and your email stay on each device. Everything is locked before it is sent, and there is no account. See [Family sync](/loopy/guide/stars/family-sync/).
+Yes, with Family sync. As long as no family code is set, the home page shows a row under **My stars**: tap **Turn on** there. The very first visit offers it too. It is also in ⚙ **Settings** under **For grown-ups**. On the other device, scan the QR code, or open the link from **Share the link**. New stars then go to every family device by themselves: every child's stars, badges, answers, levels and game choices. Colors, sound, language and your email stay on each device. Everything is locked before it is sent, and there is no account. See [Family sync](/loopy/guide/stars/family-sync/).
 
 ## Can I hear about new games?
 

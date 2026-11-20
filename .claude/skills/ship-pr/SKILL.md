@@ -24,6 +24,7 @@ description: Finish a loopy change and open its pull request with every check, s
    node tools/e2e/retry.mjs       # Try again in every game (GAME=<id> for one): a mistake comes back until it is fixed
    node tools/e2e/levels.mjs      # levels follow the child: up by itself when ready, kept over the birthday
    node tools/e2e/switch.mjs      # switching the child mid-game: each child keeps their own stars, log and last game
+   node tools/e2e/hello.mjs       # the first visit: the welcome sheet once, the family code row until a code is set (when src/loopy-hello.js, src/loopy.js or the home page changed)
    node tools/e2e/offline.mjs     # after an update the offline copy saves the new pages, never an old one (when src/sw.js changed)
    node sync/test.mjs             # the Family sync server answers right (when sync/ changed)
    node tools/sync-usage.test.mjs # the Monday usage report prints counts only (when tools/sync-*.mjs changed)

@@ -249,7 +249,7 @@
 .kid-field span, .kid-label { font-weight: 600; color: var(--muted); }
 .kid-dialog input { font: inherit; font-size: 1.1rem; padding: 10px 12px; border-radius: 12px; border: 2px solid var(--line); background: var(--bg); color: var(--ink); }
 .kid-pics { display: grid; grid-template-columns: repeat(6, 1fr); gap: 6px; }
-.kid-pics button { aspect-ratio: 1; min-height: 44px; border-radius: 14px; border: 3px solid transparent; background: var(--chip); font-size: 1.5rem; cursor: pointer; }
+.kid-pics button { aspect-ratio: 1; min-height: 44px; min-width: 0; padding: 0; border-radius: 14px; border: 3px solid transparent; background: var(--chip); font-size: 1.5rem; cursor: pointer; }
 .kid-pics button[aria-pressed="true"] { border-color: var(--c1); background: var(--card); }
 .kid-dialog .age-picker { align-self: flex-start; }
 .kid-foot { display: flex; flex-wrap: wrap; gap: 8px; justify-content: flex-end; margin-top: 4px; }

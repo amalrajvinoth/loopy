@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'sha256-89+TELuIl//rhEm5dFR7tTv/3ulQxE2gdMdo6gjY1bY='; style-src 'self' 'sha256-VLyRFrccjMLpMuCot7y8kdFaqnWavMrTuT+JJz/ZejI='; img-src 'self' data:; font-src 'self'; connect-src 'self' https://loopy-sync.loopy-1e2.workers.dev; worker-src 'self'; object-src 'none'; base-uri 'none'; form-action 'none'; manifest-src 'self'; upgrade-insecure-requests">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'sha256-N5MhcBkShVXELkwwvYBlB9eF5lGXxWTmiHRlhbjSIpU='; style-src 'self' 'sha256-C6IbryMBuhrgVmYGFaptwXgd+ih7F5u6HzqYA6mmrB8='; img-src 'self' data:; font-src 'self'; connect-src 'self' https://loopy-sync.loopy-1e2.workers.dev; worker-src 'self'; object-src 'none'; base-uri 'none'; form-action 'none'; manifest-src 'self'; upgrade-insecure-requests">
 <meta name="referrer" content="strict-origin-when-cross-origin">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <link rel="icon" href="icon.svg" type="image/svg+xml">
@@ -165,7 +165,8 @@ footer p { margin: 0; }
 .foot-small a { color: var(--muted); }
 .set-sync[hidden], .set-touch[hidden] { display: none; }
 .set-sync p:not(.set-head), .set-touch p:not(.set-head) { margin: 0; color: var(--muted); font-size: 0.9rem; line-height: 1.4; }
-.set-sync p.sync-code { font-family: "Fredoka", "Lexend", sans-serif; font-size: 1.35rem; letter-spacing: 0.06em; color: var(--ink); overflow-wrap: anywhere; }
+/* The family code, in Settings, the welcome sheet and the family code row: one style. */
+.set-sync p.sync-code, .hello-sync p.sync-code { margin: 0; font-family: "Fredoka", "Lexend", sans-serif; font-size: 1.35rem; letter-spacing: 0.06em; color: var(--ink); overflow-wrap: anywhere; }
 .sync-qr { display: block; width: min(100%, 200px); height: auto; border-radius: 12px; background: #fff; }
 .sync-join { display: flex; gap: 8px; }
 .sync-join input { flex: 1; min-width: 0; font: inherit; font-size: 1rem; padding: 10px 12px; border-radius: 12px; border: 2px solid var(--line); background: var(--bg); color: var(--ink); text-transform: uppercase; }
@@ -177,6 +178,30 @@ footer p { margin: 0; }
 .app-steps svg { flex: none; width: 40px; height: 40px; padding: 8px; border-radius: 12px; background: var(--chip); color: var(--c1); }
 .app-code { display: flex; gap: 8px; }
 .app-code input { flex: 1; min-width: 0; font-size: 0.9rem; }
+/* The first visit (loopy-hello.js): the welcome sheet in the Kids box, and the family code row under My stars,
+   shown while no family code is set. Both use the Kids box pills and the card frame. */
+.hello-head { display: flex; align-items: flex-start; gap: 12px; }
+.hello-shield { flex: none; width: 44px; height: 44px; fill: none; stroke: var(--c1); stroke-width: 2.2; stroke-linecap: round; stroke-linejoin: round; }
+.hello-col { display: flex; flex-direction: column; gap: 10px; }
+.hello-col .kid-btn { width: 100%; }
+.hello-foot { justify-content: space-between; }
+.hello-wide { width: 100%; }
+.hello-big { margin: 0; font-size: 4rem; line-height: 1; text-align: center; }
+.hello-dots { display: flex; gap: 6px; justify-content: center; }
+.hello-dots i { width: 8px; height: 8px; border-radius: 50%; background: var(--line); }
+.hello-dots i.on { background: var(--c1); }
+.hello-sync:empty { display: none; }
+.hello-sync { display: flex; flex-direction: column; gap: 10px; }
+.hello-sync .sync-line, .hello-sync .sync-msg { margin: 0; color: var(--muted); font-size: 0.9rem; line-height: 1.4; }
+.hello-sync .sync-msg:empty { display: none; }
+.hello-sync .kid-foot { justify-content: flex-start; margin: 0; }
+.hello-col[hidden], .kid-foot[hidden], .hello-sync[hidden] { display: none; }
+.wrap .family-row { --tone: var(--c1); min-height: 0; padding: 14px 16px; gap: 10px; margin-top: 4px; }
+.wrap .family-row[hidden] { display: none; }
+.family-row .hello-text { display: flex; flex-direction: column; gap: 4px; flex: 1; min-width: 0; }
+.family-row h3 { margin: 0; font-family: var(--display); font-size: 1.15rem; font-weight: 700; text-wrap: balance; }
+.family-row p { margin: 0; color: var(--muted); font-size: 0.9rem; line-height: 1.4; }
+.family-row .hello-row-foot { margin: 0; }
 @media (prefers-reduced-motion: reduce) { * { transition: none !important; animation: none !important; } }
 </style>
 <link rel="stylesheet" href="loopy.css">
@@ -213,6 +238,7 @@ footer p { margin: 0; }
     </div>
     <p class="shelf-next" id="shelf-next"></p>
     <div class="meter" aria-hidden="true"><i id="meter-fill"></i></div>
+    <div class="quiz family-row" id="family-row" hidden></div>
     <details class="fold">
       <summary data-t="seeBadges">See all badges and day streak</summary>
       <div class="badges" id="badges"></div>
@@ -420,6 +446,8 @@ const GAMES = [
   { subject: "geography", path: "geography/flags-capitals/", id: "fc", pic: "🚩", ages: [7, 16] },
 ];
 const t = Loopy.t;
+// Whether a #family= or #load= link opened the page, read before any part takes the hash off the address.
+const CAME_BY_LINK = /^#(family|load)=/.test(location.hash);
 const list = document.getElementById("list");
 // The guide has its own page for each language.
 document.getElementById("guide-link").href = Loopy.lang === "de" ? "guide/de/" : "guide/";
@@ -746,6 +774,37 @@ function grownFold() {
   if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", add);
   else add();
   window.addEventListener("hashchange", () => { if (link()) { grownFold().open = true; fill(); } });
+})();
+
+// The first visit (src/loopy-hello.js): a browser with nothing from loopy yet gets the welcome sheet once
+// (name, picture and age; then, for grown-ups, the family code; then Let's play). A device where no family
+// code is set gets the family code row under My stars on every visit, until a code is set or for the rest
+// of the day after Not now. Neither shows when a #family= or #load= link opened the page, and the sheet
+// waits for Loopy.keep: if IndexedDB still has the family's stars, the page reloads with them instead.
+(function hello() {
+  if (typeof HTMLDialogElement !== "function" || CAME_BY_LINK) return;
+  let flag = null, on = false, empty = Loopy.kids.fresh;
+  try {
+    flag = JSON.parse(localStorage.getItem("loopy.hello"));
+    on = /"i":"[0-9a-f]{32}"/.test(localStorage.getItem("loopy.sync") || "");
+    // Nothing of loopy's in this browser but the list of children made just now.
+    for (let i = 0; i < localStorage.length; i++) { const k = localStorage.key(i); if (k && k.indexOf("loopy.") === 0 && k !== "loopy.kids") empty = false; }
+  } catch (e) { empty = false; }
+  flag = flag && typeof flag === "object" ? flag : {};
+  const welcome = empty && flag.w !== 1, row = !!Loopy.syncHost && !on && flag.n !== Loopy.dayKey();
+  if (!welcome && !row) return;
+  let started = false;
+  const go = () => {
+    if (started) return;
+    started = true;
+    Loopy.load("hello").then(() => Loopy.hello.start({ welcome, row }), () => {});
+  };
+  const ready = () => {
+    if (Loopy.keep.done) { go(); return; }
+    const wait = setTimeout(go, 2500);
+    window.addEventListener("loopy:kept", () => { clearTimeout(wait); go(); }, { once: true });
+  };
+  if (document.readyState === "complete") ready(); else window.addEventListener("load", ready);
 })();
 
 // Add to home screen: the last part of ⚙ Settings on the home page. When the browser has its own

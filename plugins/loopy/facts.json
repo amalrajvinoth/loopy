@@ -23,6 +23,7 @@
     "checks.yml: Family sync keeps two devices in step, and sends nothing when it is off",
     "checks.yml: \"Levels follow the child: up by itself when ready, kept over the birthday\"",
     "checks.yml: \"Switching the child mid-game: each child keeps their own stars, log and last game\"",
+    "checks.yml: \"The first visit: the welcome sheet once, the family code row until a code is set\"",
     "checks.yml: Install Astro and Starlight (exact versions from the lock file)",
     "checks.yml: Build the guide (this also writes each page's security policy)",
     "checks.yml: Every guide page's security policy matches its code",
@@ -63,6 +64,7 @@
     "tools/check_external.py",
     "tools/ci_changes.py",
     "tools/csp.py",
+    "tools/e2e/hello.mjs",
     "tools/e2e/levels.mjs",
     "tools/e2e/offline.mjs",
     "tools/e2e/play.mjs",
@@ -79,6 +81,7 @@
   ],
   "built_files": [
     "loopy-backup.js",
+    "loopy-hello.js",
     "loopy-install.js",
     "loopy-levels.js",
     "loopy-report.js",
@@ -106,5 +109,5 @@
     "844 × 390"
   ],
   "games_lists": 1,
-  "learned_at": "ba8fe4b"
+  "learned_at": "c37a285"
 }

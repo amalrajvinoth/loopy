@@ -69,6 +69,8 @@ async function until(f, ms = 15000) {
 // A device: its own browser profile. It counts what it loads: loopy-sync.js, and anything not from the site.
 async function device(name) {
   const ctx = await browser.newContext({ serviceWorkers: "block" });
+  // The first-visit welcome sheet was seen already (tools/e2e/hello.mjs tests it); here Settings is the way in.
+  await ctx.addInitScript(() => { if (!localStorage.getItem("loopy.hello")) localStorage.setItem("loopy.hello", '{"w":1}'); });
   const seen = { sync: 0, server: 0, other: [] };
   ctx.on("request", r => {
     const u = r.url();
@@ -111,7 +113,7 @@ check("Settings has a Family sync part", await until(async () => /Family sync/i.
 check("Opening Settings sends nothing either", off.seen.server === 0, off.seen.server + " requests");
 
 // 2. A bad code and a code no family has: a clear message, sync stays off.
-await off.page.getByRole("button", { name: "Join with a code" }).click();
+await off.page.locator(".set-sync").getByRole("button", { name: "Join with a code" }).click();
 await off.page.getByLabel("Family code from your other device").fill("HELLO");
 await off.page.getByRole("button", { name: "Join", exact: true }).click();
 check("A bad code says it is not a family code", await until(async () => /not a family code/.test(await syncText(off.page))), "");
@@ -145,7 +147,7 @@ await A.page.goto(BASE + "math/plus-minus/");
 await earn(A.page, 5);
 await A.page.goto(BASE);
 await openSettings(A.page);
-await A.page.getByRole("button", { name: "Turn on" }).click();
+await A.page.locator(".set-sync").getByRole("button", { name: "Turn on" }).click();
 const on = await until(async () => /^[0-9A-Z]{4}(-[0-9A-Z]{4}){3}$/.test((await A.page.locator(".sync-code").innerText()).trim()));
 const code = on ? (await A.page.locator(".sync-code").innerText()).trim() : "";
 check("Turn on shows a family code", on, code);
@@ -255,10 +257,38 @@ await openSettings(B2);
 check("The other device says the copy was deleted", await until(async () => /deleted on another device/.test(await syncText(B2))), "");
 check("and keeps its stars", await stars(B2) === 12, String(await stars(B2)));
 
-const others = [...A.seen.other, ...B.seen.other];
+// 8. The family code row under My stars (loopy-hello.js), on a device where no code is set: Turn on makes a
+// code right there, with its QR code and Share. A second device joins from the row with that code.
+skew += 11000;
+const R = await device("R");
+await R.page.goto(BASE + "math/plus-minus/");
+await earn(R.page, 4);
+await R.page.goto(BASE);
+const rowOf = p => p.locator("#family-row");
+check("With no family code, the home page shows the family code row", await until(() => rowOf(R.page).isVisible()), "");
+check("The row loads nothing for sync until a tap", R.seen.sync === 0, R.seen.sync + " loads");
+await rowOf(R.page).getByRole("button", { name: "Turn on" }).click();
+const rowOn = await until(async () => /^[0-9A-Z]{4}(-[0-9A-Z]{4}){3}$/.test((await rowOf(R.page).locator(".sync-code").innerText()).trim()));
+const rowCode = rowOn ? (await rowOf(R.page).locator(".sync-code").innerText()).trim() : "";
+check("Turn on in the row shows a family code", rowOn, rowCode);
+check("and its QR code and Share", await rowOf(R.page).locator("svg.sync-qr").count() === 1 && await rowOf(R.page).getByRole("button", { name: "Share the link" }).isVisible(), "");
+skew += 11000;
+const J = await device("J");
+await J.page.goto(BASE);
+await rowOf(J.page).getByRole("button", { name: "Join with a code" }).click();
+await rowOf(J.page).locator("input").fill(rowCode.toLowerCase());
+await rowOf(J.page).getByRole("button", { name: "Join", exact: true }).click();
+check("Join with a code in the row brings the family's stars", await until(async () => await stars(J.page) === 4), String(await stars(J.page).catch(() => "?")));
+await J.page.goto(BASE);
+await J.page.waitForTimeout(600);
+check("Once a code is set, the row is gone", await rowOf(J.page).isHidden(), "");
+
+const others = [...A.seen.other, ...B.seen.other, ...R.seen.other, ...J.seen.other];
 check("Nothing goes anywhere but the site and the sync server", others.length === 0, others.slice(0, 3).join(" "));
 await A.ctx.close();
 await B.ctx.close();
+await R.ctx.close();
+await J.ctx.close();
 
 console.log("| Check | Result | Got |\n| --- | --- | --- |");
 for (const r of rows) console.log(`| ${r.join(" | ")} |`);

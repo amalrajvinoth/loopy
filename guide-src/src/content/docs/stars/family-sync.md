@@ -10,7 +10,11 @@ It is off until a grown-up turns it on. Then it works by itself: no codes to cop
 
 ## Turn it on
 
-1. On the home page, open ⚙ **Settings**.
+The quickest way is the row under **My stars**, "Keep the stars on every device". It is there as long as no family code is set. Tap **Turn on** in it. On a brand-new browser the [first visit](/loopy/guide/start/first-visit/) offers it too, as **Make a family code**.
+
+Or in Settings:
+
+1. On the home page, open ⚙ **Settings**, then **For grown-ups**.
 2. Scroll to **Family sync**.
 3. Tap **Turn on**.
 
@@ -21,7 +25,8 @@ loopy shows your family code, like `7K2M-QX9D-4HPT-W3RA`, and a QR code.
 On the other phone, tablet or computer:
 
 - **Scan the QR code** with the camera. loopy opens and asks "Join this family?". Tap **Join**.
-- **Or type the code:** open ⚙ **Settings**, then **Family sync**, then **Join with a code**. Type the code and tap **Join**.
+- **Or send the link:** on the first device, tap **Share the link** next to the code. It opens the phone's share sheet, or copies the link. Send it by message. On the other device, open the link and tap **Join**.
+- **Or type the code:** on the other device, tap **Join with a code** in the row under My stars, or under ⚙ **Settings**, **Family sync**. Type the code and tap **Join**.
 
 The stars from the other devices come over, and the stars here go to them. Nothing is taken away: for each child the bigger number wins, like with a [stars code](/loopy/guide/stars/move-stars/).
 
