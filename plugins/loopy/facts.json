@@ -12,6 +12,10 @@
     "checks.yml: The shared script and its parts type-check against src/loopy.d.ts",
     "checks.yml: Install Stylelint (exact versions from the lock file)",
     "checks.yml: The styles use only CSS every browser has had for 30 months (Baseline) and theme colours, and nothing is broken or doubled",
+    "checks.yml: Install the workflow checkers (exact versions and hashes from tools/lint/requirements.txt)",
+    "checks.yml: The workflows leak no token and run no untrusted input (zizmor, offline)",
+    "checks.yml: The workflows' YAML and shell are sound (actionlint)",
+    "checks.yml: Every link inside the repo points at a file that exists (lychee, offline)",
     "checks.yml: The Claude Code plugins match the repo",
     "checks.yml: Every page stays in its size budget (100 KB sent; loopy.js and loopy.css grow by at most 2 KB)",
     "checks.yml: accessibility (part ${{ matrix.part }} of 2, ${{ matrix.engine }})",
@@ -62,6 +66,7 @@
     "pages.yml: Build the guide",
     "pages.yml: The same safety checks as on every pull request",
     "pages.yml: Put the site together",
+    "pages.yml: Nothing a visitor loads was left out",
     "pages.yml: github-pages",
     "pages.yml: github-pages",
     "pages.yml: Live site check",
@@ -138,5 +143,5 @@
     "844 × 390"
   ],
   "games_lists": 1,
-  "learned_at": "04c9c1a"
+  "learned_at": "4892254"
 }

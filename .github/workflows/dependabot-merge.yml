@@ -9,7 +9,10 @@
 name: Dependabot merge
 
 on:
-  workflow_run:
+  # workflow_run gives this workflow write rights, which zizmor calls a dangerous trigger. It is the only
+  # trigger that runs after another workflow's checks, and the if: below lets it merge nothing but a green
+  # Dependabot pull request from this very repository; nothing from the pull request itself is run here.
+  workflow_run:  # zizmor: ignore[dangerous-triggers]
     workflows: [Checks]
     types: [completed]
 

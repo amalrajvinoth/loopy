@@ -12,6 +12,8 @@ description: Finish a loopy change and open its pull request with every check, s
    python3 tools/build.py --check
    node tools/build/node_modules/typescript/bin/tsc -p tools/build   # src/ against src/loopy.d.ts: a new Loopy member goes in the .d.ts too
    node tools/lint/check.mjs                  # the styles: only Baseline CSS (widely available), theme colours in pages, nothing broken or doubled (once: npm ci --prefix tools/lint --ignore-scripts)
+   zizmor --offline .github/workflows && actionlint   # the workflows: no token left in a checkout, no untrusted input in a run block, sound YAML and shell (once: pip install --require-hashes -r tools/lint/requirements.txt). A finding that is right on purpose gets `# zizmor: ignore[rule]` with its reason, never a loosened check
+   lychee --config tools/lint/lychee.toml -- './**/*.md' './**/*.html'   # every link inside the repo (Markdown and HTML) points at a file that exists; offline, so no outside request (brew install lychee on the Mac; CI runs it by itself)
    python3 tools/csp.py --check
    python3 tools/check_external.py
    python3 tools/guide_check.py              # every game has a guide page, EN and DE

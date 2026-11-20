@@ -1,0 +1,11 @@
+# The link check (lychee): every link inside the repo points at a file that exists.
+#   lychee --config tools/lint/lychee.toml './**/*.md' './**/*.html'
+# Offline on purpose: it reads files only and opens no connection, so even CI makes no outside request.
+# Links to other websites are skipped (their checker would be a separate, online run).
+offline = true
+no_progress = true
+# The guide is built from guide-src/ into guide/ on deploy, so the pages' guide/ links have no file here.
+exclude = ['/guide/?$', '/guide/.+']
+# Not part of the site: the guide's own sources (Astro checks them in guide-src/scripts/check.mjs), installed
+# packages, and the plan notes under docs/plans, which link to pull request screenshots on GitHub.
+exclude_path = ['guide-src', 'node_modules', 'docs/plans']

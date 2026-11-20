@@ -25,6 +25,8 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
       - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
         with:
           node-version: 22
@@ -42,12 +44,38 @@ jobs:
       - name: Put the site together
         run: |
           mkdir -p "$RUNNER_TEMP/site"
-          # The games: every file in the repo, as Pages served the main branch before.
-          # sync/ is Family sync's server code (it runs on Cloudflare, see sync/README.md), not part of the site.
-          tar --exclude=./.git --exclude=./guide-src --exclude=./sync -cf - . | tar -xf - -C "$RUNNER_TEMP/site"
+          # The games: every file a visitor's browser can load. Left out: what is only for people working on
+          # loopy (the same folders tools/build.py keeps out of the offline list): the sources in src/, the
+          # tools and their saved pictures, the pull request screenshots in docs/, the Claude Code plugins,
+          # the workflows, the Markdown files and the tool configs. sync/ is Family sync's server code (it
+          # runs on Cloudflare, see sync/README.md). Before this (20 November 2026) every deploy carried the
+          # whole repo, about 92 MB, of which 71 MB were screenshots no page loads.
+          tar --exclude=./.git --exclude=./.github --exclude=./.claude --exclude=./.claude-plugin --exclude=./.ralph \
+              --exclude=./docs --exclude=./plugins --exclude=./src --exclude=./sync --exclude=./tools \
+              --exclude=./guide-src --exclude=./node_modules --exclude='./*.md' --exclude=./.coderabbit.yaml \
+              --exclude=./.mcp.json --exclude=./.talismanrc --exclude=./.gitignore \
+              -cf - . | tar -xf - -C "$RUNNER_TEMP/site"
           # The guide.
           cp -R guide-src/dist "$RUNNER_TEMP/site/guide"
           tar --dereference --hard-dereference -C "$RUNNER_TEMP/site" -cf "$RUNNER_TEMP/artifact.tar" .
+      - name: Nothing a visitor loads was left out
+        run: |
+          # Every file the offline helper saves (tools/build.py knows the list), the helper itself, the
+          # manifest, security.txt and the guide must be in the site that goes live.
+          python3 - "$RUNNER_TEMP/site" <<'PY'
+          import pathlib, sys
+          sys.path.insert(0, "tools")
+          import build
+          site = pathlib.Path(sys.argv[1])
+          want = [p.relative_to(build.ROOT) for p in build.offline_files().values()]
+          want += [pathlib.Path(x) for x in ("sw.js", "manifest.webmanifest", ".well-known/security.txt", ".nojekyll", "guide/index.html")]
+          missing = [str(w) for w in want if not (site / w).is_file()]
+          print(f"{len(want) - len(missing)} of {len(want)} files are in the site.")
+          if missing:
+              print("::error::Missing from the deploy: " + ", ".join(missing[:20]))
+              sys.exit(1)
+          PY
+          du -sh "$RUNNER_TEMP/site" | cut -f1 | xargs -I{} echo "The site is {} on disk."
       - uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
         with:
           name: github-pages
@@ -78,6 +106,8 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
       - name: The live site serves what was just deployed
         env:
           SITE: https://amalrajvinoth.github.io/loopy

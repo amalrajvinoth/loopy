@@ -51,7 +51,7 @@ Tap **Settings**, then **Paper**, and pick **Addition to 100**. This paper follo
 | 10 | 🛟 Nearly round: 23 + 29 | 23 + 30 = 53, then 53 − 1 | 1 + 1 |
 | 11 | Which way helps you with 57 + 39? | Pick Tens first, Nearly round or Place by place, then work it out | 1 + 1 |
 
-The ways are the ones from [Step by Step](../step-by-step/) and [Which Way?](../which-way/), with the school's German names. A missed task comes back in Try again like on the first paper. Opened from the Try again card, the paper of the newest mistake opens.
+The ways are the ones from [Step by Step](../../math/step-by-step/) and [Which Way?](../../math/which-way/), with the school's German names. A missed task comes back in Try again like on the first paper. Opened from the Try again card, the paper of the newest mistake opens.
 
 **Print the test** prints this paper with the six ways and an example of each at the top, 11 tasks and the answers on page 2.
 

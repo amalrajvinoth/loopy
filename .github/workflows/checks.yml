@@ -30,6 +30,7 @@ jobs:
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
+          persist-credentials: false
           # A pull request is checked out as a merge commit: its first parent is the base branch.
           fetch-depth: 2
       - name: Which long checks this change needs
@@ -46,6 +47,8 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
       - name: Every page's security policy matches its code
         run: python3 tools/csp.py --check
       - name: Nothing is loaded from other websites
@@ -66,6 +69,17 @@ jobs:
         run: npm ci --prefix tools/lint --ignore-scripts --no-audit --no-fund
       - name: The styles use only CSS every browser has had for 30 months (Baseline) and theme colours, and nothing is broken or doubled
         run: node tools/lint/check.mjs
+      - name: Install the workflow checkers (exact versions and hashes from tools/lint/requirements.txt)
+        run: pip install --quiet --require-hashes -r tools/lint/requirements.txt
+      - name: The workflows leak no token and run no untrusted input (zizmor, offline)
+        run: zizmor --offline .github/workflows
+      - name: The workflows' YAML and shell are sound (actionlint)
+        run: actionlint
+      - name: Every link inside the repo points at a file that exists (lychee, offline)
+        uses: lycheeverse/lychee-action@e7477775783ea5526144ba13e8db5eec57747ce8 # v2.9.0
+        with:
+          args: --config tools/lint/lychee.toml -- './**/*.md' './**/*.html'
+          failIfEmpty: true
       - name: The Claude Code plugins match the repo
         run: |
           python3 plugins/sync.py --check
@@ -107,6 +121,8 @@ jobs:
         engine: [chromium, webkit]
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
       - name: Install the checker (exact versions from the lock file, no browser download)
         run: |
           mkdir -p "$RUNNER_TEMP/a11y"
@@ -134,6 +150,8 @@ jobs:
         engine: [chromium, webkit]
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
       - name: Install the checker (exact versions from the lock file, no browser download)
         run: |
           mkdir -p "$RUNNER_TEMP/a11y"
@@ -156,6 +174,8 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
       - name: Install the checker (exact versions from the lock file, no browser download)
         run: |
           mkdir -p "$RUNNER_TEMP/a11y"
@@ -195,6 +215,8 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
       - name: Install the checker (exact versions from the lock file, no browser download)
         run: |
           mkdir -p "$RUNNER_TEMP/a11y"
@@ -225,6 +247,7 @@ jobs:
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
+          persist-credentials: false
           fetch-depth: 2
       - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
         with:
@@ -268,6 +291,8 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
       - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
         with:
           node-version: 22
