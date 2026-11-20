@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'sha256-knBAvwZtmQRuaS0W8dZb9s0/U2tAU9XB0mXEKGKveD8='; style-src 'self' 'sha256-NibHH8JLEgZJQTTchi0cr0AnRVel5jf2vhYeljx/srY='; img-src 'self' data:; font-src 'self'; connect-src 'self' https://loopy-sync.loopy-1e2.workers.dev; worker-src 'self'; object-src 'none'; base-uri 'none'; form-action 'none'; manifest-src 'self'; upgrade-insecure-requests">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'sha256-6GP7IhpkCHqbZ5Xuq71ARiLrRu3YZZqWGPYX0873Lws='; style-src 'self' 'sha256-NibHH8JLEgZJQTTchi0cr0AnRVel5jf2vhYeljx/srY='; img-src 'self' data:; font-src 'self'; connect-src 'self' https://loopy-sync.loopy-1e2.workers.dev; worker-src 'self'; object-src 'none'; base-uri 'none'; form-action 'none'; manifest-src 'self'; upgrade-insecure-requests">
 <meta name="referrer" content="strict-origin-when-cross-origin">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <link rel="icon" href="../icon.svg" type="image/svg+xml">
@@ -167,6 +167,7 @@ section[hidden] { display: none; }
 </style>
 <link rel="stylesheet" href="../loopy.css">
 <script src="../loopy.js"></script>
+<script src="../loopy-levels.js"></script>
 </head>
 <body>
 <main class="wrap">
@@ -1122,7 +1123,9 @@ Loopy.addStrings({
     $("clear-msg").textContent = t("prCleared");
     render();
   });
-  Loopy.load("levels").catch(() => {}).then(render);
+  // The levels list came with the page (the script tag in the head), so the page is drawn once, complete: a
+  // render after a late load pushed the sections below "Game by game" down (a layout shift Lighthouse flagged).
+  render();
 })();
 </script>
 </body>
