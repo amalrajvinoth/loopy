@@ -37,14 +37,13 @@ for (const [url, runs] of byUrl) {
     if (!bad) return;
     // Every shift, biggest first: many small ones add up to a red CLS as surely as one big one.
     const shifts = (a["layout-shifts"]?.details?.items || []).slice().sort((x, y) => (y.score || 0) - (x.score || 0));
-    for (const s of shifts.slice(0, 8)) {
+    for (const s of shifts) {
       console.log(`      shift ${(s.score || 0).toFixed(3)}: ${node(s.node)}`);
       for (const sub of s.subItems?.items || []) {
         const extra = sub.extra && (sub.extra.value || sub.extra.snippet || sub.extra.selector || "");
         console.log(`        because: ${sub.cause || "?"} ${String(extra).replace(/\s+/g, " ").slice(0, 100)}`);
       }
     }
-    if (shifts.length > 8) console.log(`      ... and ${shifts.length - 8} smaller shift(s)`);
     // Lighthouse 13 keeps the element of the biggest paint in the "lcp-breakdown-insight" audit (a list whose
     // node item is the element); older reports had it in "largest-contentful-paint-element".
     const lcp = (a["lcp-breakdown-insight"]?.details?.items || []).find((it) => it.type === "node") ||
