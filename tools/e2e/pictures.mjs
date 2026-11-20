@@ -127,7 +127,7 @@ console.log("| Picture | Result |\n|---|---|");
 for (const [name, result] of rows) console.log(`| ${name} | ${result} |`);
 if (problems.length) {
   console.log(`\n${problems.length} problem(s):\n- ${problems.join("\n- ")}`);
-  console.log("\nIf the change is meant to look like this, refresh the saved pictures: Actions → Refresh pictures (your branch), or UPDATE=1 node tools/e2e/pictures.mjs here and commit tools/e2e/pictures/.");
+  console.log("\nIf the change is meant to look like this, refresh the saved pictures: put the label \"refresh pictures\" on the pull request (or Actions → Refresh pictures with the branch). They come from the pinned Chromium on the runner, not from here.");
   process.exit(1);
 }
 console.log(UPDATE ? `\nSaved ${rows.length} pictures in tools/e2e/pictures/.` : "\nEvery page still looks the same.");

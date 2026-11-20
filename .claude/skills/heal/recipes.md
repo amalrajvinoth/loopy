@@ -140,7 +140,7 @@ One per failure. Add new ones at the end (the heal skill step 3). Keep each to f
 ## Picture test is red
 - Looks like: job "picture test" red; `home-390x844-de.png: 1.42% of the pixels changed (allowed 0.3%)`, with the artifact `pictures-that-changed` (the new picture and a `-diff.png`).
 - Cause: a shared CSS or script change moved something on the home page or one of the six games. Look at the diff picture first.
-- Fix: a slip (a cut-off row, a moved button) is fixed in the source. A change that is meant to look like this gets new saved pictures: Actions → "Refresh pictures" → Run workflow with the pull request's branch (it commits `tools/e2e/pictures/` and starts the checks again), or `UPDATE=1 node tools/e2e/pictures.mjs` locally and commit. Never raise `MAX_SHARE`. After Dependabot bumps playwright-core, a refresh is expected. (20 Nov 2026)
+- Fix: a slip (a cut-off row, a moved button) is fixed in the source. A change that is meant to look like this gets new saved pictures: put the label "refresh pictures" on the pull request (the Refresh pictures workflow takes them with the pinned Chromium, commits `tools/e2e/pictures/`, starts the checks again and takes the label off), or Actions → "Refresh pictures" → Run workflow with the branch. `UPDATE=1 node tools/e2e/pictures.mjs` locally gives pictures from the local Chromium, which differ from the pinned build by 0.5 to 7%, so the label is the way. Never raise `MAX_SHARE`. After Dependabot bumps playwright-core, a refresh is expected. The artifact `pictures-that-changed` cannot be downloaded from the cloud session (the proxy blocks the store). (20 Nov 2026)
 
 ## Size budget is red
 - Looks like: step "Every page stays in its size budget" red; `must | math/x/index.html | page is 103 KB sent ... (budget 100 KB)` or `must | loopy.js | grew by 2.4 KB sent`.
@@ -154,3 +154,8 @@ One per failure. Add new ones at the end (the heal skill step 3). Keep each to f
 - Looks like: only the `webkit` jobs are red; the log says `loads from another website: https://127.0.0.1:PORT/loopy/loopy.js`, `Error performing TLS handshake` and `Can't find variable: Loopy` on every page, while the Chromium jobs are green.
 - Cause: WebKit honours the page's `upgrade-insecure-requests` even on http://127.0.0.1 and asks the plain-http test server for https. `body()` in `tools/e2e/engine.mjs` drops the directive for WebKit; a test with its own file reading that does not go through `body()` brings the failure back.
 - Fix: serve files with `res.end(body(file))` from `engine.mjs`, never `fs.createReadStream(file).pipe(res)`. (20 Nov 2026)
+
+## WebKit accessibility run is red, Chromium's is green
+- Looks like: only the `webkit` accessibility jobs are red, with the same axe rule on one control in every game, such as `label-content-name-mismatch on #read-toggle (Elements must have their visible text as part of their accessible name)`.
+- Cause: WebKit's accessibility tree differs a little from Chromium's (visible text, pseudo-element content, names from `aria-label`), so axe sees another name or text. The Read aloud pill had an `aria-label` that did not hold its On/Off tag.
+- Fix: give the control one name that is also what it shows (drop the `aria-label` when the visible text already names it; state goes in `aria-pressed`, decoration is `aria-hidden`). Never turn the rule off. (20 Nov 2026)

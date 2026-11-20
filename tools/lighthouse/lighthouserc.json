@@ -1,14 +1,15 @@
 {
-  "//": "Lighthouse on every pull request (checks.yml, job lighthouse): the pages a change touches, served by serve.mjs with gzip, scored the way a phone on slow data sees them. The budgets below turn the run red. The monthly run on the live site is lighthouse.yml.",
+  "//": "Lighthouse on every pull request (checks.yml, job lighthouse): the pages a change touches, served by serve.mjs with gzip, scored the way a phone on slow data sees them, three runs and the median (one run on a shared runner swings by five points). The budgets below turn the run red. The monthly run on the live site is lighthouse.yml.",
   "ci": {
     "collect": {
-      "numberOfRuns": 1,
+      "numberOfRuns": 3,
       "settings": {
         "onlyCategories": ["performance", "accessibility", "best-practices"],
         "chromeFlags": "--headless=new --no-sandbox"
       }
     },
     "assert": {
+      "aggregationMethod": "median",
       "assertions": {
         "categories:performance": ["error", { "minScore": 0.95 }],
         "categories:accessibility": ["error", { "minScore": 0.95 }],

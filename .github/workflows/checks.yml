@@ -237,6 +237,7 @@ jobs:
         with:
           name: lighthouse-pull-request
           path: .lighthouseci
+          include-hidden-files: true # the folder starts with a dot
           retention-days: 14
 
   # The loopy guide (guide-src/): it builds, every page passes the same safety checks as the games,

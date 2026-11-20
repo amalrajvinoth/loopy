@@ -954,7 +954,8 @@ document.documentElement.classList.add("loopy-building");
     b.type = "button";
     b.id = "read-toggle";
     b.className = "read-toggle";
-    b.setAttribute("aria-label", Loopy.t("readAloud"));
+    // No aria-label: the visible "Read aloud" names the button (the On/Off tag is aria-hidden; aria-pressed says the state).
+    // WebKit's axe run flags a label that does not hold all the visible text, Chromium's does not; one name serves both.
     b.innerHTML = SPEAKER;
     var label = document.createElement("span");
     label.textContent = Loopy.t("readAloud");
