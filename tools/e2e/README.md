@@ -69,7 +69,7 @@ PAGE=math/make-10/ node tools/e2e/pictures.mjs
 
 The pictures come out the same every run: the games get the same random numbers, the clock is fixed, animations are off, the welcome sheet is already seen, and the fonts are loaded first. A picture fails when more than 0.3% of its pixels changed; anti-aliasing never gets there, a moved button does.
 
-CI runs it in Playwright's own pinned Chromium build (`ENGINE=pinned`), so an update of the runner's Chrome cannot change a picture. When a change is meant to look different, refresh the saved pictures on the runner: Actions → "Refresh pictures" → Run workflow with the branch. It commits `tools/e2e/pictures/` and starts the checks again. A refresh is also expected after Dependabot updates `playwright-core`.
+CI runs it in Playwright's own pinned Chromium build (`ENGINE=pinned`), so an update of the runner's Chrome cannot change a picture. When a change is meant to look different, refresh the saved pictures on the runner: put the label "refresh pictures" on the pull request, or Actions → "Refresh pictures" → Run workflow with the branch. It commits `tools/e2e/pictures/`, starts the checks again and takes the label off. A refresh is also expected after Dependabot updates `playwright-core`. Pictures taken with another Chromium (`UPDATE=1` on a laptop) differ from the pinned build's by a few percent, so the saved pictures always come from the runner.
 
 ## Offline copy test
 

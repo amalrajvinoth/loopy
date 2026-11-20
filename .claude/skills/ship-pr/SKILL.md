@@ -24,7 +24,7 @@ description: Finish a loopy change and open its pull request with every check, s
    python3 plugins/test_hooks.py              # only when plugins/ changed
    node tools/a11y/check.mjs      # ENGINE=webkit runs it in Safari's engine, like CI (once: node tools/a11y/node_modules/playwright-core/cli.js install --with-deps webkit)
    node tools/e2e/play.mjs        # GAME=<id> for one game while you work; the full run before the PR. CI runs it in Chromium and WebKit (ENGINE=webkit).
-   node tools/e2e/pictures.mjs    # the home page and six games still look the same (CI: ENGINE=pinned, Playwright's own Chromium). Meant to look different? Actions → Refresh pictures with the branch, or UPDATE=1 here and commit tools/e2e/pictures/ It also checks that only Today's 10 counts a day, that money shows its € sign and the Class Test hint fits the card, and that loopy's language wins over an old "Words in" pick
+   node tools/e2e/pictures.mjs    # the home page and six games still look the same (CI: ENGINE=pinned, Playwright's own Chromium). Meant to look different? Put the label "refresh pictures" on the PR (or Actions → Refresh pictures with the branch); the pictures come from the pinned build, not from here It also checks that only Today's 10 counts a day, that money shows its € sign and the Class Test hint fits the card, and that loopy's language wins over an old "Words in" pick
    node tools/e2e/retry.mjs       # Try again in every game (GAME=<id> for one): a mistake comes back until it is fixed
    node tools/e2e/levels.mjs      # levels follow the child: up by itself when ready, kept over the birthday
    node tools/e2e/switch.mjs      # switching the child mid-game: each child keeps their own stars, log and last game
