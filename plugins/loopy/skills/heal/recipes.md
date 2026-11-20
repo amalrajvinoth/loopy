@@ -144,6 +144,7 @@ One per failure. Add new ones at the end (the heal skill step 3). Keep each to f
 
 ## Size budget is red
 - Looks like: step "Every page stays in its size budget" red; `must | math/x/index.html | page is 103 KB sent ... (budget 100 KB)` or `must | loopy.js | grew by 2.4 KB sent`.
+- Looks like, but is not: every file "grew" by its whole size (`loopy.js | grew by 23.2 KB`, fifty `suggest` rows). Then the check had nothing to compare with: the step must fetch the PR's base branch (`github.base_ref`) and pass it as `--base origin/<branch>`; review.py falls back to that tip when the shallow clone has no shared history.
 - Fix: make it smaller: move data a page alone uses into its `data.js`, share repeated code, drop an unused string. When the growth is the point of the change (a new shared part every page needs), add a line `Size budget: <why>` to the pull request body; the check then lets it through once and the finding stays a "should". (20 Nov 2026)
 
 ## Lighthouse budgets are red
