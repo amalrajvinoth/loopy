@@ -154,3 +154,7 @@ One per failure. Add new ones at the end (the heal skill step 3). Keep each to f
 - Looks like: only the `webkit` jobs are red; the log says `loads from another website: https://127.0.0.1:PORT/loopy/loopy.js`, `Error performing TLS handshake` and `Can't find variable: Loopy` on every page, while the Chromium jobs are green.
 - Cause: WebKit honours the page's `upgrade-insecure-requests` even on http://127.0.0.1 and asks the plain-http test server for https. `body()` in `tools/e2e/engine.mjs` drops the directive for WebKit; a test with its own file reading that does not go through `body()` brings the failure back.
 - Fix: serve files with `res.end(body(file))` from `engine.mjs`, never `fs.createReadStream(file).pipe(res)`. (20 Nov 2026)
+
+## Style lint is red
+- Looks like: step "The styles use only CSS every current browser has (Baseline)" red; `math/x/index.html 88:12 ✖ Property "text-box-trim" is not a newly available baseline feature (plugin/use-baseline)` or `Unexpected unknown property "colour" (property-no-unknown)`.
+- Fix: a typo is fixed. A CSS feature Safari or Firefox does not have yet gets a fallback that works without it, or goes; the ignore list in `tools/lint/stylelint.config.json` is only for properties whose fallback is the browser's own look (user-select, accent-color, resize). Warnings (a selector twice) do not turn the check red; merge the two blocks when you touch that page. (20 Nov 2026)
