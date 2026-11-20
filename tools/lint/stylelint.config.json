@@ -1,21 +1,23 @@
 {
-  "//": "Stylelint for loopy's styles: src/loopy.css, src/print.css and every page's <style> block (tools/lint/check.mjs runs it; CI too). The Baseline rule keeps the CSS to what every current browser has (Baseline newly available, data from web-features), so a child's Safari never meets a property it does not know. The ignored properties are safe fall-throughs: user-select is always written with its -webkit- twin, accent-color and resize fall back to the browser's own look, text-wrap: pretty to normal wrapping, ui-monospace to the next font in the list. Hard-coded colours are not a Stylelint rule on purpose: print styles are black on white, bank notes and coins have their own colours and var(--x, #fff) fallbacks are fine; tools/review.py and improve-ui watch the theme variables.",
-  "plugins": ["stylelint-plugin-use-baseline"],
+  "//": "Stylelint for loopy's styles: src/loopy.css, src/print.css and every page's <style> block (tools/lint/check.mjs runs it; CI too). The Baseline rule keeps the CSS to what every browser has had for 30 months (Baseline widely available, data from web-features), so a child's Safari never meets a property it does not know. The ignored properties are safe fall-throughs, each checked: user-select is always written with its -webkit- twin, accent-color and resize fall back to the browser's own look, text-wrap: pretty and balance to normal wrapping, ui-monospace to the next font in the list, and zoom (the card grows on a laptop) has been in every browser since Firefox 126 (May 2024) and falls back to size 1. loopy/no-hard-colour (tools/lint/no-hard-colour.mjs) fails a page on a written-out colour outside src/loopy.css: the themes live in loopy.css, a page takes var(--ink), var(--good) and the rest; the exceptions (custom properties, var() fallbacks, print, SVG pictures, translucent black or white) are listed in that file, and a picture such as a bank note sits between stylelint-disable and stylelint-enable comments that say why.",
+  "plugins": ["stylelint-plugin-use-baseline", "./no-hard-colour.mjs"],
   "rules": {
     "plugin/use-baseline": [true, {
-      "available": "newly",
-      "ignoreProperties": { "user-select": ["/^.+$/"], "accent-color": ["/^.+$/"], "resize": ["/^.+$/"], "text-wrap": ["pretty"], "font-family": ["/ui-monospace/"] }
+      "available": "widely",
+      "ignoreProperties": { "user-select": ["/^.+$/"], "accent-color": ["/^.+$/"], "resize": ["/^.+$/"], "text-wrap": ["pretty", "balance"], "font-family": ["/ui-monospace/"], "zoom": ["/^.+$/"] }
     }],
     "color-no-invalid-hex": true,
     "block-no-empty": true,
     "declaration-block-no-duplicate-properties": [true, { "ignore": ["consecutive-duplicates-with-different-values"] }],
     "declaration-block-no-shorthand-property-overrides": true,
     "property-no-unknown": true,
+    "declaration-property-value-no-unknown": true,
     "unit-no-unknown": true,
     "selector-pseudo-class-no-unknown": true,
     "selector-type-no-unknown": true,
     "function-no-unknown": true,
     "no-invalid-double-slash-comments": true,
+    "loopy/no-hard-colour": true,
     "font-family-no-missing-generic-family-keyword": true,
     "no-duplicate-selectors": [true, { "severity": "warning", "message": "The same selector twice: merge the two blocks when you next touch this page (no-duplicate-selectors)" }],
     "declaration-property-value-disallowed-list": [{ "/^(?!--)/": ["/env\\(safe-area-inset-(top|bottom)/"] }, { "message": "loopy: the phone's bars are var(--safe-top) and var(--safe-bottom), never env() in a page" }]

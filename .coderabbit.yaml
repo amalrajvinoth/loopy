@@ -16,6 +16,7 @@ reviews:
   auto_review:
     enabled: true
     drafts: true    # the loopy PRs start as drafts; the review should be in before one is marked ready
+    base_branches: [".*"]    # stacked PRs target a branch, not main; without this only PRs against main are reviewed
   # The owner wants fixes on, not just comments: "Fix comments" (the checkbox under a review, or
   # "@coderabbitai fix comments"), "Fix Failing CI" and the merge-conflict resolver. The "Autofix" switch
   # that keeps doing this by itself is per pull request, in CodeRabbit's first comment; it is not a setting here.

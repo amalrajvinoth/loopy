@@ -207,10 +207,10 @@ node tools/e2e/play.mjs                       # plays every game, no repeated qu
 ENGINE=webkit node tools/e2e/play.mjs         # the same in WebKit, the engine behind Safari on iPhone and iPad (CI runs both)
 node tools/e2e/pictures.mjs                   # the home page and six games still look the same (pictures in tools/e2e/pictures/)
 python3 tools/review.py --budget              # the size budgets as a check: 100 KB per page, loopy.js grows by at most 2 KB
-node tools/lint/check.mjs                     # the styles: only CSS every current browser has (Baseline), nothing broken or doubled (once: npm ci --prefix tools/lint --ignore-scripts)
+node tools/lint/check.mjs                     # the styles: Baseline CSS only (30 months in every browser), theme colours in pages, nothing broken or doubled (once: npm ci --prefix tools/lint --ignore-scripts)
 ```
 
-The GitHub check also scores the pages a change touches with Lighthouse ([tools/lighthouse/](tools/lighthouse/lighthouserc.json): every score 95 or more, no layout shift; the 100 KB size line warns, `tools/review.py --budget` is the size gate). When a change is meant to look different, refresh the saved pictures: put the label "refresh pictures" on the pull request, or Actions → "Refresh pictures" with your branch. `.mcp.json` gives Claude Code two browser tools for bug hunting (Chrome DevTools MCP and Playwright MCP); they run only on the developer's machine. On GitHub, CodeRabbit reviews every pull request against the loopy rules in `.coderabbit.yaml`.
+The GitHub check also scores the pages a change touches with Lighthouse ([tools/lighthouse/](tools/lighthouse/lighthouserc.json): every score 95 or more, no layout shift; the 100 KB size line warns, `tools/review.py --budget` is the size gate). When a change is meant to look different, refresh the saved pictures: put the label "refresh pictures" on the pull request, or Actions → "Refresh pictures" with your branch. `.mcp.json` gives Claude Code two browser tools for bug hunting (Chrome DevTools MCP and Playwright MCP); they run only on the developer's machine. On GitHub, CodeRabbit reviews every pull request against the loopy rules in `.coderabbit.yaml` (it runs only where the repository owner has installed the CodeRabbit GitHub app; on a fork without it there is no review).
 
 For the WebKit run, install the engine once: `node tools/a11y/node_modules/playwright-core/cli.js install --with-deps webkit`.
 

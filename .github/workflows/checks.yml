@@ -63,7 +63,7 @@ jobs:
         run: node tools/build/node_modules/typescript/bin/tsc -p tools/build
       - name: Install Stylelint (exact versions from the lock file)
         run: npm ci --prefix tools/lint --ignore-scripts --no-audit --no-fund
-      - name: The styles use only CSS every current browser has (Baseline), and nothing is broken or doubled
+      - name: The styles use only CSS every browser has had for 30 months (Baseline) and theme colours, and nothing is broken or doubled
         run: node tools/lint/check.mjs
       - name: The Claude Code plugins match the repo
         run: |

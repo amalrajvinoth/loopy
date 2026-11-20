@@ -11,7 +11,7 @@
     "checks.yml: loopy.js and loopy.css match their sources in src/",
     "checks.yml: The shared script and its parts type-check against src/loopy.d.ts",
     "checks.yml: Install Stylelint (exact versions from the lock file)",
-    "checks.yml: The styles use only CSS every current browser has (Baseline), and nothing is broken or doubled",
+    "checks.yml: The styles use only CSS every browser has had for 30 months (Baseline) and theme colours, and nothing is broken or doubled",
     "checks.yml: The Claude Code plugins match the repo",
     "checks.yml: Every page stays in its size budget (100 KB sent; loopy.js and loopy.css grow by at most 2 KB)",
     "checks.yml: accessibility (part ${{ matrix.part }} of 2, ${{ matrix.engine }})",
@@ -100,6 +100,7 @@
     "tools/guide_check.py",
     "tools/lighthouse/serve.mjs",
     "tools/lint/check.mjs",
+    "tools/lint/no-hard-colour.mjs",
     "tools/ralph/issue.py",
     "tools/ralph/status.py",
     "tools/review.py"
@@ -137,5 +138,5 @@
     "844 × 390"
   ],
   "games_lists": 1,
-  "learned_at": "768d1eb"
+  "learned_at": "d2461d8"
 }

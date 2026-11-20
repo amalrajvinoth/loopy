@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'sha256-N5MhcBkShVXELkwwvYBlB9eF5lGXxWTmiHRlhbjSIpU='; style-src 'self' 'sha256-C6IbryMBuhrgVmYGFaptwXgd+ih7F5u6HzqYA6mmrB8='; img-src 'self' data:; font-src 'self'; connect-src 'self' https://loopy-sync.loopy-1e2.workers.dev; worker-src 'self'; object-src 'none'; base-uri 'none'; form-action 'none'; manifest-src 'self'; upgrade-insecure-requests">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'sha256-N5MhcBkShVXELkwwvYBlB9eF5lGXxWTmiHRlhbjSIpU='; style-src 'self' 'sha256-P8L7IYHqMPqzYP0mJhr87Ap2kyZo1IdFFI3pD/kCO8w='; img-src 'self' data:; font-src 'self'; connect-src 'self' https://loopy-sync.loopy-1e2.workers.dev; worker-src 'self'; object-src 'none'; base-uri 'none'; form-action 'none'; manifest-src 'self'; upgrade-insecure-requests">
 <meta name="referrer" content="strict-origin-when-cross-origin">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <link rel="icon" href="icon.svg" type="image/svg+xml">
@@ -167,6 +167,7 @@ footer p { margin: 0; }
 .set-sync p:not(.set-head), .set-touch p:not(.set-head) { margin: 0; color: var(--muted); font-size: 0.9rem; line-height: 1.4; }
 /* The family code, in Settings, the welcome sheet and the family code row: one style. */
 .set-sync p.sync-code, .hello-sync p.sync-code { margin: 0; font-family: "Fredoka", "Lexend", sans-serif; font-size: 1.35rem; letter-spacing: 0.06em; color: var(--ink); overflow-wrap: anywhere; }
+/* stylelint-disable-next-line loopy/no-hard-colour -- a QR code scans only as black on white, in every theme */
 .sync-qr { display: block; width: min(100%, 200px); height: auto; border-radius: 12px; background: #fff; }
 .sync-join { display: flex; gap: 8px; }
 .sync-join input { flex: 1; min-width: 0; font: inherit; font-size: 1rem; padding: 10px 12px; border-radius: 12px; border: 2px solid var(--line); background: var(--bg); color: var(--ink); text-transform: uppercase; }

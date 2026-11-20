@@ -11,7 +11,7 @@ description: Finish a loopy change and open its pull request with every check, s
    ```sh
    python3 tools/build.py --check
    node tools/build/node_modules/typescript/bin/tsc -p tools/build   # src/ against src/loopy.d.ts: a new Loopy member goes in the .d.ts too
-   node tools/lint/check.mjs                  # the styles: only Baseline CSS, nothing broken or doubled (once: npm ci --prefix tools/lint --ignore-scripts)
+   node tools/lint/check.mjs                  # the styles: only Baseline CSS (widely available), theme colours in pages, nothing broken or doubled (once: npm ci --prefix tools/lint --ignore-scripts)
    python3 tools/csp.py --check
    python3 tools/check_external.py
    python3 tools/guide_check.py              # every game has a guide page, EN and DE
