@@ -13,17 +13,28 @@ import js from "@eslint/js";
 import globals from "globals";
 import html from "eslint-plugin-html";
 import baselineJs from "eslint-plugin-baseline-js";
+import * as espree from "espree";
 
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "../..");
 
-/** The top-level names a plain script declares: const WORDS = ..., var X, function f() {}. */
+/** The names a plain script declares at its top level: const WORDS = ..., var X, function f() {}, class C {}.
+ *  Parsed with espree (ESLint's own parser), so a function's parameters or a name inside a body never count. */
 function declared(file) {
-  const text = fs.readFileSync(file, "utf8");
   const names = {};
-  for (const m of text.matchAll(/^(?:const|let|var|function)\s+(.+)$/gm)) {
-    // `const MAP_K = 8, MAP_Y0 = 1435.283;` declares two names: the first word, and each name after a comma with its =.
-    const first = m[1].match(/^([A-Za-z_$][\w$]*)/); if (first) names[first[1]] = "readonly";
-    for (const n of m[1].matchAll(/,\s*([A-Za-z_$][\w$]*)\s*=(?!=)/g)) names[n[1]] = "readonly";
+  let ast;
+  try { ast = espree.parse(fs.readFileSync(file, "utf8"), { ecmaVersion: 2022, sourceType: "script" }); }
+  catch (e) { console.warn(`${path.relative(ROOT, file)}: could not parse (${e.message}); its globals are unknown to the lint`); return names; }
+  const bind = (id) => {
+    if (!id) return;
+    if (id.type === "Identifier") names[id.name] = "readonly";
+    else if (id.type === "ObjectPattern") for (const pr of id.properties) bind(pr.type === "RestElement" ? pr.argument : pr.value);
+    else if (id.type === "ArrayPattern") for (const el of id.elements) bind(el);
+    else if (id.type === "AssignmentPattern") bind(id.left);
+    else if (id.type === "RestElement") bind(id.argument);
+  };
+  for (const node of ast.body) {
+    if (node.type === "VariableDeclaration") for (const d of node.declarations) bind(d.id);
+    else if (node.type === "FunctionDeclaration" || node.type === "ClassDeclaration") bind(node.id);
   }
   return names;
 }
@@ -73,8 +84,14 @@ export default [
       eqeqeq: ["error", "always", { null: "ignore" }],
       // try { localStorage... } catch {} is how a page shrugs off a browser that blocks storage or speech.
       "no-empty": ["error", { allowEmptyCatch: true }],
-      // Only JavaScript every browser has had for 30 months, like the style lint's Baseline rule.
-      "baseline-js/use-baseline": ["error", { available: "widely" }],
+      // Only JavaScript every browser has had for 30 months, like the style lint's Baseline rule: the syntax, the
+      // built-ins (Array.prototype.at, Object.hasOwn) and the web APIs (structuredClone, navigator.share).
+      // ignoreFeatures is only for a feature every use of which sits behind a check with a fallback, each with its reason:
+      //   share: navigator.share and canShare (the phone's share sheet) are used only after `if (navigator.share)` or
+      //          `navigator.canShare(...)`; without them the Send button stays hidden and the weekly card says Save.
+      "baseline-js/use-baseline": ["error", {
+        available: "widely", includeJsBuiltins: { preset: "auto" }, includeWebApis: { preset: "auto" }, ignoreFeatures: ["share"],
+      }],
     },
   },
   ...pageBlocks(),
