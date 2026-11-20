@@ -18,7 +18,7 @@ import { fakeD1 } from "../../sync/fake-d1.mjs";
 const HERE = path.dirname(fileURLToPath(import.meta.url));
 const ROOT = path.resolve(HERE, "../..");
 const require = createRequire(path.join(process.env.A11Y_DEPS || path.join(ROOT, "tools/a11y"), "package.json"));
-import { launch, ENGINE } from "./engine.mjs";
+import { launch, ENGINE, body as pageBody } from "./engine.mjs";
 const HOST = "sync.test";
 
 const TYPES = { ".html": "text/html", ".js": "text/javascript", ".css": "text/css", ".svg": "image/svg+xml", ".png": "image/png",
@@ -30,7 +30,7 @@ const server = http.createServer((req, res) => {
   if (fs.existsSync(file) && fs.statSync(file).isDirectory()) file = path.join(file, "index.html");
   if (!fs.existsSync(file)) { res.writeHead(404); return res.end(); }
   const type = TYPES[path.extname(file)] || "application/octet-stream";
-  let body = fs.readFileSync(file);
+  let body = pageBody(file);
   if (file === path.join(ROOT, "loopy.js")) body = String(body).replace(/Loopy\.syncHost="[^"]*"/, `Loopy.syncHost="${HOST}"`);
   if (type === "text/html") body = String(body).replace(/connect-src 'self'[^;]*;/, `connect-src 'self' https://${HOST};`);
   res.writeHead(200, { "Content-Type": type });

@@ -137,6 +137,7 @@ One per failure. Add new ones at the end (the heal skill step 3). Keep each to f
 - Cause: the game's `rebuild(note)` returns null for a note its own `makeProblem` can produce, so `Loopy.retry.fresh` skips the mistake (Which Way? rejected b = 10 in `okSum`, PR #302); or the note's format changed and old notes no longer parse.
 - Fix: seed the note from the log (`Loopy.rewards.wrong(game, { …, r: note })`), reopen with `#retry` and read `window.__questions[0]`; make `rebuild` accept every sum `makeProblem` makes, never loosen the test. Keep old note formats readable. (19 Nov 2026)
 
+<<<<<<< HEAD
 ## Picture test is red
 - Looks like: job "picture test" red; `home-390x844-de.png: 1.42% of the pixels changed (allowed 0.3%)`, with the artifact `pictures-that-changed` (the new picture and a `-diff.png`).
 - Cause: a shared CSS or script change moved something on the home page or one of the six games. Look at the diff picture first.
@@ -149,3 +150,9 @@ One per failure. Add new ones at the end (the heal skill step 3). Keep each to f
 ## Lighthouse budgets are red
 - Looks like: job "Lighthouse budgets" red; `categories:performance failure for minScore assertion` or `resource-summary:total:size failure for maxNumericValue assertion` on one URL, with the artifact `lighthouse-pull-request` (the reports).
 - Fix: open the report for that URL. A size failure is the same as the size budget above. A performance failure on a local server is almost always work on load (a long script before first paint, a big picture, a font not preloaded) or a layout shift (`cumulative-layout-shift`): fix the page, never lower `minScore`. Re-run once before anything else when every URL is a few points under: the runner can be slow. (20 Nov 2026)
+=======
+## WebKit run is red, every page "Can't find variable: Loopy"
+- Looks like: only the `webkit` jobs are red; the log says `loads from another website: https://127.0.0.1:PORT/loopy/loopy.js`, `Error performing TLS handshake` and `Can't find variable: Loopy` on every page, while the Chromium jobs are green.
+- Cause: WebKit honours the page's `upgrade-insecure-requests` even on http://127.0.0.1 and asks the plain-http test server for https. `body()` in `tools/e2e/engine.mjs` drops the directive for WebKit; a test with its own file reading that does not go through `body()` brings the failure back.
+- Fix: serve files with `res.end(body(file))` from `engine.mjs`, never `fs.createReadStream(file).pipe(res)`. (20 Nov 2026)
+>>>>>>> claude/project-thread-3obxc6

@@ -21,6 +21,18 @@ const playwright = require("playwright-core");
 /** "chromium", "webkit" or "pinned", from ENGINE. Tests print it in their table and use it for engine-only steps. */
 export const ENGINE = ["webkit", "pinned"].includes(process.env.ENGINE) ? process.env.ENGINE : "chromium";
 
+/**
+ * A file's bytes as the test servers send them. In WebKit a page's `upgrade-insecure-requests` directive is
+ * dropped: WebKit upgrades even http://127.0.0.1 to https (Chromium leaves the loopback address alone, as the
+ * spec says), and the test servers speak only http, so without this nothing after the page itself would load.
+ * The real site is https, where the directive changes nothing.
+ */
+export function body(file) {
+  const bytes = fs.readFileSync(file);
+  if (ENGINE === "webkit" && file.endsWith(".html")) return Buffer.from(String(bytes).replace(/;\s*upgrade-insecure-requests/, ""));
+  return bytes;
+}
+
 export async function launch() {
   if (ENGINE === "webkit") {
     try { return await playwright.webkit.launch(); }
