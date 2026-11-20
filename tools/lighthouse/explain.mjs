@@ -8,7 +8,7 @@ import fs from "node:fs";
 import path from "node:path";
 
 const DIR = process.argv[2] || ".lighthouseci";
-const MIN = 0.95, CLS_MAX = 0.1;
+const MIN = 0.95, CLS_MAX = 0.1; // the budgets in lighthouserc.json
 const files = fs.existsSync(DIR) ? fs.readdirSync(DIR).filter((f) => /^lhr-.*\.json$/.test(f)).sort() : [];
 if (!files.length) { console.log(`No reports in ${DIR}.`); process.exit(0); }
 
@@ -23,7 +23,7 @@ for (const f of files) {
 const pct = (s) => s == null ? "  -" : String(Math.round(s * 100)).padStart(3);
 const num = (a) => a && a.numericValue != null ? a.numericValue : null;
 const ms = (a) => num(a) == null ? "-" : `${Math.round(num(a))} ms`;
-const node = (n) => n ? (n.selector || n.snippet || "?").replace(/\s+/g, " ").slice(0, 90) : "?";
+const node = (n) => n ? (n.selector || n.snippet || "?").replace(/\s+/g, " ").slice(0, 90) : "(no single element)";
 
 for (const [url, runs] of byUrl) {
   const page = url.replace(/^https?:\/\/[^/]+\/loopy\//, "") || "(home)";
@@ -35,19 +35,28 @@ for (const [url, runs] of byUrl) {
     console.log(`  run ${i + 1}: performance ${pct(c.performance.score)}  accessibility ${pct(c.accessibility.score)}  best practices ${pct(c["best-practices"].score)}` +
       `  | shift ${cls == null ? "-" : cls.toFixed(3)}  first paint ${ms(a["first-contentful-paint"])}  biggest paint ${ms(a["largest-contentful-paint"])}  blocked ${ms(a["total-blocking-time"])}${bad ? "   <- under the budget" : ""}`);
     if (!bad) return;
-    const shifts = (a["layout-shifts"]?.details?.items || []).filter((s) => s.score >= 0.01);
-    for (const s of shifts.slice(0, 6)) {
-      console.log(`      shift ${s.score.toFixed(3)}: ${node(s.node)}`);
+    // Every shift, biggest first: many small ones add up to a red CLS as surely as one big one.
+    const shifts = (a["layout-shifts"]?.details?.items || []).slice().sort((x, y) => (y.score || 0) - (x.score || 0));
+    for (const s of shifts.slice(0, 8)) {
+      console.log(`      shift ${(s.score || 0).toFixed(3)}: ${node(s.node)}`);
       for (const sub of s.subItems?.items || []) {
         const extra = sub.extra && (sub.extra.value || sub.extra.snippet || sub.extra.selector || "");
         console.log(`        because: ${sub.cause || "?"} ${String(extra).replace(/\s+/g, " ").slice(0, 100)}`);
       }
     }
-    const lcp = a["largest-contentful-paint-element"]?.details?.items?.[0]?.items?.[0]?.node;
+    if (shifts.length > 8) console.log(`      ... and ${shifts.length - 8} smaller shift(s)`);
+    // Lighthouse 13 keeps the element of the biggest paint in the "lcp-breakdown-insight" audit (a list whose
+    // node item is the element); older reports had it in "largest-contentful-paint-element".
+    const lcp = (a["lcp-breakdown-insight"]?.details?.items || []).find((it) => it.type === "node") ||
+      a["largest-contentful-paint-element"]?.details?.items?.[0]?.items?.[0]?.node;
     if (lcp) console.log(`      biggest paint: ${node(lcp)}`);
-    for (const id of ["render-blocking-resources", "unused-css-rules", "font-display", "uses-text-compression", "server-response-time"]) {
+    // The slow steps to the first paint. Lighthouse 13 names them "-insight"; the older names stay as fallbacks.
+    for (const id of ["render-blocking-insight", "render-blocking-resources", "font-display-insight", "font-display", "unused-css-rules", "uses-text-compression", "server-response-time"]) {
       const au = a[id];
-      if (au && au.score != null && au.score < 1 && au.displayValue) console.log(`      ${au.title}: ${au.displayValue}`);
+      if (!au || au.score == null || au.score >= 1) continue;
+      const rows = (au.details?.items || []).filter((it) => it.url).slice(0, 4)
+        .map((it) => `${String(it.url).replace(/^https?:\/\/[^/]+\/loopy\//, "")}${it.wastedMs != null ? ` (${Math.round(it.wastedMs)} ms)` : ""}`);
+      console.log(`      ${au.title}${au.displayValue ? `: ${au.displayValue}` : ""}${rows.length ? ` — ${rows.join(", ")}` : ""}`);
     }
   });
 }
