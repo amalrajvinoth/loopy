@@ -201,7 +201,7 @@ jobs:
           retention-days: 14
 
   # Lighthouse on the pages this change touches (tools/ci_changes.py --pages), served with gzip like GitHub Pages,
-  # with budgets: every score 95 or more, at most 100 KB sent per page, no layout shift (tools/lighthouse/lighthouserc.json).
+  # with budgets: every score 95 or more, no layout shift; the 100 KB size line is a warning here and a gate in review.py --budget (tools/lighthouse/lighthouserc.json).
   lighthouse:
     name: Lighthouse budgets
     needs: changes
