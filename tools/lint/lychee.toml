@@ -10,4 +10,4 @@ hidden = true
 exclude = ['/guide/?$', '/guide/.+']
 # Not checked: the repository data (a pattern bound to the .git folder, so .github stays in), the guide's own
 # sources (Astro checks them in guide-src/scripts/check.mjs) and installed packages. These are regular expressions.
-exclude_path = ['(^|/)\\.git(/|$)', 'guide-src', 'node_modules']
+exclude_path = ['(^|/)\.git(/|$)', 'guide-src', 'node_modules']
