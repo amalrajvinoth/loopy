@@ -222,7 +222,7 @@ After editing any page, run `python3 tools/build.py` (or at least `python3 tools
 
 Pages load `loopy.js` and `loopy.css`. These are small copies of `src/loopy.js` and `src/loopy.css`, made by a script. Never edit them by hand.
 
-After editing anything in `src/`, run:
+After editing anything in `src/`, run (needs Node 22 or newer, the version the checks use; TypeScript 7 does not start on Node 18):
 
 ```sh
 npm ci --prefix tools/build --ignore-scripts   # once: the minifier (esbuild) and the type checker, exact versions from the lock file
