@@ -9,7 +9,6 @@ tone_instructions: >-
   children: be strict about anything a child could see or lose (saved stars, German text, a cut-off screen).
 reviews:
   profile: chill
-  request_changes_workflow: false
   high_level_summary: false
   poem: false
   review_status: false
@@ -17,6 +16,16 @@ reviews:
   auto_review:
     enabled: true
     drafts: true    # the loopy PRs start as drafts; the review should be in before one is marked ready
+  # The owner wants fixes on, not just comments: "Fix comments" (the checkbox under a review, or
+  # "@coderabbitai fix comments"), "Fix Failing CI" and the merge-conflict resolver. The "Autofix" switch
+  # that keeps doing this by itself is per pull request, in CodeRabbit's first comment; it is not a setting here.
+  finishing_touches:
+    autofix:
+      enabled: true
+    fix_ci:
+      enabled: true
+    resolve_merge_conflict:
+      enabled: true
   path_filters:
     - "!loopy.js"
     - "!loopy.css"
