@@ -141,3 +141,8 @@ One per failure. Add new ones at the end (the heal skill step 3). Keep each to f
 - Looks like: only the `webkit` jobs are red; the log says `loads from another website: https://127.0.0.1:PORT/loopy/loopy.js`, `Error performing TLS handshake` and `Can't find variable: Loopy` on every page, while the Chromium jobs are green.
 - Cause: WebKit honours the page's `upgrade-insecure-requests` even on http://127.0.0.1 and asks the plain-http test server for https. `body()` in `tools/e2e/engine.mjs` drops the directive for WebKit; a test with its own file reading that does not go through `body()` brings the failure back.
 - Fix: serve files with `res.end(body(file))` from `engine.mjs`, never `fs.createReadStream(file).pipe(res)`. (20 Nov 2026)
+
+## WebKit accessibility run is red, Chromium's is green
+- Looks like: only the `webkit` accessibility jobs are red, with the same axe rule on one control in every game, such as `label-content-name-mismatch on #read-toggle (Elements must have their visible text as part of their accessible name)`.
+- Cause: WebKit's accessibility tree differs a little from Chromium's (visible text, pseudo-element content, names from `aria-label`), so axe sees another name or text. The Read aloud pill had an `aria-label` that did not hold its On/Off tag.
+- Fix: give the control one name that is also what it shows (drop the `aria-label` when the visible text already names it; state goes in `aria-pressed`, decoration is `aria-hidden`). Never turn the rule off. (20 Nov 2026)
