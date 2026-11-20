@@ -32,7 +32,7 @@ Yes. A new device starts with one child and shows no names. To add a child, open
 
 ## How do I change the language?
 
-Tap EN for English or DE for German. You find it on the home page and in each game's Settings. Loopy remembers your choice.
+Tap EN for English or DE for German. You find it on the home page and in each game's Settings. Loopy remembers your choice. Before you pick, a German phone or browser starts Loopy in German.
 
 ## What are the badges for?
 
@@ -54,7 +54,7 @@ The code carries stars, badges, best scores, the day streak, the answers on the 
 
 ## Can the stars stay the same on all our devices?
 
-Yes, with Family sync. On the home page, open ⚙ Settings, open **For grown-ups** and tap **Turn on** under Family sync. loopy shows a family code and a QR code. On the other device, scan the QR code, or open Settings, tap **Join with a code** and type it. From then on, new stars go to every family device by themselves. Nothing is taken away: for each child the bigger number wins.
+Yes, with Family sync. As long as no family code is set, the home page shows a row under **My stars**: tap **Turn on** there. The very first visit offers it too, as **Make a family code**. (It is also in ⚙ Settings under **For grown-ups**.) loopy shows a family code and a QR code. On the other device, scan the QR code, open the link from **Share the link**, or tap **Join with a code** and type it. From then on, new stars go to every family device by themselves. Nothing is taken away: for each child the bigger number wins.
 
 It carries what a stars code carries: every child's name, stars, badges, streaks, answers, age, levels and game choices. The color theme, sound, language and your email stay on each device. The family code is 16 letters and numbers; see it again in Settings on any device where sync is on. Everything is locked on your device before it is sent, with a key made from the family code. The server only keeps the locked copy and can't read it. There is no account. **Turn off** stops it on one device; **Turn off everywhere** deletes the family copy. The stars on each device stay.
 

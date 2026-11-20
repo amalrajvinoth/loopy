@@ -36,6 +36,7 @@ Guide pages live in `guide-src/src/content/docs/`. Every English page has a Germ
 | Children, ages, "Who is playing?" | Guide `setup/kids-and-ages.md`. |
 | Themes, language, "Easier to read" | Guide `setup/language-and-look.mdx`. DESIGN.md if the look changed. |
 | Add to home screen (`src/loopy-install.js`) | Guide `setup/home-screen.md`. |
+| The first visit and the family code row (`src/loopy-hello.js`) | Guide `start/first-visit.md`, `settings/home-settings.mdx` and `stars/family-sync.md` (EN + DE), FAQ q21, Help. |
 | Offline copy (`src/sw.js`) | Guide `setup/offline.md`, only if people notice it. |
 | Stars code, QR, backup file (`src/loopy-backup.js`) | Guide `stars/move-stars.mdx`, `stars/backup-file.md`, `stars/where-stars-live.md`. |
 | Grown-ups page (`progress/`), weekly card | Guide `grown-ups/grown-ups-page.mdx`. |

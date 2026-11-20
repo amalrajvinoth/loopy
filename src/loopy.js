@@ -10,7 +10,13 @@ document.documentElement.classList.add("loopy-building");
 (function () {
   var KEY = "loopy.lang", LANGS = ["en", "de"];
   var lang = "en";
-  try { var saved = localStorage.getItem(KEY); if (LANGS.indexOf(saved) !== -1) lang = saved; } catch (e) {}
+  // The saved choice wins. Before any choice, a German phone or browser starts loopy in German (nothing is saved
+  // until the language pill is tapped, so loopy follows the device until then).
+  try {
+    var saved = localStorage.getItem(KEY);
+    if (LANGS.indexOf(saved) !== -1) lang = saved;
+    else if (saved === null && /^de(-|$)/i.test(navigator.language || "")) lang = "de";
+  } catch (e) {}
   document.documentElement.lang = lang;
   var dict = { en: {}, de: {} };
 
@@ -527,8 +533,15 @@ document.documentElement.classList.add("loopy-building");
 (function () {
   var Loopy = window.Loopy, DB = "loopy", STORE = "kv", PRE = "loopy.", ASKED = "loopy.persistAsked";
   var db = null, ready = false, timer = null;
-  var keep = Loopy.keep = { db: false, persisted: false, soon: soon };
+  // keep.done turns true once the IndexedDB copy was checked (and the page did not reload from it); the
+  // event "loopy:kept" fires then. The home page waits for it before a first-visit welcome.
+  var keep = Loopy.keep = { db: false, persisted: false, done: false, soon: soon };
   var own = function (k) { return typeof k === "string" && k.indexOf(PRE) === 0; };
+  function done() {
+    if (keep.done) return;
+    keep.done = true;
+    try { window.dispatchEvent(new CustomEvent("loopy:kept")); } catch (e) {}
+  }
 
   function local() {
     var out = {};
@@ -578,14 +591,16 @@ document.documentElement.classList.add("loopy-building");
 
   function start() {
     var req;
-    try { req = indexedDB.open(DB, 1); } catch (e) { return; }
+    try { req = indexedDB.open(DB, 1); } catch (e) { done(); return; }
     req.onupgradeneeded = function () { req.result.createObjectStore(STORE); };
-    req.onerror = function () {};
+    req.onerror = done;
+    req.onblocked = done;
     req.onsuccess = function () {
       db = req.result;
       keep.db = true;
       var rows = {}, cur;
-      try { cur = db.transaction(STORE, "readonly").objectStore(STORE).openCursor(); } catch (e) { return; }
+      try { cur = db.transaction(STORE, "readonly").objectStore(STORE).openCursor(); } catch (e) { done(); return; }
+      cur.onerror = done;
       cur.onsuccess = function () {
         var c = cur.result;
         if (c) { rows[c.key] = c.value; c.continue(); return; }
@@ -594,10 +609,11 @@ document.documentElement.classList.add("loopy-building");
         ready = true;
         copy();
         ask();
+        done();
       };
     };
   }
-  try { if (!window.indexedDB) return; } catch (e) { return; }
+  try { if (!window.indexedDB) { done(); return; } } catch (e) { done(); return; }
   // When the page is left, so the last saves are copied too.
   document.addEventListener("visibilitychange", function () { if (document.visibilityState === "hidden") copy(); });
   window.addEventListener("pagehide", copy);
