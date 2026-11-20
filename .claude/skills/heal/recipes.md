@@ -136,3 +136,8 @@ One per failure. Add new ones at the end (the heal skill step 3). Keep each to f
 - Looks like: `retry.mjs` says `opened with #retry, the first question is "…", not the missed "…"`, or CI "A mistake comes back in every game until it is fixed", often only now and then.
 - Cause: the game's `rebuild(note)` returns null for a note its own `makeProblem` can produce, so `Loopy.retry.fresh` skips the mistake (Which Way? rejected b = 10 in `okSum`, PR #302); or the note's format changed and old notes no longer parse.
 - Fix: seed the note from the log (`Loopy.rewards.wrong(game, { …, r: note })`), reopen with `#retry` and read `window.__questions[0]`; make `rebuild` accept every sum `makeProblem` makes, never loosen the test. Keep old note formats readable. (19 Nov 2026)
+
+## WebKit run is red, every page "Can't find variable: Loopy"
+- Looks like: only the `webkit` jobs are red; the log says `loads from another website: https://127.0.0.1:PORT/loopy/loopy.js`, `Error performing TLS handshake` and `Can't find variable: Loopy` on every page, while the Chromium jobs are green.
+- Cause: WebKit honours the page's `upgrade-insecure-requests` even on http://127.0.0.1 and asks the plain-http test server for https. `body()` in `tools/e2e/engine.mjs` drops the directive for WebKit; a test with its own file reading that does not go through `body()` brings the failure back.
+- Fix: serve files with `res.end(body(file))` from `engine.mjs`, never `fs.createReadStream(file).pipe(res)`. (20 Nov 2026)

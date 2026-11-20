@@ -20,7 +20,7 @@ import { fileURLToPath } from "node:url";
 const HERE = path.dirname(fileURLToPath(import.meta.url));
 const ROOT = path.resolve(HERE, "../..");
 const require = createRequire(path.join(process.env.A11Y_DEPS || HERE, "package.json"));
-import { launch, ENGINE } from "../e2e/engine.mjs";
+import { launch, ENGINE, body } from "../e2e/engine.mjs";
 const AXE = fs.readFileSync(require.resolve("axe-core/axe.min.js"), "utf8");
 
 // Every theme in src/loopy.css (a theme sets its own --bg).
@@ -51,7 +51,7 @@ const server = http.createServer((req, res) => {
   if (fs.existsSync(file) && fs.statSync(file).isDirectory()) file = path.join(file, "index.html");
   if (!fs.existsSync(file)) { res.writeHead(404); return res.end(); }
   res.writeHead(200, { "Content-Type": TYPES[path.extname(file)] || "application/octet-stream" });
-  fs.createReadStream(file).pipe(res);
+  res.end(body(file));
 });
 await new Promise(r => server.listen(0, "127.0.0.1", r));
 const BASE = `http://127.0.0.1:${server.address().port}/`;
