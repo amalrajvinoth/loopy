@@ -4,7 +4,7 @@
 # Chromium build the check uses, commits them to the branch and starts the checks again (a push by this token starts
 # no workflow by itself), then takes the label off. Only for branches in this repository: on a pull request from a
 # fork the token cannot push, so the label does nothing there; the contributor saves the pictures on their machine
-# (UPDATE=1 ENGINE=pinned node tools/e2e/pictures.mjs, tools/e2e/README.md) and commits them.
+# (UPDATE=1 ENGINE=pinned node tools/e2e/pictures.mjs on Linux, the runner's system; tools/e2e/README.md) and commits them.
 name: Refresh pictures
 
 on:
