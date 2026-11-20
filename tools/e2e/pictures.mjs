@@ -1,11 +1,12 @@
 // Picture test: the home page and a set of games must still look the same.
 //
-// It takes a picture of each page at the eight DESIGN.md sizes in English, and in German at the three where
-// the longer words bite first, and compares it with the saved picture in tools/e2e/pictures/. A shared CSS change that moves a button or cuts off a row
-// goes red here, before the pull request is merged, with the new picture and a diff picture to look at.
+// It takes a picture of each page at the eight DESIGN.md sizes, in English and in German, and compares it with the
+// saved picture in tools/e2e/pictures/. A shared CSS change that moves a button or cuts off a row goes red here,
+// before the pull request is merged, with the new picture and a diff picture to look at.
 //
 //   node tools/e2e/pictures.mjs                 compare (exit 1 on a difference; new pictures and diffs in --out)
-//   UPDATE=1 node tools/e2e/pictures.mjs        save the pictures as they are now (when a change is meant to look different)
+//   ENGINE=pinned UPDATE=1 node tools/e2e/pictures.mjs    save the pictures as they are now (when a change is meant to look different;
+//                                               from a fork, where the Refresh pictures workflow cannot push, this is the way)
 //   PAGE=math/plus-minus/ node tools/e2e/pictures.mjs       one page
 //   node tools/e2e/pictures.mjs --out DIR       where the new and diff pictures go (default: pictures-out/ in the current folder)
 //
@@ -41,10 +42,8 @@ const UPDATE = !!process.env.UPDATE;
 const PAGES = ["", "math/plus-minus/", "math/make-10/", "math/what-time-is-it/", "languages/word-detective/", "geography/flags-capitals/", "science/quick-facts/"];
 // The eight DESIGN.md sizes: three phones upright, a phone on its side, a tablet both ways, a laptop, a monitor.
 const SIZES = [[360, 640], [390, 844], [430, 932], [844, 390], [820, 1180], [1180, 820], [1280, 800], [1920, 1080]];
-// German at the three sizes where its longer words break a row first (a phone upright, on its side, a tablet upright);
-// English at all eight. 77 pictures instead of 112 keeps the repo small, and a desktop layout slip shows in either language.
-const DE_SIZES = new Set(["390x844", "844x390", "820x1180"]);
-const langsAt = (w, h) => DE_SIZES.has(`${w}x${h}`) ? ["en", "de"] : ["en"];
+// Both languages at every size (112 pictures, about 10 MB): German's longer words break a row where English fits.
+const LANGS = ["en", "de"];
 // How different two pictures may be: a pixel counts as changed past this colour distance (0 to 1), and the
 // picture fails past this share of changed pixels. Anti-aliasing never reaches it; a moved button does.
 const THRESHOLD = 0.15, MAX_SHARE = 0.003;
@@ -79,7 +78,7 @@ const rows = [], problems = [];
 
 for (const page of pages) {
   for (const [w, h] of SIZES) {
-    for (const lang of langsAt(w, h)) {
+    for (const lang of LANGS) {
       const name = `${(page || "home").replace(/\/$/, "").replace(/\//g, "-")}-${w}x${h}-${lang}.png`;
       const context = await browser.newContext({ viewport: { width: w, height: h }, deviceScaleFactor: 1, reducedMotion: "reduce", bypassCSP: true, locale: lang === "de" ? "de-DE" : "en-GB" }); // bypassCSP only lets the no-motion style in; the pages still load nothing from outside
       const p = await context.newPage();
