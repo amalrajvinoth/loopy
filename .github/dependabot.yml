@@ -1,6 +1,6 @@
 # Dependabot keeps the GitHub Actions used by the checks, the guide's Astro and Starlight, the minifier and
-# type checker in tools/build/, the browser tests in tools/a11y/, Lighthouse in tools/lighthouse/ and Stylelint
-# in tools/lint/ up to date.
+# type checker in tools/build/, the browser tests in tools/a11y/, Lighthouse in tools/lighthouse/, Stylelint and
+# the workflow checkers (zizmor, actionlint, through pip) in tools/lint/ up to date.
 version: 2
 updates:
   - package-ecosystem: "github-actions"
@@ -29,5 +29,9 @@ updates:
       interval: "weekly"
   - package-ecosystem: "npm"
     directory: "/guide-src"
+    schedule:
+      interval: "weekly"
+  - package-ecosystem: "pip"
+    directory: "/tools/lint"
     schedule:
       interval: "weekly"

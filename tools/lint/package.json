@@ -1,11 +1,17 @@
 {
   "name": "loopy-lint",
   "private": true,
-  "description": "Stylelint for the styles: src/loopy.css, src/print.css and every page's <style> block, with the Baseline plugin (only CSS every browser has had for 30 months). Only used while checking, never shipped.",
+  "description": "The linters: Stylelint for src/loopy.css, src/print.css and every page's <style> block, and ESLint (with eslint-plugin-html) for every page's <script> block, each with a Baseline plugin (only CSS and JavaScript every browser has had for 30 months). Only used while checking, never shipped.",
   "type": "module",
   "dependencies": {
+    "@eslint/js": "10.0.1",
+    "eslint": "10.15.0",
+    "eslint-plugin-baseline-js": "0.7.7",
+    "eslint-plugin-html": "8.2.1",
+    "espree": "11.2.0",
+    "globals": "17.14.0",
+    "postcss-html": "2.0.1",
     "stylelint": "17.16.0",
-    "stylelint-plugin-use-baseline": "1.4.8",
-    "postcss-html": "2.0.1"
+    "stylelint-plugin-use-baseline": "1.4.8"
   }
 }

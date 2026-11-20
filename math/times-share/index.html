@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'sha256-E/wsONtMuNfTmnIPQDYvmhe9/6DRSKoQGg/D3tcuPpI='; style-src 'self' 'sha256-iKqZfY0yOsyVHa/qlTmRsjSUAon+EdDi9RLwucVWFNA=' 'sha256-PdOGawjoljwSyQ2QoDsZq9qeS3g1+SIYetWaiwe13dA=' 'sha256-RT1053JU5UiKvjrCUFx1rlhdFLMmgtuFJ9T8jnMeawQ=' 'sha256-ZpdoenNs7heXjCDUcSzlyVesehAL9R4wTaiZxTZtPwg='; img-src 'self' data:; font-src 'self'; connect-src 'self' https://loopy-sync.loopy-1e2.workers.dev; worker-src 'self'; object-src 'none'; base-uri 'none'; form-action 'none'; manifest-src 'self'; upgrade-insecure-requests">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'sha256-0H/T0LghFek2CYLJ0YzRAfVjF7/eahh3YpVdoALvnjI='; style-src 'self' 'sha256-iKqZfY0yOsyVHa/qlTmRsjSUAon+EdDi9RLwucVWFNA=' 'sha256-PdOGawjoljwSyQ2QoDsZq9qeS3g1+SIYetWaiwe13dA=' 'sha256-RT1053JU5UiKvjrCUFx1rlhdFLMmgtuFJ9T8jnMeawQ=' 'sha256-ZpdoenNs7heXjCDUcSzlyVesehAL9R4wTaiZxTZtPwg='; img-src 'self' data:; font-src 'self'; connect-src 'self' https://loopy-sync.loopy-1e2.workers.dev; worker-src 'self'; object-src 'none'; base-uri 'none'; form-action 'none'; manifest-src 'self'; upgrade-insecure-requests">
 <meta name="referrer" content="strict-origin-when-cross-origin">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <style>:root{color-scheme:light;padding-top:var(--safe-top);padding-bottom:var(--safe-bottom)}body{margin:0}[hidden]{display:none!important}</style>
@@ -329,7 +329,6 @@ const LADDER = [
 ];
 // The level each age starts at, 0-based.
 const rungForAge = (age) => age <= 6 ? 0 : age <= 10 ? age - 6 : age <= 12 ? 5 : 6;
-function levelForAge(age) { return LADDER[rungForAge(age)]; }
 
 function makeProblem(opMode, level, avoid) {
   for (let tries = 0; tries < 300; tries++) {

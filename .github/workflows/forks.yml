@@ -81,7 +81,7 @@ jobs:
 
           Last counted: $fork_total forks, $star_total stars.
           <!-- loopy-counts forks=$fork_total stars=$star_total -->"
-          body=$(echo "$body" | sed 's/^          //')
+          body=${body//$'\n          '/$'\n'}   # drop the ten spaces the YAML indents each line with
           if [ -z "$issue" ]; then
             issue=$(gh issue create --repo "$R" --title "Forks and stars" --label usage --assignee "$OWNER" --body "$body" \
                     | grep -oE '[0-9]+$')

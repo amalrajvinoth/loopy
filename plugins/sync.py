@@ -47,6 +47,11 @@ node tools/build/node_modules/typescript/bin/tsc -p tools/build   # src/ type-ch
 python3 tools/csp.py --check && python3 tools/check_external.py && python3 tools/guide_check.py
 python3 tools/review.py                             # the loopy rules, saved data, size and docs, against main
 python3 plugins/sync.py --check && python3 plugins/loopy/scripts/drift.py
+npm ci --prefix tools/lint --ignore-scripts         # once: Stylelint and ESLint
+node tools/lint/check.mjs && node tools/lint/scripts.mjs   # the styles and every page's script: sound, Baseline only, theme colours
+pip install --require-hashes -r tools/lint/requirements.txt   # once: the workflow checkers
+zizmor --offline .github/workflows && actionlint             # the workflows leak no token, their YAML and shell are sound
+lychee --config tools/lint/lychee.toml -- './**/*.md' './**/*.html'   # every link inside the repo has its file (brew install lychee; CI runs it by itself)
 npm ci --prefix tools/a11y --ignore-scripts         # once: the browser tests (they need Chrome or Chromium on the machine; CHROME=<path> names one)
 node tools/a11y/node_modules/playwright-core/cli.js install --with-deps webkit   # once, for ENGINE=webkit (Safari's engine, about 90 MB)
 node tools/a11y/check.mjs && node tools/e2e/play.mjs && node tools/e2e/retry.mjs   # ENGINE=webkit runs them in Safari's engine

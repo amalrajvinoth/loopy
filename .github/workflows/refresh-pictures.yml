@@ -29,7 +29,9 @@ jobs:
     env:
       BRANCH: ${{ inputs.branch || github.event.pull_request.head.ref }}
     steps:
-      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      # This workflow commits the new pictures and pushes them to the branch with the checkout's own token,
+      # so the token stays (zizmor's artipacked warning does not apply: no artifact is uploaded after it).
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1  # zizmor: ignore[artipacked]
         with:
           ref: ${{ inputs.branch || github.event.pull_request.head.ref }}
       - name: Install the checker (exact versions from the lock file, no browser download)
