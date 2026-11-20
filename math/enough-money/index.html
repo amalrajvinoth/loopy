@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'sha256-DsFyy6KmUUJioyLUa8Yte26/xbada+IFkvQguBVi5cc='; style-src 'self' 'sha256-iKqZfY0yOsyVHa/qlTmRsjSUAon+EdDi9RLwucVWFNA=' 'sha256-LxBqi/eylUzaCDuZIJkUZtdUXTbSWr6KCF8sQzqLcK0=' 'sha256-RT1053JU5UiKvjrCUFx1rlhdFLMmgtuFJ9T8jnMeawQ=' 'sha256-08xU/TTvs1Ev4Ls2oLIUYVrZuxzbn27vUUt0NoR1pzI='; img-src 'self' data:; font-src 'self'; connect-src 'self' https://loopy-sync.loopy-1e2.workers.dev; worker-src 'self'; object-src 'none'; base-uri 'none'; form-action 'none'; manifest-src 'self'; upgrade-insecure-requests">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'sha256-DsFyy6KmUUJioyLUa8Yte26/xbada+IFkvQguBVi5cc='; style-src 'self' 'sha256-iKqZfY0yOsyVHa/qlTmRsjSUAon+EdDi9RLwucVWFNA=' 'sha256-LxBqi/eylUzaCDuZIJkUZtdUXTbSWr6KCF8sQzqLcK0=' 'sha256-RT1053JU5UiKvjrCUFx1rlhdFLMmgtuFJ9T8jnMeawQ=' 'sha256-hN/7tJBT1KuaBR0z2WwbO/g5jHsY6zCxuiNQjWLo4r0='; img-src 'self' data:; font-src 'self'; connect-src 'self' https://loopy-sync.loopy-1e2.workers.dev; worker-src 'self'; object-src 'none'; base-uri 'none'; form-action 'none'; manifest-src 'self'; upgrade-insecure-requests">
 <meta name="referrer" content="strict-origin-when-cross-origin">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <style>:root{color-scheme:light;padding-top:var(--safe-top);padding-bottom:var(--safe-bottom)}body{margin:0}[hidden]{display:none!important}</style>
@@ -115,17 +115,13 @@ body { min-height: 100vh; min-height: 100dvh; padding-block: var(--page-pad-top)
   .play { display: grid; grid-template-columns: 1fr 1fr; gap: var(--play-gap); align-items: center; }
 }
 
-.problem-card { padding: var(--card-pad) var(--card-pad) calc(var(--card-pad) - 2px); gap: 8px; }
-.feedback { min-height: 2.9em; font-size: 1.05rem; }
-.feedback strong { font-size: 1.3rem; }
+.problem-card { padding: var(--card-pad) var(--card-pad) calc(var(--card-pad) - 2px); gap: clamp(4px, 2cqh, 8px); }
+.feedback { min-height: 2.9em; font-size: clamp(0.85rem, 4.5cqh, 1.05rem); line-height: 1.3; }
+.feedback strong { font-size: clamp(1rem, 5.4cqh, 1.3rem); }
 .pad { gap: 8px; }
 .pad button { min-height: var(--key-h); font-size: var(--key-font); }
 @media (orientation: landscape) and (min-width: 640px) {
   .problem-card { height: 100%; justify-content: center; }
-}
-@media (max-height: 760px) and (orientation: portrait) {
-  .feedback { font-size: 0.95rem; line-height: 1.35; }
-  .feedback strong { font-size: 1.15rem; }
 }
 
 /* Portrait: the page is exactly one screen tall; the pad stays at the bottom and the card shrinks to fit. */
@@ -145,36 +141,40 @@ body { min-height: 100vh; min-height: 100dvh; padding-block: var(--page-pad-top)
   .problem-card { min-height: 0; overflow: hidden; }
   .feedback { flex: 0 1 auto; min-height: 0; overflow-y: auto; }
 }
-@media (max-height: 500px) {
-  .feedback { font-size: 0.9rem; line-height: 1.3; }
-  .feedback strong { font-size: 1.05rem; }
-}
 
 
 /* Is It Enough?: a small shop of three things with price tags, a purse of notes and coins, and one question.
    Notes and coins keep fixed paper and metal colours in every theme, like Coins and Change. */
 .tag { margin: 0; font-size: 0.85rem; font-weight: 600; color: var(--muted); background: var(--chip); border-radius: 999px; padding: 4px 12px; }
-.shop { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; width: 100%; max-width: 420px; }
-.shop .item { display: flex; flex-direction: column; align-items: center; gap: 2px; padding: 8px 4px; border: 2px solid var(--line); border-radius: 16px; background: var(--chip); color: var(--ink); min-width: 0; }
+.shop { display: grid; grid-template-columns: repeat(3, 1fr); gap: clamp(4px, 2cqh, 8px); width: 100%; max-width: 420px; }
+.shop .item { display: flex; flex-direction: column; align-items: center; gap: clamp(0px, 0.6cqh, 2px); padding: clamp(2px, 2cqh, 8px) 4px; border: 2px solid var(--line); border-radius: 16px; background: var(--chip); color: var(--ink); min-width: 0; }
 .shop .item.want { border-color: var(--accent); box-shadow: 0 0 0 2px var(--accent) inset; background: var(--card); }
 .shop .item.faded { opacity: 0.55; }
-.shop .pic { font-size: clamp(1.8rem, 8vw, 2.6rem); line-height: 1.15; }
-.shop .price { font-size: clamp(1.05rem, 4.6vw, 1.35rem); font-weight: 700; font-variant-numeric: tabular-nums; }
-.shop .nm { font-size: 0.85rem; color: var(--muted); font-weight: 600; max-width: 100%; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-.has { margin: 0; font-size: 0.95rem; color: var(--muted); font-weight: 600; text-align: center; }
+.shop .pic { font-size: clamp(1.3rem, 8.5cqh, 2.6rem); line-height: 1.1; }
+.shop .price { font-size: clamp(0.95rem, 5cqh, 1.35rem); font-weight: 700; font-variant-numeric: tabular-nums; }
+.shop .nm { font-size: clamp(0.8rem, 3.6cqh, 0.85rem); color: var(--muted); font-weight: 600; max-width: 100%; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.has { margin: 0; font-size: clamp(0.8rem, 3.8cqh, 0.95rem); color: var(--muted); font-weight: 600; text-align: center; }
 /* stylelint-disable loopy/no-hard-colour -- euro notes and coins keep their paper and metal colours in every theme */
-.money { display: flex; flex-wrap: wrap; justify-content: center; align-items: center; gap: 6px; width: 100%; --mh: clamp(36px, 6dvh, 52px); }
-.money i { display: inline-grid; place-items: center; font-style: normal; font-weight: 700; font-variant-numeric: tabular-nums; color: #2b2112; height: var(--mh); font-size: clamp(0.95rem, 4vw, 1.2rem); line-height: 1; }
+.money { display: flex; flex-wrap: wrap; justify-content: center; align-items: center; gap: clamp(3px, 1.3cqh, 6px); width: 100%; --mh: clamp(24px, 10cqh, 52px); }
+.money i { display: inline-grid; place-items: center; font-style: normal; font-weight: 700; font-variant-numeric: tabular-nums; color: #2b2112; height: var(--mh); font-size: clamp(0.7rem, calc(var(--mh) * 0.42), 1.2rem); line-height: 1; }
 .money .note { width: calc(var(--mh) * 1.9); border-radius: 6px; border: 2px solid rgb(0 0 0 / 0.3); box-shadow: inset 0 0 0 3px rgb(255 255 255 / 0.45); }
 .money .n5 { background: #bfc3cb; } .money .n10 { background: #eaa595; } .money .n20 { background: #a9c1ea; } .money .n50 { background: #f0c08a; }
-.money .coin { width: var(--mh); border-radius: 50%; font-size: clamp(0.85rem, 3.4vw, 1.05rem); }
+.money .coin { width: var(--mh); border-radius: 50%; font-size: clamp(0.65rem, calc(var(--mh) * 0.36), 1.05rem); }
 .money .c2 { background: #c9ced6; border: 4px solid #e2b84a; box-shadow: 0 0 0 1.5px #9a7420; }
 .money .c1 { background: #e2b84a; border: 4px solid #c9ced6; box-shadow: 0 0 0 1.5px #7d8592; }
 /* stylelint-enable loopy/no-hard-colour */
-.question { margin: 0; font-size: clamp(1.05rem, min(4.8vw, 3dvh), 1.5rem); font-weight: 700; line-height: 1.3; text-align: center; text-wrap: balance; }
-.where { margin: 0; font-size: 0.9rem; color: var(--muted); text-align: center; text-wrap: balance; }
+/* A purse of six or more pieces takes two rows, so its pieces are smaller. On the count levels, where the card is short
+   and has no shop, the pieces, the question and the answer box follow the card's width too, so they stay big on a tablet. */
+.money.many { --mh: clamp(22px, 8.5cqh, 40px); }
+.problem-card:has(.shop[hidden]) .money { --mh: clamp(24px, max(10cqh, 7cqw), 52px); }
+.problem-card:has(.shop[hidden]) .money.many { --mh: clamp(22px, max(8.5cqh, 6cqw), 40px); }
+.problem-card:has(.shop[hidden]) .question { font-size: clamp(1rem, min(4.8vw, max(6cqh, 3.5cqw)), 1.5rem); }
+.problem-card:has(.shop[hidden]) .eq { font-size: clamp(1.3rem, max(7.5cqh, 5cqw), 2.4rem); }
+.question { margin: 0; font-size: clamp(1rem, min(4.8vw, 6cqh), 1.5rem); font-weight: 700; line-height: 1.3; text-align: center; text-wrap: balance; }
+.where { margin: 0; font-size: clamp(0.8rem, 3.5cqh, 0.9rem); color: var(--muted); text-align: center; text-wrap: balance; }
+.where:empty { display: none; }
 /* The answer line: the typed amount in a box, "? €" while empty. */
-.eq { margin: 0; font-size: clamp(1.6rem, 7vw, 2.4rem); font-weight: 700; font-variant-numeric: tabular-nums; line-height: 1.1; display: flex; align-items: center; gap: 8px; }
+.eq { margin: 0; font-size: clamp(1.3rem, 7.5cqh, 2.4rem); font-weight: 700; font-variant-numeric: tabular-nums; line-height: 1.1; display: flex; align-items: center; gap: 8px; }
 .eq[hidden] { display: none; }
 .eq .ans { min-width: 2.2em; height: 1.5em; padding: 0 0.3em; display: grid; place-items: center; border: 2px solid var(--accent); box-shadow: 0 0 0 2px var(--accent) inset; border-radius: 14px; background: var(--card); color: var(--accent); }
 .eq .ans:empty::after { content: "?"; color: var(--muted); }
@@ -197,54 +197,37 @@ body { min-height: 100vh; min-height: 100dvh; padding-block: var(--page-pad-top)
 .yn .go { font: inherit; font-size: 1.35rem; font-weight: 700; color: var(--accent-ink); background: var(--accent); border: 2px solid var(--accent); border-radius: 18px; min-height: clamp(50px, 8dvh, 80px); cursor: pointer; }
 .yn .go:disabled { opacity: 0.4; cursor: default; }
 @media (orientation: landscape) and (min-width: 640px) { .choices button { min-height: clamp(60px, 22dvh, 160px); } }
-/* A purse of six or more pieces takes two rows, so its pieces are smaller. */
-.money.many { --mh: clamp(30px, 4.4dvh, 40px); gap: 4px; }
-/* Phones up to 900px tall: with the number pad up, the amount question plus the why line need a shorter shop and purse. */
-@media (max-height: 900px) and (orientation: portrait) {
-  .problem-card { gap: 8px; }
-  .shop { gap: 6px; }
-  .shop .item { padding: 6px 4px; gap: 0; }
-  .shop .pic { font-size: 1.9rem; line-height: 1.1; }
-  .shop .price { font-size: 1.1rem; }
-  .shop .nm { font-size: 0.8rem; }
-  .money { --mh: clamp(32px, 5dvh, 44px); }
-  .money.many { --mh: 32px; }
-  .eq { font-size: 1.7rem; }
+/* One screen: the card takes the room the keys leave and is a size container (issue #310). The shop, the purse and
+   the text size themselves to the card's height in container units, not to the screen's, so a phone whose keys leave
+   a short card (426×828) shows the whole card too. Each step is made for the fullest card: three things, a purse of
+   two rows and the explanation after the answer. Settings open: the page scrolls, and the card is its content's size. */
+@media (orientation: portrait) {
+  body:not(:has(#settings-panel:not([hidden]))) .play.fit > .problem-card { container-type: size; flex: 1 1 auto; max-height: 520px; }
+  body:not(:has(#settings-panel:not([hidden]))) .play.fit > .problem-card:has(.shop[hidden]) { max-height: 350px; }
+  /* Yes and No take the same room as the number pad, so the card keeps its size from one question of a problem to the next. */
+  body:not(:has(#settings-panel:not([hidden]))) .play.fit > .yn { flex: 0 0 auto; min-height: calc(4 * var(--key-h) + 24px); }
 }
-@media (max-height: 760px) and (orientation: portrait) {
-  .problem-card { gap: 6px; }
-  .shop .nm { display: none; }
-  .shop .item { padding: 4px; }
-  .shop .pic { font-size: 1.5rem; }
-  .shop .price { font-size: 1rem; }
-  .money { --mh: clamp(30px, 5dvh, 40px); gap: 4px; }
-  .money.many { --mh: 26px; gap: 3px; }
-  .money i { font-size: 0.85rem; }
-  .money .coin { font-size: 0.75rem; }
-  .money.many i { font-size: 0.75rem; }
-  .eq { font-size: 1.5rem; }
-  .feedback { font-size: 0.9rem; line-height: 1.3; }
-  .question { font-size: 1rem; }
-  .where { font-size: 0.85rem; }
+@media (orientation: landscape) and (min-width: 640px) and (max-height: 500px) {
+  body:not(:has(#settings-panel:not([hidden]))) .play.fit > .problem-card { container-type: size; height: 100%; }
 }
-/* The smallest phones: the kind tag and the item names go, the pictures shrink, so the first-time hint still finds room. */
-@media (max-height: 660px) and (orientation: portrait) {
-  .problem-card { gap: 6px; }
-  .tag, .shop .nm { display: none; }
-  .shop { gap: 6px; }
-  .shop .item { padding: 4px; border-radius: 12px; }
-  .shop .pic { font-size: 1.4rem; line-height: 1.1; }
-  .shop .price { font-size: 0.95rem; }
-  .money { --mh: 28px; gap: 3px; }
-  .money.many { --mh: 24px; }
-  .money i { font-size: 0.8rem; }
-  .money .coin { font-size: 0.7rem; }
-  .has { font-size: 0.85rem; }
-  .question { font-size: 1rem; }
-  .where { font-size: 0.85rem; }
-  .eq { font-size: 1.4rem; }
+/* A card under 420px: the kind tag goes (the title says it), and after the answer the tip under the question gives
+   its line to the explanation. Under 300px the item names go too. Under 265px (a short phone, or a phone on its side)
+   the shop goes after the answer, which names the prices, so the explanation has room. Under 200px (the smallest
+   phone, with the long "wants" question) the "has" line goes, and after the answer the purse too: the explanation says it. */
+@container (max-height: 420px) {
+  .problem-card > .tag { display: none; }
+  .problem-card.good > .where, .problem-card.bad > .where { display: none; }
 }
-@media (max-height: 500px) { .tag { display: none; } .question { font-size: 0.95rem; } .shop .pic { font-size: 1.3rem; } .shop .item { padding: 3px; gap: 0; } .shop .nm { display: none; } .money { --mh: 28px; gap: 3px; } .money.many { --mh: 24px; } .money i { font-size: 0.8rem; } .money .coin { font-size: 0.7rem; } .eq { font-size: 1.3rem; } }
+@container (max-height: 300px) {
+  .problem-card > .shop .nm { display: none; }
+}
+@container (max-height: 265px) {
+  .problem-card.good > .shop, .problem-card.bad > .shop { display: none; }
+}
+@container (max-height: 200px) {
+  .problem-card > .has { display: none; }
+  .problem-card.good > .money, .problem-card.bad > .money { display: none; }
+}
 
 /* Worksheet cells (only printed): the money as outlined boxes with a line for the total, or the shop problem in words. */
 @media print {

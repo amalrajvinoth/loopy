@@ -64,5 +64,6 @@ Tap **Settings**, then **Print worksheet**. The print window opens. Print it, or
 - The money is euros, whole amounts only, with the 5, 10, 20 and 50 notes and the 2 and 1 coins. Coins and Change has the cents, pounds and dollars.
 - The shop has 40 things with prices that fit them (an ice cream is 2 to 4 euros, a bike 80 to 100). The names of the children are the same in both languages.
 - Every problem is made up on the spot. There is no list to download.
+- The card fits every phone. On a phone where the number keys leave only a short card, the shop and the purse get smaller. The kind tag and the item names go. After the answer the small tip under the question makes room for the explanation. On the smallest phones the shop goes after the answer too. The explanation names the prices, so nothing is lost.
 - A wrong answer goes to **Try again** on the home page and comes back until it is answered right twice. The same shop comes back with only that question.
 - The grown-ups' page groups missed questions by kind: counting notes and coins, is the money enough, how much is left or missing.
