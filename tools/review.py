@@ -5,7 +5,7 @@
     python3 tools/review.py --base <ref>    # compares with another branch or commit
     python3 tools/review.py --budget        # only the size budgets, as a check: exit 1 when a page sends more than
                                             # PAGE_BUDGET or loopy.js/loopy.css grew by more than SHARED_GROWTH_GATE
-                                            # since main. CI runs it on every pull request; a line "Size budget: <why>"
+                                            # since the PR's base branch. CI runs it on every pull request; a line "Size budget: <why>"
                                             # in the pull request body (env PR_BODY) lets a change through on purpose.
 
 It also compares this change with main for three more things:
@@ -128,9 +128,12 @@ def git(*args):
 
 
 def find_base(asked):
-    """The commit where this branch left main (like git diff origin/main...HEAD), or None."""
+    """The commit where this branch left main (like git diff origin/main...HEAD), or None.
+
+    In a shallow clone (CI) there is no shared history to find, so the branch's tip is used: on a
+    pull request CI checks out the merge of the PR into its base, and the base tip is what it adds to."""
     for ref in ([asked] if asked else ["origin/main", "main"]):
-        fork = git("merge-base", ref, "HEAD")
+        fork = git("merge-base", ref, "HEAD") or git("rev-parse", "--verify", "--quiet", ref)
         if fork:
             return fork.decode().strip()[:12]
     return None
@@ -272,7 +275,7 @@ def check_size(base):
         a, b = sent(now.get(path), path), sent(before.get(path), path)
         if a != b and base:
             sizes.append((path, b, a))
-        grew = (a or 0) - (b or 0)
+        grew = (a or 0) - (b or 0) if base else 0    # with nothing to compare with, nothing "grew"
         if path in ("loopy.js", "loopy.css") and grew > SHARED_GROWTH:
             add("must" if BUDGET and grew > SHARED_GROWTH_GATE else "should", path,
                 f"grew by {grew / 1024:.1f} KB sent; every page pays for this. Move code only one "
