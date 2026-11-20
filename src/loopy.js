@@ -20,7 +20,7 @@ document.documentElement.classList.add("loopy-building");
   document.documentElement.lang = lang;
   var dict = { en: {}, de: {} };
 
-  var Loopy = window.Loopy = window.Loopy || {};
+  var Loopy = window.Loopy = window.Loopy || /** @type {Loopy} */ ({});
   Loopy.lang = lang;
   Loopy.addStrings = function (d) { LANGS.forEach(function (l) { if (d[l]) for (var k in d[l]) dict[l][k] = d[l][k]; }); };
   Loopy.t = function (key, vars) {
@@ -141,7 +141,7 @@ document.documentElement.classList.add("loopy-building");
   var PICS = ["🐰", "🦊", "🐼", "🐯", "🐸", "🦄", "🐙", "🦖", "🐝", "🐧", "🦁", "🐨"];
   // Keys saved before there were children. On the first visit they move to child 1, so no stars are lost.
   var OLD = /^(?:loopy\.(?:rewards|daily|log|recent|ageOffset|readAloud)$|(?:bs|cc|clockquiz|mk|pm100|pz|qf|si|ss|ts|wi|wm)\.)/;
-  var Loopy = window.Loopy = window.Loopy || {};
+  var Loopy = window.Loopy = window.Loopy || /** @type {Loopy} */ ({});
 
   Loopy.addStrings({
     en: {
@@ -451,7 +451,7 @@ document.documentElement.classList.add("loopy-building");
     document.body.appendChild(dlg);
     dlg.showModal();
     var now = list.querySelector('[aria-pressed="true"]');
-    if (now) now.focus();
+    if (now) /** @type {HTMLElement} */ (now).focus();
   }
 
   // The "Kids" part of Settings: one row per child with ✎, then "Add a child".
@@ -502,7 +502,7 @@ document.documentElement.classList.add("loopy-building");
       b.innerHTML += '<svg class="kid-caret" viewBox="0 0 24 24" aria-hidden="true"><path d="M6 9l6 6 6-6"/></svg>';
     }
     if (can) {
-      b.type = "button";
+      /** @type {HTMLButtonElement} */ (b).type = "button";
       var name = Loopy.kids.label(k);
       b.setAttribute("aria-label", many ? Loopy.t("kidSwitch", { name: name }) : k.name ? Loopy.t("kidChange", { name: k.name }) : Loopy.t("kidEditAria"));
       b.setAttribute("aria-haspopup", "dialog");
@@ -535,7 +535,7 @@ document.documentElement.classList.add("loopy-building");
   var db = null, ready = false, timer = null;
   // keep.done turns true once the IndexedDB copy was checked (and the page did not reload from it); the
   // event "loopy:kept" fires then. The home page waits for it before a first-visit welcome.
-  var keep = Loopy.keep = { db: false, persisted: false, done: false, soon: soon };
+  var keep = Loopy.keep = /** @type {LoopyKeep} */ ({ db: false, persisted: false, done: false, soon: soon });
   var own = function (k) { return typeof k === "string" && k.indexOf(PRE) === 0; };
   function done() {
     if (keep.done) return;
@@ -627,7 +627,7 @@ document.documentElement.classList.add("loopy-building");
 // Loopy.root is the site's address (where loopy.js is), used for links that open the home page.
 (function () {
   var Loopy = window.Loopy, KEY = "loopy.last", PATH = /^[a-z0-9-]{1,30}\/[a-z0-9-]{1,40}\/$/;
-  var me = document.currentScript;
+  var me = /** @type {HTMLScriptElement} */ (document.currentScript);
   Loopy.root = me && me.src ? new URL(".", me.src).href : new URL(".", location.href).href;
   // Parts used now and then (Report a problem, the stars code, the worksheet) live in small files next to
   // loopy.js and load the first time they are needed, so every page starts with less code.
@@ -787,7 +787,7 @@ document.documentElement.classList.add("loopy-building");
   var offset = parseInt(window.Loopy.store.get(KEY), 10) || 0;
   var age = clamp(defaultAge() + offset);
 
-  var Loopy = window.Loopy = window.Loopy || {};
+  var Loopy = window.Loopy = window.Loopy || /** @type {Loopy} */ ({});
   Loopy.defaultAge = defaultAge;
   Loopy.getAge = function () { return age; };
   Loopy.setAge = function (n) {
@@ -809,7 +809,7 @@ document.documentElement.classList.add("loopy-building");
     [["age-down", "younger", "\u2212"], ["age-label"], ["age-up", "older", "+"]].forEach(function (d) {
       var el = document.createElement(d.length > 1 ? "button" : "span");
       el.id = d[0];
-      if (d.length > 1) { el.type = "button"; el.setAttribute("aria-label", Loopy.t(d[1])); el.textContent = d[2]; }
+      if (d.length > 1) { /** @type {HTMLButtonElement} */ (el).type = "button"; el.setAttribute("aria-label", Loopy.t(d[1])); el.textContent = d[2]; }
       else el.setAttribute("aria-live", "polite");
       box.appendChild(el);
     });
@@ -821,8 +821,8 @@ document.documentElement.classList.add("loopy-building");
     var l = document.getElementById("age-label");
     if (!l) return;
     l.textContent = Loopy.t("ageLabel", { n: age });
-    document.getElementById("age-down").disabled = age <= MIN;
-    document.getElementById("age-up").disabled = age >= MAX;
+    /** @type {HTMLButtonElement} */ (document.getElementById("age-down")).disabled = age <= MIN;
+    /** @type {HTMLButtonElement} */ (document.getElementById("age-up")).disabled = age >= MAX;
   }
   if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", build);
   else build();
@@ -871,7 +871,7 @@ document.documentElement.classList.add("loopy-building");
     b.title = Loopy.t(on ? "soundOn" : "soundOff");
   }
   function build() {
-    var b = document.getElementById("sound-toggle");
+    var b = /** @type {HTMLButtonElement} */ (document.getElementById("sound-toggle"));
     if (!b) return;
     b.type = "button";
     b.className = "sound-toggle";
@@ -883,7 +883,7 @@ document.documentElement.classList.add("loopy-building");
     });
     sync();
   }
-  var Loopy = window.Loopy = window.Loopy || {};
+  var Loopy = window.Loopy = window.Loopy || /** @type {Loopy} */ ({});
   Loopy.sound = { play: play, isOn: function () { return on; } };
   if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", build);
   else build();
@@ -1030,10 +1030,12 @@ document.documentElement.classList.add("loopy-building");
 (function () {
   var KEY = "loopy.rewards";
   // Star badges: [stars, color number]. The name is the string "b" + stars.
+  /** @type {any[]} */
   var BADGES = [[10, 3], [25, 1], [50, 2], [100, 4], [150, 5], [200, 3], [250, 5], [300, 1], [400, 2], [500, 1], [750, 4], [1000, 2], [1500, 3], [2000, 5], [3000, 1], [5000, 4]]
     .map(function (b) { return { stars: b[0], key: "b" + b[0], color: "--c" + b[1] }; });
   // More badges: [kind, how many, name key, color]. kind "streak" needs the best streak in any game,
   // "games" the number of different games played, "brave" the brave flag.
+  /** @type {any[]} */
   var EXTRA = [["streak", 10, "s10", 4], ["streak", 20, "s20", 2], ["streak", 50, "s50", 1], ["games", 5, "e5", 3], ["games", 10, "e10", 5], ["games", 15, "eAll", 2], ["brave", 1, "brave", 1]]
     .map(function (b) { return { kind: b[0], n: b[1], key: b[2], color: "--c" + b[3] }; });
   var STREAKS = [5, 10, 15, 20, 30, 50];
@@ -1115,7 +1117,7 @@ document.documentElement.classList.add("loopy-building");
     var close = function () { el.classList.add("out"); setTimeout(function () { el.remove(); }, 250); };
     if (big) {
       // The card takes focus; when it closes, focus goes back to where the child was.
-      var back = document.activeElement;
+      var back = /** @type {HTMLButtonElement} */ (document.activeElement);
       close = function () {
         el.classList.add("out"); setTimeout(function () { el.remove(); }, 250);
         if (back && back !== document.body && document.contains(back) && !back.disabled) back.focus({ preventScroll: true });
@@ -1129,7 +1131,7 @@ document.documentElement.classList.add("loopy-building");
         b.addEventListener("click", function () { close(); if (a.fn) a.fn(); });
         row.appendChild(b);
       });
-      row.firstChild.focus({ preventScroll: true });
+      /** @type {HTMLElement} */ (row.firstChild).focus({ preventScroll: true });
     }
     else setTimeout(close, 2200);
     if (!calm) confetti(big ? 160 : 70);
@@ -1181,7 +1183,7 @@ document.documentElement.classList.add("loopy-building");
   }
 
   function updateChips() {
-    document.querySelectorAll("[data-loopy-stars]").forEach(function (n) { n.textContent = data.stars; });
+    document.querySelectorAll("[data-loopy-stars]").forEach(function (n) { n.textContent = String(data.stars); });
     // The counter's name for screen readers says whose stars and how many: "Dio's stars: 12".
     document.querySelectorAll(".star-chip[data-stars-label]").forEach(function (c) { c.setAttribute("aria-label", c.getAttribute("data-stars-label") + ": " + data.stars); });
   }
@@ -1217,7 +1219,7 @@ document.documentElement.classList.add("loopy-building");
     setTimeout(function () { el.remove(); bump(chip); }, 750);
   }
 
-  var Loopy = window.Loopy = window.Loopy || {};
+  var Loopy = window.Loopy = window.Loopy || /** @type {Loopy} */ ({});
   Loopy.rewards = {
     BADGES: BADGES, STAR_PATH: STAR_PATH,
     get: function () { return data; },
@@ -1343,7 +1345,7 @@ document.documentElement.classList.add("loopy-building");
   });
   var clamp = function (i) { return Math.max(0, Math.min(L.names.length - 1, i | 0)); };
   // On narrow phones the pill says "Level 3/5", so Last 5, the level and the streak fit one line.
-  var narrow = window.matchMedia ? matchMedia("(max-width: 419px)") : { matches: false };
+  var narrow = /** @type {any} */ (window.matchMedia ? matchMedia("(max-width: 419px)") : { matches: false });
   if (narrow.addEventListener) narrow.addEventListener("change", function () { render(); });
   function at() { return clamp(L.get()); }
   function name(i) { var n = L.names[i]; return typeof n === "function" ? n() : Loopy.t(n); }
@@ -1383,7 +1385,7 @@ document.documentElement.classList.add("loopy-building");
     box.className = "pill pill-level";
     box.textContent = Loopy.t(narrow.matches ? "levelShort" : "levelOf", { n: i + 1, m: n });
     box.setAttribute("aria-label", Loopy.t("levelAria", { n: i + 1, m: n, name: name(i) }));
-    var line = document.getElementById("set-level");
+    var line = /** @type {any} */ (document.getElementById("set-level"));
     if (line && line.refresh) line.refresh();
     if (carry === null) note();
   }
@@ -1451,7 +1453,7 @@ document.documentElement.classList.add("loopy-building");
 (function () {
   var KEY = "loopy.daily", MAX = 100000;
   var DAY_BADGES = [{ days: 3, key: "d3", color: "--c2" }, { days: 7, key: "d7", color: "--c4" }, { days: 30, key: "d30", color: "--c3" }];
-  var Loopy = window.Loopy = window.Loopy || {};
+  var Loopy = window.Loopy = window.Loopy || /** @type {Loopy} */ ({});
   Loopy.addStrings({
     en: { d3: "On a Roll", d7: "Week Hero", d30: "Month Master", dayStreakBadge: "{n} days in a row! You play every day." },
     de: { d3: "Gut dabei", d7: "Wochen-Held", d30: "Monats-Meister", dayStreakBadge: "{n} Tage hintereinander! Du spielst jeden Tag." }
@@ -1513,7 +1515,7 @@ document.documentElement.classList.add("loopy-building");
   // What kind of problem it was, so the page can say what to practise. See Loopy.log.kind.
   var KIND = /^(?:(?:add|sub)(?:-rg)?|(?:mul|div)-(?:big|\d{1,2})|cl-(?:0|30|15|5|1|24)|ss-(?:start|end)|mk-(?:10|20|100|1000)|bs-(?:cmp|ord|rnd|dec|neg)|pz-(?:name|cmp|add)|cc-(?:small|count|ch10|ch)|wm-(?:animals|food|home|school)|si-[3-7]|qf-(?:space|animals|body)|wi-(?:cont|eu|euc|wd|wdc)|eb-(?:box|add|mul|two|both)|fc-(?:flag|cap)|pr-(?:frac|any|disc|ratio)|sb-(?:3|5|6|8)|so-(?:animal|living|matter|food|space|material|sense)|gd-(?:read|total|diff|mean|median|cmp)|bm-(?:small|one|three|two|big|dec)|st-(?:add|sub)|sq-(?:mine|loopy)|sh-(?:name|lines|area|angle|tri)|wd-[3-6]|wt-[357]|mw-(?:mine|loopy)|cd-(?:week|grid|count|month)|np-(?:step|back|double|grow|mix)|wf-(?:plural|past|comp|opp|art)|ra-(?:find|why|think)|tg-(?:fill|factor|split)|to-(?:read|num|draw|gd)|em-(?:count|yn|diff)|wy-(?:name|pick|why|true|fill)|mi-(?:read|cmp|conv|time|neg))$/;
   var DAY = /^\d{4}-\d{2}-\d{2}$/;
-  var Loopy = window.Loopy = window.Loopy || {};
+  var Loopy = window.Loopy = window.Loopy || /** @type {Loopy} */ ({});
   var whole = function (n) { return Loopy.whole(n, MAX_N); };
   var text = function (s) { return typeof s === "string" ? s.slice(0, LEN) : ""; };
   // Only known games, real dates in the last 30 days, sane numbers and short texts are kept, whatever the stored text says.
@@ -1708,7 +1710,7 @@ document.documentElement.classList.add("loopy-building");
   var KEY = "loopy.recent", N = 5, KEEP = 20, GAMES = window.Loopy.GAMES;
   var TICK = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 12.5l4 4 8-9"/></svg>';
   var CROSS = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M7 7l10 10M17 7L7 17"/></svg>';
-  var Loopy = window.Loopy = window.Loopy || {};
+  var Loopy = window.Loopy = window.Loopy || /** @type {Loopy} */ ({});
   // Only known games and lists of up to twenty 0s and 1s are kept, whatever the stored text says.
   function clean(raw) {
     var out = {};
@@ -1827,7 +1829,7 @@ window.Loopy.fresh = function (recent, make, keep) {
       panel.insertBefore(best, panel.children[1]);
       // The level the child is on, in the words of the level pill ("Level 3 of 6: Up to 1,000"), so the pill and
       // the rows below it match whatever the rows are called. Loopy.levels fills it and keeps it fresh.
-      var lvl = document.createElement("p");
+      var lvl = /** @type {any} */ (document.createElement("p"));
       lvl.className = "set-best"; lvl.id = "set-level"; lvl.hidden = true;
       lvl.refresh = function () {
         var c = Loopy.levels && Loopy.levels.get();
@@ -1856,8 +1858,8 @@ window.Loopy.fresh = function (recent, make, keep) {
     a.innerHTML = '<span class="set-guide-ic" aria-hidden="true">📖</span><span><b></b><small data-t="howToText"></small></span><span class="set-guide-go" aria-hidden="true">→</span>';
     a.querySelector("small").textContent = Loopy.t("howToText");
     // The title can change while playing ("Make 100" becomes "Make 1,000"), so the name is read when Settings opens.
-    a.refresh = function () { a.querySelector("b").textContent = Loopy.t("howTo", { game: h1.textContent.trim() }); };
-    a.refresh();
+    /** @type {any} */ (a).refresh = function () { a.querySelector("b").textContent = Loopy.t("howTo", { game: h1.textContent.trim() }); };
+    /** @type {any} */ (a).refresh();
     return a;
   }
   var GEAR = '<svg viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.7 1.7 0 0 0 .3 1.8l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.7 1.7 0 0 0-1.8-.3 1.7 1.7 0 0 0-1 1.5V21a2 2 0 1 1-4 0v-.1a1.7 1.7 0 0 0-1.1-1.5 1.7 1.7 0 0 0-1.8.3l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1a1.7 1.7 0 0 0 .3-1.8 1.7 1.7 0 0 0-1.5-1H3a2 2 0 1 1 0-4h.1a1.7 1.7 0 0 0 1.5-1.1 1.7 1.7 0 0 0-.3-1.8l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1a1.7 1.7 0 0 0 1.8.3H9a1.7 1.7 0 0 0 1-1.5V3a2 2 0 1 1 4 0v.1a1.7 1.7 0 0 0 1 1.5 1.7 1.7 0 0 0 1.8-.3l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1a1.7 1.7 0 0 0-.3 1.8V9a1.7 1.7 0 0 0 1.5 1H21a2 2 0 1 1 0 4h-.1a1.7 1.7 0 0 0-1.5 1z"/></svg>';
@@ -1873,7 +1875,7 @@ window.Loopy.fresh = function (recent, make, keep) {
     var sync = function () { btn.setAttribute("aria-expanded", String(!panel.hidden)); };
     btn.addEventListener("click", function () {
       panel.hidden = !panel.hidden; sync();
-      var how = document.getElementById("set-guide"), lv = document.getElementById("set-level");
+      var how = /** @type {any} */ (document.getElementById("set-guide")), lv = /** @type {any} */ (document.getElementById("set-level"));
       if (how && !panel.hidden) how.refresh();
       if (lv && !panel.hidden) lv.refresh();
     });
@@ -1977,13 +1979,13 @@ Loopy.nextButton = function (btn, answered) {
     if (!from || (from.id !== "next" && from.id !== "k-go")) return;
     setTimeout(function () {
       var lost = document.activeElement === document.body || document.activeElement === from;
-      var to = null;
+      var to = /** @type {HTMLElement} */ (null);
       if (from.id === "next" && lost) to = document.querySelector(FIRST);
       if (from.id === "k-go" && (from.disabled || document.activeElement === document.body)) to = document.querySelector(PAD);
       if (to && to.getClientRects().length) to.focus({ preventScroll: true });
     }, 0);
   }
-  document.addEventListener("click", function (e) { if (e.detail === 0) after(e.target.closest ? e.target.closest("#next, #k-go") : null); });
+  document.addEventListener("click", function (e) { var t = /** @type {any} */ (e.target); if (e.detail === 0) after(t.closest ? t.closest("#next, #k-go") : null); });
   document.addEventListener("keydown", function (e) { if (e.key === "Enter") after(document.activeElement); }, true);
   // On small screens a long explanation can scroll inside the feedback line. Then it must take
   // keyboard focus, so it can be scrolled without a mouse.
@@ -2135,7 +2137,7 @@ Loopy.nextButton = function (btn, answered) {
       var el = all[i], hit = false;
       if (el === bubble || (except && except.contains(el))) continue;
       if (/^(BUTTON|A|INPUT|SELECT|SUMMARY)$/.test(el.tagName) || el.getAttribute("role") === "button") hit = true;
-      for (var n = el.firstChild; n && !hit; n = n.nextSibling) hit = n.nodeType === 3 && /\S/.test(n.data);
+      for (var n = el.firstChild; n && !hit; n = n.nextSibling) hit = n.nodeType === 3 && /\S/.test(/** @type {any} */ (n).data);
       if (!hit) continue;
       var rs = keys && keys.contains(el) ? ink(el) : el.getClientRects();
       for (var j = 0; j < rs.length; j++) {
@@ -2314,7 +2316,7 @@ Loopy.nextButton = function (btn, answered) {
 // Works offline: sw.js, next to this file, saves every page on the device after the first visit
 // (see src/sw.js). Browsers only allow it on https and on localhost.
 (function () {
-  var me = document.currentScript;
+  var me = /** @type {HTMLScriptElement} */ (document.currentScript);
   if (!me || !me.src || !window.isSecureContext || !("serviceWorker" in navigator)) return;
   var url = new URL("sw.js", me.src).href;
   window.addEventListener("load", function () { navigator.serviceWorker.register(url).catch(function () {}); });
@@ -2324,7 +2326,7 @@ Loopy.nextButton = function (btn, answered) {
 // opened does not say "you have nothing". Each game writes the number into #streak; this watches it.
 (function () {
   function hook() {
-    var b = document.getElementById("streak"), pill = b && b.closest(".pill-streak");
+    var b = document.getElementById("streak"), pill = b && /** @type {HTMLElement} */ (b.closest(".pill-streak"));
     if (!pill) return;
     var update = function () { pill.hidden = !(parseInt(b.textContent, 10) >= 2); };
     new MutationObserver(update).observe(b, { childList: true, characterData: true, subtree: true });

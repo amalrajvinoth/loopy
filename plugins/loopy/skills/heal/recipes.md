@@ -13,8 +13,16 @@ One per failure. Add new ones at the end (the heal skill step 3). Keep each to f
 - Fix: `python3 tools/build.py` (it runs `tools/csp.py`). Never hand-edit the meta line.
 
 ## Missing minifiers
-- Looks like: `Missing minifiers. Run: python3 -m pip install ...`
-- Fix: `python3 -m pip install --require-hashes --no-binary :all: -r tools/requirements.txt` (session start does it).
+- Looks like: `Missing minifiers. Run: npm ci --prefix tools/build --ignore-scripts` (or `Node.js is not installed`).
+- Fix: `npm ci --prefix tools/build --ignore-scripts` (session start does it). The minifier is esbuild, pinned in `tools/build/package-lock.json`; Dependabot updates it. A minifier error names a real mistake in `src/` (an unclosed brace, a bad selector): fix the source.
+
+## Type check fails
+- Looks like: CI step "The shared script and its parts type-check against src/loopy.d.ts" is red; `src/loopy.js(123,4): error TS2339: Property 'x' does not exist on type 'Loopy'`.
+- Fix: a new `Loopy` member or a changed signature goes in `src/loopy.d.ts` too. A DOM slip (`.value` on an `Element`) gets a JSDoc cast, `/** @type {HTMLInputElement} */ (el)`, never a behaviour change to make the checker happy. Run `node tools/build/node_modules/typescript/bin/tsc -p tools/build` until it is quiet.
+
+## A browser test is red in WebKit only
+- Looks like: "play test (part 1 of 2, webkit)" or "accessibility (part 2 of 2, webkit)" red while the chromium job of the same part is green.
+- Fix: Safari does something differently. Read the failing page and age in the job's table, run `ENGINE=webkit node tools/e2e/play.mjs` with `GAME=<id>` (once: `node tools/a11y/node_modules/playwright-core/cli.js install --with-deps webkit`), and fix the page for both engines (`dvh` units, `:has()`, `<dialog>` focus, speech and audio timing are the usual suspects). Never drop the WebKit run. If WebKit itself could not install (the step before the test is red), re-run the job once; a second time, pin the Playwright download to the version in `tools/a11y/package-lock.json`.
 
 ## Something loads from outside
 - Looks like: `check_external.py` lists a URL.

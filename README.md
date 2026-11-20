@@ -204,7 +204,10 @@ Before a pull request is ready, review it with `.claude/skills/loopy-review/SKIL
 npm ci --prefix tools/a11y --ignore-scripts   # once
 node tools/a11y/check.mjs                     # keyboard and screen reader
 node tools/e2e/play.mjs                       # plays every game, no repeated questions
+ENGINE=webkit node tools/e2e/play.mjs         # the same in WebKit, the engine behind Safari on iPhone and iPad (CI runs both)
 ```
+
+For the WebKit run, install the engine once: `node tools/a11y/node_modules/playwright-core/cli.js install --with-deps webkit`.
 
 More in [tools/a11y/README.md](tools/a11y/README.md) and [tools/e2e/README.md](tools/e2e/README.md). After a big change is merged, add a line to [RELEASES.md](RELEASES.md).
 
@@ -217,9 +220,11 @@ Pages load `loopy.js` and `loopy.css`. These are small copies of `src/loopy.js` 
 After editing anything in `src/`, run:
 
 ```sh
-python3 -m pip install --require-hashes --no-binary :all: -r tools/requirements.txt   # once
+npm ci --prefix tools/build --ignore-scripts   # once: the minifier (esbuild) and the type checker, exact versions from the lock file
 python3 tools/build.py
 ```
+
+The scripts and styles are minified with esbuild (it shortens names and folds constants, so `loopy.js` is about 14% smaller than with a whitespace-only minifier). `src/loopy.d.ts` describes everything `Loopy.*` offers; `node tools/build/node_modules/typescript/bin/tsc -p tools/build` checks `src/` against it and fails on a wrong call before any browser test runs. When you add a member to `Loopy`, add it there too.
 
 The build also runs `tools/csp.py`, then writes `sw.js`, the offline helper. `sw.js` holds the list of files to keep offline and a hash of all of them. Any change to a page, script, style, font or icon changes the hash, so visitors get the new version and their offline copy is replaced. Commit the small files and `sw.js` with your change. The GitHub check runs `python3 tools/build.py --check` and fails if they do not match `src/`.
 

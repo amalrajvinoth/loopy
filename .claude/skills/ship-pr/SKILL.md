@@ -8,10 +8,11 @@ description: Finish a loopy change and open its pull request with every check, s
 # Ship a loopy pull request
 
 1. **Merge the latest main** into the branch first (`git fetch origin main && git merge origin/main`). The after_merge hook rebuilds generated files.
-2. **Build:** `python3 tools/build.py`.
+2. **Build:** `python3 tools/build.py` (once per checkout: `npm ci --prefix tools/build --ignore-scripts` for the minifier and the type checker).
 3. **Checks** (all must pass; the Stop hook runs the fast ones again before you finish):
    ```sh
    python3 tools/build.py --check
+   node tools/build/node_modules/typescript/bin/tsc -p tools/build   # src/ against src/loopy.d.ts: a new Loopy member goes in the .d.ts too
    python3 tools/csp.py --check
    python3 tools/check_external.py
    python3 tools/guide_check.py              # every game has a guide page, EN and DE
@@ -19,8 +20,8 @@ description: Finish a loopy change and open its pull request with every check, s
    python3 plugins/sync.py --check            # plugin copies in .claude/
    python3 plugins/loopy/scripts/drift.py     # plugin in step with the repo
    python3 plugins/test_hooks.py              # only when plugins/ changed
-   node tools/a11y/check.mjs
-   node tools/e2e/play.mjs        # GAME=<id> for one game while you work; the full run before the PR. It also checks that only Today's 10 counts a day, that money shows its € sign and the Class Test hint fits the card, and that loopy's language wins over an old "Words in" pick
+   node tools/a11y/check.mjs      # ENGINE=webkit runs it in Safari's engine, like CI (once: node tools/a11y/node_modules/playwright-core/cli.js install --with-deps webkit)
+   node tools/e2e/play.mjs        # GAME=<id> for one game while you work; the full run before the PR. CI runs it in Chromium and WebKit (ENGINE=webkit). It also checks that only Today's 10 counts a day, that money shows its € sign and the Class Test hint fits the card, and that loopy's language wins over an old "Words in" pick
    node tools/e2e/retry.mjs       # Try again in every game (GAME=<id> for one): a mistake comes back until it is fixed
    node tools/e2e/levels.mjs      # levels follow the child: up by itself when ready, kept over the birthday
    node tools/e2e/switch.mjs      # switching the child mid-game: each child keeps their own stars, log and last game
@@ -32,7 +33,7 @@ description: Finish a loopy change and open its pull request with every check, s
    ```
    The **Family sync usage** job (`.github/workflows/sync-usage.yml`, Mondays 05:23 UTC and by hand) is not a check: it counts families and grown-ups (`tools/sync-usage.mjs`, counts only), keeps the numbers in the "Family sync and grown-ups" issue (steps "Find the issue that keeps the counts" and "Keep the counts in the issue, and comment when something is new") and comments there when a family turned sync on, went quiet, or a grown-up joined the list. `tools/sync-families.mjs` is the owner's own per-family table, never run on GitHub (`sync/README.md`).
    The **Forks and stars** job (`.github/workflows/forks.yml`, Mondays and by hand) is not a check either: it lists new forks and counts new stars in its Summary, keeps the counts in the "Forks and stars" issue and comments there when they go up, so the owner gets an email.
-   CI runs the a11y check and the play test in two halves at once (`SHARD=1/2`, `SHARD=2/2`). On a pull request it skips them, and the guide job, when `tools/ci_changes.py` says no file they read changed (docs, `.claude/`, `plugins/`). A new file type or folder the pages read must not match its DOCS list. "All checks" fails if any job failed.
+   CI runs the a11y check and the play test in two halves at once (`SHARD=1/2`, `SHARD=2/2`), each in Chromium and in WebKit (`ENGINE=webkit`, the engine behind Safari on iPhone and iPad). A WebKit-only red means Safari does something differently: look for layout that depends on `dvh`, `:has()`, dialogs, speech or audio, fix the page for both engines, never skip the run. On a pull request it skips them, and the guide job, when `tools/ci_changes.py` says no file they read changed (docs, `.claude/`, `plugins/`). A new file type or folder the pages read must not match its DOCS list. "All checks" fails if any job failed.
    When `guide-src/` changed (or a game looks different), build and check the guide too (the CI "guide" job does the same):
    ```sh
    npm ci --prefix guide-src && npm run build --prefix guide-src   # also writes the guide pages' security policy

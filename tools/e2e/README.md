@@ -13,6 +13,17 @@ node tools/e2e/play.mjs
 
 If it cannot find Chrome, point it there: `CHROME=/path/to/chrome node tools/e2e/play.mjs`.
 
+### In Safari's engine too
+
+The children play on iPhones and iPads. So the GitHub check runs the play test and the accessibility check a second time in WebKit, the engine behind Safari. Locally:
+
+```sh
+node tools/a11y/node_modules/playwright-core/cli.js install --with-deps webkit   # once (about 90 MB)
+ENGINE=webkit node tools/e2e/play.mjs
+```
+
+Every test in this folder reads `ENGINE` through `engine.mjs`. A test that is red in WebKit only means Safari does something differently; fix the page for both engines.
+
 It takes a few minutes, prints a table with one row per game and age, and fails if it finds a problem.
 
 ## What it does

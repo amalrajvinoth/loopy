@@ -7,14 +7,17 @@
     "checks.yml: Every game has a page in the guide, in English and German",
     "checks.yml: The Family sync server answers right (sync/, with a stand-in database)",
     "checks.yml: The Family sync usage report prints counts only (tools/sync-usage.mjs)",
-    "checks.yml: Install the minifiers (exact versions, checked by hash)",
+    "checks.yml: Install the minifier and the type checker (exact versions from the lock file)",
     "checks.yml: loopy.js and loopy.css match their sources in src/",
+    "checks.yml: The shared script and its parts type-check against src/loopy.d.ts",
     "checks.yml: The Claude Code plugins match the repo",
-    "checks.yml: accessibility (part ${{ matrix.part }} of 2)",
+    "checks.yml: accessibility (part ${{ matrix.part }} of 2, ${{ matrix.engine }})",
     "checks.yml: Install the checker (exact versions from the lock file, no browser download)",
+    "checks.yml: Install WebKit, the engine behind Safari (only for the WebKit run)",
     "checks.yml: Every page works with a keyboard and a screen reader",
-    "checks.yml: play test (part ${{ matrix.part }} of 2)",
+    "checks.yml: play test (part ${{ matrix.part }} of 2, ${{ matrix.engine }})",
     "checks.yml: Install the checker (exact versions from the lock file, no browser download)",
+    "checks.yml: Install WebKit, the engine behind Safari (only for the WebKit run)",
     "checks.yml: Every game plays, and no question comes back too soon",
     "checks.yml: Try again test",
     "checks.yml: Install the checker (exact versions from the lock file, no browser download)",
@@ -61,9 +64,11 @@
   "tools": [
     "tools/a11y/check.mjs",
     "tools/build.py",
+    "tools/build/minify.mjs",
     "tools/check_external.py",
     "tools/ci_changes.py",
     "tools/csp.py",
+    "tools/e2e/engine.mjs",
     "tools/e2e/hello.mjs",
     "tools/e2e/levels.mjs",
     "tools/e2e/offline.mjs",
@@ -109,5 +114,5 @@
     "844 × 390"
   ],
   "games_lists": 1,
-  "learned_at": "c37a285"
+  "learned_at": "d7094f7"
 }

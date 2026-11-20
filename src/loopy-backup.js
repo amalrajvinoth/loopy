@@ -15,7 +15,7 @@
 // Loading a code adds to what is here and never takes anything away: the bigger number wins,
 // and a setting is only taken when this device has not chosen one yet.
 (function () {
-  var Loopy = window.Loopy = window.Loopy || {};
+  var Loopy = window.Loopy = window.Loopy || /** @type {Loopy} */ ({});
   var MAX_CODE = 40000, MAX_JSON = 200000, MAX_P = 10, MAX_G = 300, MAX_GV = 4000;
   // The keys a child's g may hold: game settings ("ss.mode.a7"), the last game, the games already seen, and the levels the grown-ups page last saw.
   // Each game checks its own values again when it reads them (only known choices are used).
@@ -132,7 +132,7 @@
             var x = ka[k] || [0, 0], y = kb[k] || [0, 0];
             by[k] = [Math.max(x[0], y[0]), Math.max(x[1], y[1])];
           });
-          m.push(by);
+          m.push(/** @type {any} */ (by));
         }
         row[g] = m;
       });

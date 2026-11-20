@@ -1,5 +1,5 @@
-# Dependabot keeps the GitHub Actions used by the checks, the guide's Astro and Starlight, the two minifiers in
-# tools/requirements.txt, and the accessibility checker in tools/a11y/, up to date.
+# Dependabot keeps the GitHub Actions used by the checks, the guide's Astro and Starlight, the minifier and
+# type checker in tools/build/, and the accessibility checker in tools/a11y/, up to date.
 version: 2
 updates:
   - package-ecosystem: "github-actions"
@@ -10,8 +10,8 @@ updates:
     groups:
       actions:
         patterns: ["*"]
-  - package-ecosystem: "pip"
-    directory: "/tools"
+  - package-ecosystem: "npm"
+    directory: "/tools/build"
     schedule:
       interval: "weekly"
   - package-ecosystem: "npm"

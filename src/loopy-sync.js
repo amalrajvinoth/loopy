@@ -74,9 +74,10 @@
 
   // ---- the server: GET and text/plain POST only, so the browser sends no extra request first ----
   // send(path, body): a promise of { n: status (0 when the server can't be reached), j: the answer }.
+  /** @returns {Promise<{n: number, j?: any}>} */
   function send(path, body) {
     var ctl = typeof AbortController === "function" ? new AbortController() : null, stop = setTimeout(function () { if (ctl) ctl.abort(); }, TIME);
-    var opt = { cache: "no-store", credentials: "omit", referrerPolicy: "no-referrer", signal: ctl ? ctl.signal : undefined };
+    var opt = /** @type {RequestInit} */ ({ cache: "no-store", credentials: "omit", referrerPolicy: "no-referrer", signal: ctl ? ctl.signal : undefined });
     if (body) { opt.method = "POST"; opt.headers = { "Content-Type": "text/plain" }; opt.body = JSON.stringify(body); opt.keepalive = opt.body.length < 60000; }
     return fetch("https://" + Loopy.syncHost + path, opt).then(function (r) {
       clearTimeout(stop);
@@ -138,7 +139,7 @@
     }).then(function (res) {
       busy = null;
       // Another device saved in between: read once more and try again.
-      if (res.again && pull !== 2) return round(2).then(function (r2) { return { changed: res.changed || r2.changed }; });
+      if (/** @type {any} */ (res).again && pull !== 2) return round(2).then(function (r2) { return { changed: res.changed || r2.changed }; });
       return res;
     });
     return busy;
@@ -547,7 +548,7 @@
     clean: clean,
     // Turn on with a new family code. A promise of true, or false when the server can't be reached.
     create: function () {
-      return derive(newCode()).then(function (s) {
+      return derive(newCode()).then(function (/** @type {any} */ s) {
         s.e = ""; s.h = ""; s.t = 0; s.x = 1;
         st = s;
         return round(false).then(function () {
@@ -562,7 +563,7 @@
     join: function (code) {
       var c = clean(code);
       if (!c) return Promise.resolve("bad");
-      return derive(c).then(function (s) {
+      return derive(c).then(function (/** @type {any} */ s) {
         s.e = ""; s.h = ""; s.t = 0; s.x = 0;
         return get(s).then(function (r) {
           if (r.n === 0) return "offline";

@@ -13,6 +13,8 @@ makes the .claude/ copies. Edit plugins/, never the copies; like src/ and the bu
 - plugins/<p>/agents/<name>.md -> .claude/agents/<name>.md
 - plugins/<p>/hooks/hooks.json -> "hooks" in .claude/settings.json, with ${CLAUDE_PLUGIN_ROOT}
   pointing at "$CLAUDE_PROJECT_DIR"/plugins/<p>. Other settings in that file are kept.
+- plugins/loopy/RULES.md -> AGENTS.md at the repo root (the rules plus how to build and check, for every
+  coding agent: Codex, Copilot, Cursor, Gemini CLI, ...) and CLAUDE.md, which loads AGENTS.md for Claude Code.
 """
 import json, pathlib, shutil, sys
 
@@ -30,9 +32,52 @@ def with_mark(text, src):
     return MARK.format(src=src) + text
 
 
+AGENTS_HEAD = """<!-- Written by plugins/sync.py from plugins/loopy/RULES.md. Do not edit: add a rule there (the add-rule skill), then run python3 plugins/sync.py. -->
+# loopy for coding agents
+
+loopy is a free learning games website for kids in grades 1 to 10, in English and German. It is plain HTML, CSS and JavaScript: one shared script and style sheet, no framework, no outside requests. `DESIGN.md` says how it looks. The README's "For developers" part says how a game is built. The rules below are the project's standing rules. The owner's words in the task win where they differ.
+
+## Build and check
+
+```sh
+npm ci --prefix tools/build --ignore-scripts        # once: the minifier (esbuild) and the type checker
+python3 tools/build.py                              # after any edit in src/ or to a page: loopy.js, loopy.css, sw.js, page policies
+python3 tools/build.py --check                      # what CI runs
+node tools/build/node_modules/typescript/bin/tsc -p tools/build   # src/ type-checks against src/loopy.d.ts
+python3 tools/csp.py --check && python3 tools/check_external.py && python3 tools/guide_check.py
+python3 tools/review.py                             # the loopy rules, saved data, size and docs, against main
+python3 plugins/sync.py --check && python3 plugins/loopy/scripts/drift.py
+npm ci --prefix tools/a11y --ignore-scripts         # once: the browser tests
+node tools/a11y/check.mjs && node tools/e2e/play.mjs && node tools/e2e/retry.mjs   # ENGINE=webkit runs them in Safari's engine
+```
+
+Pull requests go against `main`, from a branch, with `.github/pull_request_template.md`. Commit messages are plain words. No tool attribution lines anywhere.
+
+"""
+
+CLAUDE_MD = """<!-- Written by plugins/sync.py. Do not edit: the rules live in plugins/loopy/RULES.md. -->
+@AGENTS.md
+
+The line above loads AGENTS.md, the rules every coding agent reads. The skills in `.claude/skills/` know the repo's workflows (ship-pr, heal, new-game, loopy-review, loopy-docs, plan-options, go); the hooks in `.claude/settings.json` stop the common slips.
+"""
+
+
+def agents_md():
+    """AGENTS.md: the head above, then RULES.md with its headings one level down."""
+    rules = (ROOT / "plugins/loopy/RULES.md").read_text(encoding="utf-8")
+    body = []
+    for line in rules.splitlines():
+        if line.startswith("# "):
+            line = "## Rules"
+        elif line.startswith("## "):
+            line = "#" + line
+        body.append(line)
+    return AGENTS_HEAD + "\n".join(body).rstrip() + "\n"
+
+
 def wanted():
-    """{path in .claude/: content} for every copy, and the merged hooks."""
-    files, hooks = {}, {}
+    """{path: content} for every copy (in .claude/, plus AGENTS.md and CLAUDE.md at the root), and the merged hooks."""
+    files, hooks = {"AGENTS.md": agents_md(), "CLAUDE.md": CLAUDE_MD}, {}
     for plugin in PLUGINS:
         rel = plugin.relative_to(ROOT)
         for skill in sorted((plugin / "skills").glob("*/SKILL.md")):

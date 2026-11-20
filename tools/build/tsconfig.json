@@ -1,0 +1,25 @@
+{
+  "// what": "Type-check the shared script and its parts in src/ (plain JavaScript with JSDoc, checked against src/loopy.d.ts). Run: node tools/build/node_modules/typescript/bin/tsc -p tools/build. Nothing is written; the files the site serves do not change.",
+  "compilerOptions": {
+    "allowJs": true,
+    "checkJs": true,
+    "noEmit": true,
+    "target": "es2020",
+    "module": "none",
+    "lib": ["es2020", "dom", "dom.iterable"],
+    "strict": false,
+    "skipLibCheck": true,
+    "types": []
+  },
+  "files": [
+    "../../src/loopy.d.ts",
+    "../../src/loopy.js",
+    "../../src/loopy-report.js",
+    "../../src/loopy-backup.js",
+    "../../src/loopy-sheet.js",
+    "../../src/loopy-levels.js",
+    "../../src/loopy-install.js",
+    "../../src/loopy-sync.js",
+    "../../src/loopy-hello.js"
+  ]
+}

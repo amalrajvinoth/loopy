@@ -18,7 +18,7 @@ import { fakeD1 } from "../../sync/fake-d1.mjs";
 const HERE = path.dirname(fileURLToPath(import.meta.url));
 const ROOT = path.resolve(HERE, "../..");
 const require = createRequire(path.join(process.env.A11Y_DEPS || path.join(ROOT, "tools/a11y"), "package.json"));
-const { chromium } = require("playwright-core");
+import { launch, ENGINE } from "./engine.mjs";
 const HOST = "sync.test";
 
 const TYPES = { ".html": "text/html", ".js": "text/javascript", ".css": "text/css", ".svg": "image/svg+xml", ".png": "image/png",
@@ -47,15 +47,6 @@ Date.now = () => realNow() + skew;
 const db = fakeD1();
 const env = { DB: db, GROWNUPS: db, ORIGINS: ORIGIN };
 
-async function launch() {
-  const tries = [];
-  if (process.env.CHROME) tries.push({ executablePath: process.env.CHROME });
-  for (const p of ["/opt/pw-browsers/chromium-1194/chrome-linux/chrome", "/usr/bin/google-chrome", "/usr/bin/chromium", "/usr/bin/chromium-browser"])
-    if (fs.existsSync(p)) tries.push({ executablePath: p });
-  tries.push({ channel: "chrome" });
-  for (const t of tries) { try { return await chromium.launch(t); } catch (e) { /* try the next one */ } }
-  throw new Error("No Chrome or Chromium found. Set CHROME=/path/to/chrome.");
-}
 const browser = await launch();
 
 const rows = [], problems = [];

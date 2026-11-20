@@ -55,20 +55,21 @@ jobs:
         run: node sync/test.mjs
       - name: The Family sync usage report prints counts only (tools/sync-usage.mjs)
         run: node tools/sync-usage.test.mjs
-      - name: Install the minifiers (exact versions, checked by hash)
-        run: |
-          python3 -m venv "$RUNNER_TEMP/venv"
-          "$RUNNER_TEMP/venv/bin/pip" install --require-hashes --no-binary :all: -r tools/requirements.txt
+      - name: Install the minifier and the type checker (exact versions from the lock file)
+        run: npm ci --prefix tools/build --ignore-scripts --no-audit --no-fund
       - name: loopy.js and loopy.css match their sources in src/
-        run: '"$RUNNER_TEMP/venv/bin/python" tools/build.py --check'
+        run: python3 tools/build.py --check
+      - name: The shared script and its parts type-check against src/loopy.d.ts
+        run: node tools/build/node_modules/typescript/bin/tsc -p tools/build
       - name: The Claude Code plugins match the repo
         run: |
           python3 plugins/sync.py --check
           python3 plugins/loopy/scripts/drift.py
           python3 plugins/test_hooks.py
 
+  # The browser tests run twice: in Chromium and in WebKit, the engine behind Safari on iPhone and iPad.
   accessibility:
-    name: accessibility (part ${{ matrix.part }} of 2)
+    name: accessibility (part ${{ matrix.part }} of 2, ${{ matrix.engine }})
     needs: changes
     if: needs.changes.outputs.site == 'true'
     runs-on: ubuntu-latest
@@ -76,6 +77,7 @@ jobs:
       fail-fast: false
       matrix:
         part: [1, 2]
+        engine: [chromium, webkit]
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
       - name: Install the checker (exact versions from the lock file, no browser download)
@@ -83,14 +85,18 @@ jobs:
           mkdir -p "$RUNNER_TEMP/a11y"
           cp tools/a11y/package.json tools/a11y/package-lock.json "$RUNNER_TEMP/a11y/"
           npm ci --prefix "$RUNNER_TEMP/a11y" --ignore-scripts --no-audit --no-fund
+      - name: Install WebKit, the engine behind Safari (only for the WebKit run)
+        if: matrix.engine == 'webkit'
+        run: node "$RUNNER_TEMP/a11y/node_modules/playwright-core/cli.js" install --with-deps webkit
       - name: Every page works with a keyboard and a screen reader
         run: node tools/a11y/check.mjs
         env:
           A11Y_DEPS: ${{ runner.temp }}/a11y
           SHARD: ${{ matrix.part }}/2
+          ENGINE: ${{ matrix.engine }}
 
   play:
-    name: play test (part ${{ matrix.part }} of 2)
+    name: play test (part ${{ matrix.part }} of 2, ${{ matrix.engine }})
     needs: changes
     if: needs.changes.outputs.site == 'true'
     runs-on: ubuntu-latest
@@ -98,6 +104,7 @@ jobs:
       fail-fast: false
       matrix:
         part: [1, 2]
+        engine: [chromium, webkit]
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
       - name: Install the checker (exact versions from the lock file, no browser download)
@@ -105,11 +112,15 @@ jobs:
           mkdir -p "$RUNNER_TEMP/a11y"
           cp tools/a11y/package.json tools/a11y/package-lock.json "$RUNNER_TEMP/a11y/"
           npm ci --prefix "$RUNNER_TEMP/a11y" --ignore-scripts --no-audit --no-fund
+      - name: Install WebKit, the engine behind Safari (only for the WebKit run)
+        if: matrix.engine == 'webkit'
+        run: node "$RUNNER_TEMP/a11y/node_modules/playwright-core/cli.js" install --with-deps webkit
       - name: Every game plays, and no question comes back too soon
         run: node tools/e2e/play.mjs
         env:
           A11Y_DEPS: ${{ runner.temp }}/a11y
           SHARD: ${{ matrix.part }}/2
+          ENGINE: ${{ matrix.engine }}
 
   retry:
     name: Try again test

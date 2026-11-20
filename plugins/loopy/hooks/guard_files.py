@@ -2,7 +2,8 @@
 """PreToolUse on edits: keep two loopy rules without anyone having to remember them.
 
 1. The built files (loopy.js, loopy.css, sw.js, the loopy-*.js parts and print.css at the repo root) are never edited by hand. They
-   come from src/ through tools/build.py, and the GitHub check fails if they differ.
+   come from src/ through tools/build.py, and the GitHub check fails if they differ. The same for AGENTS.md and
+   CLAUDE.md, which plugins/sync.py writes from plugins/loopy/RULES.md.
 2. Pages never get style="..." attributes or on...= handlers. The strict security policy blocks
    them in the browser, so they would silently not work.
 """
@@ -11,6 +12,8 @@ sys.path.insert(0, str(pathlib.Path(__file__).resolve().parent))
 from common import repo, duplicate, event
 
 BUILT = {"loopy.js", "loopy.css", "sw.js", "loopy-report.js", "loopy-backup.js", "loopy-sheet.js", "loopy-levels.js", "loopy-install.js", "loopy-sync.js", "loopy-hello.js", "print.css"}
+# The rules files every coding agent reads: written by plugins/sync.py from plugins/loopy/RULES.md.
+WRITTEN = {"AGENTS.md", "CLAUDE.md"}
 STYLE = re.compile(r"<[a-zA-Z][^>]*\sstyle\s*=", re.S)
 HANDLER = re.compile(r"<[a-zA-Z][^>]*\son(click|dblclick|load|error|input|change|submit|reset|focus|blur|"
                      r"key(down|up|press)|mouse\w+|touch\w+|pointer\w+|drag\w*|drop|scroll|resize|"
@@ -35,6 +38,10 @@ except ValueError:
 if str(rel) in BUILT:
     sys.stderr.write(f"Blocked: {rel} is built from src/{rel} by tools/build.py. Edit src/{rel} instead, "
                      "then run python3 tools/build.py.\n")
+    sys.exit(2)
+if str(rel) in WRITTEN:
+    sys.stderr.write(f"Blocked: {rel} is written by plugins/sync.py from plugins/loopy/RULES.md. Add the rule there "
+                     "(the add-rule skill), then run python3 plugins/sync.py.\n")
     sys.exit(2)
 
 if rel.suffix == ".html":

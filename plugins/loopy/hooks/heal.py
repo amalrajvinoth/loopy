@@ -43,11 +43,11 @@ if (root / "plugins/sync.py").is_file():
 # 2. Built files and page policies.
 ok, out = run(root, py, "tools/build.py", "--check")
 if not ok and "Missing minifiers" in out:
-    run(root, py, "-m", "pip", "install", "-q", "--require-hashes", "--no-binary", ":all:", "-r", "tools/requirements.txt", timeout=90)
+    run(root, "npm", "ci", "--prefix", "tools/build", "--ignore-scripts", "--no-audit", "--no-fund", timeout=150)
     ok, out = run(root, py, "tools/build.py", "--check")
 if not ok:
     if "Missing minifiers" in out:
-        broken.append("tools/build.py --check could not run: the minifiers are missing and pip could not install them.")
+        broken.append("tools/build.py --check could not run: the minifier is missing and npm ci --prefix tools/build could not install it.")
     else:
         ok, out = run(root, py, "tools/build.py")
         (healed if ok else broken).append("loopy.js, loopy.css, sw.js and page policies rebuilt (tools/build.py)" if ok else "tools/build.py: " + out)
