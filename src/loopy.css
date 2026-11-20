@@ -35,6 +35,28 @@
   src: url("fonts/lexend-latin.woff2") format("woff2");
   unicode-range: U+0020-007E, U+00A0, U+00A9, U+00AB, U+00B0-00B1, U+00B7, U+00BB, U+00C4, U+00D6-00D7, U+00DC, U+00DF, U+00E4, U+00F6-00F7, U+00FC, U+2013-2014, U+2018-201A, U+201C-201E, U+2022, U+2026, U+20AC, U+2212;
 }
+/* Until Lexend has landed the text shows in Arial (Helvetica Neue on iPhone and iPad, Liberation Sans on Linux)
+   stretched to Lexend's width and line height, so the words keep their lines and nothing below them moves
+   when the real font arrives (Lighthouse's layout shift). Numbers from python3 tools/build.py --fonts.
+   A page puts "Lexend Fallback" right after "Lexend" in its --font stack. */
+@font-face {
+  font-family: "Lexend Fallback";
+  font-weight: 400 500;
+  src: local("Arial"), local("Helvetica Neue"), local("Liberation Sans");
+  size-adjust: 109.9%;
+  ascent-override: 91%;
+  descent-override: 22.8%;
+  line-gap-override: 0%;
+}
+@font-face {
+  font-family: "Lexend Fallback";
+  font-weight: 600 700;
+  src: local("Arial Bold"), local("Helvetica Neue Bold"), local("Liberation Sans Bold");
+  size-adjust: 107.8%;
+  ascent-override: 92.7%;
+  descent-override: 23.2%;
+  line-gap-override: 0%;
+}
 /* Keyboard focus: every control shows a thick ring in the theme's ring color (pages may set their own).
    Text only for screen readers (see Loopy.rewards). */
 :focus-visible { outline: 3px solid var(--mark); outline-offset: 2px; }

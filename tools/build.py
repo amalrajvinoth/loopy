@@ -119,6 +119,34 @@ def build_fonts():
         font.flavor = "woff2"
         font.save(out)
         print(f"fonts/{name}: {out.stat().st_size:,} bytes")
+    fallback_metrics()
+
+
+# Letters by how often they come up in English and German text, the space included: the "average letter width" of a font.
+LETTER_WEIGHTS = {" ": 18, "e": 12.7, "n": 8, "i": 7.5, "s": 6.8, "r": 6.5, "a": 6.5, "t": 6.5, "d": 4.5, "h": 4.5, "u": 4, "l": 4, "o": 3.5,
+                  "c": 3, "g": 3, "m": 2.8, "b": 1.9, "w": 1.9, "f": 1.7, "k": 1.4, "z": 1.1, "p": 0.8, "v": 0.8, "y": 0.5, "j": 0.3, ".": 1, ",": 1}
+
+
+def fallback_metrics():
+    """Print the numbers for the "Lexend Fallback" @font-face rules in src/loopy.css: how much to stretch Arial
+    (Liberation Sans here, the same widths) so a line of text is as long and as tall as in Lexend, at weight 400 and 700.
+    Then the words keep their lines when Lexend lands and nothing on the page moves."""
+    from fontTools.ttLib import TTFont
+    from fontTools.varLib import instancer
+
+    def average(font):
+        upm, cmap, hmtx = font["head"].unitsPerEm, font.getBestCmap(), font["hmtx"]
+        return sum(hmtx[cmap[ord(c)]][0] / upm * w for c, w in LETTER_WEIGHTS.items()) / sum(LETTER_WEIGHTS.values())
+
+    for weight, style in ((400, "Regular"), (700, "Bold")):
+        arial = pathlib.Path(f"/usr/share/fonts/truetype/liberation/LiberationSans-{style}.ttf")
+        if not arial.exists():
+            print(f"Lexend Fallback {weight}: no {arial.name} on this machine (apt install fonts-liberation), numbers not checked")
+            continue
+        lexend = instancer.instantiateVariableFont(TTFont(SRC / "fonts" / "lexend-latin.woff2"), {"wght": weight})
+        upm, size = lexend["head"].unitsPerEm, average(lexend) / average(TTFont(arial))
+        print(f"Lexend Fallback {weight}: size-adjust: {size:.1%}; ascent-override: {lexend['hhea'].ascent / upm / size:.1%}; "
+              f"descent-override: {abs(lexend['hhea'].descent) / upm / size:.1%}; line-gap-override: 0%")
 
 
 def main():
