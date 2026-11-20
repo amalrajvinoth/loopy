@@ -3,8 +3,11 @@
   "private": true,
   "description": "The minifier and the type checker for tools/build.py and the checks. Only used while building and checking, never shipped.",
   "type": "module",
+  "engines": {
+    "node": ">=22"
+  },
   "dependencies": {
     "esbuild": "0.28.2",
-    "typescript": "5.9.3"
+    "typescript": "7.0.2"
   }
 }

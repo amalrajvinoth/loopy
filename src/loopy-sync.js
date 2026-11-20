@@ -299,6 +299,7 @@
     box.replaceChildren(el("p", "set-head", t("syHead")), body, msg);
     box.hidden = false;
     // Waits for the page to load, so a tap or a link never slows the first picture.
+    /** @type {Promise<Event | void>} */
     var loaded = new Promise(function (r) { if (document.readyState === "complete") r(); else window.addEventListener("load", r, { once: true }); });
     function shown(s) {
       if (s === "busy") msg.textContent = t("syBusy");

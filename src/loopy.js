@@ -632,6 +632,7 @@ document.documentElement.classList.add("loopy-building");
   // Parts used now and then (Report a problem, the stars code, the worksheet) live in small files next to
   // loopy.js and load the first time they are needed, so every page starts with less code.
   // Loopy.load("report") is a promise that loopy-report.js is in (it loads the file once).
+  /** @type {Record<string, Promise<void>>} */
   var parts = {};
   Loopy.load = function (name) {
     if (!parts[name]) parts[name] = new Promise(function (ok, no) {
