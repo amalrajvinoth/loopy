@@ -8,6 +8,11 @@ loopy keeps getting new games. Here is what came lately!
 
 The big changes, newest first. Small fixes are not listed. See [the full list on GitHub](https://github.com/amalrajvinoth/loopy/blob/main/RELEASES.md).
 
+## 20 November 2026
+
+- **The text holds still while a page opens.** On a slow connection the words showed in a plain font first and jumped when loopy's own font arrived. In Read and Answer the whole story moved. Now the plain font is stretched to the same width, so the lines stay where they are. Behind the scenes, every page's styles are checked against what every browser has supported for 30 months, and a page may not write a colour out, so every theme looks right.
+- **loopy loads a little faster, and every game is tested in Safari's engine too.** The shared script every page loads is about 6% smaller to download. The tests that play every game now also run in WebKit, the engine behind Safari on iPhone and iPad, so a slip that only Safari shows is caught before it reaches a child's phone. Nothing on screen changes.
+
 ## 19 November 2026
 
 - **The question card fits the question.** Before, the card was the same size for every question, and a short question floated in the middle of an empty box. Now the card is only as tall as the question, the picture and the explanation. The answer buttons and the number keys take the spare room, so they are bigger and easier to tap. The answers stay at the bottom where thumbs reach. In 21 games; the games whose sum, grid or map already fills the card look the same as before. [The game screen](/loopy/guide/playing/game-screen/).

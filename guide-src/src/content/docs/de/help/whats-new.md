@@ -8,6 +8,11 @@ loopy bekommt immer wieder neue Spiele. Das ist zuletzt dazugekommen!
 
 Die großen Änderungen, die neuesten zuerst. Kleine Korrekturen stehen nicht dabei. Die [ganze Liste steht auf GitHub](https://github.com/amalrajvinoth/loopy/blob/main/RELEASES.md) (auf Englisch).
 
+## 20. November 2026
+
+- **Der Text bleibt ruhig, während eine Seite aufgeht.** Bei langsamer Verbindung standen die Wörter erst in einer einfachen Schrift und sprangen, wenn die Schrift von loopy ankam. In Lesen und Antworten rutschte die ganze Geschichte. Jetzt ist die einfache Schrift auf dieselbe Breite gestreckt, so bleiben die Zeilen, wo sie sind. Im Hintergrund wird der Stil jeder Seite jetzt gegen das geprüft, was jeder Browser seit 30 Monaten kann, und eine Seite darf keine Farbe ausschreiben. So sieht jedes Farbthema richtig aus.
+- **loopy lädt ein bisschen schneller, und jedes Spiel wird auch in Safaris Motor getestet.** Das gemeinsame Skript, das jede Seite lädt, ist etwa 6% kleiner. Die Tests, die jedes Spiel durchspielen, laufen jetzt auch in WebKit, dem Motor hinter Safari auf iPhone und iPad. So fällt ein Fehler, den nur Safari zeigt, auf, bevor er auf das Handy eines Kindes kommt. Auf dem Bildschirm ändert sich nichts.
+
 ## 19. November 2026
 
 - **Die Aufgabenkarte passt sich der Aufgabe an.** Vorher war die Karte bei jeder Aufgabe gleich groß, und eine kurze Frage schwebte mitten in einem leeren Kasten. Jetzt ist die Karte nur so hoch wie die Frage, das Bild und die Erklärung. Die Antwortknöpfe und die Zahlentasten bekommen den Platz, der übrig ist. So sind sie größer und leichter zu treffen. Die Antworten bleiben unten, wo die Daumen hinkommen. In 21 Spielen; die Spiele, bei denen die Aufgabe, das Gitter oder die Karte die Karte schon füllt, sehen aus wie vorher. [Der Spielbildschirm](/loopy/guide/de/playing/game-screen/).
