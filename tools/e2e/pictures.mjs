@@ -1,7 +1,7 @@
 // Picture test: the home page and a set of games must still look the same.
 //
-// It takes a picture of each page at three of the DESIGN.md sizes, in English and German, and compares it
-// with the saved picture in tools/e2e/pictures/. A shared CSS change that moves a button or cuts off a row
+// It takes a picture of each page at the eight DESIGN.md sizes in English, and in German at the three where
+// the longer words bite first, and compares it with the saved picture in tools/e2e/pictures/. A shared CSS change that moves a button or cuts off a row
 // goes red here, before the pull request is merged, with the new picture and a diff picture to look at.
 //
 //   node tools/e2e/pictures.mjs                 compare (exit 1 on a difference; new pictures and diffs in --out)
@@ -39,9 +39,12 @@ const UPDATE = !!process.env.UPDATE;
 // letter keyboard, the clock picture, the flag pictures and the choice buttons. Not Calendar and Dates
 // (it shows today's date) and not Today's 10 (it changes with the day).
 const PAGES = ["", "math/plus-minus/", "math/make-10/", "math/what-time-is-it/", "languages/word-detective/", "geography/flags-capitals/", "science/quick-facts/"];
-// Three of the eight DESIGN.md sizes, the ones that break first: a phone upright, a phone on its side, a tablet upright.
-const SIZES = [[390, 844], [844, 390], [820, 1180]];
-const LANGS = ["en", "de"];
+// The eight DESIGN.md sizes: three phones upright, a phone on its side, a tablet both ways, a laptop, a monitor.
+const SIZES = [[360, 640], [390, 844], [430, 932], [844, 390], [820, 1180], [1180, 820], [1280, 800], [1920, 1080]];
+// German at the three sizes where its longer words break a row first (a phone upright, on its side, a tablet upright);
+// English at all eight. 77 pictures instead of 112 keeps the repo small, and a desktop layout slip shows in either language.
+const DE_SIZES = new Set(["390x844", "844x390", "820x1180"]);
+const langsAt = (w, h) => DE_SIZES.has(`${w}x${h}`) ? ["en", "de"] : ["en"];
 // How different two pictures may be: a pixel counts as changed past this colour distance (0 to 1), and the
 // picture fails past this share of changed pixels. Anti-aliasing never reaches it; a moved button does.
 const THRESHOLD = 0.15, MAX_SHARE = 0.003;
@@ -76,7 +79,7 @@ const rows = [], problems = [];
 
 for (const page of pages) {
   for (const [w, h] of SIZES) {
-    for (const lang of LANGS) {
+    for (const lang of langsAt(w, h)) {
       const name = `${(page || "home").replace(/\/$/, "").replace(/\//g, "-")}-${w}x${h}-${lang}.png`;
       const context = await browser.newContext({ viewport: { width: w, height: h }, deviceScaleFactor: 1, reducedMotion: "reduce", bypassCSP: true, locale: lang === "de" ? "de-DE" : "en-GB" }); // bypassCSP only lets the no-motion style in; the pages still load nothing from outside
       const p = await context.newPage();

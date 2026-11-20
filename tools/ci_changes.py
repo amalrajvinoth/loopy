@@ -36,6 +36,8 @@ GUIDE = re.compile(r"^(guide-src/.* | icon\.svg | tools/(csp|check_external|ci_c
 LIGHTHOUSE_MAX = 6
 SHARED = re.compile(r"^(src/.*|fonts/.*|loopy.*\.js|loopy\.css|print\.css|sw\.js)$")
 SAMPLE = ["math/make-10/", "languages/word-detective/", "progress/"]
+# A content file two pages share, and the pages that load it (a game's own words.js or data.js sits next to its page).
+CONTENT = {"languages/words.js": ["languages/word-match/", "languages/word-trail/"]}
 
 
 def lighthouse_pages(changes):
@@ -43,6 +45,9 @@ def lighthouse_pages(changes):
     for status, path in changes:
         if path.endswith("index.html") and status[0] != "D" and not path.startswith(("guide-src/", "docs/", "help/privacy")):
             page = path[:-len("index.html")]
+            if page not in pages:
+                pages.append(page)
+        for page in CONTENT.get(path, []):
             if page not in pages:
                 pages.append(page)
     if any(SHARED.match(path) for _, path in changes):
@@ -66,7 +71,9 @@ def main(base, head, pages=False):
     changes = []
     for line in out.splitlines():
         parts = line.split("\t")
-        changes += [(parts[0], p) for p in parts[1:]]  # a rename names the old and the new path
+        # A rename names the old path, then the new one. The old path is gone at HEAD (no page to score), so it
+        # counts as deleted; the new path keeps the rename status (the guide needs a run for either).
+        changes += [("D" if parts[0][0] == "R" and i == 0 and len(parts) > 2 else parts[0], p) for i, p in enumerate(parts[1:])]
     if pages:
         print("\n".join(lighthouse_pages(changes)))
         return
