@@ -276,6 +276,9 @@ jobs:
           # shellcheck disable=SC2086
           "$lhci" collect --config=tools/lighthouse/lighthouserc.json $urls
           "$lhci" assert --config=tools/lighthouse/lighthouserc.json
+      - name: What cost the points (every run's scores; the shifts and slow steps of a run under the budget)
+        if: always()
+        run: node tools/lighthouse/explain.mjs
       - name: Keep the reports
         if: always()
         uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2

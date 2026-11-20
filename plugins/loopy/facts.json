@@ -45,6 +45,7 @@
     "checks.yml: Install Lighthouse CI (exact versions from the lock file)",
     "checks.yml: Which pages this change touches",
     "checks.yml: Score them on a phone, with the budgets",
+    "checks.yml: What cost the points (every run's scores; the shifts and slow steps of a run under the budget)",
     "checks.yml: Keep the reports",
     "checks.yml: lighthouse-pull-request",
     "checks.yml: Install Astro and Starlight (exact versions from the lock file)",
@@ -104,6 +105,7 @@
     "tools/e2e/switch.mjs",
     "tools/e2e/sync.mjs",
     "tools/guide_check.py",
+    "tools/lighthouse/explain.mjs",
     "tools/lighthouse/serve.mjs",
     "tools/lint/check.mjs",
     "tools/lint/eslint.config.mjs",
@@ -146,5 +148,5 @@
     "844 × 390"
   ],
   "games_lists": 1,
-  "learned_at": "1cd4150"
+  "learned_at": "bd91d80"
 }
