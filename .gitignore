@@ -18,4 +18,8 @@ __pycache__/
 *.pyc
 # The improve-ui skill writes its design plans here. Every file in the repo goes live on the site, so they stay out.
 design-plans/
+# Taste Skill (a global skill on the owner's Mac) keeps its build state and screenshots here. It is not used on loopy pages; see AGENTS.md.
+.taste-skill/
+# UI/UX Pro Max (another global skill on the Mac) writes its design systems here with --persist. Not for loopy pages; see AGENTS.md.
+design-system/
 tools/lint/node_modules/
