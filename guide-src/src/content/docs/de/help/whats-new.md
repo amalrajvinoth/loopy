@@ -10,6 +10,7 @@ Die großen Änderungen, die neuesten zuerst. Kleine Korrekturen stehen nicht da
 
 ## 20. November 2026
 
+- **Reicht das Geld? zeigt die ganze Aufgabe auf jedem Handy.** Auf manchen Handys ließen die Zahlentasten nur eine kurze Karte übrig, und das Antwortfeld mit dem ? war unten abgeschnitten. Jetzt werden der Laden, das Portemonnaie und die Wörter so klein, dass sie in die Karte passen. Auf einer kleinen Karte machen das Schild und die Namen der Sachen Platz, und nach einer Antwort hat die Erklärung immer Platz. [So geht es](/loopy/guide/de/games/math/enough-money/).
 - **Der Text bleibt ruhig, während eine Seite aufgeht.** Bei langsamer Verbindung standen die Wörter erst in einer einfachen Schrift und sprangen, wenn die Schrift von loopy ankam. In Lesen und Antworten rutschte die ganze Geschichte. Jetzt ist die einfache Schrift auf dieselbe Breite gestreckt, so bleiben die Zeilen, wo sie sind. Im Hintergrund wird der Stil jeder Seite jetzt gegen das geprüft, was jeder Browser seit 30 Monaten kann, und eine Seite darf keine Farbe ausschreiben. So sieht jedes Farbthema richtig aus.
 - **loopy lädt ein bisschen schneller, und jedes Spiel wird auch in Safaris Motor getestet.** Das gemeinsame Skript, das jede Seite lädt, ist etwa 6% kleiner. Die Tests, die jedes Spiel durchspielen, laufen jetzt auch in WebKit, dem Motor hinter Safari auf iPhone und iPad. So fällt ein Fehler, den nur Safari zeigt, auf, bevor er auf das Handy eines Kindes kommt. Auf dem Bildschirm ändert sich nichts.
 

@@ -257,6 +257,42 @@ async function classTestMoney(run, fail) {
   await ctx.close();
 }
 
+// Is It Enough? on a phone whose keys leave a short card (issue #310: at 426×828 the "?" box and the kind tag were cut
+// off): the fullest problems are put first through Try again, and every part of the card must be inside it, fresh and
+// after a wrong answer with the explanation, on the phone from the report and on the smallest one.
+async function enoughMoneyFits(run, fail) {
+  const NOTES = ["5:s:9:27-4,21-20,32-24:12:20,5,5,5,1:-:d", "5:s:9:12-45,36-12,28-30:012:50,20,10,5,2,1,1:-:yn"];
+  for (const [width, height] of [[426, 828], [360, 640]]) for (const note of NOTES) {
+    const ctx = await browser.newContext({ viewport: { width, height }, reducedMotion: "reduce", serviceWorkers: "block" });
+    await ctx.addInitScript(([l, r]) => {
+      if (localStorage.getItem("loopy.e2e")) return;
+      localStorage.setItem("loopy.e2e", "1"); localStorage.setItem("loopy.lang", l); localStorage.setItem("loopy.sound", "off"); localStorage.setItem("loopy.readAloud", "off");
+      localStorage.setItem("loopy.hint.enough-money", "1"); localStorage.setItem("loopy.kid.1.loopy.ageOffset", "2");
+      localStorage.setItem("loopy.kid.1.loopy.log", JSON.stringify({ days: {}, wrong: [{ d: new Date().toISOString().slice(0, 10), g: "enough-money", q: "?", a: "1", y: "2", k: "em-diff", r }] }));
+    }, [run.lang, note]);
+    const p = await ctx.newPage();
+    p.on("pageerror", e => fail(`script error: ${e.message}`));
+    await p.goto(BASE + "math/enough-money/#retry");
+    await p.waitForFunction(r => document.body.getAttribute("data-q") === r, note, { timeout: 5000 }).catch(() => fail(`Try again did not put the problem ${note} first`));
+    const cut = () => p.evaluate(() => {
+      const card = document.getElementById("card"), c = card.getBoundingClientRect(), out = [];
+      for (const el of card.children) {
+        if (el.hidden || !el.offsetHeight) continue;
+        const b = el.getBoundingClientRect();
+        if (b.top < c.top - 1 || b.bottom > c.bottom + 1) out.push(`${el.id} by ${Math.ceil(Math.max(c.top - b.top, b.bottom - c.bottom))}px`);
+        if (getComputedStyle(el).overflowY !== "visible" && el.scrollHeight > el.clientHeight + 1) out.push(`${el.id} scrolls ${el.scrollHeight - el.clientHeight}px`);
+      }
+      return out;
+    });
+    const where = `Is It Enough? at ${width}×${height} (${run.lang}), ${note}`;
+    for (const x of await cut()) fail(`${where}: ${x} is cut off the card`);
+    if (await p.$eval("#yn", e => !e.hidden)) await p.click(".choices button[data-correct=false]");
+    else { const a = await p.$eval(".eq .ans", e => e.dataset.a); await p.click(`#k${(+a + 1) % 10}`); await p.click("#k-go"); }
+    for (const x of await cut()) fail(`${where}, after a wrong answer: ${x} is cut off the card`);
+    await ctx.close();
+  }
+}
+
 for (const game of GAMES) {
   const daily = game.startsWith("mix/");
   for (const run of RUNS) {
@@ -295,6 +331,7 @@ for (const game of GAMES) {
     }
     if (p) await p.context().close();
     if (game === "mix/class-test/") { try { await classTestMoney(run, fail); } catch (e) { fail(`money task: ${e.message.split("\n")[0]}`); } }
+    if (game === "math/enough-money/" && run.lang === "de") { try { await enoughMoneyFits(run, fail); } catch (e) { fail(`card fit: ${e.message.split("\n")[0]}`); } }
     if (WORDS_IN[game]) { try { await wordsFollowLanguage(game, run, fail); } catch (e) { fail(`words language: ${e.message.split("\n")[0]}`); } }
     console.error(`${where}: ${problems.length ? problems.length + " problem(s) so far" : "ok"} (${Math.round(performance.now() / 1000)}s)`);
   }

@@ -10,6 +10,7 @@ The big changes, newest first. Small fixes are not listed. See [the full list on
 
 ## 20 November 2026
 
+- **Is It Enough? shows the whole question on every phone.** On some phones the number keys left only a short card, and the answer box with the ? was cut off at the bottom. Now the shop, the purse and the words shrink to the card. On a small card the kind tag and the item names make room, and after an answer the explanation always has room too. [How to play](/loopy/guide/games/math/enough-money/).
 - **The text holds still while a page opens.** On a slow connection the words showed in a plain font first and jumped when loopy's own font arrived. In Read and Answer the whole story moved. Now the plain font is stretched to the same width, so the lines stay where they are. Behind the scenes, every page's styles are checked against what every browser has supported for 30 months, and a page may not write a colour out, so every theme looks right.
 - **loopy loads a little faster, and every game is tested in Safari's engine too.** The shared script every page loads is about 6% smaller to download. The tests that play every game now also run in WebKit, the engine behind Safari on iPhone and iPad, so a slip that only Safari shows is caught before it reaches a child's phone. Nothing on screen changes.
 
