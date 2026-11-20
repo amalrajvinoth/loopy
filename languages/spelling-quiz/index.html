@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'sha256-PjGhPeeo/X4viffFvTyLumB2DOn3W46eqgtrYofLdI8='; style-src 'self' 'sha256-iKqZfY0yOsyVHa/qlTmRsjSUAon+EdDi9RLwucVWFNA=' 'sha256-ABwuanKcnz107xYFOpBZFak0mXO5u6bz/s+nSd1x5xk=' 'sha256-RT1053JU5UiKvjrCUFx1rlhdFLMmgtuFJ9T8jnMeawQ=' 'sha256-OqtlLmk/+xpcia1cKdN8oqNUWnLGJPg81fharWt3RJQ='; img-src 'self' data:; font-src 'self'; connect-src 'self' https://loopy-sync.loopy-1e2.workers.dev; worker-src 'self'; object-src 'none'; base-uri 'none'; form-action 'none'; manifest-src 'self'; upgrade-insecure-requests">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'sha256-ocCz2yXCxQ/x8ZrNa8DZvN3oeSbo22e4iSWs282erT8='; style-src 'self' 'sha256-iKqZfY0yOsyVHa/qlTmRsjSUAon+EdDi9RLwucVWFNA=' 'sha256-ABwuanKcnz107xYFOpBZFak0mXO5u6bz/s+nSd1x5xk=' 'sha256-RT1053JU5UiKvjrCUFx1rlhdFLMmgtuFJ9T8jnMeawQ=' 'sha256-OqtlLmk/+xpcia1cKdN8oqNUWnLGJPg81fharWt3RJQ='; img-src 'self' data:; font-src 'self'; connect-src 'self' https://loopy-sync.loopy-1e2.workers.dev; worker-src 'self'; object-src 'none'; base-uri 'none'; form-action 'none'; manifest-src 'self'; upgrade-insecure-requests">
 <meta name="referrer" content="strict-origin-when-cross-origin">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <style>:root{color-scheme:light;padding-top:var(--safe-top);padding-bottom:var(--safe-bottom)}body{margin:0}[hidden]{display:none!important}</style>
@@ -428,7 +428,7 @@ function cleanTrans(s) {
   if (typeof s !== "string") return "";
   const v = s.normalize("NFC").replace(/[’`]/g, "'").replace(/\s+/g, " ").trim();
   if (!v) return "";
-  return v.length <= 30 && /^[\p{L}'\-\/ ]+$/u.test(v) ? v : null;
+  return v.length <= 30 && /^[\p{L}'\- /]+$/u.test(v) ? v : null;
 }
 // A pasted list: commas, semicolons or new lines between words (only spaces when there is none of those).
 // A word can carry its meaning in brackets: "Biene (the bee)". Returns { words, trans, bad, cut, longTrans }:

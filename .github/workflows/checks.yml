@@ -69,6 +69,8 @@ jobs:
         run: npm ci --prefix tools/lint --ignore-scripts --no-audit --no-fund
       - name: The styles use only CSS every browser has had for 30 months (Baseline) and theme colours, and nothing is broken or doubled
         run: node tools/lint/check.mjs
+      - name: The script in every page is sound (ESLint) and uses only JavaScript every browser has had for 30 months (Baseline)
+        run: node tools/lint/scripts.mjs
       - name: Install the workflow checkers (exact versions and hashes from tools/lint/requirements.txt)
         run: pip install --quiet --require-hashes -r tools/lint/requirements.txt
       - name: The workflows leak no token and run no untrusted input (zizmor, offline)
