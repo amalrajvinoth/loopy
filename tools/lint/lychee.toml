@@ -8,6 +8,6 @@ no_progress = true
 hidden = true
 # The guide is built from guide-src/ into guide/ on deploy, so the pages' guide/ links have no file here.
 exclude = ['/guide/?$', '/guide/.+']
-# Not part of the site: the guide's own sources (Astro checks them in guide-src/scripts/check.mjs), installed
-# packages, and the plan notes under docs/plans, which link to pull request screenshots on GitHub.
-exclude_path = ['.git', 'guide-src', 'node_modules', 'docs/plans']
+# Not checked: the repository data (a pattern bound to the .git folder, so .github stays in), the guide's own
+# sources (Astro checks them in guide-src/scripts/check.mjs) and installed packages. These are regular expressions.
+exclude_path = ['(^|/)\\.git(/|$)', 'guide-src', 'node_modules']
