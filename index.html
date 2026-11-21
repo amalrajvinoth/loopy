@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'sha256-HniwPA5tTpIxVqtaDLTFGSQRb6A8sJcA6QaTRYPBuUI='; style-src 'self' 'sha256-V7Fp7Ytam787LLA+Aznyru/Pm44rPfPqV75NEFtsPIA='; img-src 'self' data:; font-src 'self'; connect-src 'self' https://loopy-sync.loopy-1e2.workers.dev; worker-src 'self'; object-src 'none'; base-uri 'none'; form-action 'none'; manifest-src 'self'; upgrade-insecure-requests">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'sha256-HniwPA5tTpIxVqtaDLTFGSQRb6A8sJcA6QaTRYPBuUI='; style-src 'self' 'sha256-GbwjrVgsixQphRCDiMZZ29AkbwhKS8MvdHOnwRHTfHA='; img-src 'self' data:; font-src 'self'; connect-src 'self' https://loopy-sync.loopy-1e2.workers.dev; worker-src 'self'; object-src 'none'; base-uri 'none'; form-action 'none'; manifest-src 'self'; upgrade-insecure-requests">
 <meta name="referrer" content="strict-origin-when-cross-origin">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <link rel="icon" href="icon.svg" type="image/svg+xml">
@@ -69,8 +69,8 @@ h1 { margin: 0; line-height: 0; color: var(--ink); }
 }
 @media (min-width: 600px) { .kid-chip.many { display: none; } }
 /* A phone on its side (844×390, 932×430) is as wide as a tablet but as short as a phone. It takes the one-row top from the
-   phone rules above, a smaller column gap and Today's 10 as one row, so Math and its first tiles are on the first screen
-   instead of only the logo and a card. */
+   phone rules above, a smaller column gap, Carry on and Try again side by side and Today's 10 as one row, so Math and its
+   first tiles are on the first screen instead of only the logo and a card. */
 @media (orientation: landscape) and (max-height: 499px) {
   body { padding-top: max(12px, var(--safe-top)); }
   header { flex-direction: row; flex-wrap: wrap; justify-content: space-between; gap: 8px; text-align: left; }
@@ -79,7 +79,13 @@ h1 { margin: 0; line-height: 0; color: var(--ink); }
   .lead, #kid-picker { display: none; }
   .kid-chip.many { display: inline-flex; }
   header .kid-set-row { flex: 1 1 0; min-width: 0; flex-wrap: nowrap; justify-content: flex-end; }
-  .wrap { gap: 14px; }
+  .wrap { gap: 14px; flex-direction: row; flex-wrap: wrap; }
+  .wrap > * { flex: 0 0 100%; min-width: 0; }
+  /* A returning child's Carry on and Try again share one short row, so the first tiles stay on the screen. */
+  .wrap > .carry.carry { flex: 1 1 40%; padding: var(--row-gap) var(--card-pad); gap: var(--row-gap); }
+  .wrap .carry .pic { font-size: 1.8rem; }
+  .wrap .carry-name { font-size: 1.15rem; }
+  .wrap .again-list { -webkit-line-clamp: 1; }
   .wrap .today { flex-direction: row; flex-wrap: wrap; align-items: center; gap: 6px 14px; padding: 12px 18px; }
   .today .tag { order: 0; }
   .today h2 { order: 1; margin: 0; }

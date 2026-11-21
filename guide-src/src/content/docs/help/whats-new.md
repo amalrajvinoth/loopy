@@ -10,7 +10,7 @@ The big changes, newest first. Small fixes are not listed. See [the full list on
 
 ## 21 November 2026
 
-- **Easier to tap, and the games show up on a phone held sideways.** In Settings the colour dots, the age − and +, the sound button and EN/DE now answer a tap a little past their edge. That is the size a thumb needs. In a game's top row the child, the flag and ⚙ sit a little further apart. The pills at the top and bottom of the home page have a thin edge, so they look like buttons. Under Move my stars the two code fields have a label: Your stars code, and A code from another device. On a phone held sideways the home page shows Math and its first games on the first screen. Keyboard users get a Skip to games link as the first Tab stop.
+- **Easier to tap, and the games show up on a phone held sideways.** Every button in Settings and in a game's top row is now the size a thumb needs. The round buttons at the top and bottom of the home page have an edge. The two stars code fields under Move my stars have a label. On a phone held sideways the home page shows Math and its first games on the first screen.
 
 ## 20 November 2026
 
