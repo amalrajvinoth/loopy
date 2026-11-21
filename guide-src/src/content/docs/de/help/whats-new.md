@@ -10,7 +10,7 @@ Die großen Änderungen, die neuesten zuerst. Kleine Korrekturen stehen nicht da
 
 ## 21. November 2026
 
-- **Leichter zu tippen, und die Spiele sind auf dem quer gehaltenen Handy zu sehen.** In den Einstellungen reagieren die Farbpunkte, das − und + beim Alter, der Ton-Knopf und EN/DE jetzt auch auf einen Tipp knapp neben dem Rand. So groß muss ein Knopf für einen Daumen sein. In der oberen Reihe eines Spiels haben das Kind, die Fahne und ⚙ etwas mehr Abstand. Die Knöpfe oben und unten auf der Startseite haben einen dünnen Rand, damit sie wie Knöpfe aussehen. Unter Sterne auf ein anderes Gerät bringen haben die zwei Code-Felder eine Beschriftung: Dein Sterne-Code und Ein Code von einem anderen Gerät. Auf dem quer gehaltenen Handy zeigt die Startseite Mathe und die ersten Spiele gleich auf dem ersten Bildschirm. Wer mit der Tastatur steuert, bekommt als ersten Tab-Stopp einen Link Zu den Spielen springen.
+- **Leichter zu tippen, und die Spiele sind auf dem quer gehaltenen Handy zu sehen.** Jeder Knopf in den Einstellungen und in der oberen Reihe eines Spiels ist jetzt so groß, wie ein Daumen es braucht, und die Knöpfe auf der Startseite haben einen Rand. Die zwei Code-Felder unter Sterne auf ein anderes Gerät bringen haben eine Beschriftung. Auf dem quer gehaltenen Handy zeigt die Startseite Mathe und die ersten Spiele gleich auf dem ersten Bildschirm.
 
 ## 20. November 2026
 

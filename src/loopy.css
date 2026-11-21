@@ -233,9 +233,11 @@
 .themes button[aria-pressed="true"] { border-color: var(--ink); }
 .themes button:focus-visible { outline: 3px solid var(--mark); outline-offset: 3px; }
 /* A thumb needs 44px: the swatches (36px), the age − and + (38px), the sound button (40px) and the EN/DE pills (36px tall) keep
-   their drawn size and reach 44×44 through an invisible ::after, so a tap just past the circle still lands. */
+   their drawn size and reach 44×44 through an invisible ::after, so a tap just past the circle still lands. The inset counts
+   from the padding box: the swatch's 3px border leaves 30px, so it takes -7px; the others have no border. */
 .themes button, .age-picker button, .sound-toggle, .lang-picker button { position: relative; }
 .themes button::after, .age-picker button::after, .sound-toggle::after, .lang-picker button::after { content: ""; position: absolute; inset: -4px; border-radius: inherit; }
+.themes button::after { inset: -7px; }
 .age-picker button::after { inset: -3px; }
 .sound-toggle::after { inset: -2px; }
 .top-row { display: flex; justify-content: space-between; align-items: center; gap: 12px; flex-wrap: wrap; }
