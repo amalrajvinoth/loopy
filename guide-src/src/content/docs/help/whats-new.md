@@ -8,6 +8,10 @@ loopy keeps getting new games. Here is what came lately!
 
 The big changes, newest first. Small fixes are not listed. See [the full list on GitHub](https://github.com/amalrajvinoth/loopy/blob/main/RELEASES.md).
 
+## 21 November 2026
+
+- **Easier to tap, and the games show up on a phone held sideways.** In Settings the colour dots, the age − and +, the sound button and EN/DE now answer a tap a little past their edge. That is the size a thumb needs. In a game's top row the child, the flag and ⚙ sit a little further apart. The pills at the top and bottom of the home page have a thin edge, so they look like buttons. Under Move my stars the two code fields have a label: Your stars code, and A code from another device. On a phone held sideways the home page shows Math and its first games on the first screen. Keyboard users get a Skip to games link as the first Tab stop.
+
 ## 20 November 2026
 
 - **Is It Enough? shows the whole question on every phone.** On some phones the number keys left only a short card, and the answer box with the ? was cut off at the bottom. Now the shop, the purse and the words shrink to the card. On a small card the kind tag and the item names make room, and after an answer the explanation always has room too. [How to play](/loopy/guide/games/math/enough-money/).

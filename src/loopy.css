@@ -232,6 +232,12 @@
 }
 .themes button[aria-pressed="true"] { border-color: var(--ink); }
 .themes button:focus-visible { outline: 3px solid var(--mark); outline-offset: 3px; }
+/* A thumb needs 44px: the swatches (36px), the age − and + (38px), the sound button (40px) and the EN/DE pills (36px tall) keep
+   their drawn size and reach 44×44 through an invisible ::after, so a tap just past the circle still lands. */
+.themes button, .age-picker button, .sound-toggle, .lang-picker button { position: relative; }
+.themes button::after, .age-picker button::after, .sound-toggle::after, .lang-picker button::after { content: ""; position: absolute; inset: -4px; border-radius: inherit; }
+.age-picker button::after { inset: -3px; }
+.sound-toggle::after { inset: -2px; }
 .top-row { display: flex; justify-content: space-between; align-items: center; gap: 12px; flex-wrap: wrap; }
 
 .age-picker { display: inline-flex; align-items: center; gap: 4px; background: var(--chip); border-radius: 999px; padding: 4px; }
@@ -296,6 +302,7 @@
 .kid-chip {
   display: inline-flex; align-items: center; gap: 6px; min-height: 44px; min-width: 44px; justify-content: center; padding: 0 14px 0 9px;
   flex: none; border-radius: 999px; border: 0; background: var(--chip); color: var(--ink); font: inherit; font-weight: 700; cursor: pointer;
+  box-shadow: inset 0 0 0 2px var(--line);
 }
 .kid-chip .kid-pic { font-size: 1.3rem; }
 .kid-chip-name { max-width: 7.5em; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
@@ -318,7 +325,7 @@
 .kid-switch-foot .kid-btn:last-child { margin-left: auto; }
 
 /* Rewards */
-.star-chip { display: inline-flex; align-items: center; gap: 6px; background: var(--chip); border-radius: 999px; padding: 6px 14px 6px 10px; font-weight: 700; font-variant-numeric: tabular-nums; }
+.star-chip { display: inline-flex; align-items: center; gap: 6px; background: var(--chip); border-radius: 999px; padding: 6px 14px 6px 10px; font-weight: 700; font-variant-numeric: tabular-nums; box-shadow: inset 0 0 0 2px var(--line); }
 .star-chip svg { width: 22px; height: 22px; fill: var(--c5); }
 /* On the home page the top-row counter is a link to the My stars shelf: same pill, no underline, 44px tall. */
 a.star-chip { color: inherit; text-decoration: none; min-height: 44px; flex: none; }
@@ -397,20 +404,21 @@ button, a, label, summary { touch-action: manipulation; -webkit-tap-highlight-co
 .settings-toggle {
   display: inline-flex; align-items: center; gap: 6px; min-height: 44px; padding: 0 14px; border-radius: 999px; cursor: pointer;
   border: 0; background: var(--chip); color: var(--ink); font: inherit; font-weight: 600;
+  box-shadow: inset 0 0 0 2px var(--line); /* the chip edge: chip on the page is only 1.27:1, the line makes it a button */
 }
 .settings-toggle svg { width: 20px; height: 20px; }
-.settings-toggle[aria-expanded="true"] { background: var(--c1); color: var(--on-accent); }
+.settings-toggle[aria-expanded="true"] { background: var(--c1); color: var(--on-accent); box-shadow: none; }
 .settings-toggle:focus-visible { outline: 3px solid var(--mark); outline-offset: 2px; }
 .settings-panel[hidden] { display: none; }
 /* Report a problem: a small flag button before Settings, and its box (built on the children's box). */
 .report-toggle {
   width: 44px; height: 44px; flex: none; border-radius: 50%; border: 0; cursor: pointer; display: grid; place-items: center;
-  background: var(--chip); color: var(--muted);
+  background: var(--chip); color: var(--muted); box-shadow: inset 0 0 0 2px var(--line);
 }
 .report-toggle svg { width: 20px; height: 20px; }
 .game-bar.rp-tight .settings-toggle span { display: none; }
 .game-bar.rp-tight .settings-toggle { padding: 0 12px; }
-.game-bar.rp-tight .bar-right { gap: 4px; }
+.game-bar.rp-tight .bar-right { gap: 8px; } /* three same-looking round buttons: 8px keeps a thumb off the neighbour */
 .game-bar.rp-hide .report-toggle { display: none; }
 .report-toggle:focus-visible, .report-dialog a:focus-visible { outline: 3px solid var(--mark); outline-offset: 2px; }
 .report-dialog { width: min(94vw, 440px); padding: 16px; }
