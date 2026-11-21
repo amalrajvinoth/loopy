@@ -8,6 +8,10 @@ loopy bekommt immer wieder neue Spiele. Das ist zuletzt dazugekommen!
 
 Die großen Änderungen, die neuesten zuerst. Kleine Korrekturen stehen nicht dabei. Die [ganze Liste steht auf GitHub](https://github.com/amalrajvinoth/loopy/blob/main/RELEASES.md) (auf Englisch).
 
+## 21. November 2026
+
+- **Leichter zu tippen, und die Spiele sind auf dem quer gehaltenen Handy zu sehen.** In den Einstellungen reagieren die Farbpunkte, das − und + beim Alter, der Ton-Knopf und EN/DE jetzt auch auf einen Tipp knapp neben dem Rand. So groß muss ein Knopf für einen Daumen sein. In der oberen Reihe eines Spiels haben das Kind, die Fahne und ⚙ etwas mehr Abstand. Die Knöpfe oben und unten auf der Startseite haben einen dünnen Rand, damit sie wie Knöpfe aussehen. Unter Sterne auf ein anderes Gerät bringen haben die zwei Code-Felder eine Beschriftung: Dein Sterne-Code und Ein Code von einem anderen Gerät. Auf dem quer gehaltenen Handy zeigt die Startseite Mathe und die ersten Spiele gleich auf dem ersten Bildschirm. Wer mit der Tastatur steuert, bekommt als ersten Tab-Stopp einen Link Zu den Spielen springen.
+
 ## 20. November 2026
 
 - **Reicht das Geld? zeigt die ganze Aufgabe auf jedem Handy.** Auf manchen Handys ließen die Zahlentasten nur eine kurze Karte übrig, und das Antwortfeld mit dem ? war unten abgeschnitten. Jetzt werden der Laden, das Portemonnaie und die Wörter so klein, dass sie in die Karte passen. Auf einer kleinen Karte machen das Schild und die Namen der Sachen Platz, und nach einer Antwort hat die Erklärung immer Platz. [So geht es](/loopy/guide/de/games/math/enough-money/).
