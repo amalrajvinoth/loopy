@@ -10,7 +10,7 @@ Die großen Änderungen, die neuesten zuerst. Kleine Korrekturen stehen nicht da
 
 ## 21. November 2026
 
-- **Leichter zu tippen, und die Spiele sind auf dem quer gehaltenen Handy zu sehen.** Jeder Knopf in den Einstellungen und in der oberen Reihe eines Spiels ist jetzt so groß, wie ein Daumen es braucht, und die Knöpfe auf der Startseite haben einen Rand. Die zwei Code-Felder unter Sterne auf ein anderes Gerät bringen haben eine Beschriftung. Auf dem quer gehaltenen Handy zeigt die Startseite Mathe und die ersten Spiele gleich auf dem ersten Bildschirm.
+- **Leichter zu tippen, und die Spiele sind auf dem quer gehaltenen Handy zu sehen.** Jeder Knopf in den Einstellungen und in der oberen Reihe eines Spiels ist jetzt so groß, wie ein Daumen es braucht. Die Knöpfe auf der Startseite haben einen Rand, und die zwei Code-Felder unter Sterne auf ein anderes Gerät bringen haben eine Beschriftung. Auf dem quer gehaltenen Handy zeigt die Startseite Mathe und die ersten Spiele gleich auf dem ersten Bildschirm.
 
 ## 20. November 2026
 
