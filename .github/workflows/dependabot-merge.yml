@@ -53,15 +53,21 @@ jobs:
           if ! python3 - "$RUNNER_TEMP/pr.json" <<'PY' >> "$GITHUB_STEP_SUMMARY"
           import json, re, sys
           pr = json.load(open(sys.argv[1]))
-          bumps = sorted(set(re.findall(r"from (\d+)((?:\.[\w-]+)*) to (\d+)((?:\.[\w-]+)*)", pr["title"] + "\n" + (pr["body"] or ""))))
-          majors = [f"{a}{b} to {c}{d}" for a, b, c, d in bumps if a != c]
-          if not bumps:
-              print("Could not tell which versions this pull request bumps, so it waits for a person.")
+          # Every "from X to Y" must be two readable version numbers. A group may also carry an update whose
+          # versions Dependabot shows as git commits (from `abc1234` to `def5678`); that one cannot be judged, so
+          # the whole pull request waits.
+          pairs = sorted(set((a.strip("`.,;:"), b.strip("`.,;:")) for a, b in re.findall(r"from (\S+) to (\S+)", pr["title"] + "\n" + (pr["body"] or ""))))
+          ver = re.compile(r"^(\d+)((?:\.[\w-]+)*)$")
+          unreadable = [f"{a} to {b}" for a, b in pairs if not (ver.match(a) and ver.match(b))]
+          bumps = [(ver.match(a), ver.match(b)) for a, b in pairs if ver.match(a) and ver.match(b)]
+          majors = [f"{a.group(0)} to {b.group(0)}" for a, b in bumps if a.group(1) != b.group(1)]
+          if not bumps or unreadable:
+              print("Could not read every version this pull request bumps" + (" (" + ", ".join(unreadable) + ")" if unreadable else "") + ", so it waits for a person.")
           elif majors:
               print("A major version bump (" + ", ".join(majors) + ") waits for a person; only patch and minor bumps merge by themselves.")
           else:
               print(f"{len(bumps)} patch or minor bump(s): merging.")
-          sys.exit(1 if not bumps or majors else 0)
+          sys.exit(1 if not bumps or unreadable or majors else 0)
           PY
           then
             cat "$GITHUB_STEP_SUMMARY"
