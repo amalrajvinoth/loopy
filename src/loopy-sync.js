@@ -103,7 +103,8 @@
     busy = (pull ? get(s).then(function (r) {
       if (r.n === 0) throw new Error("offline");
       if (r.n === 404 && s.e) throw new Error("gone");
-      if (r.n !== 200) return;
+      if (r.n === 204 || r.n === 404) return;      // nothing new (204), or no copy yet (404): maybe save below
+      if (r.n !== 200) { if (r.n === 429) later(); throw new Error("error"); }   // too many, or a server error: no sync time
       pulled = Date.now();
       return unlock(s, r.j.b).then(function (code) {
         return Loopy.backup.exportCode().then(function (before) {
@@ -533,14 +534,18 @@
       line.appendChild(input);
       row.appendChild(save);
       body.append(line, lab, row);
+      // A save whose answer was lost may have reached the server with its key. The next try for the same
+      // email sends that key again (the server keeps the first key it saw), so Remove works afterwards.
+      var tried = null;
       function go() {
         var m = input.value.trim().toLowerCase();
         if (m.length > 254 || !/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(m)) { msg.textContent = t("stBad"); input.focus(); return; }
         if (!tick.checked) { msg.textContent = t("stTick"); tick.focus(); return; }
-        var k = newKey();
+        var k = tried && tried.m === m ? tried.k : newKey();
         save.disabled = true; msg.textContent = t("syBusy");
         send("/g", { m: m, l: Loopy.lang === "de" ? "de" : "en", k: k }).then(function (r) {
           save.disabled = false;
+          tried = r.n === 0 ? { m: m, k: k } : null;
           if (r.n === 200) { saved = { m: m, k: k, t: Date.now() }; writeTouch(saved); draw(); msg.textContent = t("stDone"); }
           else if (r.n === 0) msg.textContent = t("syNoNet");
           else if (r.n === 429) msg.textContent = t("stWait");
