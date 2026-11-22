@@ -12,7 +12,8 @@
 This is the list the ship-pr and loopy-review skills, AGENTS.md and the README point at, so it is written
 once. The GitHub check (.github/workflows/checks.yml) runs the same commands; plugins/loopy/scripts/drift.py
 fails when a check is added there and not here. Which browser tests a change needs comes from
-tools/ci_changes.py, the same answer CI uses.
+tools/ci_changes.py, the same answer CI uses. One difference: CI runs every lint whatever changed; here a
+lint (types, styles, scripts, workflows, links) runs when a file it reads changed. --all runs them all.
 
 tools/review.py also exits 1 for a `must` that was already on main. That is reported as "already on main"
 and does not turn the run red; only a `must` this change added does.
@@ -97,9 +98,9 @@ CHECKS = [
      "Update what it names (the evolve skill), then run drift.py --update.", "Plugin behind the repo"),
     ("hooks", f"{PY} plugins/test_hooks.py", "the plugin hooks do what they say", paths(r"^(plugins/|\.claude/)"), [],
      "Fix the hook. Change the test only when the new behaviour was asked for.", "Hook test fails"),
-    ("sync-server", "node sync/test.mjs", "the Family sync server answers right", paths(r"^sync/"), [],
+    ("sync-server", "node sync/test.mjs", "the Family sync server answers right", ALWAYS, [],
      "See sync/README.md.", "Family sync fails"),
-    ("sync-usage", "node tools/sync-usage.test.mjs", "the Monday usage report prints counts only", paths(r"^tools/sync-.*\.mjs$"), [],
+    ("sync-usage", "node tools/sync-usage.test.mjs", "the Monday usage report prints counts only", ALWAYS, [],
      "The issue and the log are public: counts only.", "Family sync usage job is red"),
     ("a11y", "node tools/a11y/check.mjs", "every page works with a keyboard and a screen reader", SITE, BROWSER,
      "Fix the page. Never turn an axe rule off.", "Play test or accessibility check cannot start"),
@@ -117,12 +118,12 @@ CHECKS = [
     ("switch", "node tools/e2e/switch.mjs", "switching the child mid-game: each child keeps their own stars, log and last game", SITE, BROWSER,
      "Nothing is saved after a switch starts, until the reload.", "Switch test fails"),
     ("hello", "node tools/e2e/hello.mjs", "the first visit: the welcome sheet once, the family code row until a code is set",
-     paths(r"^(src/loopy-hello\.js | src/loopy\.js | index\.html)$"), BROWSER,
+     SITE, BROWSER,
      "A test that starts with an empty browser must set loopy.hello.", "First visit test fails"),
     ("offline", "node tools/e2e/offline.mjs", "after an update the offline copy saves the new pages, never an old one",
-     paths(r"^(src/sw\.js | tools/build\.py)$"), BROWSER, "See the recipe.", "Offline copy keeps an old page"),
+     SITE, BROWSER, "See the recipe.", "Offline copy keeps an old page"),
     ("sync", "node tools/e2e/sync.mjs", "Family sync keeps two devices in step and sends nothing when off",
-     paths(r"^(src/loopy-sync\.js | sync/ | index\.html$)"), BROWSER, "See sync/README.md.", "Family sync fails"),
+     SITE, BROWSER, "See sync/README.md.", "Family sync fails"),
     ("guide", f"npm run build --prefix guide-src && {PY} tools/csp.py --check && {PY} tools/check_external.py && node guide-src/scripts/check.mjs",
      "the guide builds; its policies, links, search and accessibility are right",
      GUIDE_JOB, GUIDE, "When a game looks different, also run npm run screens --prefix guide-src and commit the pictures.",
