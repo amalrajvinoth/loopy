@@ -27,6 +27,7 @@ crons = ["17 3 * * *"]
 # binding, free on every plan, counted per caller address at each Cloudflare location, so the limit is about
 # this, not exact. LIMIT covers the family copies and /stats: a family's devices on one Wi-Fi make a few requests
 # a minute. LIMIT_MAIL covers Stay in touch (/g), so nobody fills the list with junk addresses from one place.
+# The check runs inside the Worker, so it spares the databases, not the Worker's own daily request allowance.
 # period may only be 10 or 60 seconds. The tests (sync/test.mjs) use a stand-in; without the binding nothing is limited.
 [[ratelimits]]
 name = "LIMIT"

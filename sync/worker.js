@@ -20,9 +20,12 @@
 //
 // All are "simple" requests (GET, or POST with text/plain), so browsers send no extra preflight request.
 // Too many requests from one address answer 429: 60 a minute for the copies and /stats, 6 a minute for /g
-// (wrangler.toml, [[ratelimits]]). A family's devices on one Wi-Fi make a few a minute; a flood from one
-// address stops there instead of using up the free plan's 100,000 requests a day for every family. Nothing is
-// lost: a device that gets 429 keeps everything in its own browser and tries again later.
+// (wrangler.toml, [[ratelimits]]). A family's devices on one Wi-Fi make a few a minute. A flood from one
+// address then reaches neither database: no reads or writes of the copies (D1's daily allowance), no junk
+// rows in the Stay in touch list. The check runs inside this Worker, so each 429 still counts as one of the
+// free plan's 100,000 requests a day; keeping a flood off that allowance needs a rule in front of the Worker
+// (a zone rate-limit rule, once loopy has its own domain). Nothing is lost: a device that gets 429 for a
+// family copy keeps everything in its own browser and tries again later.
 // Once a day the scheduled job (wrangler.toml) deletes old copies (not written for 400 days) and old
 // emails (saved 2 years ago), and writes one row of counts into the stats table.
 
@@ -39,8 +42,10 @@ const EMAIL = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/;
 const STATS_DAYS = 90;
 
 // Too many requests from one address? limiter is one of the Rate Limiting bindings in wrangler.toml, counted
-// per caller address. Without the binding (sync/test.mjs, wrangler dev --local) nothing is limited, and if the
-// binding itself fails the request goes through: the limit is a brake, never a reason to lose a save.
+// per caller address. It keeps a flood away from the databases and the mailing list; it does not spare the
+// Worker's own daily request allowance, because it runs inside the Worker (see the top of this file). Without
+// the binding (sync/test.mjs, wrangler dev --local) nothing is limited, and if the binding itself fails the
+// request goes through: the limit is a brake, never a reason to lose a save.
 async function tooMany(limiter, req) {
   const ip = req.headers.get("CF-Connecting-IP");
   if (!limiter || !ip) return false;
