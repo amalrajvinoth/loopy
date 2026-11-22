@@ -135,8 +135,8 @@ check("Remove forgets it on the device", await until(() => off.page.evaluate(() 
 check("Settings has the email box again", await until(async () => !/Saved:/.test(await touchText(off.page))), "");
 // A save whose answer is lost reached the server. A retry that gets 429, then one that works, must end with
 // the same remove key, or Remove could never delete the row.
-const saveTouch = async () => {
-  await off.page.getByLabel("Your email").fill("parent@example.com");
+const saveTouch = async (mail = "parent@example.com") => {
+  await off.page.getByLabel("Your email").fill(mail);
   await off.page.locator(".touch-agree input").check();
   await off.page.getByRole("button", { name: "Save", exact: true }).click();
 };
@@ -147,6 +147,8 @@ check("but the server kept the email", env.DB.grownups.size === 1, env.DB.grownu
 env.LIMIT_MAIL = { limit: async () => ({ success: false }) };
 await saveTouch();
 check("A retry that gets 429 asks to wait", await until(async () => /wait a moment/.test(await touchText(off.page))), "");
+await saveTouch("other@example.com");
+check("A 429 for another email in between asks to wait too", await until(async () => /wait a moment/.test(await touchText(off.page))), "");
 delete env.LIMIT_MAIL;
 skew += 11000;   // the server takes one save per email every 10 seconds
 await saveTouch();

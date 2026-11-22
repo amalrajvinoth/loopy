@@ -535,18 +535,19 @@
       row.appendChild(save);
       body.append(line, lab, row);
       // A save whose answer was lost may have reached the server with its key, and a later 429 or error does
-      // not say otherwise. So the same email keeps the same key until a save succeeds (the server keeps the
+      // not say otherwise. So each email keeps its key until a save of it succeeds (the server keeps the
       // first key it saw), and Remove works afterwards.
-      var tried = null;
+      /** @type {Record<string, string>} */
+      var tried = {};
       function go() {
         var m = input.value.trim().toLowerCase();
         if (m.length > 254 || !/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(m)) { msg.textContent = t("stBad"); input.focus(); return; }
         if (!tick.checked) { msg.textContent = t("stTick"); tick.focus(); return; }
-        var k = tried && tried.m === m ? tried.k : newKey();
+        var k = tried[m] || newKey();
         save.disabled = true; msg.textContent = t("syBusy");
         send("/g", { m: m, l: Loopy.lang === "de" ? "de" : "en", k: k }).then(function (r) {
           save.disabled = false;
-          tried = r.n === 200 ? null : { m: m, k: k };
+          if (r.n === 200) delete tried[m]; else tried[m] = k;
           if (r.n === 200) { saved = { m: m, k: k, t: Date.now() }; writeTouch(saved); draw(); msg.textContent = t("stDone"); }
           else if (r.n === 0) msg.textContent = t("syNoNet");
           else if (r.n === 429) msg.textContent = t("stWait");
