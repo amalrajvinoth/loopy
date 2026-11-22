@@ -19,6 +19,10 @@
 //                           row with this email and this key (unknown, or saved first from another device)
 //
 // All are "simple" requests (GET, or POST with text/plain), so browsers send no extra preflight request.
+// Too many requests from one address answer 429: 60 a minute for the copies and /stats, 6 a minute for /g
+// (wrangler.toml, [[ratelimits]]). A family's devices on one Wi-Fi make a few a minute; a flood from one
+// address stops there instead of using up the free plan's 100,000 requests a day for every family. Nothing is
+// lost: a device that gets 429 keeps everything in its own browser and tries again later.
 // Once a day the scheduled job (wrangler.toml) deletes old copies (not written for 400 days) and old
 // emails (saved 2 years ago), and writes one row of counts into the stats table.
 
@@ -33,6 +37,15 @@ const MAX_MAIL = 254;
 const MAX_GROWNUPS = 50000;   // more emails than loopy will ever get; stops a flood
 const EMAIL = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/;
 const STATS_DAYS = 90;
+
+// Too many requests from one address? limiter is one of the Rate Limiting bindings in wrangler.toml, counted
+// per caller address. Without the binding (sync/test.mjs, wrangler dev --local) nothing is limited, and if the
+// binding itself fails the request goes through: the limit is a brake, never a reason to lose a save.
+async function tooMany(limiter, req) {
+  const ip = req.headers.get("CF-Connecting-IP");
+  if (!limiter || !ip) return false;
+  try { return !(await limiter.limit({ key: ip })).success; } catch (e) { return false; }
+}
 
 async function sha(text) {
   const d = await crypto.subtle.digest("SHA-256", new TextEncoder().encode(text));
@@ -57,6 +70,8 @@ export default {
     if (allowed.includes(origin)) head["Access-Control-Allow-Origin"] = origin;
     const send = (status, body) => new Response(body === undefined ? null : JSON.stringify(body),
       { status, headers: body === undefined ? head : { ...head, "Content-Type": "application/json" } });
+
+    if (await tooMany(url.pathname === "/g" ? env.LIMIT_MAIL : env.LIMIT, req)) return send(429);
 
     if (url.pathname === "/stats") {
       if (req.method !== "GET") return send(405);

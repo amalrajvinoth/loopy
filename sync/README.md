@@ -56,6 +56,7 @@ Four ways, all counts only on GitHub. Nobody can see who: the server has no name
 | `POST /f/<id>?e=<hash>` with `{k, b}` | `200 {e}` saved. `412 {e}` another device saved first: read again, merge, try again. `403` wrong write key. `429` less than 10 seconds since the last save. `413` too big. `400` not a locked copy |
 | `POST /f/<id>?del=1` with `{k}` | Deletes the family copy |
 | `GET /stats` | The last 90 nightly rows of counts: `[{day, families, active7, active30, bytes}]` |
+| any, too often | `429` after 60 requests a minute from one address (6 a minute for `POST /g`). The device keeps everything and tries again later. See **Free plan limits** |
 | `POST /g` with `{m, l, k}` | Saves a grown-up's email `m` with language `l` and remove key `k`. `200 {}`. `400` not an email. `429` the same device saved it less than 10 seconds ago. `503` no emails database. An email already on the list keeps its first key: a save with another key changes nothing and still answers `200`, so nobody can take a row over or find out who is on the list |
 | `POST /g?del=1` with `{m, k}` | Deletes that email. `200` deleted. `404` no row with this email and this key: unknown, or saved first from another device (the same answer for both, on purpose) |
 
@@ -79,6 +80,8 @@ The browser side is `src/loopy-sync.js` and the Family sync part of ⚙ Settings
 ## Free plan limits
 
 Cloudflare's free plan allows 100,000 requests a day, and D1 allows 100,000 saves and 5 million reads a day with 5 GB of space. A family that plays every day uses a few dozen requests. So the free plan covers thousands of families.
+
+One address may make 60 requests a minute (6 a minute to Stay in touch); past that the server answers `429` until the minute is over (`[[ratelimits]]` in `wrangler.toml`, Cloudflare's Rate Limiting binding, free). A family's devices on one Wi-Fi use a few a minute, so they never see it. A flood from one computer stops there instead of using up the day's 100,000 requests for every family. The count is per Cloudflare location, so it is roughly 60, not exact. Nothing is lost on a `429`: the device keeps everything in its own browser and tries again later (`src/loopy-sync.js` treats it like a short outage).
 
 ## Set it up (the repo owner, once)
 
