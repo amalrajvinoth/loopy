@@ -137,7 +137,8 @@ SLOW = {"a11y", "play", "pictures", "retry", "levels", "switch", "hello", "offli
 
 
 # A browser test says this when its browser is not on the machine; the line after "Run:" installs it.
-NO_BROWSER = re.compile(r"(?:is not installed for ENGINE=\w+\. Run: (.+)|No Chrome or Chromium found\. (.+))")
+# Node prints the line of source that threw before the message itself, so the capture stops at a quote or a backslash.
+NO_BROWSER = re.compile(r"""(?:is not installed for ENGINE=\w+\. Run: ([^"\\\n]+)|No Chrome or Chromium found\. ([^"\\\n]+))""")
 
 
 def git(*args):
