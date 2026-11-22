@@ -4,15 +4,23 @@
 // wrangler's JSON, so no network is needed.
 
 import { execFileSync } from "node:child_process";
+import { existsSync } from "node:fs";
+import { dirname, join } from "node:path";
+import { fileURLToPath } from "node:url";
 
+// wrangler from sync/node_modules when it is installed there (npm ci --prefix sync --ignore-scripts, the exact
+// version from sync/package-lock.json, as the GitHub jobs do), else the same version through npx.
+const LOCAL = join(dirname(fileURLToPath(import.meta.url)), "..", "sync", "node_modules", ".bin", "wrangler");
 const W = process.env.WRANGLER || "wrangler@4.149.0";
 
 export function query(db, sql, cwd) {
   const fake = process.env.SYNC_D1_FAKE;
   const out = fake
     ? execFileSync(process.execPath, [fake, db, sql], { encoding: "utf8", stdio: ["ignore", "pipe", "inherit"] })
-    : execFileSync("npx", ["--yes", W, "d1", "execute", db, "--remote", "--json", "--command", sql],
-        { encoding: "utf8", stdio: ["ignore", "pipe", "inherit"], cwd });
+    : existsSync(LOCAL)
+      ? execFileSync(LOCAL, ["d1", "execute", db, "--remote", "--json", "--command", sql], { encoding: "utf8", stdio: ["ignore", "pipe", "inherit"], cwd })
+      : execFileSync("npx", ["--yes", W, "d1", "execute", db, "--remote", "--json", "--command", sql],
+          { encoding: "utf8", stdio: ["ignore", "pipe", "inherit"], cwd });
   const j = JSON.parse(out.slice(out.indexOf("[")));
   return (j[0] && j[0].results) || [];
 }

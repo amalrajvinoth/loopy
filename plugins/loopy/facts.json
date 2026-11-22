@@ -61,6 +61,7 @@
     "forks.yml: Forks and stars",
     "forks.yml: New forks and stars since the last run",
     "lighthouse.yml: Lighthouse",
+    "lighthouse.yml: Install Lighthouse (the exact version from tools/lighthouse/package-lock.json, the one the checks use)",
     "lighthouse.yml: Score the home page, a game and the guide on a phone",
     "lighthouse.yml: Every score is 90 or more",
     "lighthouse.yml: lighthouse-reports",
@@ -81,11 +82,13 @@
     "sync-usage.yml: Family sync usage",
     "sync-usage.yml: Not set up yet",
     "sync-usage.yml: Find the issue that keeps the counts",
+    "sync-usage.yml: Install wrangler (the exact version from sync/package-lock.json, no install scripts)",
     "sync-usage.yml: Count families and grown-ups",
     "sync-usage.yml: Keep the counts in the issue, and comment when something is new",
     "sync.yml: Family sync server",
     "sync.yml: Not set up yet",
     "sync.yml: The server answers right",
+    "sync.yml: Install wrangler (the exact version from sync/package-lock.json, no install scripts)",
     "sync.yml: Make the database once, set up its table, deploy"
   ],
   "tools": [
@@ -148,5 +151,5 @@
     "844 × 390"
   ],
   "games_lists": 1,
-  "learned_at": "bd91d80"
+  "learned_at": "621eec2"
 }

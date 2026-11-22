@@ -1,12 +1,20 @@
 # Dependabot keeps the GitHub Actions used by the checks, the guide's Astro and Starlight, the minifier and
 # type checker in tools/build/, the browser tests in tools/a11y/, Lighthouse in tools/lighthouse/, Stylelint and
-# the workflow checkers (zizmor, actionlint, through pip) in tools/lint/ up to date.
+# the workflow checkers (zizmor, actionlint, through pip) in tools/lint/ and wrangler (the Family sync deploy tool)
+# in sync/ up to date.
+#
+# Every update waits 7 days after its release (cooldown) before Dependabot proposes it. A bad release is usually
+# pulled from the registry within days, so the wait keeps it out of loopy; a security fix skips the wait
+# (Dependabot security updates ignore the cooldown). dependabot-merge.yml then merges only patch and minor bumps
+# by itself; a major version waits for a person. (Security review, 21 November 2026.)
 version: 2
 updates:
   - package-ecosystem: "github-actions"
     directory: "/"
     schedule:
       interval: "weekly"
+    cooldown:
+      default-days: 7
     # One pull request for all action updates, so the workflows never mix old and new versions.
     groups:
       actions:
@@ -15,23 +23,41 @@ updates:
     directory: "/tools/build"
     schedule:
       interval: "weekly"
+    cooldown:
+      default-days: 7
   - package-ecosystem: "npm"
     directory: "/tools/a11y"
     schedule:
       interval: "weekly"
+    cooldown:
+      default-days: 7
   - package-ecosystem: "npm"
     directory: "/tools/lighthouse"
     schedule:
       interval: "weekly"
+    cooldown:
+      default-days: 7
   - package-ecosystem: "npm"
     directory: "/tools/lint"
     schedule:
       interval: "weekly"
+    cooldown:
+      default-days: 7
   - package-ecosystem: "npm"
     directory: "/guide-src"
     schedule:
       interval: "weekly"
+    cooldown:
+      default-days: 7
+  - package-ecosystem: "npm"
+    directory: "/sync"
+    schedule:
+      interval: "weekly"
+    cooldown:
+      default-days: 7
   - package-ecosystem: "pip"
     directory: "/tools/lint"
     schedule:
       interval: "weekly"
+    cooldown:
+      default-days: 7

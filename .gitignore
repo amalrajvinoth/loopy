@@ -23,3 +23,5 @@ design-plans/
 # UI/UX Pro Max (another global skill on the Mac) writes its design systems here with --persist. Not for loopy pages; see AGENTS.md.
 design-system/
 tools/lint/node_modules/
+# wrangler, the Family sync deploy tool, installs here (npm ci --prefix sync --ignore-scripts; see sync/README.md).
+sync/node_modules/

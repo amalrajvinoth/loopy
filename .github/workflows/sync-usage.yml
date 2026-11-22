@@ -21,8 +21,6 @@ jobs:
     env:
       CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
       CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
-      # The same exact version as the deploy job (sync.yml).
-      WRANGLER: wrangler@4.149.0
     steps:
       - name: Not set up yet
         if: env.CLOUDFLARE_API_TOKEN == '' || env.CLOUDFLARE_ACCOUNT_ID == ''
@@ -55,6 +53,9 @@ jobs:
           echo "number=$number" >> "$GITHUB_OUTPUT"
           echo "last=$last" >> "$GITHUB_OUTPUT"
           echo "Issue: ${number:-none yet}. Last counts: ${last:-none yet}."
+      - name: Install wrangler (the exact version from sync/package-lock.json, no install scripts)
+        if: env.CLOUDFLARE_API_TOKEN != '' && env.CLOUDFLARE_ACCOUNT_ID != ''
+        run: npm ci --prefix sync --ignore-scripts --no-audit --no-fund
       - name: Count families and grown-ups
         if: env.CLOUDFLARE_API_TOKEN != '' && env.CLOUDFLARE_ACCOUNT_ID != ''
         working-directory: sync
@@ -62,7 +63,7 @@ jobs:
           LAST: ${{ steps.issue.outputs.last }}
           OUT: ${{ runner.temp }}/report
         run: |
-          w() { npx --yes "$WRANGLER" "$@"; }
+          w() { node_modules/.bin/wrangler "$@"; }
           find_id() { w d1 list --json | node -e 'let s="";process.stdin.on("data",d=>s+=d).on("end",()=>{const d=JSON.parse(s).find(x=>x.name===process.argv[1]);process.stdout.write(d?d.uuid:"")})' "$1"; }
           id=$(find_id loopy-sync)
           test -n "$id"

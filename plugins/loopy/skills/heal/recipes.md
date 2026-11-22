@@ -99,8 +99,8 @@ One per failure. Add new ones at the end (the heal skill step 3). Keep each to f
 
 ## A Dependabot pull request did not merge by itself
 - Looks like: a green Dependabot pull request stays open; or the "Dependabot merge" run says "nothing to merge".
-- Cause: the merge job only runs for a "Checks" run that passed on a pull request from a `dependabot/` branch against `main`; a push to the branch after the run (a rebase) changes the commit, so the run no longer matches.
-- Fix: nothing to do when a newer "Checks" run is still going; it merges after that one. For a red one, fix the pull request like any other (it is not merged on purpose). After a merge by the token, the Pages deploy and the checks on `main` are started by the workflow itself. (25 Oct 2026)
+- Cause: the merge job only runs for a "Checks" run that passed on a pull request from a `dependabot/` branch against `main`; a push to the branch after the run (a rebase) changes the commit, so the run no longer matches. Since the security review of 21 November 2026 the job also leaves a pull request open on purpose when any bump in it is a major version (its title or body says "from 1.x to 2.x"), or when it cannot read the versions; the step Summary says which. Dependabot itself waits 7 days after a release before proposing it (`cooldown` in `.github/dependabot.yml`), so a quiet week is normal.
+- Fix: nothing to do when a newer "Checks" run is still going; it merges after that one. For a red one, fix the pull request like any other (it is not merged on purpose). A major version waits for the owner: read its release notes, run the checks, and merge it by hand. After a merge by the token, the Pages deploy and the checks on `main` are started by the workflow itself. (25 Oct 2026)
 
 ## Lighthouse run is red
 - Looks like: the monthly "Lighthouse" run: "N score(s) under 90", with the page and the category in the step log.
@@ -110,7 +110,7 @@ One per failure. Add new ones at the end (the heal skill step 3). Keep each to f
 ## Family sync usage job is red
 - Looks like: the Monday (or hand-run) "Family sync usage" job fails in "Count families and grown-ups": `test -n "$id"` fails, wrangler says "Authentication error", or `tools/sync-usage.mjs` throws on JSON. Or it fails in "Find the issue that keeps the counts" / "Keep the counts in the issue, and comment when something is new": `gh` says 403 or "could not resolve to an Issue".
 - Cause: a missing or expired Cloudflare secret, the `loopy-sync` database renamed, or wrangler's `--json` output changed shape. For the issue steps: the workflow lost `issues: write`, or the open issue titled "Family sync and grown-ups" lost its `usage` label (the job finds it by label and title; a closed one is fine, the job makes a new one).
-- Fix: ask the owner to check `CLOUDFLARE_API_TOKEN` and `CLOUDFLARE_ACCOUNT_ID` (sync/README.md). For a shape change, run `npx wrangler d1 execute loopy-sync --remote --json --command "SELECT 1"` and fit `query()` in `tools/sync-d1.mjs` to it, then `node tools/sync-usage.test.mjs`. It must keep printing counts only: the issue and the log are public. (1 Nov 2026, Monday issue 18 Nov 2026)
+- Fix: ask the owner to check `CLOUDFLARE_API_TOKEN` and `CLOUDFLARE_ACCOUNT_ID` (sync/README.md). For a shape change, run `npm ci --prefix sync --ignore-scripts` then `sync/node_modules/.bin/wrangler d1 execute loopy-sync --remote --json --command "SELECT 1"` and fit `query()` in `tools/sync-d1.mjs` to it, then `node tools/sync-usage.test.mjs`. It must keep printing counts only: the issue and the log are public. (1 Nov 2026, Monday issue 18 Nov 2026)
 
 ## Forks and stars job is red
 - Looks like: the Monday "Forks and stars" run fails in "New forks and stars since the last run": `gh api` or `gh issue` says "Resource not accessible by integration" (HTTP 403).
