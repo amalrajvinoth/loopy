@@ -20,4 +20,4 @@ One round of care for the pull request of the branch you are on. Made for a loop
 
 - Never skip, disable or quarantine a test. Never force-push. Never merge.
 - A flake is proven only by the same commit passing on a re-run; otherwise it is a bug.
-- Two rounds with nothing to do means the loop is finished.
+- Two rounds with nothing to do means the loop is finished. A round with CI still running is waiting, not nothing to do: the loop goes on until CI is green or the owner must act.
