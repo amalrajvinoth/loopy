@@ -16,6 +16,9 @@
 (function () {
   var Loopy = window.Loopy, KEY = "loopy.sync", ABC = "0123456789ABCDEFGHJKMNPQRSTVWXYZ";
   var WAIT = 20000, GAP = 120000, TIME = 15000, IDLE = 300000, AGAIN = 900000, IDLE_MAX = 3600000;
+  // ending: the pending "Turn off everywhere" delete; no round starts while it runs (a late save would make the copy again).
+  /** @type {Promise<boolean> | null} */
+  var ending = null;
   var st = read(), busy = null, timer = null, idleTimer = null, touched = Date.now(), pushed = st ? st.t : 0, pulled = 0, dirty = false, status = st ? "idle" : "off", tell = [];
 
   // ---- saved state ----
@@ -79,11 +82,12 @@
     var ctl = typeof AbortController === "function" ? new AbortController() : null, stop = setTimeout(function () { if (ctl) ctl.abort(); }, TIME);
     var opt = /** @type {RequestInit} */ ({ cache: "no-store", credentials: "omit", referrerPolicy: "no-referrer", signal: ctl ? ctl.signal : undefined });
     if (body) { opt.method = "POST"; opt.headers = { "Content-Type": "text/plain" }; opt.body = JSON.stringify(body); opt.keepalive = opt.body.length < 60000; }
+    // A dropped connection, a timeout or an answer that is not JSON all count as "could not reach" (n: 0).
+    // The timer runs until the body is read too, so a stalled answer cannot hold a request open for good.
     return fetch("https://" + Loopy.syncHost + path, opt).then(function (r) {
-      clearTimeout(stop);
       if (r.status !== 200 && r.status !== 412) return { n: r.status };
       return r.json().then(function (j) { return { n: r.status, j: j || {} }; });
-    }, function () { clearTimeout(stop); return { n: 0 }; });
+    }).then(function (out) { clearTimeout(stop); return out; }, function () { clearTimeout(stop); return { n: 0 }; });
   }
   function call(s, query, body) { return send("/f/" + s.i + query, body); }
   var get = function (s) { return call(s, "?e=" + s.e); };
@@ -94,12 +98,13 @@
   function round(pull) {
     if (busy) return busy;
     var s = st, changed = false;
-    if (!s) return Promise.resolve({});
+    if (!s || ending) return Promise.resolve({});
     say("busy");
     busy = (pull ? get(s).then(function (r) {
       if (r.n === 0) throw new Error("offline");
       if (r.n === 404 && s.e) throw new Error("gone");
-      if (r.n !== 200) return;
+      if (r.n === 204 || r.n === 404) return;      // nothing new (204), or no copy yet (404): maybe save below
+      if (r.n !== 200) { if (r.n === 429) later(); throw new Error("error"); }   // too many, or a server error: no sync time
       pulled = Date.now();
       return unlock(s, r.j.b).then(function (code) {
         return Loopy.backup.exportCode().then(function (before) {
@@ -219,6 +224,7 @@
       syIs: "On. Your family code:", syScan: "On your other device, scan this or type the code under Family sync, Join with a code.",
       syNow: "Sync now", syStop: "Turn off", syForget: "Turn off everywhere",
       syForgetSure: "Tap again to turn off sync on every device and delete the family copy. Stars on each device stay.",
+      syForgetLater: "The family copy could not be deleted just now. Sync stays on. Try again in a moment.",
       syWhen: "Last sync at {time}.", syBusy: "Syncing…", syOffline: "Waiting for the internet. Stars are safe on this device.",
       syGone: "The family copy was deleted on another device. Turn off, then turn on or join again.", syError: "Something went wrong. Stars are safe on this device.",
       syBad: "That is not a family code. It has 16 letters and numbers.", syNone: "No family has this code. Check it on the other device.",
@@ -232,6 +238,7 @@
       syIs: "An. Euer Familien-Code:", syScan: "Scanne das auf deinem anderen Gerät oder tippe den Code dort unter Familien-Sync, Mit Code beitreten ein.",
       syNow: "Jetzt abgleichen", syStop: "Ausschalten", syForget: "Überall ausschalten",
       syForgetSure: "Tippe noch einmal, um den Sync auf allen Geräten auszuschalten und die Familien-Kopie zu löschen. Die Sterne auf jedem Gerät bleiben.",
+      syForgetLater: "Die Familien-Kopie konnte gerade nicht gelöscht werden. Der Sync bleibt an. Versuche es gleich noch einmal.",
       syWhen: "Zuletzt abgeglichen um {time}.", syBusy: "Wird abgeglichen …", syOffline: "Wartet auf Internet. Die Sterne sind auf diesem Gerät sicher.",
       syGone: "Die Familien-Kopie wurde auf einem anderen Gerät gelöscht. Schalte aus und dann wieder ein oder tritt neu bei.", syError: "Etwas ist schiefgegangen. Die Sterne sind auf diesem Gerät sicher.",
       syBad: "Das ist kein Familien-Code. Er hat 16 Buchstaben und Zahlen.", syNone: "Keine Familie hat diesen Code. Prüfe ihn auf dem anderen Gerät.",
@@ -349,7 +356,11 @@
       stop.addEventListener("click", function () { Loopy.sync.off(false).then(draw); });
       forget.addEventListener("click", function () {
         if (!sure) { sure = true; forget.classList.add("sure"); msg.textContent = t("syForgetSure"); return; }
-        Loopy.sync.off(true).then(draw);
+        forget.disabled = true;
+        Loopy.sync.off(true).then(function (done) {
+          forget.disabled = false;
+          if (done) draw(); else msg.textContent = t("syForgetLater");
+        });
       });
     }
 
@@ -477,6 +488,11 @@
     if (!s || typeof s !== "object" || typeof s.m !== "string" || s.m.length > 254 || !/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(s.m) || !/^[A-Za-z0-9_-]{43}$/.test(s.k)) return null;
     return { m: s.m, k: s.k, t: typeof s.t === "number" && isFinite(s.t) ? s.t : 0 };
   }
+  // A save whose answer was lost may have reached the server with its key, and a later 429 or error does not
+  // say otherwise. So each email keeps its key, for as long as the page is open, until a save of it succeeds
+  // (the server keeps the first key it saw), and Remove works afterwards.
+  /** @type {Record<string, string>} */
+  var tried = {};
   function writeTouch(s) { try { if (s) localStorage.setItem(TOUCH, JSON.stringify(s)); else localStorage.removeItem(TOUCH); } catch (e) {} }
   function newKey() {
     var r = crypto.getRandomValues(new Uint8Array(32));
@@ -499,6 +515,9 @@
           send("/g?del=1", { m: saved.m, k: saved.k }).then(function (r) {
             remove.disabled = false;
             if (r.n === 0) { msg.textContent = t("syNoNet"); return; }
+            // 429 (too many requests from this address) or a server error: nothing was deleted, so the email
+            // and its remove key stay here for the next try.
+            if (r.n !== 200 && r.n !== 404) { msg.textContent = t("stWait"); return; }
             // 404: no row with this email and this device's key. Either it is gone already, or the same
             // email was saved first on another device, which is the one that can delete it.
             var elsewhere = r.n !== 200;
@@ -524,10 +543,11 @@
         var m = input.value.trim().toLowerCase();
         if (m.length > 254 || !/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(m)) { msg.textContent = t("stBad"); input.focus(); return; }
         if (!tick.checked) { msg.textContent = t("stTick"); tick.focus(); return; }
-        var k = newKey();
+        var k = tried[m] || newKey();
         save.disabled = true; msg.textContent = t("syBusy");
         send("/g", { m: m, l: Loopy.lang === "de" ? "de" : "en", k: k }).then(function (r) {
           save.disabled = false;
+          if (r.n === 200) delete tried[m]; else tried[m] = k;
           if (r.n === 200) { saved = { m: m, k: k, t: Date.now() }; writeTouch(saved); draw(); msg.textContent = t("stDone"); }
           else if (r.n === 0) msg.textContent = t("syNoNet");
           else if (r.n === 429) msg.textContent = t("stWait");
@@ -567,7 +587,8 @@
       return derive(c).then(function (/** @type {any} */ s) {
         s.e = ""; s.h = ""; s.t = 0; s.x = 0;
         return get(s).then(function (r) {
-          if (r.n === 0) return "offline";
+          // Only a 404 means "no family with this code"; 429 (too many requests) or a server error is "try later".
+          if (r.n === 0 || (r.n !== 200 && r.n !== 404)) return "offline";
           if (r.n !== 200) return "none";
           st = s;
           return round(true).then(function (res) {
@@ -579,11 +600,22 @@
       });
     },
     // Turn off on this device. forget: also delete the family's copy on the server (for every device).
+    // With forget, the code and keys stay until the server says the copy is gone (200, or 404: already gone),
+    // so a 429 or a dropped connection leaves sync on and Turn off everywhere can be tapped again. A round that
+    // is running finishes first and no new one starts meanwhile: a save after the delete would make the copy again.
     off: function (forget) {
       var s = st;
-      st = null; write(); clearTimeout(timer); clearTimeout(idleTimer); say("off");
-      if (!forget || !s) return Promise.resolve(true);
-      return call(s, "?del=1", { k: s.w }).then(function (r) { return r.n === 200 || r.n === 404; });
+      function clear() { st = null; write(); clearTimeout(timer); clearTimeout(idleTimer); say("off"); }
+      if (!forget || !s) { clear(); return Promise.resolve(true); }
+      if (ending) return ending;
+      clearTimeout(timer); timer = null;
+      ending = Promise.resolve(busy).then(function () { return call(s, "?del=1", { k: s.w }); }).then(function (r) {
+        ending = null;
+        if (r.n !== 200 && r.n !== 404) { if (st === s) later(); return false; }
+        if (st === s) clear();          // Turn off was tapped meanwhile, or a new family made: leave that alone
+        return true;
+      });
+      return ending;
     },
     // Sync now (the home page's "Sync now"): a promise of { changed }.
     now: function () { return Loopy.syncPage === "home" ? home() : round(true); },

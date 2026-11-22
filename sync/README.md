@@ -57,6 +57,7 @@ Four ways, all counts only on GitHub. Nobody can see who: the server has no name
 | `POST /f/<id>?e=<hash>` with `{k, b}` | `200 {e}` saved. `412 {e}` another device saved first: read again, merge, try again. `403` wrong write key. `429` less than 10 seconds since the last save. `413` too big. `400` not a locked copy |
 | `POST /f/<id>?del=1` with `{k}` | Deletes the family copy |
 | `GET /stats` | The last 90 nightly rows of counts: `[{day, families, active7, active30, bytes}]` |
+| any, too often | `429` after 60 requests a minute from one address (6 a minute for `POST /g`). A family copy keeps everything on the device and tries again later. A Stay in touch save is not kept; the page says to wait a moment and tap Save again. See **Free plan limits** |
 | `POST /g` with `{m, l, k}` | Saves a grown-up's email `m` with language `l` and remove key `k`. `200 {}`. `400` not an email. `429` the same device saved it less than 10 seconds ago. `503` no emails database. An email already on the list keeps its first key: a save with another key changes nothing and still answers `200`, so nobody can take a row over or find out who is on the list |
 | `POST /g?del=1` with `{m, k}` | Deletes that email. `200` deleted. `404` no row with this email and this key: unknown, or saved first from another device (the same answer for both, on purpose) |
 
@@ -81,6 +82,8 @@ The browser side is `src/loopy-sync.js` and the Family sync part of ⚙ Settings
 ## Free plan limits
 
 Cloudflare's free plan allows 100,000 requests a day, and D1 allows 100,000 saves and 5 million reads a day with 5 GB of space. A family that plays every day uses a few dozen requests. So the free plan covers thousands of families.
+
+One address may make 60 requests a minute (6 a minute to Stay in touch); past that the server answers `429` until the minute is over (`[[ratelimits]]` in `wrangler.toml`, Cloudflare's rate-limiting binding, free). A family's devices on one Wi-Fi use a few a minute, so they never see it. A flood from one computer is cut to 60 database requests a minute, or 6 new rows a minute in the Stay in touch list. The requests under the limit still go through, and a missing or failing binding lets everything through (`tooMany` returns false then), so the limit slows a flood down rather than stopping it. The check runs inside the Worker, so each `429` still counts as one of the day's 100,000 Worker requests; keeping a flood off that allowance needs a rule in front of the Worker, which Cloudflare offers for a domain of its own (planned with loopykids.de). The count is per Cloudflare location, so it is roughly 60, not exact. A family copy that gets a `429` stays in the browser and the device tries again later (`src/loopy-sync.js` treats it like a short outage). Turn off everywhere keeps the code and keys until the server answers `200` or `404`, so after a `429` the page says to try again in a moment. A Stay in touch email that gets a `429` is not saved; the page asks to wait a moment and tap Save again.
 
 ## Set it up (the repo owner, once)
 

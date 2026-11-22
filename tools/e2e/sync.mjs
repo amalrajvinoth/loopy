@@ -46,6 +46,7 @@ const realNow = Date.now;
 Date.now = () => realNow() + skew;
 const db = fakeD1();
 const env = { DB: db, GROWNUPS: db, ORIGINS: ORIGIN };
+let dropNext = false;   // the server handles the next request, but its answer never reaches the browser
 
 const browser = await launch();
 
@@ -71,7 +72,9 @@ async function device(name) {
   });
   await ctx.route(`https://${HOST}/**`, async route => {
     const q = route.request(), headers = await q.allHeaders();
+    headers["cf-connecting-ip"] = "203.0.113.5"; // Cloudflare adds the caller's address; the rate limit is keyed by it
     const r = await worker.fetch(new Request(q.url(), { method: q.method(), headers, body: q.method() === "POST" ? q.postData() : undefined }), env);
+    if (dropNext) { dropNext = false; await route.abort("connectionreset"); return; }
     const out = {};
     r.headers.forEach((v, k) => { out[k] = v; });
     await route.fulfill({ status: r.status, headers: out, body: Buffer.from(await r.arrayBuffer()) });
@@ -130,6 +133,32 @@ await off.page.getByRole("button", { name: "Remove", exact: true }).click();
 check("Remove deletes it on the server", await until(() => env.DB.grownups.size === 0), env.DB.grownups.size + " rows");
 check("Remove forgets it on the device", await until(() => off.page.evaluate(() => localStorage.getItem("loopy.touch") === null)), "");
 check("Settings has the email box again", await until(async () => !/Saved:/.test(await touchText(off.page))), "");
+// A save whose answer is lost reached the server. A retry that gets 429, then one that works, must end with
+// the same remove key, or Remove could never delete the row.
+const saveTouch = async (mail = "parent@example.com") => {
+  await off.page.getByLabel("Your email").fill(mail);
+  await off.page.locator(".touch-agree input").check();
+  await off.page.getByRole("button", { name: "Save", exact: true }).click();
+};
+dropNext = true;
+await saveTouch();
+check("A save whose answer is lost says the server can't be reached", await until(async () => /can't reach/.test(await touchText(off.page))), "");
+check("but the server kept the email", env.DB.grownups.size === 1, env.DB.grownups.size + " rows");
+env.LIMIT_MAIL = { limit: async () => ({ success: false }) };
+await saveTouch();
+check("A retry that gets 429 asks to wait", await until(async () => /wait a moment/.test(await touchText(off.page))), "");
+await saveTouch("other@example.com");
+check("A 429 for another email in between asks to wait too", await until(async () => /wait a moment/.test(await touchText(off.page))), "");
+delete env.LIMIT_MAIL;
+await saveTouch("other@example.com");
+check("Another email saved in between", await until(async () => /Saved: other@example.com/.test(await touchText(off.page))), "");
+await off.page.getByRole("button", { name: "Remove", exact: true }).click();
+check("and removed again", await until(() => env.DB.grownups.size === 1 && !env.DB.grownups.has("other@example.com")), env.DB.grownups.size + " rows");
+skew += 11000;   // the server takes one save per email every 10 seconds
+await saveTouch();
+check("The next retry says it is saved", await until(async () => /Saved: parent@example.com/.test(await touchText(off.page))), "");
+await off.page.getByRole("button", { name: "Remove", exact: true }).click();
+check("and Remove still deletes it on the server: the key stayed the same", await until(() => env.DB.grownups.size === 0), env.DB.grownups.size + " rows");
 await off.ctx.close();
 
 // 3. Device A: 5 stars, then Turn on. The home page shows before loopy-sync.js loads.
@@ -235,12 +264,18 @@ check("While loopy is hidden, nothing is read", A.seen.server === asked && loads
 await A3.close();
 
 // 7. A turns off and deletes the family copy. Every device keeps its stars.
+// First the server says too many requests (429): the code stays and the page says to try again.
 await openSettings(A2);
 const forget = A2.getByRole("button", { name: "Turn off everywhere" });
+env.LIMIT = { limit: async () => ({ success: false }) };
 await forget.click();
+await forget.click();
+check("After a 429, Turn off everywhere keeps the code on this device", await until(async () => /could not be deleted/.test(await syncText(A2))) && await A2.evaluate(() => localStorage.getItem("loopy.sync")) !== null, "");
+check("and the copy stays on the server", env.DB.rows.size === 1, env.DB.rows.size + " rows");
+delete env.LIMIT;
 await forget.click();
 check("Turn off everywhere removes the copy on the server", await until(() => env.DB.rows.size === 0), env.DB.rows.size + " rows");
-check("Turn off forgets the code on this device", await A2.evaluate(() => localStorage.getItem("loopy.sync")) === null, "");
+check("Turn off forgets the code on this device", await until(() => A2.evaluate(() => localStorage.getItem("loopy.sync") === null)), "");
 check("Turn off keeps the stars", await stars(A2) >= 8, String(await stars(A2)));
 const B2 = await B.ctx.newPage();
 await B2.goto(BASE);

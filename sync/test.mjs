@@ -101,5 +101,25 @@ ok((await call("POST", "/g", { m: MAIL, l: "en", k: RK }, "https://evil.example"
 const noMail = { ...env, GROWNUPS: undefined };
 ok((await worker.fetch(new Request("https://sync.test/g", { method: "POST", body: JSON.stringify({ m: MAIL, l: "en", k: RK }), headers: { Origin: ORIGIN, "Content-Type": "text/plain" } }), noMail)).status === 503, "without the emails database: 503");
 
+// Too many requests from one address: the Rate Limiting bindings (wrangler.toml), with a stand-in that allows
+// 3 a minute. Every test above ran without the bindings and without an address, so nothing was limited there.
+const limiter = (allow) => { const seen = new Map(); return { limit: async ({ key }) => { seen.set(key, (seen.get(key) || 0) + 1); return { success: seen.get(key) <= allow }; }, seen }; };
+const limited = { ...env, LIMIT: limiter(3), LIMIT_MAIL: limiter(3) };
+const from = (ip, method, path, body, e = limited) => worker.fetch(new Request("https://sync.test" + path, { method, body: body === undefined ? undefined : JSON.stringify(body),
+  headers: { Origin: ORIGIN, "Content-Type": "text/plain", ...(ip ? { "CF-Connecting-IP": ip } : {}) } }), e).then(r => r.status);
+let codes = [];
+for (let i = 0; i < 4; i++) codes.push(await from("1.2.3.4", "GET", `/f/${ID}?e=`));
+ok(codes.join() === "200,200,200,429", "the 4th request in a minute from one address: 429 (" + codes.join() + ")");
+ok((await from("5.6.7.8", "GET", `/f/${ID}?e=`)) === 200, "another address is not limited");
+ok((await from("1.2.3.4", "GET", "/stats")) === 429, "/stats counts under the same limit");
+codes = [];
+for (let i = 0; i < 4; i++) codes.push(await from("1.2.3.4", "POST", "/g", { m: `p${i}@example.com`, l: "en", k: RK }));
+ok(codes.join() === "200,200,200,429", "Stay in touch has its own limit: the 4th in a minute from one address is 429 (" + codes.join() + ")");
+ok(limited.LIMIT.seen.get("1.2.3.4") === 5 && limited.LIMIT_MAIL.seen.get("1.2.3.4") === 4, "the copies and the emails are counted apart");
+ok((await from("", "GET", `/f/${ID}?e=`)) === 200, "a request with no address (the tests, wrangler dev) is not limited");
+const broken = { ...env, LIMIT: { limit: async () => { throw new Error("down"); } } };
+ok((await from("1.2.3.4", "GET", `/f/${ID}?e=`, undefined, broken)) === 200, "a limiter that fails lets the request through");
+for (const m of ["p0", "p1", "p2"]) db.grownups.delete(m + "@example.com");
+
 console.log(fails ? `${fails} failed` : "All sync server tests pass.");
 process.exit(fails ? 1 : 0);
