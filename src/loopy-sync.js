@@ -499,6 +499,9 @@
           send("/g?del=1", { m: saved.m, k: saved.k }).then(function (r) {
             remove.disabled = false;
             if (r.n === 0) { msg.textContent = t("syNoNet"); return; }
+            // 429 (too many requests from this address) or a server error: nothing was deleted, so the email
+            // and its remove key stay here for the next try.
+            if (r.n !== 200 && r.n !== 404) { msg.textContent = t("stWait"); return; }
             // 404: no row with this email and this device's key. Either it is gone already, or the same
             // email was saved first on another device, which is the one that can delete it.
             var elsewhere = r.n !== 200;
@@ -567,7 +570,8 @@
       return derive(c).then(function (/** @type {any} */ s) {
         s.e = ""; s.h = ""; s.t = 0; s.x = 0;
         return get(s).then(function (r) {
-          if (r.n === 0) return "offline";
+          // Only a 404 means "no family with this code"; 429 (too many requests) or a server error is "try later".
+          if (r.n === 0 || (r.n !== 200 && r.n !== 404)) return "offline";
           if (r.n !== 200) return "none";
           st = s;
           return round(true).then(function (res) {
