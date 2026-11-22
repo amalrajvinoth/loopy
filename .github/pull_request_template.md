@@ -18,6 +18,13 @@
 | --- | --- |
 | <img src="" width="260" alt="Before"> | <img src="" width="260" alt="After"> |
 
+## Check on a phone
+
+<!-- What only a real phone or tablet shows: the home screen app, a keyboard, how a line reads to a child. One line each.
+     Delete this section when there is nothing. The phone-checks skill copies these lines into the Phone checks issue after the merge. -->
+
+-
+
 ## Checked
 
 - [ ] English and German

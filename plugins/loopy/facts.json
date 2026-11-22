@@ -135,6 +135,7 @@
     "What changed",
     "Changes",
     "Before and after",
+    "Check on a phone",
     "Checked"
   ],
   "screens": [
@@ -148,5 +149,5 @@
     "844 × 390"
   ],
   "games_lists": 1,
-  "learned_at": "bd91d80"
+  "learned_at": "621eec2"
 }
