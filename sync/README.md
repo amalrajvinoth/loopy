@@ -40,7 +40,8 @@ Four ways, all counts only on GitHub. Nobody can see who: the server has no name
 
    ```sh
    cd ~/personal/work/loopy
-   npx --yes wrangler@4.149.0 login      # once; it opens the browser
+   npm ci --prefix sync --ignore-scripts   # once: wrangler, the exact version from the lock file
+   sync/node_modules/.bin/wrangler login   # once; it opens the browser
    node tools/sync-families.mjs
    ```
 
@@ -70,6 +71,7 @@ Requests are plain `GET` and `POST` with `text/plain`, so the browser sends them
 | `schema.sql` | The tables `families` and `stats` in `loopy-sync` |
 | `grownups.sql` | The table `grownups` in `loopy-grownups` (EU) |
 | `wrangler.toml` | Cloudflare settings. `DATABASE_ID` and `GROWNUPS_ID` are filled in by the deploy job |
+| `package.json`, `package-lock.json` | wrangler, the deploy tool, pinned to one exact version with every package it needs. The deploy job and the Monday usage job install it with `npm ci --prefix sync --ignore-scripts`; Dependabot proposes updates after a 7-day wait, and a major version waits for a person |
 | `test.mjs`, `fake-d1.mjs` | Tests with a stand-in database: `node sync/test.mjs` (CI runs it on every change) |
 | `../tools/sync-usage.mjs` | The Monday report the **Family sync usage** job posts to the **Family sync and grown-ups** issue (counts only); `../tools/sync-usage.test.mjs` tests it |
 | `../tools/sync-families.mjs` | One row per family and the Stay in touch list, for the owner's own screen |
@@ -96,8 +98,9 @@ One address may make 60 requests a minute (6 a minute to Stay in touch); past th
 ## Try it on your computer
 
 ```sh
+npm ci --prefix sync --ignore-scripts     # once: wrangler, the exact version from the lock file
 cd sync
-npx --yes wrangler@4.149.0 d1 execute loopy-sync --local --file schema.sql
-npx --yes wrangler@4.149.0 d1 execute loopy-grownups --local --file grownups.sql
-npx --yes wrangler@4.149.0 dev --local
+node_modules/.bin/wrangler d1 execute loopy-sync --local --file schema.sql
+node_modules/.bin/wrangler d1 execute loopy-grownups --local --file grownups.sql
+node_modules/.bin/wrangler dev --local
 ```
