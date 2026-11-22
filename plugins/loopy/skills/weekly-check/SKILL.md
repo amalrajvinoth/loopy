@@ -10,7 +10,7 @@ A loop that says nothing when nothing needs a person. One message at most, one s
 ## 1. Read, do not guess
 
 - Merged pull requests and commits on `main` since the last Monday, from GitHub.
-- Open pull requests: CI state, conflicts with `main`, waiting on whom. Dependabot pull requests that are red (green ones merge by themselves, see `.github/workflows/dependabot-merge.yml`): run the `fix-dependabot` skill up to its merge step, and name the merge as the owner's next step.
+- Open pull requests: CI state, conflicts with `main`, waiting on whom. Dependabot pull requests that are red (green patch and minor ones merge by themselves, see `.github/workflows/dependabot-merge.yml`; a green major bump waits for the owner, name it): run the `fix-dependabot` skill up to its merge step, and name the merge as the owner's next step.
 - The last runs of the workflows on `main`: Checks, Pages (its "Live site check" job), Lighthouse, Family sync server, Forks and stars. A red one is news. The Forks and stars run (Mondays 05:13 UTC, just before this check) lists new forks and stars in its Summary; it already told the owner by itself on the "Forks and stars" issue, so only mention it when the run is red.
 - Open roadmap issues in #21: the next one in order, and any issue with no pull request for more than two weeks.
 - On a fresh clone of `main`: `python3 plugins/loopy/scripts/drift.py` and `python3 tools/review.py` (its `docs` rows). Nothing else runs; the browser tests ran on every merge.

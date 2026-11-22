@@ -15,20 +15,23 @@ jobs:
   lighthouse:
     runs-on: ubuntu-latest
     steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
       - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
         with:
           node-version: 22
           package-manager-cache: false
+      - name: Install Lighthouse (the exact version from tools/lighthouse/package-lock.json, the one the checks use)
+        run: npm ci --prefix tools/lighthouse --ignore-scripts --no-audit --no-fund
       - name: Score the home page, a game and the guide on a phone
         env:
           SITE: https://amalrajvinoth.github.io/loopy
-          # An exact version, at least two weeks old.
-          LIGHTHOUSE: lighthouse@13.5.0
         run: |
           mkdir -p "$RUNNER_TEMP/reports"
           for page in "home:" "make-10:math/make-10/" "guide:guide/"; do
             name="${page%%:*}"; path="${page#*:}"
-            npx --yes "$LIGHTHOUSE" "$SITE/$path" --quiet \
+            tools/lighthouse/node_modules/.bin/lighthouse "$SITE/$path" --quiet \
               --only-categories=performance,accessibility,best-practices \
               --chrome-flags="--headless=new --no-sandbox" \
               --output=json --output=html --output-path="$RUNNER_TEMP/reports/$name"

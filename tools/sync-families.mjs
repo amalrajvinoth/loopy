@@ -2,7 +2,8 @@
 // Actions log is public, and the Stay in touch emails at the end are personal.
 //
 //   cd ~/personal/work/loopy
-//   npx --yes wrangler@4.149.0 login     once; it opens the browser
+//   npm ci --prefix sync --ignore-scripts   once: wrangler, the exact version from sync/package-lock.json
+//   sync/node_modules/.bin/wrangler login   once; it opens the browser
 //   node tools/sync-families.mjs
 //
 // It shows everything the server holds that names nobody: a 6-letter handle made from the random family id,
