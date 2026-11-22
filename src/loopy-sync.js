@@ -16,6 +16,9 @@
 (function () {
   var Loopy = window.Loopy, KEY = "loopy.sync", ABC = "0123456789ABCDEFGHJKMNPQRSTVWXYZ";
   var WAIT = 20000, GAP = 120000, TIME = 15000, IDLE = 300000, AGAIN = 900000, IDLE_MAX = 3600000;
+  // ending: the pending "Turn off everywhere" delete; no round starts while it runs (a late save would make the copy again).
+  /** @type {Promise<boolean> | null} */
+  var ending = null;
   var st = read(), busy = null, timer = null, idleTimer = null, touched = Date.now(), pushed = st ? st.t : 0, pulled = 0, dirty = false, status = st ? "idle" : "off", tell = [];
 
   // ---- saved state ----
@@ -94,7 +97,7 @@
   function round(pull) {
     if (busy) return busy;
     var s = st, changed = false;
-    if (!s) return Promise.resolve({});
+    if (!s || ending) return Promise.resolve({});
     say("busy");
     busy = (pull ? get(s).then(function (r) {
       if (r.n === 0) throw new Error("offline");
@@ -590,16 +593,21 @@
     },
     // Turn off on this device. forget: also delete the family's copy on the server (for every device).
     // With forget, the code and keys stay until the server says the copy is gone (200, or 404: already gone),
-    // so a 429 or a dropped connection leaves sync on and Turn off everywhere can be tapped again.
+    // so a 429 or a dropped connection leaves sync on and Turn off everywhere can be tapped again. A round that
+    // is running finishes first and no new one starts meanwhile: a save after the delete would make the copy again.
     off: function (forget) {
       var s = st;
       function clear() { st = null; write(); clearTimeout(timer); clearTimeout(idleTimer); say("off"); }
       if (!forget || !s) { clear(); return Promise.resolve(true); }
-      return call(s, "?del=1", { k: s.w }).then(function (r) {
-        if (r.n !== 200 && r.n !== 404) return false;
-        clear();
+      if (ending) return ending;
+      clearTimeout(timer); timer = null;
+      ending = Promise.resolve(busy).then(function () { return call(s, "?del=1", { k: s.w }); }).then(function (r) {
+        ending = null;
+        if (r.n !== 200 && r.n !== 404) { if (st === s) later(); return false; }
+        if (st === s) clear();          // Turn off was tapped meanwhile, or a new family made: leave that alone
         return true;
       });
+      return ending;
     },
     // Sync now (the home page's "Sync now"): a promise of { changed }.
     now: function () { return Loopy.syncPage === "home" ? home() : round(true); },
