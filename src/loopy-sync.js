@@ -219,6 +219,7 @@
       syIs: "On. Your family code:", syScan: "On your other device, scan this or type the code under Family sync, Join with a code.",
       syNow: "Sync now", syStop: "Turn off", syForget: "Turn off everywhere",
       syForgetSure: "Tap again to turn off sync on every device and delete the family copy. Stars on each device stay.",
+      syForgetLater: "The family copy could not be deleted just now. Sync stays on. Try again in a moment.",
       syWhen: "Last sync at {time}.", syBusy: "Syncing…", syOffline: "Waiting for the internet. Stars are safe on this device.",
       syGone: "The family copy was deleted on another device. Turn off, then turn on or join again.", syError: "Something went wrong. Stars are safe on this device.",
       syBad: "That is not a family code. It has 16 letters and numbers.", syNone: "No family has this code. Check it on the other device.",
@@ -232,6 +233,7 @@
       syIs: "An. Euer Familien-Code:", syScan: "Scanne das auf deinem anderen Gerät oder tippe den Code dort unter Familien-Sync, Mit Code beitreten ein.",
       syNow: "Jetzt abgleichen", syStop: "Ausschalten", syForget: "Überall ausschalten",
       syForgetSure: "Tippe noch einmal, um den Sync auf allen Geräten auszuschalten und die Familien-Kopie zu löschen. Die Sterne auf jedem Gerät bleiben.",
+      syForgetLater: "Die Familien-Kopie konnte gerade nicht gelöscht werden. Der Sync bleibt an. Versuche es gleich noch einmal.",
       syWhen: "Zuletzt abgeglichen um {time}.", syBusy: "Wird abgeglichen …", syOffline: "Wartet auf Internet. Die Sterne sind auf diesem Gerät sicher.",
       syGone: "Die Familien-Kopie wurde auf einem anderen Gerät gelöscht. Schalte aus und dann wieder ein oder tritt neu bei.", syError: "Etwas ist schiefgegangen. Die Sterne sind auf diesem Gerät sicher.",
       syBad: "Das ist kein Familien-Code. Er hat 16 Buchstaben und Zahlen.", syNone: "Keine Familie hat diesen Code. Prüfe ihn auf dem anderen Gerät.",
@@ -349,7 +351,11 @@
       stop.addEventListener("click", function () { Loopy.sync.off(false).then(draw); });
       forget.addEventListener("click", function () {
         if (!sure) { sure = true; forget.classList.add("sure"); msg.textContent = t("syForgetSure"); return; }
-        Loopy.sync.off(true).then(draw);
+        forget.disabled = true;
+        Loopy.sync.off(true).then(function (done) {
+          forget.disabled = false;
+          if (done) draw(); else msg.textContent = t("syForgetLater");
+        });
       });
     }
 
@@ -583,11 +589,17 @@
       });
     },
     // Turn off on this device. forget: also delete the family's copy on the server (for every device).
+    // With forget, the code and keys stay until the server says the copy is gone (200, or 404: already gone),
+    // so a 429 or a dropped connection leaves sync on and Turn off everywhere can be tapped again.
     off: function (forget) {
       var s = st;
-      st = null; write(); clearTimeout(timer); clearTimeout(idleTimer); say("off");
-      if (!forget || !s) return Promise.resolve(true);
-      return call(s, "?del=1", { k: s.w }).then(function (r) { return r.n === 200 || r.n === 404; });
+      function clear() { st = null; write(); clearTimeout(timer); clearTimeout(idleTimer); say("off"); }
+      if (!forget || !s) { clear(); return Promise.resolve(true); }
+      return call(s, "?del=1", { k: s.w }).then(function (r) {
+        if (r.n !== 200 && r.n !== 404) return false;
+        clear();
+        return true;
+      });
     },
     // Sync now (the home page's "Sync now"): a promise of { changed }.
     now: function () { return Loopy.syncPage === "home" ? home() : round(true); },

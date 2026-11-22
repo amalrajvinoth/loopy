@@ -71,6 +71,7 @@ async function device(name) {
   });
   await ctx.route(`https://${HOST}/**`, async route => {
     const q = route.request(), headers = await q.allHeaders();
+    headers["cf-connecting-ip"] = "203.0.113.5"; // Cloudflare adds the caller's address; the rate limit is keyed by it
     const r = await worker.fetch(new Request(q.url(), { method: q.method(), headers, body: q.method() === "POST" ? q.postData() : undefined }), env);
     const out = {};
     r.headers.forEach((v, k) => { out[k] = v; });
@@ -235,12 +236,18 @@ check("While loopy is hidden, nothing is read", A.seen.server === asked && loads
 await A3.close();
 
 // 7. A turns off and deletes the family copy. Every device keeps its stars.
+// First the server says too many requests (429): the code stays and the page says to try again.
 await openSettings(A2);
 const forget = A2.getByRole("button", { name: "Turn off everywhere" });
+env.LIMIT = { limit: async () => ({ success: false }) };
 await forget.click();
+await forget.click();
+check("After a 429, Turn off everywhere keeps the code on this device", await until(async () => /could not be deleted/.test(await syncText(A2))) && await A2.evaluate(() => localStorage.getItem("loopy.sync")) !== null, "");
+check("and the copy stays on the server", env.DB.rows.size === 1, env.DB.rows.size + " rows");
+delete env.LIMIT;
 await forget.click();
 check("Turn off everywhere removes the copy on the server", await until(() => env.DB.rows.size === 0), env.DB.rows.size + " rows");
-check("Turn off forgets the code on this device", await A2.evaluate(() => localStorage.getItem("loopy.sync")) === null, "");
+check("Turn off forgets the code on this device", await until(() => A2.evaluate(() => localStorage.getItem("loopy.sync") === null)), "");
 check("Turn off keeps the stars", await stars(A2) >= 8, String(await stars(A2)));
 const B2 = await B.ctx.newPage();
 await B2.goto(BASE);
