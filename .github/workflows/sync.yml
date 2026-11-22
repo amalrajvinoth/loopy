@@ -27,8 +27,6 @@ jobs:
     env:
       CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
       CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
-      # An exact version, at least two weeks old.
-      WRANGLER: wrangler@4.149.0
     steps:
       - name: Not set up yet
         if: env.CLOUDFLARE_API_TOKEN == '' || env.CLOUDFLARE_ACCOUNT_ID == ''
@@ -45,11 +43,14 @@ jobs:
       - name: The server answers right
         if: env.CLOUDFLARE_API_TOKEN != '' && env.CLOUDFLARE_ACCOUNT_ID != ''
         run: node sync/test.mjs
+      - name: Install wrangler (the exact version from sync/package-lock.json, no install scripts)
+        if: env.CLOUDFLARE_API_TOKEN != '' && env.CLOUDFLARE_ACCOUNT_ID != ''
+        run: npm ci --prefix sync --ignore-scripts --no-audit --no-fund
       - name: Make the database once, set up its table, deploy
         if: env.CLOUDFLARE_API_TOKEN != '' && env.CLOUDFLARE_ACCOUNT_ID != ''
         working-directory: sync
         run: |
-          w() { npx --yes "$WRANGLER" "$@"; }
+          w() { node_modules/.bin/wrangler "$@"; }
           find_id() { w d1 list --json | node -e 'let s="";process.stdin.on("data",d=>s+=d).on("end",()=>{const d=JSON.parse(s).find(x=>x.name===process.argv[1]);process.stdout.write(d?d.uuid:"")})' "$1"; }
           id=$(find_id loopy-sync)
           if [ -z "$id" ]; then
