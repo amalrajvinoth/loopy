@@ -49,16 +49,7 @@ def with_mark(text, src):
 AGENTS_HEAD = """<!-- Written by plugins/sync.py from plugins/loopy/RULES.md and plugins/work-style/RULES.md. Do not edit: add a rule there (the add-rule skill), then run python3 plugins/sync.py. -->
 # loopy for coding agents
 
-loopy is a free learning games website for kids in grades 1 to 10, in English and German. It is plain HTML, CSS and JavaScript: one shared script and style sheet, no framework, no outside requests. `DESIGN.md` says how it looks. The README's "For developers" part says how a game is built. The rules below are the project's standing rules. The owner's words in the task win where they differ.
-
-## Build and check
-
-```sh
-python3 tools/build.py    # after any edit in src/ or to a page (once: npm ci --prefix tools/build --ignore-scripts)
-python3 tools/check.py    # the checks this change needs, with why a red one matters; --list shows all, --fast skips the browser tests and the guide build
-```
-
-Pull requests go against `main`, from a branch.
+loopy is a free learning games website for kids in grades 1 to 10, in English and German. It is plain HTML, CSS and JavaScript: one shared script and style sheet, no framework, no outside requests. `DESIGN.md` says how it looks. The README's "For developers" part says how a game is built. The rules below are the project's standing rules. The owner's words in the task win where they differ. Pull requests go against `main`, from a branch.
 
 """
 

@@ -82,6 +82,8 @@ with tempfile.TemporaryDirectory() as tmp:
     expect("rules: quiet when AGENTS.md holds them and CLAUDE.md loads it", hook(WS / "rules.py", {}, project=proj)[1], "")
     (proj / "CLAUDE.md").write_text("Do not write `@AGENTS.md` here.\n\n```\n@AGENTS.md\n```\n")
     expect("rules: shown when CLAUDE.md only names AGENTS.md in backticks or a code block", hook(WS / "rules.py", {}, project=proj)[1], shown)
+    (proj / "CLAUDE.md").write_text("@AGENTS.md.backup\n")
+    expect("rules: shown when CLAUDE.md loads another file with a longer name", hook(WS / "rules.py", {}, project=proj)[1], shown)
     (proj / "CLAUDE.md").write_text("@AGENTS.md\n")
     (proj / "AGENTS.md").write_text("# x\n\n## How the owner works\n")
     expect("rules: shown when AGENTS.md has the heading and no rules", hook(WS / "rules.py", {}, project=proj)[1], shown)

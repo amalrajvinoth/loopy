@@ -1,16 +1,7 @@
 <!-- Written by plugins/sync.py from plugins/loopy/RULES.md and plugins/work-style/RULES.md. Do not edit: add a rule there (the add-rule skill), then run python3 plugins/sync.py. -->
 # loopy for coding agents
 
-loopy is a free learning games website for kids in grades 1 to 10, in English and German. It is plain HTML, CSS and JavaScript: one shared script and style sheet, no framework, no outside requests. `DESIGN.md` says how it looks. The README's "For developers" part says how a game is built. The rules below are the project's standing rules. The owner's words in the task win where they differ.
-
-## Build and check
-
-```sh
-python3 tools/build.py    # after any edit in src/ or to a page (once: npm ci --prefix tools/build --ignore-scripts)
-python3 tools/check.py    # the checks this change needs, with why a red one matters; --list shows all, --fast skips the browser tests and the guide build
-```
-
-Pull requests go against `main`, from a branch.
+loopy is a free learning games website for kids in grades 1 to 10, in English and German. It is plain HTML, CSS and JavaScript: one shared script and style sheet, no framework, no outside requests. `DESIGN.md` says how it looks. The README's "For developers" part says how a game is built. The rules below are the project's standing rules. The owner's words in the task win where they differ. Pull requests go against `main`, from a branch.
 
 ## Rules
 
@@ -43,7 +34,7 @@ Add a rule with the add-rule skill, in one or two lines; the how-to goes in the 
 - GitHub Pages gets only the site: `src/`, `tools/`, `docs/`, `plugins/`, the workflows and the Markdown files are left out, so a page never loads a file from there.
 
 ### Every change
-- Run `python3 tools/check.py` before a pull request. The GitHub check runs the same checks, the browser tests also in WebKit (Safari's engine), and Lighthouse.
+- Run `python3 tools/check.py` before a pull request: the checks this change needs, with why a red one matters (`--list` shows all, `--fast` leaves out the browser tests and the guide build). The GitHub check runs the same checks, the browser tests also in WebKit (Safari's engine), and Lighthouse.
 - Never skip, disable or loosen a check to get green. A finding that is right on purpose gets a comment with its reason on that line (`eslint-disable-next-line`, `stylelint-disable`, `# zizmor: ignore[rule]`). A CSS or JavaScript feature that not every browser has had for 30 months gets a fallback, not an ignore entry. A red size budget means make it smaller. A red picture test gets the "refresh pictures" label only when the change is meant to look different.
 - Look for speed and size wins (loopy.js size, work on load, what is saved, page size, fonts, sw.js cache, Lighthouse) and say in the PR what was found, or that nothing was.
 - Every pull request that changes what a page looks like first runs the repo's own improve-ui skill on that page (`/improve-ui <page>`, not a global skill of the same name). Fix the findings in the same PR or say in the PR why not.
