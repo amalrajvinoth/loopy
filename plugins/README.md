@@ -29,6 +29,10 @@ Two plugins, made from how the owner works on loopy. They turn the asks the owne
 | "fix CI", "it's broken" | `heal` | loopy |
 | "evolve the plugin" | `evolve` | loopy |
 | "weekly check", "what needs me" (and every Monday by itself, from the project's scheduled task) | `weekly-check` | loopy |
+| "tend the PR", "keep the PR green", `/loop 15m /tend-pr` or a bare `/loop` | `tend-pr` | loopy |
+| "close out", "fill the PR numbers", `/loop 30m /close-out` | `close-out` | loopy |
+| "fix dependabot", "the bumps are red", `/loop 1h /fix-dependabot` | `fix-dependabot` | loopy |
+| "phone checks", "what should I check on the phone", `/loop 1h /phone-checks` | `phone-checks` | loopy |
 
 You can keep typing the way you do now. Claude picks the skill from what you write. You can also call one by name: `/next-task` in this repo, or `/loopy:next-task` where the plugin is installed.
 
