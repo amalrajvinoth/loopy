@@ -83,11 +83,11 @@
     var opt = /** @type {RequestInit} */ ({ cache: "no-store", credentials: "omit", referrerPolicy: "no-referrer", signal: ctl ? ctl.signal : undefined });
     if (body) { opt.method = "POST"; opt.headers = { "Content-Type": "text/plain" }; opt.body = JSON.stringify(body); opt.keepalive = opt.body.length < 60000; }
     // A dropped connection, a timeout or an answer that is not JSON all count as "could not reach" (n: 0).
+    // The timer runs until the body is read too, so a stalled answer cannot hold a request open for good.
     return fetch("https://" + Loopy.syncHost + path, opt).then(function (r) {
-      clearTimeout(stop);
       if (r.status !== 200 && r.status !== 412) return { n: r.status };
       return r.json().then(function (j) { return { n: r.status, j: j || {} }; });
-    }).catch(function () { clearTimeout(stop); return { n: 0 }; });
+    }).then(function (out) { clearTimeout(stop); return out; }, function () { clearTimeout(stop); return { n: 0 }; });
   }
   function call(s, query, body) { return send("/f/" + s.i + query, body); }
   var get = function (s) { return call(s, "?e=" + s.e); };
