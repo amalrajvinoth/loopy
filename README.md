@@ -203,7 +203,7 @@ Before a pull request is ready, review it with `.claude/skills/loopy-review/SKIL
 One command runs every check your change needs, and says why a red one matters:
 
 ```sh
-python3 tools/check.py          # --list shows them all, --fast leaves out the browser tests, --webkit adds Safari's engine
+python3 tools/check.py          # --list shows them all, --fast leaves out the browser tests and the guide build, --webkit adds Safari's engine
 ```
 
 It runs these, among others. You can also run them one by one:

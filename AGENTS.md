@@ -7,7 +7,7 @@ loopy is a free learning games website for kids in grades 1 to 10, in English an
 
 ```sh
 python3 tools/build.py    # after any edit in src/ or to a page (once: npm ci --prefix tools/build --ignore-scripts)
-python3 tools/check.py    # the checks this change needs, with why a red one matters; --list shows all, --fast skips the browser tests
+python3 tools/check.py    # the checks this change needs, with why a red one matters; --list shows all, --fast skips the browser tests and the guide build
 ```
 
 Pull requests go against `main`, from a branch.

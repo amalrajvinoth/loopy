@@ -4,19 +4,20 @@
 Reads RULES.md from the repo copy first (plugins/work-style/RULES.md), so a rule added on a
 branch is used at once, then falls back to the installed copy next to this file.
 
-Prints nothing when the project's AGENTS.md already holds these rules (in loopy, plugins/sync.py
-writes them there under "How the owner works" and CLAUDE.md loads that file), so a session does
-not read them twice, at start and again on every resume.
+Prints nothing when the project's AGENTS.md already holds every one of these rules (in loopy,
+plugins/sync.py writes them there under "How the owner works") and CLAUDE.md loads that file, so
+a session does not read them twice, at start and again on every resume. A heading with no rules
+under it, or an AGENTS.md that misses a rule, does not count: the rules are printed.
 """
 import os, pathlib, sys
 
 here = pathlib.Path(__file__).resolve().parent.parent
 project = pathlib.Path(os.environ.get("CLAUDE_PROJECT_DIR", "."))
+rules = next((p.read_text(encoding="utf-8") for p in (project / "plugins/work-style/RULES.md", here / "RULES.md") if p.is_file()), "")
 agents, claude = project / "AGENTS.md", project / "CLAUDE.md"
-if (agents.is_file() and "## How the owner works" in agents.read_text(encoding="utf-8")
-        and claude.is_file() and "@AGENTS.md" in claude.read_text(encoding="utf-8")):
-    sys.exit(0)
-for path in (project / "plugins/work-style/RULES.md", here / "RULES.md"):
-    if path.is_file():
-        sys.stdout.write(path.read_text(encoding="utf-8"))
-        break
+if agents.is_file() and claude.is_file() and "@AGENTS.md" in claude.read_text(encoding="utf-8"):
+    held = agents.read_text(encoding="utf-8")
+    lines = [line for line in rules.splitlines() if line.startswith("- ")]
+    if "## How the owner works" in held and lines and all(line in held for line in lines):
+        sys.exit(0)
+sys.stdout.write(rules)

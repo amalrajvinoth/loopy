@@ -34,13 +34,13 @@ USERS = {
 CI_ONLY = {"tools/ci_changes.py", "tools/lighthouse/serve.mjs", "tools/lighthouse/explain.mjs"}
 
 
-def named_recipes():
-    """The heal recipe each check in tools/check.py names (the last field of a CHECKS row)."""
+def check_list():
+    """The rows of CHECKS in tools/check.py: (name, command, ..., heal recipe)."""
     if not (ROOT / "tools/check.py").is_file():
-        return set()
+        return []
     sys.path.insert(0, str(ROOT / "tools"))
     import check
-    return {row[-1] for row in check.CHECKS}
+    return check.CHECKS
 
 
 def read(rel):
@@ -83,14 +83,15 @@ def self_checks(now):
         out.append(f"plugins/loopy/scripts/screens.mjs: SIZES are {sizes}, but DESIGN.md lists {now['screens']}.")
     # tools/check.py is the one list of checks the skills point at: it must know every check CI runs,
     # and every heal recipe it names must be there under that title.
-    check = read("tools/check.py")
+    checks = check_list()
+    commands = " ".join(row[1] for row in checks)
     in_ci = set(re.findall(r"(?:python3|node) ((?:tools|sync|plugins|guide-src)/[\w./-]+\.(?:py|mjs))", read(".github/workflows/checks.yml")))
     for script in sorted(in_ci - CI_ONLY):
-        if script not in check:
+        if not re.search(rf"(?<![\w./-]){re.escape(script)}(?![\w./-])", commands):
             out.append(f"tools/check.py does not run {script}, which .github/workflows/checks.yml does. Add it to CHECKS there, "
                        "with why a red one matters and its heal recipe.")
     titles = set(re.findall(r"^## (.+)$", read("plugins/loopy/skills/heal/recipes.md"), re.M))
-    for recipe in sorted(named_recipes()):
+    for recipe in sorted({row[-1] for row in checks}):
         if recipe not in titles:
             out.append(f"tools/check.py names the heal recipe \"{recipe}\", but plugins/loopy/skills/heal/recipes.md has no such title.")
     return out

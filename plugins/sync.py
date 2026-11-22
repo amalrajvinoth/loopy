@@ -55,7 +55,7 @@ loopy is a free learning games website for kids in grades 1 to 10, in English an
 
 ```sh
 python3 tools/build.py    # after any edit in src/ or to a page (once: npm ci --prefix tools/build --ignore-scripts)
-python3 tools/check.py    # the checks this change needs, with why a red one matters; --list shows all, --fast skips the browser tests
+python3 tools/check.py    # the checks this change needs, with why a red one matters; --list shows all, --fast skips the browser tests and the guide build
 ```
 
 Pull requests go against `main`, from a branch.
@@ -146,12 +146,20 @@ def too_long(files):
         if size > limit:
             out.append(f"{path} is {size} bytes (limit {limit}{', ' + why if why else ''}). Shorten it, or move detail that is "
                        "needed only sometimes into a page next to it and say when to read that page.")
-        m = re.search(r"^description:\s*(.*)$", text, re.M)
-        if m and re.search(r" #|: ", m.group(1)) and not m.group(1).startswith(("'", '"')):
+        front = re.match(r"---\n(.*?)\n---\n", text, re.S)
+        m = re.search(r"^description:[ \t]*(.*)$", front.group(1) if front else "", re.M)
+        said = m.group(1).strip() if m else ""
+        quoted = len(said) > 1 and said[0] in "'\"" and said[-1] == said[0]
+        if not said or said[0] in ">|":
+            out.append(f"{path}: the description must be one line after 'description:' in the frontmatter at the top, "
+                       "not a folded or block value: that is the line this check can count.")
+            continue
+        if not quoted and re.search(r" #|: ", said):
             out.append(f"{path}: the description has ' #' or ': ' in it. In the frontmatter ' #' starts a comment, so everything after "
                        "it is lost (\"Build #N\" became \"Build\"), and ': ' is not allowed. Say it another way.")
-        if m and len(m.group(1)) > MAX_DESCRIPTION:
-            out.append(f"{path}: the description is {len(m.group(1))} characters (limit {MAX_DESCRIPTION}). Every session reads it: "
+        length = len(said) - (2 if quoted else 0)
+        if length > MAX_DESCRIPTION:
+            out.append(f"{path}: the description is {length} characters (limit {MAX_DESCRIPTION}). Every session reads it: "
                        "say what the skill does and the words that start it, nothing more.")
     agents = len(files["AGENTS.md"].encode("utf-8"))
     if agents > MAX_AGENTS:

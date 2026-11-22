@@ -2,7 +2,7 @@
 """Every loopy check, in one place. Runs the ones a change needs and says why a red one matters.
 
     python3 tools/check.py              the checks this change needs (compared with origin/main)
-    python3 tools/check.py --fast       the same, without the browser tests
+    python3 tools/check.py --fast       the same, without the browser tests and the guide build
     python3 tools/check.py --all        every check, whatever changed
     python3 tools/check.py --webkit     also the accessibility check and the play test in WebKit (Safari's engine)
     python3 tools/check.py --list       say what would run and why, and run nothing
@@ -19,7 +19,11 @@ and does not turn the run red; only a `must` this change added does.
 
 A check whose tool is not on this machine is listed as "not run here" with the line that installs it. It
 does not fail the run, because CI runs it; say so in the pull request. The npm packages (tools/build,
-tools/lint, tools/a11y, guide-src) are installed from their lock files when missing, like CI does.
+tools/lint, tools/a11y, guide-src) are installed from their lock files when missing, like CI does. When
+that install fails, the checks that need it are red: they did not run, and nothing else would say so.
+
+When git cannot compare with the base (a branch it does not know), the run stops, because "nothing changed"
+would leave checks out.
 
 Lighthouse runs in CI only (job "Lighthouse budgets"); the heal recipe "Lighthouse budgets are red" says
 how to run it by hand.
@@ -143,10 +147,14 @@ def git(*args):
 
 def changes(base):
     """(status, path) pairs: what differs from where the branch left the base, plus files not committed yet.
-    A rename counts under both names, as in tools/ci_changes.py."""
+    A rename counts under both names, as in tools/ci_changes.py. Raises LookupError with git's own words
+    when it cannot compare: an empty list would read as "nothing changed" and leave checks out."""
     start = git("merge-base", base, "HEAD") or base
+    p = subprocess.run(["git", "diff", "--name-status", "-M", start], cwd=ROOT, capture_output=True, text=True)
+    if p.returncode:
+        raise LookupError(p.stderr.strip() or f"git diff {start} failed")
     out = []
-    for line in git("diff", "--name-status", "-M", start).splitlines():
+    for line in p.stdout.strip().splitlines():
         status, *names = line.split("\t")
         out += [(status, name) for name in names]
     return out + [("A", name) for name in git("ls-files", "--others", "--exclude-standard").splitlines()]
@@ -189,16 +197,26 @@ def wanted(check, changed, site, guide):
     return bool(hit), (hit + " changed") if hit else "none of its files changed"
 
 
+INSTALLS = {}   # an npm install this run tried -> what it printed when it failed ("" when it worked)
+
+
 def missing(needs, install):
-    """The first thing a check needs that is not there, as the line that gets it; npm packages are installed first."""
+    """The first thing a check needs that is not there: (the line that gets it, what went wrong).
+    npm packages are installed first, once a run. A tool that is simply not on this machine has no
+    "what went wrong"; an install that was tried and failed does, and that is a red check."""
     for need, how in needs:
         there = (ROOT / need).exists() if "/" in need else bool(shutil.which(need))
         if not there and install and how.startswith("npm ci"):
-            print(f"  installing: {how}", flush=True)
-            there = subprocess.run(how, shell=True, cwd=ROOT, capture_output=True).returncode == 0
+            if how not in INSTALLS:
+                print(f"  installing: {how}", flush=True)
+                p = subprocess.run(how, shell=True, cwd=ROOT, capture_output=True, text=True)
+                INSTALLS[how] = "" if p.returncode == 0 else ((p.stdout + p.stderr).strip() or f"exit {p.returncode}")
+            if INSTALLS[how]:
+                return how, INSTALLS[how]
+            there = True
         if not there:
-            return how
-    return None
+            return how, ""
+    return None, ""
 
 
 def main(argv):
@@ -209,7 +227,12 @@ def main(argv):
         print(__doc__ + "\nChecks: " + ", ".join(c[0] for c in CHECKS) + ("\n\nUnknown: " + ", ".join(unknown) if unknown else ""))
         return 2 if unknown else 0
     base = argv[argv.index("--base") + 1] if "--base" in argv and argv.index("--base") + 1 < len(argv) else "origin/main"
-    changed = changes(base)
+    try:
+        changed = changes(base)
+    except LookupError as err:
+        print(f"Cannot compare with {base}, so there is no telling which checks this change needs.\n   {str(err).splitlines()[0]}\n"
+              "Get the branch first (git fetch origin main), or name another one with --base REF.")
+        return 2
     site, guide = ci_changes.needs(changed)
 
     plan = []
@@ -223,7 +246,7 @@ def main(argv):
         if "--webkit" in flags and check[3] == ASKED and not names:
             run, why = True, "--webkit"
         if "--fast" in flags and name in SLOW and not names:
-            run, why = False, "a browser test, left out by --fast"
+            run, why = False, "a browser test or the guide build, left out by --fast"
         plan.append((check, run, why))
 
     if "--list" in flags:
@@ -238,7 +261,15 @@ def main(argv):
     for (name, cmd, what, _when, needs, hint, recipe), run, _why in plan:
         if not run:
             continue
-        how = missing(needs, install=True)
+        how, broke = missing(needs, install=True)
+        if broke:
+            failed.append(name)
+            tail = "\n".join(("   " + line) for line in broke.splitlines()[-25:])
+            print(f"\nRED {name}: did not run, because what it needs would not install.\n   $ {how}\n{tail}\n"
+                  "   Why it matters: the check never ran, so nothing says this change is right.\n"
+                  "   Fix the install (often package.json and its lock file disagree: npm install in that folder), then run it again.\n",
+                  flush=True)
+            continue
         if how:
             absent.append((name, how))
             print(f"-  {name}: not run here. Get it with: {how}", flush=True)

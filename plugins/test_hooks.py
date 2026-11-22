@@ -68,21 +68,26 @@ expect("style= in a .md file is fine", blocked(gf, write("README.md", 'Do not us
 expect("file outside the repo", blocked(gf, {"tool_name": "Write", "tool_input": {"file_path": "/tmp/x/loopy.js", "content": "x"}}), False)
 
 
+sys.path.insert(0, str(ROOT / "plugins"))
+import sync  # noqa: E402
+
 # --- the work-style rules are shown once, not twice -------------------------------------------
 with tempfile.TemporaryDirectory() as tmp:
     proj = pathlib.Path(tmp)
     shown = hook(WS / "rules.py", {}, project=proj)[1]
     expect("rules: shown where no AGENTS.md holds them", "# How the owner works" in shown, True)
-    (proj / "AGENTS.md").write_text("# x\n\n## How the owner works\n")
+    (proj / "AGENTS.md").write_text("# x\n\n" + sync.down(shown, sync.WORK_STYLE))
     expect("rules: still shown when CLAUDE.md does not load AGENTS.md", "# How the owner works" in hook(WS / "rules.py", {}, project=proj)[1], True)
     (proj / "CLAUDE.md").write_text("@AGENTS.md\n")
     expect("rules: quiet when AGENTS.md holds them and CLAUDE.md loads it", hook(WS / "rules.py", {}, project=proj)[1], "")
+    (proj / "AGENTS.md").write_text("# x\n\n## How the owner works\n")
+    expect("rules: shown when AGENTS.md has the heading and no rules", hook(WS / "rules.py", {}, project=proj)[1], shown)
+    (proj / "AGENTS.md").write_text("# x\n\n" + sync.down(shown, sync.WORK_STYLE).replace("- Never rewrite history", "- Rewrite history"))
+    expect("rules: shown when AGENTS.md misses a rule", hook(WS / "rules.py", {}, project=proj)[1], shown)
 expect("rules: quiet in the loopy repo itself", hook(WS / "rules.py", {})[1], "")
 
 
 # --- sync.py keeps the skills short and their descriptions whole ------------------------------
-sys.path.insert(0, str(ROOT / "plugins"))
-import sync  # noqa: E402
 fm = "---\nname: x\ndescription: {}\n---\n"
 ok_files = {"AGENTS.md": "rules\n", ".claude/skills/x/SKILL.md": fm.format("Does a thing. Use for \"x\".") + "body\n"}
 own = lambda found: [line for line in found if "/skills/x/" in line or line.startswith("AGENTS.md")]
@@ -90,6 +95,10 @@ expect("sizes: a short skill passes", own(sync.too_long(ok_files)), [])
 expect("sizes: a long skill is named", len(own(sync.too_long({**ok_files, ".claude/skills/x/SKILL.md": fm.format("Short.") + "a" * (sync.MAX_SKILL + 1)}))), 1)
 expect("sizes: a long description is named", len(own(sync.too_long({**ok_files, ".claude/skills/x/SKILL.md": fm.format("a" * (sync.MAX_DESCRIPTION + 1))}))), 1)
 expect("sizes: ' #' in a description is named", len(own(sync.too_long({**ok_files, ".claude/skills/x/SKILL.md": fm.format("Use for \"Build #N\".")}))), 1)
+expect("sizes: 200 characters in quotes pass", own(sync.too_long({**ok_files, ".claude/skills/x/SKILL.md": fm.format('"' + "a" * sync.MAX_DESCRIPTION + '"')})), [])
+expect("sizes: 201 characters in quotes are named", len(own(sync.too_long({**ok_files, ".claude/skills/x/SKILL.md": fm.format('"' + "a" * (sync.MAX_DESCRIPTION + 1) + '"')}))), 1)
+expect("sizes: a folded description is named", len(own(sync.too_long({**ok_files, ".claude/skills/x/SKILL.md": fm.format(">\n  " + "a" * (sync.MAX_DESCRIPTION + 1))}))), 1)
+expect("sizes: a skill with no description is named", len(own(sync.too_long({**ok_files, ".claude/skills/x/SKILL.md": "---\nname: x\n---\nbody\n"}))), 1)
 expect("sizes: a long AGENTS.md is named", len(own(sync.too_long({**ok_files, "AGENTS.md": "a" * (sync.MAX_AGENTS + 1)}))), 1)
 expect("sizes: the repo's own skills and AGENTS.md pass today", sync.too_long(sync.wanted()[0]), [])
 
