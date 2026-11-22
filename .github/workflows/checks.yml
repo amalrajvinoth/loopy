@@ -304,7 +304,7 @@ jobs:
           # Keep installs exact from the lock files, with no shared npm cache.
           package-manager-cache: false
       - name: Install Astro and Starlight (exact versions from the lock file)
-        run: npm ci --prefix guide-src --no-audit --no-fund
+        run: npm ci --prefix guide-src --ignore-scripts --no-audit --no-fund
       - name: Build the guide (this also writes each page's security policy)
         run: npm run build --prefix guide-src
       - name: Every guide page's security policy matches its code
