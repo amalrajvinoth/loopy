@@ -534,8 +534,9 @@
       line.appendChild(input);
       row.appendChild(save);
       body.append(line, lab, row);
-      // A save whose answer was lost may have reached the server with its key. The next try for the same
-      // email sends that key again (the server keeps the first key it saw), so Remove works afterwards.
+      // A save whose answer was lost may have reached the server with its key, and a later 429 or error does
+      // not say otherwise. So the same email keeps the same key until a save succeeds (the server keeps the
+      // first key it saw), and Remove works afterwards.
       var tried = null;
       function go() {
         var m = input.value.trim().toLowerCase();
@@ -545,7 +546,7 @@
         save.disabled = true; msg.textContent = t("syBusy");
         send("/g", { m: m, l: Loopy.lang === "de" ? "de" : "en", k: k }).then(function (r) {
           save.disabled = false;
-          tried = r.n === 0 ? { m: m, k: k } : null;
+          tried = r.n === 200 ? null : { m: m, k: k };
           if (r.n === 200) { saved = { m: m, k: k, t: Date.now() }; writeTouch(saved); draw(); msg.textContent = t("stDone"); }
           else if (r.n === 0) msg.textContent = t("syNoNet");
           else if (r.n === 429) msg.textContent = t("stWait");

@@ -46,6 +46,7 @@ const realNow = Date.now;
 Date.now = () => realNow() + skew;
 const db = fakeD1();
 const env = { DB: db, GROWNUPS: db, ORIGINS: ORIGIN };
+let dropNext = false;   // the server handles the next request, but its answer never reaches the browser
 
 const browser = await launch();
 
@@ -73,6 +74,7 @@ async function device(name) {
     const q = route.request(), headers = await q.allHeaders();
     headers["cf-connecting-ip"] = "203.0.113.5"; // Cloudflare adds the caller's address; the rate limit is keyed by it
     const r = await worker.fetch(new Request(q.url(), { method: q.method(), headers, body: q.method() === "POST" ? q.postData() : undefined }), env);
+    if (dropNext) { dropNext = false; await route.abort("connectionreset"); return; }
     const out = {};
     r.headers.forEach((v, k) => { out[k] = v; });
     await route.fulfill({ status: r.status, headers: out, body: Buffer.from(await r.arrayBuffer()) });
@@ -131,6 +133,26 @@ await off.page.getByRole("button", { name: "Remove", exact: true }).click();
 check("Remove deletes it on the server", await until(() => env.DB.grownups.size === 0), env.DB.grownups.size + " rows");
 check("Remove forgets it on the device", await until(() => off.page.evaluate(() => localStorage.getItem("loopy.touch") === null)), "");
 check("Settings has the email box again", await until(async () => !/Saved:/.test(await touchText(off.page))), "");
+// A save whose answer is lost reached the server. A retry that gets 429, then one that works, must end with
+// the same remove key, or Remove could never delete the row.
+const saveTouch = async () => {
+  await off.page.getByLabel("Your email").fill("parent@example.com");
+  await off.page.locator(".touch-agree input").check();
+  await off.page.getByRole("button", { name: "Save", exact: true }).click();
+};
+dropNext = true;
+await saveTouch();
+check("A save whose answer is lost says the server can't be reached", await until(async () => /can't reach/.test(await touchText(off.page))), "");
+check("but the server kept the email", env.DB.grownups.size === 1, env.DB.grownups.size + " rows");
+env.LIMIT_MAIL = { limit: async () => ({ success: false }) };
+await saveTouch();
+check("A retry that gets 429 asks to wait", await until(async () => /wait a moment/.test(await touchText(off.page))), "");
+delete env.LIMIT_MAIL;
+skew += 11000;   // the server takes one save per email every 10 seconds
+await saveTouch();
+check("The next retry says it is saved", await until(async () => /Saved: parent@example.com/.test(await touchText(off.page))), "");
+await off.page.getByRole("button", { name: "Remove", exact: true }).click();
+check("and Remove still deletes it on the server: the key stayed the same", await until(() => env.DB.grownups.size === 0), env.DB.grownups.size + " rows");
 await off.ctx.close();
 
 // 3. Device A: 5 stars, then Turn on. The home page shows before loopy-sync.js loads.
