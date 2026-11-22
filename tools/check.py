@@ -1,0 +1,284 @@
+#!/usr/bin/env python3
+"""Every loopy check, in one place. Runs the ones a change needs and says why a red one matters.
+
+    python3 tools/check.py              the checks this change needs (compared with origin/main)
+    python3 tools/check.py --fast       the same, without the browser tests
+    python3 tools/check.py --all        every check, whatever changed
+    python3 tools/check.py --webkit     also the accessibility check and the play test in WebKit (Safari's engine)
+    python3 tools/check.py --list       say what would run and why, and run nothing
+    python3 tools/check.py play retry   only the checks named
+    python3 tools/check.py --base REF   compare with another branch or commit
+
+This is the list the ship-pr and loopy-review skills, AGENTS.md and the README point at, so it is written
+once. The GitHub check (.github/workflows/checks.yml) runs the same commands; plugins/loopy/scripts/drift.py
+fails when a check is added there and not here. Which browser tests a change needs comes from
+tools/ci_changes.py, the same answer CI uses.
+
+tools/review.py also exits 1 for a `must` that was already on main. That is reported as "already on main"
+and does not turn the run red; only a `must` this change added does.
+
+A check whose tool is not on this machine is listed as "not run here" with the line that installs it. It
+does not fail the run, because CI runs it; say so in the pull request. The npm packages (tools/build,
+tools/lint, tools/a11y, guide-src) are installed from their lock files when missing, like CI does.
+
+Lighthouse runs in CI only (job "Lighthouse budgets"); the heal recipe "Lighthouse budgets are red" says
+how to run it by hand.
+"""
+import os, pathlib, re, shutil, subprocess, sys, tempfile, time
+
+ROOT = pathlib.Path(__file__).resolve().parents[1]
+sys.path.insert(0, str(ROOT / "tools"))
+import ci_changes  # noqa: E402  (the same "which long checks" answer CI uses)
+
+PY = sys.executable
+A11Y = "tools/a11y/node_modules/playwright-core"
+NPM = "npm ci --ignore-scripts --no-audit --no-fund --prefix "
+WORKFLOW_TOOLS = "pip install --require-hashes -r tools/lint/requirements.txt"
+
+# What a check needs before it can run: (a path in the repo or a command on PATH, how to get it).
+# The npm ones are installed by this script; the rest are named and left to the person.
+BUILD = [("tools/build/node_modules/esbuild", NPM + "tools/build")]
+LINT = [("tools/lint/node_modules", NPM + "tools/lint")]
+BROWSER = [(A11Y, NPM + "tools/a11y")]
+GUIDE = BROWSER + [("guide-src/node_modules", NPM + "guide-src")]
+
+ALWAYS, SITE, GUIDE_JOB, ASKED = "always", "site", "guide", "asked"
+
+
+def paths(pattern):
+    """A check that runs when a changed file matches."""
+    return re.compile(pattern, re.X)
+
+
+# name, command, what it proves, when it runs, what it needs, why a red one matters, its heal recipe
+CHECKS = [
+    ("build", f"{PY} tools/build.py --check", "loopy.js, loopy.css, sw.js and the page policies match src/", ALWAYS, BUILD,
+     "Run python3 tools/build.py and commit the result. Never edit the built files.", "Built files out of date"),
+    ("types", "node tools/build/node_modules/typescript/bin/tsc -p tools/build", "src/ type-checks against src/loopy.d.ts",
+     paths(r"^(src/|tools/build/)"), BUILD,
+     "A new Loopy member or a changed signature goes in src/loopy.d.ts too.", "Type check fails"),
+    ("styles", "node tools/lint/check.mjs", "the styles: Baseline CSS only, theme colours in pages, nothing broken or doubled",
+     paths(r"(\.html$ | \.css$ | ^tools/lint/)"), LINT,
+     "Only CSS every browser has had for 30 months. A page writes no colour out: it takes var(--ink) and the rest. "
+     "A too-new feature gets a fallback, never an ignore entry.", "Style lint is red"),
+    ("scripts", "node tools/lint/scripts.mjs", "every page's script: no undefined or unused name, === not ==, Baseline JavaScript only",
+     paths(r"(\.html$ | (words|data)\.js$ | ^tools/lint/)"), LINT,
+     "A finding that is right on purpose gets an eslint-disable-next-line comment with its reason, never a rule off for every page.",
+     "Script lint is red (ESLint)"),
+    ("workflows", "zizmor --offline .github/workflows", "the workflows leak no token and run no untrusted input",
+     paths(r"^(\.github/workflows/ | tools/lint/requirements\.txt)"), [("zizmor", WORKFLOW_TOOLS)],
+     "A finding that is right on purpose gets `# zizmor: ignore[rule]` with its reason, never a loosened check.",
+     "Workflow audit is red (zizmor or actionlint)"),
+    ("actionlint", "actionlint", "the workflows' YAML and shell are sound",
+     paths(r"^(\.github/workflows/ | tools/lint/requirements\.txt)"), [("actionlint", WORKFLOW_TOOLS)],
+     "Fix the YAML or the shell line it names.", "Workflow audit is red (zizmor or actionlint)"),
+    ("links", "lychee --config tools/lint/lychee.toml -- './**/*.md' './**/*.html'", "every link inside the repo points at a file that exists",
+     paths(r"(\.md$ | \.html$ | ^tools/lint/lychee\.toml)"), [("lychee", "brew install lychee (CI runs it by itself)")],
+     "Point the link at the real file. Offline: it opens no connection.", "Link check is red (lychee)"),
+    ("policy", f"{PY} tools/csp.py --check", "every page's security policy matches its code", ALWAYS, [],
+     "Run python3 tools/build.py. Never hand-edit the policy line.", "Page security policy out of date"),
+    ("outside", f"{PY} tools/check_external.py", "nothing loads from another website", ALWAYS, [],
+     "Put the file in the repo or remove it. loopy makes no outside requests.", "Something loads from outside"),
+    ("guide-pages", f"{PY} tools/guide_check.py", "every game has a guide page, in English and German", ALWAYS, [],
+     "Add the missing guide page in both languages.", "Guide page missing for a game"),
+    ("review", f"{PY} tools/review.py", "the loopy rules, saved data, sizes and docs, against main", ALWAYS, [],
+     "A `must` this change added must be fixed. `docs` rows are docs the change may have missed.", 'review.py "must"'),
+    ("budget", f"{PY} tools/review.py --budget", "the size budgets: 100 KB a page, loopy.js and loopy.css grow by at most 2 KB", ALWAYS, [],
+     "Make it smaller. When the growth is the point, a line `Size budget: <why>` in the pull request body allows it.",
+     "Size budget is red"),
+    ("plugins", f"{PY} plugins/sync.py --check", "the .claude/ copies, AGENTS.md and the skill sizes match plugins/", ALWAYS, [],
+     "Run python3 plugins/sync.py. A skill over its size limit gets shorter, or moves detail to a page next to it.",
+     "Plugin copies out of date"),
+    ("drift", f"{PY} plugins/loopy/scripts/drift.py", "the plugin is in step with the repo", ALWAYS, [],
+     "Update what it names (the evolve skill), then run drift.py --update.", "Plugin behind the repo"),
+    ("hooks", f"{PY} plugins/test_hooks.py", "the plugin hooks do what they say", paths(r"^(plugins/|\.claude/)"), [],
+     "Fix the hook. Change the test only when the new behaviour was asked for.", "Hook test fails"),
+    ("sync-server", "node sync/test.mjs", "the Family sync server answers right", paths(r"^sync/"), [],
+     "See sync/README.md.", "Family sync fails"),
+    ("sync-usage", "node tools/sync-usage.test.mjs", "the Monday usage report prints counts only", paths(r"^tools/sync-.*\.mjs$"), [],
+     "The issue and the log are public: counts only.", "Family sync usage job is red"),
+    ("a11y", "node tools/a11y/check.mjs", "every page works with a keyboard and a screen reader", SITE, BROWSER,
+     "Fix the page. Never turn an axe rule off.", "Play test or accessibility check cannot start"),
+    ("play", "node tools/e2e/play.mjs", "every game plays: no errors, stars add up, no repeated question (GAME=<id> for one game)", SITE, BROWSER,
+     "It also proves a day is only Today's 10, money shows its sign, and loopy's language wins over an old Words in pick.",
+     "Play test: question came back too soon"),
+    ("pictures", "node tools/e2e/pictures.mjs", "the home page and six games still look the same at the eight sizes", SITE,
+     BROWSER,
+     'Meant to look different? Put the label "refresh pictures" on the pull request. Never loosen the compare.',
+     "Picture test is red"),
+    ("retry", "node tools/e2e/retry.mjs", "Try again in every game: a mistake comes back until it is fixed", SITE, BROWSER,
+     "Make the game's rebuild accept every question it makes. Never loosen the test.", "Try again test: the missed question does not come first"),
+    ("levels", "node tools/e2e/levels.mjs", "levels follow the child: up when ready, kept over the birthday", SITE, BROWSER,
+     "A child never loses a level they earned.", "Levels test fails"),
+    ("switch", "node tools/e2e/switch.mjs", "switching the child mid-game: each child keeps their own stars, log and last game", SITE, BROWSER,
+     "Nothing is saved after a switch starts, until the reload.", "Switch test fails"),
+    ("hello", "node tools/e2e/hello.mjs", "the first visit: the welcome sheet once, the family code row until a code is set",
+     paths(r"^(src/loopy-hello\.js | src/loopy\.js | index\.html)$"), BROWSER,
+     "A test that starts with an empty browser must set loopy.hello.", "First visit test fails"),
+    ("offline", "node tools/e2e/offline.mjs", "after an update the offline copy saves the new pages, never an old one",
+     paths(r"^(src/sw\.js | tools/build\.py)$"), BROWSER, "See the recipe.", "Offline copy keeps an old page"),
+    ("sync", "node tools/e2e/sync.mjs", "Family sync keeps two devices in step and sends nothing when off",
+     paths(r"^(src/loopy-sync\.js | sync/ | index\.html$)"), BROWSER, "See sync/README.md.", "Family sync fails"),
+    ("guide", f"npm run build --prefix guide-src && {PY} tools/csp.py --check && {PY} tools/check_external.py && node guide-src/scripts/check.mjs",
+     "the guide builds; its policies, links, search and accessibility are right",
+     GUIDE_JOB, GUIDE, "When a game looks different, also run npm run screens --prefix guide-src and commit the pictures.",
+     "Guide build or check fails"),
+    ("a11y-webkit", "node tools/a11y/check.mjs", "the accessibility check in WebKit, the engine behind Safari", ASKED, BROWSER,
+     "Safari does something differently. Fix the page for both engines; never skip the run.", "WebKit accessibility run is red, Chromium's is green"),
+    ("play-webkit", "node tools/e2e/play.mjs", "the play test in WebKit", ASKED, BROWSER,
+     "Look for layout that leans on dvh, :has(), dialogs, speech or audio.", "A browser test is red in WebKit only"),
+]
+ENV = {"pictures": {"ENGINE": "pinned"}, "a11y-webkit": {"ENGINE": "webkit"}, "play-webkit": {"ENGINE": "webkit"}}
+SLOW = {"a11y", "play", "pictures", "retry", "levels", "switch", "hello", "offline", "sync", "guide", "a11y-webkit", "play-webkit"}
+
+
+# A browser test says this when its browser is not on the machine; the line after "Run:" installs it.
+NO_BROWSER = re.compile(r"(?:is not installed for ENGINE=\w+\. Run: (.+)|No Chrome or Chromium found\. (.+))")
+
+
+def git(*args):
+    p = subprocess.run(["git", *args], cwd=ROOT, capture_output=True, text=True)
+    return p.stdout.strip() if p.returncode == 0 else ""
+
+
+def changes(base):
+    """(status, path) pairs: what differs from where the branch left the base, plus files not committed yet.
+    A rename counts under both names, as in tools/ci_changes.py."""
+    start = git("merge-base", base, "HEAD") or base
+    out = []
+    for line in git("diff", "--name-status", "-M", start).splitlines():
+        status, *names = line.split("\t")
+        out += [(status, name) for name in names]
+    return out + [("A", name) for name in git("ls-files", "--others", "--exclude-standard").splitlines()]
+
+
+def musts(text):
+    """The `must` rows of a tools/review.py table."""
+    return {line.strip() for line in text.splitlines() if line.lstrip().startswith("| must |")}
+
+
+def musts_on_base(base):
+    """The `must` rows tools/review.py already prints where the branch left the base: those are not this
+    change's doing, so they do not turn its run red. Read in a throwaway checkout of that commit."""
+    start = git("merge-base", base, "HEAD") or git("rev-parse", base)
+    if not start:
+        return set()
+    with tempfile.TemporaryDirectory() as tmp:
+        there = pathlib.Path(tmp) / "base"
+        if subprocess.run(["git", "worktree", "add", "--detach", str(there), start], cwd=ROOT, capture_output=True).returncode:
+            return set()
+        try:
+            p = subprocess.run([PY, "tools/review.py"], cwd=there, capture_output=True, text=True)
+            return musts(p.stdout)
+        finally:
+            subprocess.run(["git", "worktree", "remove", "--force", str(there)], cwd=ROOT, capture_output=True)
+
+
+def wanted(check, changed, site, guide):
+    """Does this change need the check, and the reason in words."""
+    when = check[3]
+    if when == ALWAYS:
+        return True, "always"
+    if when == SITE:
+        return site, "a file a page loads changed" if site else "no file a page loads changed"
+    if when == GUIDE_JOB:
+        return guide, "the guide, or a file added or removed" if guide else "the guide did not change"
+    if when == ASKED:
+        return False, "only with --webkit or by name"
+    hit = next((path for _, path in changed if when.search(path)), None)
+    return bool(hit), (hit + " changed") if hit else "none of its files changed"
+
+
+def missing(needs, install):
+    """The first thing a check needs that is not there, as the line that gets it; npm packages are installed first."""
+    for need, how in needs:
+        there = (ROOT / need).exists() if "/" in need else bool(shutil.which(need))
+        if not there and install and how.startswith("npm ci"):
+            print(f"  installing: {how}", flush=True)
+            there = subprocess.run(how, shell=True, cwd=ROOT, capture_output=True).returncode == 0
+        if not there:
+            return how
+    return None
+
+
+def main(argv):
+    flags = {a for a in argv if a.startswith("--")}
+    names = [a for i, a in enumerate(argv) if not a.startswith("--") and (i == 0 or argv[i - 1] != "--base")]
+    unknown = [n for n in names if n not in {c[0] for c in CHECKS}] + sorted(flags - {"--all", "--fast", "--webkit", "--list", "--base", "--help"})
+    if unknown or "--help" in flags:
+        print(__doc__ + "\nChecks: " + ", ".join(c[0] for c in CHECKS) + ("\n\nUnknown: " + ", ".join(unknown) if unknown else ""))
+        return 2 if unknown else 0
+    base = argv[argv.index("--base") + 1] if "--base" in argv and argv.index("--base") + 1 < len(argv) else "origin/main"
+    changed = changes(base)
+    site, guide = ci_changes.needs(changed)
+
+    plan = []
+    for check in CHECKS:
+        name = check[0]
+        run, why = wanted(check, changed, site, guide)
+        if names:
+            run, why = name in names, "named"
+        elif "--all" in flags and check[3] != ASKED:
+            run, why = True, "--all"
+        if "--webkit" in flags and check[3] == ASKED and not names:
+            run, why = True, "--webkit"
+        if "--fast" in flags and name in SLOW and not names:
+            run, why = False, "a browser test, left out by --fast"
+        plan.append((check, run, why))
+
+    if "--list" in flags:
+        print(f"{len(changed)} changed file(s) against {base}. site={site} guide={guide}\n")
+        for (name, cmd, what, *_), run, why in plan:
+            env = "".join(f"{k}={v} " for k, v in ENV.get(name, {}).items())
+            print(f"{'run ' if run else 'skip'}  {name:12} {what}\n      {env}{cmd.replace(PY, 'python3')}   ({why})")
+        print("\nCI only: Lighthouse budgets on the pages the change touches.")
+        return 0
+
+    failed, absent, passed, already = [], [], [], []
+    for (name, cmd, what, _when, needs, hint, recipe), run, _why in plan:
+        if not run:
+            continue
+        how = missing(needs, install=True)
+        if how:
+            absent.append((name, how))
+            print(f"-  {name}: not run here. Get it with: {how}", flush=True)
+            continue
+        began = time.time()
+        p = subprocess.run(cmd, shell=True, cwd=ROOT, capture_output=True, text=True, env={**os.environ, **ENV.get(name, {})})
+        took = f"{time.time() - began:.0f}s"
+        if p.returncode == 0:
+            passed.append(name)
+            print(f"ok {name} ({took}): {what}", flush=True)
+            continue
+        if name == "review":
+            # review.py also exits 1 for a `must` that was on main before this change. That one is reported, not red.
+            old = musts(p.stdout) & musts_on_base(base)
+            if old and not musts(p.stdout) - old:
+                passed.append(name)
+                already.extend(sorted(old))
+                print(f"ok {name} ({took}): {what}\n   {len(old)} `must` row(s) were already on main, not from this change:\n   "
+                      + "\n   ".join(sorted(old)), flush=True)
+                continue
+        no_browser = NO_BROWSER.search(p.stdout + p.stderr)
+        if no_browser:
+            how = (no_browser.group(1) or no_browser.group(2)).strip()
+            absent.append((name, how))
+            print(f"-  {name}: not run here, its browser is missing. Get it with: {how}", flush=True)
+            continue
+        failed.append(name)
+        tail = "\n".join(("   " + line) for line in (p.stdout + p.stderr).strip().splitlines()[-25:])
+        print(f"\nRED {name} ({took}): {what}\n   $ {cmd.replace(PY, 'python3')}\n{tail}\n   Why it matters: {hint}\n"
+              f"   Recipe: \"{recipe}\" in plugins/loopy/skills/heal/recipes.md\n", flush=True)
+
+    print(f"\n{len(passed)} passed, {len(failed)} red, {len(absent)} not run here.")
+    if absent:
+        print("Not run here (CI runs them; say so in the pull request): " + ", ".join(name for name, _ in absent))
+    if already:
+        print(f"Already on main: {len(already)} `must` from tools/review.py. Say so in the pull request; it is not this change's to fix.")
+    if failed:
+        print("Red: " + ", ".join(failed) + ". Fix the cause, then run them again: python3 tools/check.py " + " ".join(failed))
+    return 1 if failed else 0
+
+
+if __name__ == "__main__":
+    sys.exit(main(sys.argv[1:]))

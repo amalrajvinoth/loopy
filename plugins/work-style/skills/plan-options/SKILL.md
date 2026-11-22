@@ -1,6 +1,6 @@
 ---
 name: plan-options
-description: Make a plan with numbered options and a recommendation, then wait for the owner to pick. Use for "Plan for X", "Plan to ...", "Brain-storm X", "what are the options", or any ask to think before building.
+description: Make a plan with numbered options and a recommendation, then wait for the owner to pick. Use for "Plan for X", "Plan to ...", "Brain-storm X", "what are the options", or to think before building.
 ---
 
 # Plan with numbered options

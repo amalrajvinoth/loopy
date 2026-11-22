@@ -1,11 +1,11 @@
 ---
 name: fix-dependabot
-description: Fix every red Dependabot pull request on loopy on its own branch and merge it when green. Use with the built-in loop (`/loop 1h /fix-dependabot`), for "fix dependabot", "the bumps are red", or from the weekly check.
+description: Fix every red Dependabot pull request on loopy on its own branch and merge it when green. Use with /loop (`/loop 1h /fix-dependabot`), for "fix dependabot" or "the bumps are red".
 ---
 
 # Fix red Dependabot pull requests
 
-Green patch and minor Dependabot pull requests merge by themselves (`.github/workflows/dependabot-merge.yml`; Dependabot proposes a release 7 days after it came out). A major version bump (1.x to 2.x) and a red one wait for a person. A green major is the owner's call: say what changed and do not merge it. The red ones waited for a person: TypeScript 7 wanted a new `module` option and two type hints, Stylelint 18 was blocked by a plugin's peer range. This skill takes them.
+Green patch and minor Dependabot pull requests merge by themselves (`.github/workflows/dependabot-merge.yml`; Dependabot proposes a release 7 days after it came out). A major version bump (1.x to 2.x) and a red one wait for a person. A green major is the owner's call: say what changed and do not merge it. This skill takes the red ones.
 
 ## One round
 

@@ -13,15 +13,29 @@ makes the .claude/ copies. Edit plugins/, never the copies; like src/ and the bu
 - plugins/<p>/agents/<name>.md -> .claude/agents/<name>.md
 - plugins/<p>/hooks/hooks.json -> "hooks" in .claude/settings.json, with ${CLAUDE_PLUGIN_ROOT}
   pointing at "$CLAUDE_PROJECT_DIR"/plugins/<p>. Other settings in that file are kept.
-- plugins/loopy/RULES.md -> AGENTS.md at the repo root (the rules plus how to build and check, for every
-  coding agent: Codex, Copilot, Cursor, Gemini CLI, ...) and CLAUDE.md, which loads AGENTS.md for Claude Code.
+- plugins/loopy/RULES.md and plugins/work-style/RULES.md -> AGENTS.md at the repo root (the rules plus how to
+  build and check, for every coding agent: Codex, Copilot, Cursor, Gemini CLI, ...) and CLAUDE.md, which loads
+  AGENTS.md for Claude Code.
+
+--check also keeps the skills short (see MAX_SKILL below): every SKILL.md in .claude/skills, the repo's own
+included, its description, and AGENTS.md.
 """
-import json, pathlib, shutil, sys
+import json, pathlib, re, sys
 
 ROOT = pathlib.Path(__file__).resolve().parent.parent
 PLUGINS = sorted(p.parent.parent for p in (ROOT / "plugins").glob("*/.claude-plugin/plugin.json"))
 MARK = "<!-- Copied from {src} by plugins/sync.py. Edit the source there, then run python3 plugins/sync.py. -->\n"
 SETTINGS = ROOT / ".claude/settings.json"
+# The heading the work-style rules get in AGENTS.md. plugins/work-style/hooks/rules.py looks for it.
+WORK_STYLE = "How the owner works"
+# Sizes, in bytes of the file Claude reads (the .claude/ copy). A skill's body is read whole each time it is used, AGENTS.md in every
+# session, and every description in every session. More than this and the text is doing a page's job:
+# move the detail into a file next to the skill, which is read only when it is needed.
+MAX_SKILL, MAX_AGENTS, MAX_DESCRIPTION = 6 * 1024, 10 * 1024, 200
+# A skill that may be longer, with the reason. Keep this list short.
+LONGER = {
+    "improve-ui": (10 * 1024, "copied from ibelick/ui-skills (MIT); kept word for word so an update is a plain copy"),
+}
 
 
 def with_mark(text, src):
@@ -32,7 +46,7 @@ def with_mark(text, src):
     return MARK.format(src=src) + text
 
 
-AGENTS_HEAD = """<!-- Written by plugins/sync.py from plugins/loopy/RULES.md. Do not edit: add a rule there (the add-rule skill), then run python3 plugins/sync.py. -->
+AGENTS_HEAD = """<!-- Written by plugins/sync.py from plugins/loopy/RULES.md and plugins/work-style/RULES.md. Do not edit: add a rule there (the add-rule skill), then run python3 plugins/sync.py. -->
 # loopy for coding agents
 
 loopy is a free learning games website for kids in grades 1 to 10, in English and German. It is plain HTML, CSS and JavaScript: one shared script and style sheet, no framework, no outside requests. `DESIGN.md` says how it looks. The README's "For developers" part says how a game is built. The rules below are the project's standing rules. The owner's words in the task win where they differ.
@@ -40,24 +54,11 @@ loopy is a free learning games website for kids in grades 1 to 10, in English an
 ## Build and check
 
 ```sh
-npm ci --prefix tools/build --ignore-scripts        # once: the minifier (esbuild) and the type checker
-python3 tools/build.py                              # after any edit in src/ or to a page: loopy.js, loopy.css, sw.js, page policies
-python3 tools/build.py --check                      # what CI runs
-node tools/build/node_modules/typescript/bin/tsc -p tools/build   # src/ type-checks against src/loopy.d.ts
-python3 tools/csp.py --check && python3 tools/check_external.py && python3 tools/guide_check.py
-python3 tools/review.py                             # the loopy rules, saved data, size and docs, against main
-python3 plugins/sync.py --check && python3 plugins/loopy/scripts/drift.py
-npm ci --prefix tools/lint --ignore-scripts         # once: Stylelint and ESLint
-node tools/lint/check.mjs && node tools/lint/scripts.mjs   # the styles and every page's script: sound, Baseline only, theme colours
-pip install --require-hashes -r tools/lint/requirements.txt   # once: the workflow checkers
-zizmor --offline .github/workflows && actionlint             # the workflows leak no token, their YAML and shell are sound
-lychee --config tools/lint/lychee.toml -- './**/*.md' './**/*.html'   # every link inside the repo has its file (brew install lychee; CI runs it by itself)
-npm ci --prefix tools/a11y --ignore-scripts         # once: the browser tests (they need Chrome or Chromium on the machine; CHROME=<path> names one)
-node tools/a11y/node_modules/playwright-core/cli.js install --with-deps webkit   # once, for ENGINE=webkit (Safari's engine, about 90 MB)
-node tools/a11y/check.mjs && node tools/e2e/play.mjs && node tools/e2e/retry.mjs   # ENGINE=webkit runs them in Safari's engine
+python3 tools/build.py    # after any edit in src/ or to a page (once: npm ci --prefix tools/build --ignore-scripts)
+python3 tools/check.py    # the checks this change needs, with why a red one matters; --list shows all, --fast skips the browser tests
 ```
 
-Pull requests go against `main`, from a branch, with `.github/pull_request_template.md`. Commit messages are plain words. No tool attribution lines anywhere.
+Pull requests go against `main`, from a branch.
 
 """
 
@@ -68,17 +69,29 @@ The line above loads AGENTS.md, the rules every coding agent reads. The skills i
 """
 
 
-def agents_md():
-    """AGENTS.md: the head above, then RULES.md with its headings one level down."""
-    rules = (ROOT / "plugins/loopy/RULES.md").read_text(encoding="utf-8")
+def down(text, top):
+    """A RULES.md with its headings one level down and its title replaced, so it sits under AGENTS.md's own title."""
     body = []
-    for line in rules.splitlines():
+    for line in text.splitlines():
         if line.startswith("# "):
-            line = "## Rules"
+            line = "## " + top
         elif line.startswith("## "):
             line = "#" + line
         body.append(line)
-    return AGENTS_HEAD + "\n".join(body).rstrip() + "\n"
+    return "\n".join(body).rstrip() + "\n"
+
+
+def agents_md():
+    """AGENTS.md: the head above, the loopy rules, then how the owner works (the work-style rules).
+    The work-style SessionStart hook sees its rules here and does not print them a second time."""
+    rules = down((ROOT / "plugins/loopy/RULES.md").read_text(encoding="utf-8"), "Rules")
+    style = ROOT / "plugins/work-style/RULES.md"
+    if style.is_file():
+        # Its first paragraph is about how the plugin loads; AGENTS.md has its own.
+        text = style.read_text(encoding="utf-8")
+        head, _, rest = text.partition("\n## ")
+        rules += "\n" + down(head.splitlines()[0] + "\n\n## " + rest, WORK_STYLE)
+    return AGENTS_HEAD + rules
 
 
 def wanted():
@@ -118,6 +131,35 @@ def copies_on_disk():
     return out
 
 
+def too_long(files):
+    """Skills, descriptions and AGENTS.md past their size. files: what sync writes; the repo's own skills are read from disk."""
+    out = []
+    skills = {path: text for path, text in files.items() if path.endswith("/SKILL.md")}
+    for own in sorted((ROOT / ".claude/skills").glob("*/SKILL.md")):
+        rel = str(own.relative_to(ROOT))
+        if rel not in skills:
+            skills[rel] = own.read_text(encoding="utf-8")
+    for path, text in sorted(skills.items()):
+        name = path.split("/")[-2]
+        limit, why = LONGER.get(name, (MAX_SKILL, ""))
+        size = len(text.encode("utf-8"))
+        if size > limit:
+            out.append(f"{path} is {size} bytes (limit {limit}{', ' + why if why else ''}). Shorten it, or move detail that is "
+                       "needed only sometimes into a page next to it and say when to read that page.")
+        m = re.search(r"^description:\s*(.*)$", text, re.M)
+        if m and re.search(r" #|: ", m.group(1)) and not m.group(1).startswith(("'", '"')):
+            out.append(f"{path}: the description has ' #' or ': ' in it. In the frontmatter ' #' starts a comment, so everything after "
+                       "it is lost (\"Build #N\" became \"Build\"), and ': ' is not allowed. Say it another way.")
+        if m and len(m.group(1)) > MAX_DESCRIPTION:
+            out.append(f"{path}: the description is {len(m.group(1))} characters (limit {MAX_DESCRIPTION}). Every session reads it: "
+                       "say what the skill does and the words that start it, nothing more.")
+    agents = len(files["AGENTS.md"].encode("utf-8"))
+    if agents > MAX_AGENTS:
+        out.append(f"AGENTS.md is {agents} bytes (limit {MAX_AGENTS}). Every session reads it: keep rules to one or two lines "
+                   "in the RULES.md files, and put the how-to in the skill, recipe or check that uses it.")
+    return out
+
+
 def main():
     check = "--check" in sys.argv
     files, hooks = wanted()
@@ -149,12 +191,15 @@ def main():
         if not check:
             SETTINGS.parent.mkdir(parents=True, exist_ok=True)
             SETTINGS.write_text(json.dumps(new_settings, indent=2, ensure_ascii=False) + "\n", encoding="utf-8")
+    long = too_long(files)
+    if long:
+        print("Too long (the skills stay short so every session and pull request reads less):\n - " + "\n - ".join(long))
     if check and problems:
         print("The plugin copies in .claude/ are out of date. Run: python3 plugins/sync.py\n - " + "\n - ".join(problems))
         return 1
     if not check:
         print(f"Updated {len(problems)} file(s) in .claude/." if problems else "The .claude/ copies are up to date.")
-    return 0
+    return 1 if long else 0
 
 
 if __name__ == "__main__":

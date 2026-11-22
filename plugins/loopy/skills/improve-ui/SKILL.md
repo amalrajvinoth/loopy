@@ -1,9 +1,9 @@
 ---
 name: improve-ui
-description: Audit an existing product surface against its own design evidence, identify verified UI problems, and write self-contained implementation plans for another agent. Strictly read-only on product source. Use when asked to review, refine, improve, or clean up an interface without replacing its identity; investigate design-system drift; or prepare a design handoff.
+description: Audit a page against its own design source (in loopy, DESIGN.md), prove its UI problems and write a plan another agent can build. Read-only. Use for "/improve-ui <page>" or "review the UI".
 ---
 
-Source: the `improve-ui` skill by Julien Thibeaut (ibelick), from [ui-skills.com](https://www.ui-skills.com/skills/ibelick/improve-ui) and [github.com/ibelick/ui-skills](https://github.com/ibelick/ui-skills), MIT licence. Copied into the repo so nothing is fetched at run time. Only the "In loopy" section was added.
+Source: the `improve-ui` skill by Julien Thibeaut (ibelick), from [ui-skills.com](https://www.ui-skills.com/skills/ibelick/improve-ui) and [github.com/ibelick/ui-skills](https://github.com/ibelick/ui-skills), MIT licence. Copied into the repo so nothing is fetched at run time. Only the description and the "In loopy" section are loopy's own.
 
 # Improve UI
 
@@ -19,13 +19,12 @@ Audit one coherent product surface against the system that actually governs it. 
 
 ## In loopy
 
-- The governing design source is `DESIGN.md` (colours, the six themes, fonts, spacing, components). `plugins/loopy/RULES.md` and the game READMEs may add rules for one surface. The guide under `guide-src/` has its own Starlight styling; audit it only when asked.
+- The governing design source is `DESIGN.md`. A finding may cite any line of its "7. Do and don't", and of AGENTS.md "Site" and "Games"; those are the binding rules, and they are not repeated here. A game README may add a rule for its own page. The guide under `guide-src/` has its own Starlight styling; audit it only when asked.
 - A surface is one page: the home page `index.html`, one game `<subject>/<game>/index.html`, the progress page, the Help page, a print (worksheet, weekly card). The traced path is that page, `src/loopy.css`, `src/loopy.js`, and any `Loopy.load()` part the page uses. The root `loopy.css` and `loopy.js` are built copies; cite `src/`.
-- Binding rules a finding may cite: the name is lowercase "loopy" on screen; Black is the default theme and every theme defines the same colour names; headings in Fredoka, body in Lexend, both self-hosted from `fonts/`; one phone or tablet screen with no scrolling at 360×640, 390×844, 844×390, 820×1180 and 1180×820; settings behind the ⚙ button; every print shows the real logo from `Loopy.logo()`; every word on screen in English and German through `data-t` or `Loopy.t()`.
-- More binding rules, from the fixes of November 2026 (the loopy-review skill has the checks): the main content fills the card and nothing is cut off at the eight sizes, also after a wrong answer and with Settings open (PRs #266, #276); Next is never greyed out before an answer and the first-time hint covers no key or word (PR #273); a helper line names only what is on the card and every note and coin shows its currency sign (PR #274); a question that assumes a time of day says "Pretend it is …" (PR #288); with loopy in German nothing on screen stays English and a German keyboard has ü, ö, ä and ß (PRs #292, #296); the phone's bars are `--safe-top` and `--safe-bottom`, never raw `env()` (PR #295); the home page top is one 44px row on phones (PR #271).
 - A correction must keep loopy's own rules: no `style=` attributes, no `on*=` handlers, no outside requests, no new shared script, edits in `src/` followed by `python3 tools/build.py`. A plan that needs any of these is not a valid correction.
-- Rendered evidence: when the user asks for visual inspection, `tools/e2e/` and `tools/a11y/` show how pages are opened in a headless browser; screenshots go at the eight sizes in DESIGN.md "Screens".
-- Plans go under `design-plans/` in the repo. That folder is in `.gitignore`, because every file in the repo goes live on the site. In a project thread, also copy the plan to `/mnt/project-files/design-plans/` so the owner and other threads can read it. Whoever builds a plan follows the `ship-pr` skill (review, docs, play test, pull request).
+- Rendered evidence: `node plugins/loopy/scripts/screens.mjs <page> --out <dir>` takes the page at the eight sizes in DESIGN.md "Screens", in English and German. `screen.md` in the loopy-review skill says what to look for.
+- Plans go under `design-plans/` in the repo. That folder is in `.gitignore`, because every file in the repo goes live on the site. In a project thread, also copy the plan to `/mnt/project-files/design-plans/`. Whoever builds a plan follows the `ship-pr` skill.
+- Another design skill (impeccable, Taste Skill, UI/UX Pro Max): read `references/other-design-skills.md` first.
 
 ## 1. Select the surface
 

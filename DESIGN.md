@@ -480,6 +480,7 @@ loopy is mostly flat. Depth comes from solid offset shadows, not blur.
 - Respect `prefers-reduced-motion`. Turn off hops, bounces and confetti.
 - Explain every answer in one plain sentence.
 - Let the card and its content be the same size. A sum, grid, text or picture grows with the card in container units, up to `--big`. The card's height caps it. A question with a size of its own gets a card that fits it (`.play.fit`). The answers or keys take the spare room instead. So nothing is cut off on a tablet held upright, and no question sits small in an empty card.
+- Measure again when the web font lands (`document.fonts.ready`), in a page that picks a text size by measuring. Or a small phone can still scroll.
 - Say when a question is pretend. "Pretend it is afternoon", a badge, and Read aloud says it first.
 - Make a helper line match the card. Name only what the child can see. Show the currency sign on every note and coin.
 - Give green and red a second signal too, like a word or a line-through.
@@ -494,6 +495,7 @@ loopy is mostly flat. Depth comes from solid offset shadows, not blur.
 - Don't make a game page scroll.
 - Don't show a button that does nothing. Next comes after the answer; before it, its place stays empty.
 - Don't let the first-time hint cover a key, a number or a word.
+- Don't let the row of children push the first game tiles off a 360 × 640 home page.
 - Don't read `env(safe-area-inset-*)` in a page. Use `--safe-top` and `--safe-bottom`.
 - Don't count a day for anything but a finished Today's 10.
 - Don't use green or red for anything except right and wrong.

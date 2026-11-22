@@ -1,11 +1,11 @@
 ---
 name: phone-checks
-description: Keep the one "Phone checks" issue current: what only a real phone or tablet can show, from merged pull requests, struck out when a later change covered it. Use with the built-in loop (`/loop 1h /phone-checks`), for "phone checks", "what should I check on the phone", or after a merge.
+description: Keep the "Phone checks" issue current with what only a real phone or tablet can show, from merged pull requests. Use with /loop (`/loop 1h /phone-checks`), for "phone checks" or after a merge.
 ---
 
 # Phone checks
 
-Some things only a real phone shows: the home screen app's bottom bar, a Pixel's keyboard, how a German wrong-answer line reads to a child. Those waited in notes nobody could find. Now they live in one GitHub issue, titled **Phone checks**, label `phone check`, with a tick box per item. The owner ticks what they looked at. This skill keeps the list.
+Some things only a real phone shows: the home screen app's bottom bar, a Pixel's keyboard, how a German wrong-answer line reads to a child. They live in one GitHub issue, titled **Phone checks**, label `phone check`, with a tick box per item. The owner ticks what they looked at. This skill keeps the list.
 
 ## One round
 
