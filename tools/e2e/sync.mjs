@@ -150,6 +150,10 @@ check("A retry that gets 429 asks to wait", await until(async () => /wait a mome
 await saveTouch("other@example.com");
 check("A 429 for another email in between asks to wait too", await until(async () => /wait a moment/.test(await touchText(off.page))), "");
 delete env.LIMIT_MAIL;
+await saveTouch("other@example.com");
+check("Another email saved in between", await until(async () => /Saved: other@example.com/.test(await touchText(off.page))), "");
+await off.page.getByRole("button", { name: "Remove", exact: true }).click();
+check("and removed again", await until(() => env.DB.grownups.size === 1 && !env.DB.grownups.has("other@example.com")), env.DB.grownups.size + " rows");
 skew += 11000;   // the server takes one save per email every 10 seconds
 await saveTouch();
 check("The next retry says it is saved", await until(async () => /Saved: parent@example.com/.test(await touchText(off.page))), "");

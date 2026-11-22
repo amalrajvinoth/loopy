@@ -488,6 +488,11 @@
     if (!s || typeof s !== "object" || typeof s.m !== "string" || s.m.length > 254 || !/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(s.m) || !/^[A-Za-z0-9_-]{43}$/.test(s.k)) return null;
     return { m: s.m, k: s.k, t: typeof s.t === "number" && isFinite(s.t) ? s.t : 0 };
   }
+  // A save whose answer was lost may have reached the server with its key, and a later 429 or error does not
+  // say otherwise. So each email keeps its key, for as long as the page is open, until a save of it succeeds
+  // (the server keeps the first key it saw), and Remove works afterwards.
+  /** @type {Record<string, string>} */
+  var tried = {};
   function writeTouch(s) { try { if (s) localStorage.setItem(TOUCH, JSON.stringify(s)); else localStorage.removeItem(TOUCH); } catch (e) {} }
   function newKey() {
     var r = crypto.getRandomValues(new Uint8Array(32));
@@ -534,11 +539,6 @@
       line.appendChild(input);
       row.appendChild(save);
       body.append(line, lab, row);
-      // A save whose answer was lost may have reached the server with its key, and a later 429 or error does
-      // not say otherwise. So each email keeps its key until a save of it succeeds (the server keeps the
-      // first key it saw), and Remove works afterwards.
-      /** @type {Record<string, string>} */
-      var tried = {};
       function go() {
         var m = input.value.trim().toLowerCase();
         if (m.length > 254 || !/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(m)) { msg.textContent = t("stBad"); input.focus(); return; }
