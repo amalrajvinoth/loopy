@@ -470,8 +470,8 @@
   // { m: email, k: remove key, t: time saved, f: 1 when linked }: Remove sends the key, and the server
   // deletes the row. Never in a stars code, never per child, never shown in a game.
   // With Family sync on, a second tick box, "Also link my email to our Family sync" (issue #169), sends the
-  // family id (st.i) along, so the owner can see which family copy goes with which email. The copy stays
-  // locked. The box shows only while sync is on; Turn off everywhere drops the link on the server too.
+  // family id (st.i) and write key (st.w) along, so the owner can see which family copy goes with which email
+  // and nobody can link an email to a family that is not theirs. The copy stays locked (the lock key never goes). The box shows only while sync is on; Turn off everywhere drops the link on the server too.
   // The server answers 200 whether or not it took the link (an email saved first on another device keeps that
   // device's key, and the answer must not tell who is on the list), so the saved line says "unless ...".
   var TOUCH = "loopy.touch";
@@ -565,9 +565,9 @@
         if (m.length > 254 || !/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(m)) { msg.textContent = t("stBad"); input.focus(); return; }
         if (!tick.checked) { msg.textContent = t("stTick"); tick.focus(); return; }
         var k = tried[m] || newKey(), f = st && !linkLab.hidden && linkTick.checked ? st.i : "";
-        /** @type {{m: string, l: string, k: string, f?: string}} */
+        /** @type {{m: string, l: string, k: string, f?: string, w?: string}} */
         var out = { m: m, l: Loopy.lang === "de" ? "de" : "en", k: k };
-        if (f) out.f = f;
+        if (f) { out.f = f; out.w = st.w; }   // the family's write key proves this device is in that family
         save.disabled = true; msg.textContent = t("syBusy");
         send("/g", out).then(function (r) {
           save.disabled = false;

@@ -12,9 +12,10 @@
 //                           this family (below) loses its link
 //   GET  /stats             the last 90 nightly rows of counts (families, active in 7 and 30 days, size).
 //                           Counts only: no ids, no names, no emails
-//   POST /g                 body { m: email, l: language, k: remove key, f: family id (only when the grown-up
-//                           ticked "Also link my email to our Family sync") }: "Stay in touch", a grown-up's
-//                           email, kept in the GROWNUPS database (EU). 200 {}, 400 not an email, 429 too soon.
+//   POST /g                 body { m: email, l: language, k: remove key, f: family id and w: its write key
+//                           (both only when the grown-up ticked "Also link my email to our Family sync") }:
+//                           "Stay in touch", a grown-up's email, kept in the GROWNUPS database (EU). 200 {},
+//                           400 not an email, 403 the family does not exist or w is not its key, 429 too soon.
 //                           An email already saved keeps its first remove key: a later save with another
 //                           key changes nothing (and still answers 200, so nobody can tell who is on the list)
 //   POST /g?del=1           body { m: email, k: remove key }: delete it. 200 deleted, 404 when there is no
@@ -148,7 +149,13 @@ export default {
   // then write today's row of counts (replacing it if the job ran twice).
   async scheduled(event, env) {
     const now = Date.now();
-    await env.DB.prepare("DELETE FROM families WHERE t < ?").bind(now - KEEP_DAYS * 86400000).run();
+    const cut = now - KEEP_DAYS * 86400000;
+    // An email linked to a copy that expires would keep pointing at it: drop those links first.
+    if (env.GROWNUPS) {
+      const old = await env.DB.prepare("SELECT id FROM families WHERE t < ?").bind(cut).all();
+      for (const r of old.results || []) await env.GROWNUPS.prepare("UPDATE grownups SET f = NULL WHERE f = ?").bind(r.id).run();
+    }
+    await env.DB.prepare("DELETE FROM families WHERE t < ?").bind(cut).run();
     if (env.GROWNUPS) await env.GROWNUPS.prepare("DELETE FROM grownups WHERE t < ?").bind(now - KEEP_MAIL_DAYS * 86400000).run();
     const c = await env.DB.prepare("SELECT COUNT(*) AS f, COALESCE(SUM(t > ?), 0) AS a7, COALESCE(SUM(t > ?), 0) AS a30, COALESCE(SUM(length(b)), 0) AS bytes FROM families")
       .bind(now - 7 * 86400000, now - 30 * 86400000).first();
@@ -163,8 +170,10 @@ export default {
 // a row over by posting the same email, and the answers are the same whether an email is on the list or
 // not. Nothing else is stored, no IP and no name. The one thing a grown-up can add is their family id (f),
 // when they tick "Also link my email to our Family sync": then the owner can see which family copy goes with
-// which email. The copy stays locked, so that still tells nothing about stars or names. A save without f
-// (the box not ticked) removes an earlier link, and deleting the family copy removes it too.
+// which email. The copy stays locked, so that still tells nothing about stars or names. A link needs the
+// family's write key (w) too, so only a device in that family can link an email to it. A save without f
+// (the box not ticked) removes an earlier link; deleting the family copy, and the nightly job when a copy
+// expires, remove it too.
 async function grownup(req, url, env, send) {
   if (req.method !== "POST") return send(405);
   const db = env.GROWNUPS;
@@ -176,10 +185,15 @@ async function grownup(req, url, env, send) {
   let body;
   try { body = JSON.parse(text); } catch (e) { return send(400); }
   if (!body || typeof body.m !== "string" || typeof body.k !== "string" || !KEY.test(body.k)) return send(400);
-  if (body.f !== undefined && (typeof body.f !== "string" || !ID.test(body.f))) return send(400);
+  if (body.f !== undefined && (typeof body.f !== "string" || !ID.test(body.f) || typeof body.w !== "string" || !KEY.test(body.w))) return send(400);
   const f = body.f || null;
   const m = body.m.trim().toLowerCase();
   if (m.length > MAX_MAIL || !EMAIL.test(m)) return send(400);
+  if (f) {
+    // Only a device that holds the family's write key may link an email to that family.
+    const fam = await env.DB.prepare("SELECT k FROM families WHERE id = ?").bind(f).first();
+    if (!fam || fam.k !== await sha("loopy-key:" + body.w)) return send(403);
+  }
   const k = await sha("loopy-mail:" + body.k);
   const row = await db.prepare("SELECT k, t FROM grownups WHERE m = ?").bind(m).first();
 

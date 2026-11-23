@@ -7,6 +7,8 @@ export function fakeD1() {
     if (/^SELECT e, b FROM families WHERE id = \?$/.test(sql)) { const r = rows.get(a[0]); return { first: r ? { e: r.e, b: r.b } : null }; }
     if (/^SELECT e, k, t FROM families WHERE id = \?$/.test(sql)) { const r = rows.get(a[0]); return { first: r ? { e: r.e, k: r.k, t: r.t } : null }; }
     if (/^SELECT e FROM families WHERE id = \?$/.test(sql)) { const r = rows.get(a[0]); return { first: r ? { e: r.e } : null }; }
+    if (/^SELECT k FROM families WHERE id = \?$/.test(sql)) { const r = rows.get(a[0]); return { first: r ? { k: r.k } : null }; }
+    if (/^SELECT id FROM families WHERE t < \?$/.test(sql)) { return { all: [...rows].filter(([, r]) => r.t < a[0]).map(([id]) => ({ id })) }; }
     if (/^DELETE FROM families WHERE id = \? AND k = \?$/.test(sql)) { const r = rows.get(a[0]); const hit = r && r.k === a[1]; if (hit) rows.delete(a[0]); return { changes: hit ? 1 : 0 }; }
     if (/^UPDATE families SET e = \?, b = \?, t = \? WHERE id = \? AND e = \?$/.test(sql)) {
       const r = rows.get(a[3]); if (!r || r.e !== a[4]) return { changes: 0 };

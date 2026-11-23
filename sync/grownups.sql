@@ -7,7 +7,8 @@
 -- t: the time it was saved, in milliseconds. A row is deleted 2 years after that.
 -- f: the family id from Family sync, only when the grown-up ticked "Also link my email to our Family sync"
 --    (issue #169), else NULL. It says which locked family copy goes with the email, nothing more: the copy
---    stays locked. A save without the tick, or deleting the family copy, sets it back to NULL.
+--    stays locked. A link needs the family's write key, so only that family's devices can make it. A save
+--    without the tick, deleting the family copy, or the nightly job when the copy expires, sets it back to NULL.
 --    A database made before this column exists gets it from grownups-link.sql (the deploy job runs it once).
 CREATE TABLE IF NOT EXISTS grownups (
   m TEXT PRIMARY KEY,
