@@ -36,7 +36,7 @@ document.documentElement.classList.add("loopy-building");
   // such as a mistake on the Try again card, in this language's signs (DESIGN.md "Numbers and signs").
   var SIGNS = { en: { add: "+", sub: "−", mul: "×", div: "÷" }, de: { add: "+", sub: "−", mul: "·", div: ":" } };
   Loopy.sign = function (op) { return SIGNS[lang][op] || op; };
-  Loopy.signs = function (text) { return lang === "de" ? String(text).replace(/×/g, "·").replace(/÷/g, ":") : String(text); };
+  Loopy.signs = function (text) { return lang === "de" && typeof text === "string" ? text.replace(/×/g, "·").replace(/÷/g, ":") : text; };
   // Small helpers the parts below and the loopy-*.js files share.
   // A new element: Loopy.el("button", "kid-btn", "Dio"). cls and text may be left out.
   Loopy.el = function (tag, cls, text) {
