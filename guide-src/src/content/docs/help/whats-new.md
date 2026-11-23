@@ -10,6 +10,7 @@ The big changes, newest first. Small fixes are not listed. See [the full list on
 
 ## 23 November 2026
 
+- **Link your email to your family, if you like.** Under **Stay in touch** in ⚙ Settings, grown-ups with Family sync on see a second tick box, **Also link my email to our Family sync**. Tick it and your family id is kept next to your email. So loopy's maker can see which locked family copy goes with which email, for example to help when sync goes wrong. The copy stays locked. Only if you tick it. The [privacy note](/loopy/privacy/) says it all.
 - **The sign stands out in every sum.** The +, −, × (or ·) and ÷ (or :) in a sum is now in the theme's colour in every maths game, so a child reads the operation first. The German times dot is drawn bigger, so 3 · 4 reads as clearly as 3 × 4. Before, six games showed the sign in plain text.
 - **German sums look like school.** In German, times is now written 3 · 4 and share 12 : 3, the way German schools write them. Every maths game, the worksheets and the Try again line use the new signs. English keeps × and ÷.
 

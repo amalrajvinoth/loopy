@@ -8,10 +8,12 @@
 //   POST /f/<id>?e=<hash>   body { k: write key, b: locked copy }: save it, if the copy here still has
 //                           hash <hash> (leave e out for a new family). 200 { e }, 412 { e } when the copy
 //                           changed since (read it, merge, try again), 403 wrong key, 429 too soon
-//   POST /f/<id>?del=1      body { k: write key }: delete the family's copy. 200 or 404
+//   POST /f/<id>?del=1      body { k: write key }: delete the family's copy. 200 or 404. An email linked to
+//                           this family (below) loses its link
 //   GET  /stats             the last 90 nightly rows of counts (families, active in 7 and 30 days, size).
 //                           Counts only: no ids, no names, no emails
-//   POST /g                 body { m: email, l: language, k: remove key }: "Stay in touch", a grown-up's
+//   POST /g                 body { m: email, l: language, k: remove key, f: family id (only when the grown-up
+//                           ticked "Also link my email to our Family sync") }: "Stay in touch", a grown-up's
 //                           email, kept in the GROWNUPS database (EU). 200 {}, 400 not an email, 429 too soon.
 //                           An email already saved keeps its first remove key: a later save with another
 //                           key changes nothing (and still answers 200, so nobody can tell who is on the list)
@@ -112,6 +114,8 @@ export default {
     if (url.searchParams.get("del") === "1") {
       if (!row) return send(404);
       await db.prepare("DELETE FROM families WHERE id = ? AND k = ?").bind(id, k).run();
+      // An email linked to this family (Stay in touch) points at nothing now: drop the link, keep the email.
+      if (env.GROWNUPS) await env.GROWNUPS.prepare("UPDATE grownups SET f = NULL WHERE f = ?").bind(id).run();
       return send(200, {});
     }
 
@@ -156,7 +160,10 @@ export default {
 // database (GROWNUPS, in the EU). The device keeps a random remove key; the server keeps only its hash, so
 // only that device (or the owner) can delete the row. The key never changes once saved, so nobody can take
 // a row over by posting the same email, and the answers are the same whether an email is on the list or
-// not. Nothing else is stored: no family id, no IP, no name.
+// not. Nothing else is stored, no IP and no name. The one thing a grown-up can add is their family id (f),
+// when they tick "Also link my email to our Family sync": then the owner can see which family copy goes with
+// which email. The copy stays locked, so that still tells nothing about stars or names. A save without f
+// (the box not ticked) removes an earlier link, and deleting the family copy removes it too.
 async function grownup(req, url, env, send) {
   if (req.method !== "POST") return send(405);
   const db = env.GROWNUPS;
@@ -168,6 +175,8 @@ async function grownup(req, url, env, send) {
   let body;
   try { body = JSON.parse(text); } catch (e) { return send(400); }
   if (!body || typeof body.m !== "string" || typeof body.k !== "string" || !KEY.test(body.k)) return send(400);
+  if (body.f !== undefined && (typeof body.f !== "string" || !ID.test(body.f))) return send(400);
+  const f = body.f || null;
   const m = body.m.trim().toLowerCase();
   if (m.length > MAX_MAIL || !EMAIL.test(m)) return send(400);
   const k = await sha("loopy-mail:" + body.k);
@@ -184,11 +193,11 @@ async function grownup(req, url, env, send) {
   if (row) {
     if (row.k !== k) return send(200, {});
     if (now - row.t < MIN_GAP) return send(429);
-    await db.prepare("UPDATE grownups SET l = ?, t = ? WHERE m = ? AND k = ?").bind(l, now, m, k).run();
+    await db.prepare("UPDATE grownups SET l = ?, t = ?, f = ? WHERE m = ? AND k = ?").bind(l, now, f, m, k).run();
     return send(200, {});
   }
   const n = await db.prepare("SELECT COUNT(*) AS n FROM grownups").first();
   if (n && n.n >= MAX_GROWNUPS) return send(503);
-  await db.prepare("INSERT INTO grownups (m, k, l, t) VALUES (?, ?, ?, ?) ON CONFLICT(m) DO NOTHING").bind(m, k, l, now).run();
+  await db.prepare("INSERT INTO grownups (m, k, l, t, f) VALUES (?, ?, ?, ?, ?) ON CONFLICT(m) DO NOTHING").bind(m, k, l, now, f).run();
   return send(200, {});
 }

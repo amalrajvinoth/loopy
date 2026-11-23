@@ -8,7 +8,9 @@
 //
 // It shows everything the server holds that names nobody: a 6-letter handle made from the random family id,
 // the last save in your time zone, the days since, and the size of the locked copy. Then how many families
-// saved today, this week, this month or longer ago, and the Stay in touch list (email, language, saved).
+// saved today, this week, this month or longer ago, and the Stay in touch list (email, language, saved, and
+// the family handle when the grown-up ticked "Also link my email to our Family sync", so you can see which
+// family copy goes with which email).
 // The server cannot open a locked copy, so there is no column for children, stars or games, on purpose.
 // Run it from the repo root, not from sync/, so wrangler finds the databases by name.
 
@@ -43,11 +45,12 @@ if (rows.length) {
 out.push("A family is a random id. The copy is locked on the family's devices, so this is all the server knows.", "");
 
 let gr = [];
-try { gr = query("loopy-grownups", "SELECT m, l, t FROM grownups ORDER BY t DESC", root); }
+try { gr = query("loopy-grownups", "SELECT m, l, t, substr(f, 1, 6) AS f FROM grownups ORDER BY t DESC", root); }
 catch (e) { out.push("Stay in touch list: could not read loopy-grownups (" + (e.message || e).split("\n")[0] + ")", ""); gr = null; }
 if (gr) {
   out.push("Stay in touch list: " + gr.length + (gr.length ? ". These are personal: keep them on this screen." : ""));
-  for (const g of gr) out.push("  " + pad(g.l, 4) + pad(when(Number(g.t)), 22) + g.m);
+  for (const g of gr) out.push("  " + pad(g.l, 4) + pad(when(Number(g.t)), 22) + pad(g.f || "-", 8) + g.m);
+  if (gr.length) out.push("  The third column is the family handle from the list above, when the grown-up linked the email; - when not.");
   out.push("");
 }
 process.stdout.write(out.join("\n"));

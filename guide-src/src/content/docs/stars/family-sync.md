@@ -56,7 +56,7 @@ Family sync carries the same things as a [stars code](/loopy/guide/stars/move-st
 - The color theme, **Easier to read**, sound and language. A brand-new device that has not picked any takes them from the family once.
 - Which child is playing right now.
 - The family code itself, and whether loopy is on the home screen.
-- Your email under **Stay in touch**. It is not part of the family at all.
+- Your email under **Stay in touch**. It is not part of the family at all. If you tick **Also link my email to our Family sync** there, your family id is kept next to the email on the server. The copy stays locked. See [Settings on the home page](/loopy/guide/settings/home-settings/).
 
 ## When it syncs
 

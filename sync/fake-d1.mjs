@@ -28,11 +28,12 @@ export function fakeD1() {
     }
     if (/^SELECT k, t FROM grownups WHERE m = \?$/.test(sql)) { const r = grownups.get(a[0]); return { first: r ? { k: r.k, t: r.t } : null }; }
     if (/^DELETE FROM grownups WHERE m = \? AND k = \?$/.test(sql)) { const r = grownups.get(a[0]); const hit = r && r.k === a[1]; if (hit) grownups.delete(a[0]); return { changes: hit ? 1 : 0 }; }
-    if (/^UPDATE grownups SET l = \?, t = \? WHERE m = \? AND k = \?$/.test(sql)) { const r = grownups.get(a[2]); if (!r || r.k !== a[3]) return { changes: 0 }; Object.assign(r, { l: a[0], t: a[1] }); return { changes: 1 }; }
+    if (/^UPDATE grownups SET l = \?, t = \?, f = \? WHERE m = \? AND k = \?$/.test(sql)) { const r = grownups.get(a[3]); if (!r || r.k !== a[4]) return { changes: 0 }; Object.assign(r, { l: a[0], t: a[1], f: a[2] }); return { changes: 1 }; }
+    if (/^UPDATE grownups SET f = NULL WHERE f = \?$/.test(sql)) { let n = 0; for (const r of grownups.values()) if (r.f === a[0]) { r.f = null; n++; } return { changes: n }; }
     if (/^SELECT COUNT\(\*\) AS n FROM grownups$/.test(sql)) return { first: { n: grownups.size } };
-    if (/^INSERT INTO grownups \(m, k, l, t\) VALUES \(\?, \?, \?, \?\) ON CONFLICT\(m\) DO NOTHING$/.test(sql)) {
+    if (/^INSERT INTO grownups \(m, k, l, t, f\) VALUES \(\?, \?, \?, \?, \?\) ON CONFLICT\(m\) DO NOTHING$/.test(sql)) {
       if (grownups.has(a[0])) return { changes: 0 };
-      grownups.set(a[0], { k: a[1], l: a[2], t: a[3] }); return { changes: 1 };
+      grownups.set(a[0], { k: a[1], l: a[2], t: a[3], f: a[4] }); return { changes: 1 };
     }
     if (/^DELETE FROM grownups WHERE t < \?$/.test(sql)) { let n = 0; for (const [m, r] of grownups) if (r.t < a[0]) { grownups.delete(m); n++; } return { changes: n }; }
     throw new Error("fake D1 does not know: " + sql);

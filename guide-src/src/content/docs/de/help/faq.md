@@ -42,7 +42,7 @@ Ja, mit dem Familien-Sync. Solange kein Familien-Code gesetzt ist, zeigt die Sta
 
 ## Kann ich von neuen Spielen erfahren?
 
-Ja. In ⚙ **Einstellungen** auf der Startseite, unter **In Kontakt bleiben**, tippe deine E-Mail ein, kreuze das Kästchen an und tippe auf **Speichern**. Nur für Erwachsene. loopy behält die E-Mail, deine Sprache und die Zeit, sonst nichts, und **Löschen** entfernt sie. Mehr unter [Einstellungen auf der Startseite](/loopy/guide/de/settings/home-settings/).
+Ja. In ⚙ **Einstellungen** auf der Startseite, unter **In Kontakt bleiben**, tippe deine E-Mail ein, kreuze das Kästchen an und tippe auf **Speichern**. Nur für Erwachsene. loopy behält die E-Mail, deine Sprache und die Zeit, sonst nichts, und **Löschen** entfernt sie. Ist der Familien-Sync an, kannst du auch **Meine E-Mail auch mit unserem Familien-Sync verknüpfen** ankreuzen. Dann sieht der Macher von loopy, welche Familien-Kopie zu deiner E-Mail gehört. Mehr unter [Einstellungen auf der Startseite](/loopy/guide/de/settings/home-settings/).
 
 ## Kann ich loopy wie eine App nutzen, auch offline?
 

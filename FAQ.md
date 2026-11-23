@@ -60,7 +60,7 @@ It carries what a stars code carries: every child's name, stars, badges, streaks
 
 ## Can I hear about new games?
 
-Yes. On the home page, open ⚙ Settings, open **For grown-ups** and find **Stay in touch**. Type your email, tick the box and tap **Save**. Only grown-ups, please. Loopy keeps the email, your language and the time on its own server in the EU. Nothing else. It sends a note a few times a year. Tap **Remove** in the same place to delete it; it is deleted by itself after 2 years anyway. Nothing is sent until you tap Save. The [privacy note](https://amalrajvinoth.github.io/loopy/privacy/) has the details.
+Yes. On the home page, open ⚙ Settings, open **For grown-ups** and find **Stay in touch**. Type your email, tick the box and tap **Save**. Only grown-ups, please. Loopy keeps the email, your language and the time on its own server in the EU. Nothing else. It sends a note a few times a year. Tap **Remove** in the same place to delete it; it is deleted by itself after 2 years anyway. Nothing is sent until you tap Save. With Family sync on, you can also tick **Also link my email to our Family sync**. Then your family id is kept next to the email, so Loopy's maker can see which locked family copy goes with your email. Only if you tick it. The [privacy note](https://amalrajvinoth.github.io/loopy/privacy/) has the details.
 
 ## Can I use Loopy like an app?
 

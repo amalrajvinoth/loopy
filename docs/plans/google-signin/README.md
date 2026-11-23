@@ -1,6 +1,6 @@
 # Plan: Google sign-in and emails for tracking who uses loopy
 
-The owner asked on 1 November 2026: add email with Google sign-in, store it in the Cloudflare Worker database, and use it to see and track who uses loopy. Picked: options 1 and 2 (issues #167, #168). Later: #169 (2b), #170 (3), #171 (4, parked).
+The owner asked on 1 November 2026: add email with Google sign-in, store it in the Cloudflare Worker database, and use it to see and track who uses loopy. Picked: options 1 and 2 (issues #167, #168). Later: #169 (2b, built 23 November 2026), #170 (3), #171 (4, parked).
 
 This plan lays out four ways to do it, from "no change" to "sign in to play". No code has changed. Pick a number and I will build it.
 
@@ -56,7 +56,7 @@ A new part in ⚙ Settings on the home page, above Family sync: "Grown-ups: stay
 - Weak spot: nobody checks the email is real. Someone can type a wrong address. If you want to be sure, I can add a "we sent you a link, tap it" step later, but that needs a mail sender (Cloudflare has none for free; Resend or Mailchannels have free tiers). Also not many parents will fill it in. Expect a handful.
 - Cost: one PR, about half a day.
 
-**2b.** Tick box "Also link my email to our Family sync" writes the family id next to the email. Then you can see which family copy belongs to which parent. That is the one step that turns the anonymous `families` table into a named one for those who tick it. I would leave it out at first.
+**2b.** Tick box "Also link my email to our Family sync" writes the family id next to the email. Then you can see which family copy belongs to which parent. That is the one step that turns the anonymous `families` table into a named one for those who tick it. I would leave it out at first. Built on 23 November 2026 (issue #169): the box shows only while Family sync is on, the Worker keeps the id in a new `f` column, a save without the tick or **Turn off everywhere** drops it again.
 
 ## Option 3. "Sign in with Google" for grown-ups, optional
 
