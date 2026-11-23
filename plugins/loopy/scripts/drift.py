@@ -20,14 +20,27 @@ FACTS = PLUGIN / "facts.json"
 
 # fact -> what in the plugin depends on it
 USERS = {
-    "ci_steps": "skills ship-pr and heal (the checks they run) and heal/recipes.md",
-    "tools": "skills ship-pr and heal (the tools they run)",
-    "repo_skills": "skill ship-pr (which repo skills to use) and RULES.md",
+    "ci_steps": "tools/check.py (the one list of checks the skills run) and heal/recipes.md",
+    "tools": "tools/check.py (the tools it runs) and heal/recipes.md",
+    "repo_skills": "skill ship-pr (which repo skills to use)",
     "built_files": "hooks/guard_files.py and scripts/resolve_built.py (BUILT), RULES.md",
     "pr_template": "skill ship-pr (the PR body sections)",
     "screens": "RULES.md, scripts/screens.mjs (SIZES) and agents/screens.md",
     "games_lists": "skill new-game and RULES.md (how many GAMES lists a new game id goes in)",
 }
+
+
+# Scripts CI runs that are not checks of a change: which jobs to run, and Lighthouse's own server and report.
+CI_ONLY = {"tools/ci_changes.py", "tools/lighthouse/serve.mjs", "tools/lighthouse/explain.mjs"}
+
+
+def check_list():
+    """The rows of CHECKS in tools/check.py: (name, command, ..., heal recipe)."""
+    if not (ROOT / "tools/check.py").is_file():
+        return []
+    sys.path.insert(0, str(ROOT / "tools"))
+    import check
+    return check.CHECKS
 
 
 def read(rel):
@@ -68,6 +81,19 @@ def self_checks(now):
     sizes = sorted(f"{w} × {h}" for w, h in re.findall(r"\[(\d+),\s*(\d+)", m.group(1))) if m else []
     if sizes != now["screens"]:
         out.append(f"plugins/loopy/scripts/screens.mjs: SIZES are {sizes}, but DESIGN.md lists {now['screens']}.")
+    # tools/check.py is the one list of checks the skills point at: it must know every check CI runs,
+    # and every heal recipe it names must be there under that title.
+    checks = check_list()
+    commands = " ".join(row[1] for row in checks)
+    in_ci = set(re.findall(r"(?:python3|node) ((?:tools|sync|plugins|guide-src)/[\w./-]+\.(?:py|mjs))", read(".github/workflows/checks.yml")))
+    for script in sorted(in_ci - CI_ONLY):
+        if not re.search(rf"(?<![\w./-]){re.escape(script)}(?![\w./-])", commands):
+            out.append(f"tools/check.py does not run {script}, which .github/workflows/checks.yml does. Add it to CHECKS there, "
+                       "with why a red one matters and its heal recipe.")
+    titles = set(re.findall(r"^## (.+)$", read("plugins/loopy/skills/heal/recipes.md"), re.M))
+    for recipe in sorted({row[-1] for row in checks}):
+        if recipe not in titles:
+            out.append(f"tools/check.py names the heal recipe \"{recipe}\", but plugins/loopy/skills/heal/recipes.md has no such title.")
     return out
 
 

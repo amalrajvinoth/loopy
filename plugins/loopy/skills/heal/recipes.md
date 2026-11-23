@@ -1,6 +1,6 @@
 # Heal recipes
 
-One per failure. Add new ones at the end (the heal skill step 3). Keep each to four lines.
+One per failure. Add new ones at the end (the heal skill step 3). Keep each to four lines. Nobody reads this file whole: the heal skill searches it for the error text, and `python3 tools/check.py` names the recipe for a red check by its title, so a title that changes here changes there too (`drift.py` checks it).
 
 ## Built files out of date
 - Looks like: `loopy.js, loopy.css and sw.js do not match` or `build.py --check` fails, or CI "match their sources in src/".
@@ -74,6 +74,7 @@ One per failure. Add new ones at the end (the heal skill step 3). Keep each to f
 
 ## All checks fails, or a long check did not run
 - Looks like: CI "All checks" lists a job as failure or cancelled; or a page change passed without the accessibility, play or guide jobs running.
+- How CI runs them: the accessibility check and the play test run in two halves at once (`SHARD=1/2`, `SHARD=2/2`), each in Chromium and in WebKit. On a pull request they and the guide job are skipped when `tools/ci_changes.py` says no file they read changed (docs, `.claude/`, `plugins/`). A new file type or folder the pages read must not match its DOCS list.
 - Cause: a job above it failed (fix that job), a newer push stopped this run (cancelled: look at the newer run), or `tools/ci_changes.py` treats a file the pages read as docs.
 - Fix: open the failed job named in the list. For a wrong skip, narrow the DOCS or GUIDE pattern in `tools/ci_changes.py` and test it with `python3 tools/ci_changes.py origin/main HEAD`. (20 Oct 2026)
 
@@ -108,11 +109,13 @@ One per failure. Add new ones at the end (the heal skill step 3). Keep each to f
 - Fix: download the reports kept with the run and open the page's HTML report; it lists what cost the points. Size: `python3 tools/review.py` (100 KB per page). Fix in `src/`, rebuild, and run the workflow again (Actions → Lighthouse → Run workflow) after the merge. (25 Oct 2026)
 
 ## Family sync usage job is red
+- What it is: not a check. Mondays 05:23 UTC and by hand (`.github/workflows/sync-usage.yml`), it counts families and grown-ups with `tools/sync-usage.mjs`, keeps the numbers in the "Family sync and grown-ups" issue and comments there when something is new. `tools/sync-families.mjs` is the owner's own per-family table, never run on GitHub (`sync/README.md`).
 - Looks like: the Monday (or hand-run) "Family sync usage" job fails in "Count families and grown-ups": `test -n "$id"` fails, wrangler says "Authentication error", or `tools/sync-usage.mjs` throws on JSON. Or it fails in "Find the issue that keeps the counts" / "Keep the counts in the issue, and comment when something is new": `gh` says 403 or "could not resolve to an Issue".
 - Cause: a missing or expired Cloudflare secret, the `loopy-sync` database renamed, or wrangler's `--json` output changed shape. For the issue steps: the workflow lost `issues: write`, or the open issue titled "Family sync and grown-ups" lost its `usage` label (the job finds it by label and title; a closed one is fine, the job makes a new one).
 - Fix: ask the owner to check `CLOUDFLARE_API_TOKEN` and `CLOUDFLARE_ACCOUNT_ID` (sync/README.md). For a shape change, run `npm ci --prefix sync --ignore-scripts` then `sync/node_modules/.bin/wrangler d1 execute loopy-sync --remote --json --command "SELECT 1"` and fit `query()` in `tools/sync-d1.mjs` to it, then `node tools/sync-usage.test.mjs`. It must keep printing counts only: the issue and the log are public. (1 Nov 2026, Monday issue 18 Nov 2026)
 
 ## Forks and stars job is red
+- What it is: not a check. Mondays and by hand (`.github/workflows/forks.yml`), it lists new forks and counts new stars in its Summary, keeps the counts in the "Forks and stars" issue and comments there when they go up, so the owner gets an email.
 - Looks like: the Monday "Forks and stars" run fails in "New forks and stars since the last run": `gh api` or `gh issue` says "Resource not accessible by integration" (HTTP 403).
 - Cause: the Actions token may list forks, read the totals and write issues, but not list who starred (403) nor read traffic (both tried 2 November 2026; plain requests without a token get 401 on the runner). So stars are counted against the count kept in the "Forks and stars" issue's text, and a 403 means a new endpoint was added, or `issues: write` or `actions: read` was taken out of the job's `permissions`. Clone counts are optional and never fail the job.
 - Fix: keep to the endpoints the job uses; put the permissions back in `forks.yml`. Run it again: Actions → Forks and stars → Run workflow. (2 Nov 2026)
@@ -149,6 +152,7 @@ One per failure. Add new ones at the end (the heal skill step 3). Keep each to f
 
 ## Lighthouse budgets are red
 - Looks like: job "Lighthouse budgets" red; `categories:performance failure for minScore assertion` or `cumulative-layout-shift failure` on one URL, with the artifact `lighthouse-pull-request` (the reports). A `resource-summary:total:size` line is a warning, not red: Lighthouse counts headers, icon, manifest and the lazy parts too (the progress page is 101 KB that way); the 100 KB gate is `review.py --budget`.
+- Locally: `npm ci --prefix tools/lighthouse --ignore-scripts`, `node tools/lighthouse/serve.mjs 8787 &`, then `tools/lighthouse/node_modules/.bin/lhci collect --config=tools/lighthouse/lighthouserc.json --url=http://127.0.0.1:8787/loopy/<page>/` and `tools/lighthouse/node_modules/.bin/lhci assert --config=tools/lighthouse/lighthouserc.json`; `node tools/lighthouse/explain.mjs` then says what each run lost its points to. CI scores only the pages the change touches (`tools/ci_changes.py --pages`): performance, accessibility and best practices 95 or more, layout shift under 0.1.
 - Fix: read the step "What cost the points" in the job log first (`tools/lighthouse/explain.mjs`): every run's scores, and for a run under the budget each layout shift with the element that moved and why, the element of the biggest paint and the slow steps. The reports themselves are the `lighthouse-pull-request` artifact, which needs a browser to download. A performance failure on a local server is almost always work on load (a long script before first paint, a big picture, a font not preloaded) or a layout shift (`cumulative-layout-shift`, the report's "Avoid large layout shifts" names the element): fix the page, never lower `minScore`. Seen once: the progress page waited for `Loopy.load("levels")` before its first render, so the sections below "Game by game" jumped down when the part arrived (CLS 0.14, score 94); the part now comes with the page in a script tag and the page is drawn once. Re-run once before anything else when every URL is a few points under: the runner can be slow. (20 Nov 2026)
 
 ## WebKit run is red, every page "Can't find variable: Loopy"
@@ -184,3 +188,13 @@ One per failure. Add new ones at the end (the heal skill step 3). Keep each to f
 - Looks like: step "The script in every page is sound (ESLint) and uses only JavaScript every browser has had for 30 months (Baseline)" red; `math/x/index.html 356:28 error 'FOO' is not defined no-undef`, `'hard' is assigned a value but never used no-unused-vars`, `Expected '===' and instead saw '==' eqeqeq`, or `... is not a widely available Baseline feature baseline-js/use-baseline`.
 - Cause: a typo or a leftover in a page's script; a new data file whose globals the page reads (the config parses the `words.js` or `data.js` the page loads and takes its top-level `const`, `let`, `var`, `function` and `class` names; a name made another way, say `window.X = ...`, is missed); a JavaScript feature, built-in or web API Safari or Firefox got less than 30 months ago.
 - Fix: run `node tools/lint/scripts.mjs <page>` locally. Remove the leftover, fix the typo, write `===`. A new global goes in the data file as a top-level `const NAME = ...`. A too-new feature gets a fallback that works without it, or goes. Only a finding that is right on purpose gets `// eslint-disable-next-line <rule>` with a comment above that says why (as the two marker characters in Coins and Change do); a web API every use of which sits behind a check with a fallback may go on the `ignoreFeatures` list in `tools/lint/eslint.config.mjs` with its reason (as `share` does). Never turn a rule off for every page. (20 Nov 2026)
+
+## Hook test fails
+- Looks like: `python3 plugins/test_hooks.py` prints `Plugin hook tests failed:` with a line for each hook, or CI "The Claude Code plugins match the repo" is red after its sync and drift lines passed.
+- Cause: a hook in `plugins/*/hooks/` changed what it blocks or prints, or a file it reads moved.
+- Fix: fix the hook. Change the test only when the hook's new behaviour is what was asked for. Then `python3 plugins/sync.py`. (22 Nov 2026)
+
+## A skill, a description or AGENTS.md is too long
+- Looks like: `plugins/sync.py --check` prints "Too long" with a `SKILL.md is N bytes (limit 6144)`, `the description is N characters (limit 200)` or `AGENTS.md is N bytes (limit 10240)`.
+- Cause: something was added to a skill or to a `RULES.md` and nothing was taken out. Every session reads AGENTS.md and the descriptions; a skill's body is read whole each time it is used.
+- Fix: replace or shorten what is there. Move detail that is needed only sometimes into a page next to the skill and say in the skill when to read it; move a how-to out of `RULES.md` into the skill, recipe or `tools/check.py` hint that uses it. Never raise the limit; the `LONGER` list in `plugins/sync.py` is only for a skill copied word for word from somewhere else. (22 Nov 2026)

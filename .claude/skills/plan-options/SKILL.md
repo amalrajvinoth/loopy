@@ -1,6 +1,6 @@
 ---
 name: plan-options
-description: Make a plan with numbered options and a recommendation, then wait for the owner to pick. Use for "Plan for X", "Plan to ...", "Brain-storm X", "what are the options", or any ask to think before building.
+description: Make a plan with numbered options and a recommendation, then wait for the owner to pick. Use for "Plan for X", "Plan to ...", "Brain-storm X", "what are the options", or to think before building.
 ---
 
 <!-- Copied from plugins/work-style/skills/plan-options/ by plugins/sync.py. Edit the source there, then run python3 plugins/sync.py. -->

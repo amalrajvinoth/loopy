@@ -1,6 +1,6 @@
 ---
 name: fix-issue
-description: Fix a GitHub issue end to end. Use when the owner sends "fix: <issue link>", "fix #N", "fix this bug", or pastes a bug report.
+description: Fix a GitHub issue end to end. Use when the owner sends "fix:" with an issue link or number, "fix this bug", or pastes a bug report.
 ---
 
 # Fix an issue

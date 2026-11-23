@@ -1,6 +1,6 @@
 ---
 name: plan-pr-fix
-description: Read a pull request and plan how to get it merged. Use for "Plan to fix: <PR link>", "what's wrong with PR N", or "why is this PR stuck".
+description: Read a pull request and plan how to get it merged. Use for "Plan to fix:" with a PR link, "what's wrong with PR N", or "why is this PR stuck".
 ---
 
 # Plan to fix a pull request

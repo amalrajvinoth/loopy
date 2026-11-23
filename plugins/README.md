@@ -19,7 +19,7 @@ Two plugins, made from how the owner works on loopy. They turn the asks the owne
 | "apply all suggestion" | `apply-suggestions` | work-style |
 | "from now on...", "Update memory and instructions..." | `add-rule` | work-style |
 | "Take next task", "take next 3 tasks", "Start next" | `next-task` | loopy |
-| "Build #N" | `build-issue` | loopy |
+| "Build #N", "Build N" | `build-issue` | loopy |
 | "add a game" | `new-game` | loopy |
 | "push", "ship it" | `ship-pr` | loopy |
 | "update the docs", "update the guide", "update the FAQ" (and every change people can see) | `loopy-docs` | loopy |
@@ -40,7 +40,7 @@ You can keep typing the way you do now. Claude picks the skill from what you wri
 
 | When | Hook | What it does |
 | --- | --- | --- |
-| A session starts | `rules.py`, `session_start.py` | Shows the rules (`RULES.md` of each plugin), installs the minifiers and the test packages if missing, reports drift |
+| A session starts | `rules.py`, `session_start.py` | Installs the minifiers and the test packages if missing, reports drift. The rules themselves come from `AGENTS.md`, which `sync.py` writes from both `RULES.md` files and `CLAUDE.md` loads; `rules.py` prints the work-style rules only in a repo whose `AGENTS.md` does not hold them |
 | You send a message | `catch_rule.py` | Notices a new standing rule ("from now on", "always", "never") so Claude records it |
 | Before a commit, PR or comment | `no_attribution.py` | Blocks "Co-Authored-By: Claude", "Claude-Session", "Generated with Claude Code" and session links |
 | Before an edit | `guard_files.py` | Blocks edits to the built `loopy.js`, `loopy.css`, `sw.js`, and `style=` or `on...=` in pages |
@@ -62,6 +62,18 @@ You can keep typing the way you do now. Claude picks the skill from what you wri
 
 Evolve never loosens a rule, check or hook by itself. That needs your word.
 
+## Short on purpose
+
+Every session reads `AGENTS.md` and every skill's description. A skill's body is read whole each time it is used. So the text is kept short, and each fact lives in one place:
+
+- **The checks** are one script, `tools/check.py`. It runs what a change needs and says why a red check matters. The skills, `AGENTS.md` and the README point at it; none of them lists the checks again. `drift.py` fails when CI gains a check the script does not have.
+- **The rules** are `RULES.md` (one or two lines each) and, for the look, `DESIGN.md` "7. Do and don't". The review and improve-ui skills say how to check them, and do not repeat them.
+- **Detail that is needed only sometimes** sits in a page next to its skill, read when the skill says so: `loopy-review` has `screen.md`, `saved-data.md`, `speed.md` and `release-notes.md`; `loopy-docs` has `docs-map.md`; `improve-ui` has `references/`.
+- **heal reads one recipe**, found by the error text or by the title `tools/check.py` prints, never all of `recipes.md`.
+- **`sync.py --check` holds the line:** a `SKILL.md` up to 6 KB, a description up to 200 characters and without ` #` or `: ` (the frontmatter cuts it off there), `AGENTS.md` up to 10 KB. Past that, shorten or move detail to a page. The `LONGER` list in `sync.py` is only for a skill copied word for word from somewhere else (improve-ui).
+
+No skill sets `disable-model-invocation`. It would take a description out of every session, but `/loop 15m /tend-pr` could then no longer start the skill.
+
 ## Where it runs
 
 - **Cloud threads and anyone working in this repo:** nothing to install. Claude Code on the web does not install plugins from a repo's settings, so `python3 plugins/sync.py` copies the skills and agents into `.claude/skills` and `.claude/agents`, and the hooks into `.claude/settings.json`. These load in every session in this repo.
@@ -79,7 +91,7 @@ Evolve never loosens a rule, check or hook by itself. That needs your word.
 Edit `plugins/`, never the copies in `.claude/` (like `src/` and the built `loopy.js`). Then:
 
 ```sh
-python3 plugins/sync.py                    # refresh .claude/
+python3 plugins/sync.py                    # refresh .claude/ and AGENTS.md, and check the sizes
 python3 plugins/test_hooks.py              # hook tests
 python3 plugins/loopy/scripts/drift.py     # in step with the repo
 claude plugin validate plugins/loopy       # when the Claude Code CLI is there

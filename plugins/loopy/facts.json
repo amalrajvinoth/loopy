@@ -95,6 +95,7 @@
     "tools/a11y/check.mjs",
     "tools/build.py",
     "tools/build/minify.mjs",
+    "tools/check.py",
     "tools/check_external.py",
     "tools/ci_changes.py",
     "tools/csp.py",
@@ -152,5 +153,5 @@
     "844 × 390"
   ],
   "games_lists": 1,
-  "learned_at": "621eec2"
+  "learned_at": "9ae5b18"
 }

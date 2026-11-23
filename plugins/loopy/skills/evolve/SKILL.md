@@ -1,6 +1,6 @@
 ---
 name: evolve
-description: Update the loopy and work-style plugins so they keep up with the repo and with how the owner works. Use when drift.py reports the plugin is behind, for "evolve the plugin", "update the plugin", on the weekly plugin check, or after a run of merges.
+description: Bring the loopy and work-style plugins in step with the repo and with how the owner works. Use when drift.py says the plugin is behind, for "evolve the plugin", or on the weekly check.
 ---
 
 # Evolve the plugins
@@ -8,7 +8,7 @@ description: Update the loopy and work-style plugins so they keep up with the re
 The plugins learn from three sources. Look at all three, change what they show, and open one small pull request.
 
 ## 1. The repo moved (drift)
-Run `python3 plugins/loopy/scripts/drift.py`. For each line, update what it names: a new CI step or tool goes into `ship-pr` step 3 and a recipe in `heal/recipes.md`; a new built file goes into `BUILT` in the hooks; a changed screen size into `screens.mjs`; a new repo skill into `ship-pr` and `RULES.md`; a changed PR template into `ship-pr` step 7; a new GAMES list into `new-game`.
+Run `python3 plugins/loopy/scripts/drift.py`. For each line, update what it names: a new CI check goes into `tools/check.py` (the one check list, with its "why it matters" line) and a recipe in `heal/recipes.md`; a new built file goes into `BUILT` in the hooks; a changed screen size into `screens.mjs`; a new repo skill into `ship-pr`; a changed PR template into `ship-pr` step 9; a new GAMES list into `new-game`.
 
 ## 2. The owner asked for something new (rules and habits)
 Read what the owner asked since `learned_at` in `plugins/loopy/facts.json` (the project chat and threads when this session can read them, otherwise merged PR descriptions and review comments). Look for:
@@ -20,10 +20,12 @@ Read what the owner asked since `learned_at` in `plugins/loopy/facts.json` (the 
 Read `plugins/loopy/skills/heal/recipes.md`. A recipe used for the same cause twice should become a hook or a check (heal skill step 4).
 
 ## Finish
-1. `python3 plugins/sync.py` (copies into `.claude/`), `python3 plugins/test_hooks.py`, `claude plugin validate plugins/loopy` and `plugins/work-style` when the CLI is there.
+1. `python3 plugins/sync.py` (copies into `.claude/`, checks the sizes), `python3 plugins/test_hooks.py`, `claude plugin validate plugins/loopy` and `plugins/work-style` when the CLI is there.
 2. `python3 plugins/loopy/scripts/drift.py --update`.
 3. Bump `version` in each changed plugin's `.claude-plugin/plugin.json` (patch for fixes, minor for new skills or rules).
 4. Add a line to `plugins/CHANGELOG.md`: date, version, what the plugin learned and from where.
 5. One pull request, "Plugin: learn <what>". No screenshots needed. Reply with the link and the list of what changed, one line each.
+
+**Replace or shorten, do not only add.** A skill is read whole each time it is used, and AGENTS.md in every session. When a skill learns something, rewrite the step it belongs to; put detail that is needed only sometimes in a page next to the skill; keep a fact in one place and point at it from the others. `plugins/sync.py --check` fails past 6 KB a skill, 200 characters a description and 10 KB for AGENTS.md.
 
 Never let evolve loosen a rule, a check or a hook on its own. Removing or weakening one needs the owner's word.

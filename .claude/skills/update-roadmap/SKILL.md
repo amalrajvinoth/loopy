@@ -1,6 +1,6 @@
 ---
 name: update-roadmap
-description: Bring loopy's roadmap issue #21 in line with what is on main. Use for "Update roadmap ticket", "refresh the roadmap", or after several merges.
+description: Bring the loopy roadmap issue in line with what is on main. Use for "Update roadmap ticket", "refresh the roadmap", or after several merges.
 ---
 
 <!-- Copied from plugins/loopy/skills/update-roadmap/ by plugins/sync.py. Edit the source there, then run python3 plugins/sync.py. -->

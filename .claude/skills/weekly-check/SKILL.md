@@ -1,6 +1,6 @@
 ---
 name: weekly-check
-description: The Monday check of loopy: what merged, what is red, whether the plugins fell behind, and what waits on the owner. Runs by itself from the project's weekly scheduled task; also for "weekly check" or "what needs me".
+description: The Monday check of loopy. What merged, what is red, whether the plugins fell behind, what waits on the owner. Runs from the weekly scheduled task. Also for "weekly check" or "what needs me".
 ---
 
 <!-- Copied from plugins/loopy/skills/weekly-check/ by plugins/sync.py. Edit the source there, then run python3 plugins/sync.py. -->
