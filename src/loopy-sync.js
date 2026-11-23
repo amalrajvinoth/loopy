@@ -472,6 +472,8 @@
   // With Family sync on, a second tick box, "Also link my email to our Family sync" (issue #169), sends the
   // family id (st.i) along, so the owner can see which family copy goes with which email. The copy stays
   // locked. The box shows only while sync is on; Turn off everywhere drops the link on the server too.
+  // The server answers 200 whether or not it took the link (an email saved first on another device keeps that
+  // device's key, and the answer must not tell who is on the list), so the saved line says "unless ...".
   var TOUCH = "loopy.touch";
   Loopy.addStrings({
     en: { stHead: "Grown-ups: stay in touch",
@@ -480,14 +482,14 @@
       stSaved: "Saved: {mail}. Thank you!", stDone: "Saved. Thank you!", stGone: "Removed.", stBad: "That does not look like an email.",
       stTick: "Please tick the box first.", stWait: "Please wait a moment, then try again.", stElse: "Removed from this device. If you saved it on another device too, remove it there as well.",
       stLink: "Also link my email to our Family sync", stLinkWhy: "Then loopy's maker can see which family copy goes with your email, for example to help when sync goes wrong. The copy stays locked: the server still cannot read stars or names.",
-      stLinked: "Linked to your Family sync. Remove and save again to unlink." },
+      stLinked: "Linked to your Family sync, unless this email was saved first on another device. Remove and save again to unlink." },
     de: { stHead: "Für Erwachsene: in Kontakt bleiben",
       stText: "Hinterlasse deine E-Mail, wenn du von neuen Spielen hören möchtest, ein paar Mal im Jahr. Nur für Erwachsene. Sie wird deinem Kind nie gezeigt und nie weitergegeben. Sie liegt auf loopys eigenem Server in der EU. Du kannst sie hier jederzeit löschen.",
       stLabel: "Deine E-Mail", stAgree: "Ich bin erwachsen und stimme dem ", stNote: "Datenschutzhinweis", stSave: "Speichern", stRemove: "Löschen",
       stSaved: "Gespeichert: {mail}. Danke!", stDone: "Gespeichert. Danke!", stGone: "Gelöscht.", stBad: "Das sieht nicht wie eine E-Mail aus.",
       stTick: "Bitte zuerst das Kästchen ankreuzen.", stWait: "Bitte warte kurz und versuche es noch einmal.", stElse: "Auf diesem Gerät gelöscht. Hast du sie auch auf einem anderen Gerät gespeichert, lösche sie dort ebenfalls.",
       stLink: "Meine E-Mail auch mit unserem Familien-Sync verknüpfen", stLinkWhy: "Dann sieht der Macher von loopy, welche Familien-Kopie zu deiner E-Mail gehört, zum Beispiel um zu helfen, wenn der Sync hakt. Die Kopie bleibt verschlossen: Der Server kann Sterne und Namen weiter nicht lesen.",
-      stLinked: "Mit eurem Familien-Sync verknüpft. Zum Trennen löschen und neu speichern." }
+      stLinked: "Mit eurem Familien-Sync verknüpft, außer die E-Mail wurde zuerst auf einem anderen Gerät gespeichert. Zum Trennen löschen und neu speichern." }
   });
   function readTouch() {
     var s;
@@ -500,6 +502,9 @@
   // (the server keeps the first key it saw), and Remove works afterwards.
   /** @type {Record<string, string>} */
   var tried = {};
+  // Redraws the open Stay in touch part from storage, set while it is on screen (Turn off everywhere uses it).
+  /** @type {(() => void) | null} */
+  var refreshTouch = null;
   function writeTouch(s) { try { if (s) localStorage.setItem(TOUCH, JSON.stringify(s)); else localStorage.removeItem(TOUCH); } catch (e) {} }
   function newKey() {
     var r = crypto.getRandomValues(new Uint8Array(32));
@@ -512,6 +517,7 @@
     msg.setAttribute("aria-live", "polite");
     box.replaceChildren(el("p", "set-head", t("stHead")), el("p", "", t("stText")), body, msg);
     box.hidden = false;
+    refreshTouch = function () { saved = readTouch(); draw(); };
     function draw() {
       var row = el("div", "kid-foot");
       body.replaceChildren();
@@ -634,7 +640,7 @@
         if (r.n !== 200 && r.n !== 404) { if (st === s) later(); return false; }
         if (st === s) clear();          // Turn off was tapped meanwhile, or a new family made: leave that alone
         var tc = readTouch();           // the server dropped the Stay in touch link to this family: forget it here too
-        if (tc && tc.f) { tc.f = 0; writeTouch(tc); }
+        if (tc && tc.f) { tc.f = 0; writeTouch(tc); if (refreshTouch) refreshTouch(); }
         return true;
       });
       return ending;

@@ -42,7 +42,7 @@ Yes, with Family sync. As long as no family code is set, the home page shows a r
 
 ## Can I hear about new games?
 
-Yes. In ⚙ Settings on the home page, under **Stay in touch**, type your email, tick the box and tap **Save**. Only grown-ups. loopy keeps the email, your language and the time, nothing else, and **Remove** deletes it. With Family sync on, you can also tick **Also link my email to our Family sync**. Then loopy's maker can see which family copy goes with your email. See [Settings on the home page](/loopy/guide/settings/home-settings/).
+Yes. In ⚙ Settings on the home page, under **Stay in touch**, type your email, tick the box and tap **Save**. Only grown-ups. loopy keeps the email, your language and the time, and **Remove** deletes it. With Family sync on, you can also tick **Also link my email to our Family sync**. Then your family id is kept next to the email too, so loopy's maker can see which family copy goes with your email. Nothing else is kept. See [Settings on the home page](/loopy/guide/settings/home-settings/).
 
 ## Can I use loopy like an app, and offline?
 

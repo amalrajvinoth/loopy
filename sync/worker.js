@@ -113,9 +113,10 @@ export default {
 
     if (url.searchParams.get("del") === "1") {
       if (!row) return send(404);
-      await db.prepare("DELETE FROM families WHERE id = ? AND k = ?").bind(id, k).run();
-      // An email linked to this family (Stay in touch) points at nothing now: drop the link, keep the email.
+      // An email linked to this family (Stay in touch) would point at nothing: drop the link first, keep the
+      // email. First, so that if this step fails the family row is still there and the same request can retry.
       if (env.GROWNUPS) await env.GROWNUPS.prepare("UPDATE grownups SET f = NULL WHERE f = ?").bind(id).run();
+      await db.prepare("DELETE FROM families WHERE id = ? AND k = ?").bind(id, k).run();
       return send(200, {});
     }
 
