@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'sha256-B00FNrq24vdIjy9jtKj12ibG7+ukaA4LwoKQ+b+zhPs='; style-src 'self' 'sha256-iKqZfY0yOsyVHa/qlTmRsjSUAon+EdDi9RLwucVWFNA=' 'sha256-EdOymIVb6fnN53VSCMS+YBrDE6XvVNV2qSCIaGiIz2I='; img-src 'self' data:; font-src 'self'; connect-src 'self' https://loopy-sync.loopy-1e2.workers.dev; worker-src 'self'; object-src 'none'; base-uri 'none'; form-action 'none'; manifest-src 'self'; upgrade-insecure-requests">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'sha256-K32oYLyz8Wx1ptv9hP0APuEYVsy4dFXyFncI7MMnOwM='; style-src 'self' 'sha256-iKqZfY0yOsyVHa/qlTmRsjSUAon+EdDi9RLwucVWFNA=' 'sha256-OQwuojJH58EchjKKQJLoEQfhcz+sA+rcK3T8WQexI5o='; img-src 'self' data:; font-src 'self'; connect-src 'self' https://loopy-sync.loopy-1e2.workers.dev; worker-src 'self'; object-src 'none'; base-uri 'none'; form-action 'none'; manifest-src 'self'; upgrade-insecure-requests">
 <meta name="referrer" content="strict-origin-when-cross-origin">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <style>:root{color-scheme:light;padding-top:var(--safe-top);padding-bottom:var(--safe-bottom)}body{margin:0}[hidden]{display:none!important}</style>
@@ -60,7 +60,6 @@ h1 { margin: 0; font-size: 1.6rem; font-weight: 700; text-wrap: balance; }
 .stage { display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 6px; flex: 1 1 auto; min-height: 0; width: 100%; container-type: inline-size; }
 /* Big sums (age 11+, like 10,000 − 9,999) shrink to fit the card. --n is the number of characters, set by the script. */
 .sum { font-size: min(clamp(2.2rem, min(11vw, 9dvh), 4.4rem), calc(100cqi / (var(--n, 1) * 0.56))); font-weight: 700; font-variant-numeric: tabular-nums; white-space: nowrap; letter-spacing: 0.02em; }
-.sum .op { color: var(--accent); }
 .sum .q { color: var(--mark); }
 .problem-card.good .sum .q { color: var(--good); }
 .problem-card.bad .sum .q { color: var(--bad); }
@@ -511,7 +510,7 @@ const keyOf = (p) => p.kind + (p.kind === "ss" ? p.word[1] + p.mode : p.kind ===
       s.className = "sum";
       s.innerHTML = '<span></span><span class="op"></span><span></span> = <span class="q">?</span>';
       s.children[0].textContent = num(p.a);
-      s.children[1].textContent = sign[p.op].trim();
+      Loopy.sum(s.children[1], sign[p.op].trim());
       s.children[2].textContent = num(p.b);
       s.children[1].before(" "); s.children[1].after(" ");
       s.setAttribute("aria-label", p.a + " " + t(word[p.op]) + " " + p.b);

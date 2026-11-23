@@ -40,7 +40,7 @@ function changedPages() {
     return [...new Set(files.filter(f => f.endsWith("index.html")).map(f => f.replace(/index\.html$/, "")))];
   } catch { return []; }
 }
-let pages = args.length ? args.map(p => p.replace(/^\/+/, "").replace(/index\.html$/, "")) : changedPages();
+let pages = args.length ? args.map(p => p.replace(/^\/+/, "").replace(/index\.html$/, "").replace(/([^/])$/, "$1/")) : changedPages(); // a folder ends in "/", so ../../loopy.js resolves
 if (!pages.length) pages = [""];
 
 const TYPES = { ".html": "text/html", ".js": "text/javascript", ".css": "text/css", ".svg": "image/svg+xml", ".png": "image/png",
@@ -74,6 +74,7 @@ for (const page of pages) {
     const ctx = await browser.newContext({ viewport: { width: w, height: h }, reducedMotion: "reduce", serviceWorkers: "block" });
     await ctx.addInitScript(([l, t]) => {
       localStorage.setItem("loopy.lang", l); localStorage.setItem("loopy.sound", "off");
+      localStorage.setItem("loopy.hello", '{"w":1}'); // the welcome sheet was seen, so the page itself shows
       if (t) localStorage.setItem("loopy.theme", t);
     }, [lang, THEME]);
     const tab = await ctx.newPage();

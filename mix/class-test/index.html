@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'sha256-Qazktym0JcjdlAFpU2Ll5chloPm6AqyyZKaz0tP1ZXQ='; style-src 'self' 'sha256-iKqZfY0yOsyVHa/qlTmRsjSUAon+EdDi9RLwucVWFNA=' 'sha256-08rg5M++IXGWyrL1tOdSQvIQCsEp0j+gQDYSQyQSDMI='; img-src 'self' data:; font-src 'self'; connect-src 'self' https://loopy-sync.loopy-1e2.workers.dev; worker-src 'self'; object-src 'none'; base-uri 'none'; form-action 'none'; manifest-src 'self'; upgrade-insecure-requests">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'sha256-1M8f3LcUPdDOkamN69dDVEbetdpk3mU7fLG/kBbWcEw='; style-src 'self' 'sha256-iKqZfY0yOsyVHa/qlTmRsjSUAon+EdDi9RLwucVWFNA=' 'sha256-UdF0Za+oKIw059Ieos1g7lX17SW1MZlr/PboBPYkuxA='; img-src 'self' data:; font-src 'self'; connect-src 'self' https://loopy-sync.loopy-1e2.workers.dev; worker-src 'self'; object-src 'none'; base-uri 'none'; form-action 'none'; manifest-src 'self'; upgrade-insecure-requests">
 <meta name="referrer" content="strict-origin-when-cross-origin">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <style>:root{color-scheme:light;padding-top:var(--safe-top);padding-bottom:var(--safe-bottom)}body{margin:0}[hidden]{display:none!important}</style>
@@ -127,7 +127,7 @@ svg.clock { width: min(100%, 260px, 28dvh); height: auto; aspect-ratio: 1; displ
 .mg { border-collapse: separate; border-spacing: clamp(4px, 1.4cqw, 8px); margin: -4px auto; font-weight: 700; font-variant-numeric: tabular-nums; }
 .mg th, .mg td { width: clamp(52px, 18cqw, 88px); height: clamp(44px, 6.5dvh, 76px); padding: 0 4px; text-align: center; vertical-align: middle; border: 2px solid var(--line); border-radius: 14px; background: var(--chip); color: var(--ink); font-size: clamp(1.1rem, 5cqw, 1.9rem); line-height: 1; }
 .mg th { color: var(--muted); }
-.mg .corner { background: transparent; border-color: transparent; color: var(--muted); }
+.mg .corner { background: transparent; border-color: transparent; color: var(--accent); }
 .mg .todo { border-style: dashed; background: var(--card); color: var(--muted); }
 .mg .ask { border-style: solid; border-color: var(--accent); box-shadow: 0 0 0 2px var(--accent) inset; background: var(--card); color: var(--accent); }
 .mg .ask:empty::after, .mg .todo:empty::after { content: "?"; color: var(--muted); }
@@ -516,7 +516,7 @@ Loopy.addStrings({
     return { slot, a, b, qs: [{ note: "ct:" + slot + ":" + a + ":" + b, kind: sign === "+" ? "st-add" : "st-sub", pts: slot === 7 ? 2 : 1, mode: "pad", answer: total,
       ask: () => t(askKey, askVars || {}), sub: () => "", why: () => t("ctWhySteps", { steps: stepsText(steps, slot === 4 ? "ctComma" : "ctThen") }),
       log: () => num(a) + " " + sign + " " + num(b) }],
-      draw: (box, q, st) => { box.appendChild(el("div", "sum small", num(a) + " " + sign + " " + num(b))); box.appendChild(stepsList(steps, steps.length - 1, q, st)); },
+      draw: (box, q, st) => { box.appendChild(Loopy.sum(el("div", "sum small"), num(a) + " " + sign + " " + num(b))); box.appendChild(stepsList(steps, steps.length - 1, q, st)); },
       sheet: (box) => { box.appendChild(el("div", "sum", num(a) + " " + sign + " " + num(b))); const f = el("div", "fill"); steps.forEach((s, i) => { if (i) f.appendChild(document.createElement("br")); f.appendChild(document.createTextNode(num(s[0]) + " " + s[1] + " " + num(s[2]) + " = ")); f.appendChild(el("i", "")); }); box.appendChild(f); },
       answers: () => stepsText(steps, slot === 4 ? "ctComma" : "ctThen") };
   }
@@ -534,7 +534,7 @@ Loopy.addStrings({
     return ol;
   }
   // One line with a label and the box being typed in, like "= [?]".
-  function askLine(q, st, label) { const ol = el("ol", "steps"), li = el("li", "", label), box = el("span", "box ask"); fillAsk(box, q, st); li.appendChild(box); ol.appendChild(li); return ol; }
+  function askLine(q, st, label) { const ol = el("ol", "steps"), li = Loopy.sum(el("li"), label), box = el("span", "box ask"); fillAsk(box, q, st); li.appendChild(box); ol.appendChild(li); return ol; }
   // The box being typed in: the typed digits, or the answer once it is answered. For a screen reader and the tests it carries the answer.
   function fillAsk(box, q, st) {
     if (st.answered) { box.textContent = st.ok ? num(q.answer) : st.typed; return; }
@@ -639,7 +639,7 @@ Loopy.addStrings({
     return { slot: 8, a, b, w, qs: [
       { note: "ct:8:" + a + ":" + b + ":" + w + ":n", kind: "wy-name", pts: 1, mode: "pick", names: true, answer: wayName(w), choices: names, ask: () => t("ctAskName"), sub: () => t("ctSubName"), why: () => t("ctWhyName", { way: wayName(w), steps: wayText(a, b, w) }), log: () => sum },
       { note: "ct:8:" + a + ":" + b + ":" + w + ":w", kind: "wy-why", pts: 1, mode: "pick", answer: reason(a, b, w), choices: reasons, ask: () => t("ctAskWhy", { way: wayName(w) }), sub: () => t("ctSubWhy"), why: () => t("ctWhyWay", { way: wayName(w), steps: wayText(a, b, w), reason: reason(a, b, w) }), log: () => sum + ": " + wayName(w) }],
-      draw: (box, q) => { box.appendChild(el("div", "sum", sum)); const wc = el("div", "waycard" + (q.names ? " quiet" : "")); if (!q.names) wc.appendChild(el("b", "", wayName(w))); wc.appendChild(el("span", "st", wayText(a, b, w))); box.appendChild(wc); },
+      draw: (box, q) => { box.appendChild(Loopy.sum(el("div", "sum"), sum)); const wc = el("div", "waycard" + (q.names ? " quiet" : "")); if (!q.names) wc.appendChild(el("b", "", wayName(w))); wc.appendChild(el("span", "st", wayText(a, b, w))); box.appendChild(wc); },
       sheet: (box) => { box.appendChild(el("div", "sum", sum)); const wc = el("div", "waycard"); wc.appendChild(el("span", "st", wayText(a, b, w))); box.appendChild(wc); const ways = el("div", "ways"); WAYS.forEach(k => { const row = el("div", "way"); row.appendChild(el("i", "")); row.appendChild(document.createTextNode(wayName(k))); ways.appendChild(row); }); box.appendChild(ways); line(box, t("ctBecause")); },
       answers: () => wayName(w) + ". " + reason(a, b, w) };
   }
@@ -678,7 +678,7 @@ Loopy.addStrings({
     const table = (q, st, print) => {
       const tb = el("table", "mg"); tb.setAttribute("aria-label", t("ctGridAria"));
       const head = el("tr"), body = el("tr");
-      head.appendChild(el("th", "corner", times()));
+      head.appendChild(Loopy.sum(el("th", "corner"), times()));
       body.appendChild(el("th", "", num(r)));
       // The box of the question on show has the accent line; a box answered before shows its number; the other one waits.
       const cell = (tag, me, value, done) => {
@@ -745,7 +745,7 @@ Loopy.addStrings({
     const qs = steps.map((st, i) => ({ note: "ca:" + slot + ":" + a + ":" + b + ":" + i, kind: "st-add", pts: 1, mode: "pad", answer: st[3], i,
       ask: () => ask(i), sub: () => "", why: () => why ? why(i) : t("ctWhySteps", { steps: stepsText(steps, sep2(w)) }), log: () => sum }));
     return { slot, paper: 2, a, b, w, qs,
-      draw: (box, q, st) => { box.appendChild(el("div", "sum small", sum)); box.appendChild(stepsList(steps, q.i, q, st)); },
+      draw: (box, q, st) => { box.appendChild(Loopy.sum(el("div", "sum small"), sum)); box.appendChild(stepsList(steps, q.i, q, st)); },
       sheet: (box) => { box.appendChild(el("div", "sum", sum)); const f = el("div", "fill"); steps.forEach((st, i) => { if (i) f.appendChild(document.createElement("br")); f.appendChild(document.createTextNode(num(st[0]) + " " + st[1] + " " + num(st[2]) + " = ")); f.appendChild(el("i", "")); }); box.appendChild(f); },
       answers: () => stepsText(steps, sep2(w)) };
   }
@@ -766,7 +766,7 @@ Loopy.addStrings({
     const qs = steps.map((st, i) => ({ note: "ca:9:" + a + ":" + b1 + ":" + i, kind: "st-add", pts: 1, mode: "pad", answer: st[3], i,
       ask: () => t(i ? "ctAskPair2" : "ctAskPair1", v), sub: () => "", why: () => t("ctWhyPair", v), log: () => num(st[0]) + " + " + num(st[2]) }));
     return { slot: 9, paper: 2, a, b: b2, qs,
-      draw: (box, q, st) => { box.appendChild(el("div", "sum small", sum)); box.appendChild(stepsList(steps, q.i, q, st)); },
+      draw: (box, q, st) => { box.appendChild(Loopy.sum(el("div", "sum small"), sum)); box.appendChild(stepsList(steps, q.i, q, st)); },
       sheet: (box) => { box.appendChild(el("div", "sum", sum)); const f = el("div", "fill"); steps.forEach((st, i) => { if (i) f.appendChild(document.createElement("br")); f.appendChild(document.createTextNode(num(st[0]) + " + " + num(st[2]) + " = ")); f.appendChild(el("i", "")); }); box.appendChild(f); },
       answers: () => stepsText(steps, "ctComma") };
   }
@@ -808,7 +808,7 @@ Loopy.addStrings({
     const qs = sums.map(x => ({ note: "ca:4:" + x.a + ":" + x.b, kind: "wy-pick", pts: 1, mode: "pick", names: true, a: x.a, b: x.b, w: x.w, answer: wname(x.w), choices: wayChoices(ONE, x.w),
       ask: () => t("ctAskHow"), sub: () => t("ctSubHow"), why: () => t("ctWhyHow", { reason: statement(x.a, x.b, x.w), way: wname(x.w), steps: stepsText(ways2(x.a, x.b, x.w)) }), log: () => num(x.a) + " + " + num(x.b) }));
     return { slot: 4, paper: 2, qs,
-      draw: (box, q) => box.appendChild(el("div", "sum", num(q.a) + " + " + num(q.b))),
+      draw: (box, q) => box.appendChild(Loopy.sum(el("div", "sum"), num(q.a) + " + " + num(q.b))),
       sheet: (box) => { const ways = el("div", "ways"); ONE.forEach((k, i) => ways.appendChild(el("div", "way", num(i + 1) + " " + wlabel(k)))); box.appendChild(ways); sums.forEach(x => line(box, num(x.a) + " + " + num(x.b) + " =")); },
       answers: () => sums.map(x => num(x.a) + " + " + num(x.b) + ": " + wname(x.w) + " (" + num(x.a + x.b) + ")").join(t("ctComma")) };
   }
@@ -828,7 +828,7 @@ Loopy.addStrings({
       choices: shuffle(x.n.map((b, i) => ({ text: num(b), ok: ONE[i] === x.w }))),
       ask: () => t("ctAskMake", { way: wlabel(x.w) }), sub: () => t("ctSubMake"), why: () => t("ctWhyMake", { a: num(x.a), b: num(x.n[ONE.indexOf(x.w)]), reason: statement(x.a, x.n[ONE.indexOf(x.w)], x.w) }), log: () => num(x.a) + " + ?" }));
     return { slot: 5, paper: 2, qs,
-      draw: (box, q) => box.appendChild(el("div", "sum", num(q.a) + " + ?")),
+      draw: (box, q) => box.appendChild(Loopy.sum(el("div", "sum"), num(q.a) + " + ?")),
       sheet: (box) => parts.forEach(x => line(box, wlabel(x.w) + ": " + num(x.a) + " +")),
       answers: () => parts.map(x => wname(x.w) + ": " + num(x.a) + " + " + num(x.n[ONE.indexOf(x.w)])).join(t("ctComma")) };
   }
@@ -844,7 +844,7 @@ Loopy.addStrings({
       { note: "ca:11:" + a + ":" + b + ":p", kind: "wy-pick", pts: 1, mode: "pick", names: true, answer: wname(w), choices: wayChoices(TWO, w), ask: () => t("ctAskWhich"), sub: () => t("ctSubWhich"), why: () => t("ctWhyHow", { reason: statement(a, b, w), way: wname(w), steps: stepsText(steps, sep2(w)) }), log: () => sum },
       { note: "ca:11:" + a + ":" + b + ":s", kind: "st-add", pts: 1, mode: "pad", answer: a + b, i: steps.length - 1, ask: () => t("ctAskSumNow", { way: wname(w) }), sub: () => "", why: () => t("ctWhySteps", { steps: stepsText(steps, sep2(w)) }), log: () => sum }];
     return { slot: 11, paper: 2, a, b, w, qs,
-      draw: (box, q, st) => { box.appendChild(el("div", q.mode === "pad" ? "sum small" : "sum", sum)); if (q.mode === "pad") box.appendChild(stepsList(steps, q.i, q, st)); },
+      draw: (box, q, st) => { box.appendChild(Loopy.sum(el("div", q.mode === "pad" ? "sum small" : "sum"), sum)); if (q.mode === "pad") box.appendChild(stepsList(steps, q.i, q, st)); },
       sheet: (box) => { box.appendChild(el("div", "sum", sum)); const ways = el("div", "ways"); TWO.forEach(k => { const row = el("div", "way"); row.appendChild(el("i", "")); row.appendChild(document.createTextNode(wlabel(k))); ways.appendChild(row); }); box.appendChild(ways); line(box, t("ctBecause")); line(box, "="); },
       answers: () => wname(w) + ". " + statement(a, b, w) + " " + stepsText(steps, sep2(w)) };
   }

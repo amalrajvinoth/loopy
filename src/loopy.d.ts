@@ -199,6 +199,8 @@ interface Loopy {
   sign(op: string): string;
   /** A saved sum (a mistake on the Try again card, kept with × and ÷) rewritten in this language's signs. */
   signs(text: any): any;
+  /** Writes a sum into el with each sign in a span.op (span.op.dot for the German ·), so the card can colour it. */
+  sum(el: HTMLElement, text: string): HTMLElement;
   setLang(l: string): void;
 
   // Small helpers

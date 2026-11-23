@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'sha256-ZuyL71zuxH+uHf1Ojj/rz81EJayrhWm3hdqUAgR2fwk='; style-src 'self' 'sha256-iKqZfY0yOsyVHa/qlTmRsjSUAon+EdDi9RLwucVWFNA=' 'sha256-PdOGawjoljwSyQ2QoDsZq9qeS3g1+SIYetWaiwe13dA=' 'sha256-RT1053JU5UiKvjrCUFx1rlhdFLMmgtuFJ9T8jnMeawQ=' 'sha256-ZpdoenNs7heXjCDUcSzlyVesehAL9R4wTaiZxTZtPwg='; img-src 'self' data:; font-src 'self'; connect-src 'self' https://loopy-sync.loopy-1e2.workers.dev; worker-src 'self'; object-src 'none'; base-uri 'none'; form-action 'none'; manifest-src 'self'; upgrade-insecure-requests">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'sha256-7SXJtVFNcQrj/maubTHzjAwdy5yZHvihe/mRKI7pnnE='; style-src 'self' 'sha256-iKqZfY0yOsyVHa/qlTmRsjSUAon+EdDi9RLwucVWFNA=' 'sha256-irfFxHS8qWDzHe2BhK1PhX+h8NXrBfkWSa75vaWWvUU=' 'sha256-RT1053JU5UiKvjrCUFx1rlhdFLMmgtuFJ9T8jnMeawQ=' 'sha256-wXtpvkDWN4SNuV6vdxw0qmsRgMnGMc7req4jJdrrDyM='; img-src 'self' data:; font-src 'self'; connect-src 'self' https://loopy-sync.loopy-1e2.workers.dev; worker-src 'self'; object-src 'none'; base-uri 'none'; form-action 'none'; manifest-src 'self'; upgrade-insecure-requests">
 <meta name="referrer" content="strict-origin-when-cross-origin">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <style>:root{color-scheme:light;padding-top:var(--safe-top);padding-bottom:var(--safe-bottom)}body{margin:0}[hidden]{display:none!important}</style>
@@ -75,7 +75,7 @@ h1 { margin: 0; font-size: 1.6rem; font-weight: 700; text-wrap: balance; }
   font-variant-numeric: tabular-nums; letter-spacing: 0.04em;
 }
 .vert .num { grid-column: 2; text-align: right; min-width: 3ch; }
-.vert .op { grid-column: 1; grid-row: 2; color: var(--accent); }
+.vert .op { grid-column: 1; grid-row: 2; }
 .vert .rule { grid-column: 1 / -1; height: 0.07em; background: var(--ink); border-radius: 2px; margin: 0.1em 0 0.12em; }
 .vert .ans {
   grid-column: 2; text-align: right; min-width: 3ch; min-height: 1.12em;
@@ -182,7 +182,6 @@ body { min-height: 100vh; min-height: 100dvh; padding-block: var(--page-pad-top)
 /* Times and Share: the problem is written in one line, with an optional dot picture to count. */
 .eq { display: flex; align-items: baseline; justify-content: center; flex-wrap: wrap; gap: 0 0.28em;
   font-size: clamp(2.4rem, min(12vw, 8dvh), 5rem); font-weight: 600; font-variant-numeric: tabular-nums; line-height: 1.15; }
-.eq .op { color: var(--accent); }
 .eq .eqs { color: var(--muted); }
 .eq .ans { min-width: 1.6ch; text-align: center; color: var(--accent); border-bottom: 0.07em solid var(--ink); position: relative; padding: 0 0.1em; }
 .eq .ans.empty::after { content: "?"; color: var(--muted); }
@@ -482,7 +481,7 @@ function explain(p) {
     typed = ""; answered = false;
     $("eq-a").textContent = fmt(current.a);
     $("eq-b").textContent = fmt(current.b);
-    $("op-sign").textContent = Loopy.sign(current.op);
+    Loopy.sum($("op-sign"), Loopy.sign(current.op));
     $("eq").setAttribute("aria-label", current.a + " " + t(current.op === "mul" ? "timesWord" : "dividedBy") + " " + current.b);
     card.className = "problem-card";
     feedbackEl.className = "feedback";

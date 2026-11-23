@@ -201,7 +201,7 @@ Rules:
 
 - Numbers use `font-variant-numeric: tabular-nums`, so they line up and do not jump.
 - Numbers follow the language: 1,000 in English and 1.000 in German. Use `Loopy.num()`.
-- The signs of a sum follow the language too, the way the child's school writes them: + − × ÷ in English, + − · : in German (3 · 4, 12 : 3). Use `Loopy.sign("mul")`, never a sign typed into a page; a saved sum (a mistake on the Try again card) goes through `Loopy.signs()`. A saved sum (a mistake in the log) keeps × and ÷ whatever the language, and `Loopy.signs()` shows it right. The minus is always the real minus sign −, not a hyphen. A grid size such as "4 × 4" is not a sum and keeps ×.
+- The signs of a sum follow the language too, the way the child's school writes them: + − × ÷ in English, + − · : in German (3 · 4, 12 : 3). Use `Loopy.sign("mul")`, never a sign typed into a page, and `Loopy.sum()` to write a sum onto the card ("4. Components", Problem card); a saved sum (a mistake on the Try again card) goes through `Loopy.signs()`. A saved sum (a mistake in the log) keeps × and ÷ whatever the language, and `Loopy.signs()` shows it right. The minus is always the real minus sign −, not a hyphen. A grid size such as "4 × 4" is not a sum and keeps ×.
 - Use `text-wrap: balance` on headings.
 - The name is always lowercase "loopy" on screen.
 
@@ -241,6 +241,8 @@ The "loopy" bunny logo sits at the top of the home page. Its letters hop one aft
 ### Problem card
 
 The question sits on a card with a 1px line border and radius 24px. After an answer the border turns green or red.
+
+**The sign of the sum a question asks** (+, −, × or ·, ÷ or :) is `accent` on every card, the colour of the Check button, so a child reads the operation first; the digits stay `ink` and the equals sign `muted`. Worked steps under the sum (Step by Step, Class Test) keep their own `muted` or `ink` text. The corner sign of a times grid (Times Table Grid, Class Test, Box Multiplication) is `accent` too. `Loopy.sum(el, "7 · 8 =")` writes a sum with each sign in a `span.op`, which `loopy.css` colours; a page never colours a sign itself. The German times dot is small in Lexend, so `loopy.css` draws it a step bigger (scale 1.45, no extra room taken). A sign inside a number, like −3, is not a sign and stays `ink`.
 
 **The card fits its content.** Some questions have a size of their own. A quiz question, a flag, a word picture, a short sum with a number pad. Their card is only as tall as what it holds. The page marks the play area `<main class="play fit">`, and `src/loopy.css` does the rest. In portrait the card sits under the title. The answers, keys or letter tiles stay at the bottom and take the spare room, up to `--ans-max` and `--key-max`. Those are `--ans-grow` and `--key-grow` times `--ans-h` and `--key-h`: 1.5 and 1.3, and 1.4 and 1.2 on a laptop and a monitor. Three one-column answers grow to 0.8 of that, like their size. What is left after the cap is page, between the card and the answers. When the feedback line appears, the card grows down into that gap and the buttons give back height. So the answers never move. In landscape the card sits in the middle of its column, and the answers in the middle of theirs. A card that sizes its content to itself does not use `.fit`. That is the Plus and Minus sum, the Make 10 frames, the Word Detective grid, the Measure It drawing and the calendar. They use container units. A size container needs a height of its own, so that card keeps the full height of its column. 21 games fit their content, 15 fill the card.
 

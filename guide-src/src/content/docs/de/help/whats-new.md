@@ -10,6 +10,7 @@ Die großen Änderungen, die neuesten zuerst. Kleine Korrekturen stehen nicht da
 
 ## 23. November 2026
 
+- **Das Rechenzeichen fällt in jeder Aufgabe auf.** Das +, −, · (oder ×) und : (oder ÷) in einer Aufgabe hat jetzt in jedem Mathe-Spiel die Farbe des Farbthemas. So liest ein Kind zuerst, was zu rechnen ist. Der Mal-Punkt ist größer gezeichnet, so ist 3 · 4 so gut zu lesen wie 3 × 4. Vorher stand das Zeichen in sechs Spielen in einfacher Schrift.
 - **Aufgaben wie in der Schule.** Auf Deutsch steht mal jetzt als 3 · 4 und geteilt als 12 : 3, so wie in der Schule. Jedes Mathe-Spiel, die Arbeitsblätter und die Zeile bei Nochmal versuchen nehmen die neuen Zeichen. Auf Englisch bleibt es bei × und ÷.
 
 ## 21. November 2026

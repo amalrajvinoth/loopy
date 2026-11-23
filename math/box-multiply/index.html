@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'sha256-jHW9G87SetIjnbNYM6ZGRtqjK049Aj7HeeqMGUZt0Kw='; style-src 'self' 'sha256-iKqZfY0yOsyVHa/qlTmRsjSUAon+EdDi9RLwucVWFNA=' 'sha256-87zjEkVsrzwPoAbSDoN/ZnW0StRKiyidSvqU1E5sMok=' 'sha256-RT1053JU5UiKvjrCUFx1rlhdFLMmgtuFJ9T8jnMeawQ=' 'sha256-yiPTQs2ZOdRqz8GdRt5SEsNMHvqRwdBOY/PxoI7wxT4='; img-src 'self' data:; font-src 'self'; connect-src 'self' https://loopy-sync.loopy-1e2.workers.dev; worker-src 'self'; object-src 'none'; base-uri 'none'; form-action 'none'; manifest-src 'self'; upgrade-insecure-requests">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'sha256-ByTglhC/uqJ39X/XyPi9GBOWTW+GajUXBfjmV6gbZdQ='; style-src 'self' 'sha256-iKqZfY0yOsyVHa/qlTmRsjSUAon+EdDi9RLwucVWFNA=' 'sha256-87zjEkVsrzwPoAbSDoN/ZnW0StRKiyidSvqU1E5sMok=' 'sha256-RT1053JU5UiKvjrCUFx1rlhdFLMmgtuFJ9T8jnMeawQ=' 'sha256-/+SNdVCrzG/ooleFrbRN0kaSq7M7xJixN2mgJHbzqzY='; img-src 'self' data:; font-src 'self'; connect-src 'self' https://loopy-sync.loopy-1e2.workers.dev; worker-src 'self'; object-src 'none'; base-uri 'none'; form-action 'none'; manifest-src 'self'; upgrade-insecure-requests">
 <meta name="referrer" content="strict-origin-when-cross-origin">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <style>:root{color-scheme:light;padding-top:var(--safe-top);padding-bottom:var(--safe-bottom)}body{margin:0}[hidden]{display:none!important}</style>
@@ -158,7 +158,7 @@ body { min-height: 100vh; min-height: 100dvh; padding-block: var(--page-pad-top)
 .grid th, .grid td { padding: 0 6px; text-align: center; vertical-align: middle; border-radius: 12px;
   height: clamp(36px, 6.2dvh, 68px); min-width: clamp(54px, 18vw, 120px); font-size: clamp(1.1rem, min(5.4vw, 3.6dvh), 2rem); line-height: 1; white-space: nowrap; }
 .grid th { background: var(--chip); color: var(--muted); font-weight: 700; }
-.grid td.corner { background: transparent; border: 0; color: var(--muted); min-width: 0; padding: 0 4px; }
+.grid td.corner { background: transparent; border: 0; color: var(--accent); min-width: 0; padding: 0 4px; }
 .grid th[scope="row"] { min-width: clamp(44px, 14vw, 96px); }
 .grid td { border: 2px dashed var(--line); color: var(--muted); }
 .grid td.given { border: 2px solid var(--line); color: var(--ink); }
@@ -443,7 +443,7 @@ function hint(p, bx) {
     gridEl.setAttribute("aria-label", t("bmGrid", { s: sumText(p) }));
     const head = gridEl.createTHead().insertRow();
     const corner = document.createElement("td");
-    corner.className = "corner"; corner.textContent = Loopy.sign("mul"); corner.setAttribute("aria-hidden", "true");
+    corner.className = "corner"; Loopy.sum(corner, Loopy.sign("mul")); corner.setAttribute("aria-hidden", "true");
     head.appendChild(corner);
     p.cols.forEach(x => { const th = document.createElement("th"); th.scope = "col"; th.textContent = show(x, p.scale); head.appendChild(th); });
     const body = gridEl.createTBody();
@@ -534,7 +534,7 @@ function hint(p, bx) {
     // Quick: one of the boxes or the total is empty; the total a third of the time.
     step = mode === "quick" ? (Math.random() < 0.34 ? current.boxes.length : randInt(0, current.boxes.length - 1)) : 0;
     typed = ""; tries = 0; missed = false; done = false; shaken = false;
-    $("q").textContent = sumText(current);
+    Loopy.sum($("q"), sumText(current));
     card.classList.remove("good", "bad");
     drawGrid();
     totEl.dataset.state = "";
