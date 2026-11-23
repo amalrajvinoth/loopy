@@ -216,6 +216,11 @@
   --good: #8ce99a; --good-bg: #1d3b26; --bad: #ff8787; --bad-bg: #3f1f22; --on-accent: #0f1f17;
   --face: #fbfff9; --rim: #08130d; color-scheme: dark;
 }
+/* The sign of a sum on the card (+ − × ÷ · :) in the accent colour, so a child reads the operation first; the German
+   times dot is small in Lexend, so it is drawn a step bigger (DESIGN.md "Problem card"). Loopy.sum() writes the spans. */
+.problem-card .op { color: var(--accent); }
+.problem-card .op.dot { display: inline-block; transform: scale(1.45); }
+
 /* Names each page already uses, mapped onto the theme colors. */
 :root[data-theme] {
   --accent: var(--c1); --hour: var(--c1); --minute: var(--c2); --mark: var(--c2); --accent-ink: var(--on-accent);

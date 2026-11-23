@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'sha256-W/tvRkti67TppVN+194qRQ+xXYXbaL8ADMzqlblHkiY='; style-src 'self' 'sha256-iKqZfY0yOsyVHa/qlTmRsjSUAon+EdDi9RLwucVWFNA=' 'sha256-DyknVH2qkLuapMKucNR3xQwBRLW1mNXVZGUtDFedX4I=' 'sha256-RT1053JU5UiKvjrCUFx1rlhdFLMmgtuFJ9T8jnMeawQ=' 'sha256-K5yNOVobc28u3zvqYCXCeTxJiGVmx62rJ9MHvvXK4ZE='; img-src 'self' data:; font-src 'self'; connect-src 'self' https://loopy-sync.loopy-1e2.workers.dev; worker-src 'self'; object-src 'none'; base-uri 'none'; form-action 'none'; manifest-src 'self'; upgrade-insecure-requests">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'sha256-hRp5f16vOWGu0HLmu8A9AcdSyn4ToxwyVzBvwSL+bhk='; style-src 'self' 'sha256-iKqZfY0yOsyVHa/qlTmRsjSUAon+EdDi9RLwucVWFNA=' 'sha256-DyknVH2qkLuapMKucNR3xQwBRLW1mNXVZGUtDFedX4I=' 'sha256-RT1053JU5UiKvjrCUFx1rlhdFLMmgtuFJ9T8jnMeawQ=' 'sha256-K5yNOVobc28u3zvqYCXCeTxJiGVmx62rJ9MHvvXK4ZE='; img-src 'self' data:; font-src 'self'; connect-src 'self' https://loopy-sync.loopy-1e2.workers.dev; worker-src 'self'; object-src 'none'; base-uri 'none'; form-action 'none'; manifest-src 'self'; upgrade-insecure-requests">
 <meta name="referrer" content="strict-origin-when-cross-origin">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <style>:root{color-scheme:light;padding-top:var(--safe-top);padding-bottom:var(--safe-bottom)}body{margin:0}[hidden]{display:none!important}</style>
@@ -279,16 +279,16 @@ Loopy.addStrings({
     npAnswerIs: "Die fehlende Zahl ist {a}.",
     npStep: "Jede Zahl ist {s} mehr als die davor. {a} + {s} = {b}.",
     npBack: "Jede Zahl ist {s} weniger als die davor. {a} − {s} = {b}.",
-    npDouble: "Jede Zahl ist das Doppelte der Zahl davor. {a} × 2 = {b}.",
-    npTriple: "Jede Zahl ist das Dreifache der Zahl davor. {a} × 3 = {b}.",
-    npSquare: "Das sind die Quadratzahlen: 1 × 1, 2 × 2, 3 × 3 und so weiter. {n} × {n} = {b}.",
+    npDouble: "Jede Zahl ist das Doppelte der Zahl davor. {a} · 2 = {b}.",
+    npTriple: "Jede Zahl ist das Dreifache der Zahl davor. {a} · 3 = {b}.",
+    npSquare: "Das sind die Quadratzahlen: 1 · 1, 2 · 2, 3 · 3 und so weiter. {n} · {n} = {b}.",
     npGrow: "Die Sprünge werden größer: {jumps}. {a} + {s} = {b}.",
     npGrowBack: "Die Sprünge werden kleiner: {jumps}. {a} − {s} = {b}.",
     npTwo: "Zwei Regeln wechseln sich ab: {r1}, dann {r2}. {a} {op} {s} = {b}.",
-    npDoublePlus: "Verdoppeln, dann {k} dazu. {a} × 2 + {k} = {b}.",
-    npDoubleMinus: "Verdoppeln, dann {k} weg. {a} × 2 − {k} = {b}.",
+    npDoublePlus: "Verdoppeln, dann {k} dazu. {a} · 2 + {k} = {b}.",
+    npDoubleMinus: "Verdoppeln, dann {k} weg. {a} · 2 − {k} = {b}.",
     npFib: "Zähle die zwei Zahlen davor zusammen. {a} + {c} = {b}.",
-    npSquarePlus: "Die Quadratzahlen plus {k}: {n} × {n} + {k} = {b}.",
+    npSquarePlus: "Die Quadratzahlen plus {k}: {n} · {n} + {k} = {b}.",
     npHow: "Schreib die fehlende Zahl auf die Linie."
   }
 });
@@ -347,11 +347,11 @@ Loopy.addStrings({
   };
   function times(start, k, name) {
     const seq = [start]; for (let i = 0; i < 4; i++) seq.push(seq[i] * k);
-    return { kind: "double", seq, jumps: seq.slice(1).map(() => "×" + k), why: (m) => { const [a, b] = lastTwo(seq, m); return t(name, { a: fmt(a), b: fmt(b) }); } };
+    return { kind: "double", seq, jumps: seq.slice(1).map(() => Loopy.sign("mul") + k), why: (m) => { const [a, b] = lastTwo(seq, m); return t(name, { a: fmt(a), b: fmt(b) }); } };
   }
   function twice(start, k, name) {
     const seq = [start]; for (let i = 0; i < 4; i++) seq.push(seq[i] * 2 + k);
-    return { kind: "mix", seq, jumps: seq.slice(1).map(() => "×2" + plus(k)), why: (m) => { const [a, b] = lastTwo(seq, m); return t(name, { k: fmt(Math.abs(k)), a: fmt(a), b: fmt(b) }); } };
+    return { kind: "mix", seq, jumps: seq.slice(1).map(() => Loopy.sign("mul") + "2" + plus(k)), why: (m) => { const [a, b] = lastTwo(seq, m); return t(name, { k: fmt(Math.abs(k)), a: fmt(a), b: fmt(b) }); } };
   }
   function grow(s0, first, by, sign) {
     const steps = []; for (let i = 0; i < 5; i++) steps.push((first + i * by) * sign);

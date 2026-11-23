@@ -16,7 +16,7 @@ Die Karte erscheint, sobald ein Kind ein Spiel gespielt hat. Bei mehr als einem 
 
 ## Nochmal versuchen
 
-Eine falsche Antwort geht nicht verloren. Wenn ein Kind etwas falsch hat, erscheint die Karte **Nochmal versuchen** unter **Weiterspielen**. Sie nennt ein Spiel und zeigt die Fehler dieser Woche, zum Beispiel „3 von dieser Woche · 52 − 17 · 7 × 8“.
+Eine falsche Antwort geht nicht verloren. Wenn ein Kind etwas falsch hat, erscheint die Karte **Nochmal versuchen** unter **Weiterspielen**. Sie nennt ein Spiel und zeigt die Fehler dieser Woche, zum Beispiel „3 von dieser Woche, 52 − 17, 7 · 8“.
 
 1. Tippe auf die Karte **Nochmal versuchen**.
 2. Das Spiel mit den meisten Fehlern öffnet sich.

@@ -8,6 +8,11 @@ loopy keeps getting new games. Here is what came lately!
 
 The big changes, newest first. Small fixes are not listed. See [the full list on GitHub](https://github.com/amalrajvinoth/loopy/blob/main/RELEASES.md).
 
+## 23 November 2026
+
+- **The sign stands out in every sum.** The +, −, × (or ·) and ÷ (or :) in a sum is now in the theme's colour in every maths game, so a child reads the operation first. The German times dot is drawn bigger, so 3 · 4 reads as clearly as 3 × 4. Before, six games showed the sign in plain text.
+- **German sums look like school.** In German, times is now written 3 · 4 and share 12 : 3, the way German schools write them. Every maths game, the worksheets and the Try again line use the new signs. English keeps × and ÷.
+
 ## 21 November 2026
 
 - **Easier to tap, and the games show up on a phone held sideways.** Every button in Settings and in a game's top row is now the size a thumb needs. The round buttons at the top and bottom of the home page have an edge. The two stars code fields under Move my stars have a label. On a phone held sideways the home page shows Math and its first games on the first screen.

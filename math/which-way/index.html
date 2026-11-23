@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'sha256-oo4DRc0kJzFuzYasHGhQrvzFq2QhVZlRFiUUae86eEs='; style-src 'self' 'sha256-iKqZfY0yOsyVHa/qlTmRsjSUAon+EdDi9RLwucVWFNA=' 'sha256-LxBqi/eylUzaCDuZIJkUZtdUXTbSWr6KCF8sQzqLcK0=' 'sha256-RT1053JU5UiKvjrCUFx1rlhdFLMmgtuFJ9T8jnMeawQ=' 'sha256-8LSka8R+7snSsiUi9D/DxPV05u9xRBnNZj45syosAYk='; img-src 'self' data:; font-src 'self'; connect-src 'self' https://loopy-sync.loopy-1e2.workers.dev; worker-src 'self'; object-src 'none'; base-uri 'none'; form-action 'none'; manifest-src 'self'; upgrade-insecure-requests">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'sha256-kz1pBf0qoNoofLyTjH/dSZyV76DI3wBISx46CkXuI60='; style-src 'self' 'sha256-iKqZfY0yOsyVHa/qlTmRsjSUAon+EdDi9RLwucVWFNA=' 'sha256-LxBqi/eylUzaCDuZIJkUZtdUXTbSWr6KCF8sQzqLcK0=' 'sha256-RT1053JU5UiKvjrCUFx1rlhdFLMmgtuFJ9T8jnMeawQ=' 'sha256-8LSka8R+7snSsiUi9D/DxPV05u9xRBnNZj45syosAYk='; img-src 'self' data:; font-src 'self'; connect-src 'self' https://loopy-sync.loopy-1e2.workers.dev; worker-src 'self'; object-src 'none'; base-uri 'none'; form-action 'none'; manifest-src 'self'; upgrade-insecure-requests">
 <meta name="referrer" content="strict-origin-when-cross-origin">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <style>:root{color-scheme:light;padding-top:var(--safe-top);padding-bottom:var(--safe-bottom)}body{margin:0}[hidden]{display:none!important}</style>
@@ -635,7 +635,7 @@ Loopy.addStrings({
   function draw() {
     const p = current;
     tagEl.textContent = t(p.type === "n" ? "wyTagName" : p.type === "p" ? "wyTagPick" : p.type === "w" ? "wyTagWhy" : p.type === "t" ? "wyTagTrue" : "wyTagFill");
-    sumEl.textContent = sumText(p.a, p.b);
+    Loopy.sum(sumEl, sumText(p.a, p.b));
     wayCard.hidden = p.type === "t" || p.type === "f" || p.type === "p";
     wayNameEl.hidden = p.type !== "w";
     wayNameEl.textContent = p.type === "w" ? wayLabel(p.w) : "";

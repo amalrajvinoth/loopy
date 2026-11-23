@@ -32,7 +32,7 @@ Yes. A new device starts with one child and shows no names. To add a child, open
 
 ## How do I change the language?
 
-Tap EN for English or DE for German. You find it on the home page and in each game's Settings. Loopy remembers your choice. Before you pick, a German phone or browser starts Loopy in German.
+Tap EN for English or DE for German. You find it on the home page and in each game's Settings. Loopy remembers your choice. Before you pick, a German phone or browser starts Loopy in German. In German the sums use the signs German schools use: 3 · 4 for times and 12 : 3 for share.
 
 ## What are the badges for?
 
@@ -113,7 +113,7 @@ Tap the **Grown-ups** button at the bottom of the home page. The first card says
 
 ## What is "Try again" on the home page?
 
-A wrong answer is not lost. When a child gets something wrong, the home page shows a **Try again** card with this week's mistakes, like "3 from this week · 52 − 17 · 7 × 8". Tap it and the game starts with those exact problems. Inside any game, every fifth question can be an old mistake too. Once a mistake is answered right twice, it goes off the list. Mistakes from Today's 10 come back in the game they belong to. Nothing is sent anywhere; the list lives on your device, and the stars code carries it to another device.
+A wrong answer is not lost. When a child gets something wrong, the home page shows a **Try again** card with this week's mistakes, like "3 from this week, 52 − 17, 7 × 8". Tap it and the game starts with those exact problems. Inside any game, every fifth question can be an old mistake too. Once a mistake is answered right twice, it goes off the list. Mistakes from Today's 10 come back in the game they belong to. Nothing is sent anywhere; the list lives on your device, and the stars code carries it to another device.
 
 ## How do the words hide in Word Trail?
 

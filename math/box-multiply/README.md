@@ -7,7 +7,7 @@ Split the numbers into tens and ones, fill one box for each pair, then add the b
 
 ## How to play
 
-1. Look at the sum on top, like 23 × 14.
+1. Look at the sum on top, like 23 × 14. In German it reads 23 · 14, as at school.
 2. The grid is already split for you: 20 and 3 across the top, 10 and 4 down the side.
 3. Fill the boxes one at a time. The line under the grid says which one is next, like "Box 3 of 4: 20 × 4 = ?".
 4. Tap the numbers, then tap **Check**. A right box turns green and the next one starts.

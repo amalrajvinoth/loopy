@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'sha256-IGgxvwF9Jj9qmrf2RSPOZoc+olM0CxBRCvOmb/kYEfs='; style-src 'self' 'sha256-iKqZfY0yOsyVHa/qlTmRsjSUAon+EdDi9RLwucVWFNA=' 'sha256-EdOymIVb6fnN53VSCMS+YBrDE6XvVNV2qSCIaGiIz2I='; img-src 'self' data:; font-src 'self'; connect-src 'self' https://loopy-sync.loopy-1e2.workers.dev; worker-src 'self'; object-src 'none'; base-uri 'none'; form-action 'none'; manifest-src 'self'; upgrade-insecure-requests">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'sha256-K32oYLyz8Wx1ptv9hP0APuEYVsy4dFXyFncI7MMnOwM='; style-src 'self' 'sha256-iKqZfY0yOsyVHa/qlTmRsjSUAon+EdDi9RLwucVWFNA=' 'sha256-OQwuojJH58EchjKKQJLoEQfhcz+sA+rcK3T8WQexI5o='; img-src 'self' data:; font-src 'self'; connect-src 'self' https://loopy-sync.loopy-1e2.workers.dev; worker-src 'self'; object-src 'none'; base-uri 'none'; form-action 'none'; manifest-src 'self'; upgrade-insecure-requests">
 <meta name="referrer" content="strict-origin-when-cross-origin">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <style>:root{color-scheme:light;padding-top:var(--safe-top);padding-bottom:var(--safe-bottom)}body{margin:0}[hidden]{display:none!important}</style>
@@ -60,7 +60,6 @@ h1 { margin: 0; font-size: 1.6rem; font-weight: 700; text-wrap: balance; }
 .stage { display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 6px; flex: 1 1 auto; min-height: 0; width: 100%; container-type: inline-size; }
 /* Big sums (age 11+, like 10,000 − 9,999) shrink to fit the card. --n is the number of characters, set by the script. */
 .sum { font-size: min(clamp(2.2rem, min(11vw, 9dvh), 4.4rem), calc(100cqi / (var(--n, 1) * 0.56))); font-weight: 700; font-variant-numeric: tabular-nums; white-space: nowrap; letter-spacing: 0.02em; }
-.sum .op { color: var(--accent); }
 .sum .q { color: var(--mark); }
 .problem-card.good .sum .q { color: var(--good); }
 .problem-card.bad .sum .q { color: var(--bad); }
@@ -477,7 +476,8 @@ const keyOf = (p) => p.kind + (p.kind === "ss" ? p.word[1] + p.mode : p.kind ===
     } catch (e) {}
   }
 
-  const sign = { add: " + ", sub: " − ", mul: " × ", div: " ÷ " };
+  const sign = { add: " + ", sub: " − ", mul: " " + Loopy.sign("mul") + " ", div: " " + Loopy.sign("div") + " " };
+  const SAVED = { add: " + ", sub: " − ", mul: " × ", div: " ÷ " }; // a logged mistake keeps × and ÷ in every language
   const word = { add: "plus", sub: "minus", mul: "timesWord", div: "dividedBy" };
   const label = (p, c) => p.kind === "pm" || p.kind === "ts" ? num(c) : c;
 
@@ -510,7 +510,7 @@ const keyOf = (p) => p.kind + (p.kind === "ss" ? p.word[1] + p.mode : p.kind ===
       s.className = "sum";
       s.innerHTML = '<span></span><span class="op"></span><span></span> = <span class="q">?</span>';
       s.children[0].textContent = num(p.a);
-      s.children[1].textContent = sign[p.op].trim();
+      Loopy.sum(s.children[1], sign[p.op].trim());
       s.children[2].textContent = num(p.b);
       s.children[1].before(" "); s.children[1].after(" ");
       s.setAttribute("aria-label", p.a + " " + t(word[p.op]) + " " + p.b);
@@ -557,7 +557,7 @@ const keyOf = (p) => p.kind + (p.kind === "ss" ? p.word[1] + p.mode : p.kind ===
   // A wrong answer for the grown-ups' progress page: the problem, the right answer and the one picked.
   // r is the note Try again (Loopy.retry) replays it from, in the format of the game that owns the problem, with that game in front.
   function missed(p, given) {
-    if (p.kind === "pm" || p.kind === "ts") return { q: num(p.a) + sign[p.op] + num(p.b), a: num(p.answer), y: given, k: Loopy.log.kind(p.op, p.a, p.b), r: (p.kind === "pm" ? "plus-minus:" : "times-share:") + p.op + " " + p.a + " " + p.b };
+    if (p.kind === "pm" || p.kind === "ts") return { q: num(p.a) + SAVED[p.op] + num(p.b), a: num(p.answer), y: given, k: Loopy.log.kind(p.op, p.a, p.b), r: (p.kind === "pm" ? "plus-minus:" : "times-share:") + p.op + " " + p.a + " " + p.b };
     if (p.kind === "cl") return { q: "🕒", a: p.answer, y: given, k: Loopy.log.timeKind(p.m), r: "clock:" + p.answer };
     return { q: p.word[0] + " " + (p.mode === "start" ? "_" + p.rest : p.rest + "_"), a: p.word[1],
       y: p.mode === "start" ? given + p.rest : p.rest + given, k: "ss-" + p.mode, r: "sound-spell:" + p.lang + ":" + p.mode + ":" + p.word[1] };

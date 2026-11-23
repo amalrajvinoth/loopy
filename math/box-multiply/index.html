@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'sha256-2sj/ZQ+owXpPY1NpX6YVYAloCj1TUVN1xY/tmcbB2Ag='; style-src 'self' 'sha256-iKqZfY0yOsyVHa/qlTmRsjSUAon+EdDi9RLwucVWFNA=' 'sha256-87zjEkVsrzwPoAbSDoN/ZnW0StRKiyidSvqU1E5sMok=' 'sha256-RT1053JU5UiKvjrCUFx1rlhdFLMmgtuFJ9T8jnMeawQ=' 'sha256-yiPTQs2ZOdRqz8GdRt5SEsNMHvqRwdBOY/PxoI7wxT4='; img-src 'self' data:; font-src 'self'; connect-src 'self' https://loopy-sync.loopy-1e2.workers.dev; worker-src 'self'; object-src 'none'; base-uri 'none'; form-action 'none'; manifest-src 'self'; upgrade-insecure-requests">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'sha256-ByTglhC/uqJ39X/XyPi9GBOWTW+GajUXBfjmV6gbZdQ='; style-src 'self' 'sha256-iKqZfY0yOsyVHa/qlTmRsjSUAon+EdDi9RLwucVWFNA=' 'sha256-87zjEkVsrzwPoAbSDoN/ZnW0StRKiyidSvqU1E5sMok=' 'sha256-RT1053JU5UiKvjrCUFx1rlhdFLMmgtuFJ9T8jnMeawQ=' 'sha256-/+SNdVCrzG/ooleFrbRN0kaSq7M7xJixN2mgJHbzqzY='; img-src 'self' data:; font-src 'self'; connect-src 'self' https://loopy-sync.loopy-1e2.workers.dev; worker-src 'self'; object-src 'none'; base-uri 'none'; form-action 'none'; manifest-src 'self'; upgrade-insecure-requests">
 <meta name="referrer" content="strict-origin-when-cross-origin">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <style>:root{color-scheme:light;padding-top:var(--safe-top);padding-bottom:var(--safe-bottom)}body{margin:0}[hidden]{display:none!important}</style>
@@ -158,7 +158,7 @@ body { min-height: 100vh; min-height: 100dvh; padding-block: var(--page-pad-top)
 .grid th, .grid td { padding: 0 6px; text-align: center; vertical-align: middle; border-radius: 12px;
   height: clamp(36px, 6.2dvh, 68px); min-width: clamp(54px, 18vw, 120px); font-size: clamp(1.1rem, min(5.4vw, 3.6dvh), 2rem); line-height: 1; white-space: nowrap; }
 .grid th { background: var(--chip); color: var(--muted); font-weight: 700; }
-.grid td.corner { background: transparent; border: 0; color: var(--muted); min-width: 0; padding: 0 4px; }
+.grid td.corner { background: transparent; border: 0; color: var(--accent); min-width: 0; padding: 0 4px; }
 .grid th[scope="row"] { min-width: clamp(44px, 14vw, 96px); }
 .grid td { border: 2px dashed var(--line); color: var(--muted); }
 .grid td.given { border: 2px solid var(--line); color: var(--ink); }
@@ -319,22 +319,20 @@ Loopy.addStrings({
     // A second wrong try (and the reason in Quick): the answer.
     bmShowBox: "{x} × {y} = {v}. On to the next box.", bmWhyBox: "{x} × {y} = {v}.", bmWhyTotal: "{list} = {v}.",
     bmDone: "All done!", bmSum: "{s} = {v}.",
-    bmQBox: "{s}: {x} × {y} = ?",
     bmHow: "Fill in each box, then add them up. Write the total on the line."
   },
   de: {
     bmName: "Malkreuz", bmLevel: "Stufe", bmMode: "Spielart", bmSteps: "Schritte: jedes Kästchen", bmQuick: "Schnell: ein Kästchen fehlt",
-    bmLv0: "Zweistellig × 2 bis 5", bmLv1: "Zweistellig × einstellig", bmLv2: "Dreistellig × einstellig",
-    bmLv3: "Zweistellig × zweistellig", bmLv4: "Dreistellig × zweistellig", bmLv5: "Kommazahlen",
+    bmLv0: "Zweistellig · 2 bis 5", bmLv1: "Zweistellig · einstellig", bmLv2: "Dreistellig · einstellig",
+    bmLv3: "Zweistellig · zweistellig", bmLv4: "Dreistellig · zweistellig", bmLv5: "Kommazahlen",
     bmTotal: "Gesamt", bmDotAria: "Komma", bmGrid: "Kästchen für {s}",
     bmSay: "Was ist {a} mal {b}?",
-    bmBox: "Kästchen {i} von {n}: {x} × {y} = ?", bmAdd: "Jetzt zähle die Kästchen zusammen.", bmOneBox: "Ein Kästchen ist leer. Was gehört hinein?", bmWhatTotal: "Was ist das Ergebnis?",
-    bmHintZero: "Rechne {p} × {q} und hänge eine Null an.", bmHintZeros: "Rechne {p} × {q} und hänge {z} Nullen an.",
-    bmHintOnes: "Zähle in {q}er-Schritten, {p}-mal.", bmHintDec: "Rechne erst {p} × {q} und mach es dann 10-mal kleiner.",
+    bmBox: "Kästchen {i} von {n}: {x} · {y} = ?", bmAdd: "Jetzt zähle die Kästchen zusammen.", bmOneBox: "Ein Kästchen ist leer. Was gehört hinein?", bmWhatTotal: "Was ist das Ergebnis?",
+    bmHintZero: "Rechne {p} · {q} und hänge eine Null an.", bmHintZeros: "Rechne {p} · {q} und hänge {z} Nullen an.",
+    bmHintOnes: "Zähle in {q}er-Schritten, {p}-mal.", bmHintDec: "Rechne erst {p} · {q} und mach es dann 10-mal kleiner.",
     bmHintAdd: "Zähle alle {n} Kästchen zusammen. Fang mit dem größten an.", bmWhyRows: "Zeile für Zeile: {rows}. Zusammen {v}.",
-    bmShowBox: "{x} × {y} = {v}. Weiter zum nächsten Kästchen.", bmWhyBox: "{x} × {y} = {v}.", bmWhyTotal: "{list} = {v}.",
+    bmShowBox: "{x} · {y} = {v}. Weiter zum nächsten Kästchen.", bmWhyBox: "{x} · {y} = {v}.", bmWhyTotal: "{list} = {v}.",
     bmDone: "Geschafft!", bmSum: "{s} = {v}.",
-    bmQBox: "{s}: {x} × {y} = ?",
     bmHow: "Fülle jedes Kästchen aus und zähle dann zusammen. Schreibe das Ergebnis auf die Linie."
   }
 });
@@ -375,7 +373,7 @@ function sum(lv, a, b) {
 function makeProblem(lv) { const L = LEVELS[lv]; return sum(lv, L.a(), L.b()); }
 
 // The sum as text, like "23 × 14" or "2.3 × 14".
-const sumText = (p) => show(p.a, p.scale) + " × " + Loopy.num(p.b);
+const sumText = (p) => show(p.a, p.scale) + " " + Loopy.sign("mul") + " " + Loopy.num(p.b);
 const boxText = (p, bx) => [show(bx.x, p.scale), Loopy.num(bx.y), show(bx.v, p.scale)];
 const listText = (p) => p.boxes.map(bx => show(bx.v, p.scale)).join(" + ");
 // Why the total is what it is: every box added up, or with two rows, each row's sum first (shorter on a phone).
@@ -445,7 +443,7 @@ function hint(p, bx) {
     gridEl.setAttribute("aria-label", t("bmGrid", { s: sumText(p) }));
     const head = gridEl.createTHead().insertRow();
     const corner = document.createElement("td");
-    corner.className = "corner"; corner.textContent = "×"; corner.setAttribute("aria-hidden", "true");
+    corner.className = "corner"; Loopy.sum(corner, Loopy.sign("mul")); corner.setAttribute("aria-hidden", "true");
     head.appendChild(corner);
     p.cols.forEach(x => { const th = document.createElement("th"); th.scope = "col"; th.textContent = show(x, p.scale); head.appendChild(th); });
     const body = gridEl.createTBody();
@@ -536,7 +534,7 @@ function hint(p, bx) {
     // Quick: one of the boxes or the total is empty; the total a third of the time.
     step = mode === "quick" ? (Math.random() < 0.34 ? current.boxes.length : randInt(0, current.boxes.length - 1)) : 0;
     typed = ""; tries = 0; missed = false; done = false; shaken = false;
-    $("q").textContent = sumText(current);
+    Loopy.sum($("q"), sumText(current));
     card.classList.remove("good", "bad");
     drawGrid();
     totEl.dataset.state = "";
@@ -561,10 +559,11 @@ function hint(p, bx) {
     render();
   }
 
-  // The log row for a mistake: the question as asked, like "23 × 14: 20 × 4 = ?" or "23 × 14 = ?".
+  // The log row for a mistake: the question as asked, like "23 × 14: 20 × 4 = ?" or "23 × 14 = ?". A logged sum keeps
+  // × in every language; the Try again card and the grown-ups' page show it in the language's sign (Loopy.signs).
   function logWrong() {
-    const p = current, s = sumText(p);
-    const q = isTotal() ? s + " = ?" : t("bmQBox", { s, x: boxText(p, p.boxes[step])[0], y: boxText(p, p.boxes[step])[1] });
+    const p = current, s = show(p.a, p.scale) + " × " + Loopy.num(p.b);
+    const q = isTotal() ? s + " = ?" : s + ": " + boxText(p, p.boxes[step]).slice(0, 2).join(" × ") + " = ?";
     Loopy.rewards.wrong(GAME, { q, a: show(want(), p.scale), y: typedText(), k: "bm-" + LEVELS[p.lv].kind, r: p.key });
   }
   function finish(ok) {
@@ -655,7 +654,7 @@ function hint(p, bx) {
       b.textContent = sumText(p);
       box.appendChild(b);
       const table = document.createElement("table"), head = table.insertRow(), x = document.createElement("th");
-      x.className = "ws-x"; x.textContent = "×"; head.appendChild(x);
+      x.className = "ws-x"; x.textContent = Loopy.sign("mul"); head.appendChild(x);
       p.cols.forEach(c => { const th = document.createElement("th"); th.textContent = show(c, p.scale); head.appendChild(th); });
       p.rows.forEach(r => { const tr = table.insertRow(), th = document.createElement("th"); th.textContent = Loopy.num(r); tr.appendChild(th); p.cols.forEach(() => tr.insertCell()); });
       box.appendChild(table);
