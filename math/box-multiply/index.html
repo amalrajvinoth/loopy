@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'sha256-5KPogCx+Ko20s0/kSNTKtyc9VviQr654ULhEh9P4rN0='; style-src 'self' 'sha256-iKqZfY0yOsyVHa/qlTmRsjSUAon+EdDi9RLwucVWFNA=' 'sha256-87zjEkVsrzwPoAbSDoN/ZnW0StRKiyidSvqU1E5sMok=' 'sha256-RT1053JU5UiKvjrCUFx1rlhdFLMmgtuFJ9T8jnMeawQ=' 'sha256-yiPTQs2ZOdRqz8GdRt5SEsNMHvqRwdBOY/PxoI7wxT4='; img-src 'self' data:; font-src 'self'; connect-src 'self' https://loopy-sync.loopy-1e2.workers.dev; worker-src 'self'; object-src 'none'; base-uri 'none'; form-action 'none'; manifest-src 'self'; upgrade-insecure-requests">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'sha256-gnNoBm0vQIu2cmEPxC2OoDspGgX+nAtF/g77g5vq8kE='; style-src 'self' 'sha256-iKqZfY0yOsyVHa/qlTmRsjSUAon+EdDi9RLwucVWFNA=' 'sha256-87zjEkVsrzwPoAbSDoN/ZnW0StRKiyidSvqU1E5sMok=' 'sha256-RT1053JU5UiKvjrCUFx1rlhdFLMmgtuFJ9T8jnMeawQ=' 'sha256-yiPTQs2ZOdRqz8GdRt5SEsNMHvqRwdBOY/PxoI7wxT4='; img-src 'self' data:; font-src 'self'; connect-src 'self' https://loopy-sync.loopy-1e2.workers.dev; worker-src 'self'; object-src 'none'; base-uri 'none'; form-action 'none'; manifest-src 'self'; upgrade-insecure-requests">
 <meta name="referrer" content="strict-origin-when-cross-origin">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <style>:root{color-scheme:light;padding-top:var(--safe-top);padding-bottom:var(--safe-bottom)}body{margin:0}[hidden]{display:none!important}</style>
@@ -319,7 +319,6 @@ Loopy.addStrings({
     // A second wrong try (and the reason in Quick): the answer.
     bmShowBox: "{x} × {y} = {v}. On to the next box.", bmWhyBox: "{x} × {y} = {v}.", bmWhyTotal: "{list} = {v}.",
     bmDone: "All done!", bmSum: "{s} = {v}.",
-    bmQBox: "{s}: {x} × {y} = ?",
     bmHow: "Fill in each box, then add them up. Write the total on the line."
   },
   de: {
@@ -334,7 +333,6 @@ Loopy.addStrings({
     bmHintAdd: "Zähle alle {n} Kästchen zusammen. Fang mit dem größten an.", bmWhyRows: "Zeile für Zeile: {rows}. Zusammen {v}.",
     bmShowBox: "{x} · {y} = {v}. Weiter zum nächsten Kästchen.", bmWhyBox: "{x} · {y} = {v}.", bmWhyTotal: "{list} = {v}.",
     bmDone: "Geschafft!", bmSum: "{s} = {v}.",
-    bmQBox: "{s}: {x} · {y} = ?",
     bmHow: "Fülle jedes Kästchen aus und zähle dann zusammen. Schreibe das Ergebnis auf die Linie."
   }
 });
@@ -561,10 +559,11 @@ function hint(p, bx) {
     render();
   }
 
-  // The log row for a mistake: the question as asked, like "23 × 14: 20 × 4 = ?" or "23 × 14 = ?".
+  // The log row for a mistake: the question as asked, like "23 × 14: 20 × 4 = ?" or "23 × 14 = ?". A logged sum keeps
+  // × in every language; the Try again card and the grown-ups' page show it in the language's sign (Loopy.signs).
   function logWrong() {
-    const p = current, s = sumText(p);
-    const q = isTotal() ? s + " = ?" : t("bmQBox", { s, x: boxText(p, p.boxes[step])[0], y: boxText(p, p.boxes[step])[1] });
+    const p = current, s = show(p.a, p.scale) + " × " + Loopy.num(p.b), [x, y] = boxText(p, p.boxes[step]);
+    const q = isTotal() ? s + " = ?" : s + ": " + x + " × " + y + " = ?";
     Loopy.rewards.wrong(GAME, { q, a: show(want(), p.scale), y: typedText(), k: "bm-" + LEVELS[p.lv].kind, r: p.key });
   }
   function finish(ok) {

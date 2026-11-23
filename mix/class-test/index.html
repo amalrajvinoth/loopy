@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'sha256-gbXZqpu8D9XA3sJ6w07qPWWuOEHJRh9hpDxinMNAWTQ='; style-src 'self' 'sha256-iKqZfY0yOsyVHa/qlTmRsjSUAon+EdDi9RLwucVWFNA=' 'sha256-08rg5M++IXGWyrL1tOdSQvIQCsEp0j+gQDYSQyQSDMI='; img-src 'self' data:; font-src 'self'; connect-src 'self' https://loopy-sync.loopy-1e2.workers.dev; worker-src 'self'; object-src 'none'; base-uri 'none'; form-action 'none'; manifest-src 'self'; upgrade-insecure-requests">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'sha256-vmsfpTKSs6FaOBGy94cWfHeGwsfL3XLoJC/sKfF5LwY='; style-src 'self' 'sha256-iKqZfY0yOsyVHa/qlTmRsjSUAon+EdDi9RLwucVWFNA=' 'sha256-08rg5M++IXGWyrL1tOdSQvIQCsEp0j+gQDYSQyQSDMI='; img-src 'self' data:; font-src 'self'; connect-src 'self' https://loopy-sync.loopy-1e2.workers.dev; worker-src 'self'; object-src 'none'; base-uri 'none'; form-action 'none'; manifest-src 'self'; upgrade-insecure-requests">
 <meta name="referrer" content="strict-origin-when-cross-origin">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <style>:root{color-scheme:light;padding-top:var(--safe-top);padding-bottom:var(--safe-bottom)}body{margin:0}[hidden]{display:none!important}</style>
@@ -673,8 +673,8 @@ Loopy.addStrings({
   function gridTask(r, cols) {
     const ps = cols.map(c => r * c);
     const qs = [
-      { note: "ct:11:" + r + ":" + cols.join(",") + ":p", kind: "tg-fill", pts: 1, mode: "pad", answer: ps[0], ask: () => t("ctAskCell"), sub: () => t("ctSubGrid"), why: () => t("ctWhyCell", { r: num(r), c: num(cols[0]), p: num(ps[0]) }), log: () => num(r) + " " + times() + " " + num(cols[0]) },
-      { note: "ct:11:" + r + ":" + cols.join(",") + ":f", kind: "tg-factor", pts: 1, mode: "pad", answer: cols[2], ask: () => t("ctAskFactor"), sub: () => t("ctSubGrid"), why: () => t("ctWhyFactor", { r: num(r), c: num(cols[2]), p: num(ps[2]) }), log: () => num(r) + " " + times() + " ? = " + num(ps[2]) }];
+      { note: "ct:11:" + r + ":" + cols.join(",") + ":p", kind: "tg-fill", pts: 1, mode: "pad", answer: ps[0], ask: () => t("ctAskCell"), sub: () => t("ctSubGrid"), why: () => t("ctWhyCell", { r: num(r), c: num(cols[0]), p: num(ps[0]) }), log: () => num(r) + " × " + num(cols[0]) },
+      { note: "ct:11:" + r + ":" + cols.join(",") + ":f", kind: "tg-factor", pts: 1, mode: "pad", answer: cols[2], ask: () => t("ctAskFactor"), sub: () => t("ctSubGrid"), why: () => t("ctWhyFactor", { r: num(r), c: num(cols[2]), p: num(ps[2]) }), log: () => num(r) + " × ? = " + num(ps[2]) }];
     const table = (q, st, print) => {
       const tb = el("table", "mg"); tb.setAttribute("aria-label", t("ctGridAria"));
       const head = el("tr"), body = el("tr");

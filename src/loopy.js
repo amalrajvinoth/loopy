@@ -32,11 +32,15 @@ document.documentElement.classList.add("loopy-building");
   };
   Loopy.num = function (n) { return n.toLocaleString(lang === "de" ? "de-DE" : "en-US"); };
   // The signs of a sum the way the child's school writes them: + − × ÷ in English, + − · : in German.
-  // Loopy.sign("mul") is the sign for this language; Loopy.signs(text) rewrites a sum saved with × or ÷,
-  // such as a mistake on the Try again card, in this language's signs (DESIGN.md "Numbers and signs").
+  // Loopy.sign("mul") is the sign to show for this language. A saved sum (a mistake in the log) always keeps
+  // × and ÷, whatever the language it was played in; Loopy.signs(text) shows it in this language's signs on
+  // the Try again card and the grown-ups' page (DESIGN.md "3. Typography").
   var SIGNS = { en: { add: "+", sub: "−", mul: "×", div: "÷" }, de: { add: "+", sub: "−", mul: "·", div: ":" } };
   Loopy.sign = function (op) { return SIGNS[lang][op] || op; };
-  Loopy.signs = function (text) { return lang === "de" && typeof text === "string" ? text.replace(/×/g, "·").replace(/÷/g, ":") : text; };
+  Loopy.signs = function (text) {
+    if (typeof text !== "string") return text;
+    return lang === "de" ? text.replace(/×/g, "·").replace(/÷/g, ":") : text.replace(/·/g, "×").replace(/ : /g, " ÷ ");
+  };
   // Small helpers the parts below and the loopy-*.js files share.
   // A new element: Loopy.el("button", "kid-btn", "Dio"). cls and text may be left out.
   Loopy.el = function (tag, cls, text) {

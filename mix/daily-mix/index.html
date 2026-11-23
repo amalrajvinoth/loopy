@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'sha256-QBsBRVuPIWth0jLeuVv0WjdpB2VUBQx9o51j3BdMEzA='; style-src 'self' 'sha256-iKqZfY0yOsyVHa/qlTmRsjSUAon+EdDi9RLwucVWFNA=' 'sha256-EdOymIVb6fnN53VSCMS+YBrDE6XvVNV2qSCIaGiIz2I='; img-src 'self' data:; font-src 'self'; connect-src 'self' https://loopy-sync.loopy-1e2.workers.dev; worker-src 'self'; object-src 'none'; base-uri 'none'; form-action 'none'; manifest-src 'self'; upgrade-insecure-requests">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'sha256-B00FNrq24vdIjy9jtKj12ibG7+ukaA4LwoKQ+b+zhPs='; style-src 'self' 'sha256-iKqZfY0yOsyVHa/qlTmRsjSUAon+EdDi9RLwucVWFNA=' 'sha256-EdOymIVb6fnN53VSCMS+YBrDE6XvVNV2qSCIaGiIz2I='; img-src 'self' data:; font-src 'self'; connect-src 'self' https://loopy-sync.loopy-1e2.workers.dev; worker-src 'self'; object-src 'none'; base-uri 'none'; form-action 'none'; manifest-src 'self'; upgrade-insecure-requests">
 <meta name="referrer" content="strict-origin-when-cross-origin">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <style>:root{color-scheme:light;padding-top:var(--safe-top);padding-bottom:var(--safe-bottom)}body{margin:0}[hidden]{display:none!important}</style>
@@ -478,6 +478,7 @@ const keyOf = (p) => p.kind + (p.kind === "ss" ? p.word[1] + p.mode : p.kind ===
   }
 
   const sign = { add: " + ", sub: " − ", mul: " " + Loopy.sign("mul") + " ", div: " " + Loopy.sign("div") + " " };
+  const SAVED = { add: " + ", sub: " − ", mul: " × ", div: " ÷ " }; // a logged mistake keeps × and ÷ in every language
   const word = { add: "plus", sub: "minus", mul: "timesWord", div: "dividedBy" };
   const label = (p, c) => p.kind === "pm" || p.kind === "ts" ? num(c) : c;
 
@@ -557,7 +558,7 @@ const keyOf = (p) => p.kind + (p.kind === "ss" ? p.word[1] + p.mode : p.kind ===
   // A wrong answer for the grown-ups' progress page: the problem, the right answer and the one picked.
   // r is the note Try again (Loopy.retry) replays it from, in the format of the game that owns the problem, with that game in front.
   function missed(p, given) {
-    if (p.kind === "pm" || p.kind === "ts") return { q: num(p.a) + sign[p.op] + num(p.b), a: num(p.answer), y: given, k: Loopy.log.kind(p.op, p.a, p.b), r: (p.kind === "pm" ? "plus-minus:" : "times-share:") + p.op + " " + p.a + " " + p.b };
+    if (p.kind === "pm" || p.kind === "ts") return { q: num(p.a) + SAVED[p.op] + num(p.b), a: num(p.answer), y: given, k: Loopy.log.kind(p.op, p.a, p.b), r: (p.kind === "pm" ? "plus-minus:" : "times-share:") + p.op + " " + p.a + " " + p.b };
     if (p.kind === "cl") return { q: "🕒", a: p.answer, y: given, k: Loopy.log.timeKind(p.m), r: "clock:" + p.answer };
     return { q: p.word[0] + " " + (p.mode === "start" ? "_" + p.rest : p.rest + "_"), a: p.word[1],
       y: p.mode === "start" ? given + p.rest : p.rest + given, k: "ss-" + p.mode, r: "sound-spell:" + p.lang + ":" + p.mode + ":" + p.word[1] };

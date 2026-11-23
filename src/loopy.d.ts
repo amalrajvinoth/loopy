@@ -197,7 +197,7 @@ interface Loopy {
   num(n: number): string;
   /** The sign for "add", "sub", "mul" or "div" as the school writes it: × and ÷ in English, · and : in German. */
   sign(op: string): string;
-  /** A sum saved with × or ÷ (a mistake on the Try again card) rewritten in this language's signs. */
+  /** A saved sum (a mistake on the Try again card, kept with × and ÷) rewritten in this language's signs. */
   signs(text: any): any;
   setLang(l: string): void;
 

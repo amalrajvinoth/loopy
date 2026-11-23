@@ -201,7 +201,7 @@ Rules:
 
 - Numbers use `font-variant-numeric: tabular-nums`, so they line up and do not jump.
 - Numbers follow the language: 1,000 in English and 1.000 in German. Use `Loopy.num()`.
-- The signs of a sum follow the language too, the way the child's school writes them: + − × ÷ in English, + − · : in German (3 · 4, 12 : 3). Use `Loopy.sign("mul")`, never a sign typed into a page; a saved sum (a mistake on the Try again card) goes through `Loopy.signs()`. The minus is always the real minus sign −, not a hyphen. A grid size such as "4 × 4" is not a sum and keeps ×.
+- The signs of a sum follow the language too, the way the child's school writes them: + − × ÷ in English, + − · : in German (3 · 4, 12 : 3). Use `Loopy.sign("mul")`, never a sign typed into a page; a saved sum (a mistake on the Try again card) goes through `Loopy.signs()`. A saved sum (a mistake in the log) keeps × and ÷ whatever the language, and `Loopy.signs()` shows it right. The minus is always the real minus sign −, not a hyphen. A grid size such as "4 × 4" is not a sum and keeps ×.
 - Use `text-wrap: balance` on headings.
 - The name is always lowercase "loopy" on screen.
 
