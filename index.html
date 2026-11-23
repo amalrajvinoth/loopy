@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'sha256-wJXceUNKMlVnMhJPcJec78AwyJtJ0Ch45tctydoo49g='; style-src 'self' 'sha256-6tDnjbgOxMB2miOicHbXAuohzs4fd3AMaZiLN6/RYY4='; img-src 'self' data:; font-src 'self'; connect-src 'self' https://loopy-sync.loopy-1e2.workers.dev; worker-src 'self'; object-src 'none'; base-uri 'none'; form-action 'none'; manifest-src 'self'; upgrade-insecure-requests">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'sha256-wJXceUNKMlVnMhJPcJec78AwyJtJ0Ch45tctydoo49g='; style-src 'self' 'sha256-RqLXBhKtmLJ8aPBhTsFzBvNO1UJDp+memHT+KfRNKsY='; img-src 'self' data:; font-src 'self'; connect-src 'self' https://loopy-sync.loopy-1e2.workers.dev; worker-src 'self'; object-src 'none'; base-uri 'none'; form-action 'none'; manifest-src 'self'; upgrade-insecure-requests">
 <meta name="referrer" content="strict-origin-when-cross-origin">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <link rel="icon" href="icon.svg" type="image/svg+xml">
@@ -178,18 +178,18 @@ footer p { margin: 0; }
 .grown-parts { display: flex; flex-direction: column; gap: 12px; }
 .grown-parts > :first-child { border-top: 0; padding-top: 4px; }
 /* Stay in touch (a grown-up's email) and Family sync: two parts of Settings, before Use like an app. */
-.set-sync, .set-touch { display: flex; flex-direction: column; gap: 10px; border-top: 2px dashed var(--line); padding-top: 12px; }
+.set-sync, .set-touch { display: flex; flex-direction: column; gap: var(--row-gap); border-top: 2px dashed var(--line); padding-top: 12px; }
 .sync-join input.touch-mail { text-transform: none; }
-.touch-form { display: flex; flex-direction: column; gap: 10px; }
+.touch-form { display: flex; flex-direction: column; gap: var(--row-gap); }
 .touch-form .kid-foot { margin-top: 0; }
 .touch-agree, .touch-link { display: flex; gap: 10px; align-items: flex-start; color: var(--ink); font-size: 0.95rem; line-height: 1.35; cursor: pointer; }
-.touch-agree > span, .touch-link > span { padding-top: 2px; }
+.touch-agree > span, .touch-link > span { padding-top: 2px; } /* half the 24px box minus half a 0.95rem line: centres the box on the first line of words, not a size-class gap */
 .touch-agree input, .touch-link input { flex: none; width: 24px; height: 24px; margin: 0; accent-color: var(--c1); }
 .touch-agree a { color: var(--c1); }
 .touch-agree a:focus-visible, .touch-agree input:focus-visible, .touch-link input:focus-visible { outline: 3px solid var(--mark); outline-offset: 2px; }
 /* The second tick box, "Also link my email to our Family sync", shows only while Family sync is on. Its why-line is small and muted. */
 .touch-link[hidden] { display: none; }
-.touch-link .touch-sub { display: block; margin-top: 4px; color: var(--muted); font-size: 0.85rem; line-height: 1.4; }
+.touch-link .touch-sub { display: block; margin-top: 4px; /* a line break under the words, not a size-class gap */ color: var(--muted); font-size: 0.85rem; line-height: 1.4; }
 .set-touch p.touch-saved { color: var(--ink); font-weight: 600; overflow-wrap: anywhere; }
 .foot-small { font-size: 0.85rem; }
 /* The two stars code fields have a label you can see (the same small caps as the other Settings headings), not only a placeholder. */
