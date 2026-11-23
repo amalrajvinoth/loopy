@@ -31,6 +31,12 @@ document.documentElement.classList.add("loopy-building");
     return s;
   };
   Loopy.num = function (n) { return n.toLocaleString(lang === "de" ? "de-DE" : "en-US"); };
+  // The signs of a sum the way the child's school writes them: + − × ÷ in English, + − · : in German.
+  // Loopy.sign("mul") is the sign for this language; Loopy.signs(text) rewrites a sum saved with × or ÷,
+  // such as a mistake on the Try again card, in this language's signs (DESIGN.md "Numbers and signs").
+  var SIGNS = { en: { add: "+", sub: "−", mul: "×", div: "÷" }, de: { add: "+", sub: "−", mul: "·", div: ":" } };
+  Loopy.sign = function (op) { return SIGNS[lang][op] || op; };
+  Loopy.signs = function (text) { return lang === "de" ? String(text).replace(/×/g, "·").replace(/÷/g, ":") : String(text); };
   // Small helpers the parts below and the loopy-*.js files share.
   // A new element: Loopy.el("button", "kid-btn", "Dio"). cls and text may be left out.
   Loopy.el = function (tag, cls, text) {

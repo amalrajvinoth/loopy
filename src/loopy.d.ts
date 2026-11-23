@@ -195,6 +195,10 @@ interface Loopy {
   t(key: string, vars?: { [name: string]: any }): string;
   /** A number the way the language writes it (1,000 or 1.000). */
   num(n: number): string;
+  /** The sign for "add", "sub", "mul" or "div" as the school writes it: × and ÷ in English, · and : in German. */
+  sign(op: string): string;
+  /** A sum saved with × or ÷ (a mistake on the Try again card) rewritten in this language's signs. */
+  signs(text: string): string;
   setLang(l: string): void;
 
   // Small helpers

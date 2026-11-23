@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'sha256-cHpK+saCoi3aBZLp7ff26NYkkB8WTqA08qQNXVaYTvs='; style-src 'self' 'sha256-iKqZfY0yOsyVHa/qlTmRsjSUAon+EdDi9RLwucVWFNA=' 'sha256-bjMELR2ilEwC0lfsSyC8yLHpsS+6Tj7sD9+j2Dtz7RA=' 'sha256-RT1053JU5UiKvjrCUFx1rlhdFLMmgtuFJ9T8jnMeawQ=' 'sha256-3g1AoLMs4khCIB009XwQJD/FZCUuAi12GF/3h0uEX7w='; img-src 'self' data:; font-src 'self'; connect-src 'self' https://loopy-sync.loopy-1e2.workers.dev; worker-src 'self'; object-src 'none'; base-uri 'none'; form-action 'none'; manifest-src 'self'; upgrade-insecure-requests">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'sha256-MSE6R/Ja5JDoYkGRs04Fyeh3/mRKVgq9uarqB+YEx1o='; style-src 'self' 'sha256-iKqZfY0yOsyVHa/qlTmRsjSUAon+EdDi9RLwucVWFNA=' 'sha256-bjMELR2ilEwC0lfsSyC8yLHpsS+6Tj7sD9+j2Dtz7RA=' 'sha256-RT1053JU5UiKvjrCUFx1rlhdFLMmgtuFJ9T8jnMeawQ=' 'sha256-3g1AoLMs4khCIB009XwQJD/FZCUuAi12GF/3h0uEX7w='; img-src 'self' data:; font-src 'self'; connect-src 'self' https://loopy-sync.loopy-1e2.workers.dev; worker-src 'self'; object-src 'none'; base-uri 'none'; form-action 'none'; manifest-src 'self'; upgrade-insecure-requests">
 <meta name="referrer" content="strict-origin-when-cross-origin">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <style>:root{color-scheme:light;padding-top:var(--safe-top);padding-bottom:var(--safe-bottom)}body{margin:0}[hidden]{display:none!important}</style>
@@ -373,9 +373,9 @@ Loopy.addStrings({
     shW_sc0: "Die Form hat keine Symmetrieachse: egal, wie du faltest, die Hälften passen nicht aufeinander.",
     shW_sc1: "Die Form hat 1 Symmetrieachse: nur eine Faltung bringt die Hälften aufeinander.",
     shW_scN: "Die Form hat {n} Symmetrieachsen: {n} Arten zu falten, bei denen die Hälften aufeinanderpassen.",
-    shW_ar: "{h} Reihen mit je {w} Kästchen: {w} × {h} = {a} cm².",
+    shW_ar: "{h} Reihen mit je {w} Kästchen: {w} · {h} = {a} cm².",
     shW_pe: "Einmal ganz herum: {w} + {h} + {w} + {h} = {p} cm.",
-    shW_al: "Das große Rechteck hat {w} × {h} = {A} Kästchen. Die fehlende Ecke hat {cw} × {ch} = {c}. {A} − {c} = {a} cm².",
+    shW_al: "Das große Rechteck hat {w} · {h} = {A} Kästchen. Die fehlende Ecke hat {cw} · {ch} = {c}. {A} − {c} = {a} cm².",
     shW_pl: "Zähle alle Seiten einmal herum zusammen: {p} cm. Die ausgeschnittene Ecke ändert nichts daran, es ist so viel wie beim Rechteck {w} mal {h}.",
     sh_acute: "Spitz", sh_right: "Rechter Winkel", sh_obtuse: "Stumpf", sh_straight: "Gestreckt", sh_reflex: "Überstumpf",
     shW_acute: "Dieser Winkel hat {d}°. Kleiner als 90° heißt spitz.",
@@ -396,9 +396,9 @@ Loopy.addStrings({
     shW_rtri: "Eine Ecke ist ein rechter Winkel, 90°, also ist es ein rechtwinkliges Dreieck.",
     shW_ta: "Die 3 Winkel eines Dreiecks ergeben zusammen 180°. 180 − {a} − {b} = {c}.",
     shW_tq: "Die 4 Winkel eines Vierecks ergeben zusammen 360°. 360 − {a} − {b} − {c} = {d}.",
-    shW_tr: "Fläche eines Dreiecks = Grundseite × Höhe ÷ 2. {b} × {h} ÷ 2 = {a} cm².",
-    shW_ba: "Fläche eines Rechtecks = Länge × Breite. {w} × {h} = {a} cm².",
-    shW_bp: "Umfang = einmal ganz herum. 2 × ({w} + {h}) = {p} cm.",
+    shW_tr: "Fläche eines Dreiecks = Grundseite · Höhe : 2. {b} · {h} : 2 = {a} cm².",
+    shW_ba: "Fläche eines Rechtecks = Länge · Breite. {w} · {h} = {a} cm².",
+    shW_bp: "Umfang = einmal ganz herum. 2 · ({w} + {h}) = {p} cm.",
     shCm: "{n} cm", shCm2: "{n} cm²", shDeg: "{n}°", shReadQ: "{q} {list}?"
   }
 });

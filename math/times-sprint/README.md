@@ -7,7 +7,7 @@ German name: Einmaleins-Sprint.
 
 ## How to play
 
-1. Look at the problem, like 7 × 8.
+1. Look at the problem, like 7 × 8. In German it reads 7 · 8, as at school, and sharing is 56 : 8.
 2. Tap the numbers to write your answer, then tap **Check**. The clock starts when you tap your first number.
 3. The next problem comes straight away. A short line under it says if the last one was right, or shows the right answer.
 4. When the 60 seconds are up, you see how many you got right and your best score. Tap **Play again** to try to beat it.

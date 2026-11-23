@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'sha256-0H/T0LghFek2CYLJ0YzRAfVjF7/eahh3YpVdoALvnjI='; style-src 'self' 'sha256-iKqZfY0yOsyVHa/qlTmRsjSUAon+EdDi9RLwucVWFNA=' 'sha256-PdOGawjoljwSyQ2QoDsZq9qeS3g1+SIYetWaiwe13dA=' 'sha256-RT1053JU5UiKvjrCUFx1rlhdFLMmgtuFJ9T8jnMeawQ=' 'sha256-ZpdoenNs7heXjCDUcSzlyVesehAL9R4wTaiZxTZtPwg='; img-src 'self' data:; font-src 'self'; connect-src 'self' https://loopy-sync.loopy-1e2.workers.dev; worker-src 'self'; object-src 'none'; base-uri 'none'; form-action 'none'; manifest-src 'self'; upgrade-insecure-requests">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'sha256-ufvBuo0NUSk2oTLnvqur0lcsYq1Zbs7zC59UZmhQqPA='; style-src 'self' 'sha256-iKqZfY0yOsyVHa/qlTmRsjSUAon+EdDi9RLwucVWFNA=' 'sha256-PdOGawjoljwSyQ2QoDsZq9qeS3g1+SIYetWaiwe13dA=' 'sha256-RT1053JU5UiKvjrCUFx1rlhdFLMmgtuFJ9T8jnMeawQ=' 'sha256-ZpdoenNs7heXjCDUcSzlyVesehAL9R4wTaiZxTZtPwg='; img-src 'self' data:; font-src 'self'; connect-src 'self' https://loopy-sync.loopy-1e2.workers.dev; worker-src 'self'; object-src 'none'; base-uri 'none'; form-action 'none'; manifest-src 'self'; upgrade-insecure-requests">
 <meta name="referrer" content="strict-origin-when-cross-origin">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <style>:root{color-scheme:light;padding-top:var(--safe-top);padding-bottom:var(--safe-bottom)}body{margin:0}[hidden]{display:none!important}</style>
@@ -293,17 +293,17 @@ Loopy.addStrings({
     tsHow: "Work out each problem. Write the answer on the line."
   },
   de: {
-    tsName: "Mal und Teilen", problems: "Aufgaben", times: "Mal ×", share: "Teilen ÷",
+    tsName: "Mal und Teilen", problems: "Aufgaben", times: "Mal ·", share: "Teilen :",
     dotsLabel: "Punkte zum Zählen zeigen (nur beim Einmaleins)",
     note6: "Reihen 1, 2, 5 und 10, bis 5 mal.", note7: "Reihen 2, 5 und 10.", note8: "Reihen 2, 3, 4, 5 und 10.",
     note9: "Alle Reihen von 2 bis 10.", note10: "Alle Reihen von 2 bis 12.",
     noteBig2: "Zweistellige Zahlen mal oder geteilt durch eine Ziffer.", noteBig3: "Größere Zahlen: dreistellig mal einstellig oder zweistellig mal zweistellig.",
     tsOne: "Mal 1 bleibt die Zahl gleich: {eq}.",
-    tsGroups: "{a} × {b} sind {g} Gruppen mit {size}. Zähle in {size}er-Schritten: {list}.",
-    tsZero: "Denke: {d} × {s} = {p}, dann hänge 1 Null an: {ans}.", tsZeros: "Denke: {d} × {s} = {p}, dann hänge {z} Nullen an: {ans}.",
+    tsGroups: "{a} · {b} sind {g} Gruppen mit {size}. Zähle in {size}er-Schritten: {list}.",
+    tsZero: "Denke: {d} · {s} = {p}, dann hänge 1 Null an: {ans}.", tsZeros: "Denke: {d} · {s} = {p}, dann hänge {z} Nullen an: {ans}.",
     tsSplit: "Zerlege {n} in {parts}. {steps}. Zusammen: {sum}.",
-    tsShare: "Teile {a} in {b} gleiche Gruppen. {b} × {q} = {a}, also bekommt jede Gruppe {q}.",
-    tsThink: "Denke: {b} × {q} = {a}, also {a} ÷ {b} = {q}.",
+    tsShare: "Teile {a} in {b} gleiche Gruppen. {b} · {q} = {a}, also bekommt jede Gruppe {q}.",
+    tsThink: "Denke: {b} · {q} = {a}, also {a} : {b} = {q}.",
     tsHowMany: "Wie viele sind in jeder Gruppe?", tsCount: "Zähle die Punkte oder nutze, was du schon weißt.",
    
     timesWord: "mal", dividedBy: "geteilt durch",
@@ -360,7 +360,7 @@ const parts = (n) => String(n).split("").map((d, i, s) => +d * Math.pow(10, s.le
 function explain(p) {
   if (p.op === "mul") {
     if (p.a <= 12 && p.b <= 12) {
-      if (p.a === 1 || p.b === 1) return t("tsOne", { eq: p.a + " × " + p.b + " = " + p.answer });
+      if (p.a === 1 || p.b === 1) return t("tsOne", { eq: p.a + " " + Loopy.sign("mul") + " " + p.b + " = " + p.answer });
       const g = p.a, size = p.b, list = []; // read a × b as "a groups of b", matching the dot picture
       for (let i = 1; i <= g; i++) list.push(size * i);
       return t("tsGroups", { a: p.a, b: p.b, g, size, list: list.join(", ") });
@@ -372,7 +372,7 @@ function explain(p) {
       const zeros = String(big).length - 1, d = big / Math.pow(10, zeros);
       return t(zeros > 1 ? "tsZeros" : "tsZero", { d, s: small, p: d * small, z: zeros, ans: fmt(p.answer) });
     }
-    const times = ps.map((x, i) => (big === p.a ? fmt(x) + " × " + small : small + " × " + fmt(x)) + " = " + fmt(prods[i]));
+    const times = ps.map((x, i) => (big === p.a ? fmt(x) + " " + Loopy.sign("mul") + " " + small : small + " " + Loopy.sign("mul") + " " + fmt(x)) + " = " + fmt(prods[i]));
     return t("tsSplit", { n: fmt(big), parts: ps.map(fmt).join(" + "), steps: times.join(", "),
       sum: prods.map(fmt).join(" + ") + " = " + fmt(p.answer) });
   }
@@ -383,7 +383,7 @@ function explain(p) {
   if (qs.length === 1) return t("tsThink", { a: fmt(p.a), b: p.b, q: fmt(p.answer) });
   const pieces = qs.map(q => q * p.b);
   return t("tsSplit", { n: fmt(p.a), parts: pieces.map(fmt).join(" + "),
-    steps: pieces.map((x, i) => fmt(x) + " ÷ " + p.b + " = " + fmt(qs[i])).join(", "),
+    steps: pieces.map((x, i) => fmt(x) + " " + Loopy.sign("div") + " " + p.b + " = " + fmt(qs[i])).join(", "),
     sum: qs.map(fmt).join(" + ") + " = " + fmt(p.answer) });
 }
 // GEN END
@@ -482,7 +482,7 @@ function explain(p) {
     typed = ""; answered = false;
     $("eq-a").textContent = fmt(current.a);
     $("eq-b").textContent = fmt(current.b);
-    $("op-sign").textContent = current.op === "mul" ? "×" : "÷";
+    $("op-sign").textContent = Loopy.sign(current.op);
     $("eq").setAttribute("aria-label", current.a + " " + t(current.op === "mul" ? "timesWord" : "dividedBy") + " " + current.b);
     card.className = "problem-card";
     feedbackEl.className = "feedback";
@@ -509,10 +509,10 @@ function explain(p) {
     answered = true; tried++;
     const ok = parseInt(typed, 10) === current.answer;
     if (ok) { right++; streak++; } else { streak = 0; }
-    if (window.Loopy && Loopy.rewards) ok ? Loopy.rewards.correct("times-share", streak, Loopy.log.kind(current.op, current.a, current.b)) : Loopy.rewards.wrong("times-share", { q: fmt(current.a) + (current.op === "mul" ? " × " : " ÷ ") + fmt(current.b), a: fmt(current.answer), y: fmt(parseInt(typed, 10)), k: Loopy.log.kind(current.op, current.a, current.b), r: note(current) });
+    if (window.Loopy && Loopy.rewards) ok ? Loopy.rewards.correct("times-share", streak, Loopy.log.kind(current.op, current.a, current.b)) : Loopy.rewards.wrong("times-share", { q: fmt(current.a) + " " + Loopy.sign(current.op) + " " + fmt(current.b), a: fmt(current.answer), y: fmt(parseInt(typed, 10)), k: Loopy.log.kind(current.op, current.a, current.b), r: note(current) });
     card.className = "problem-card " + (ok ? "good" : "bad");
     feedbackEl.className = "feedback " + (ok ? "good" : "bad");
-    const sign = current.op === "mul" ? " × " : " ÷ ";
+    const sign = " " + Loopy.sign(current.op) + " ";
     const head = ok
       ? (streak >= 3 ? t("correctRow", { n: streak }) : t("correct"))
       : t("notQuite") + " " + fmt(current.a) + sign + fmt(current.b) + " = " + fmt(current.answer) + ".";
@@ -549,7 +549,7 @@ function explain(p) {
   Loopy.speech.question({ host: card, text: () => t("whatIs", { q: current.a + " " + t(current.op === "mul" ? "timesWord" : "dividedBy") + " " + current.b }) });
 
   // Print worksheet: 20 problems with the same tables, numbers and problems as the game.
-  const eq = (p) => fmt(p.a) + (p.op === "mul" ? " × " : " ÷ ") + fmt(p.b) + " =";
+  const eq = (p) => fmt(p.a) + " " + Loopy.sign(p.op) + " " + fmt(p.b) + " =";
   Loopy.worksheet({
     title: () => t("tsName"),
     level: () => [t("ageLabel", { n: age }), t("problems") + ": " + t({ mul: "times", div: "share", mix: "both" }[opMode]), t(level.note)].join(" · "),

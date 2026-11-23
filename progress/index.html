@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'sha256-6GP7IhpkCHqbZ5Xuq71ARiLrRu3YZZqWGPYX0873Lws='; style-src 'self' 'sha256-JJTcs6UsHWgVSKUySfFu3EotUA5xPRvf2JGwvDltwg0='; img-src 'self' data:; font-src 'self'; connect-src 'self' https://loopy-sync.loopy-1e2.workers.dev; worker-src 'self'; object-src 'none'; base-uri 'none'; form-action 'none'; manifest-src 'self'; upgrade-insecure-requests">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'sha256-38GynWd5vWX/aomjKdiS+hHGiYWvdMhGvjfcKXzhEns='; style-src 'self' 'sha256-JJTcs6UsHWgVSKUySfFu3EotUA5xPRvf2JGwvDltwg0='; img-src 'self' data:; font-src 'self'; connect-src 'self' https://loopy-sync.loopy-1e2.workers.dev; worker-src 'self'; object-src 'none'; base-uri 'none'; form-action 'none'; manifest-src 'self'; upgrade-insecure-requests">
 <meta name="referrer" content="strict-origin-when-cross-origin">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <link rel="icon" href="../icon.svg" type="image/svg+xml">
@@ -519,8 +519,8 @@ Loopy.addStrings({
     "tip-eb-two": "Übt 3x + 4 = 19: erst das + 4 rückgängig machen, dann teilen.",
     "tip-eb-both": "Übt x auf beiden Seiten: erst auf beiden Seiten das kleinere x wegnehmen.",
     "tip-fc-flag": "Schaut Flaggen gemeinsam an: Farben und Formen nennen, dann das Land sagen.", "tip-fc-cap": "Übt Hauptstädte: Land und Hauptstadt zusammen sagen.",
-    "tip-pr-frac": "Übt Hälften, Viertel und Zehntel: 50 % ist ÷ 2, 25 % ist ÷ 4, 10 % ist ÷ 10.",
-    "tip-pr-any": "Übt beliebige Prozente: erst 10 % finden, dann hochzählen, wie 30 % = 3 × 10 %.",
+    "tip-pr-frac": "Übt Hälften, Viertel und Zehntel: 50 % ist : 2, 25 % ist : 4, 10 % ist : 10.",
+    "tip-pr-any": "Übt beliebige Prozente: erst 10 % finden, dann hochzählen, wie 30 % = 3 · 10 %.",
     "tip-pr-disc": "Übt Rabatte: erst den Prozentwert ausrechnen, dann vom Preis abziehen (oder dazuzählen).",
     "tip-pr-ratio": "Übt Verhältnisse: die Teile zusammenzählen, das Ganze in so viele Teile teilen, dann die nötigen Teile zählen.",
     "tip-gd-read": "Lest zusammen ein Diagramm: sucht einen Balken und sagt seine Zahl, dann den größten und den kleinsten.",
@@ -530,11 +530,11 @@ Loopy.addStrings({
     "tip-gd-median": "Übt den Median: Zahlen der Reihe nach ordnen und die Mitte finden.",
     "tip-gd-cmp": "Vergleicht zwei Diagramme: zählt jedes zusammen und sagt, welche Summe größer ist.",
     "tip-bm-small": "Übt das Zerlegen: 13 ist 10 + 3. Jeden Teil mit der kleinen Zahl malnehmen, dann zusammenzählen.",
-    "tip-bm-one": "Übt Zehner mal Einer: 40 × 6 ist 4 × 6 mit einer Null dran.",
+    "tip-bm-one": "Übt Zehner mal Einer: 40 · 6 ist 4 · 6 mit einer Null dran.",
     "tip-bm-three": "Übt drei Teile: 234 ist 200 + 30 + 4. Jeden Teil malnehmen, dann alle drei zusammenzählen.",
     "tip-bm-two": "Übt die vier Kästchen: beide Zahlen in Zehner und Einer zerlegen, jedes Kästchen füllen, dann zusammenzählen.",
-    "tip-bm-big": "Übt große Malkreuze: die Nullen in jedem Kästchen zählen, wie 200 × 40 = 8 mit drei Nullen.",
-    "tip-bm-dec": "Übt Kommazahlen: 0,3 × 4 ist 3 × 4, nur 10-mal kleiner.",
+    "tip-bm-big": "Übt große Malkreuze: die Nullen in jedem Kästchen zählen, wie 200 · 40 = 8 mit drei Nullen.",
+    "tip-bm-dec": "Übt Kommazahlen: 0,3 · 4 ist 3 · 4, nur 10-mal kleiner.",
     "tip-st-add": "Übt schrittweises Plusrechnen: die zweite Zahl zerlegen, erst die Zehner, dann die Einer, wie 47 + 20 = 67, dann 67 + 5 = 72.",
     "tip-st-sub": "Übt schrittweises Minusrechnen: erst die Zehner abziehen, dann die Einer, wie 83 − 30 = 53, dann 53 − 6 = 47.",
     "tip-sh-name": "Sucht Formen zu Hause: wie viele Ecken hat der Tisch, das Fenster, die Uhr? Zählt die Seiten mit dem Finger.",
@@ -895,7 +895,7 @@ Loopy.addStrings({
       more.type = "button";
       const fill = () => {
         g.items.slice(shown, shown + 5).forEach(x => {
-          const row = el("div", "miss"), q = el("div", "q", x.q === "🕒" ? t("prClockQ") : x.q), a = el("span", "ok", "✓ " + x.a), y = el("span", "no", x.y ? "✗ " + x.y : "");
+          const row = el("div", "miss"), q = el("div", "q", x.q === "🕒" ? t("prClockQ") : Loopy.signs(x.q)), a = el("span", "ok", "✓ " + x.a), y = el("span", "no", x.y ? "✗ " + x.y : "");
           q.appendChild(el("small", "", nameOf(x.g) + " · " + dayLabel(x.d)));
           a.setAttribute("aria-label", t("prRightAns") + ": " + x.a);
           if (x.y) y.setAttribute("aria-label", t("prTheirs") + ": " + x.y);

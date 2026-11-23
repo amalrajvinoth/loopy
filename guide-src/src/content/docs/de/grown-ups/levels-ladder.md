@@ -36,10 +36,10 @@ Von der ersten bis zur letzten Stufe. Die 10 von heute hat keine Stufen.
 | Pizza-Brüche | 5 | Benennen, 4 Stücke → Benennen, 8 Stücke → Vergleichen, 8 Stücke → Plus, 8 Stücke → Gemischt, 12 Stücke |
 | Münzen und Wechselgeld | 5 | Kleine Münzen → Alles zählen → Leichtes Wechselgeld → Wechselgeld → Mit 20 oder 50 zahlen |
 | Waage | 5 | □ + 4 = 9 → x + 4 = 9 → 3x = 12 → 3x + 4 = 19 → x auf beiden Seiten |
-| Einmaleins-Sprint | 5 | Reihen 1, 2 und 10, bis 5 mal → Reihen 2, 5 und 10 → Alle Reihen bis 10 × 10 → Alle Reihen bis 12 × 12 → Alle Reihen bis 12 × 12, gemischt mit Teilen |
+| Einmaleins-Sprint | 5 | Reihen 1, 2 und 10, bis 5 mal → Reihen 2, 5 und 10 → Alle Reihen bis 10 · 10 → Alle Reihen bis 12 · 12 → Alle Reihen bis 12 · 12, gemischt mit Teilen |
 | Prozent und Verhältnis | 4 | Hälften, Viertel und Zehntel → Jeder Prozentsatz → Rabatt und Aufschlag → Verhältnis und Maßstab |
 | Diagramme und Daten | 4 | Balkendiagramme und Piktogramme → Tabellen und Liniendiagramme → Mittelwert und Median → Zwei Diagramme vergleichen |
-| Malkreuz | 6 | Zweistellig × 2 bis 5 → Zweistellig × einstellig → Dreistellig × einstellig → Zweistellig × zweistellig → Dreistellig × zweistellig → Kommazahlen |
+| Malkreuz | 6 | Zweistellig · 2 bis 5 → Zweistellig · einstellig → Dreistellig · einstellig → Zweistellig · zweistellig → Dreistellig · zweistellig → Kommazahlen |
 | Schrittweise rechnen | 6 | Über den Zehner, bis 20 → Bis 100 → Bis 100 mit Übertrag → Bis 1.000 → Bis 1.000 mit Übertrag → Bis 10.000 |
 | Formen und Winkel | 5 | Formen, Ecken und Seiten → Linien und Symmetrie → Umfang und Fläche → Winkel → Dreiecke und Formeln |
 | Kalender und Datum | 4 | Wochentage → Der Monat → Tage und Wochen → Monate und Datum |

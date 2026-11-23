@@ -40,7 +40,7 @@ They stay there next time you play. **Reset score** in Settings clears them.
 
 Tap **Settings** to choose:
 
-- **Problems:** Times, Share, or Both.
+- **Problems:** Times, Share, or Both. In German the signs are the school's: 3 · 4 and 12 : 3.
 - **Show dots:** turn the counting dots on or off.
 - **Read aloud:** On or Off. When it is on, a speaker button sits in the corner of the problem. It says, for example, "What is 7 times 8?". Tap it to hear the question in the device's own voice, in English or German. Each new question is also read by itself while the sound is on. It starts on for ages 5 to 7 and off from 8. If the device has no voice, the button and the setting do not show.
 

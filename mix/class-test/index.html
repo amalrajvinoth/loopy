@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'sha256-QzxXVaSBxFx2/6P8VctD65/dXp4NzMf7xQUI8xvIWM4='; style-src 'self' 'sha256-iKqZfY0yOsyVHa/qlTmRsjSUAon+EdDi9RLwucVWFNA=' 'sha256-08rg5M++IXGWyrL1tOdSQvIQCsEp0j+gQDYSQyQSDMI='; img-src 'self' data:; font-src 'self'; connect-src 'self' https://loopy-sync.loopy-1e2.workers.dev; worker-src 'self'; object-src 'none'; base-uri 'none'; form-action 'none'; manifest-src 'self'; upgrade-insecure-requests">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'sha256-gbXZqpu8D9XA3sJ6w07qPWWuOEHJRh9hpDxinMNAWTQ='; style-src 'self' 'sha256-iKqZfY0yOsyVHa/qlTmRsjSUAon+EdDi9RLwucVWFNA=' 'sha256-08rg5M++IXGWyrL1tOdSQvIQCsEp0j+gQDYSQyQSDMI='; img-src 'self' data:; font-src 'self'; connect-src 'self' https://loopy-sync.loopy-1e2.workers.dev; worker-src 'self'; object-src 'none'; base-uri 'none'; form-action 'none'; manifest-src 'self'; upgrade-insecure-requests">
 <meta name="referrer" content="strict-origin-when-cross-origin">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <style>:root{color-scheme:light;padding-top:var(--safe-top);padding-bottom:var(--safe-bottom)}body{margin:0}[hidden]{display:none!important}</style>
@@ -492,7 +492,7 @@ Loopy.addStrings({
   const pick = (arr) => arr[Math.floor(Math.random() * arr.length)];
   const shuffle = (arr) => { const a = arr.slice(); for (let i = a.length - 1; i > 0; i--) { const j = randInt(0, i); [a[i], a[j]] = [a[j], a[i]]; } return a; };
   const cap = (s) => s.charAt(0).toUpperCase() + s.slice(1);
-  const times = () => Loopy.lang === "de" ? "·" : "×";
+  const times = () => Loopy.sign("mul");
   const euro = (n) => t("ctEuro", { n: num(n) });
   // Two papers: 1 the grade 3 class test (12 tasks, 20 points), 2 the worksheet "Addition to 100" (11 tasks, 25 points).
   // The paper is saved per child (ct.paper); each has its own best score (ct.best, ct.best2).

@@ -16,7 +16,7 @@ The card shows once a child has played a game. With more than one child, each ch
 
 ## Try again
 
-A wrong answer is not lost. When a child gets something wrong, the **Try again** card shows under **Carry on**. It names a game and lists this week's mistakes, like "3 from this week · 52 − 17 · 7 × 8".
+A wrong answer is not lost. When a child gets something wrong, the **Try again** card shows under **Carry on**. It names a game and lists this week's mistakes, like "3 from this week, 52 − 17, 7 × 8".
 
 1. Tap the **Try again** card.
 2. The game with the most mistakes opens.
