@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'sha256-1M8f3LcUPdDOkamN69dDVEbetdpk3mU7fLG/kBbWcEw='; style-src 'self' 'sha256-iKqZfY0yOsyVHa/qlTmRsjSUAon+EdDi9RLwucVWFNA=' 'sha256-UdF0Za+oKIw059Ieos1g7lX17SW1MZlr/PboBPYkuxA='; img-src 'self' data:; font-src 'self'; connect-src 'self' https://loopy-sync.loopy-1e2.workers.dev; worker-src 'self'; object-src 'none'; base-uri 'none'; form-action 'none'; manifest-src 'self'; upgrade-insecure-requests">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'sha256-WweGPswxPKYtGixGBAvGOWvqKKZVx0Ro33HiUBets24='; style-src 'self' 'sha256-iKqZfY0yOsyVHa/qlTmRsjSUAon+EdDi9RLwucVWFNA=' 'sha256-UdF0Za+oKIw059Ieos1g7lX17SW1MZlr/PboBPYkuxA='; img-src 'self' data:; font-src 'self'; connect-src 'self' https://loopy-sync.loopy-1e2.workers.dev; worker-src 'self'; object-src 'none'; base-uri 'none'; form-action 'none'; manifest-src 'self'; upgrade-insecure-requests">
 <meta name="referrer" content="strict-origin-when-cross-origin">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <style>:root{color-scheme:light;padding-top:var(--safe-top);padding-bottom:var(--safe-bottom)}body{margin:0}[hidden]{display:none!important}</style>
@@ -523,7 +523,7 @@ Loopy.addStrings({
   function stepsList(steps, askI, q, st) {
     const ol = el("ol", "steps");
     steps.forEach((s, i) => {
-      const li = el("li", "", num(s[0]) + " " + s[1] + " " + num(s[2]) + " =");
+      const li = Loopy.sum(el("li"), num(s[0]) + " " + s[1] + " " + num(s[2]) + " ="); // a step can be the question itself (the easy sums task)
       const box = el("span", "box");
       if (i < askI) box.textContent = num(s[3]);
       else if (i === askI) { box.classList.add("ask"); fillAsk(box, q, st); }
@@ -796,7 +796,7 @@ Loopy.addStrings({
       return svg;
     };
     return { slot: 8, paper: 2, a, b, qs,
-      draw: (box, q, st) => { box.appendChild(el("div", "sum small", sum)); box.appendChild(line(q.i, st)); box.appendChild(askLine(q, st, num(steps[q.i][0]) + " + " + num(steps[q.i][2]) + " =")); },
+      draw: (box, q, st) => { box.appendChild(Loopy.sum(el("div", "sum small"), sum)); box.appendChild(line(q.i, st)); box.appendChild(askLine(q, st, num(steps[q.i][0]) + " + " + num(steps[q.i][2]) + " =")); },
       sheet: (box) => { box.appendChild(el("div", "sum", sum)); box.appendChild(line(-1, null, true)); },
       answers: () => stepsText(steps, "ctThen") };
   }
