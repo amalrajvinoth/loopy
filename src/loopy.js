@@ -39,7 +39,7 @@ document.documentElement.classList.add("loopy-building");
   Loopy.sign = function (op) { return SIGNS[lang][op] || op; };
   Loopy.signs = function (text) {
     if (typeof text !== "string") return text;
-    return lang === "de" ? text.replace(/×/g, "·").replace(/÷/g, ":") : text.replace(/·/g, "×").replace(/ : /g, " ÷ ");
+    return lang === "de" ? text.replace(/×/g, "·").replace(/÷/g, ":") : text.replace(/·/g, "×"); // a ratio "1 : 2" keeps its colon
   };
   // Small helpers the parts below and the loopy-*.js files share.
   // A new element: Loopy.el("button", "kid-btn", "Dio"). cls and text may be left out.
