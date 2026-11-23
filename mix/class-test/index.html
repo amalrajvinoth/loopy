@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'sha256-vmsfpTKSs6FaOBGy94cWfHeGwsfL3XLoJC/sKfF5LwY='; style-src 'self' 'sha256-iKqZfY0yOsyVHa/qlTmRsjSUAon+EdDi9RLwucVWFNA=' 'sha256-08rg5M++IXGWyrL1tOdSQvIQCsEp0j+gQDYSQyQSDMI='; img-src 'self' data:; font-src 'self'; connect-src 'self' https://loopy-sync.loopy-1e2.workers.dev; worker-src 'self'; object-src 'none'; base-uri 'none'; form-action 'none'; manifest-src 'self'; upgrade-insecure-requests">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'sha256-Qazktym0JcjdlAFpU2Ll5chloPm6AqyyZKaz0tP1ZXQ='; style-src 'self' 'sha256-iKqZfY0yOsyVHa/qlTmRsjSUAon+EdDi9RLwucVWFNA=' 'sha256-08rg5M++IXGWyrL1tOdSQvIQCsEp0j+gQDYSQyQSDMI='; img-src 'self' data:; font-src 'self'; connect-src 'self' https://loopy-sync.loopy-1e2.workers.dev; worker-src 'self'; object-src 'none'; base-uri 'none'; form-action 'none'; manifest-src 'self'; upgrade-insecure-requests">
 <meta name="referrer" content="strict-origin-when-cross-origin">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <style>:root{color-scheme:light;padding-top:var(--safe-top);padding-bottom:var(--safe-bottom)}body{margin:0}[hidden]{display:none!important}</style>
@@ -701,7 +701,7 @@ Loopy.addStrings({
   function easyTask(a, b) {
     const [s1, s2] = SPLITS[a], x = times(), steps = [[s1, x, b, s1 * b], [s2, x, b, s2 * b], [a, x, b, a * b]];
     const vars = { s1: num(s1), s2: num(s2), b: num(b), a: num(a), p1: num(s1 * b), p2: num(s2 * b), p: num(a * b) };
-    const qs = [1, 2].map(i => ({ note: "ct:12:" + a + ":" + b + ":" + (i - 1), kind: "tg-split", pts: 1, mode: "pad", answer: steps[i][3], ask: () => t("ctAskEasy", vars), sub: () => t("ctSubEasy"), why: () => t("ctWhyEasy", vars), log: () => num(steps[i][0]) + " " + x + " " + num(b), i }));
+    const qs = [1, 2].map(i => ({ note: "ct:12:" + a + ":" + b + ":" + (i - 1), kind: "tg-split", pts: 1, mode: "pad", answer: steps[i][3], ask: () => t("ctAskEasy", vars), sub: () => t("ctSubEasy"), why: () => t("ctWhyEasy", vars), log: () => num(steps[i][0]) + " × " + num(b), i }));
     return { slot: 12, qs, draw: (box, q, st) => { const ol = stepsList(steps, q.i, q, st); if (q.i === 2 && st.done[0]) ol.children[1].lastChild.classList.add("ok"); box.appendChild(ol); },
       sheet: (box) => { const f = el("div", "fill"); steps.forEach((s, i) => { if (i) f.appendChild(document.createElement("br")); f.appendChild(document.createTextNode(num(s[0]) + " " + x + " " + num(b) + " = ")); f.appendChild(i ? el("i", "") : document.createTextNode(num(s[3]))); }); box.appendChild(f); },
       answers: () => stepsText(steps, "ctComma") };
