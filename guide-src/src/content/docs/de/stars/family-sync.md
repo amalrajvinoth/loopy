@@ -56,7 +56,7 @@ Der Familien-Sync trägt dasselbe wie ein [Sterne-Code](/loopy/guide/de/stars/mo
 - Das Farbthema, **Leichter lesen**, Ton und Sprache. Ein ganz neues Gerät, das noch nichts gewählt hat, übernimmt sie einmal von der Familie.
 - Welches Kind gerade spielt.
 - Der Familien-Code selbst, und ob loopy auf dem Home-Bildschirm ist.
-- Deine E-Mail unter **In Kontakt bleiben**. Sie gehört gar nicht zur Familie.
+- Deine E-Mail unter **In Kontakt bleiben**. Sie gehört gar nicht zur Familie. Kreuzt du dort **Meine E-Mail auch mit unserem Familien-Sync verknüpfen** an, liegt eure Familien-Nummer auf dem Server neben der E-Mail. Die Kopie bleibt verschlossen. Siehe [Einstellungen auf der Startseite](/loopy/guide/de/settings/home-settings/).
 
 ## Wann abgeglichen wird
 

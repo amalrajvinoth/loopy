@@ -68,4 +68,7 @@ jobs:
           sed -i "s/GROWNUPS_ID/$gid/" wrangler.toml
           w d1 execute loopy-sync --remote --yes --file schema.sql
           w d1 execute loopy-grownups --remote --yes --file grownups.sql
+          # The f column (linked family id, issue #169) once, on a table made before it existed
+          w d1 execute loopy-grownups --remote --yes --command "SELECT f FROM grownups LIMIT 0" > /dev/null 2>&1 \
+            || w d1 execute loopy-grownups --remote --yes --file grownups-link.sql
           w deploy

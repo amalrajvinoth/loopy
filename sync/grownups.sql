@@ -5,9 +5,15 @@
 --    can delete the row. It never changes: a later save of the same email with another key changes nothing.
 -- l: the language the grown-up uses loopy in, en or de.
 -- t: the time it was saved, in milliseconds. A row is deleted 2 years after that.
+-- f: the family id from Family sync, only when the grown-up ticked "Also link my email to our Family sync"
+--    (issue #169), else NULL. It says which locked family copy goes with the email, nothing more: the copy
+--    stays locked. A link needs the family's write key, so only that family's devices can make it. A save
+--    without the tick, deleting the family copy, or the nightly job when the copy expires, sets it back to NULL.
+--    A database made before this column exists gets it from grownups-link.sql (the deploy job runs it once).
 CREATE TABLE IF NOT EXISTS grownups (
   m TEXT PRIMARY KEY,
   k TEXT NOT NULL,
   l TEXT NOT NULL,
-  t INTEGER NOT NULL
+  t INTEGER NOT NULL,
+  f TEXT
 );

@@ -467,32 +467,44 @@
   // ---- "Stay in touch": a grown-up's email, a part of ⚙ Settings on the home page above Family sync ----
   // Nothing is sent until a grown-up taps Save. The email, the language and the time go to the same server
   // (POST /g), which keeps them apart from the family copies. This browser keeps "loopy.touch" as
-  // { m: email, k: remove key, t: time saved }: Remove sends the key, and the server deletes the row.
-  // Never in a stars code, never per child, never shown in a game.
+  // { m: email, k: remove key, t: time saved, f: the family id it was linked to, or "" }: Remove sends the key, and the server
+  // deletes the row. Never in a stars code, never per child, never shown in a game.
+  // With Family sync on, a second tick box, "Also link my email to our Family sync" (issue #169), sends the
+  // family id (st.i) and write key (st.w) along, so the owner can see which family copy goes with which email
+  // and nobody can link an email to a family that is not theirs. The copy stays locked (the lock key never goes). The box shows only while sync is on; Turn off everywhere drops the link on the server too.
+  // The server answers 200 whether or not it took the link (an email saved first on another device keeps that
+  // device's key, and the answer must not tell who is on the list), so the saved line says "unless ...".
   var TOUCH = "loopy.touch";
   Loopy.addStrings({
     en: { stHead: "Grown-ups: stay in touch",
       stText: "Leave your email if you would like to hear about new games, a few times a year. Only grown-ups, please. It is never shown to your child and never shared. It is kept on loopy's own server in the EU. You can remove it here at any time.",
       stLabel: "Your email", stAgree: "I am a grown-up and I agree to the ", stNote: "privacy note", stSave: "Save", stRemove: "Remove",
       stSaved: "Saved: {mail}. Thank you!", stDone: "Saved. Thank you!", stGone: "Removed.", stBad: "That does not look like an email.",
-      stTick: "Please tick the box first.", stWait: "Please wait a moment, then try again.", stElse: "Removed from this device. If you saved it on another device too, remove it there as well." },
+      stTick: "Please tick the box first.", stWait: "Please wait a moment, then try again.", stElse: "Removed from this device. If you saved it on another device too, remove it there as well.",
+      stLink: "Also link my email to our Family sync", stLinkWhy: "Then loopy's maker can see which family copy goes with your email, for example to help when sync goes wrong. The copy stays locked: the server still cannot read stars or names.",
+      stLinked: "Linked to your Family sync, unless this email was saved first on another device. Remove and save again to unlink." },
     de: { stHead: "Für Erwachsene: in Kontakt bleiben",
       stText: "Hinterlasse deine E-Mail, wenn du von neuen Spielen hören möchtest, ein paar Mal im Jahr. Nur für Erwachsene. Sie wird deinem Kind nie gezeigt und nie weitergegeben. Sie liegt auf loopys eigenem Server in der EU. Du kannst sie hier jederzeit löschen.",
       stLabel: "Deine E-Mail", stAgree: "Ich bin erwachsen und stimme dem ", stNote: "Datenschutzhinweis", stSave: "Speichern", stRemove: "Löschen",
       stSaved: "Gespeichert: {mail}. Danke!", stDone: "Gespeichert. Danke!", stGone: "Gelöscht.", stBad: "Das sieht nicht wie eine E-Mail aus.",
-      stTick: "Bitte zuerst das Kästchen ankreuzen.", stWait: "Bitte warte kurz und versuche es noch einmal.", stElse: "Auf diesem Gerät gelöscht. Hast du sie auch auf einem anderen Gerät gespeichert, lösche sie dort ebenfalls." }
+      stTick: "Bitte zuerst das Kästchen ankreuzen.", stWait: "Bitte warte kurz und versuche es noch einmal.", stElse: "Auf diesem Gerät gelöscht. Hast du sie auch auf einem anderen Gerät gespeichert, lösche sie dort ebenfalls.",
+      stLink: "Meine E-Mail auch mit unserem Familien-Sync verknüpfen", stLinkWhy: "Dann sieht der Macher von loopy, welche Familien-Kopie zu deiner E-Mail gehört, zum Beispiel um zu helfen, wenn der Sync hakt. Die Kopie bleibt verschlossen: Der Server kann Sterne und Namen weiter nicht lesen.",
+      stLinked: "Mit eurem Familien-Sync verknüpft, außer die E-Mail wurde zuerst auf einem anderen Gerät gespeichert. Zum Trennen löschen und neu speichern." }
   });
   function readTouch() {
     var s;
     try { s = JSON.parse(localStorage.getItem(TOUCH)); } catch (e) { return null; }
     if (!s || typeof s !== "object" || typeof s.m !== "string" || s.m.length > 254 || !/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(s.m) || !/^[A-Za-z0-9_-]{43}$/.test(s.k)) return null;
-    return { m: s.m, k: s.k, t: typeof s.t === "number" && isFinite(s.t) ? s.t : 0 };
+    return { m: s.m, k: s.k, t: typeof s.t === "number" && isFinite(s.t) ? s.t : 0, f: /^[0-9a-f]{32}$/.test(s.f) ? s.f : "" };
   }
   // A save whose answer was lost may have reached the server with its key, and a later 429 or error does not
   // say otherwise. So each email keeps its key, for as long as the page is open, until a save of it succeeds
   // (the server keeps the first key it saw), and Remove works afterwards.
   /** @type {Record<string, string>} */
   var tried = {};
+  // Redraws the open Stay in touch part from storage, set while it is on screen (Turn off everywhere uses it).
+  /** @type {(() => void) | null} */
+  var refreshTouch = null;
   function writeTouch(s) { try { if (s) localStorage.setItem(TOUCH, JSON.stringify(s)); else localStorage.removeItem(TOUCH); } catch (e) {} }
   function newKey() {
     var r = crypto.getRandomValues(new Uint8Array(32));
@@ -505,6 +517,7 @@
     msg.setAttribute("aria-live", "polite");
     box.replaceChildren(el("p", "set-head", t("stHead")), el("p", "", t("stText")), body, msg);
     box.hidden = false;
+    refreshTouch = function () { saved = readTouch(); draw(); };
     function draw() {
       var row = el("div", "kid-foot");
       body.replaceChildren();
@@ -526,10 +539,18 @@
           });
         });
         row.appendChild(remove);
-        body.append(el("p", "touch-saved", t("stSaved", { mail: saved.m })), row);
+        body.append(el("p", "touch-saved", t("stSaved", { mail: saved.m })));
+        if (saved.f) body.append(el("p", "", t("stLinked")));
+        body.append(row);
         return;
       }
       var line = el("div", "sync-join"), input = el("input"), lab = el("label", "touch-agree"), tick = el("input"), save = btn(t("stSave")), link = el("a", "", t("stNote"));
+      // "Also link my email to our Family sync": only while sync is on, so the box never offers what it can't do.
+      var linkLab = el("label", "touch-link"), linkTick = el("input"), linkWords = el("span"), linkWhy = el("span", "touch-sub", t("stLinkWhy"));
+      linkTick.type = "checkbox"; linkTick.setAttribute("aria-label", t("stLink")); linkWhy.id = "touch-link-why"; linkTick.setAttribute("aria-describedby", linkWhy.id);
+      linkWords.append(t("stLink"), linkWhy);
+      linkLab.append(linkTick, linkWords);
+      linkLab.hidden = !st;
       input.type = "email"; input.className = "touch-mail"; input.autocomplete = "email"; input.spellcheck = false;
       input.setAttribute("autocapitalize", "off"); input.placeholder = "name@example.com"; input.setAttribute("aria-label", t("stLabel"));
       tick.type = "checkbox"; link.href = "privacy/"; link.target = "_blank"; link.rel = "noopener";
@@ -538,17 +559,20 @@
       lab.append(tick, words);
       line.appendChild(input);
       row.appendChild(save);
-      body.append(line, lab, row);
+      body.append(line, lab, linkLab, row);
       function go() {
         var m = input.value.trim().toLowerCase();
         if (m.length > 254 || !/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(m)) { msg.textContent = t("stBad"); input.focus(); return; }
         if (!tick.checked) { msg.textContent = t("stTick"); tick.focus(); return; }
-        var k = tried[m] || newKey();
+        var k = tried[m] || newKey(), f = st && !linkLab.hidden && linkTick.checked ? st.i : "";
+        /** @type {{m: string, l: string, k: string, f?: string, w?: string}} */
+        var out = { m: m, l: Loopy.lang === "de" ? "de" : "en", k: k };
+        if (f) { out.f = f; out.w = st.w; }   // the family's write key proves this device is in that family
         save.disabled = true; msg.textContent = t("syBusy");
-        send("/g", { m: m, l: Loopy.lang === "de" ? "de" : "en", k: k }).then(function (r) {
+        send("/g", out).then(function (r) {
           save.disabled = false;
           if (r.n === 200) delete tried[m]; else tried[m] = k;
-          if (r.n === 200) { saved = { m: m, k: k, t: Date.now() }; writeTouch(saved); draw(); msg.textContent = t("stDone"); }
+          if (r.n === 200) { saved = { m: m, k: k, t: Date.now(), f: f }; writeTouch(saved); draw(); msg.textContent = t("stDone"); }
           else if (r.n === 0) msg.textContent = t("syNoNet");
           else if (r.n === 429) msg.textContent = t("stWait");
           else if (r.n === 400) msg.textContent = t("stBad");
@@ -557,6 +581,8 @@
       }
       save.addEventListener("click", go);
       input.addEventListener("keydown", function (e) { if (e.key === "Enter") go(); });
+      // Sync turned on or off below while the form is open: show or hide the link box, keep what was typed.
+      tell.push(function () { if (!saved) linkLab.hidden = !st; });
     }
     draw();
   }
@@ -613,6 +639,8 @@
         ending = null;
         if (r.n !== 200 && r.n !== 404) { if (st === s) later(); return false; }
         if (st === s) clear();          // Turn off was tapped meanwhile, or a new family made: leave that alone
+        var tc = readTouch();           // the server dropped the Stay in touch links to this family: forget it here too
+        if (tc && tc.f === s.i) { tc.f = ""; writeTouch(tc); if (refreshTouch) refreshTouch(); }
         return true;
       });
       return ending;

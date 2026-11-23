@@ -105,6 +105,7 @@ await off.page.goto(BASE);
 await openSettings(off.page);
 check("Settings has a Family sync part", await until(async () => /Family sync/i.test(await syncText(off.page))), "");
 check("Opening Settings sends nothing either", off.seen.server === 0, off.seen.server + " requests");
+check("With sync off, Stay in touch has no 'link my email' box", await off.page.locator(".touch-link").isHidden(), "");
 
 // 2. A bad code and a code no family has: a clear message, sync stays off.
 await off.page.locator(".set-sync").getByRole("button", { name: "Join with a code" }).click();
@@ -181,6 +182,18 @@ const order = await A.page.evaluate(() => {
   return s ? Math.round(s.startTime - nav.loadEventStart) : null;
 });
 check("With sync on, loopy-sync.js loads only after the page is shown", order !== null && order >= 0, order + " ms after load");
+
+// 3b. Stay in touch with sync on: "Also link my email to our Family sync" sends the family id along (issue #169).
+await openSettings(A.page);
+check("With sync on, Stay in touch shows the 'link my email' box", await until(() => A.page.locator(".touch-link").isVisible()), "");
+await A.page.getByLabel("Your email").fill("linked@example.com");
+await A.page.locator(".touch-agree input").check();
+await A.page.locator(".touch-link input").check();
+await A.page.getByRole("button", { name: "Save", exact: true }).click();
+const familyId = [...env.DB.rows.keys()][0];
+check("Save with the box ticked keeps the family id next to the email", await until(() => env.DB.grownups.get("linked@example.com")?.f === familyId), String(env.DB.grownups.get("linked@example.com")?.f));
+check("Settings says the email is linked", await until(async () => /Linked to your Family sync/.test(await A.page.locator(".set-touch").innerText())), "");
+check("The device remembers which family it linked", await A.page.evaluate(id => JSON.parse(localStorage.getItem("loopy.touch")).f === id, familyId), "");
 
 // 4. Device B joins with the link from the QR code: A's stars come over.
 skew += 11000;
@@ -276,6 +289,8 @@ delete env.LIMIT;
 await forget.click();
 check("Turn off everywhere removes the copy on the server", await until(() => env.DB.rows.size === 0), env.DB.rows.size + " rows");
 check("Turn off forgets the code on this device", await until(() => A2.evaluate(() => localStorage.getItem("loopy.sync") === null)), "");
+check("Turn off everywhere drops the email's link on the server and keeps the email", env.DB.grownups.get("linked@example.com")?.f === null, String(env.DB.grownups.get("linked@example.com")?.f));
+check("and this device no longer says it is linked", await until(() => A2.evaluate(() => JSON.parse(localStorage.getItem("loopy.touch")).f === "")), "");
 check("Turn off keeps the stars", await stars(A2) >= 8, String(await stars(A2)));
 const B2 = await B.ctx.newPage();
 await B2.goto(BASE);

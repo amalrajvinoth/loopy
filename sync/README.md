@@ -18,10 +18,12 @@ The plan and the options it was picked from: [docs/plans/remote-sync/](../docs/p
 
 A grown-up can leave their email in ⚙ Settings on the home page (above Family sync), to hear about new games. Nothing is sent until they tap **Save**. The email, the language (`en` or `de`) and the time go to this same Worker (`POST /g`) and into a **second database**, `loopy-grownups`, made in the EU (`--location weur`), apart from the family copies. The device makes a random remove key and keeps it in the browser (`loopy.touch`); the server keeps only a hash of it, so only that device can delete the row (**Remove**, `POST /g?del=1`). The key never changes once an email is saved, so posting someone else's email cannot take their row over, and the server answers the same whether an email is on the list or not. The owner can delete rows by hand in the D1 Console. An email is deleted 2 years after it was saved. The site's privacy note (`privacy/`) says all this to parents.
 
+**Linked to the family, on request** (issue #169). With Family sync on, the Stay in touch part shows a second tick box, **Also link my email to our Family sync**. Ticked, the save carries the family id (`f`) and the family's write key (`w`, checked against the family row, so only a device in that family can link to it), and the row keeps the id in the `f` column, so the owner can see which locked family copy goes with which email (`tools/sync-families.mjs` prints the family's 6-letter handle next to the email). The copy stays locked, so that still tells nothing about stars or names. A save without the tick sets `f` back to NULL, and so does deleting the family copy (`POST /f/<id>?del=1`) or the nightly job when a copy expires. The tick box is not shown while sync is off. The column was added after the table existed: the deploy job runs `grownups-link.sql` once when it is missing.
+
 To read the list: Cloudflare dashboard, **Storage & Databases**, **D1**, **loopy-grownups**, **Console**:
 
 ```sql
-SELECT m AS email, l AS lang, datetime(t / 1000, 'unixepoch') AS saved FROM grownups ORDER BY t DESC;
+SELECT m AS email, l AS lang, substr(f, 1, 6) AS family, datetime(t / 1000, 'unixepoch') AS saved FROM grownups ORDER BY t DESC;
 SELECT COUNT(*) AS grownups FROM grownups;
 ```
 
@@ -36,7 +38,7 @@ SELECT * FROM stats ORDER BY day DESC;
 Four ways, all counts only on GitHub. Nobody can see who: the server has no names, no family codes and no IP addresses.
 
 1. **The Monday issue.** Every Monday at 05:23 UTC the **Family sync usage** job (`.github/workflows/sync-usage.yml`, report in `tools/sync-usage.mjs`) counts families and grown-ups and writes the latest numbers into one open issue titled **Family sync and grown-ups** (label `usage`, assigned to the owner), next to the **Forks and stars** issue. The table has a Now and a Last week column: families with sync on, saved in the last day, week and month, quiet for 30 days, the size of all copies, grown-ups on the Stay in touch list by language, and one number a week for the last 8 weeks. When a family turned sync on, a family went quiet, or a grown-up joined the list, the job adds the report as a comment, so the owner gets an email. Nothing new, no comment. The issue text keeps last week's counts in a hidden line (`<!-- loopy-sync-counts ... -->`); close the issue any time and the next run opens a new one. Run it any time: Actions tab, **Family sync usage**, **Run workflow**. The Summary of the run shows the same report. It uses the same two secrets as the deploy job. The issue, the log and the Summary are public, so they print no emails and no ids. `node tools/sync-usage.test.mjs` tests the report with a stand-in database.
-2. **One row per family, on your own screen.** `tools/sync-families.mjs` prints, for each family, a 6-letter handle made from the random id, the last save in your time zone, the days since, and the size of the locked copy; then how many saved today, this week, this month or longer ago; then the Stay in touch list (email, language, saved). Run it from the repo root on your own computer, never on GitHub, because the emails are personal:
+2. **One row per family, on your own screen.** `tools/sync-families.mjs` prints, for each family, a 6-letter handle made from the random id, the last save in your time zone, the days since, and the size of the locked copy; then how many saved today, this week, this month or longer ago; then the Stay in touch list (email, language, saved, and the family handle when the grown-up linked it). Run it from the repo root on your own computer, never on GitHub, because the emails are personal:
 
    ```sh
    cd ~/personal/work/loopy
@@ -55,10 +57,10 @@ Four ways, all counts only on GitHub. Nobody can see who: the server has no name
 | --- | --- |
 | `GET /f/<id>?e=<hash>` | `200 {e, b}` the locked copy and its hash, `204` when it has not changed since `<hash>`, `404` when there is none |
 | `POST /f/<id>?e=<hash>` with `{k, b}` | `200 {e}` saved. `412 {e}` another device saved first: read again, merge, try again. `403` wrong write key. `429` less than 10 seconds since the last save. `413` too big. `400` not a locked copy |
-| `POST /f/<id>?del=1` with `{k}` | Deletes the family copy |
+| `POST /f/<id>?del=1` with `{k}` | Deletes the family copy. A Stay in touch email linked to it loses the link (its `f` is set to NULL) |
 | `GET /stats` | The last 90 nightly rows of counts: `[{day, families, active7, active30, bytes}]` |
 | any, too often | `429` after 60 requests a minute from one address (6 a minute for `POST /g`). A family copy keeps everything on the device and tries again later. A Stay in touch save is not kept; the page says to wait a moment and tap Save again. See **Free plan limits** |
-| `POST /g` with `{m, l, k}` | Saves a grown-up's email `m` with language `l` and remove key `k`. `200 {}`. `400` not an email. `429` the same device saved it less than 10 seconds ago. `503` no emails database. An email already on the list keeps its first key: a save with another key changes nothing and still answers `200`, so nobody can take a row over or find out who is on the list |
+| `POST /g` with `{m, l, k, f?, w?}` | Saves a grown-up's email `m` with language `l` and remove key `k`; `f` (the family id, 32 hex) with `w` (the family's write key) only when the grown-up ticked **Also link my email to our Family sync**, and a save without `f` drops an earlier link. `200 {}`. `400` not an email or not a family id. `403` no family with that id, or `w` is not its write key. `429` the same device saved it less than 10 seconds ago. `503` no emails database. An email already on the list keeps its first key: a save with another key changes nothing and still answers `200`, so nobody can take a row over or find out who is on the list |
 | `POST /g?del=1` with `{m, k}` | Deletes that email. `200` deleted. `404` no row with this email and this key: unknown, or saved first from another device (the same answer for both, on purpose) |
 
 Requests are plain `GET` and `POST` with `text/plain`, so the browser sends them without an extra check first (no CORS preflight). Only the pages in `ORIGINS` (`wrangler.toml`) may read the answers. A copy is at most 70 KB. The server keeps a hash of the write key, never the key.
@@ -70,6 +72,7 @@ Requests are plain `GET` and `POST` with `text/plain`, so the browser sends them
 | `worker.js` | The server |
 | `schema.sql` | The tables `families` and `stats` in `loopy-sync` |
 | `grownups.sql` | The table `grownups` in `loopy-grownups` (EU) |
+| `grownups-link.sql` | Adds the `f` column (the linked family id) to a `grownups` table made before it existed; the deploy job runs it once when the column is missing |
 | `wrangler.toml` | Cloudflare settings. `DATABASE_ID` and `GROWNUPS_ID` are filled in by the deploy job |
 | `package.json`, `package-lock.json` | wrangler, the deploy tool, pinned to one exact version with every package it needs. The deploy job and the Monday usage job install it with `npm ci --prefix sync --ignore-scripts`; Dependabot proposes updates after a 7-day wait, and a major version waits for a person |
 | `test.mjs`, `fake-d1.mjs` | Tests with a stand-in database: `node sync/test.mjs` (CI runs it on every change) |
@@ -102,5 +105,7 @@ npm ci --prefix sync --ignore-scripts     # once: wrangler, the exact version fr
 cd sync
 node_modules/.bin/wrangler d1 execute loopy-sync --local --file schema.sql
 node_modules/.bin/wrangler d1 execute loopy-grownups --local --file grownups.sql
+node_modules/.bin/wrangler d1 execute loopy-grownups --local --command "SELECT f FROM grownups LIMIT 0" > /dev/null 2>&1 \
+  || node_modules/.bin/wrangler d1 execute loopy-grownups --local --file grownups-link.sql   # a local table from before the f column
 node_modules/.bin/wrangler dev --local
 ```
