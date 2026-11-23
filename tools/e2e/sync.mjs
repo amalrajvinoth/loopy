@@ -193,7 +193,7 @@ await A.page.getByRole("button", { name: "Save", exact: true }).click();
 const familyId = [...env.DB.rows.keys()][0];
 check("Save with the box ticked keeps the family id next to the email", await until(() => env.DB.grownups.get("linked@example.com")?.f === familyId), String(env.DB.grownups.get("linked@example.com")?.f));
 check("Settings says the email is linked", await until(async () => /Linked to your Family sync/.test(await A.page.locator(".set-touch").innerText())), "");
-check("The device remembers the link, not the family id", await A.page.evaluate(() => { const t = JSON.parse(localStorage.getItem("loopy.touch")); return t.f === 1 && !("i" in t); }), "");
+check("The device remembers which family it linked", await A.page.evaluate(id => JSON.parse(localStorage.getItem("loopy.touch")).f === id, familyId), "");
 
 // 4. Device B joins with the link from the QR code: A's stars come over.
 skew += 11000;
@@ -290,7 +290,7 @@ await forget.click();
 check("Turn off everywhere removes the copy on the server", await until(() => env.DB.rows.size === 0), env.DB.rows.size + " rows");
 check("Turn off forgets the code on this device", await until(() => A2.evaluate(() => localStorage.getItem("loopy.sync") === null)), "");
 check("Turn off everywhere drops the email's link on the server and keeps the email", env.DB.grownups.get("linked@example.com")?.f === null, String(env.DB.grownups.get("linked@example.com")?.f));
-check("and this device no longer says it is linked", await until(() => A2.evaluate(() => JSON.parse(localStorage.getItem("loopy.touch")).f === 0)), "");
+check("and this device no longer says it is linked", await until(() => A2.evaluate(() => JSON.parse(localStorage.getItem("loopy.touch")).f === "")), "");
 check("Turn off keeps the stars", await stars(A2) >= 8, String(await stars(A2)));
 const B2 = await B.ctx.newPage();
 await B2.goto(BASE);

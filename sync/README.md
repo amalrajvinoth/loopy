@@ -105,5 +105,7 @@ npm ci --prefix sync --ignore-scripts     # once: wrangler, the exact version fr
 cd sync
 node_modules/.bin/wrangler d1 execute loopy-sync --local --file schema.sql
 node_modules/.bin/wrangler d1 execute loopy-grownups --local --file grownups.sql
+node_modules/.bin/wrangler d1 execute loopy-grownups --local --command "SELECT f FROM grownups LIMIT 0" > /dev/null 2>&1 \
+  || node_modules/.bin/wrangler d1 execute loopy-grownups --local --file grownups-link.sql   # a local table from before the f column
 node_modules/.bin/wrangler dev --local
 ```

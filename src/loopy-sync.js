@@ -467,7 +467,7 @@
   // ---- "Stay in touch": a grown-up's email, a part of ⚙ Settings on the home page above Family sync ----
   // Nothing is sent until a grown-up taps Save. The email, the language and the time go to the same server
   // (POST /g), which keeps them apart from the family copies. This browser keeps "loopy.touch" as
-  // { m: email, k: remove key, t: time saved, f: 1 when linked }: Remove sends the key, and the server
+  // { m: email, k: remove key, t: time saved, f: the family id it was linked to, or "" }: Remove sends the key, and the server
   // deletes the row. Never in a stars code, never per child, never shown in a game.
   // With Family sync on, a second tick box, "Also link my email to our Family sync" (issue #169), sends the
   // family id (st.i) and write key (st.w) along, so the owner can see which family copy goes with which email
@@ -495,7 +495,7 @@
     var s;
     try { s = JSON.parse(localStorage.getItem(TOUCH)); } catch (e) { return null; }
     if (!s || typeof s !== "object" || typeof s.m !== "string" || s.m.length > 254 || !/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(s.m) || !/^[A-Za-z0-9_-]{43}$/.test(s.k)) return null;
-    return { m: s.m, k: s.k, t: typeof s.t === "number" && isFinite(s.t) ? s.t : 0, f: s.f === 1 ? 1 : 0 };
+    return { m: s.m, k: s.k, t: typeof s.t === "number" && isFinite(s.t) ? s.t : 0, f: /^[0-9a-f]{32}$/.test(s.f) ? s.f : "" };
   }
   // A save whose answer was lost may have reached the server with its key, and a later 429 or error does not
   // say otherwise. So each email keeps its key, for as long as the page is open, until a save of it succeeds
@@ -572,7 +572,7 @@
         send("/g", out).then(function (r) {
           save.disabled = false;
           if (r.n === 200) delete tried[m]; else tried[m] = k;
-          if (r.n === 200) { saved = { m: m, k: k, t: Date.now(), f: f ? 1 : 0 }; writeTouch(saved); draw(); msg.textContent = t("stDone"); }
+          if (r.n === 200) { saved = { m: m, k: k, t: Date.now(), f: f }; writeTouch(saved); draw(); msg.textContent = t("stDone"); }
           else if (r.n === 0) msg.textContent = t("syNoNet");
           else if (r.n === 429) msg.textContent = t("stWait");
           else if (r.n === 400) msg.textContent = t("stBad");
@@ -639,8 +639,8 @@
         ending = null;
         if (r.n !== 200 && r.n !== 404) { if (st === s) later(); return false; }
         if (st === s) clear();          // Turn off was tapped meanwhile, or a new family made: leave that alone
-        var tc = readTouch();           // the server dropped the Stay in touch link to this family: forget it here too
-        if (tc && tc.f) { tc.f = 0; writeTouch(tc); if (refreshTouch) refreshTouch(); }
+        var tc = readTouch();           // the server dropped the Stay in touch links to this family: forget it here too
+        if (tc && tc.f === s.i) { tc.f = ""; writeTouch(tc); if (refreshTouch) refreshTouch(); }
         return true;
       });
       return ending;
