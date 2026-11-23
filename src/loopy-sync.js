@@ -512,6 +512,7 @@
   }
   function touchPart(box) {
     var t = Loopy.t, saved = readTouch(), body = document.createElement("div"), msg = document.createElement("p");
+    body.className = "touch-form";
     function el(tag, cls, text) { var n = document.createElement(tag); if (cls) n.className = cls; if (text !== undefined) n.textContent = text; return n; }
     function btn(text, cls) { var b = el("button", cls || "kid-btn", text); b.type = "button"; return b; }
     msg.setAttribute("aria-live", "polite");
