@@ -216,6 +216,14 @@
   --good: #8ce99a; --good-bg: #1d3b26; --bad: #ff8787; --bad-bg: #3f1f22; --on-accent: #0f1f17;
   --face: #fbfff9; --rim: #08130d; color-scheme: dark;
 }
+/* Clean: a calm, grown-up look. Off-white page, white cards, slate text, one indigo accent and quiet versions of the
+   other four, so the home tiles still take turns without shouting. Every text pair passes WCAG AA. */
+:root[data-theme="clean"] {
+  --bg: #f4f6f9; --card: #ffffff; --ink: #1b2430; --muted: #5b6675; --line: #d9dee6; --chip: #e8ecf1; --key: #ffffff;
+  --c1: #2f55d4; --c2: #c2410c; --c3: #0f7a5a; --c4: #6d4fc2; --c5: #9a6700;
+  --good: #0f7a5a; --good-bg: #e3f3ec; --bad: #b42318; --bad-bg: #fbe9e7; --on-accent: #ffffff;
+  --face: #ffffff; --rim: #1b2430; color-scheme: light;
+}
 /* The sign of a sum on the card (+ − × ÷ · :) in the accent colour, so a child reads the operation first; the German
    times dot is small in Lexend, so it is drawn a step bigger (DESIGN.md "Problem card"). Loopy.sum() writes the spans. */
 .problem-card .op { color: var(--accent); }
@@ -229,7 +237,8 @@
 :root[data-theme="contrast"] { --hour: #3d84ff; --minute: #e65c00; }
 .next { color: var(--on-accent) !important; }
 
-.themes { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; }
+/* 7px gaps: seven 36px swatches fit the 296px row of a 360px phone (7 × 36 + 6 × 7 = 294px). */
+.themes { display: flex; flex-wrap: wrap; gap: 7px; align-items: center; }
 .themes button {
   width: 36px; height: 36px; padding: 0; border-radius: 50%; cursor: pointer;
   border: 3px solid var(--line); background: var(--sw-bg);
@@ -248,8 +257,6 @@
 .age-picker button::after { inset: -3px; }
 .sound-toggle::after { inset: -2px; }
 .lang-picker button::after { inset: -4px 0; }
-.top-row { display: flex; justify-content: space-between; align-items: center; gap: 12px; flex-wrap: wrap; }
-
 .age-picker { display: inline-flex; align-items: center; gap: 4px; background: var(--chip); border-radius: 999px; padding: 4px; }
 .age-picker span { min-width: 4.4em; text-align: center; font-weight: 700; font-variant-numeric: tabular-nums; }
 .age-picker button {

@@ -8,6 +8,10 @@ loopy keeps getting new games. Here is what came lately!
 
 The big changes, newest first. Small fixes are not listed. See [the full list on GitHub](https://github.com/amalrajvinoth/loopy/blob/main/RELEASES.md).
 
+## 24 November 2026
+
+- **A new look called Clean.** A calm light theme with a grey page, white cards and one blue. It is the sixth round colour button in ⚙ Settings, before High contrast. Nothing else changes, and the theme your child picked stays.
+
 ## 23 November 2026
 
 - **Link your email to your family, if you like.** Under **Stay in touch** in ⚙ Settings, grown-ups with Family sync on see a second tick box, **Also link my email to our Family sync**. Tick it and your family id is kept next to your email. So loopy's maker can see which locked family copy goes with which email, for example to help when sync goes wrong. The copy stays locked. Only if you tick it. The [privacy note](/loopy/privacy/) says it all.

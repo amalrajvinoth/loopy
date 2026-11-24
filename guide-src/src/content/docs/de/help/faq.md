@@ -54,7 +54,7 @@ Ja, in den meisten Spielen. Schalte in den ⚙ Einstellungen des Spiels **Vorles
 
 ## Kann loopy leichter zu sehen oder zu lesen sein?
 
-Ja. Wähle in den ⚙ Einstellungen die Farbe **Hoher Kontrast** oder schalte **Leichter lesen** ein. Mehr unter [Sprache und Aussehen](/loopy/guide/de/setup/language-and-look/).
+Ja. In den ⚙ Einstellungen ändern die runden Farben das Aussehen. **Klar** ist ein ruhiges, helles. Wähle die Farbe **Hoher Kontrast** oder schalte **Leichter lesen** ein. Mehr unter [Sprache und Aussehen](/loopy/guide/de/setup/language-and-look/).
 
 ## Wie schalte ich den Ton aus?
 

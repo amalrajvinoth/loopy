@@ -22,7 +22,7 @@
   var GKEY = /^(?:(?:bm|bs|cc|cd|clockquiz|ct|em|wy|mi|np|wf|ra|eb|fc|gd|mk|mw|pm100|pr|pz|qf|sb|sh|si|so|sq|ss|st|tg|to|ts|tt|wd|wi|wm|wt)\.[A-Za-z]{1,16}(?:\.a\d{1,2})?|loopy\.(?:last|seen|levels))$/;
   var KEYS = { rewards: "loopy.rewards", daily: "loopy.daily", log: "loopy.log", recent: "loopy.recent",
     age: "loopy.ageOffset", read: "loopy.readAloud", theme: "loopy.theme", font: "loopy.font", sound: "loopy.sound", lang: "loopy.lang" };
-  var CHOICES = { read: ["on", "off"], theme: ["black", "sunny", "ocean", "candy", "forest", "contrast"], font: ["easy", "normal"], sound: ["on", "off"], lang: ["en", "de"] };
+  var CHOICES = { read: ["on", "off"], theme: ["black", "sunny", "ocean", "candy", "forest", "clean", "contrast"], font: ["easy", "normal"], sound: ["on", "off"], lang: ["en", "de"] };
   // Theme, reading font, sound and language are for the whole device; the rest belongs to child id.
   var DEVICE = { theme: true, font: true, sound: true, lang: true };
   var keyOf = function (k, id) { return DEVICE[k] ? KEYS[k] : Loopy.kids.key(id, KEYS[k]); };

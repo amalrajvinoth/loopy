@@ -70,7 +70,7 @@ document.documentElement.classList.add("loopy-building");
 
   Loopy.addStrings({
     en: {
-      theme: "Color theme", black: "Black", sunny: "Sunny", ocean: "Ocean", candy: "Candy", forest: "Forest", contrast: "High contrast",
+      theme: "Color theme", black: "Black", sunny: "Sunny", ocean: "Ocean", candy: "Candy", forest: "Forest", clean: "Clean", contrast: "High contrast",
       easyRead: "Easier to read", easyOn: "On", easyOff: "Off",
       ageGroup: "Age", ageLabel: "Age {n}", younger: "Younger", older: "Older",
       soundOn: "Sound on", soundOff: "Sound off", settings: "Settings", language: "Language",
@@ -94,7 +94,7 @@ document.documentElement.classList.add("loopy-building");
       hintLetters: "Tap the letters to spell the word!", hintWords: "Tap the words in order!", hintMap: "Tap the right place on the map!"
     },
     de: {
-      theme: "Farbthema", black: "Schwarz", sunny: "Sonnig", ocean: "Ozean", candy: "Bonbon", forest: "Wald", contrast: "Hoher Kontrast",
+      theme: "Farbthema", black: "Schwarz", sunny: "Sonnig", ocean: "Ozean", candy: "Bonbon", forest: "Wald", clean: "Klar", contrast: "Hoher Kontrast",
       easyRead: "Leichter lesen", easyOn: "An", easyOff: "Aus",
       ageGroup: "Alter", ageLabel: "Alter {n}", younger: "Jünger", older: "Älter",
       soundOn: "Ton an", soundOff: "Ton aus", settings: "Einstellungen", language: "Sprache",
@@ -706,6 +706,7 @@ document.documentElement.classList.add("loopy-building");
     { id: "ocean",  name: "ocean",  bg: "#06263a", dot: "#4cc9f0" },
     { id: "candy",  name: "candy",  bg: "#fff0f6", dot: "#c2257a" },
     { id: "forest", name: "forest", bg: "#0f1f17", dot: "#8ce99a" },
+    { id: "clean",  name: "clean",  bg: "#f4f6f9", dot: "#2f55d4" },
     { id: "contrast", name: "contrast", bg: "#000000", dot: "#ffffff" }
   ];
   var KEY = "loopy.theme";

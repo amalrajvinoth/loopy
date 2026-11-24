@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'sha256-w4iwDWLzFrSVdj8gv/5vUWz+vR8RTiupIliXeWT2+Ic='; style-src 'self' 'sha256-iKqZfY0yOsyVHa/qlTmRsjSUAon+EdDi9RLwucVWFNA=' 'sha256-g37RrpP+Q7lUQ27a0OnK9jDAr3FNO7m62sh0ptTO7/w='; img-src 'self' data:; font-src 'self'; connect-src 'self' https://loopy-sync.loopy-1e2.workers.dev; worker-src 'self'; object-src 'none'; base-uri 'none'; form-action 'none'; manifest-src 'self'; upgrade-insecure-requests">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'sha256-cA7uKhTl0u1THZex17F9hz5laCHkhMB74wVLg1lNT74='; style-src 'self' 'sha256-iKqZfY0yOsyVHa/qlTmRsjSUAon+EdDi9RLwucVWFNA=' 'sha256-g37RrpP+Q7lUQ27a0OnK9jDAr3FNO7m62sh0ptTO7/w='; img-src 'self' data:; font-src 'self'; connect-src 'self' https://loopy-sync.loopy-1e2.workers.dev; worker-src 'self'; object-src 'none'; base-uri 'none'; form-action 'none'; manifest-src 'self'; upgrade-insecure-requests">
 <meta name="referrer" content="strict-origin-when-cross-origin">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <style>:root{color-scheme:light;padding-top:var(--safe-top);padding-bottom:var(--safe-bottom)}body{margin:0}[hidden]{display:none!important}</style>
@@ -309,10 +309,12 @@ const meets = (a, b) => a[0] < b[2] && a[2] > b[0] && a[1] < b[3] && a[3] > b[1]
 function placeName(p, lang, sentence) {
   if (lang === "de") {
     const s = sentence && DE_SAY[p[0]];
-    return s ? s.replace("*", "") : p[2];
+    return s ? (s.endsWith("*") ? s.slice(0, -1) : s) : p[2] || p[1];
   }
   return (sentence && EN_THE.includes(p[0]) ? "the " : "") + p[1];
 }
+// A capital's name. The German column is empty when it is the same as the English one.
+const capitalOf = (p, lang) => (lang === "de" && p[4]) || p[3];
 function areaName(id, lang, sentence) { const a = AREAS[id]; return lang === "de" ? a[sentence ? 3 : 2] : a[sentence ? 1 : 0]; }
 
 // The questions for a map and a mode. Younger children get the well-known countries only.
@@ -447,7 +449,7 @@ function makeProblem(map, find, age, avoid) {
     if (!current) return "";
     const lang = Loopy.lang;
     if (current.type !== "land") return t("wiWhere", { p: areaName(current.id, lang, true) });
-    if (current.cap) return t("wiCapAsk", { c: current.place[lang === "de" ? 4 : 3] });
+    if (current.cap) return t("wiCapAsk", { c: capitalOf(current.place, lang) });
     const plural = lang === "de" && /\*$/.test(DE_SAY[current.id] || "");
     return t(plural ? "wiWherePl" : "wiWhere", { p: placeName(current.place, lang, true) });
   }
@@ -553,7 +555,7 @@ function makeProblem(map, find, age, avoid) {
     shapes(want).forEach(s => s.classList.add("right"));
     if (!ok) shapes(hit).forEach(s => s.classList.add("wrong"));
     if (ok) { right++; streak++; } else { streak = 0; }
-    const capital = current.type === "land" ? current.place[lang === "de" ? 4 : 3] : "";
+    const capital = current.type === "land" ? capitalOf(current.place, lang) : "";
     if (ok) Loopy.rewards.correct("where-is-it", streak, kind());
     else Loopy.rewards.wrong("where-is-it", { q: current.cap ? capital : nameOfHit(want, false), a: nameOfHit(want, false), y: nameOfHit(hit, false), k: kind(), r: note(current) });
     // Name the right place on the map (and the one tapped, if it was wrong). Capitals get a dot.
@@ -649,7 +651,7 @@ function makeProblem(map, find, age, avoid) {
       box.appendChild(line);
       return box;
     },
-    answer: (q) => q.cap ? placeName(q.place, Loopy.lang, false) + ": " + q.place[Loopy.lang === "de" ? 4 : 3] : nameOfHit(q.id, false)
+    answer: (q) => q.cap ? placeName(q.place, Loopy.lang, false) + ": " + capitalOf(q.place, Loopy.lang) : nameOfHit(q.id, false)
   });
 
   newRound();

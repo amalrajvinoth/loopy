@@ -8,6 +8,10 @@ loopy bekommt immer wieder neue Spiele. Das ist zuletzt dazugekommen!
 
 Die großen Änderungen, die neuesten zuerst. Kleine Korrekturen stehen nicht dabei. Die [ganze Liste steht auf GitHub](https://github.com/amalrajvinoth/loopy/blob/main/RELEASES.md) (auf Englisch).
 
+## 24. November 2026
+
+- **Ein neues Aussehen: Klar.** Ein ruhiges helles Farbthema mit grauer Seite, weißen Karten und einem Blau. Es ist der sechste runde Farbknopf in den ⚙ Einstellungen, vor Hoher Kontrast. Sonst ändert sich nichts, und das Thema deines Kindes bleibt.
+
 ## 23. November 2026
 
 - **Deine E-Mail mit eurer Familie verknüpfen, wenn du magst.** Unter **In Kontakt bleiben** in ⚙ Einstellungen sehen Erwachsene mit Familien-Sync ein zweites Kästchen, **Meine E-Mail auch mit unserem Familien-Sync verknüpfen**. Kreuzt du es an, liegt eure Familien-Nummer neben deiner E-Mail. So sieht der Macher von loopy, welche verschlossene Familien-Kopie zu welcher E-Mail gehört, zum Beispiel um zu helfen, wenn der Sync hakt. Die Kopie bleibt verschlossen. Nur, wenn du es ankreuzt. Der [Datenschutzhinweis](/loopy/privacy/) sagt alles dazu.
