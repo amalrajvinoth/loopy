@@ -13,7 +13,8 @@ table files on the live databases. So these wait for the owner's yes, never Clau
     rulesets, branch protection, Pages, collaborators, hooks, secrets, variables, Actions permissions, environments
 
 A tool name counts anywhere in a command (sudo -u x, timeout, nohup, xargs, npx in front), bash -c '...' and
-bash <<EOF are read too. This only adds refusals.
+bash <<EOF are read too. This only adds refusals. It is a safety net, not a sandbox: a shell can always hide a command
+from a pattern. The settings deny list, the main branch rules on GitHub and the owner's own merge are the locks behind it.
 
 Local work stays free: wrangler dev, wrangler d1 execute --local, pushes to a work branch, draft pull requests.
 The owner can let one session through by starting Claude Code with LOOPY_OWNER_APPROVED=1 in their own shell;
@@ -46,7 +47,12 @@ def strip_heredocs(cmd):
     the body when a shell reads it (bash <<EOF runs every line)."""
     def keep(m):
         before = cmd[cmd.rfind("\n", 0, m.start()) + 1:m.start()].split()
-        body = "\n" + m.group(4) if any(base(w) in SHELLS for w in before) else ""
+        if any(base(w) in SHELLS for w in before):
+            body = "\n" + m.group(4)
+        elif not m.group(1):  # unquoted: $(...) and `...` in the body still run
+            body = "".join("\n" + s for s in re.findall(r"\$\(([^()]*)\)|`([^`]*)`", m.group(4)) for s in s if s)
+        else:
+            body = ""
         return " " + m.group(3) + body + "\n"
     return re.sub(r"<<-?\s*(['\"]?)(\w+)\1([^\n]*)\n(.*?)\n\s*\2\s*(?=\n|$)", keep, cmd, flags=re.S)
 
@@ -93,16 +99,22 @@ def wrangler(args):
     return None
 
 
-def git(args):
-    cwd = None
+def git(args, state):
+    cwd, config = None, []
     while args and args[0].startswith("-"):
         if args[0] in ("-C", "-c", "--git-dir", "--work-tree", "--namespace") and len(args) > 1:
             cwd = args[1] if args[0] == "-C" else cwd
+            config += [args[1]] if args[0] == "-c" else []
             args = args[2:]
         else:
+            config += [args[0].split("=", 1)[-1]] if args[0].startswith("--config-env") else []
             args = args[1:]
+    if args[:1] in (["switch"], ["checkout"]) and any(a in MAIN for a in args[1:]):
+        state["main"] = True  # a later push of HEAD in this line pushes main
     if not args or args[0] != "push":
         return None
+    if any(re.match(r"(remote\.[^=]*\.push|push\.default|branch\.[^=]*\.merge)", c, re.I) for c in config):
+        return "a push with its destination set by -c (it can go to main)"
     flags = [a for a in args[1:] if a.startswith("-")]
     refs = [a for a in args[1:] if not a.startswith("-")]
     if any(f in ("--force", "-f") or re.fullmatch(r"-[a-zA-Z]*f[a-zA-Z]*", f) for f in flags) or any(r.startswith("+") for r in refs[1:]):
@@ -110,9 +122,9 @@ def git(args):
     if "--all" in flags or "--mirror" in flags:
         return "git push --all or --mirror (it pushes main too)"
     targets = [r.split(":")[-1] for r in refs[1:]]
-    if any(t in MAIN for t in targets):
-        return "a push to main (main is live)"
-    if (len(refs) <= 1 or any(t in ("HEAD", "@") for t in targets)) and branch(cwd) in ("main", "master"):
+    if any(t in MAIN or "*" in t or t == "" for t in targets) or "--branches" in flags:
+        return "a push to main (main is live; a * or : refspec reaches it too)"
+    if (len(refs) <= 1 or any(t in ("HEAD", "@") for t in targets)) and (state.get("main") or branch(cwd) in ("main", "master")):
         return "a push from the main branch (main is live)"
     return None
 
@@ -135,6 +147,8 @@ def gh_api(args):
             method = a[2:].upper()
         elif a.startswith("--method="):
             method = a.split("=", 1)[1].upper()
+        elif re.match(r"-[fF].", a):
+            fields.append(a[2:])
         elif a.startswith(("--field=", "--raw-field=", "--input=")):
             fields.append(a.split("=", 1)[1])
         elif not a.startswith("-") and not path:
@@ -181,20 +195,21 @@ def gh(args):
     return None
 
 
-def bash(cmd, depth=0):
+def bash(cmd, depth=0, state=None):
     """The first owner's step in a shell line. A tool name is looked for anywhere in a command, so sudo -u x,
     timeout 60, nohup, xargs or npx in front cannot hide it, and bash -c '...' is read too."""
+    state = {} if state is None else state
     for words in segments(cmd):
         for i, w in enumerate(words):
             name, rest = base(w), words[i + 1:]
             found = None
             if name in SHELLS and "-c" in rest and depth < 3:
                 j = rest.index("-c")
-                found = bash(rest[j + 1], depth + 1) if j + 1 < len(rest) else None
+                found = bash(rest[j + 1], depth + 1, state) if j + 1 < len(rest) else None
             elif name in ("wrangler", "wrangler2") or name.startswith("wrangler@"):
                 found = wrangler(rest)
             elif name == "git":
-                found = git(rest)
+                found = git(rest, state)
             elif name == "gh":
                 found = gh(rest)
             if found:

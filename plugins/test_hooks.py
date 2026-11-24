@@ -88,8 +88,14 @@ for c in ("sudo -u root wrangler deploy", "timeout 60 wrangler deploy", "nohup n
           "wrangler d1 time-travel restore loopy-sync", "git --no-pager push origin main", "gh pr -R o/r merge 5",
           "gh api graphql -f query='mutation { mergePullRequest(input:{pullRequestId:\"X\"}) { clientMutationId } }'",
           "gh api -X POST repos/o/r/merges -f base=main -f head=claude/x", "gh api -X PUT repos/o/r/contents/f -f message=x -f content=eA==",
-          "gh api -X PATCH repos/o/r/git/refs/heads/main -f sha=abc", "gh api -X POST repos/o/r/transfer -f new_owner=x"):
+          "gh api -X PATCH repos/o/r/git/refs/heads/main -f sha=abc", "gh api -X POST repos/o/r/transfer -f new_owner=x",
+          "cat <<EOF\n$(wrangler rollback --message x)\nEOF", "git push origin 'refs/heads/*:refs/heads/*'", "git push origin :",
+          "git -c remote.origin.push=HEAD:main push origin", "git switch main && git push origin HEAD",
+          "gh api repos/o/r/actions/variables -fname=X -fvalue=x"):
     expect(f"guard: {c[:40]}", stop(c), True)
+expect("guard: a quoted heredoc with $( ) is text", stop("cat > f <<'EOF'\n$(wrangler deploy)\nEOF"), False)
+expect("guard: switch to a work branch, push HEAD", stop("git switch claude/x && git push -u origin HEAD"), False)
+expect("guard: -c for something else", stop("git -c core.quotepath=off push -u origin claude/x"), False)
 expect("guard: a file to a work branch", stop("gh api -X PUT repos/o/r/contents/f -f message=x -f content=eA== -f branch=claude/x"), False)
 expect("guard: a GraphQL review-thread reply", stop("gh api graphql -f query='mutation { resolveReviewThread(input:{threadId:\"X\"}) { clientMutationId } }'"), False)
 expect("guard: a new branch ref", stop("gh api repos/o/r/git/refs -f ref=refs/heads/claude/x -f sha=abc"), False)
