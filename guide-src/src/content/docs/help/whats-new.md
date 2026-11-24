@@ -10,6 +10,7 @@ The big changes, newest first. Small fixes are not listed. See [the full list on
 
 ## 24 November 2026
 
+- **Pick how the game buttons look.** A new **Game tiles** row in the home page ⚙ Settings offers five looks: Chunky (as before), Sticker, Soft, List and Icons. Each child keeps their own choice, and it travels in the stars code.
 - **A new look called Clean.** A calm light theme with a grey page, white cards and one blue. It is the sixth round colour button in ⚙ Settings, before High contrast. Nothing else changes, and the theme your child picked stays.
 
 ## 23 November 2026

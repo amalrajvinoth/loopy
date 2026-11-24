@@ -56,6 +56,10 @@ Yes, in most games. Turn on **Read aloud** in the game's ⚙ Settings. It is on 
 
 Yes. In ⚙ Settings, the round colors change the look. **Clean** is a calm, light one. Pick the **High contrast** color, or turn on **Easier to read**. See [Language and look](/loopy/guide/setup/language-and-look/).
 
+## Can I change how the game buttons look?
+
+Yes. On the home page, open ⚙ Settings and find **Game tiles**. Tap a small square: **Chunky**, **Sticker**, **Soft**, **List** or **Icons**. The choice is saved for the child playing. See [Language and look](/loopy/guide/setup/language-and-look/#game-tiles).
+
 ## How do I turn the sound off?
 
 Tap the speaker button. In a game, it is inside ⚙ Settings.

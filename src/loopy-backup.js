@@ -17,9 +17,9 @@
 (function () {
   var Loopy = window.Loopy = window.Loopy || /** @type {Loopy} */ ({});
   var MAX_CODE = 40000, MAX_JSON = 200000, MAX_P = 10, MAX_G = 300, MAX_GV = 4000;
-  // The keys a child's g may hold: game settings ("ss.mode.a7"), the last game, the games already seen, and the levels the grown-ups page last saw.
+  // The keys a child's g may hold: game settings ("ss.mode.a7"), the last game, the games already seen, the levels the grown-ups page last saw, and the home page's tile style.
   // Each game checks its own values again when it reads them (only known choices are used).
-  var GKEY = /^(?:(?:bm|bs|cc|cd|clockquiz|ct|em|wy|mi|np|wf|ra|eb|fc|gd|mk|mw|pm100|pr|pz|qf|sb|sh|si|so|sq|ss|st|tg|to|ts|tt|wd|wi|wm|wt)\.[A-Za-z]{1,16}(?:\.a\d{1,2})?|loopy\.(?:last|seen|levels))$/;
+  var GKEY = /^(?:(?:bm|bs|cc|cd|clockquiz|ct|em|wy|mi|np|wf|ra|eb|fc|gd|mk|mw|pm100|pr|pz|qf|sb|sh|si|so|sq|ss|st|tg|to|ts|tt|wd|wi|wm|wt)\.[A-Za-z]{1,16}(?:\.a\d{1,2})?|loopy\.(?:last|seen|levels|tiles))$/;
   var KEYS = { rewards: "loopy.rewards", daily: "loopy.daily", log: "loopy.log", recent: "loopy.recent",
     age: "loopy.ageOffset", read: "loopy.readAloud", theme: "loopy.theme", font: "loopy.font", sound: "loopy.sound", lang: "loopy.lang" };
   var CHOICES = { read: ["on", "off"], theme: ["black", "sunny", "ocean", "candy", "forest", "clean", "contrast"], font: ["easy", "normal"], sound: ["on", "off"], lang: ["en", "de"] };

@@ -10,6 +10,7 @@ Die großen Änderungen, die neuesten zuerst. Kleine Korrekturen stehen nicht da
 
 ## 24. November 2026
 
+- **Wähle, wie die Spielknöpfe aussehen.** Eine neue Zeile **Spielkacheln** in den ⚙ Einstellungen der Startseite bietet fünf Looks: Bunt (wie bisher), Sticker, Sanft, Liste und Symbole. Jedes Kind behält seine eigene Wahl, und sie reist im Sterne-Code mit.
 - **Ein neues Aussehen: Klar.** Ein ruhiges helles Farbthema mit grauer Seite, weißen Karten und einem Blau. Es ist der sechste runde Farbknopf in den ⚙ Einstellungen, vor Hoher Kontrast. Sonst ändert sich nichts, und das Thema deines Kindes bleibt.
 
 ## 23. November 2026

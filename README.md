@@ -74,6 +74,7 @@ Open it with the Grown-ups button at the bottom of the home page.
 - **Age.** Pick the child's age. Each game gets easier or harder to match it. The age goes up by itself on each birthday.
 - **Language.** English is the default. Tap **DE** for German, or **EN** to go back.
 - **Colors.** Black is the default. You can also pick Sunny, Ocean, Candy, Forest, Clean or High contrast. Clean is a calm light look with one blue accent. High contrast is black and white with bright colors and white edges on every button.
+- **Game tiles.** In **Settings** on the home page, the **Game tiles** row picks how the game buttons look: Chunky (the start), Sticker, Soft, List or Icons. Each child keeps their own choice, and it travels in the stars code. Today's 10, Carry on and Try again keep their look.
 - **Easier to read.** In **Settings**, turn on **Easier to read** to switch every text to Atkinson Hyperlegible, a font made so letters like b and d, or I, l and 1, are easy to tell apart. Pages only load the font when it is on, and it is saved for offline use like the other fonts.
 - **Stars.** Every right answer gives a star. More stars unlock badges, from 10 stars up to 5,000. A streak of right answers sets off confetti, and the best streak earns badges at 10, 20 and 50 in a row. There are badges for playing 5, 10 and all games, and a Brave badge for 10 in a row on a level above your age.
 - **Sound.** Short happy sounds play. Tap the speaker to turn them off.

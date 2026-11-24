@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'sha256-wJXceUNKMlVnMhJPcJec78AwyJtJ0Ch45tctydoo49g='; style-src 'self' 'sha256-RqLXBhKtmLJ8aPBhTsFzBvNO1UJDp+memHT+KfRNKsY='; img-src 'self' data:; font-src 'self'; connect-src 'self' https://loopy-sync.loopy-1e2.workers.dev; worker-src 'self'; object-src 'none'; base-uri 'none'; form-action 'none'; manifest-src 'self'; upgrade-insecure-requests">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'sha256-jfHh1UyPg8nG6v+uj16zW3p5CTruC+DAnyHrGOzWmfs='; style-src 'self' 'sha256-3J/ATI/QszWxYzjJXau25+DPdQ+ywWHQreYFqsK77eg='; img-src 'self' data:; font-src 'self'; connect-src 'self' https://loopy-sync.loopy-1e2.workers.dev; worker-src 'self'; object-src 'none'; base-uri 'none'; form-action 'none'; manifest-src 'self'; upgrade-insecure-requests">
 <meta name="referrer" content="strict-origin-when-cross-origin">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <link rel="icon" href="icon.svg" type="image/svg+xml">
@@ -137,6 +137,72 @@ h1 { margin: 0; line-height: 0; color: var(--ink); }
   .quiz.game h3 { font-size: 1.7rem; }
   .quiz.game p { font-size: 1rem; }
 }
+/* Game tiles styles ("Game tiles" in Settings, saved per child as loopy.tiles). Chunky is the look above and needs no rules.
+   One attribute on <html> switches the rest; every colour still comes from the theme. Today's 10, Carry on and Try again
+   are not game tiles and keep their look in every style. */
+/* Sticker: the tile is filled with its tone, the picture sits on the colour, and a card-coloured band at the bottom holds the name and ages.
+   The solid shadow is the tone darkened: a 35% black layer over a tone layer (a shadow is only drawn outside the tile). */
+:root[data-tiles="sticker"] .quiz.game { background: var(--tone); padding: 10px 0 0; gap: 0; overflow: hidden; box-shadow: 0 6px 0 rgb(0 0 0 / .35), 0 6px 0 var(--tone); }
+:root[data-tiles="sticker"] .quiz.game:hover { box-shadow: 0 8px 0 rgb(0 0 0 / .35), 0 8px 0 var(--tone); }
+:root[data-tiles="sticker"] .quiz.game:active { box-shadow: 0 2px 0 rgb(0 0 0 / .35), 0 2px 0 var(--tone); }
+:root[data-tiles="sticker"] .quiz.game .pic { margin-bottom: 8px; filter: drop-shadow(0 2px 0 rgb(0 0 0 / .15)); }
+:root[data-tiles="sticker"] .quiz.game h3 { color: var(--ink); background: var(--card); width: 100%; padding: 8px 6px 4px; }
+:root[data-tiles="sticker"] .quiz.game p { background: var(--card); width: 100%; padding: 0 10px 4px; }
+:root[data-tiles="sticker"] .quiz.game .tag { background: var(--card); width: 100%; border-radius: 0; margin-top: 0; padding: 0 6px 8px; }
+/* Soft: a calm card with a thin line and a soft shadow; the picture on a round tinted disc; the name in ink at every size. */
+:root[data-tiles="soft"] .quiz.game { border: 1px solid var(--line); box-shadow: 0 1px 2px rgb(0 0 0 / .06), 0 6px 16px rgb(0 0 0 / .08); }
+:root[data-tiles="soft"] .quiz.game:hover { box-shadow: 0 2px 4px rgb(0 0 0 / .06), 0 10px 20px rgb(0 0 0 / .1); }
+:root[data-tiles="soft"] .quiz.game:active { transform: scale(0.97); box-shadow: 0 1px 2px rgb(0 0 0 / .06); }
+:root[data-tiles="soft"] .quiz.game .pic { display: grid; place-items: center; width: 2.6em; height: 2.6em; font-size: 1.5rem; border-radius: 50%; background: var(--chip); background: color-mix(in srgb, var(--tone) 22%, var(--card)); }
+:root[data-tiles="soft"] .quiz.game h3 { color: var(--ink); }
+/* List: one game per row, two columns from 600px. The picture on a tinted square, the name, the ages on the right. */
+:root[data-tiles="list"] .grid { grid-template-columns: 1fr; gap: 8px; }
+:root[data-tiles="list"] .quiz.game { flex-direction: row; align-items: center; text-align: left; padding: 8px 12px 8px 8px; gap: 12px; border-width: 2px; box-shadow: 0 3px 0 var(--tone); min-height: 56px; }
+:root[data-tiles="list"] .quiz.game:hover { box-shadow: 0 5px 0 var(--tone); }
+:root[data-tiles="list"] .quiz.game:active { transform: translateY(2px); box-shadow: 0 1px 0 var(--tone); }
+:root[data-tiles="list"] .quiz.game .pic { display: grid; place-items: center; flex: none; width: 44px; height: 44px; font-size: 1.5rem; border-radius: 12px; background: var(--chip); background: color-mix(in srgb, var(--tone) 22%, var(--card)); }
+:root[data-tiles="list"] .quiz.game h3 { flex: 1 1 auto; font-size: 1.05rem; color: var(--ink); text-wrap: pretty; }
+:root[data-tiles="list"] .quiz.game .tag { margin: 0; flex: none; font-size: 0.68rem; }
+:root[data-tiles="list"] .quiz.game p { display: none; }
+/* Icons: no card. A round tone disc with the picture and the name under it, like apps on a phone. The ages show from 600px. */
+:root[data-tiles="icons"] .grid { gap: 6px 8px; }
+:root[data-tiles="icons"] .quiz.game { background: transparent; border: 0; box-shadow: none; padding: 6px 2px 4px; gap: 6px; border-radius: 16px; }
+:root[data-tiles="icons"] .quiz.game:hover { transform: none; box-shadow: none; }
+:root[data-tiles="icons"] .quiz.game:active { transform: scale(0.94); box-shadow: none; }
+:root[data-tiles="icons"] .quiz.game .pic { display: grid; place-items: center; width: 64px; height: 64px; font-size: 2rem; border-radius: 50%; background: var(--tone); box-shadow: 0 4px 0 rgb(0 0 0 / .35), 0 4px 0 var(--tone); }
+:root[data-tiles="icons"] .quiz.game h3 { color: var(--ink); font-size: clamp(0.8rem, 3.4vw, 1.2rem); }
+:root[data-tiles="icons"] .quiz.game .tag, :root[data-tiles="icons"] .quiz.game p { display: none; }
+@media (min-width: 600px) {
+  :root[data-tiles="sticker"] .quiz.game { padding: 14px 0 0; }
+  :root[data-tiles="sticker"] .quiz.game .pic { margin-bottom: 10px; }
+  :root[data-tiles="sticker"] .quiz.game h3 { padding-top: 10px; }
+  :root[data-tiles="sticker"] .quiz.game .tag { padding-bottom: 10px; }
+  :root[data-tiles="soft"] .quiz.game .pic { font-size: 2rem; }
+  :root[data-tiles="list"] .grid { grid-template-columns: 1fr 1fr; gap: 10px; }
+  :root[data-tiles="list"] .quiz.game { padding: 10px 14px 10px 10px; }
+  :root[data-tiles="list"] .quiz.game .pic { width: 52px; height: 52px; font-size: 1.8rem; }
+  :root[data-tiles="list"] .quiz.game h3 { font-size: 1.2rem; }
+  :root[data-tiles="list"] .quiz.game .tag { font-size: 0.72rem; }
+  :root[data-tiles="icons"] .grid { gap: 10px 12px; }
+  :root[data-tiles="icons"] .quiz.game .pic { width: 84px; height: 84px; font-size: 2.6rem; }
+  :root[data-tiles="icons"] .quiz.game .tag { display: inline-block; }
+}
+/* The "Game tiles" row in Settings: a label over five small squares, one per style, drawn like the theme swatches (36px, 44px to tap). */
+.tiles-row { flex-basis: 100%; display: flex; flex-direction: column; gap: 6px; }
+.tiles-row > span { font-weight: 600; font-size: 0.95rem; }
+.tiles { display: flex; flex-wrap: wrap; gap: 7px; }
+.tiles button { position: relative; width: 36px; height: 36px; padding: 0; border-radius: 10px; cursor: pointer; touch-action: manipulation; border: 3px solid var(--line); background: var(--card); display: grid; place-items: center; }
+.tiles button[aria-pressed="true"] { border-color: var(--ink); }
+/* High contrast draws line and ink both white, so the chosen square gets the swatches' extra ink ring. */
+:root[data-theme="contrast"] .tiles button[aria-pressed="true"] { outline: 3px solid var(--ink); outline-offset: 2px; }
+.tiles button::after { content: ""; position: absolute; inset: -7px; }
+.tiles button:focus-visible { outline: 3px solid var(--mark); outline-offset: 3px; }
+.tiles i { display: block; width: 18px; height: 18px; border-radius: 5px; }
+.tiles .t-chunky i { border: 2px solid var(--c1); box-shadow: 0 2px 0 var(--c1); }
+.tiles .t-sticker i { background: var(--c1); }
+.tiles .t-soft i { border: 1px solid var(--line); box-shadow: 0 2px 4px rgb(0 0 0 / .25); }
+.tiles .t-list i { width: 20px; border-radius: 0; background: repeating-linear-gradient(var(--c1) 0 3px, transparent 3px 7px); }
+.tiles .t-icons i { width: 16px; height: 16px; border-radius: 50%; background: var(--c1); }
 .go { margin-top: auto; align-self: flex-start; background: var(--tone); color: var(--card); font-family: var(--display); font-weight: 700; font-size: 1.2rem; padding: 6px 16px; border-radius: 999px; }
 /* Today's 10: one big button above the shelf. */
 .wrap .today { --tone: var(--c5); min-height: 0; }
@@ -329,6 +395,7 @@ Loopy.addStrings({
     badFile: "That file didn't work. Pick a loopy backup file.",
     whose: "Whose stars?", everyone: "Everyone",
     carryTag: "Carry on", carryGo: "Go →", againTag: "Try again", againLine: "{n} from this week",
+    tiles: "Game tiles", tilesChunky: "Chunky", tilesSticker: "Sticker", tilesSoft: "Soft", tilesList: "List", tilesIcons: "Icons",
     askOne: "Load {name}'s stars here?", askMany: "Load the stars of {names} here?", askNone: "Load these stars here?",
     askText: "This adds their stars, progress, game levels and where they left off to this device. Nothing here is taken away.",
     askLoad: "Load", askNo: "Not now",
@@ -392,6 +459,7 @@ Loopy.addStrings({
     badFile: "Die Datei hat nicht geklappt. Wähle eine loopy-Sicherungsdatei.",
     whose: "Wessen Sterne?", everyone: "Alle",
     carryTag: "Weiterspielen", carryGo: "Los →", againTag: "Nochmal versuchen", againLine: "{n} von dieser Woche",
+    tiles: "Spielkacheln", tilesChunky: "Bunt", tilesSticker: "Sticker", tilesSoft: "Sanft", tilesList: "Liste", tilesIcons: "Symbole",
     askOne: "Die Sterne von {name} hier laden?", askMany: "Die Sterne von {names} hier laden?", askNone: "Diese Sterne hier laden?",
     askText: "Das fügt Sterne, Fortschritt, Stufen in den Spielen und wo aufgehört wurde zu diesem Gerät hinzu. Hier geht nichts verloren.",
     askLoad: "Laden", askNo: "Nicht jetzt",
@@ -486,6 +554,16 @@ const GAMES = [
   { subject: "geography", path: "geography/flags-capitals/", id: "fc", pic: "🚩", ages: [7, 16] },
 ];
 const t = Loopy.t;
+// Game tiles: how the game buttons look. Saved per child (Loopy.store), so the choice follows the child and
+// travels in the stars code. Only a known style is used; anything else means Chunky, the look of the page itself.
+const TILES = ["chunky", "sticker", "soft", "list", "icons"];
+const tilesNow = () => { const v = Loopy.store.get("loopy.tiles"); return TILES.indexOf(v) > 0 ? v : "chunky"; };
+function showTiles(id) {
+  if (id === "chunky") document.documentElement.removeAttribute("data-tiles");
+  else document.documentElement.setAttribute("data-tiles", id);
+  document.querySelectorAll(".tiles button").forEach(b => b.setAttribute("aria-pressed", String(b.dataset.tiles === id)));
+}
+showTiles(tilesNow());
 // Whether a #family= or #load= link opened the page, read before any part takes the hash off the address.
 const CAME_BY_LINK = /^#(family|load)=/.test(location.hash);
 const list = document.getElementById("list");
@@ -537,6 +615,24 @@ function render() {
 }
 render();
 window.addEventListener("loopy:age", render);
+// The "Game tiles" row goes after Easier to read, which loopy.js adds when the page has loaded; this listener came later, so it runs after that one.
+document.addEventListener("DOMContentLoaded", () => {
+  const after = document.getElementById("font-toggle") || document.getElementById("theme-picker");
+  if (!after) return;
+  const row = document.createElement("div"), label = document.createElement("span"), box = document.createElement("div");
+  row.className = "tiles-row"; label.id = "tiles-label"; label.textContent = t("tiles");
+  box.className = "tiles"; box.setAttribute("role", "group"); box.setAttribute("aria-labelledby", "tiles-label");
+  for (const id of TILES) {
+    const b = document.createElement("button"), name = t("tiles" + id[0].toUpperCase() + id.slice(1));
+    b.type = "button"; b.className = "t-" + id; b.dataset.tiles = id; b.title = name; b.setAttribute("aria-label", name);
+    b.appendChild(document.createElement("i"));
+    b.addEventListener("click", () => { Loopy.store.set("loopy.tiles", id); showTiles(id); });
+    box.appendChild(b);
+  }
+  row.append(label, box);
+  after.insertAdjacentElement("afterend", row);
+  showTiles(tilesNow());
+});
 
 // Carry on: the child's last game, above Today's 10.
 (function carryOn() {
