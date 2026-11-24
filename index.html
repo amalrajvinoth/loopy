@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'sha256-jfHh1UyPg8nG6v+uj16zW3p5CTruC+DAnyHrGOzWmfs='; style-src 'self' 'sha256-3J/ATI/QszWxYzjJXau25+DPdQ+ywWHQreYFqsK77eg='; img-src 'self' data:; font-src 'self'; connect-src 'self' https://loopy-sync.loopy-1e2.workers.dev; worker-src 'self'; object-src 'none'; base-uri 'none'; form-action 'none'; manifest-src 'self'; upgrade-insecure-requests">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'sha256-jfHh1UyPg8nG6v+uj16zW3p5CTruC+DAnyHrGOzWmfs='; style-src 'self' 'sha256-Ap0TXWanx/J5//ogC7NtRbC/JT1h752eoLDw/fRAUZQ='; img-src 'self' data:; font-src 'self'; connect-src 'self' https://loopy-sync.loopy-1e2.workers.dev; worker-src 'self'; object-src 'none'; base-uri 'none'; form-action 'none'; manifest-src 'self'; upgrade-insecure-requests">
 <meta name="referrer" content="strict-origin-when-cross-origin">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <link rel="icon" href="icon.svg" type="image/svg+xml">
@@ -155,8 +155,8 @@ h1 { margin: 0; line-height: 0; color: var(--ink); }
 :root[data-tiles="soft"] .quiz.game:active { transform: scale(0.97); box-shadow: 0 1px 2px rgb(0 0 0 / .06); }
 :root[data-tiles="soft"] .quiz.game .pic { display: grid; place-items: center; width: 2.6em; height: 2.6em; font-size: 1.5rem; border-radius: 50%; background: var(--chip); background: color-mix(in srgb, var(--tone) 22%, var(--card)); }
 :root[data-tiles="soft"] .quiz.game h3 { color: var(--ink); }
-/* List: one game per row, two columns from 600px. The picture on a tinted square, the name, the ages on the right. */
-:root[data-tiles="list"] .grid { grid-template-columns: 1fr; gap: 8px; }
+/* List: one game per row, two columns from 600px, the rows --row-gap apart. The picture on a 44px tinted square (the thumb size, 52px from 600px), the name, the ages on the right. */
+:root[data-tiles="list"] .grid { grid-template-columns: 1fr; gap: var(--row-gap); }
 :root[data-tiles="list"] .quiz.game { flex-direction: row; align-items: center; text-align: left; padding: 8px 12px 8px 8px; gap: 12px; border-width: 2px; box-shadow: 0 3px 0 var(--tone); min-height: 56px; }
 :root[data-tiles="list"] .quiz.game:hover { box-shadow: 0 5px 0 var(--tone); }
 :root[data-tiles="list"] .quiz.game:active { transform: translateY(2px); box-shadow: 0 1px 0 var(--tone); }
@@ -165,7 +165,7 @@ h1 { margin: 0; line-height: 0; color: var(--ink); }
 :root[data-tiles="list"] .quiz.game .tag { margin: 0; flex: none; font-size: 0.68rem; }
 :root[data-tiles="list"] .quiz.game p { display: none; }
 /* Icons: no card. A round tone disc with the picture and the name under it, like apps on a phone. The ages show from 600px. */
-:root[data-tiles="icons"] .grid { gap: 6px 8px; }
+:root[data-tiles="icons"] .grid { gap: calc(var(--row-gap) * .75) var(--row-gap); }
 :root[data-tiles="icons"] .quiz.game { background: transparent; border: 0; box-shadow: none; padding: 6px 2px 4px; gap: 6px; border-radius: 16px; }
 :root[data-tiles="icons"] .quiz.game:hover { transform: none; box-shadow: none; }
 :root[data-tiles="icons"] .quiz.game:active { transform: scale(0.94); box-shadow: none; }
@@ -178,12 +178,11 @@ h1 { margin: 0; line-height: 0; color: var(--ink); }
   :root[data-tiles="sticker"] .quiz.game h3 { padding-top: 10px; }
   :root[data-tiles="sticker"] .quiz.game .tag { padding-bottom: 10px; }
   :root[data-tiles="soft"] .quiz.game .pic { font-size: 2rem; }
-  :root[data-tiles="list"] .grid { grid-template-columns: 1fr 1fr; gap: 10px; }
+  :root[data-tiles="list"] .grid { grid-template-columns: 1fr 1fr; }
   :root[data-tiles="list"] .quiz.game { padding: 10px 14px 10px 10px; }
   :root[data-tiles="list"] .quiz.game .pic { width: 52px; height: 52px; font-size: 1.8rem; }
   :root[data-tiles="list"] .quiz.game h3 { font-size: 1.2rem; }
   :root[data-tiles="list"] .quiz.game .tag { font-size: 0.72rem; }
-  :root[data-tiles="icons"] .grid { gap: 10px 12px; }
   :root[data-tiles="icons"] .quiz.game .pic { width: 84px; height: 84px; font-size: 2.6rem; }
   :root[data-tiles="icons"] .quiz.game .tag { display: inline-block; }
 }
@@ -195,6 +194,8 @@ h1 { margin: 0; line-height: 0; color: var(--ink); }
 .tiles button[aria-pressed="true"] { border-color: var(--ink); }
 /* High contrast draws line and ink both white, so the chosen square gets the swatches' extra ink ring. */
 :root[data-theme="contrast"] .tiles button[aria-pressed="true"] { outline: 3px solid var(--ink); outline-offset: 2px; }
+/* Focus on the chosen square still shows: the ring takes the focus colour and moves out a step. */
+:root[data-theme="contrast"] .tiles button[aria-pressed="true"]:focus-visible { outline-color: var(--mark); outline-offset: 4px; }
 .tiles button::after { content: ""; position: absolute; inset: -7px; }
 .tiles button:focus-visible { outline: 3px solid var(--mark); outline-offset: 3px; }
 .tiles i { display: block; width: 18px; height: 18px; border-radius: 5px; }
