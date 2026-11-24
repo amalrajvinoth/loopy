@@ -5,12 +5,14 @@ description: Finish a loopy change and open its pull request with every check, s
 
 # Ship a loopy pull request
 
+The `development-loop` skill hands over at step 7 when its last try was clean on this commit.
+
 1. **Merge the latest main** into the branch (`git fetch origin main && git merge origin/main`). The after_merge hook rebuilds generated files.
 2. **Build:** `python3 tools/build.py`.
 3. **Checks:** `python3 tools/check.py`. It runs what the change needs, and for a red one prints why it matters and the heal recipe that fits. Fix the cause, then run the red ones again by name. Add `--webkit` when the change touches layout or anything Safari does differently. A check it lists as "not run here" runs in CI: say so in the pull request. When a game looks different, also run `npm run screens --prefix guide-src` and commit `guide-src/src/assets/screens/`, so the guide shows no old layout.
 4. **Docs** with the loopy-docs skill, in this same pull request. Fix the `docs` rows from `tools/review.py`, or say why not.
 5. **UI audit** when anything on a page looks different: `/improve-ui <page>` (the repo's own copy). Fix its findings in this pull request, or say there why not.
-6. **Review** with the loopy-review skill (or the `reviewer` agent). Fix every "Must fix". Note speed and size findings for the pull request.
+6. **Review** with the loopy-review skill (or the `code-reviewer` agent). Fix every "Must fix". Note speed and size findings for the pull request.
 7. **Screenshots** when anything on screen changed: `node plugins/loopy/scripts/screens.mjs --out <scratch>/after` on the branch, and with `--root <worktree of origin/main> --out <scratch>/before` for main. It fails if a page scrolls; fix that first. Then look at the pictures: nothing cut off (the tablet held upright and a phone on its side go first), no mostly empty card on a tablet or a monitor, no greyed-out Next before an answer, no hint bubble over a key or a word. Take them again after a wrong answer with the longest explanation and with Settings open. Copy the phone-size pair you show into `docs/screenshots/`, commit, and link them by raw.githubusercontent.com URL pinned to the commit.
 8. **Commit** in plain words. No Claude attribution lines (a hook blocks them).
 9. **Pull request** against `main` with `.github/pull_request_template.md`: What changed (a parent could read it), Changes (one line each, what someone will notice), Before and after (or delete it), Check on a phone (what only a real phone or tablet shows, one line each; delete it when there is nothing: the `phone-checks` skill reads it), Checked, a line on the docs that changed (or "Docs: nothing people see changed"), a line on speed and size ("nothing found" is fine), "Closes #N". Keep the project's "Requested by" lines at the top when the project asks for them. After creating it, open it again and remove any "Generated with/by Claude Code" line a tool added. Assign the owner and ask them for a review.

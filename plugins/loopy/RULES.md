@@ -26,6 +26,7 @@ Add a rule with the add-rule skill, in one or two lines; the how-to goes in the 
 ## Safety
 - No outside requests. No `style=` attributes, no `on*=` handlers (a hook blocks them).
 - Saved data is never lost or reset: a changed key or format needs a migration, and old stars codes still import. Per-child data goes through `Loopy.store`. Validate everything read from storage.
+- A merge (main is live; a `sync/` merge also changes the live databases), a deploy, a `--remote` Cloudflare command, a secret and a repo setting are the owner's steps (the approval_guard hook stops them).
 - GitHub Pages gets only the site: `src/`, `tools/`, `docs/`, `plugins/`, the workflows and the Markdown files are left out, so a page never loads a file from there.
 
 ## Every change
