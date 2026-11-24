@@ -221,7 +221,8 @@ with tempfile.TemporaryDirectory() as tmp:  # a checkout on main: which branch d
               "(cd ../other && git switch work) && git push origin HEAD", "git switch claude/x | cat && git push origin HEAD",
               "bash -c 'cd ../other' && git push origin HEAD", "false && cd ../other; git push origin HEAD",
               "cd ../other || true && git push origin HEAD", "git switch side && git switch - && git push origin HEAD",
-              "git switch side && git switch @{-1} && git push origin HEAD"):
+              "git switch side && git switch @{-1} && git push origin HEAD",
+              "pushd ../other && pushd && git push origin HEAD"):
         expect(f"guard on main: {c[:50]}", on_main(c), True)
     for c in ("git switch claude/x && git push -u origin HEAD", "git checkout -b claude/x && git push -u origin HEAD",
               "git checkout side && git push origin HEAD", "git switch main && git switch claude/x && git push -u origin HEAD",

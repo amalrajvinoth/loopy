@@ -251,7 +251,7 @@ def gh(args):
 def cd(words, state, before, after):
     """Follow cd like a switch: the folder the next command runs in, or every folder it may run in."""
     dest = words[1] if len(words) > 1 else "~"
-    if words[0] == "popd" or dest.startswith("-") or "$" in dest or "`" in dest:
+    if words[0] == "popd" or (words[0] == "pushd" and len(words) < 2) or dest.startswith(("-", "+")) or "$" in dest or "`" in dest:
         new = {"?"}
     else:
         new = {"?" if c == "?" else os.path.join(c, os.path.expanduser(dest)) for c in state["cwd"]}
