@@ -93,7 +93,7 @@ In **Spelling Quiz** and **My Words**, yes: grown-ups paste their own list in Se
 
 ## Can Loopy be easier to see or read?
 
-Yes. Open **Settings**. The last color, **High contrast**, uses black, white and bright colors with clear white edges. **Easier to read** switches every text to Atkinson Hyperlegible, a font with letters that are easy to tell apart, like b and d or I, l and 1. Both are remembered on this device and work on every page.
+Yes. Open **Settings**. The round colors change the look; **Clean** is a calm light one. The last color, **High contrast**, uses black, white and bright colors with clear white edges. **Easier to read** switches every text to Atkinson Hyperlegible, a font with letters that are easy to tell apart, like b and d or I, l and 1. Both are remembered on this device and work on every page.
 
 ## How do I turn the sound off?
 

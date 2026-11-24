@@ -31,6 +31,7 @@ themes:
   ocean:  { bg: "#06263a", card: "#0d3550", ink: "#eaf6ff", c1: "#4cc9f0", scheme: dark }
   candy:  { bg: "#fff0f6", card: "#ffffff", ink: "#3a1d3f", c1: "#c2257a", scheme: light }
   forest: { bg: "#0f1f17", card: "#183024", ink: "#effaf2", c1: "#8ce99a", scheme: dark }
+  clean:  { bg: "#f4f6f9", card: "#ffffff", ink: "#1b2430", c1: "#2f55d4", scheme: light }
   contrast: { bg: "#000000", card: "#000000", ink: "#ffffff", muted: "#e6e6e6", line: "#ffffff", c1: "#8cc8ff", hour: "#3d84ff", minute: "#e65c00", scheme: dark }
 
 typography:
@@ -132,7 +133,7 @@ Every page uses theme variables. Never hard-code a color in a game. Use a variab
 
 ### Themes
 
-There are five color themes and one high contrast theme. Black is the default. The child picks one in Settings. It is saved in the browser.
+There are six color themes and one high contrast theme. Black is the default. The child picks one in Settings. It is saved in the browser.
 
 | Theme | Page (`--bg`) | Card (`--card`) | Text (`--ink`) | Main accent (`--c1`) | Mode |
 | --- | --- | --- | --- | --- | --- |
@@ -141,7 +142,10 @@ There are five color themes and one high contrast theme. Black is the default. T
 | Ocean | #06263a | #0d3550 | #eaf6ff | #4cc9f0 | dark |
 | Candy | #fff0f6 | #ffffff | #3a1d3f | #c2257a | light |
 | Forest | #0f1f17 | #183024 | #effaf2 | #8ce99a | dark |
+| Clean | #f4f6f9 | #ffffff | #1b2430 | #2f55d4 | light |
 | High contrast | #000000 | #000000 | #ffffff | #8cc8ff | dark |
+
+**Clean** is the calm, grown-up look: an off-white page, white cards, slate text and one indigo accent. The other accents are quiet versions (burnt orange `c2` #c2410c, teal `c3` #0f7a5a, violet `c4` #6d4fc2, dark gold `c5` #9a6700), so the home tiles still take turns. Text on an accent is white. The shapes do not change: the same cards, frames and drop shadows as every other theme.
 
 **High contrast** is for kids with low vision. Every text and button passes WCAG AA (checked with axe on every page). On top of its colors:
 
@@ -360,7 +364,7 @@ Age, language, color theme, sound and levels go behind the ⚙ button, on the ho
 
 - **Age picker:** a chip pill with round minus and plus buttons and the age in the middle.
 - **Language picker:** EN and DE in a chip pill. The chosen one gets the card color.
-- **Theme picker:** six round 36px swatches (the last is High contrast, black with a white dot). The chosen one gets an ink border.
+- **Theme picker:** seven round 36px swatches (Clean is off-white with an indigo dot; the last is High contrast, black with a white dot). The chosen one gets an ink border.
 - **Easier to read:** a chip pill right after the theme picker, styled like Read aloud: an "Aa" icon, "Easier to read", and an On or Off tag. loopy.js adds it to every page that has a theme picker.
 - **Level picker:** a segmented row of buttons in a chip box. The chosen one is raised on the card color.
 - **Read aloud:** a chip pill next to the sound toggle, at least 44px tall: a speaker icon, "Read aloud", and a small On or Off tag on the card color. Off greys the icon and tag. `Loopy.speech.question()` adds it. Sound Spell, Spell It and Word Match keep their own read-aloud setting (they read words, not a question) but show the same pill through `Loopy.speech.toggle()`. No game has its own tick box for it.
@@ -475,7 +479,7 @@ loopy is mostly flat. Depth comes from solid offset shadows, not blur.
 
 ### Do
 
-- Use the theme variables for every color. Check your page in all five themes.
+- Use the theme variables for every color. Check your page in all seven themes.
 - Load only `loopy.js` and `loopy.css` as shared files. Edit `src/`, then run `python3 tools/build.py`.
 - Ship every word in English and German. Use `Loopy.addStrings`, `data-t` and `Loopy.t()`.
 - Make tap targets at least 44px. Make main game buttons much bigger.
