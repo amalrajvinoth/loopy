@@ -35,6 +35,7 @@ MERGE = re.compile(r"/pulls/\d+/(merge|ccr/auto_merge)/?$")
 OPS = set(";&|()\n")
 SHELLS = {"bash", "sh", "zsh", "dash"}
 MAIN = ("main", "master", "refs/heads/main", "refs/heads/master")
+SURE = (None, ";", "\n", "&&")  # before one of these, a command followed by && always runs before the next
 RISKY_GRAPHQL = re.compile(r"mutation[\s\S]*\b(merge\w*|enablePullRequestAutoMerge|\w*Repository\w*|\w*BranchProtection\w*|"
                            r"\w*Ruleset\w*|updateRefs?|createCommitOnBranch|\w*Secret\w*)\s*\(", re.I)
 
@@ -106,13 +107,12 @@ def switch_target(args, path):
     for i, a in enumerate(rest):
         if a in ("-c", "-C", "-b", "-B", "--orphan") and i + 1 < len(rest):
             return rest[i + 1]
-    names = [a for a in rest if not a.startswith("-")]
+    names = [a for a in rest if a == "-" or not a.startswith("-")]
     if len(names) != 1:
         return None
     name = names[0]
-    if name in ("-", "@{-1}"):
-        code, out = run_git(path, "rev-parse", "--abbrev-ref", "@{-1}")
-        return out if code == 0 and out else "?"
+    if name == "-" or name.startswith("@{-"):
+        return "@{-1}" if name == "-" else name  # the branch before: git() reads it, if nothing switched before it
     if args[0] == "checkout" and run_git(path, "rev-parse", "--verify", "--quiet", f"refs/heads/{name}")[0] != 0 \
             and run_git(path, "ls-files", "--error-unmatch", "--", name)[0] == 0:
         return None  # a tracked file: checkout puts the file back and stays on its branch
@@ -145,13 +145,19 @@ def git(args, state, before=None, after=";"):
         else:
             config += [args[0].split("=", 1)[-1]] if args[0].startswith("--config-env") else []
             args = args[1:]
-    path = None if state["cwd"] is None and cwd is None else os.path.join(state["cwd"] or ".", cwd or ".")
-    if args[:1] in (["switch"], ["checkout"]) and state["cwd"] != "?":
-        new = switch_target(args, path)
-        if new:
+    paths = {"?" if c == "?" else os.path.join(c, cwd or ".") for c in state["cwd"]}
+    if args[:1] in (["switch"], ["checkout"]):
+        for path in paths - {"?"}:
+            new = switch_target(args, path)
+            if not new:
+                continue
             key = heads(state, path)
+            if new.startswith("@{-"):  # git switch -: the branch before, unless this line already moved it
+                code, out = run_git(path, "rev-parse", "--abbrev-ref", new)
+                new = out if code == 0 and out and key not in state["moved"] else "?"
+            state["moved"].add(key)
             state["ever"][key].add(new)
-            if after == "&&" and before in (None, ";", "\n", "&&"):
+            if after == "&&" and before in SURE and len(paths) == 1:
                 state["now"][key] = {new}  # the next command runs only on the new branch
             else:
                 state["now"][key].add(new)  # the switch may be skipped or fail, and the next command still runs
@@ -169,9 +175,9 @@ def git(args, state, before=None, after=";"):
     if any(t in MAIN or "*" in t or t == "" for t in targets) or "--branches" in flags:
         return "a push to main (main is live; a * or : refspec reaches it too)"
     if len(refs) <= 1 or any(t in ("HEAD", "@") for t in targets):
-        if state["cwd"] == "?":
+        if "?" in paths:
             return "a push of HEAD after a cd the guard cannot follow (it may be main)"
-        if state["now"][heads(state, path)] & {"main", "master", "?"}:
+        if any(state["now"][heads(state, p)] & {"main", "master", "?"} for p in paths):
             return "a push from the main branch (main is live)"
     return None
 
@@ -242,26 +248,38 @@ def gh(args):
     return None
 
 
+def cd(words, state, before, after):
+    """Follow cd like a switch: the folder the next command runs in, or every folder it may run in."""
+    dest = words[1] if len(words) > 1 else "~"
+    if words[0] == "popd" or dest.startswith("-") or "$" in dest or "`" in dest:
+        new = {"?"}
+    else:
+        new = {"?" if c == "?" else os.path.join(c, os.path.expanduser(dest)) for c in state["cwd"]}
+    state["cwd_ever"] |= new
+    state["cwd"] = new if after == "&&" and before in SURE else state["cwd"] | new
+
+
 def bash(cmd, depth=0, state=None):
     """The first owner's step in a shell line. A tool name is looked for anywhere in a command, so sudo -u x,
     timeout 60, nohup, xargs or npx in front cannot hide it, and bash -c '...' is read too."""
-    state = {"cwd": None, "dirs": [], "now": {}, "ever": {}} if state is None else state
+    state = state or {"cwd": {"."}, "cwd_ever": {"."}, "dirs": [], "now": {}, "ever": {}, "moved": set()}
     before = None
     for words, sep in segments(cmd):
         op = sep.replace("(", "").replace(")", "") or ";"
-        if before is not None and before != "&&":
-            for key in state["now"]:  # the && chain before may have stopped at any switch in it
+        if before is not None and before != "&&":  # the && chain before may have stopped at any cd or switch in it
+            state["cwd"] = set(state["cwd_ever"])
+            for key in state["now"]:
                 state["now"][key] = set(state["ever"][key])
         if words[:1] in (["cd"], ["pushd"], ["popd"]):
-            dest = words[1] if len(words) > 1 else "~"
-            state["cwd"] = "?" if words[0] == "popd" or dest == "-" or "$" in dest or "`" in dest or state["cwd"] == "?" \
-                else os.path.join(state["cwd"] or ".", os.path.expanduser(dest))
+            cd(words, state, before, op)
         for i, w in enumerate(words):
             name, rest = base(w), words[i + 1:]
             found = None
             if name in SHELLS and "-c" in rest and depth < 3:
                 j = rest.index("-c")
+                outer = set(state["cwd"]), set(state["cwd_ever"]), list(state["dirs"])
                 found = bash(rest[j + 1], depth + 1, state) if j + 1 < len(rest) else None
+                state["cwd"], state["cwd_ever"], state["dirs"] = outer  # a child shell's cd stays in the child
             elif name in ("wrangler", "wrangler2") or name.startswith("wrangler@"):
                 found = wrangler(rest)
             elif name == "git":
@@ -271,9 +289,9 @@ def bash(cmd, depth=0, state=None):
             if found:
                 return found
         for _ in range(sep.count("(")):
-            state["dirs"].append(state["cwd"])
+            state["dirs"].append((set(state["cwd"]), set(state["cwd_ever"])))
         for _ in range(sep.count(")")):
-            state["cwd"] = state["dirs"].pop() if state["dirs"] else "?"
+            state["cwd"], state["cwd_ever"] = state["dirs"].pop() if state["dirs"] else ({"?"}, {"?"})
         before = op
     return None
 
