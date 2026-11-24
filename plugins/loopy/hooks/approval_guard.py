@@ -109,8 +109,16 @@ def git(args, state):
         else:
             config += [args[0].split("=", 1)[-1]] if args[0].startswith("--config-env") else []
             args = args[1:]
-    if args[:1] in (["switch"], ["checkout"]) and any(a in MAIN for a in args[1:]):
-        state["main"] = True  # a later push of HEAD in this line pushes main
+    if args[:1] in (["switch"], ["checkout"]) and "--" not in args:
+        rest, new = args[1:], None
+        for i, a in enumerate(rest):
+            if a in ("-c", "-C", "-b", "-B") and i + 1 < len(rest):
+                new = rest[i + 1]
+                break
+            if not a.startswith("-"):
+                new = new or a
+        if new:
+            state["branch"] = new  # a later push of HEAD in this line pushes this branch
     if not args or args[0] != "push":
         return None
     if any(re.match(r"(remote\.[^=]*\.push|push\.default|branch\.[^=]*\.merge)", c, re.I) for c in config):
@@ -124,7 +132,7 @@ def git(args, state):
     targets = [r.split(":")[-1] for r in refs[1:]]
     if any(t in MAIN or "*" in t or t == "" for t in targets) or "--branches" in flags:
         return "a push to main (main is live; a * or : refspec reaches it too)"
-    if (len(refs) <= 1 or any(t in ("HEAD", "@") for t in targets)) and (state.get("main") or branch(cwd) in ("main", "master")):
+    if (len(refs) <= 1 or any(t in ("HEAD", "@") for t in targets)) and (state.get("branch") or branch(cwd)) in ("main", "master"):
         return "a push from the main branch (main is live)"
     return None
 
