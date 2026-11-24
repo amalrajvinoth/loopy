@@ -208,6 +208,24 @@ with tempfile.TemporaryDirectory() as tmp:
     expect("merge: hook tells Claude what is left", "other.html" in out, True)
     expect("merge: non-merge command ignored", hook(LP / "after_merge.py", bash("ls"), project=r)[1], "")
 
+with tempfile.TemporaryDirectory() as tmp:  # a checkout on main: which branch does a push of HEAD come from?
+    (pathlib.Path(tmp) / "loopy").mkdir()
+    r = fake_repo(pathlib.Path(tmp) / "loopy")
+    (r.parent / "other").mkdir()
+    subprocess.run(["git", "init", "-q", "-b", "work"], cwd=r.parent / "other")
+    on_main = lambda c: blocked(ag, bash(c), project=r)
+    for c in ("git push -u origin HEAD", "git checkout page.html && git push origin HEAD", "git checkout -- page.html && git push origin HEAD",
+              "git switch claude/x || git push origin HEAD", "git switch claude/x; git push origin HEAD",
+              "git switch claude/x && true; git push origin HEAD", "false || git switch claude/x && git push origin HEAD",
+              "git -C ../other switch work && git push origin HEAD", "cd ../other && git switch work && cd - && git push origin HEAD",
+              "(cd ../other && git switch work) && git push origin HEAD", "git switch claude/x | cat && git push origin HEAD"):
+        expect(f"guard on main: {c[:50]}", on_main(c), True)
+    for c in ("git switch claude/x && git push -u origin HEAD", "git checkout -b claude/x && git push -u origin HEAD",
+              "git checkout side && git push origin HEAD", "git switch main && git switch claude/x && git push -u origin HEAD",
+              "git switch -c claude/x && git add . && git commit -m x && git push -u origin HEAD",
+              "cd ../other && git push origin HEAD", "git push -u origin claude/x"):
+        expect(f"guard on main allows: {c[:50]}", on_main(c), False)
+
 with tempfile.TemporaryDirectory() as tmp:
     r = fake_repo(tmp)
     (r / "loopy.js").write_text("stale\n")  # changed and out of date

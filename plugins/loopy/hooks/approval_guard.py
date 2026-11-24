@@ -13,7 +13,8 @@ table files on the live databases. So these wait for the owner's yes, never Clau
     rulesets, branch protection, Pages, collaborators, hooks, secrets, variables, Actions permissions, environments
 
 A tool name counts anywhere in a command (sudo -u x, timeout, nohup, xargs, npx in front), bash -c '...' and
-bash <<EOF are read too. This only adds refusals. It is a safety net, not a sandbox: a shell can always hide a command
+bash <<EOF are read too. A push of HEAD checks the branch of the checkout it runs in, after any switch the push
+waits for with && (a cd, git -C and git checkout <file> are followed). This only adds refusals. It is a safety net, not a sandbox: a shell can always hide a command
 from a pattern. The settings deny list, the main branch rules on GitHub and the owner's own merge are the locks behind it.
 
 Local work stays free: wrangler dev, wrangler d1 execute --local, pushes to a work branch, draft pull requests.
@@ -69,18 +70,53 @@ def segments(cmd):
     words = []
     for tok in tokens + [";"]:
         if tok and set(tok) <= OPS:
-            if words:
-                yield words
+            yield words, tok  # the separator says whether the next command runs only after this one worked (&&)
             words = []
         else:
             words.append(tok)
 
 
-def branch(cwd=None):
+def run_git(cwd, *args):
     try:
-        return subprocess.run(["git", "rev-parse", "--abbrev-ref", "HEAD"], cwd=cwd, capture_output=True, text=True, timeout=5).stdout.strip()
+        r = subprocess.run(["git", *args], cwd=cwd or None, capture_output=True, text=True, timeout=5)
+        return r.returncode, r.stdout.strip()
     except (OSError, subprocess.TimeoutExpired):
-        return ""
+        return 1, ""
+
+
+def branch(cwd=None):
+    return run_git(cwd, "rev-parse", "--abbrev-ref", "HEAD")[1]
+
+
+def heads(state, path):
+    """The branches HEAD may be on in this checkout when the next command runs: its branch now, narrowed by a
+    switch that the next command waits for (&&), widened by every switch the shell may have skipped or failed."""
+    key = os.path.realpath(path or ".")
+    if key not in state["now"]:
+        state["now"][key] = {branch(path)}
+        state["ever"][key] = set(state["now"][key])
+    return key
+
+
+def switch_target(args, path):
+    """The branch a git switch or checkout moves HEAD to, or None when it moves nothing (git checkout <file>)."""
+    rest = args[1:]
+    if "--" in rest:
+        return None
+    for i, a in enumerate(rest):
+        if a in ("-c", "-C", "-b", "-B", "--orphan") and i + 1 < len(rest):
+            return rest[i + 1]
+    names = [a for a in rest if not a.startswith("-")]
+    if len(names) != 1:
+        return None
+    name = names[0]
+    if name in ("-", "@{-1}"):
+        code, out = run_git(path, "rev-parse", "--abbrev-ref", "@{-1}")
+        return out if code == 0 and out else "?"
+    if args[0] == "checkout" and run_git(path, "rev-parse", "--verify", "--quiet", f"refs/heads/{name}")[0] != 0 \
+            and run_git(path, "ls-files", "--error-unmatch", "--", name)[0] == 0:
+        return None  # a tracked file: checkout puts the file back and stays on its branch
+    return name
 
 
 def wrangler(args):
@@ -99,7 +135,7 @@ def wrangler(args):
     return None
 
 
-def git(args, state):
+def git(args, state, before=None, after=";"):
     cwd, config = None, []
     while args and args[0].startswith("-"):
         if args[0] in ("-C", "-c", "--git-dir", "--work-tree", "--namespace") and len(args) > 1:
@@ -109,16 +145,16 @@ def git(args, state):
         else:
             config += [args[0].split("=", 1)[-1]] if args[0].startswith("--config-env") else []
             args = args[1:]
-    if args[:1] in (["switch"], ["checkout"]) and "--" not in args:
-        rest, new = args[1:], None
-        for i, a in enumerate(rest):
-            if a in ("-c", "-C", "-b", "-B") and i + 1 < len(rest):
-                new = rest[i + 1]
-                break
-            if not a.startswith("-"):
-                new = new or a
+    path = None if state["cwd"] is None and cwd is None else os.path.join(state["cwd"] or ".", cwd or ".")
+    if args[:1] in (["switch"], ["checkout"]) and state["cwd"] != "?":
+        new = switch_target(args, path)
         if new:
-            state["branch"] = new  # a later push of HEAD in this line pushes this branch
+            key = heads(state, path)
+            state["ever"][key].add(new)
+            if after == "&&" and before in (None, ";", "\n", "&&"):
+                state["now"][key] = {new}  # the next command runs only on the new branch
+            else:
+                state["now"][key].add(new)  # the switch may be skipped or fail, and the next command still runs
     if not args or args[0] != "push":
         return None
     if any(re.match(r"(remote\.[^=]*\.push|push\.default|branch\.[^=]*\.merge)", c, re.I) for c in config):
@@ -132,8 +168,11 @@ def git(args, state):
     targets = [r.split(":")[-1] for r in refs[1:]]
     if any(t in MAIN or "*" in t or t == "" for t in targets) or "--branches" in flags:
         return "a push to main (main is live; a * or : refspec reaches it too)"
-    if (len(refs) <= 1 or any(t in ("HEAD", "@") for t in targets)) and (state.get("branch") or branch(cwd)) in ("main", "master"):
-        return "a push from the main branch (main is live)"
+    if len(refs) <= 1 or any(t in ("HEAD", "@") for t in targets):
+        if state["cwd"] == "?":
+            return "a push of HEAD after a cd the guard cannot follow (it may be main)"
+        if state["now"][heads(state, path)] & {"main", "master", "?"}:
+            return "a push from the main branch (main is live)"
     return None
 
 
@@ -206,8 +245,17 @@ def gh(args):
 def bash(cmd, depth=0, state=None):
     """The first owner's step in a shell line. A tool name is looked for anywhere in a command, so sudo -u x,
     timeout 60, nohup, xargs or npx in front cannot hide it, and bash -c '...' is read too."""
-    state = {} if state is None else state
-    for words in segments(cmd):
+    state = {"cwd": None, "dirs": [], "now": {}, "ever": {}} if state is None else state
+    before = None
+    for words, sep in segments(cmd):
+        op = sep.replace("(", "").replace(")", "") or ";"
+        if before is not None and before != "&&":
+            for key in state["now"]:  # the && chain before may have stopped at any switch in it
+                state["now"][key] = set(state["ever"][key])
+        if words[:1] in (["cd"], ["pushd"], ["popd"]):
+            dest = words[1] if len(words) > 1 else "~"
+            state["cwd"] = "?" if words[0] == "popd" or dest == "-" or "$" in dest or "`" in dest or state["cwd"] == "?" \
+                else os.path.join(state["cwd"] or ".", os.path.expanduser(dest))
         for i, w in enumerate(words):
             name, rest = base(w), words[i + 1:]
             found = None
@@ -217,11 +265,16 @@ def bash(cmd, depth=0, state=None):
             elif name in ("wrangler", "wrangler2") or name.startswith("wrangler@"):
                 found = wrangler(rest)
             elif name == "git":
-                found = git(rest, state)
+                found = git(rest, state, before, op)
             elif name == "gh":
                 found = gh(rest)
             if found:
                 return found
+        for _ in range(sep.count("(")):
+            state["dirs"].append(state["cwd"])
+        for _ in range(sep.count(")")):
+            state["cwd"] = state["dirs"].pop() if state["dirs"] else "?"
+        before = op
     return None
 
 
