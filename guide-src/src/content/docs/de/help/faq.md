@@ -56,6 +56,10 @@ Ja, in den meisten Spielen. Schalte in den ⚙ Einstellungen des Spiels **Vorles
 
 Ja. In den ⚙ Einstellungen ändern die runden Farben das Aussehen. **Klar** ist ein ruhiges, helles. Wähle die Farbe **Hoher Kontrast** oder schalte **Leichter lesen** ein. Mehr unter [Sprache und Aussehen](/loopy/guide/de/setup/language-and-look/).
 
+## Kann ich ändern, wie die Spielknöpfe aussehen?
+
+Ja. Öffne auf der Startseite die ⚙ Einstellungen und suche **Spielkacheln**. Tippe auf ein kleines Quadrat: **Bunt**, **Sticker**, **Sanft**, **Liste** oder **Symbole**. Die Wahl wird für das spielende Kind gespeichert. Mehr unter [Sprache und Aussehen](/loopy/guide/de/setup/language-and-look/#spielkacheln).
+
 ## Wie schalte ich den Ton aus?
 
 Tippe auf den Lautsprecher-Knopf. In einem Spiel ist er in den ⚙ Einstellungen.

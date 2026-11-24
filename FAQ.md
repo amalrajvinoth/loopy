@@ -95,6 +95,10 @@ In **Spelling Quiz** and **My Words**, yes: grown-ups paste their own list in Se
 
 Yes. Open **Settings**. The round colors change the look. **Clean** is a calm, light one. The last color, **High contrast**, uses black, white and bright colors with clear white edges. **Easier to read** switches every text to Atkinson Hyperlegible, a font with letters that are easy to tell apart, like b and d or I, l and 1. Both are remembered on this device and work on every page.
 
+## Can I change how the game buttons look?
+
+Yes. On the home page, open **Settings** and find **Game tiles** under Age, look and sound. Tap a small square. **Chunky** is the usual look. **Sticker** fills each tile with colour. **Soft** is a calm card. **List** shows one game per row with big names. **Icons** shows round discs like apps on a phone. The choice is saved for the child playing and goes along in their stars code.
+
 ## How do I turn the sound off?
 
 Tap the speaker button. On a game page, it is inside Settings.
