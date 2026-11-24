@@ -54,7 +54,7 @@ Yes, in most games. Turn on **Read aloud** in the game's ⚙ Settings. It is on 
 
 ## Can loopy be easier to see or read?
 
-Yes. In ⚙ Settings, pick the **High contrast** color, or turn on **Easier to read**. See [Language and look](/loopy/guide/setup/language-and-look/).
+Yes. In ⚙ Settings, the round colors change the look. **Clean** is a calm, light one. Pick the **High contrast** color, or turn on **Easier to read**. See [Language and look](/loopy/guide/setup/language-and-look/).
 
 ## How do I turn the sound off?
 

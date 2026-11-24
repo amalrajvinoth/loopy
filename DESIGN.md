@@ -145,7 +145,7 @@ There are six color themes and one high contrast theme. Black is the default. Th
 | Clean | #f4f6f9 | #ffffff | #1b2430 | #2f55d4 | light |
 | High contrast | #000000 | #000000 | #ffffff | #8cc8ff | dark |
 
-**Clean** is the calm, grown-up look: an off-white page, white cards, slate text and one indigo accent. The other accents are quiet versions (burnt orange `c2` #c2410c, teal `c3` #0f7a5a, violet `c4` #6d4fc2, dark gold `c5` #9a6700), so the home tiles still take turns. Text on an accent is white. The shapes do not change: the same cards, frames and drop shadows as every other theme.
+**Clean** is the calm, grown-up look: an off-white page, white cards, slate text and one indigo accent. The other accents are quiet versions, so the home tiles still take turns: burnt orange `c2` #c2410c, teal `c3` #0f7a5a, violet `c4` #6d4fc2 and dark gold `c5` #9a6700. Text on an accent is white. The shapes do not change: the same cards, frames and drop shadows as every other theme.
 
 **High contrast** is for kids with low vision. Every text and button passes WCAG AA (checked with axe on every page). On top of its colors:
 
