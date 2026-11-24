@@ -12,13 +12,13 @@ One change, four helpers, at most three tries. A **try** is one `developer` pass
 1. **Plan.** Ask the `architect` helper for the build plan. For a fix of a line or two, plan it yourself in five lines. If the plan names a step only the owner may do, say so now and leave it out of the build.
 2. **Build.** Give the plan, the branch and the issue number to the `developer` helper.
 3. **Test.** Ask the `qa-engineer` helper. RED: back to step 2 with its exact output. That ends this try.
-4. **Review.** GREEN: ask the `code-reviewer` helper. A Must fix goes back to step 2 and ends this try. Fix a Should fix in the same try, or note why not for the pull request.
+4. **Review.** GREEN: ask the `code-reviewer` helper. A Must fix goes back to step 2 and ends this try. Fix a Should fix in the same try, then run steps 3 and 4 again on the new commit; a Should fix found then is noted for the pull request.
 5. **Stop at three.** When the third try is still RED or has a Must fix, stop. Do not start a fourth try, widen the task, or loosen a check. Tell the owner, in plain words:
    - what fails, with the exact error text;
    - what each try changed;
    - two or three ways forward, one marked ⭐.
    Push the branch and open a draft pull request so the work is not lost, then wait.
-6. **Clean:** go on with the `ship-pr` skill. The loop already ran its checks, review and improve-ui on this commit, so start at its step 7 (screenshots). Run the checks again only if main was merged in since. Write "Loop: N of 3 tries" in the pull request's Checked list.
+6. **Clean:** go on with the `ship-pr` skill from its step 1 (merge main). Skip its checks (3) and review (6) only while nothing changed since the clean try: no file edited (docs, a new check) and the merge brought nothing. Its UI audit (5) still runs when a page looks different; a code fix from the audit goes back through step 3 here. Write "Loop: N of 3 tries" in the pull request's Checked list.
 
 Helpers start with no memory of this session. Give each one the branch, the issue, the plan, and the last findings.
 

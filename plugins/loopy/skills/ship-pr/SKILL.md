@@ -5,7 +5,7 @@ description: Finish a loopy change and open its pull request with every check, s
 
 # Ship a loopy pull request
 
-The `development-loop` skill hands over at step 7 when its last try was clean on this commit.
+After a clean `development-loop`, skip steps 3 and 6 only while nothing changed since its last try (no edit, and step 1 merged nothing new).
 
 1. **Merge the latest main** into the branch (`git fetch origin main && git merge origin/main`). The after_merge hook rebuilds generated files.
 2. **Build:** `python3 tools/build.py`.

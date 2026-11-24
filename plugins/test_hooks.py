@@ -15,6 +15,7 @@ failed = []
 def hook(script, payload, project=ROOT):
     env = {**os.environ, "CLAUDE_PROJECT_DIR": str(project)}
     env.pop("CLAUDE_PLUGIN_ROOT", None)
+    env.pop("LOOPY_OWNER_APPROVED", None)
     p = subprocess.run([sys.executable, str(script)], input=json.dumps(payload), capture_output=True, text=True, env=env, cwd=project)
     return p.returncode, p.stdout + p.stderr
 
@@ -81,6 +82,19 @@ expect("guard: a commit message that mentions it", stop('git commit -m "Never (g
 expect("guard: push to main with -C", stop("git -C ../loopy push origin main"), True)
 expect("guard: npm exec wrangler deploy", stop("npm exec -- wrangler deploy"), True)
 expect("guard: grep for it", stop("grep -rn 'wrangler deploy' .github"), False)
+for c in ("sudo -u root wrangler deploy", "timeout 60 wrangler deploy", "nohup npx wrangler deploy", 'bash -c "gh pr merge 5"',
+          "sh -c 'git push origin main'", "cat <<'EOF' > f && git push origin main\nbody\nEOF", "bash <<'EOF'\nwrangler deploy\nEOF",
+          "echo x#; wrangler deploy", "wrangler --config wrangler.toml deploy", "wrangler pages publish", "wrangler pages secret put X",
+          "wrangler d1 time-travel restore loopy-sync", "git --no-pager push origin main", "gh pr -R o/r merge 5",
+          "gh api graphql -f query='mutation { mergePullRequest(input:{pullRequestId:\"X\"}) { clientMutationId } }'",
+          "gh api -X POST repos/o/r/merges -f base=main -f head=claude/x", "gh api -X PUT repos/o/r/contents/f -f message=x -f content=eA==",
+          "gh api -X PATCH repos/o/r/git/refs/heads/main -f sha=abc", "gh api -X POST repos/o/r/transfer -f new_owner=x"):
+    expect(f"guard: {c[:40]}", stop(c), True)
+expect("guard: a file to a work branch", stop("gh api -X PUT repos/o/r/contents/f -f message=x -f content=eA== -f branch=claude/x"), False)
+expect("guard: a GraphQL review-thread reply", stop("gh api graphql -f query='mutation { resolveReviewThread(input:{threadId:\"X\"}) { clientMutationId } }'"), False)
+expect("guard: a new branch ref", stop("gh api repos/o/r/git/refs -f ref=refs/heads/claude/x -f sha=abc"), False)
+expect("guard: GitHub tool push_files to main", blocked(ag, {"tool_name": "mcp__github__push_files", "tool_input": {"branch": "main"}}), True)
+expect("guard: GitHub tool push_files to a work branch", blocked(ag, {"tool_name": "mcp__github__push_files", "tool_input": {"branch": "claude/x"}}), False)
 expect("guard: GitHub tool merge", blocked(ag, {"tool_name": "mcp__github__merge_pull_request", "tool_input": {"pullNumber": 1}}), True)
 expect("guard: GitHub tool pull request", blocked(ag, {"tool_name": "mcp__github__create_pull_request", "tool_input": {"title": "x"}}), False)
 

@@ -3,13 +3,17 @@
 
 main is live (GitHub Pages deploys it), and a merged sync/ change deploys the Family sync Worker and runs its
 table files on the live databases. So these wait for the owner's yes, never Claude's own judgement:
-  - deploying: wrangler deploy / publish / pages deploy / versions deploy / rollback / delete
-  - the live databases and other live resources: any wrangler command with --remote, wrangler d1 create / delete
+  - deploying: wrangler deploy / publish / rollback / delete / restore, wherever the word stands (pages deploy, triggers deploy)
+  - the live databases and other live resources: any wrangler command with --remote, wrangler d1 create
   - secrets: wrangler secret, gh secret, gh variable
   - main: git push to main, --all or --mirror, a force push (--force-with-lease on a work branch stays allowed)
-  - merging: gh pr merge, the REST merge and auto-merge calls, the GitHub tool merge_pull_request
+  - merging: gh pr merge, the REST merge, auto-merge and merges calls, a GraphQL merge, the GitHub merge tools
+  - writing to main through the API: contents without branch= (it goes to main), git/refs/heads/main, push_files to main
   - repo settings: gh repo edit / delete / rename / archive, gh ruleset, gh api writes to the repo itself, its
     rulesets, branch protection, Pages, collaborators, hooks, secrets, variables, Actions permissions, environments
+
+A tool name counts anywhere in a command (sudo -u x, timeout, nohup, xargs, npx in front), bash -c '...' and
+bash <<EOF are read too. This only adds refusals.
 
 Local work stays free: wrangler dev, wrangler d1 execute --local, pushes to a work branch, draft pull requests.
 The owner can let one session through by starting Claude Code with LOOPY_OWNER_APPROVED=1 in their own shell;
@@ -27,15 +31,31 @@ SETTINGS = re.compile(r"^/?repos/[^/\s]+/[^/\s]+(/(rulesets(/\S*)?|branches/\S+/
                       r"private-vulnerability-reporting|secret-scanning(/\S*)?|code-scanning/default-setup))?/?$")
 MERGE = re.compile(r"/pulls/\d+/(merge|ccr/auto_merge)/?$")
 OPS = set(";&|()\n")
-WRAP = {"sudo", "exec", "env", "command", "time", "npx", "bunx", "yarn"}
+SHELLS = {"bash", "sh", "zsh", "dash"}
+MAIN = ("main", "master", "refs/heads/main", "refs/heads/master")
+RISKY_GRAPHQL = re.compile(r"mutation[\s\S]*\b(merge\w*|enablePullRequestAutoMerge|\w*Repository\w*|\w*BranchProtection\w*|"
+                           r"\w*Ruleset\w*|updateRefs?|createCommitOnBranch|\w*Secret\w*)\s*\(", re.I)
+
+
+def base(word):
+    return word.rsplit("/", 1)[-1]
+
+
+def strip_heredocs(cmd):
+    """Drop a heredoc's body (text written to a file is not a command), but keep the rest of its first line, and keep
+    the body when a shell reads it (bash <<EOF runs every line)."""
+    def keep(m):
+        before = cmd[cmd.rfind("\n", 0, m.start()) + 1:m.start()].split()
+        body = "\n" + m.group(4) if any(base(w) in SHELLS for w in before) else ""
+        return " " + m.group(3) + body + "\n"
+    return re.sub(r"<<-?\s*(['\"]?)(\w+)\1([^\n]*)\n(.*?)\n\s*\2\s*(?=\n|$)", keep, cmd, flags=re.S)
 
 
 def segments(cmd):
-    """The commands in a shell line, split on ; && || | ( ) and new lines outside quotes, without heredoc bodies
-    (text written to a file is not a command). Leading VAR=value, sudo, env, npx -y, npm exec and the like are dropped."""
-    cmd = re.sub(r"<<-?\s*(['\"]?)(\w+)\1[^\n]*\n.*?\n\s*\2\s*(\n|$)", "\n", cmd, flags=re.S)
-    lex = shlex.shlex(cmd, posix=True, punctuation_chars=";&|()\n")
-    lex.whitespace, lex.whitespace_split = " \t\r", True
+    """The commands in a shell line, split on ; && || | ( ) and new lines outside quotes. # is not a comment here:
+    shlex would end the line at x#, where bash goes on."""
+    lex = shlex.shlex(strip_heredocs(cmd), posix=True, punctuation_chars=";&|()\n")
+    lex.whitespace, lex.whitespace_split, lex.commenters = " \t\r", True, ""
     try:
         tokens = list(lex)
     except ValueError:
@@ -43,20 +63,16 @@ def segments(cmd):
     words = []
     for tok in tokens + [";"]:
         if tok and set(tok) <= OPS:
-            while words and (re.fullmatch(r"\w+=.*", words[0]) or words[0] in WRAP or words[0] in ("-y", "--yes", "--")
-                             or words[:2] in (["npm", "exec"], ["pnpm", "exec"]) or words[0] == "pnpm"):
-                words = words[2:] if words[:2] in (["npm", "exec"], ["pnpm", "exec"]) else words[1:]
             if words:
-                words[0] = words[0].rsplit("/", 1)[-1]
                 yield words
             words = []
         else:
             words.append(tok)
 
 
-def branch():
+def branch(cwd=None):
     try:
-        return subprocess.run(["git", "rev-parse", "--abbrev-ref", "HEAD"], capture_output=True, text=True, timeout=5).stdout.strip()
+        return subprocess.run(["git", "rev-parse", "--abbrev-ref", "HEAD"], cwd=cwd, capture_output=True, text=True, timeout=5).stdout.strip()
     except (OSError, subprocess.TimeoutExpired):
         return ""
 
@@ -64,17 +80,27 @@ def branch():
 def wrangler(args):
     if "--remote" in args or any(a.startswith("--remote=") for a in args):
         return "a wrangler command with --remote (live Cloudflare data)"
-    first = args[0] if args else ""
-    if first in ("deploy", "publish", "rollback", "delete") or args[:2] in (["pages", "deploy"], ["versions", "deploy"]):
-        return f"wrangler {' '.join(args[:2]) if first in ('pages', 'versions') else first} (a live deploy)"
-    if first == "secret":
+    if "--local" in args:
+        return None
+    words = [a for a in args if not a.startswith("-")]
+    if "secret" in words:
         return "wrangler secret (a secret)"
-    if first == "d1" and len(args) > 1 and args[1] in ("create", "delete"):
-        return f"wrangler d1 {args[1]} (a live database)"
+    hit = {"deploy", "publish", "rollback", "delete", "restore"} & set(words)
+    if hit:
+        return f"wrangler {sorted(hit)[0]} (a live change)"
+    if words[:2] == ["d1", "create"]:
+        return "wrangler d1 create (a live database)"
     return None
 
 
-def git_push(args):
+def git(args):
+    cwd = None
+    while args and args[0].startswith("-"):
+        if args[0] in ("-C", "-c", "--git-dir", "--work-tree", "--namespace") and len(args) > 1:
+            cwd = args[1] if args[0] == "-C" else cwd
+            args = args[2:]
+        else:
+            args = args[1:]
     if not args or args[0] != "push":
         return None
     flags = [a for a in args[1:] if a.startswith("-")]
@@ -84,73 +110,109 @@ def git_push(args):
     if "--all" in flags or "--mirror" in flags:
         return "git push --all or --mirror (it pushes main too)"
     targets = [r.split(":")[-1] for r in refs[1:]]
-    if any(t in ("main", "master", "refs/heads/main", "refs/heads/master") for t in targets):
+    if any(t in MAIN for t in targets):
         return "a push to main (main is live)"
-    if len(refs) <= 1 and branch() in ("main", "master"):
+    if (len(refs) <= 1 or any(t in ("HEAD", "@") for t in targets)) and branch(cwd) in ("main", "master"):
         return "a push from the main branch (main is live)"
     return None
 
 
-def gh(args):
-    if args[:2] == ["pr", "merge"]:
-        return "gh pr merge (the owner merges)"
-    if args[:1] in (["secret"], ["variable"], ["ruleset"]):
-        return f"gh {args[0]} (a secret or repo setting)"
-    if args[:1] == ["repo"] and len(args) > 1 and args[1] in ("edit", "delete", "rename", "archive", "unarchive"):
-        return f"gh repo {args[1]} (a repo setting)"
-    if args[:1] != ["api"]:
-        return None
-    method, path, i, fields = "", "", 1, False
+def gh_api(args):
+    method, path, fields, i = "", "", [], 0
     while i < len(args):
         a = args[i]
         if a in ("-X", "--method") and i + 1 < len(args):
             method, i = args[i + 1].upper(), i + 2
             continue
+        if a in ("-f", "-F", "--field", "--raw-field", "--input") and i + 1 < len(args):
+            fields.append(args[i + 1])
+            i += 2
+            continue
+        if a in ("-H", "--header", "-q", "--jq", "-t", "--template", "--hostname", "--cache", "-p", "--preview") and i + 1 < len(args):
+            i += 2
+            continue
         if a.startswith("-X") and len(a) > 2:
             method = a[2:].upper()
         elif a.startswith("--method="):
             method = a.split("=", 1)[1].upper()
-        elif a in ("-f", "-F", "--field", "--raw-field", "--input") or a.startswith(("--field=", "--raw-field=", "--input=")):
-            fields = True
-        elif not a.startswith("-") and not path and args[i - 1] not in ("-H", "--header", "-q", "--jq", "-t", "--template",
-                                                                        "-f", "-F", "--field", "--raw-field", "--input", "--hostname", "--cache"):
-            path = a.split("?", 1)[0]
+        elif a.startswith(("--field=", "--raw-field=", "--input=")):
+            fields.append(a.split("=", 1)[1])
+        elif not a.startswith("-") and not path:
+            path = a.split("?", 1)[0].strip("/")
         i += 1
     method = method or ("POST" if fields else "GET")
+    if path == "graphql":
+        return "a GraphQL change that merges or touches settings or main" if any(RISKY_GRAPHQL.search(a) for a in args) else None
     if method == "GET":
         return None
     if MERGE.search(path):
         return "a pull request merge through the API (the owner merges)"
+    if re.fullmatch(r"repos/[^/]+/[^/]+/(merges|transfer)", path):
+        return f"{method} {path} (a merge or a repo move)"
+    if re.fullmatch(r"repos/[^/]+/[^/]+/git/refs/heads/(main|master)", path) or (
+            re.fullmatch(r"repos/[^/]+/[^/]+/git/refs", path) and any(v.split("=", 1)[-1] in MAIN for v in fields)):
+        return f"{method} {path} (moves main)"
+    if re.match(r"repos/[^/]+/[^/]+/contents/", path):
+        branches = [v.split("=", 1)[1] for v in fields if v.startswith("branch=")]
+        if not branches or any(b in MAIN for b in branches):
+            return f"{method} {path} (a file written to main; without branch= it goes to main)"
     if SETTINGS.match(path):
         return f"{method} {path} (a repo setting)"
+    return None
+
+
+def gh(args):
+    words, i = [], 0
+    while i < len(args):
+        if args[i] in ("-R", "--repo") and i + 1 < len(args):
+            i += 2
+            continue
+        if not args[i].startswith("-"):
+            words.append(args[i])
+        i += 1
+    if words[:1] == ["api"]:
+        return gh_api(args[args.index("api") + 1:])
+    if words[:1] == ["pr"] and "merge" in words[1:2]:
+        return "gh pr merge (the owner merges)"
+    if words[:1] in (["secret"], ["variable"], ["ruleset"]):
+        return f"gh {words[0]} (a secret or repo setting)"
+    if words[:1] == ["repo"] and len(words) > 1 and words[1] in ("edit", "delete", "rename", "archive", "unarchive"):
+        return f"gh repo {words[1]} (a repo setting)"
+    return None
+
+
+def bash(cmd, depth=0):
+    """The first owner's step in a shell line. A tool name is looked for anywhere in a command, so sudo -u x,
+    timeout 60, nohup, xargs or npx in front cannot hide it, and bash -c '...' is read too."""
+    for words in segments(cmd):
+        for i, w in enumerate(words):
+            name, rest = base(w), words[i + 1:]
+            found = None
+            if name in SHELLS and "-c" in rest and depth < 3:
+                j = rest.index("-c")
+                found = bash(rest[j + 1], depth + 1) if j + 1 < len(rest) else None
+            elif name in ("wrangler", "wrangler2") or name.startswith("wrangler@"):
+                found = wrangler(rest)
+            elif name == "git":
+                found = git(rest)
+            elif name == "gh":
+                found = gh(rest)
+            if found:
+                return found
     return None
 
 
 def why(tool, data):
     if tool.startswith("mcp__github__"):
         name = tool[len("mcp__github__"):]
-        if "merge_pull_request" in name or "auto_merge" in name:
-            return "merging a pull request (the owner merges)"
-        if "secret" in name or name in ("update_repository", "delete_repository"):
+        if "merge" in name:
+            return "merging (the owner merges)"
+        if "secret" in name or name in ("update_repository", "delete_repository", "transfer_repository"):
             return f"{name} (a secret or repo setting)"
+        if name in ("push_files", "create_or_update_file", "delete_file") and str(data.get("branch", "main")) in MAIN:
+            return f"{name} to main (main is live)"
         return None
-    if tool != "Bash":
-        return None
-    for words in segments(data.get("command", "")):
-        head, args = words[0], words[1:]
-        if head in ("wrangler", "wrangler2") or head.startswith("wrangler@"):
-            found = wrangler(args)
-        elif head == "git":
-            while args[:1] in (["-C"], ["-c"]):
-                args = args[2:]
-            found = git_push(args)
-        elif head == "gh":
-            found = gh(args)
-        else:
-            found = None
-        if found:
-            return found
-    return None
+    return bash(data.get("command", "")) if tool == "Bash" else None
 
 
 if __name__ == "__main__":
