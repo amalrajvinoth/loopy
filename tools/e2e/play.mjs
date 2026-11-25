@@ -127,12 +127,30 @@ async function trail(p) {
   for (const rc of a.split(",")) await p.click(`#grid [data-rc="${rc}"]`);
 }
 
+// A chess move or puzzle (Chess Puzzles): the card says data-chess="on" while a move is wanted and carries the
+// child's moves in data-a as "e2e4,g1f3" (a fifth letter picks the piece a pawn becomes). The squares carry data-sq.
+// data-wait="on" while the other side moves; the board takes no taps then.
+async function chess(p) {
+  const on = '[data-chess="on"]', ready = () => p.waitForFunction(() => {
+    const c = document.querySelector("[data-chess]"); return c.dataset.chess !== "on" || c.dataset.wait !== "on";
+  }, null, { timeout: 5000 });
+  await ready();
+  for (const u of (await p.locator(on).first().getAttribute("data-a")).split(",")) {
+    if (!await p.locator(on).count()) break;
+    await p.click(`#board [data-sq="${u.slice(0, 2)}"]`);
+    await p.click(`#board [data-sq="${u.slice(2, 4)}"]`);
+    if (u[4]) await p.click(`[data-promo="${u[4]}"]`);
+    await ready();
+  }
+}
+
 // Answer the question on screen: the right answer when the page marks it, otherwise the first one.
 // Returns true when the answer was the marked right one.
 async function answer(p) {
   if (await p.locator('[data-steps="on"]').count()) { await steps(p); return true; }
   if (await p.locator('[data-tries="on"]').count()) { await tries(p); return true; }
   if (await p.locator('[data-trail="on"]').count()) { await trail(p); return true; }
+  if (await p.locator('[data-chess="on"]').count()) { await chess(p); return true; }
   const right = p.locator('[data-correct="true"]:enabled');
   if (await right.count()) {
     await right.first().click();

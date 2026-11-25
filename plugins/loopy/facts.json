@@ -7,6 +7,7 @@
     "checks.yml: Every game has a page in the guide, in English and German",
     "checks.yml: The Family sync server answers right (sync/, with a stand-in database)",
     "checks.yml: The Family sync usage report prints counts only (tools/sync-usage.mjs)",
+    "checks.yml: Every chess puzzle plays through with the game's own rules (tools/chess/build.mjs)",
     "checks.yml: Install the minifier and the type checker (exact versions from the lock file)",
     "checks.yml: loopy.js and loopy.css match their sources in src/",
     "checks.yml: The shared script and its parts type-check against src/loopy.d.ts",
@@ -97,6 +98,9 @@
     "tools/build/minify.mjs",
     "tools/check.py",
     "tools/check_external.py",
+    "tools/chess/build.mjs",
+    "tools/chess/cards.mjs",
+    "tools/chess/pick.mjs",
     "tools/ci_changes.py",
     "tools/csp.py",
     "tools/e2e/engine.mjs",
@@ -153,5 +157,5 @@
     "844 × 390"
   ],
   "games_lists": 1,
-  "learned_at": "9ae5b18"
+  "learned_at": "d5c9eac"
 }
