@@ -8,6 +8,10 @@ loopy keeps getting new games. Here is what came lately!
 
 The big changes, newest first. Small fixes are not listed. See [the full list on GitHub](https://github.com/amalrajvinoth/loopy/blob/main/RELEASES.md).
 
+## 25 November 2026
+
+- **A new game: Chess Puzzles.** It is in a new **Brain games** part of the home page. Chess on a wooden board: tap or drag a piece to move it. Six levels, in the order a chess school teaches: how each piece moves, checkmates, winning pieces, defending, sacrifices, then openings and board manners. The puzzles are real ones, easy ones first. A Clue makes the right piece wiggle, and after a wrong move a green arrow shows the right one. [How to play](/loopy/guide/games/brain/chess-puzzles/).
+
 ## 24 November 2026
 
 - **Pick how the game buttons look.** A new **Game tiles** row in the home page ⚙ Settings offers five looks: Chunky (as before), Sticker, Soft, List and Icons. Each child keeps their own choice, and it travels in the stars code.

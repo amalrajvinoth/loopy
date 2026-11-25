@@ -46,6 +46,7 @@ export const GAMES: Game[] = [
   g("science", "sort-it", "🗂️", [6, 12], "Sort It", "Sortieren"),
   g("geography", "where-is-it", "🗺️", [7, 14], "Where Is It?", "Wo liegt das?"),
   g("geography", "flags-capitals", "🚩", [7, 16], "Flags and Capitals", "Flaggen und Hauptstädte"),
+  g("brain", "chess-puzzles", "♞", [5, 16], "Chess Puzzles", "Schachrätsel"),
 ];
 
 export const SUBJECTS: Record<string, { en: string; de: string; pic: string }> = {
@@ -53,6 +54,7 @@ export const SUBJECTS: Record<string, { en: string; de: string; pic: string }> =
   languages: { en: "Languages", de: "Sprachen", pic: "🔤" },
   science: { en: "Science", de: "Naturwissenschaft", pic: "🔬" },
   geography: { en: "Geography", de: "Erdkunde", pic: "🌍" },
+  brain: { en: "Brain games", de: "Denkspiele", pic: "🧠" },
 };
 
 export const ALL = [TODAY, ...GAMES];

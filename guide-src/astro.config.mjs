@@ -54,6 +54,7 @@ export default defineConfig({
             group("Languages", "Sprachen", "games/languages", { collapsed: true }),
             group("Science", "Naturwissenschaft", "games/science", { collapsed: true }),
             group("Geography", "Erdkunde", "games/geography", { collapsed: true }),
+            group("Brain games", "Denkspiele", "games/brain", { collapsed: true }),
           ],
         },
         group("Settings", "Einstellungen", "settings"),

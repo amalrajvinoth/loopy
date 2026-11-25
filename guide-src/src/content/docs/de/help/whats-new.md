@@ -8,6 +8,10 @@ loopy bekommt immer wieder neue Spiele. Das ist zuletzt dazugekommen!
 
 Die großen Änderungen, die neuesten zuerst. Kleine Korrekturen stehen nicht dabei. Die [ganze Liste steht auf GitHub](https://github.com/amalrajvinoth/loopy/blob/main/RELEASES.md) (auf Englisch).
 
+## 25. November 2026
+
+- **Ein neues Spiel: Schachrätsel.** Es steht in einem neuen Teil der Startseite, **Denkspiele**. Schach auf einem Holzbrett: Tippe oder zieh eine Figur, um sie zu bewegen. Sechs Stufen, in der Reihenfolge einer Schachschule: wie jede Figur zieht, Schachmatt, Figuren gewinnen, Verteidigen, Opfer, dann Eröffnung und Benehmen am Brett. Die Rätsel sind echte, leichte zuerst. Ein Tipp lässt die richtige Figur wackeln, und nach einem falschen Zug zeigt ein grüner Pfeil den richtigen. [So wird gespielt](/loopy/guide/de/games/brain/chess-puzzles/).
+
 ## 24. November 2026
 
 - **Wähle, wie die Spielknöpfe aussehen.** Eine neue Zeile **Spielkacheln** in den ⚙ Einstellungen der Startseite bietet fünf Looks: Bunt (wie bisher), Sticker, Sanft, Liste und Symbole. Jedes Kind behält seine eigene Wahl, und sie reist im Sterne-Code mit.
