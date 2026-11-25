@@ -9,9 +9,7 @@
 // are not here. Node 22.15 or newer reads .zst by itself; an older Node needs the zstd command (brew install zstd).
 import fs from "node:fs";
 import zlib from "node:zlib";
-import readline from "node:readline";
-import { spawn } from "node:child_process";
-import { Readable } from "node:stream";
+import { spawnSync } from "node:child_process";
 
 const URL = "https://database.lichess.org/lichess_db_puzzle.csv.zst";
 const OUT = new globalThis.URL("download/", import.meta.url);
@@ -56,39 +54,68 @@ function mover(fen, moves) {
   return (b[m1.slice(0, 2)] || "?").toLowerCase();
 }
 
-async function lines() {
+// The Lichess file is packed in many pieces (zstd frames), each after a small "skip me" frame, the way pzstd
+// writes it. Node's unpacker stops at the end of the first piece, so the pieces are cut apart here and each one
+// is unpacked by itself. A piece's end is found from its block headers (the zstd format, RFC 8878).
+function frameEnd(buf, o) {
+  const fhd = buf[o + 4], single = (fhd >> 5) & 1;
+  let p = o + 5 + (single ? 0 : 1) + [0, 1, 2, 4][fhd & 3] + [single, 2, 4, 8][fhd >> 6];
+  for (;;) {
+    const h = buf[p] | (buf[p + 1] << 8) | (buf[p + 2] << 16), type = (h >> 1) & 3, size = h >>> 3;
+    p += 3 + (type === 1 ? 1 : size);
+    if (h & 1) break;
+    if (p > buf.length) throw new Error("the file is cut off");
+  }
+  return p + ((fhd >> 2) & 1 ? 4 : 0);
+}
+function* unpack(buf) {
+  for (let o = 0; o + 8 <= buf.length;) {
+    const magic = buf.readUInt32LE(o);
+    if ((magic & 0xfffffff0) === 0x184d2a50) { o += 8 + buf.readUInt32LE(o + 4); continue; }
+    if (magic !== 0xfd2fb528) throw new Error("not a zstd file at byte " + o);
+    const end = frameEnd(buf, o);
+    yield zlib.zstdDecompressSync(buf.subarray(o, end), { params: { [zlib.constants.ZSTD_d_windowLogMax]: 31 } });
+    o = end;
+  }
+}
+
+async function* lines() {
   const file = process.argv[2];
-  let input;
-  if (file) input = fs.createReadStream(file);
+  let buf;
+  if (file) buf = fs.readFileSync(file);
   else {
     const res = await fetch(URL, { headers: { "User-Agent": "loopy-chess-picker" } });
-    console.error("download:", res.status, res.headers.get("content-type"), res.headers.get("content-length"), "bytes");
+    console.error("download:", res.status, res.headers.get("content-length"), "bytes");
     if (!res.ok) throw new Error("download failed: " + res.status);
-    input = Readable.fromWeb(res.body);
+    buf = Buffer.from(await res.arrayBuffer());
   }
-  // A stream that breaks must stop the run with its reason: readline would just end, and the file would be empty.
-  const loud = (what) => (e) => { console.error(what + " failed: " + e.message); process.exit(1); };
-  input.on("error", loud("reading the download"));
-  input.on("data", (d) => { packed += d.length; });
-  if (file && !file.endsWith(".zst")) return readline.createInterface({ input, crlfDelay: Infinity });
-  // The file is packed with a long window (zstd --long), more than a decoder allows by default.
-  if (zlib.createZstdDecompress) {
-    const z = zlib.createZstdDecompress({ params: { [zlib.constants.ZSTD_d_windowLogMax]: 31 } });
-    z.on("error", loud("unpacking"));
-    z.on("data", (d) => { unpacked += d.length; });
-    return readline.createInterface({ input: input.pipe(z), crlfDelay: Infinity });
+  packed = buf.length;
+  let parts;
+  if (file && !file.endsWith(".zst")) parts = [buf];
+  else if (zlib.zstdDecompressSync) parts = unpack(buf);
+  else {
+    // An older Node: the zstd command unpacks it (brew install zstd).
+    const z = spawnSync("zstd", ["-dc", "--long=31"], { input: buf, maxBuffer: 4e9 });
+    if (z.error || z.status) throw new Error("zstd failed (brew install zstd): " + (z.error ? z.error.message : z.stderr));
+    parts = [z.stdout];
   }
-  const z = spawn("zstd", ["-dc", "--long=31"], { stdio: ["pipe", "pipe", "inherit"] });
-  z.on("error", loud("zstd (brew install zstd)"));
-  input.pipe(z.stdin);
-  return readline.createInterface({ input: z.stdout, crlfDelay: Infinity });
+  // A piece can end in the middle of a line (or of a letter): the rest waits for the next piece.
+  let rest = Buffer.alloc(0);
+  for (const part of parts) {
+    unpacked += part.length;
+    const all = Buffer.concat([rest, part]), cut = all.lastIndexOf(10);
+    if (cut < 0) { rest = all; continue; }
+    yield* all.subarray(0, cut).toString("utf8").split("\n");
+    rest = all.subarray(cut + 1);
+  }
+  if (rest.length) yield rest.toString("utf8");
 }
 
 let packed = 0, unpacked = 0;
 const pools = Object.fromEntries(TOPICS.map(([k]) => [k, new Map()]));
 const used = new Set();
 let n = 0;
-for await (const line of await lines()) {
+for await (const line of lines()) {
   if (n++ === 0 && line.startsWith("PuzzleId")) continue;
   const [id, fen, moves, rating, dev, pop, plays, themes, , open = ""] = line.split(",");
   const r = +rating;
