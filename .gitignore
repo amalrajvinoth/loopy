@@ -25,3 +25,5 @@ design-system/
 tools/lint/node_modules/
 # wrangler, the Family sync deploy tool, installs here (npm ci --prefix sync --ignore-scripts; see sync/README.md).
 sync/node_modules/
+# The Chess Puzzles picker downloads the Lichess puzzle list here (see tools/chess/pick.mjs).
+tools/chess/download/
