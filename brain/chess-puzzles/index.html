@@ -1,0 +1,981 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'sha256-JFYuzorrDitfmg/6uiw2Xn8peqjIwjYFhQpT56RiES4='; style-src 'self' 'sha256-iKqZfY0yOsyVHa/qlTmRsjSUAon+EdDi9RLwucVWFNA=' 'sha256-cmucACXiF46U7yIAIAaPXLwJTaOpboZmJyYTvZKkw1E='; img-src 'self' data:; font-src 'self'; connect-src 'self' https://loopy-sync.loopy-1e2.workers.dev; worker-src 'self'; object-src 'none'; base-uri 'none'; form-action 'none'; manifest-src 'self'; upgrade-insecure-requests">
+<meta name="referrer" content="strict-origin-when-cross-origin">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<style>:root{color-scheme:light;padding-top:var(--safe-top);padding-bottom:var(--safe-bottom)}body{margin:0}[hidden]{display:none!important}</style>
+<link rel="icon" href="../../icon.svg" type="image/svg+xml">
+<link rel="manifest" href="../../manifest.webmanifest">
+<link rel="apple-touch-icon" href="../../apple-touch-icon.png">
+<meta name="theme-color" content="#0a0a0c">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="loopy">
+<title data-t="cpName">Chess Puzzles</title>
+<meta name="description" content="Chess Puzzles on loopy: real chess puzzles in six levels, from how the pieces move to checkmates, forks, pins, sacrifices and opening traps. Free practice for ages 5 to 16, English and German.">
+<link rel="preload" href="../../fonts/lexend-latin.woff2" as="font" type="font/woff2" crossorigin>
+<style>
+/* Chess Puzzles: a wooden board in the card, the task under it, Clue and Skip at the bottom. Shared look with the other games. */
+:root {
+  --bg: #f3f6fb; --card: #ffffff; --ink: #1d2a3f; --muted: #5d6b82; --line: #d5dde9; --accent: #2457c5; --accent-ink: #ffffff;
+  --mark: #e2622b; --good: #1f8a4c; --good-bg: #e3f5ea; --bad: #c23a3a; --bad-bg: #fbe6e6; --chip: #e6ecf6; --key: #ffffff;
+  --font: "Lexend", "Lexend Fallback", "Segoe UI", "Helvetica Neue", Arial, sans-serif;
+}
+* { box-sizing: border-box; }
+body {
+  background: var(--bg); color: var(--ink); font-family: var(--font); font-size: 16px;
+  padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px));
+  min-height: 100vh; min-height: 100dvh; padding-block: var(--page-pad-top) var(--page-pad-bottom);
+}
+.wrap { max-width: var(--col); margin: 0 auto; display: flex; flex-direction: column; gap: var(--row-gap); }
+.game-bar { display: flex; align-items: center; justify-content: space-between; gap: 8px; }
+.bar-right { display: flex; align-items: center; gap: 8px; }
+.home-link { display: inline-flex; align-items: center; min-height: 40px; color: var(--muted); font-weight: 600; text-decoration: none; font-size: 0.95rem; }
+.top { display: flex; flex-wrap: wrap; gap: 8px 12px; align-items: center; justify-content: space-between; }
+h1 { margin: 0; font-size: 1.6rem; font-weight: 700; text-wrap: balance; }
+.score { display: flex; flex-wrap: wrap; gap: 8px; font-variant-numeric: tabular-nums; }
+.pill { background: var(--card); border: 1px solid var(--line); border-radius: 999px; padding: 6px 14px; font-weight: 600; font-size: 1rem; white-space: nowrap; }
+.pill span { color: var(--muted); font-weight: 400; margin-right: 4px; }
+.seg-label { font-size: 0.8rem; font-weight: 600; letter-spacing: 0.06em; text-transform: uppercase; color: var(--muted); margin: 0 0 4px 4px; }
+.seg { display: grid; grid-template-columns: repeat(2, 1fr); gap: 6px; background: var(--chip); padding: 5px; border-radius: 14px; }
+.seg button { font: inherit; font-size: 0.9rem; font-weight: 600; color: var(--muted); background: transparent; border: 0; border-radius: 10px; padding: 8px 4px; min-height: 44px; cursor: pointer; }
+.seg button.wide { grid-column: 1 / -1; }
+.seg button[aria-pressed="true"] { background: var(--card); color: var(--ink); box-shadow: 0 1px 3px rgb(0 0 0 / 0.12); }
+.reset { font: inherit; font-size: 0.95rem; color: var(--muted); background: transparent; border: 2px solid var(--line); border-radius: 14px; padding: 0 16px; min-height: 44px; cursor: pointer; }
+button:focus-visible { outline: 3px solid var(--mark); outline-offset: 3px; }
+
+.play { display: flex; flex-direction: column; gap: var(--play-gap); -webkit-user-select: none; user-select: none; }
+.problem-card {
+  background: var(--card); border: 1px solid var(--line); border-radius: 24px; display: flex; flex-direction: column; align-items: center;
+  gap: 8px; padding: var(--card-pad) var(--card-pad) calc(var(--card-pad) - 2px);
+}
+.problem-card.good { border-color: var(--good); box-shadow: 0 0 0 2px var(--good) inset; }
+.problem-card.bad { border-color: var(--bad); box-shadow: 0 0 0 2px var(--bad) inset; }
+.topic { flex-shrink: 0; line-height: 1.4; display: inline-flex; align-items: center; gap: 6px; max-width: 100%; background: var(--chip); color: var(--muted); border-radius: 999px; padding: 4px 12px; font-size: 0.85rem; font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.question { margin: 0; font-size: var(--q-font); font-weight: 700; line-height: 1.25; text-align: center; text-wrap: balance; }
+.intro { margin: 0; color: var(--muted); font-size: 0.95rem; line-height: 1.35; text-align: center; text-wrap: balance; }
+.intro b { color: var(--ink); }
+.feedback { margin: 0; text-align: center; font-size: clamp(1rem, min(3.6vw, 2.2dvh), 1.4rem); line-height: 1.4; max-width: 40ch; min-height: 1.4em; }
+.feedback strong { display: block; font-size: clamp(1.2rem, min(4.6vw, 2.8dvh), 1.8rem); }
+.feedback.good strong { color: var(--good); }
+.feedback.bad strong { color: var(--bad); }
+.feedback:empty { display: none; }
+.pic { font-size: clamp(3rem, 12dvh, 6rem); line-height: 1; }
+.pic .pc { display: block; width: 1.3em; height: 1.3em; }
+
+/* The board: maple and walnut, like a real wooden board, in every theme (a picture keeps its own colours).
+   The grain is drawn by the browser from a tiny SVG noise pattern, so there is no picture file to load. */
+.boardbox { width: 100%; flex: 1 1 auto; min-height: 0; container-type: size; display: grid; place-items: center; }
+.frame {
+  --maple: #ecd3a6; --maple-2: #e0bd87; --walnut: #9a643c; --walnut-2: #7b4a29; --frame: #5c3a22; --frame-2: #3a2312;
+  --edge: #f3e3c5;
+  /* The marks take the theme's accent (as on the box being asked in other games): green, red and yellow mean right,
+     wrong and rewards in loopy, so the last move, the picked piece and a king in check are never those. */
+  --sel: color-mix(in srgb, var(--accent) 55%, transparent); --last: color-mix(in srgb, var(--accent) 42%, transparent);
+  --check: color-mix(in srgb, var(--accent) 90%, transparent); --check-2: color-mix(in srgb, var(--accent) 40%, transparent); --hl-good: rgb(47 158 68 / 0.55); --hl-bad: rgb(217 72 15 / 0.6);
+  --w-edge: #3a2414; --b-edge: #0b0604; --arrow: #2f9e44; --arrow-bad: #d9480f;
+  --grain: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='600' height='600'%3E%3Cfilter id='f'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.003 .06' numOctaves='3' seed='3'/%3E%3CfeComponentTransfer%3E%3CfeFuncA type='table' tableValues='0 .22 0 .22 0 .22 0 .22 0'/%3E%3C/feComponentTransfer%3E%3CfeColorMatrix values='0 0 0 0 .28 0 0 0 0 .16 0 0 0 0 .07 0 0 0 1 0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23f)'/%3E%3C/svg%3E");
+  --grain-2: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='600' height='600'%3E%3Cfilter id='f'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.05 .004' numOctaves='3' seed='11'/%3E%3CfeComponentTransfer%3E%3CfeFuncA type='table' tableValues='0 .45 0 .45 0 .45 0 .45 0'/%3E%3C/feComponentTransfer%3E%3CfeColorMatrix values='0 0 0 0 .2 0 0 0 0 .1 0 0 0 0 .04 0 0 0 1 0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23f)'/%3E%3C/svg%3E");
+  position: relative; width: min(100cqw, 100cqh); aspect-ratio: 1; padding: 5.2%; border-radius: clamp(10px, 3.4cqmin, 20px);
+  background: var(--grain) 0 0 / 120% 100%, linear-gradient(160deg, var(--frame), var(--frame-2));
+  box-shadow: 0 12px 30px rgb(0 0 0 / 0.35), inset 0 1px 0 rgb(255 255 255 / 0.18), inset 0 -2px 4px rgb(0 0 0 / 0.35);
+}
+.board {
+  position: relative; display: grid; grid-template: repeat(8, 1fr) / repeat(8, 1fr); width: 100%; height: 100%; border-radius: 4px; overflow: hidden;
+  background: var(--grain) 0 0 / 100% 100%, linear-gradient(90deg, var(--maple), var(--maple-2) 50%, var(--maple));
+  box-shadow: 0 0 0 2px rgb(0 0 0 / 0.35), inset 0 0 12px rgb(0 0 0 / 0.18); touch-action: none;
+}
+.sq { position: relative; border: 0; padding: 0; margin: 0; background: transparent; display: grid; place-items: center; cursor: pointer; -webkit-tap-highlight-color: transparent; min-width: 0; min-height: 0; }
+.sq.d { background: var(--grain-2) 0 0 / 800% 800%, linear-gradient(135deg, var(--walnut), var(--walnut-2)); }
+.sq.last { box-shadow: inset 0 0 0 999px var(--last); }
+.sq.sel { box-shadow: inset 0 0 0 999px var(--sel); }
+.sq.check { background: radial-gradient(circle, var(--check) 0, var(--check-2) 45%, transparent 72%); }
+.sq.d.check { background: radial-gradient(circle, var(--check) 0, var(--check-2) 45%, transparent 72%), linear-gradient(135deg, var(--walnut), var(--walnut-2)); }
+.sq.dot::after { content: ""; position: absolute; width: 30%; height: 30%; border-radius: 50%; background: rgb(0 0 0 / 0.24); pointer-events: none; }
+.sq.cap::after { content: ""; position: absolute; inset: 5%; border-radius: 50%; box-shadow: inset 0 0 0 clamp(3px, 0.8cqmin, 6px) rgb(0 0 0 / 0.26); pointer-events: none; }
+.sq.good { box-shadow: inset 0 0 0 999px var(--hl-good); }
+.sq.bad { box-shadow: inset 0 0 0 999px var(--hl-bad); }
+.sq.clue .pc { animation: clue 0.9s ease-in-out infinite; }
+@keyframes clue { 50% { transform: translateY(-8%) scale(1.06); } }
+.sq:focus-visible { outline: 3px solid var(--mark); outline-offset: -3px; z-index: 2; }
+.pc { width: 88%; height: 88%; pointer-events: none; filter: drop-shadow(0 2px 1.5px rgb(0 0 0 / 0.45)); }
+.pc .w { fill: url(#lw); stroke: var(--w-edge); stroke-width: 26; }
+.pc .b { fill: url(#lb); stroke: var(--b-edge); stroke-width: 20; }
+.star { font-size: clamp(1rem, 7cqmin, 2.6rem); line-height: 1; pointer-events: none; filter: drop-shadow(0 1px 1px rgb(0 0 0 / 0.4)); }
+.drag { position: fixed; z-index: 30; pointer-events: none; transform: translate(-50%, -60%) scale(1.15); }
+.coords { position: absolute; inset: 0; pointer-events: none; font-size: clamp(8px, 2.6cqmin, 14px); font-weight: 700; color: var(--edge); opacity: 0.85; }
+.coords span { position: absolute; display: grid; place-items: center; }
+.arrows { position: absolute; inset: 5.2%; width: 89.6%; height: 89.6%; pointer-events: none; }
+.arrows line { stroke-width: 0.17; stroke-linecap: round; opacity: 0.85; }
+.promo { display: flex; gap: 8px; justify-content: center; }
+.promo button { width: var(--key-h); height: var(--key-h); border-radius: 14px; border: 2px solid var(--line); background: var(--key); cursor: pointer; padding: 4px; }
+.promo .pc { width: 100%; height: 100%; }
+.defs { position: absolute; width: 0; height: 0; overflow: hidden; }
+
+.side { display: flex; flex-direction: column; gap: var(--row-gap); }
+.row2 { display: grid; grid-template-columns: 1fr 1fr; gap: var(--row-gap); }
+.more, .next { font: inherit; font-weight: 700; font-size: 1.05rem; border-radius: 999px; min-height: 48px; cursor: pointer; }
+.more { color: var(--ink); background: transparent; border: 2px solid var(--line); }
+.more:disabled { opacity: 0.45; cursor: default; }
+.next { background: var(--accent); border: 2px solid var(--accent); }
+.row2 .next.skip { width: 100%; min-width: 0; padding: 0 8px; }
+.row2 .more[hidden] + .next { grid-column: 1 / -1; }
+.choices { display: grid; grid-template-columns: 1fr; gap: var(--row-gap); }
+.choices button {
+  font: inherit; font-size: max(var(--ans-floor), clamp(1rem, min(4.6vw, 3dvh), 1.5rem)); font-weight: 700; color: var(--ink); line-height: 1.2;
+  background: var(--key); border: 2px solid var(--line); border-radius: 18px; min-height: calc(var(--ans-h) * 0.8); padding: 6px 10px; cursor: pointer;
+  overflow-wrap: anywhere; transition: transform .08s ease, border-color .15s ease; touch-action: manipulation; -webkit-tap-highlight-color: transparent;
+}
+.choices button:hover:not(:disabled) { border-color: var(--accent); }
+.choices button:disabled { cursor: default; }
+.choices button.right { border-color: var(--good); background: var(--good-bg); color: var(--good); }
+.choices button.wrong { border-color: var(--bad); background: var(--bad-bg); color: var(--bad); }
+.choices button.faded { opacity: 0.45; }
+/* Check, checkmate or stalemate: three short words side by side, so the board keeps its room. */
+.choices.row3 { grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 8px; }
+.choices.row3 button { font-size: max(var(--ans-floor), clamp(0.95rem, min(3.8vw, 2.6dvh), 1.4rem)); padding: 6px 4px; overflow-wrap: normal; hyphens: auto; }
+
+/* Portrait: one screen tall. The board takes the room the words leave. */
+@media (orientation: portrait) {
+  body { height: calc(100dvh - var(--safe-top) - var(--safe-bottom)); min-height: 0; display: flex; flex-direction: column; overflow: hidden; }
+  body:has(#settings-panel:not([hidden])) { height: auto; overflow: visible; }
+  .wrap { flex: 1 1 auto; min-height: 0; width: 100%; }
+  .play { flex: 1 1 auto; min-height: 0; }
+  .problem-card { flex: 1 1 auto; min-height: 0; justify-content: center; overflow: hidden; }
+  .boardbox { flex: 0 1 auto; aspect-ratio: 1; }
+  .problem-card.text .boardbox { flex: 0 0 auto; }
+  /* The task is read first, so it sits above the board; the answer shows under it. */
+  .topic, .question { order: -1; }
+  .feedback { flex: 0 0 auto; }
+}
+/* Landscape: the board on the left, as tall as the screen allows; the words and buttons beside it. */
+@media (orientation: landscape) and (min-width: 640px) {
+  body { height: calc(100dvh - var(--safe-top) - var(--safe-bottom)); min-height: 0; display: flex; flex-direction: column; overflow: hidden; }
+  body:has(#settings-panel:not([hidden])) { height: auto; overflow: visible; }
+  .wrap { flex: 1 1 auto; min-height: 0; width: 100%; }
+  .play { flex: 1 1 auto; min-height: 0; display: grid; grid-template-columns: minmax(0, auto) minmax(0, 1fr); grid-template-rows: minmax(0, 1fr); column-gap: var(--play-gap); }
+  .problem-card { display: contents; }
+  .boardbox { grid-column: 1; grid-row: 1; height: 100%; aspect-ratio: 1; width: auto; }
+  /* The words move into the side column here (see placeWords), above the answers and buttons. */
+  .side { grid-column: 2; grid-row: 1; min-height: 0; }
+  .side .card-words { flex: 0 1 auto; margin-block: auto; min-height: 0; overflow-y: auto; display: flex; flex-direction: column; justify-content: center; gap: 8px; align-items: flex-start; }
+  .card-words .question, .card-words .intro, .card-words .feedback { text-align: left; }
+  .side .choices, .side .row2 { flex: 0 0 auto; }
+  .problem-card.text .boardbox { display: none; }
+  .problem-card.text + .side .card-words { align-items: center; }
+  /* A card question on a wide screen: the three answers side by side, under the picture and the question. */
+  .problem-card.text + .side .choices { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+  .problem-card.text + .side .choices button { min-height: min(calc(var(--ans-h) * 0.8), 16dvh); }
+  .problem-card.text + .side .card-words :is(.question, .feedback) { text-align: center; }
+  .problem-card.good .frame { box-shadow: 0 0 0 4px var(--good), 0 12px 30px rgb(0 0 0 / 0.35); }
+  .problem-card.bad .frame { box-shadow: 0 0 0 4px var(--bad), 0 12px 30px rgb(0 0 0 / 0.35); }
+}
+.card-words { display: contents; }
+@media (max-height: 500px) {
+  .problem-card.text + .side .pic { display: none; } /* a phone on its side: room for the question and the hint */
+  .question { font-size: 1rem; } .intro { font-size: 0.85rem; } .feedback { font-size: 0.9rem; } .feedback strong { font-size: 1.05rem; }
+  .more, .next { min-height: 44px; }
+}
+@media (prefers-reduced-motion: reduce) { * { transition: none !important; animation: none !important; } }
+
+/* Worksheet (only printed): nine puzzles, three across, each a small black-and-white diagram and its task. */
+@media print {
+  ol.sheet-grid.sheet-clock:has(.ws-cp) { grid-template-columns: repeat(3, 1fr); grid-template-rows: repeat(3, 74mm); gap: 3mm; }
+  .ws-cp { display: flex; flex-direction: column; align-items: center; gap: 1.5mm; }
+  .ws-cp svg { width: 56mm; height: 56mm; }
+  .ws-cp p { margin: 0; font-size: 10pt; font-weight: 600; text-align: center; }
+}
+</style>
+<link rel="stylesheet" href="../../loopy.css">
+<script src="../../loopy.js"></script>
+<script src="data.js"></script>
+</head>
+<body>
+
+<svg class="defs" aria-hidden="true" focusable="false"><defs>
+<linearGradient id="lw" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#fffaf0"/><stop offset=".55" stop-color="#f1dfbd"/><stop offset="1" stop-color="#d4b07c"/></linearGradient>
+<linearGradient id="lb" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#5e4635"/><stop offset=".5" stop-color="#2c1f17"/><stop offset="1" stop-color="#120c08"/></linearGradient>
+<marker id="ahg" viewBox="0 0 4 4" markerWidth="2.4" markerHeight="2.4" refX="1.6" refY="2" orient="auto"><path d="M0 0L4 2L0 4z" fill="#2f9e44"/></marker><marker id="ahr" viewBox="0 0 4 4" markerWidth="2.4" markerHeight="2.4" refX="1.6" refY="2" orient="auto"><path d="M0 0L4 2L0 4z" fill="#d9480f"/></marker>
+<symbol id="gk" viewBox="100 -1600 1636 1636"><path d="M848-967Q849-970 851-973Q816-1016 765-1044Q691-1085 613-1085Q535-1085 462-1044Q388-1004 346-930Q304-855 304-775Q304-694 345-621Q386-548 460-508Q482-494 505-486H848ZM989-486H1331Q1355-494 1377-508Q1451-548 1492-621Q1532-694 1532-775Q1532-855 1490-930Q1449-1004 1376-1044Q1302-1085 1223-1085Q1146-1085 1072-1044Q1020-1016 986-973Q988-970 989-967ZM540-383V-80H1297V-383ZM458 0V-383Q416-396 378-418Q309-472 255-570Q201-668 201-775Q201-883 256-982Q311-1080 410-1133Q509-1186 613-1186Q693-1186 769-1155V-1157Q769-1193 787-1224Q805-1256 837-1274Q850-1281 866-1285V-1339H758V-1409H866V-1496H971V-1409H1079V-1339H971V-1285Q987-1281 1000-1274Q1031-1256 1050-1224Q1068-1193 1068-1157V-1155Q1144-1186 1223-1186Q1327-1186 1426-1133Q1525-1080 1580-982Q1635-883 1635-775Q1635-668 1581-570Q1527-472 1459-418Q1420-396 1379-383V0ZM825-1149Q825-1124 838-1102Q850-1081 872-1068Q895-1056 918-1056Q942-1056 964-1068Q987-1081 999-1102Q1011-1124 1011-1149Q1011-1173 999-1196Q987-1218 964-1230Q942-1241 918-1241Q895-1241 872-1230Q850-1218 838-1196Q825-1173 825-1149ZM1245-331V-131H592V-331ZM798-537H518Q500-544 483-556Q422-589 389-650Q356-710 356-777Q356-843 390-904Q424-966 484-1000Q543-1033 607-1033Q669-1033 730-1000Q771-977 800-941Q798-938 798-936ZM1039-936Q1039-938 1037-941Q1066-977 1107-1000Q1168-1033 1229-1033Q1294-1033 1354-1000Q1413-966 1447-904Q1481-843 1481-777Q1481-710 1448-650Q1415-589 1354-556Q1336-544 1318-537H1039Z"/></symbol><symbol id="gq" viewBox="100 -1600 1636 1636"><path d="M333-1019Q238-1021 226-1116Q226-1144 240-1170Q255-1195 282-1209Q309-1223 338-1223Q366-1223 393-1209Q420-1195 434-1170Q448-1144 448-1116Q444-1052 387-1030L626-524L574-1226Q491-1226 473-1319Q473-1347 488-1372Q502-1397 528-1411Q555-1425 586-1425Q614-1425 640-1411Q667-1397 682-1372Q696-1347 696-1319Q694-1274 648-1240L837-492L880-1312Q813-1342 811-1390Q811-1418 826-1444Q841-1470 868-1483Q894-1496 921-1496Q950-1496 976-1483Q1003-1470 1018-1444Q1033-1418 1033-1390Q1030-1336 963-1312L1001-490L1186-1230Q1140-1277 1140-1319Q1140-1346 1154-1372Q1169-1397 1196-1411Q1223-1425 1250-1425Q1280-1425 1307-1411Q1334-1397 1348-1372Q1363-1346 1363-1319Q1352-1234 1266-1218L1174-524L1431-1039Q1388-1073 1388-1116Q1388-1144 1402-1170Q1417-1195 1444-1208Q1470-1222 1498-1222Q1528-1222 1554-1208Q1581-1195 1596-1170Q1610-1144 1610-1116Q1597-1022 1498-1022L1338-559V0H477V-559ZM1281-356V-434H554V-356ZM1281-58V-137H554V-58Z"/></symbol><symbol id="gr" viewBox="100 -1600 1636 1636"><path d="M1238-1156V-1250H598V-1156ZM1312-179V-290H524V-179ZM776-1494H1053V-1339H1224V-1494H1494V-1332H1379V-1188L1287-1038V-453L1379-304V-161H1494V2H341V-161H456V-304L549-456H550V-1037H549L456-1188V-1332H341V-1494H606V-1339H776ZM1439-54V-109H397V-54Z"/></symbol><symbol id="gn" viewBox="100 -1600 1636 1636"><path d="M790-1254Q827-1277 827-1316Q827-1341 812-1370Q797-1398 797-1420Q797-1466 855-1496Q940-1415 948-1370Q955-1326 955-1313Q955-1266 921-1254H925Q925-1253 923-1253Q1459-913 1504 0H534Q521-56 521-114Q521-274 724-416Q926-557 926-670Q926-678 925-685Q859-518 742-518Q742-518 732-518Q642-372 539-372Q535-372 532-372L580-476L473-396Q359-424 332-507Q420-736 420-926Q420-953 418-979Q466-1088 565-1192Q568-1202 568-1211Q568-1239 546-1252Q523-1265 523-1300Q523-1337 543-1403Q647-1376 703-1254ZM533-999V-983Q537-953 545-953H566Q635-953 635-1002Q635-1036 678-1084H672Q576-1084 539-1020ZM424-549V-525Q424-496 452-496H462Q534-511 534-564L527-598Q465-598 424-549ZM922-1174 974-1085Q1349-816 1355-52H1432Q1387-902 922-1174Z"/></symbol><symbol id="gp" viewBox="100 -1600 1636 1636"><path d="M315 1Q304-56 304-114Q304-274 386-420Q469-567 615-645Q653-666 693-681Q663-710 642-748Q600-823 600-905Q600-988 642-1064Q685-1139 762-1181Q789-1195 818-1205Q792-1224 777-1253Q754-1292 754-1334Q754-1376 776-1414Q798-1453 837-1474Q876-1495 917-1495Q957-1495 996-1474Q1035-1453 1058-1414Q1080-1376 1080-1334Q1080-1292 1059-1253Q1042-1224 1017-1204Q1044-1195 1074-1181Q1149-1139 1192-1064Q1235-988 1235-905Q1235-823 1194-748Q1172-710 1142-681Q1180-665 1218-645Q1365-567 1448-420Q1531-274 1531-114Q1531-56 1519 1Z"/></symbol><symbol id="gb" viewBox="100 -1600 1636 1636"><path fill-rule="evenodd" d="M418 0H1418Q1462 0 1450-58L1426-136Q1414-178 1368-178H468Q422-178 410-136L386-58Q374 0 418 0ZM570-222H1266Q1308-222 1308-262Q1308-302 1266-302H570Q528-302 528-262Q528-222 570-222ZM700-344H1136Q1096-430 1160-528Q1298-708 1290-884Q1280-1086 918-1336Q556-1086 546-884Q538-708 676-528Q740-430 700-344ZM1006-1078L1088-996L874-782L792-864ZM918-1362Q998-1362 998-1438Q998-1514 918-1514Q838-1514 838-1438Q838-1362 918-1362Z"/></symbol>
+</defs></svg>
+
+<div class="wrap">
+  <header class="game-bar">
+    <a class="home-link" href="../../">&larr; loopy</a>
+    <div class="bar-right">
+      <span id="star-chip"></span>
+      <button type="button" id="settings-toggle" aria-controls="settings-panel"></button>
+    </div>
+  </header>
+  <section class="top" aria-labelledby="title">
+    <h1 id="title" data-t="cpName">Chess Puzzles</h1>
+    <div class="score" aria-live="polite">
+      <div class="pill pill-score"><span data-t="score">Score</span><b id="score">0 / 0</b></div>
+      <div id="level"></div>
+      <div class="pill pill-streak"><span data-t="streak">Streak</span><b id="streak">0</b></div>
+      <div id="last5" data-game="chess-puzzles"></div>
+    </div>
+  </section>
+  <div class="settings-panel" id="settings-panel" hidden>
+    <div class="controls"><div id="age-picker"></div><div id="theme-picker"></div><button id="sound-toggle"></button><div id="lang-picker"></div></div>
+    <div>
+      <p class="seg-label" id="level-label" data-t="cpLevel">Level</p>
+      <div class="seg" role="group" aria-labelledby="level-label" id="level-seg">
+        <button type="button" data-level="0" data-t="cpL1">Meet the pieces</button>
+        <button type="button" data-level="1" data-t="cpL2">Checkmates</button>
+        <button type="button" data-level="2" data-t="cpL3">Winning material</button>
+        <button type="button" data-level="3" data-t="cpL4">Defending</button>
+        <button type="button" data-level="4" data-t="cpL5">Sacrifice to win</button>
+        <button type="button" data-level="5" data-t="cpL6">Openings</button>
+      </div>
+    </div>
+    <div>
+      <p class="seg-label" id="topic-label" data-t="cpTopic">Topic</p>
+      <div class="seg" role="group" aria-labelledby="topic-label" id="topic-seg"></div>
+    </div>
+    <div class="panel-foot">
+      <p data-t="cpKbd">Keyboard works too: arrow keys move, Enter picks a square.</p>
+      <button type="button" class="reset" id="reset" data-t="resetScore">Reset score</button>
+    </div>
+  </div>
+
+  <main class="play">
+    <div class="problem-card" id="card">
+      <div class="boardbox" id="boardbox">
+        <div class="frame" id="frame">
+          <div class="board" id="board" role="grid" aria-labelledby="question"></div>
+          <div class="coords" id="coords" aria-hidden="true"></div>
+          <svg class="arrows" id="arrows" viewBox="0 0 8 8" aria-hidden="true"></svg>
+        </div>
+      </div>
+      <div class="card-words">
+        <span class="topic" id="topic"></span>
+        <div class="pic" id="pic" aria-hidden="true" hidden></div>
+        <p class="question" id="question"></p>
+        <p class="intro" id="intro" hidden></p>
+        <div class="promo" id="promo" hidden></div>
+        <p class="feedback" id="feedback"></p>
+      </div>
+    </div>
+    <div class="side">
+      <div class="choices" id="choices" hidden></div>
+      <div class="row2">
+        <button type="button" class="more" id="clue" data-t="cpClue">💡 Clue</button>
+        <button type="button" class="next" id="next">Skip</button>
+      </div>
+    </div>
+  </main>
+</div>
+
+<script>
+Loopy.addStrings({
+  en: {
+    cpName: "Chess Puzzles", cpLevel: "Level", cpTopic: "Topic", cpAll: "All for my level", cpClue: "💡 Clue",
+    cpKbd: "Keyboard works too: arrow keys move, Enter picks a square.", hintBoard: "Tap a piece, then where it goes!",
+    cpL1: "Meet the pieces", cpL2: "Checkmates", cpL3: "Winning material", cpL4: "Defending", cpL5: "Sacrifice to win", cpL6: "Openings and rules",
+    t_rook: "The rook", t_bishop: "The bishop", t_queen: "The queen", t_king: "The king", t_knight: "The knight", t_pawn: "The pawn",
+    t_mate1: "Mate in one", t_pawnmate: "Pawn mates", t_matepin: "Mate with a pin or discovery", t_mate2: "Mate in two",
+    t_castle: "Castling", t_enpassant: "En passant", t_promote: "Promotion",
+    t_fork: "Forks", t_pin: "Pins", t_skewer: "Skewers", t_double: "Double attacks", t_discover: "Discovered attacks",
+    t_defender: "Remove the defender", t_trapped: "Trap a piece", t_hanging: "Take the free piece",
+    t_defend: "Defend", t_draw: "Save a draw", t_between: "In-between moves", t_cms: "Check, mate or stalemate?",
+    t_sacrifice: "Sacrifices", t_decoy: "Decoys", t_deflect: "Deflections", t_lines: "Opening lines", t_attack: "Attack the king", t_mate3: "Mate in three",
+    t_rules: "Opening rules", t_traps: "Opening traps", t_manners: "Board manners",
+    i_rook: "The rook goes in straight lines: up, down and sideways, as far as it likes.",
+    i_bishop: "The bishop goes on the diagonals, as far as it likes. It stays on its colour.",
+    i_queen: "The queen goes straight and on the diagonals, as far as she likes.",
+    i_king: "The king goes one square in any direction.",
+    i_knight: "The knight jumps in an L: two squares one way, then one to the side. It can jump over pieces.",
+    i_pawn: "The pawn goes forward one square, two from its first row. It takes one square forward on the diagonal.",
+    i_mate1: "Checkmate: the king is attacked and has no way out.",
+    i_pawnmate: "Even the smallest piece can give checkmate.",
+    i_matepin: "A pinned piece cannot help its king. A piece that moves away can open a check.",
+    i_mate2: "First a strong move, then checkmate on the next move.",
+    i_castle: "Castling: the king goes two squares to the side and the rook jumps over it.",
+    i_enpassant: "A pawn that jumps two squares past your pawn can be taken as if it went one.",
+    i_promote: "A pawn that reaches the last row becomes a queen, rook, bishop or knight.",
+    i_fork: "A fork: one knight attacks two pieces at once.",
+    i_pin: "A pin: the piece in front cannot move, or the bigger piece behind it is lost.",
+    i_skewer: "A skewer: attack a big piece, and when it moves, take the piece behind it.",
+    i_double: "A double attack: one move attacks two things at once.",
+    i_discover: "A discovered attack: move one piece out of the way, and the piece behind it attacks.",
+    i_defender: "Take or chase away the piece that guards, then win what it guarded.",
+    i_trapped: "Attack a piece that has no safe square left.",
+    i_hanging: "Look for a piece nobody guards, and take it.",
+    i_defend: "When you are attacked, look for the move that keeps you safe.",
+    i_draw: "When you are behind, a draw is a good result. Check forever, or leave no moves.",
+    i_between: "Before you take back, look for a stronger move first, like a check.",
+    i_cms: "Check: the king is attacked. Checkmate: it cannot escape. Stalemate: no move, but not in check.",
+    i_sacrifice: "Give up a piece on purpose to win something bigger.",
+    i_decoy: "Lure a piece onto a bad square.",
+    i_deflect: "Pull a guard away from what it protects.",
+    i_lines: "Clear a line so your rook, bishop or queen can get through.",
+    i_attack: "Bring more pieces near the other king than it has guards.",
+    i_mate3: "Three moves to checkmate. Every move should be a check or a big threat.",
+    i_rules: "Good opening ideas: the middle, bring out pieces, keep the king safe.",
+    i_traps: "Some openings hide a trap. Find the move that wins.",
+    i_manners: "Chess players are friendly and fair.",
+    cpNew: "New: {t}",
+    cpWhite: "White to move.", cpBlack: "Black to move.",
+    cpMate: "Checkmate in one move!", cpMateN: "Checkmate in {n} moves!", cpWin: "Find the move that wins!", cpBest: "Find the best move!",
+    cpSave: "Find the move that saves you!", cpTake: "Take the free piece!",
+    "cpReach-r": "Move the rook to the star.", "cpReach-b": "Move the bishop to the star.", "cpReach-q": "Move the queen to the star.",
+    "cpReach-k": "Move the king to the star.", "cpReach-n": "Move the knight to the star.", "cpReach-p": "Move the pawn to the star.",
+    "cpGrab-r": "Take a black piece with the rook.", "cpGrab-b": "Take a black piece with the bishop.", "cpGrab-q": "Take a black piece with the queen.",
+    "cpGrab-k": "Take a black piece with the king.", "cpGrab-n": "Take a black piece with the knight.", "cpGrab-p": "Take a black piece with the pawn.",
+    cpTap: "Tap a piece, then where it goes.", cpGoOn: "Good! Now your next move.", cpWas: "The move: {m}.", cpWasFirst: "The first move: {m}.",
+    "pn-k": "King", "pn-q": "Queen", "pn-r": "Rook", "pn-b": "Bishop", "pn-n": "Knight", "pn-p": "Pawn",
+    "pc-k": "king", "pc-q": "queen", "pc-r": "rook", "pc-b": "bishop", "pc-n": "knight", "pc-p": "pawn",
+    cpTo: "{p} to {s}", cpTakes: "{p} takes on {s}", cpCastle: "Castling", cpBecomes: ", becomes a {p}", cpPromo: "Which piece should the pawn become?",
+    cpWhitePc: "white {p}", cpBlackPc: "black {p}", cpEmpty: "empty",
+    cpCmsQ: "Black to move. What is it?", cpCheck: "Check", cpCheckmate: "Checkmate", cpStalemate: "Stalemate",
+    "cpCms-0": "The black king is attacked, but it can get out of check.", "cpCms-1": "The black king is attacked and cannot get away. The game is over.",
+    "cpCms-2": "The black king is not attacked, but Black has no move. It is a draw.",
+    cpHow: "Find the best move for the side that is to move. Write it under the board, or draw an arrow.",
+    cpPuzzle: "{t}, puzzle {n}"
+  },
+  de: {
+    cpName: "Schachrätsel", cpLevel: "Stufe", cpTopic: "Thema", cpAll: "Alle für meine Stufe", cpClue: "💡 Tipp",
+    cpKbd: "Die Tastatur geht auch: Pfeiltasten bewegen, Enter wählt ein Feld.", hintBoard: "Tippe eine Figur an, dann ihr Ziel!",
+    cpL1: "Die Figuren", cpL2: "Schachmatt", cpL3: "Material gewinnen", cpL4: "Verteidigen", cpL5: "Opfern und gewinnen", cpL6: "Eröffnung und Regeln",
+    t_rook: "Der Turm", t_bishop: "Der Läufer", t_queen: "Die Dame", t_king: "Der König", t_knight: "Der Springer", t_pawn: "Der Bauer",
+    t_mate1: "Matt in einem Zug", t_pawnmate: "Matt mit dem Bauern", t_matepin: "Matt mit Fesselung oder Abzug", t_mate2: "Matt in zwei Zügen",
+    t_castle: "Rochade", t_enpassant: "En passant", t_promote: "Umwandlung",
+    t_fork: "Gabel", t_pin: "Fesselung", t_skewer: "Spieß", t_double: "Doppelangriff", t_discover: "Abzugsangriff",
+    t_defender: "Verteidiger beseitigen", t_trapped: "Figur fangen", t_hanging: "Freie Figur schlagen",
+    t_defend: "Verteidigen", t_draw: "Remis retten", t_between: "Zwischenzug", t_cms: "Schach, matt oder patt?",
+    t_sacrifice: "Opfer", t_decoy: "Hinlenkung", t_deflect: "Ablenkung", t_lines: "Linien öffnen", t_attack: "Königsangriff", t_mate3: "Matt in drei Zügen",
+    t_rules: "Eröffnungsregeln", t_traps: "Eröffnungsfallen", t_manners: "Gutes Benehmen am Brett",
+    i_rook: "Der Turm zieht gerade: nach vorn, nach hinten und zur Seite, so weit er will.",
+    i_bishop: "Der Läufer zieht schräg, so weit er will. Er bleibt immer auf seiner Farbe.",
+    i_queen: "Die Dame zieht gerade und schräg, so weit sie will.",
+    i_king: "Der König zieht ein Feld in jede Richtung.",
+    i_knight: "Der Springer springt wie ein L: zwei Felder in eine Richtung, dann eins zur Seite. Er darf über Figuren springen.",
+    i_pawn: "Der Bauer zieht ein Feld nach vorn, aus seiner ersten Reihe auch zwei. Er schlägt ein Feld schräg nach vorn.",
+    i_mate1: "Schachmatt: Der König wird angegriffen und kann nicht entkommen.",
+    i_pawnmate: "Auch die kleinste Figur kann matt setzen.",
+    i_matepin: "Eine gefesselte Figur kann ihrem König nicht helfen. Eine Figur, die wegzieht, kann ein Schach öffnen.",
+    i_mate2: "Erst ein starker Zug, dann matt im nächsten Zug.",
+    i_castle: "Rochade: Der König zieht zwei Felder zur Seite und der Turm springt über ihn.",
+    i_enpassant: "Ein Bauer, der mit zwei Feldern an deinem Bauern vorbeizieht, darf geschlagen werden, als wäre er nur eins gezogen.",
+    i_promote: "Ein Bauer auf der letzten Reihe wird zur Dame, zum Turm, Läufer oder Springer.",
+    i_fork: "Eine Gabel: Ein Springer greift zwei Figuren auf einmal an.",
+    i_pin: "Eine Fesselung: Die vordere Figur kann nicht ziehen, sonst geht die größere dahinter verloren.",
+    i_skewer: "Ein Spieß: Greif eine große Figur an. Zieht sie weg, schlägst du die Figur dahinter.",
+    i_double: "Ein Doppelangriff: Ein Zug greift zwei Dinge auf einmal an.",
+    i_discover: "Ein Abzugsangriff: Zieh eine Figur aus dem Weg, dann greift die Figur dahinter an.",
+    i_defender: "Schlag oder vertreib die Figur, die etwas schützt. Dann gewinnst du, was sie geschützt hat.",
+    i_trapped: "Greif eine Figur an, die kein sicheres Feld mehr hat.",
+    i_hanging: "Such eine Figur, die niemand schützt, und schlag sie.",
+    i_defend: "Wenn du angegriffen wirst, such den Zug, der dich rettet.",
+    i_draw: "Wenn du hinten liegst, ist ein Remis gut. Gib immer wieder Schach, oder lass keinen Zug übrig.",
+    i_between: "Bevor du zurückschlägst, such erst einen stärkeren Zug, zum Beispiel ein Schach.",
+    i_cms: "Schach: Der König wird angegriffen. Matt: Er kann nicht entkommen. Patt: kein Zug, aber kein Schach.",
+    i_sacrifice: "Gib absichtlich eine Figur her, um etwas Größeres zu gewinnen.",
+    i_decoy: "Lock eine Figur auf ein schlechtes Feld.",
+    i_deflect: "Lenk einen Wächter von dem ab, was er schützt.",
+    i_lines: "Mach eine Linie frei, damit Turm, Läufer oder Dame durchkommen.",
+    i_attack: "Bring mehr Figuren zum anderen König, als er Wächter hat.",
+    i_mate3: "Drei Züge bis matt. Jeder Zug sollte Schach sein oder eine große Drohung.",
+    i_rules: "Gute Ideen für die Eröffnung: die Mitte, Figuren entwickeln, den König schützen.",
+    i_traps: "In manchen Eröffnungen steckt eine Falle. Finde den Zug, der gewinnt.",
+    i_manners: "Schachspieler sind freundlich und fair.",
+    cpNew: "Neu: {t}",
+    cpWhite: "Weiß am Zug.", cpBlack: "Schwarz am Zug.",
+    cpMate: "Matt in einem Zug!", cpMateN: "Matt in {n} Zügen!", cpWin: "Finde den Zug, der gewinnt!", cpBest: "Finde den besten Zug!",
+    cpSave: "Finde den rettenden Zug!", cpTake: "Schlag die freie Figur!",
+    "cpReach-r": "Zieh den Turm auf den Stern.", "cpReach-b": "Zieh den Läufer auf den Stern.", "cpReach-q": "Zieh die Dame auf den Stern.",
+    "cpReach-k": "Zieh den König auf den Stern.", "cpReach-n": "Zieh den Springer auf den Stern.", "cpReach-p": "Zieh den Bauern auf den Stern.",
+    "cpGrab-r": "Schlag eine schwarze Figur mit dem Turm.", "cpGrab-b": "Schlag eine schwarze Figur mit dem Läufer.", "cpGrab-q": "Schlag eine schwarze Figur mit der Dame.",
+    "cpGrab-k": "Schlag eine schwarze Figur mit dem König.", "cpGrab-n": "Schlag eine schwarze Figur mit dem Springer.", "cpGrab-p": "Schlag eine schwarze Figur mit dem Bauern.",
+    cpTap: "Tippe eine Figur an, dann ihr Ziel.", cpGoOn: "Gut! Jetzt dein nächster Zug.", cpWas: "Der Zug: {m}.", cpWasFirst: "Der erste Zug: {m}.",
+    "pn-k": "König", "pn-q": "Dame", "pn-r": "Turm", "pn-b": "Läufer", "pn-n": "Springer", "pn-p": "Bauer",
+    "pc-k": "König", "pc-q": "Dame", "pc-r": "Turm", "pc-b": "Läufer", "pc-n": "Springer", "pc-p": "Bauer",
+    cpTo: "{p} nach {s}", cpTakes: "{p} schlägt auf {s}", cpCastle: "Rochade", cpBecomes: ", wird {p}", cpPromo: "Was soll aus dem Bauern werden?",
+    cpWhitePc: "weiß: {p}", cpBlackPc: "schwarz: {p}", cpEmpty: "leer",
+    cpCmsQ: "Schwarz am Zug. Was ist das?", cpCheck: "Schach", cpCheckmate: "Schachmatt", cpStalemate: "Patt",
+    "cpCms-0": "Der schwarze König wird angegriffen, aber er kann dem Schach entkommen.", "cpCms-1": "Der schwarze König wird angegriffen und kann nicht entkommen. Die Partie ist aus.",
+    "cpCms-2": "Der schwarze König wird nicht angegriffen, aber Schwarz hat keinen Zug. Das ist remis.",
+    cpHow: "Finde den besten Zug für die Seite, die am Zug ist. Schreib ihn unter das Brett oder mal einen Pfeil.",
+    cpPuzzle: "{t}, Rätsel {n}"
+  }
+});
+
+// ENGINE START: the rules of chess, small. tools/chess/build.mjs checks every puzzle with this same code.
+// A square is 0 to 63: a1 = 0, h1 = 7, a8 = 56. A position: { b: 64 letters or "", w: white to move, c: castling rights, ep: square or -1 }.
+const CHESS = (function () {
+  const F = "abcdefgh", KN = [[1, 2], [2, 1], [2, -1], [1, -2], [-1, -2], [-2, -1], [-2, 1], [-1, 2]];
+  const RO = [[1, 0], [-1, 0], [0, 1], [0, -1]], BI = [[1, 1], [1, -1], [-1, 1], [-1, -1]], KG = RO.concat(BI);
+  const name = (i) => F[i & 7] + ((i >> 3) + 1);
+  const idx = (s) => F.indexOf(s[0]) + 8 * (+s[1] - 1);
+  const isW = (p) => !!p && p === p.toUpperCase();
+  function parse(fen) {
+    const [pl, side, cs, ep] = fen.split(" "), b = Array(64).fill("");
+    let r = 7, f = 0;
+    for (const ch of pl) { if (ch === "/") { r--; f = 0; } else if (/\d/.test(ch)) f += +ch; else b[r * 8 + f++] = ch; }
+    return { b, w: side !== "b", c: cs && cs !== "-" ? cs : "", ep: ep && ep !== "-" ? idx(ep) : -1 };
+  }
+  function attacked(b, sq, byW) {
+    const f = sq & 7, r = sq >> 3, at = (x, y) => (x >= 0 && x < 8 && y >= 0 && y < 8 ? b[y * 8 + x] : "");
+    const mine = (p, t) => p && isW(p) === byW && t.includes(p.toLowerCase());
+    for (const d of [-1, 1]) if (mine(at(f + d, byW ? r - 1 : r + 1), "p")) return true;
+    for (const [x, y] of KN) if (mine(at(f + x, r + y), "n")) return true;
+    for (const [x, y] of KG) if (mine(at(f + x, r + y), "k")) return true;
+    for (const [dirs, set] of [[RO, "rq"], [BI, "bq"]]) for (const [x, y] of dirs) {
+      for (let a = f + x, c = r + y; a >= 0 && a < 8 && c >= 0 && c < 8; a += x, c += y) { const p = b[c * 8 + a]; if (p) { if (mine(p, set)) return true; break; } }
+    }
+    return false;
+  }
+  const inCheck = (s) => { const k = s.b.indexOf(s.w ? "K" : "k"); return k >= 0 && attacked(s.b, k, !s.w); };
+  function pseudo(s) {
+    const out = [], b = s.b, w = s.w;
+    for (let i = 0; i < 64; i++) {
+      const p = b[i];
+      if (!p || isW(p) !== w) continue;
+      const t = p.toLowerCase(), f = i & 7, r = i >> 3, add = (to, x) => out.push(Object.assign({ f: i, t: to }, x));
+      const slide = (dirs, one) => { for (const [x, y] of dirs) for (let a = f + x, c = r + y; a >= 0 && a < 8 && c >= 0 && c < 8; a += x, c += y) { const j = c * 8 + a; if (b[j] && isW(b[j]) === w) break; add(j); if (b[j] || one) break; } };
+      if (t === "n") slide(KN, 1); else if (t === "b") slide(BI); else if (t === "r") slide(RO); else if (t === "q") slide(KG);
+      else if (t === "k") {
+        slide(KG, 1);
+        const rook = w ? "R" : "r";
+        if (i === (w ? 4 : 60) && !inCheck(s)) {
+          if (s.c.includes(w ? "K" : "k") && !b[i + 1] && !b[i + 2] && b[i + 3] === rook && !attacked(b, i + 1, !w) && !attacked(b, i + 2, !w)) add(i + 2, { c: 1 });
+          if (s.c.includes(w ? "Q" : "q") && !b[i - 1] && !b[i - 2] && !b[i - 3] && b[i - 4] === rook && !attacked(b, i - 1, !w) && !attacked(b, i - 2, !w)) add(i - 2, { c: 1 });
+        }
+      } else {
+        const d = w ? 8 : -8, last = w ? 7 : 0, go = (to, x) => { if ((to >> 3) === last) for (const q of "qrbn") add(to, Object.assign({ p: q }, x)); else add(to, x); };
+        if (!b[i + d]) { go(i + d); if (r === (w ? 1 : 6) && !b[i + 2 * d]) add(i + 2 * d); }
+        for (const x of [-1, 1]) {
+          if (f + x < 0 || f + x > 7) continue;
+          const j = i + d + x;
+          if (b[j] && isW(b[j]) !== w) go(j); else if (j === s.ep) add(j, { e: 1 });
+        }
+      }
+    }
+    return out;
+  }
+  function play(s, m) {
+    const b = s.b.slice(), p = b[m.f];
+    b[m.t] = m.p ? (s.w ? m.p.toUpperCase() : m.p) : p; b[m.f] = "";
+    if (m.e) b[m.t + (s.w ? -8 : 8)] = "";
+    if (m.c) { if (m.t > m.f) { b[m.f + 1] = b[m.f + 3]; b[m.f + 3] = ""; } else { b[m.f - 1] = b[m.f - 4]; b[m.f - 4] = ""; } }
+    let c = s.c;
+    for (const [sq, ch] of [[4, "KQ"], [60, "kq"], [7, "K"], [0, "Q"], [63, "k"], [56, "q"]]) if (m.f === sq || m.t === sq) for (const x of ch) c = c.replace(x, "");
+    return { b, w: !s.w, c, ep: p.toLowerCase() === "p" && Math.abs(m.t - m.f) === 16 ? (m.f + m.t) / 2 : -1 };
+  }
+  const legal = (s) => pseudo(s).filter((m) => { const n = play(s, m), k = n.b.indexOf(s.w ? "K" : "k"); return k < 0 || !attacked(n.b, k, n.w); });
+  const uci = (m) => name(m.f) + name(m.t) + (m.p || "");
+  const find = (s, u) => legal(s).find((m) => uci(m) === u) || null;
+  // "" (play on), "check", "mate" or "stale" for the side to move.
+  const status = (s) => { const n = legal(s).length, c = inCheck(s); return n ? (c ? "check" : "") : c ? "mate" : "stale"; };
+  return { parse, legal, play, uci, find, status, inCheck, name, idx, isW };
+})();
+// ENGINE END
+
+(function () {
+  const $ = (id) => document.getElementById(id);
+  const t = Loopy.t, GAME = "chess-puzzles", C = CHESS;
+  // On a screen on its side the words sit in the side column, above the answers, so the first-time hint finds
+  // the empty room under them; held upright they are part of the card, above and under the board.
+  const words = document.querySelector(".card-words"), wide = matchMedia("(orientation: landscape) and (min-width: 640px)");
+  const placeWords = () => { if (wide.matches) document.querySelector(".side").prepend(words); else $("card").appendChild(words); };
+  wide.addEventListener("change", placeWords);
+  placeWords();
+  const card = $("card"), boardEl = $("board"), coordsEl = $("coords"), arrowsEl = $("arrows"), topicEl = $("topic"), picEl = $("pic");
+  const qEl = $("question"), introEl = $("intro"), promoEl = $("promo"), feedbackEl = $("feedback"), choicesEl = $("choices");
+  const clueBtn = $("clue"), nextBtn = $("next");
+  const levelBtns = [...document.querySelectorAll("#level-seg button")], topicSeg = $("topic-seg");
+  const randInt = (n) => Math.floor(Math.random() * n), pick = (a) => a[randInt(a.length)];
+  const store = {
+    get(k, d, ok) { try { const v = JSON.parse(Loopy.store.get(k)); return ok(v) ? v : d; } catch (e) { return d; } },
+    set(k, v) { Loopy.store.set(k, JSON.stringify(v)); }
+  };
+  // The six levels and their topics, in the order a chess school teaches them. Level 1 and the cards are made here;
+  // the other topics are real puzzles (CP.p, filled by puzzles-2.js to puzzles-6.js), easiest first.
+  const LEVELS = [
+    ["rook", "bishop", "queen", "king", "knight", "pawn"],
+    ["mate1", "pawnmate", "matepin", "mate2", "castle", "enpassant", "promote"],
+    ["fork", "pin", "skewer", "double", "discover", "defender", "trapped", "hanging"],
+    ["defend", "draw", "between", "cms"],
+    ["sacrifice", "decoy", "deflect", "lines", "attack", "mate3"],
+    ["rules", "traps", "manners"]
+  ];
+  const KINDS = ["pieces", "mate", "win", "defend", "sac", "open"];
+  const PIECE = { rook: "r", bishop: "b", queen: "q", king: "k", knight: "n", pawn: "p" };
+  const ICON = ["♞", "♛", "⚔️", "🛡️", "💥", "📖"];
+  const DATA = typeof CP === "object" && CP ? CP : { p: {}, cms: [], cards: {} };
+  const has = (topic) => PIECE[topic] || topic === "cms" ? true : topic === "rules" || topic === "manners" ? !!(DATA.cards[topic] || []).length : !!(DATA.p[topic] || []).length;
+
+  let age = Loopy.getAge(), level, topicPick;
+  const levelForAge = (a) => a <= 6 ? 0 : a <= 8 ? 1 : a <= 10 ? 2 : a <= 12 ? 3 : a <= 14 ? 4 : 5;
+  function loadForAge() {
+    level = store.get("cp.level.a" + age, levelForAge(age), (v) => Number.isInteger(v) && v >= 0 && v < 6);
+    topicPick = store.get("cp.topic.a" + age, "all", (v) => v === "all" || LEVELS.flat().includes(v));
+    if (topicPick !== "all" && !LEVELS[level].includes(topicPick)) topicPick = "all";
+  }
+  loadForAge();
+  // Where the child got to in each topic (the next puzzle, easiest first), and the topics already introduced.
+  const okNext = (v) => v && typeof v === "object" && !Array.isArray(v) && Object.keys(v).every((k) => LEVELS.flat().includes(k) && Number.isInteger(v[k]) && v[k] >= 0 && v[k] < 1000);
+  const nextOf = store.get("cp.next", {}, okNext);
+  const seenTopics = store.get("cp.seen", [], (v) => Array.isArray(v) && v.every((k) => LEVELS.flat().includes(k)));
+  let turn = 0;
+
+  Loopy.levels.init({ names: ["cpL1", "cpL2", "cpL3", "cpL4", "cpL5", "cpL6"],
+    get: () => level, base: () => levelForAge(age),
+    set: (i) => { level = i; topicPick = "all"; save(); recent = []; newRound(); } });
+  function save() { store.set("cp.level.a" + age, level); store.set("cp.topic.a" + age, topicPick); }
+
+  let right = 0, tried = 0, streak = 0, recent = [];
+  let round = 0, current = null, pos = null, step = 0, answered = false, sel = -1, targets = [], lastMove = null, clues = 0, busy = false, focusSq = -1;
+
+  // ---------- Making a problem ----------
+  // The topic for the next problem: the one picked in Settings, or each topic of the level in turn (in order first, then mixed).
+  function topicNow() {
+    const list = LEVELS[level].filter(has);
+    if (!list.length) return pick(LEVELS[0]); // offline before this level's puzzles came: the pieces instead
+    if (topicPick !== "all" && list.includes(topicPick)) return topicPick;
+    const k = turn++;
+    return k < list.length ? list[k] : pick(list);
+  }
+  function make() {
+    const topic = topicNow();
+    if (PIECE[topic]) return makePieces(topic);
+    if (topic === "cms") return makeCms(randInt(DATA.cms.length));
+    if (topic === "rules" || topic === "manners") return makeCard(topic, randInt(DATA.cards[topic].length));
+    const list = DATA.p[topic], i = (nextOf[topic] || 0) % list.length;
+    nextOf[topic] = (i + 1) % list.length;
+    store.set("cp.next", nextOf);
+    return makePuzzle(topic, i);
+  }
+  // A real puzzle: "fen|moves". The first move is the other side's; the child plays the moves after it.
+  function makePuzzle(topic, i) {
+    const raw = (DATA.p[topic] || [])[i];
+    if (typeof raw !== "string") return null;
+    const [fen, moves] = raw.split("|"), s = C.parse(fen), sol = moves.split(" ");
+    if (!C.find(s, sol[0])) return null;
+    const n = Math.ceil((sol.length - 1) / 2);
+    const task = /^mate/.test(topic) || topic === "pawnmate" ? (n === 1 ? t("cpMate") : t("cpMateN", { n })) : topic === "hanging" ? t("cpTake")
+      : topic === "defend" || topic === "draw" ? t("cpSave") : LEVELS[2].includes(topic) || LEVELS[4].includes(topic) ? t("cpWin") : t("cpBest");
+    return { kind: "puzzle", topic, i, key: topic + ":" + i, s, sol, flip: !s.w, task, n };
+  }
+  // Meet the pieces: one white piece, a star to reach or black pieces of which exactly one can be taken.
+  function makePieces(topic, note) {
+    const p = PIECE[topic];
+    for (let tries = 0; tries < 200; tries++) {
+      let sq, star = -1, foes = [], grab;
+      if (note) { [grab, sq, star] = [note.g, note.sq, note.star]; foes = note.foes; }
+      else {
+        grab = randInt(2) === 1;
+        sq = p === "p" ? 8 + randInt(40) : randInt(64);
+      }
+      const b = Array(64).fill(""); b[sq] = p.toUpperCase();
+      if (!note && grab) { const n = 2 + randInt(2); while (foes.length < n) { const j = randInt(64); if (j !== sq && !foes.includes(j)) foes.push(j); } }
+      foes.forEach((j, k) => { b[j] = "pnbr"[(k + sq) % 4]; });
+      const s = { b, w: true, c: "", ep: -1 }, moves = C.legal(s).filter((m) => !m.p || m.p === "q");
+      if (!grab) {
+        const ends = moves.map((m) => m.t);
+        if (!note) star = ends.length ? pick(ends) : -1;
+        if (star < 0 || !ends.includes(star)) { if (note) return null; continue; }
+      } else {
+        const hits = moves.filter((m) => b[m.t]);
+        if (hits.length !== 1) { if (note) return null; continue; }
+        star = hits[0].t;
+      }
+      return { kind: "pieces", topic, key: [topic, grab ? "g" : "r", sq, grab ? foes.join(".") : star].join(":"), s, grab, sq, star, foes, flip: true,
+        task: t((grab ? "cpGrab-" : "cpReach-") + p), sol: [C.uci(moves.find((m) => m.t === star))] };
+    }
+    return null;
+  }
+  // Check, mate or stalemate: a position made by the build, Black to move. 0 check, 1 mate, 2 stalemate.
+  function makeCms(i) {
+    const raw = DATA.cms[i];
+    if (typeof raw !== "string") return null;
+    const [fen, a] = raw.split("|");
+    return { kind: "choice", topic: "cms", i, key: "cms:" + i, s: C.parse(fen), flip: true, task: t("cpCmsQ"),
+      options: ["cpCheck", "cpCheckmate", "cpStalemate"].map((k) => t(k)), right: +a, why: t("cpCms-" + a) };
+  }
+  // Opening rules and board manners: a question with three answers, the right one first in data.js.
+  function makeCard(topic, i) {
+    const c = (DATA.cards[topic] || [])[i], w = c && c[Loopy.lang === "de" ? "de" : "en"];
+    if (!w) return null;
+    const order = [0, 1, 2].sort(() => Math.random() - 0.5);
+    return { kind: "choice", topic, i, key: topic + ":" + i, text: true, pic: c.pic, task: w[0], options: order.map((k) => w[1 + k]), right: order.indexOf(0), why: w[4] };
+  }
+  // Try again: the note is the key. "fork:3" is the fourth fork puzzle; "rook:g:27:30.45" a rook on d4 with black pieces on g4 and f6.
+  function rebuild(r) {
+    const m = /^([a-z0-9]{2,10}):(.{1,60})$/.exec(r);
+    if (!m || !LEVELS[level].includes(m[1])) return null;
+    const topic = m[1];
+    if (PIECE[topic]) {
+      const k = /^([gr]):(\d{1,2}):([\d.]{1,12})$/.exec(m[2]);
+      if (!k) return null;
+      const sq = +k[2], rest = k[3].split(".").map(Number);
+      if (sq > 63 || rest.some((n) => !(n >= 0 && n < 64))) return null;
+      return makePieces(topic, { g: k[1] === "g", sq, star: k[1] === "r" ? rest[0] : -1, foes: k[1] === "g" ? rest : [] });
+    }
+    if (!/^\d{1,3}$/.test(m[2])) return null;
+    const i = +m[2];
+    if (topic === "cms") return makeCms(i);
+    if (topic === "rules" || topic === "manners") return makeCard(topic, i);
+    return makePuzzle(topic, i);
+  }
+  const makeAny = () => { let p = null; for (let i = 0; i < 20 && !p; i++) p = make(); return p; };
+
+  // ---------- Drawing the board ----------
+  const el = (tag, cls, text) => Loopy.el(tag, cls, text);
+  const SVG = "http://www.w3.org/2000/svg";
+  function pieceSvg(p) {
+    const svg = document.createElementNS(SVG, "svg"), use = document.createElementNS(SVG, "use");
+    svg.setAttribute("class", "pc"); svg.setAttribute("viewBox", "0 0 1636 1636"); svg.setAttribute("aria-hidden", "true");
+    use.setAttribute("href", "#g" + p.toLowerCase()); use.setAttribute("class", C.isW(p) ? "w" : "b");
+    svg.appendChild(use);
+    return svg;
+  }
+  // Square i sits in grid cell (row, col): White at the bottom, or Black when the child plays Black.
+  const cell = (i) => current && !current.flip ? [i >> 3, 7 - (i & 7)] : [7 - (i >> 3), i & 7];
+  const at = (row, col) => current && !current.flip ? row * 8 + (7 - col) : (7 - row) * 8 + col;
+  const label = (i) => { const p = pos.b[i]; return C.name(i) + ", " + (p ? t(C.isW(p) ? "cpWhitePc" : "cpBlackPc", { p: t("pc-" + p.toLowerCase()) }) : t("cpEmpty")); };
+  function drawBoard() {
+    boardEl.textContent = "";
+    const check = pos && C.inCheck(pos) ? pos.b.indexOf(pos.w ? "K" : "k") : -1;
+    for (let row = 0; row < 8; row++) for (let col = 0; col < 8; col++) {
+      const i = at(row, col), b = el("button", "sq " + (((i >> 3) + (i & 7)) % 2 ? "l" : "d"));
+      b.type = "button"; b.dataset.sq = C.name(i); b.setAttribute("role", "gridcell"); b.tabIndex = i === focusSq ? 0 : -1;
+      if (pos.b[i]) b.appendChild(pieceSvg(pos.b[i]));
+      if (current.star === i && !current.grab && !pos.b[i]) b.appendChild(el("span", "star", "⭐"));
+      if (lastMove && (lastMove.f === i || lastMove.t === i)) b.classList.add("last");
+      if (i === sel) b.classList.add("sel");
+      if (targets.includes(i)) b.classList.add(pos.b[i] ? "cap" : "dot");
+      if (i === check) b.classList.add("check");
+      if (clues === 1 && !answered && i === clueFrom()) b.classList.add("clue");
+      b.setAttribute("aria-label", label(i));
+      boardEl.appendChild(b);
+    }
+    if (focusSq < 0) boardEl.firstChild.tabIndex = 0;
+    coordsEl.textContent = "";
+    for (let k = 0; k < 8; k++) {
+      const f = el("span", "", "abcdefgh"[current.flip ? k : 7 - k]), r = el("span", "", String(current.flip ? 8 - k : k + 1));
+      // On the frame: letters under the board, numbers on its left.
+      f.style.left = (5.2 + k * 11.2) + "%"; f.style.width = "11.2%"; f.style.bottom = "0"; f.style.height = "5.2%";
+      r.style.top = (5.2 + k * 11.2) + "%"; r.style.height = "11.2%"; r.style.left = "0"; r.style.width = "5.2%";
+      coordsEl.append(f, r);
+    }
+  }
+  function sqEl(i) { return boardEl.querySelector('[data-sq="' + C.name(i) + '"]'); }
+  function arrow(u, cls) {
+    const [r1, c1] = cell(C.idx(u.slice(0, 2))), [r2, c2] = cell(C.idx(u.slice(2, 4)));
+    const l = document.createElementNS(SVG, "line"), len = Math.hypot(c2 - c1, r2 - r1), k = (len - 0.42) / len;
+    l.setAttribute("x1", c1 + 0.5); l.setAttribute("y1", r1 + 0.5);
+    l.setAttribute("x2", c1 + 0.5 + (c2 - c1) * k); l.setAttribute("y2", r1 + 0.5 + (r2 - r1) * k);
+    l.setAttribute("stroke", cls === "bad" ? "#d9480f" : "#2f9e44"); l.setAttribute("marker-end", "url(#" + (cls === "bad" ? "ahr" : "ahg") + ")");
+    arrowsEl.appendChild(l);
+  }
+  // Slide a piece from one square to another (Web Animations; nothing moves with reduced motion).
+  function slide(from, to) {
+    const a = sqEl(from), b = sqEl(to), pc = b && b.querySelector(".pc");
+    if (!a || !pc || matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+    const ra = a.getBoundingClientRect(), rb = b.getBoundingClientRect();
+    pc.animate([{ transform: `translate(${ra.left - rb.left}px, ${ra.top - rb.top}px)` }, { transform: "none" }], { duration: 200, easing: "ease-out" });
+  }
+
+  // ---------- A round ----------
+  // The puzzles come one level at a time (puzzles-2.js to puzzles-6.js), so the page only fetches the level played.
+  const got = [true], asked = [];
+  function newRound() {
+    const lv = level;
+    if (got[lv]) return roundNow();
+    if (asked[lv]) return;
+    asked[lv] = true;
+    const s = document.createElement("script"), done = () => { got[lv] = true; if (lv === level) roundNow(); };
+    s.src = "puzzles-" + (lv + 1) + ".js";
+    s.addEventListener("load", done); s.addEventListener("error", done);
+    document.head.appendChild(s);
+  }
+  function roundNow() {
+    current = Loopy.retry.fresh(GAME, recent, makeAny, rebuild, 12);
+    const r = ++round;
+    answered = false; sel = -1; targets = []; lastMove = null; clues = 0; step = 0; busy = false;
+    arrowsEl.textContent = ""; promoEl.hidden = true; card.className = "problem-card" + (current.text ? " text" : "");
+    feedbackEl.className = "feedback"; feedbackEl.textContent = "";
+    topicEl.textContent = ICON[level] + " " + t("t_" + current.topic); // the level is on the Level pill already
+    const fresh = !seenTopics.includes(current.topic);
+    introEl.hidden = !fresh && current.kind !== "pieces";
+    introEl.innerHTML = fresh ? "<b></b> " : "";
+    if (fresh) { introEl.firstChild.textContent = t("cpNew", { t: t("t_" + current.topic) }); seenTopics.push(current.topic); store.set("cp.seen", seenTopics); }
+    introEl.appendChild(document.createTextNode(t("i_" + current.topic)));
+    picEl.hidden = !current.text; picEl.textContent = current.pic || "";
+    // A chess piece in the picture is drawn like the pieces on the board, not as a phone's emoji.
+    const glyph = { "♛": "Q", "♞": "N", "♟": "P" }[(current.pic || "").charAt(0)];
+    if (glyph) { picEl.textContent = ""; picEl.appendChild(pieceSvg(glyph)); }
+    $("boardbox").hidden = !!current.text;
+    choicesEl.hidden = current.kind !== "choice";
+    clueBtn.hidden = current.kind === "choice";
+    clueBtn.disabled = false;
+    if (current.kind === "choice") drawChoices();
+    pos = current.s || null;
+    if (pos) {
+      if (current.kind === "puzzle") {
+        // The other side's move first, so the child sees what just happened.
+        const m = C.find(pos, current.sol[0]);
+        drawBoard();
+        busy = true; card.dataset.wait = "on"; // the play test waits while the other side moves
+        setTimeout(() => { if (r === round) { pos = C.play(pos, m); lastMove = m; step = 1; busy = false; card.dataset.wait = "off"; drawBoard(); slide(m.f, m.t); } }, 450);
+      } else drawBoard();
+    }
+    if (current.kind !== "puzzle") card.dataset.wait = "off";
+    qEl.textContent = (current.kind === "puzzle" ? t(current.flip ? "cpWhite" : "cpBlack") + " " : "") + current.task;
+    card.dataset.chess = current.kind === "choice" ? "off" : "on";
+    card.dataset.a = current.kind === "choice" ? "" : current.sol.filter((_, k) => k % 2 === (current.kind === "puzzle" ? 1 : 0)).join(",");
+    Loopy.nextButton(nextBtn, false);
+    render();
+    Loopy.speech.read();
+  }
+  function drawChoices() {
+    choicesEl.textContent = "";
+    choicesEl.classList.toggle("row3", current.topic === "cms");
+    current.options.forEach((o, k) => {
+      const b = el("button", "", o);
+      b.type = "button"; b.dataset.correct = String(k === current.right);
+      b.addEventListener("click", () => choose(b));
+      choicesEl.appendChild(b);
+    });
+  }
+  function render() {
+    Loopy.levels.render();
+    $("score").textContent = right + " / " + tried;
+    $("streak").textContent = streak;
+    levelBtns.forEach((b) => b.setAttribute("aria-pressed", String(+b.dataset.level === level)));
+    topicSeg.textContent = "";
+    ["all"].concat(LEVELS[level].filter(has)).forEach((k) => {
+      const b = el("button", k === "all" ? "wide" : "", k === "all" ? t("cpAll") : t("t_" + k));
+      b.type = "button"; b.setAttribute("aria-pressed", String(topicPick === k));
+      b.addEventListener("click", () => { topicPick = k; save(); turn = 0; recent = []; newRound(); });
+      topicSeg.appendChild(b);
+    });
+  }
+
+  // ---------- Moving ----------
+  const mine = (i) => pos && pos.b[i] && C.isW(pos.b[i]) === pos.w;
+  function choosePiece(i) {
+    sel = i;
+    // Dots show where the piece can go. In Meet the pieces they wait for a clue, so the child learns the moves.
+    targets = current.kind === "pieces" && clues === 0 ? [] : [...new Set(C.legal(pos).filter((m) => m.f === i).map((m) => m.t))];
+    drawBoard();
+  }
+  function tap(i) {
+    if (answered || busy || !pos || current.kind === "choice") return;
+    focusSq = i;
+    if (sel >= 0 && sel !== i && !mine(i)) {
+      const moves = C.legal(pos).filter((m) => m.f === sel && m.t === i);
+      if (moves.length) return moves.length > 1 ? askPromo(moves) : judge(moves[0]);
+      sel = -1; targets = []; drawBoard(); return;
+    }
+    if (mine(i) && i !== sel) choosePiece(i); else { sel = -1; targets = []; drawBoard(); }
+  }
+  function askPromo(moves) {
+    promoEl.textContent = ""; promoEl.hidden = false; busy = true;
+    qEl.textContent = t("cpPromo");
+    "qrbn".split("").forEach((q) => {
+      const b = el("button"); b.type = "button"; b.dataset.promo = q; b.setAttribute("aria-label", t("pn-" + q));
+      b.appendChild(pieceSvg(pos.w ? q.toUpperCase() : q));
+      b.addEventListener("click", () => { promoEl.hidden = true; busy = false; judge(moves.find((m) => m.p === q)); });
+      promoEl.appendChild(b);
+    });
+  }
+  // How a move reads: "Knight takes on c7", "Pawn to e8, becomes a Queen", "Castling".
+  function said(s, u) {
+    const m = C.find(s, u);
+    if (!m) return u;
+    if (m.c) return t("cpCastle");
+    const p = t("pn-" + s.b[m.f].toLowerCase());
+    return t(s.b[m.t] || m.e ? "cpTakes" : "cpTo", { p, s: C.name(m.t) }) + (m.p ? t("cpBecomes", { p: t("pn-" + m.p) }) : "");
+  }
+  function judge(m) {
+    const u = C.uci(m), want = current.sol[step] || "";
+    const next = C.play(pos, m);
+    let ok;
+    if (current.kind === "pieces") ok = m.t === current.star;
+    else ok = u === want || C.status(next) === "mate";
+    const before = pos;
+    sel = -1; targets = [];
+    if (!ok) {
+      lastMove = null;
+      drawBoard();
+      const b = sqEl(m.t); if (b) b.classList.add("bad");
+      return finish(false, before, want, u);
+    }
+    pos = next; lastMove = m;
+    drawBoard(); slide(m.f, m.t);
+    const done = current.kind === "pieces" || C.status(next) === "mate" || step + 1 >= current.sol.length;
+    if (done) { const b = sqEl(m.t); if (b) b.classList.add("good"); return finish(true, before, want, u); }
+    // The other side answers, then the child moves again.
+    feedbackEl.className = "feedback"; feedbackEl.textContent = t("cpGoOn");
+    busy = true; card.dataset.wait = "on";
+    const now = round;
+    setTimeout(() => {
+      if (now !== round) return;
+      const r = C.find(pos, current.sol[step + 1]);
+      if (!r) return finish(true, before, want, u);
+      pos = C.play(pos, r); lastMove = r; step += 2; busy = false; card.dataset.wait = "off"; clues = 0;
+      drawBoard(); slide(r.f, r.t);
+    }, 550);
+  }
+  function choose(btn) {
+    if (answered) return;
+    const ok = btn.dataset.correct === "true";
+    [...choicesEl.children].forEach((b) => {
+      b.disabled = true;
+      if (b.dataset.correct === "true") b.classList.add("right"); else if (b === btn) b.classList.add("wrong"); else b.classList.add("faded");
+    });
+    finish(ok, null, current.options[current.right], btn.textContent);
+  }
+  function finish(ok, before, want, got) {
+    answered = true; busy = false; tried++;
+    if (ok) { right++; streak++; } else streak = 0;
+    const kind = "cp-" + KINDS[level];
+    const q = current.kind === "choice" && current.text ? current.task.slice(0, 40) : t("cpPuzzle", { t: t("t_" + current.topic), n: (current.i || 0) + 1 });
+    const a = current.kind === "choice" ? want : before ? said(before, want) : want;
+    if (ok) Loopy.rewards.correct(GAME, streak, kind);
+    else Loopy.rewards.wrong(GAME, { q, a: String(a).slice(0, 40), y: String(current.kind === "choice" ? got : said(before, got)).slice(0, 40), k: kind, r: current.key });
+    card.className = "problem-card " + (ok ? "good" : "bad") + (current.text ? " text" : "");
+    picEl.hidden = true; // the explanation takes the picture's place
+    feedbackEl.className = "feedback " + (ok ? "good" : "bad");
+    feedbackEl.innerHTML = "<strong></strong>";
+    feedbackEl.firstChild.textContent = ok ? (streak >= 3 ? t("correctRow", { n: streak }) : t("correct")) : t("notQuite");
+    let why = current.why || "";
+    if (current.kind !== "choice") {
+      if (!ok) { arrow(want, "good"); why = t(step > 1 ? "cpWas" : current.kind === "puzzle" && current.sol.length > 2 ? "cpWasFirst" : "cpWas", { m: said(before, want) }) + " " + t("i_" + current.topic); }
+      else why = t("i_" + current.topic);
+    }
+    feedbackEl.appendChild(document.createTextNode(why));
+    introEl.hidden = true;
+    clueBtn.disabled = true;
+    card.dataset.chess = "off";
+    Loopy.nextButton(nextBtn, true);
+    render();
+  }
+  // Clue: first the piece to move wiggles, then its squares show.
+  const clueFrom = () => { const u = current && current.sol && current.sol[step]; return u ? C.idx(u.slice(0, 2)) : -1; };
+  clueBtn.addEventListener("click", () => {
+    if (answered || busy || !pos || current.kind === "choice") return;
+    clues++;
+    if (clues >= 2) { choosePiece(clueFrom()); clueBtn.disabled = true; } else drawBoard();
+  });
+
+  // ---------- Taps, drags and keys ----------
+  let drag = null;
+  boardEl.addEventListener("pointerdown", (e) => {
+    const b = e.target.closest(".sq");
+    if (!b || answered || busy) return;
+    const i = C.idx(b.dataset.sq);
+    if (!mine(i)) return;
+    drag = { i, x: e.clientX, y: e.clientY, ghost: null, id: e.pointerId };
+  });
+  window.addEventListener("pointermove", (e) => {
+    if (!drag || e.pointerId !== drag.id) return;
+    if (!drag.ghost && Math.hypot(e.clientX - drag.x, e.clientY - drag.y) > 8) {
+      if (sel !== drag.i) choosePiece(drag.i);
+      const from = sqEl(drag.i), pc = from && from.querySelector(".pc");
+      if (!pc) return;
+      const size = from.getBoundingClientRect().width;
+      drag.ghost = pc.cloneNode(true); drag.ghost.classList.add("drag");
+      drag.ghost.style.width = drag.ghost.style.height = size + "px";
+      pc.style.opacity = "0.3";
+      document.body.appendChild(drag.ghost);
+    }
+    if (drag.ghost) { drag.ghost.style.left = e.clientX + "px"; drag.ghost.style.top = e.clientY + "px"; }
+  });
+  window.addEventListener("pointerup", (e) => {
+    if (!drag || e.pointerId !== drag.id) return;
+    const d = drag; drag = null;
+    if (!d.ghost) return;
+    d.ghost.remove();
+    const under = document.elementFromPoint(e.clientX, e.clientY), b = under && under.closest && under.closest(".sq");
+    if (b && b.dataset.sq !== C.name(d.i)) tap(C.idx(b.dataset.sq)); else drawBoard();
+    d.moved = true;
+  });
+  boardEl.addEventListener("click", (e) => { const b = e.target.closest(".sq"); if (b) tap(C.idx(b.dataset.sq)); });
+  // Arrow keys move around the board, Enter or Space taps the square.
+  boardEl.addEventListener("keydown", (e) => {
+    const b = e.target.closest(".sq"), d = { ArrowUp: [-1, 0], ArrowDown: [1, 0], ArrowLeft: [0, -1], ArrowRight: [0, 1] }[e.key];
+    if (!b || !d) return;
+    e.preventDefault();
+    const [r, c] = cell(C.idx(b.dataset.sq)), r2 = Math.min(7, Math.max(0, r + d[0])), c2 = Math.min(7, Math.max(0, c + d[1]));
+    focusSq = at(r2, c2);
+    [...boardEl.children].forEach((x) => { x.tabIndex = -1; });
+    const to = sqEl(focusSq); to.tabIndex = 0; to.focus();
+  });
+  nextBtn.addEventListener("click", () => {
+    if (!answered) { streak = 0; render(); }
+    newRound();
+  });
+  levelBtns.forEach((b) => b.addEventListener("click", () => { level = +b.dataset.level; topicPick = "all"; turn = 0; save(); recent = []; newRound(); }));
+  window.addEventListener("loopy:age", (e) => { age = e.detail; recent = []; turn = 0; loadForAge(); newRound(); });
+  $("reset").addEventListener("click", () => { right = 0; tried = 0; streak = 0; Loopy.recent.clear(GAME); newRound(); });
+  document.addEventListener("keydown", (e) => {
+    if (e.target.tagName === "INPUT" || document.querySelector(".loopy-cheer.big")) return;
+    const n = +e.key;
+    if (current.kind === "choice" && n >= 1 && n <= 3 && !answered) { const b = choicesEl.children[n - 1]; if (b) choose(b); }
+    else if (e.key === "Enter" && answered && !boardEl.contains(e.target)) newRound();
+  });
+
+  // Read aloud: "White to move. Checkmate in one move!" and the topic's one line the first time.
+  Loopy.speech.question({ host: qEl, inline: true, text: () => [qEl.textContent, introEl.hidden ? "" : t("i_" + current.topic)].filter(Boolean).join(" ") });
+
+  // Print worksheet: nine puzzles from the child's level, each as a black-and-white diagram with its task.
+  Loopy.worksheet({
+    title: () => t("cpName"),
+    level: () => [t("ageLabel", { n: age }), t("cpLevel") + ": " + t("cpL" + (level + 1))].join(" · "),
+    how: () => t("cpHow"),
+    layout: "clock",
+    make: () => {
+      const out = [], keys = [];
+      for (let k = 0; k < 200 && out.length < 9; k++) {
+        const topic = pick(LEVELS[level].filter((x) => has(x) && x !== "rules" && x !== "manners" && x !== "cms"));
+        const p = topic && (PIECE[topic] ? makePieces(topic) : makePuzzle(topic, randInt(DATA.p[topic].length)));
+        if (p && !keys.includes(p.key)) { keys.push(p.key); out.push(p); }
+      }
+      return out;
+    },
+    cell: (p) => {
+      const box = el("div", "ws-cp"), s = p.kind === "puzzle" ? C.play(p.s, C.find(p.s, p.sol[0])) : p.s, flip = p.flip;
+      const svg = document.createElementNS(SVG, "svg");
+      svg.setAttribute("viewBox", "-0.4 0 8.4 8.45");
+      for (let i = 0; i < 64; i++) {
+        const row = flip ? 7 - (i >> 3) : i >> 3, col = flip ? i & 7 : 7 - (i & 7);
+        const r = document.createElementNS(SVG, "rect");
+        r.setAttribute("x", col); r.setAttribute("y", row); r.setAttribute("width", 1); r.setAttribute("height", 1);
+        r.setAttribute("fill", ((i >> 3) + (i & 7)) % 2 ? "#fff" : "#bbb"); svg.appendChild(r);
+        const q = s.b[i] || (p.star === i && !p.grab ? "*" : "");
+        if (!q) continue;
+        if (q === "*") { const c = document.createElementNS(SVG, "text"); c.setAttribute("x", col + 0.5); c.setAttribute("y", row + 0.78); c.setAttribute("font-size", "0.8"); c.setAttribute("text-anchor", "middle"); c.textContent = "★"; svg.appendChild(c); continue; }
+        const u = document.createElementNS(SVG, "use");
+        u.setAttribute("href", "#g" + q.toLowerCase()); u.setAttribute("x", col + 0.06); u.setAttribute("y", row + 0.06); u.setAttribute("width", 0.88); u.setAttribute("height", 0.88);
+        u.setAttribute("fill", C.isW(q) ? "#fff" : "#000"); u.setAttribute("stroke", "#000"); u.setAttribute("stroke-width", "40");
+        svg.appendChild(u);
+      }
+      const r = document.createElementNS(SVG, "rect");
+      r.setAttribute("width", 8); r.setAttribute("height", 8); r.setAttribute("fill", "none"); r.setAttribute("stroke", "#000"); r.setAttribute("stroke-width", "0.06");
+      svg.appendChild(r);
+      // Letters under the board and numbers beside it, so a child can write the move down.
+      for (let k = 0; k < 8; k++) {
+        const f = document.createElementNS(SVG, "text"), n = document.createElementNS(SVG, "text");
+        f.setAttribute("x", k + 0.5); f.setAttribute("y", 8.36); f.textContent = "abcdefgh"[flip ? k : 7 - k];
+        n.setAttribute("x", -0.2); n.setAttribute("y", k + 0.62); n.textContent = String(flip ? 8 - k : k + 1);
+        for (const x of [f, n]) { x.setAttribute("font-size", "0.32"); x.setAttribute("text-anchor", "middle"); svg.appendChild(x); }
+      }
+      box.appendChild(svg);
+      box.appendChild(el("p", "", (p.kind === "puzzle" ? t(p.flip ? "cpWhite" : "cpBlack") + " " : "") + p.task));
+      return box;
+    },
+    answer: (p) => { const s = p.kind === "puzzle" ? C.play(p.s, C.find(p.s, p.sol[0])) : p.s; return said(s, p.kind === "puzzle" ? p.sol[1] : p.sol[0]); }
+  });
+
+  newRound();
+})();
+</script>
+</body>
+</html>
