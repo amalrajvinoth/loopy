@@ -112,8 +112,32 @@ async function next(p, n) {
   await p.waitForFunction(k => window.__questions.length > k, n, { timeout: 5000 });
 }
 
+// A chess puzzle: wait while the other side moves, play moves given as "e2e4" (a fifth letter promotes).
+const chessOn = '[data-chess="on"]';
+async function chessReady(p) {
+  await p.waitForFunction(() => { const c = document.querySelector("[data-chess]"); return !c || c.dataset.chess !== "on" || c.dataset.wait !== "on"; }, null, { timeout: 5000 });
+}
+async function chessMove(p, u) {
+  await p.click(`#board [data-sq="${u.slice(0, 2)}"]`);
+  await p.click(`#board [data-sq="${u.slice(2, 4)}"]`);
+  if (u[4]) await p.click(`[data-promo="${u[4]}"]`);
+}
+
 // Answer wrong on purpose: a choice or word that is not marked right, a wrong digit, a tap beside the place.
 async function answerWrong(p) {
+  // A chess puzzle: the right piece to any other square it can reach, or else another piece.
+  if (await p.locator(chessOn).count()) {
+    await chessReady(p);
+    const first = (await p.locator(chessOn).first().getAttribute("data-a")).split(",")[0];
+    const froms = [first.slice(0, 2), ...await p.locator("#board [data-sq]").evaluateAll(l => l.map(b => b.dataset.sq))];
+    for (const from of froms) {
+      await p.click(`#board [data-sq="${from}"]`);
+      const to = (await p.locator("#board .sq.dot, #board .sq.cap").evaluateAll(l => l.map(b => b.dataset.sq)))
+        .find(sq => from !== first.slice(0, 2) || sq !== first.slice(2, 4));
+      if (to) { await p.click(`#board [data-sq="${to}"]`); if (await p.locator("[data-promo]").count()) await p.locator("[data-promo]").first().click(); return; }
+    }
+    return;
+  }
   const wrong = p.locator('#choices button:enabled:not([data-correct="true"]), #answers button:enabled:not([data-correct="true"]), #words button:enabled:not([data-correct="true"])');
   if (await wrong.count()) {
     await wrong.first().click();
@@ -172,6 +196,14 @@ async function miss(p) {
 // Answer right: the marked choice, or the logged right answer typed on the pad. Returns false when it cannot.
 async function answerRight(p, row) {
   if (await p.locator('[data-steps="on"]').count()) { await steps(p); return true; }
+  if (await p.locator(chessOn).count()) {
+    await chessReady(p);
+    for (const u of (await p.locator(chessOn).first().getAttribute("data-a")).split(",")) {
+      if (!await p.locator(chessOn).count()) break;
+      await chessMove(p, u); await chessReady(p);
+    }
+    return true;
+  }
   const right = p.locator('[data-correct="true"]:enabled');
   if (await right.count()) {
     await right.first().click();

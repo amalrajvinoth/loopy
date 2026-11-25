@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'sha256-JFYuzorrDitfmg/6uiw2Xn8peqjIwjYFhQpT56RiES4='; style-src 'self' 'sha256-iKqZfY0yOsyVHa/qlTmRsjSUAon+EdDi9RLwucVWFNA=' 'sha256-cmucACXiF46U7yIAIAaPXLwJTaOpboZmJyYTvZKkw1E='; img-src 'self' data:; font-src 'self'; connect-src 'self' https://loopy-sync.loopy-1e2.workers.dev; worker-src 'self'; object-src 'none'; base-uri 'none'; form-action 'none'; manifest-src 'self'; upgrade-insecure-requests">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'sha256-xxjpbBvY5ivceeg9bcysPVmSJhY2ZS65b/kFfpIFCNg='; style-src 'self' 'sha256-iKqZfY0yOsyVHa/qlTmRsjSUAon+EdDi9RLwucVWFNA=' 'sha256-I5FcwtcOCb0JXTPL1HgT74ATYARlWxJeP13c7ndJ3p4='; img-src 'self' data:; font-src 'self'; connect-src 'self' https://loopy-sync.loopy-1e2.workers.dev; worker-src 'self'; object-src 'none'; base-uri 'none'; form-action 'none'; manifest-src 'self'; upgrade-insecure-requests">
 <meta name="referrer" content="strict-origin-when-cross-origin">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <style>:root{color-scheme:light;padding-top:var(--safe-top);padding-bottom:var(--safe-bottom)}body{margin:0}[hidden]{display:none!important}</style>
@@ -17,6 +17,7 @@
 <title data-t="cpName">Chess Puzzles</title>
 <meta name="description" content="Chess Puzzles on loopy: real chess puzzles in six levels, from how the pieces move to checkmates, forks, pins, sacrifices and opening traps. Free practice for ages 5 to 16, English and German.">
 <link rel="preload" href="../../fonts/lexend-latin.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="../../fonts/fredoka-latin.woff2" as="font" type="font/woff2" crossorigin>
 <style>
 /* Chess Puzzles: a wooden board in the card, the task under it, Clue and Skip at the bottom. Shared look with the other games. */
 :root {
@@ -88,6 +89,7 @@ button:focus-visible { outline: 3px solid var(--mark); outline-offset: 3px; }
   background: var(--grain) 0 0 / 100% 100%, linear-gradient(90deg, var(--maple), var(--maple-2) 50%, var(--maple));
   box-shadow: 0 0 0 2px rgb(0 0 0 / 0.35), inset 0 0 12px rgb(0 0 0 / 0.18); touch-action: none;
 }
+.rank { display: contents; }
 .sq { position: relative; border: 0; padding: 0; margin: 0; background: transparent; display: grid; place-items: center; cursor: pointer; -webkit-tap-highlight-color: transparent; min-width: 0; min-height: 0; }
 .sq.d { background: var(--grain-2) 0 0 / 800% 800%, linear-gradient(135deg, var(--walnut), var(--walnut-2)); }
 .sq.last { box-shadow: inset 0 0 0 999px var(--last); }
@@ -145,6 +147,10 @@ button:focus-visible { outline: 3px solid var(--mark); outline-offset: 3px; }
   .wrap { flex: 1 1 auto; min-height: 0; width: 100%; }
   .play { flex: 1 1 auto; min-height: 0; }
   .problem-card { flex: 1 1 auto; min-height: 0; justify-content: center; overflow: hidden; }
+  /* Spare room goes two parts above the words, one part under them: the first-time hint gets a band of its
+     own over the topic, instead of covering Clue and Skip. The negative margins take back the card's gap. */
+  .problem-card::before { content: ""; order: -2; flex: 2 1 0; margin-bottom: -8px; }
+  .problem-card::after { content: ""; order: 1; flex: 1 1 0; margin-top: -8px; }
   .boardbox { flex: 0 1 auto; aspect-ratio: 1; }
   .problem-card.text .boardbox { flex: 0 0 auto; }
   /* The task is read first, so it sits above the board; the answer shows under it. */
@@ -639,9 +645,15 @@ const CHESS = (function () {
   const at = (row, col) => current && !current.flip ? row * 8 + (7 - col) : (7 - row) * 8 + col;
   const label = (i) => { const p = pos.b[i]; return C.name(i) + ", " + (p ? t(C.isW(p) ? "cpWhitePc" : "cpBlackPc", { p: t("pc-" + p.toLowerCase()) }) : t("cpEmpty")); };
   function drawBoard() {
+    // Keyboard play: the square in focus is drawn again, so focus goes back to it and is not lost.
+    const had = boardEl.contains(document.activeElement) ? document.activeElement.dataset.sq : "";
+    if (had) focusSq = C.idx(had);
     boardEl.textContent = "";
     const check = pos && C.inCheck(pos) ? pos.b.indexOf(pos.w ? "K" : "k") : -1;
+    // One row element per rank (display: contents), so the grid has the rows a screen reader expects.
+    let rank;
     for (let row = 0; row < 8; row++) for (let col = 0; col < 8; col++) {
+      if (!col) { rank = el("div", "rank"); rank.setAttribute("role", "row"); boardEl.appendChild(rank); }
       const i = at(row, col), b = el("button", "sq " + (((i >> 3) + (i & 7)) % 2 ? "l" : "d"));
       b.type = "button"; b.dataset.sq = C.name(i); b.setAttribute("role", "gridcell"); b.tabIndex = i === focusSq ? 0 : -1;
       if (pos.b[i]) b.appendChild(pieceSvg(pos.b[i]));
@@ -652,9 +664,10 @@ const CHESS = (function () {
       if (i === check) b.classList.add("check");
       if (clues === 1 && !answered && i === clueFrom()) b.classList.add("clue");
       b.setAttribute("aria-label", label(i));
-      boardEl.appendChild(b);
+      rank.appendChild(b);
     }
-    if (focusSq < 0) boardEl.firstChild.tabIndex = 0;
+    if (focusSq < 0) boardEl.querySelector(".sq").tabIndex = 0;
+    if (had) sqEl(focusSq).focus({ preventScroll: true });
     coordsEl.textContent = "";
     for (let k = 0; k < 8; k++) {
       const f = el("span", "", "abcdefgh"[current.flip ? k : 7 - k]), r = el("span", "", String(current.flip ? 8 - k : k + 1));
@@ -905,8 +918,17 @@ const CHESS = (function () {
     e.preventDefault();
     const [r, c] = cell(C.idx(b.dataset.sq)), r2 = Math.min(7, Math.max(0, r + d[0])), c2 = Math.min(7, Math.max(0, c + d[1]));
     focusSq = at(r2, c2);
-    [...boardEl.children].forEach((x) => { x.tabIndex = -1; });
+    boardEl.querySelectorAll(".sq").forEach((x) => { x.tabIndex = -1; });
     const to = sqEl(focusSq); to.tabIndex = 0; to.focus();
+  });
+  // Next from the keyboard: focus goes to the board's square in the Tab order, so the child can play on
+  // (loopy.js does this for answer buttons, and still does on a card question).
+  nextBtn.addEventListener("keydown", (e) => {
+    if (e.key !== "Enter" && e.key !== " ") return;
+    setTimeout(() => {
+      const a = document.activeElement, sq = boardEl.querySelector('[tabindex="0"]');
+      if ((a === document.body || a === nextBtn) && sq && sq.getClientRects().length) sq.focus({ preventScroll: true });
+    }, 0);
   });
   nextBtn.addEventListener("click", () => {
     if (!answered) { streak = 0; render(); }
