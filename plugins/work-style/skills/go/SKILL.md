@@ -11,6 +11,6 @@ description: Build what the owner picked from a plan. Use when they answer a pla
    - "use recommended", "go", "yes" → the ⭐ items;
    - "approve and implement", "all", "do all" → every item that is not already done.
    Say in one line which items you are building. Skip any item that has shipped since the plan was written, and say so.
-3. Build all picked items on one branch from the latest main branch, unless the plan said they should be separate pull requests.
+3. Build all picked items on one branch from the latest main branch, unless the plan said they should be separate pull requests. In loopy, build them with the `development-loop` skill.
 4. Finish like any change in the repo: in loopy use the `ship-pr` skill (every check, screenshots, pull request).
 5. Reply once with the pull request link and anything the owner should check by hand (a real phone, Safari, print).

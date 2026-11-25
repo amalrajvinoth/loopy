@@ -20,6 +20,7 @@ Two plugins, made from how the owner works on loopy. They turn the asks the owne
 | "from now on...", "Update memory and instructions..." | `add-rule` | work-style |
 | "Take next task", "take next 3 tasks", "Start next" | `next-task` | loopy |
 | "Build #N", "Build N" | `build-issue` | loopy |
+| "use the loop" (and the build step of `build-issue`, `fix-issue` and `go`) | `development-loop` | loopy |
 | "add a game" | `new-game` | loopy |
 | "push", "ship it" | `ship-pr` | loopy |
 | "update the docs", "update the guide", "update the FAQ" (and every change people can see) | `loopy-docs` | loopy |
@@ -43,9 +44,23 @@ You can keep typing the way you do now. Claude picks the skill from what you wri
 | A session starts | `rules.py`, `session_start.py` | Installs the minifiers and the test packages if missing, reports drift. The rules themselves come from `AGENTS.md`, which `sync.py` writes from both `RULES.md` files and `CLAUDE.md` loads; `rules.py` prints the work-style rules only in a repo whose `AGENTS.md` does not hold them |
 | You send a message | `catch_rule.py` | Notices a new standing rule ("from now on", "always", "never") so Claude records it |
 | Before a commit, PR or comment | `no_attribution.py` | Blocks "Co-Authored-By: Claude", "Claude-Session", "Generated with Claude Code" and session links |
+| Before a shell command or a GitHub tool | `approval_guard.py` | Stops the owner's steps: a deploy, a `wrangler` command with `--remote`, a secret, a push to `main` or a force push, a merge, a repo setting. Local work, work branches and draft pull requests stay free. The owner lets one session through by starting Claude Code with `LOOPY_OWNER_APPROVED=1` |
 | Before an edit | `guard_files.py` | Blocks edits to the built `loopy.js`, `loopy.css`, `sw.js`, and `style=` or `on...=` in pages |
 | After `git merge` or `git pull` | `after_merge.py` | Resolves conflicts that are only in built files or the security policy line, rebuilds, stages them |
 | Before Claude finishes | `heal.py` | Rebuilds stale files by itself; sends Claude back if a check fails |
+
+## The development loop and its helpers
+
+The `development-loop` skill builds one change in four steps, each done by a helper (a subagent in `.claude/agents/`). A **try** is one build with its test and review. After three tries that are not clean, it stops and asks the owner with the error, what each try changed and two or three ways forward.
+
+| Step | Helper | What it does |
+| --- | --- | --- |
+| Plan | `architect` | The build plan for the picked task: files, risks, checks, a "Done when" list. Read-only |
+| Build | `developer` | One focused change, `tools/build.py`, `tools/check.py --fast`, a commit. Never pushes |
+| Test | `qa-engineer` | `tools/check.py`, screenshots at the eight sizes, GREEN or RED with the exact error and its heal recipe. Read-only |
+| Review | `code-reviewer` | The loopy-review report: Must fix, Should fix, Suggestion. Read-only |
+
+`planner` (options for "Plan for X") and `screens` (before and after pictures) are helpers too. A clean loop hands over to `ship-pr` at its screenshots step. `.claude/settings.json` also denies the plainest forms of a merge, a deploy and a secret, as a second lock behind `approval_guard.py`.
 
 ## Self-healing
 

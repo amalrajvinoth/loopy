@@ -14,6 +14,15 @@
       "Bash(node plugins/loopy/scripts/screens.mjs:*)",
       "Bash(git fetch:*)",
       "Bash(git merge origin/main:*)"
+    ],
+    "deny": [
+      "Bash(gh secret:*)",
+      "Bash(gh pr merge:*)",
+      "Bash(wrangler secret:*)",
+      "Bash(npx wrangler secret:*)",
+      "Bash(wrangler deploy:*)",
+      "Bash(npx wrangler deploy:*)",
+      "Bash(git push origin main:*)"
     ]
   },
   "hooks": {
@@ -44,6 +53,16 @@
           {
             "type": "command",
             "command": "python3 \"$CLAUDE_PROJECT_DIR/plugins/loopy/hooks/guard_files.py\"",
+            "timeout": 10
+          }
+        ]
+      },
+      {
+        "matcher": "Bash|mcp__github__.*",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "python3 \"$CLAUDE_PROJECT_DIR/plugins/loopy/hooks/approval_guard.py\"",
             "timeout": 10
           }
         ]
