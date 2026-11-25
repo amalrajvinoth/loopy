@@ -62,17 +62,20 @@ async function lines() {
   if (file) input = fs.createReadStream(file);
   else {
     const res = await fetch(URL, { headers: { "User-Agent": "loopy-chess-picker" } });
+    console.error("download:", res.status, res.headers.get("content-type"), res.headers.get("content-length"), "bytes");
     if (!res.ok) throw new Error("download failed: " + res.status);
     input = Readable.fromWeb(res.body);
   }
   // A stream that breaks must stop the run with its reason: readline would just end, and the file would be empty.
   const loud = (what) => (e) => { console.error(what + " failed: " + e.message); process.exit(1); };
   input.on("error", loud("reading the download"));
+  input.on("data", (d) => { packed += d.length; });
   if (file && !file.endsWith(".zst")) return readline.createInterface({ input, crlfDelay: Infinity });
   // The file is packed with a long window (zstd --long), more than a decoder allows by default.
   if (zlib.createZstdDecompress) {
     const z = zlib.createZstdDecompress({ params: { [zlib.constants.ZSTD_d_windowLogMax]: 31 } });
     z.on("error", loud("unpacking"));
+    z.on("data", (d) => { unpacked += d.length; });
     return readline.createInterface({ input: input.pipe(z), crlfDelay: Infinity });
   }
   const z = spawn("zstd", ["-dc", "--long=31"], { stdio: ["pipe", "pipe", "inherit"] });
@@ -81,6 +84,7 @@ async function lines() {
   return readline.createInterface({ input: z.stdout, crlfDelay: Infinity });
 }
 
+let packed = 0, unpacked = 0;
 const pools = Object.fromEntries(TOPICS.map(([k]) => [k, new Map()]));
 const used = new Set();
 let n = 0;
@@ -103,6 +107,7 @@ for await (const line of await lines()) {
   if (n % 500000 === 0) console.error(n.toLocaleString(), "puzzles read");
 }
 
+console.error(`read ${packed} bytes, unpacked ${unpacked} bytes, ${n} lines`);
 if (n < 100000) { console.error(`only ${n} lines came in; the download stopped early, so nothing is written`); process.exit(1); }
 fs.mkdirSync(OUT, { recursive: true });
 const out = ["topic\tid\tfen\tmoves\trating\tthemes"];
