@@ -83,10 +83,12 @@
    them (html padding, body height), and the scrolling pages add --safe-bottom under their last line. In a home
    screen app on a phone or tablet the bottom keeps a floor: Chrome on Android (135 and newer) draws the app under
    the gesture bar and can report its height as 0 or late, which hid the last row of keys. safe-area-max-inset-bottom
-   is the bar's full height where the browser knows it (Chrome 135+); 24px is the gesture bar on most phones. */
+   is the bar's full height where the browser knows it (Chrome 135+). The floor grows with the screen: 24px is the
+   gesture bar on most phones, 48px the taskbar on an Android tablet (back, home and apps), which covered Clue and
+   Skip in Chess Puzzles (issue #366). tools/e2e/taskbar.mjs checks every game with that bar in place. */
 :root { --safe-top: env(safe-area-inset-top, 0px); --safe-bottom: env(safe-area-inset-bottom, 0px); }
 @media (display-mode: standalone) and (pointer: coarse), (display-mode: fullscreen) and (pointer: coarse) {
-  :root { --safe-bottom: max(env(safe-area-inset-bottom, 0px), env(safe-area-max-inset-bottom, 0px), 24px); }
+  :root { --safe-bottom: max(env(safe-area-inset-bottom, 0px), env(safe-area-max-inset-bottom, 0px), clamp(24px, 6.7vmin, 48px)); }
 }
 :root {
   --page-pad-top: 8px; --page-pad-bottom: 12px;
@@ -184,13 +186,13 @@
   --bg: #0a0a0c; --card: #16161b; --ink: #f5f5f7; --muted: #a1a1ab; --line: #2a2a33; --chip: #23232b; --key: #1c1c22;
   --c1: #5b9dff; --c2: #ff8a4c; --c3: #3fd68a; --c4: #e070ff; --c5: #ffd23f;
   --good: #3fd68a; --good-bg: #10291c; --bad: #ff6b6b; --bad-bg: #2e1414; --on-accent: #0a0a0c;
-  --face: #fafafa; --rim: #000000; color-scheme: dark;
+  --face: #fafafa; --rim: #000; color-scheme: dark;
 }
 :root[data-theme="sunny"] {
-  --bg: #fff8ec; --card: #ffffff; --ink: #1d2a3f; --muted: #5d6b82; --line: #f0e2c8; --chip: #fdeccc; --key: #ffffff;
+  --bg: #fff8ec; --card: #fff; --ink: #1d2a3f; --muted: #5d6b82; --line: #f0e2c8; --chip: #fdeccc; --key: #fff;
   --c1: #2457c5; --c2: #d4561f; --c3: #1f8a4c; --c4: #b0359c; --c5: #a87a00;
-  --good: #1f8a4c; --good-bg: #e3f5ea; --bad: #c23a3a; --bad-bg: #fbe6e6; --on-accent: #ffffff;
-  --face: #ffffff; --rim: #1d2a3f; color-scheme: light;
+  --good: #1f8a4c; --good-bg: #e3f5ea; --bad: #c23a3a; --bad-bg: #fbe6e6; --on-accent: #fff;
+  --face: #fff; --rim: #1d2a3f; color-scheme: light;
 }
 :root[data-theme="ocean"] {
   --bg: #06263a; --card: #0d3550; --ink: #eaf6ff; --muted: #9cc3dc; --line: #1d4d6d; --chip: #134466; --key: #103e5c;
@@ -199,16 +201,16 @@
   --face: #f4fbff; --rim: #031722; color-scheme: dark;
 }
 :root[data-theme="candy"] {
-  --bg: #fff0f6; --card: #ffffff; --ink: #3a1d3f; --muted: #7a5a80; --line: #f7cfe2; --chip: #fde0ee; --key: #ffffff;
+  --bg: #fff0f6; --card: #fff; --ink: #3a1d3f; --muted: #7a5a80; --line: #f7cfe2; --chip: #fde0ee; --key: #fff;
   --c1: #c2257a; --c2: #6741d9; --c3: #0b7f5e; --c4: #d9480f; --c5: #1971c2;
-  --good: #0b7f5e; --good-bg: #e0f7ef; --bad: #c92a2a; --bad-bg: #ffe3e3; --on-accent: #ffffff;
-  --face: #ffffff; --rim: #3a1d3f; color-scheme: light;
+  --good: #0b7f5e; --good-bg: #e0f7ef; --bad: #c92a2a; --bad-bg: #ffe3e3; --on-accent: #fff;
+  --face: #fff; --rim: #3a1d3f; color-scheme: light;
 }
 :root[data-theme="contrast"] {
-  --bg: #000000; --card: #000000; --ink: #ffffff; --muted: #e6e6e6; --line: #ffffff; --chip: #1f1f1f; --key: #141414;
+  --bg: #000; --card: #000; --ink: #fff; --muted: #e6e6e6; --line: #fff; --chip: #1f1f1f; --key: #141414;
   --c1: #8cc8ff; --c2: #ffb066; --c3: #5cf2a0; --c4: #ffa6f0; --c5: #ffe500;
-  --good: #5cf2a0; --good-bg: #002b14; --bad: #ff9b9b; --bad-bg: #3d0000; --on-accent: #000000;
-  --face: #ffffff; --rim: #ffffff; color-scheme: dark;
+  --good: #5cf2a0; --good-bg: #002b14; --bad: #ff9b9b; --bad-bg: #3d0000; --on-accent: #000;
+  --face: #fff; --rim: #fff; color-scheme: dark;
 }
 :root[data-theme="forest"] {
   --bg: #0f1f17; --card: #183024; --ink: #effaf2; --muted: #a6c4b1; --line: #2a4a38; --chip: #22402f; --key: #1d3829;
@@ -219,10 +221,10 @@
 /* Clean: a calm, grown-up look. Off-white page, white cards, slate text, one indigo accent and quiet versions of the
    other four, so the home tiles still take turns without shouting. Every text pair passes WCAG AA. */
 :root[data-theme="clean"] {
-  --bg: #f4f6f9; --card: #ffffff; --ink: #1b2430; --muted: #5b6675; --line: #d9dee6; --chip: #e8ecf1; --key: #ffffff;
+  --bg: #f4f6f9; --card: #fff; --ink: #1b2430; --muted: #5b6675; --line: #d9dee6; --chip: #e8ecf1; --key: #fff;
   --c1: #2f55d4; --c2: #c2410c; --c3: #0f7a5a; --c4: #6d4fc2; --c5: #9a6700;
-  --good: #0f7a5a; --good-bg: #e3f3ec; --bad: #b42318; --bad-bg: #fbe9e7; --on-accent: #ffffff;
-  --face: #ffffff; --rim: #1b2430; color-scheme: light;
+  --good: #0f7a5a; --good-bg: #e3f3ec; --bad: #b42318; --bad-bg: #fbe9e7; --on-accent: #fff;
+  --face: #fff; --rim: #1b2430; color-scheme: light;
 }
 /* The sign of a sum on the card (+ − × ÷ · :) in the accent colour, so a child reads the operation first; the German
    times dot is small in Lexend, so it is drawn a step bigger (DESIGN.md "Problem card"). Loopy.sum() writes the spans. */
@@ -368,7 +370,6 @@ a.star-chip:focus-visible { outline: 3px solid var(--mark); outline-offset: 2px;
 @keyframes cheer-in { from { transform: translate(-50%, -50%) scale(.5); opacity: 0; } }
 @keyframes cheer-out { to { transform: translate(-50%, -50%) scale(.85); opacity: 0; } }
 @keyframes spin-star { from { transform: rotate(-12deg) scale(.95); } to { transform: rotate(12deg) scale(1.08); } }
-@media (prefers-reduced-motion: reduce) { .loopy-cheer, .loopy-cheer svg { animation: none; } }
 
 /* Badge shelf on the home page */
 .shelf { background: var(--card); border: 2px solid var(--line); border-radius: 24px; padding: 18px; display: flex; flex-direction: column; gap: 14px; }
@@ -590,7 +591,6 @@ button.next.skip:hover { color: var(--ink) !important; }
 .loopy-plus svg { width: 22px; height: 22px; fill: var(--c5); }
 .star-chip.bump { animation: star-bump .35s ease; }
 @keyframes star-bump { 50% { transform: scale(1.18); } }
-@media (prefers-reduced-motion: reduce) { .star-chip.bump { animation: none; } }
 
 /* First-time hint: one bubble above the answers the first time a child opens a game. */
 .loopy-hint {
@@ -612,5 +612,6 @@ button.next.skip:hover { color: var(--ink) !important; }
 .loopy-hint.tight { font-size: 1.05rem; line-height: 1.2; padding: 4px 14px; border-radius: 14px; animation: none; } /* no bob: there is no room for it */
 /* At the card's top edge (spot 3) an arrow would point at the picture, so the bubble has none there either. */
 .loopy-hint.tight::after, .loopy-hint.plain::after { display: none; }
-@media (prefers-reduced-motion: reduce) { .loopy-hint { animation: none; } }
+/* Reduced motion: the cheer, the star chip's bump and the hint stand still. */
+@media (prefers-reduced-motion: reduce) { .loopy-cheer, .loopy-cheer svg, .star-chip.bump, .loopy-hint { animation: none; } }
 @media print { .loopy-hint, .loopy-plus { display: none; } }

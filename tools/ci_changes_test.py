@@ -19,8 +19,9 @@ class Picks(unittest.TestCase):
         p = plan("math/plus-minus/index.html", "sw.js")
         for job in ("a11y", "play", "retry", "pictures"):
             self.assertEqual(pages(p[job]), ["math/plus-minus/"], job)
-        # Sync and switch open Plus and Minus; the offline test reads the built sw.js. Levels does not open it.
-        self.assertEqual(json.loads(p["extras"]), ["offline", "sync", "switch"])
+        # Sync and switch open Plus and Minus, the taskbar test every game; the offline test reads the built sw.js.
+        # Levels does not open it.
+        self.assertEqual(json.loads(p["extras"]), ["offline", "sync", "switch", "taskbar"])
         self.assertTrue(p["lighthouse"])
 
     def test_a_game_off_the_picture_list_has_no_picture_test(self):
@@ -42,7 +43,7 @@ class Picks(unittest.TestCase):
         p = plan("index.html")
         self.assertEqual(pages(p["a11y"]), [""])
         self.assertEqual(p["play"], "none")
-        self.assertEqual(len(json.loads(p["extras"])), 5)   # every extra test starts on the home page
+        self.assertEqual(len(json.loads(p["extras"])), 5)   # every extra test but the taskbar test starts on the home page
         self.assertEqual(json.loads(plan("help/index.html")["extras"]), ["hello"])
 
     def test_shared_files_test_everything(self):
@@ -50,7 +51,7 @@ class Picks(unittest.TestCase):
                      "tools/a11y/package-lock.json", ".github/workflows/checks.yml", "tools/ci_changes.py", "something-new.txt"):
             p = plan(path)
             self.assertEqual([p[j] for j in ("a11y", "play", "retry", "pictures")], ["all"] * 4, path)
-            self.assertEqual(len(json.loads(p["extras"])), 5, path)
+            self.assertEqual(len(json.loads(p["extras"])), 6, path)
 
     def test_a_deleted_page_tests_everything(self):
         self.assertEqual(plan("math/no-such-game/index.html", status="D")["play"], "all")
@@ -59,6 +60,7 @@ class Picks(unittest.TestCase):
         p = plan("tools/e2e/play.mjs")
         self.assertEqual((p["play"], p["a11y"], p["retry"], p["pictures"]), ("all", "none", "none", "none"))
         self.assertEqual(json.loads(plan("tools/e2e/levels.mjs")["extras"]), ["levels"])
+        self.assertEqual(json.loads(plan("tools/e2e/taskbar.mjs")["extras"]), ["taskbar"])
         self.assertEqual(plan("tools/e2e/pictures/home-en-390x844.png")["pictures"], "all")
 
     def test_no_browser_test(self):

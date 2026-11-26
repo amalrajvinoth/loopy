@@ -112,6 +112,16 @@ It serves the site as if `Loopy.syncHost` were `sync.test`. Requests to that add
 
 CI runs it with the Try again test.
 
+## Taskbar test
+
+`taskbar.mjs` opens every game as a home screen app, the way a child opens loopy from the home screen:
+
+```sh
+node tools/e2e/taskbar.mjs            # GAME=chess-puzzles for one game
+```
+
+Chrome on Android draws a home screen app under the system's bar at the bottom and can say the bar is 0px tall. So loopy keeps a floor under every game (`--safe-bottom` in `src/loopy.css`). Headless Chrome cannot be a home screen app, so the test's server turns that rule on. Then, at 390 × 844 (a 24px gesture bar) and at 720 × 1112, 820 × 1180 and 1180 × 820 (a 48px tablet taskbar), it checks that no button, field or problem card ends under the bar, and that the page does not scroll. It came from issue #366: on an Android tablet the taskbar covered Clue and Skip in Chess Puzzles. CI runs it when a game or a shared file changes.
+
 ## Switch test
 
 `switch.mjs` checks that switching the child in the middle of a game keeps every child's own stars, answer log and "last game":

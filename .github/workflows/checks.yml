@@ -230,6 +230,11 @@ jobs:
         run: node tools/e2e/hello.mjs
         env:
           A11Y_DEPS: ${{ runner.temp }}/a11y
+      - name: "Home screen app: nothing under the phone's or tablet's bar at the bottom"
+        if: contains(fromJSON(needs.changes.outputs.extras), 'taskbar')
+        run: node tools/e2e/taskbar.mjs
+        env:
+          A11Y_DEPS: ${{ runner.temp }}/a11y
 
   # The home page and six games must still look the same (those of them the change touches): pictures at four sizes, English and German, compared
   # with tools/e2e/pictures/. Playwright's own pinned Chromium, so the runner's Chrome updates cannot move a pixel.
