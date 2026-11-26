@@ -13,7 +13,8 @@ This is the list the ship-pr and loopy-review skills, AGENTS.md and the README p
 once. The GitHub check (.github/workflows/checks.yml) runs the same commands; plugins/loopy/scripts/drift.py
 fails when a check is added there and not here. Which browser tests a change needs comes from
 tools/ci_changes.py, the same answer CI uses, and so do the pages they test: a change to one game tests that
-game (PAGES), a change to a shared file tests every page. --all and a check named by hand test every page. One difference: CI runs every lint whatever changed; here a
+game (PAGES), a change to a shared file tests every page. --all tests every page; a check named by hand tests
+every page unless the shell sets PAGES. One difference: CI runs every lint whatever changed; here a
 lint (types, styles, scripts, workflows, links) runs when a file it reads changed. --all runs them all.
 
 tools/review.py also exits 1 for a `must` that was already on main. That is reported as "already on main"
@@ -265,8 +266,11 @@ def main(argv):
             run, why = name in names, "named"
         elif "--all" in flags and check[3] != ASKED:
             run, why = True, "--all"
-        elif name in SCOPED and ci[SCOPED[name]] not in ("all", "none"):
-            env["PAGES"] = ci[SCOPED[name]]
+        if name in SCOPED and not names:
+            # --all tests every page, whatever PAGES the shell has; otherwise the pages this change touches.
+            # A check named by hand keeps the shell's PAGES, so PAGES='["math/make-10/"]' check.py play still works.
+            if "--all" in flags or ci[SCOPED[name]] != "none":
+                env["PAGES"] = "all" if "--all" in flags else ci[SCOPED[name]]
         if "--webkit" in flags and check[3] == ASKED and not names:
             run, why = (ci[SCOPED[name]] != "none" or "--all" in flags), "--webkit"
         if "--fast" in flags and name in SLOW and not names:
