@@ -161,6 +161,7 @@ STORE_CALL = re.compile(r"\bstore\.(?:get|set|remove)\(\s*[\"'`]([^\"'`$]+)")
 KEY_NAME = re.compile(r"\bKEY\s*=\s*[\"']([^\"']+)[\"']")
 LOOPY_KEY = re.compile(r"[\"'](loopy\.[a-zA-Z][\w.]*)[\"']")
 NOT_KEY = (".js", ".css", ".html", ".svg", ".png", ".woff2")
+DIRECT_WRITE = re.compile(r"localStorage\s*(?:\.\s*(?:setItem|removeItem|clear)\s*\(|\[[^\]]*\]\s*=(?!=))")
 
 
 def saved_keys(files):
@@ -198,8 +199,10 @@ def check_storage(base, now, before):
         add("must", "src/loopy.js", f"`{name}` was taken out of OLD, so devices that still have old `{name}` keys "
             "lose them on their first visit")
     for path, text in now.items():
-        if not path.startswith("src/loopy") and "localStorage" in text:
-            add("must", path, "uses `localStorage` directly; use `Loopy.store` so each child keeps their own data")
+        # Reading a device-wide key (the first-visit check on the home page) is fine. Writing, or touching a
+        # child's key (`loopy.kid.`), must go through `Loopy.store` so each child keeps their own data.
+        if not path.startswith("src/loopy") and (DIRECT_WRITE.search(text) or "localStorage" in text and "loopy.kid." in text):
+            add("must", path, "writes `localStorage` or reads a child's key directly; use `Loopy.store` so each child keeps their own data")
         was = before.get(path, "")
         for name, pattern, why, where in [
             ("removes saved data", r"\.removeItem\(|localStorage\.clear\(|\.deleteDatabase\(",
@@ -442,6 +445,9 @@ def main():
     check_size(base)
     if base:
         check_docs(base)
+    tracked = subprocess.run(["git", "ls-files", "*.orig", "*.rej"], cwd=ROOT, capture_output=True, text=True).stdout.split()
+    for path in tracked:
+        add("must", path, "is a merge or patch leftover; delete it (it is also ignored in .gitignore now)")
 
     home = (ROOT / "index.html").read_text(encoding="utf-8")
     readme = (ROOT / "README.md").read_text(encoding="utf-8")
