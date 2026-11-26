@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'sha256-itQ+SiiRyvMk/69wY00l1jEV80bRWKnO2x2tJLOl+Bc='; style-src 'self' 'sha256-iKqZfY0yOsyVHa/qlTmRsjSUAon+EdDi9RLwucVWFNA=' 'sha256-C0Ejdp4E1rYdpBNX5sa0lskflkEMrDOKXSPBfu85N98='; img-src 'self' data:; font-src 'self'; connect-src 'self' https://loopy-sync.loopy-1e2.workers.dev; worker-src 'self'; object-src 'none'; base-uri 'none'; form-action 'none'; manifest-src 'self'; upgrade-insecure-requests">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'sha256-aIBVJzefGI1A2ndhj7dqk9K54lg4/z7ETTcZyZrSSlk='; style-src 'self' 'sha256-iKqZfY0yOsyVHa/qlTmRsjSUAon+EdDi9RLwucVWFNA=' 'sha256-C0Ejdp4E1rYdpBNX5sa0lskflkEMrDOKXSPBfu85N98='; img-src 'self' data:; font-src 'self'; connect-src 'self' https://loopy-sync.loopy-1e2.workers.dev; worker-src 'self'; object-src 'none'; base-uri 'none'; form-action 'none'; manifest-src 'self'; upgrade-insecure-requests">
 <meta name="referrer" content="strict-origin-when-cross-origin">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <style>:root{color-scheme:light;padding-top:var(--safe-top);padding-bottom:var(--safe-bottom)}body{margin:0}[hidden]{display:none!important}</style>
@@ -514,14 +514,19 @@ const CHESS = (function () {
   const clueBtn = $("clue"), nextBtn = $("next");
   // The first-time hint goes between the task and the board. If it found no room there and fell under the board
   // (onto Clue and Skip), the board makes room for this puzzle and loopy places the hint again.
-  new MutationObserver(() => {
+  // The room stays until the next puzzle, so the board never moves under a child's first tap. loopy places the
+  // hint again later (a turn of the screen), so each move of the hint is looked at too.
+  const hintMoved = new MutationObserver(() => roomForHint());
+  const roomForHint = () => {
     const hint = document.querySelector("body > .loopy-hint"), box = document.querySelector(".boardbox");
+    if (hint && !hint.dataset.watched) { hint.dataset.watched = "1"; hintMoved.observe(hint, { attributes: true, attributeFilter: ["style"] }); }
     if (!hint || !box || card.classList.contains("hint-room") || wide.matches) return;
     if (hint.getBoundingClientRect().top < box.getBoundingClientRect().top) return;
     card.style.setProperty("--hint-room", hint.offsetHeight + 24 + "px");
     card.classList.add("hint-room");
     dispatchEvent(new Event("resize"));
-  }).observe(document.body, { childList: true });
+  };
+  new MutationObserver(roomForHint).observe(document.body, { childList: true });
   const levelBtns = [...document.querySelectorAll("#level-seg button")], topicSeg = $("topic-seg");
   const randInt = (n) => Math.floor(Math.random() * n), pick = (a) => a[randInt(a.length)];
   const store = {

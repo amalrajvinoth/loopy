@@ -40,6 +40,11 @@ for (const subject of fs.readdirSync(ROOT).sort()) {
   }
 }
 
+if (!GAMES.length) {
+  console.error(`No game to test: GAME=${ONLY} names none of the games.`);
+  process.exit(1);
+}
+
 const css = fs.readFileSync(path.join(ROOT, "loopy.css"), "utf8");
 if (!css.includes(APP_RULE)) {
   console.error(`The home screen app rule is not in loopy.css any more:\n  ${APP_RULE}\nUpdate APP_RULE in tools/e2e/taskbar.mjs to the new rule.`);
