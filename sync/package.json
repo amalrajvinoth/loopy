@@ -3,6 +3,6 @@
   "type": "module",
   "description": "loopy Family sync server (a Cloudflare Worker). See README.md. Tests: node test.mjs. wrangler (the deploy tool) is pinned here with its lock file, so the deploy and the Monday usage job install exact versions: npm ci --prefix sync --ignore-scripts",
   "devDependencies": {
-    "wrangler": "4.162.0"
+    "wrangler": "4.165.0"
   }
 }
