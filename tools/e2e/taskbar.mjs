@@ -67,8 +67,8 @@ const problems = [];
 for (const s of SCREENS) {
   const ctx = await browser.newContext({ viewport: { width: s.w, height: s.h }, hasTouch: true, reducedMotion: "reduce", serviceWorkers: "block" });
   ctx.setDefaultTimeout(10000);
-  // A child who has played before: no welcome sheet, no first-time hints.
-  await ctx.addInitScript(() => { try { localStorage.setItem("loopy.hello", "1"); } catch (e) { /* no storage */ } });
+  // No welcome sheet. The first-time hint shows, as on a child's first visit to each game.
+  await ctx.addInitScript(() => { try { localStorage.setItem("loopy.hello", '{"w":1}'); } catch (e) { /* no storage */ } });
   const page = await ctx.newPage();
   for (const game of GAMES) {
     await page.goto(BASE + game, { waitUntil: "load" });

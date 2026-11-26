@@ -46,7 +46,7 @@ Ja. In ⚙ **Einstellungen** auf der Startseite, unter **In Kontakt bleiben**, t
 
 ## Kann ich loopy wie eine App nutzen, auch offline?
 
-Ja. Öffne auf der Startseite die ⚙ Einstellungen und tippe auf **loopy zum Home-Bildschirm hinzufügen**. Nach einem Besuch mit Internet geht loopy auch offline. Mehr unter [Zum Home-Bildschirm](/loopy/guide/de/setup/home-screen/) und [Offline](/loopy/guide/de/setup/offline/).
+Ja. Öffne auf der Startseite die ⚙ Einstellungen und tippe auf **loopy zum Home-Bildschirm hinzufügen**. Nach einem Besuch mit Internet geht loopy auch offline. loopy lässt unten Platz für die Leiste des Geräts. So verschwindet die letzte Reihe Knöpfe nie darunter. Mehr unter [Zum Home-Bildschirm](/loopy/guide/de/setup/home-screen/) und [Offline](/loopy/guide/de/setup/offline/).
 
 ## Kann loopy die Fragen vorlesen?
 
