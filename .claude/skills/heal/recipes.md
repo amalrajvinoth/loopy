@@ -48,8 +48,8 @@ One per failure. Add new ones at the end (the heal skill step 3). Keep each to f
 
 ## Play test: a tap times out waiting for a steady target
 - Looks like: `play.mjs` says `could not play: ... waiting for element to be visible, enabled and stable`, often on the first page of a fresh browser (the chess board showed it) and not on a second run.
-- Cause: usually not the game. The first page of a new browser is slow once, or the target moves for a frame. The line after the call log (`checkVisibility`, `boxes`, `fonts`) says which: one box repeated means it is steady, several mean the layout still moves.
-- Fix: moving boxes are the page's: settle the layout (no size from a late font or script). Steady boxes: keep `warmUp` in `tools/e2e/engine.mjs` and its call in `play.mjs`; do not raise a timeout or retry the tap.
+- Cause: usually not the game. The first page of a new browser is slow once, or the target moves for a frame. Read the line after the call log. State first: `checkVisibility`, `visibility`, `disabled`, `aria-disabled`, `inert`; a target in any of these cannot be tapped, whatever its boxes show. Then `boxes`, sampled after the timeout: one box repeated is steady, several mean the layout moves; `frames missed` means the steadiness check could not finish.
+- Fix: a state field with a fault is the page's: fix that. Moving boxes are the page's too: settle the layout (no size from a late font or script). Steady boxes: keep `warmUp` in `tools/e2e/engine.mjs` and its call in `play.mjs`; do not raise a timeout or retry the tap. It runs once, for the chess board only: a steady target that still times out, on another page or after warm-up, needs its own look at what the click waited on in the call log.
 
 ## Offline copy keeps an old page
 - Looks like: `tools/e2e/offline.mjs` fails, or CI "After an update, phones save the new pages, never an old one"; or a phone still shows an old page (no logo, blank Print) after a fix shipped.
