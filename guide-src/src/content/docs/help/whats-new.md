@@ -8,6 +8,10 @@ loopy keeps getting new games. Here is what came lately!
 
 The big changes, newest first. Small fixes are not listed. See [the full list on GitHub](https://github.com/amalrajvinoth/loopy/blob/main/RELEASES.md).
 
+## 26 November 2026
+
+- **Bigger question cards on a tablet.** The question card now fills the whole question side, and the question, picture and words grow to fill it. Before, the card was only as big as its question and left a big empty gap. Phones stay as they were.
+
 ## 25 November 2026
 
 - **A new game: Chess Puzzles.** It is in a new **Brain games** part of the home page. Chess on a wooden board: tap or drag a piece to move it. Six levels, in the order a chess school teaches: how each piece moves, checkmates, winning pieces, defending, sacrifices, then openings and board manners. The puzzles are real ones, easy ones first. A Clue makes the right piece wiggle, and after a wrong move a green arrow shows the right one. [How to play](/loopy/guide/games/brain/chess-puzzles/).
