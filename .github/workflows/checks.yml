@@ -59,6 +59,8 @@ jobs:
         run: node sync/test.mjs
       - name: The Family sync usage report prints counts only (tools/sync-usage.mjs)
         run: node tools/sync-usage.test.mjs
+      - name: Every chess puzzle plays through with the game's own rules (tools/chess/build.mjs)
+        run: node tools/chess/build.mjs --check
       - name: Install the minifier and the type checker (exact versions from the lock file)
         run: npm ci --prefix tools/build --ignore-scripts --no-audit --no-fund
       - name: loopy.js and loopy.css match their sources in src/

@@ -127,12 +127,33 @@ async function trail(p) {
   for (const rc of a.split(",")) await p.click(`#grid [data-rc="${rc}"]`);
 }
 
+// A chess move or puzzle (Chess Puzzles): the card says data-chess="on" while a move is wanted and carries the
+// child's moves in data-a as "e2e4,g1f3" (a fifth letter picks the piece a pawn becomes). The squares carry data-sq.
+// data-wait="on" while the other side moves; the board takes no taps then.
+async function chess(p) {
+  const on = '[data-chess="on"]', ready = () => p.waitForFunction(() => {
+    const c = document.querySelector("[data-chess]"); return c.dataset.chess !== "on" || c.dataset.wait !== "on";
+  }, null, { timeout: 5000 });
+  await ready();
+  await p.evaluate(() => { window.__cpBefore = Loopy.rewards.last(); });
+  for (const u of (await p.locator(on).first().getAttribute("data-a")).split(",")) {
+    if (!await p.locator(on).count()) break;
+    await p.click(`#board [data-sq="${u.slice(0, 2)}"]`);
+    await p.click(`#board [data-sq="${u.slice(2, 4)}"]`);
+    if (u[4]) await p.click(`[data-promo="${u[4]}"]`);
+    await ready();
+  }
+  // The puzzle's own moves must count as right (a level-up may already show the next card, so ask loopy).
+  if (!await p.evaluate(() => { const l = Loopy.rewards.last(); return !!l && l !== window.__cpBefore && l.ok; })) throw new Error("chess: the puzzle's own moves were not marked right");
+}
+
 // Answer the question on screen: the right answer when the page marks it, otherwise the first one.
 // Returns true when the answer was the marked right one.
 async function answer(p) {
   if (await p.locator('[data-steps="on"]').count()) { await steps(p); return true; }
   if (await p.locator('[data-tries="on"]').count()) { await tries(p); return true; }
   if (await p.locator('[data-trail="on"]').count()) { await trail(p); return true; }
+  if (await p.locator('[data-chess="on"]').count()) { await chess(p); return true; }
   const right = p.locator('[data-correct="true"]:enabled');
   if (await right.count()) {
     await right.first().click();
@@ -326,7 +347,9 @@ for (const game of GAMES) {
       const qs = keys.filter(k => k !== "\x00");
       rows.push(`| ${game} | ${run.age} | ${run.lang} | ${qs.length} | ${new Set(qs).size} | ${rightCount} | ${bad.length ? "repeats" : "pass"} |`);
     } catch (e) {
-      fail(`could not play: ${e.message.split("\n")[0]}`);
+      // The first line says what timed out; the last lines of the call log say on what, and what was in the way.
+      const log = e.message.split("\n").slice(1).map(l => l.trim()).filter(Boolean).slice(-8);
+      fail(`could not play: ${[e.message.split("\n")[0], ...log].join(" / ")}`);
       rows.push(`| ${game} | ${run.age} | ${run.lang} | - | - | - | error |`);
     }
     if (p) await p.context().close();

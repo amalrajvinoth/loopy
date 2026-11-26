@@ -169,7 +169,7 @@ for (const page of GAMES) {
   let found = false;
   for (let i = 0; i < 60 && !found; i++) {
     await p.keyboard.press("Tab");
-    found = await p.evaluate(() => { const e = document.activeElement; return !!(e.closest("#choices, #answers, #pad, #letters, #words, #map") ); });
+    found = await p.evaluate(() => { const e = document.activeElement; return !!(e.closest("#choices, #answers, #pad, #letters, #words, #map, #board") ); });
   }
   if (!found) { fail(where, "Tab never reaches the answers"); await p.context().close(); continue; }
   const said = () => p.evaluate(() => {
@@ -192,6 +192,18 @@ for (const page of GAMES) {
       for (let i = 0; i < 10 && await p.evaluate(() => document.getElementById("k-go").disabled); i++) await p.keyboard.press("Enter");
       await p.focus("#k-go"); await p.keyboard.press("Enter");
     }
+    else if (await p.$('[data-chess="on"]')) {
+      // A chess puzzle: Enter on the piece's square, then on the square it goes to (data-a lists the moves as
+      // "e2e4", a fifth letter promotes), waiting while the other side moves.
+      const ready = () => p.waitForFunction(() => { const c = document.querySelector("[data-chess]"); return c.dataset.chess !== "on" || c.dataset.wait !== "on"; }, null, { timeout: 5000 });
+      await ready();
+      for (const u of (await p.getAttribute('[data-chess="on"]', "data-a")).split(",")) {
+        if (!await p.$('[data-chess="on"]')) break;
+        for (const sq of [u.slice(0, 2), u.slice(2, 4)]) { await p.focus(`#board [data-sq="${sq}"]`); await p.keyboard.press("Enter"); }
+        if (u[4]) { await p.focus(`[data-promo="${u[4]}"]`); await p.keyboard.press("Enter"); }
+        await ready();
+      }
+    }
     else await p.keyboard.press("Enter");
     await p.waitForTimeout(200);
     if (await p.$(".loopy-cheer.big")) { await p.keyboard.press("Enter"); await p.waitForTimeout(300); }
@@ -201,7 +213,7 @@ for (const page of GAMES) {
     if (next && await next.isVisible()) {
       await p.focus("#next"); await p.keyboard.press("Enter"); await p.waitForTimeout(250);
       // A game can mix choices and a pad from one question to the next (Is It Enough?), so either area is fine.
-      const at = await p.evaluate(() => !!document.activeElement.closest("#choices, #answers, #map, #pad, #letters, #words"));
+      const at = await p.evaluate(() => !!document.activeElement.closest("#choices, #answers, #map, #board, #pad, #letters, #words"));
       if (!at) fail(where, `after Next, focus is on ${await focusIn()}, not on the first answer`);
     } else if (!pad) {
       await p.waitForTimeout(2600);

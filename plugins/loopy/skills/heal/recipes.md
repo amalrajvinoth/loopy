@@ -33,6 +33,10 @@ One per failure. Add new ones at the end (the heal skill step 3). Keep each to f
 - Looks like: conflicts in `loopy.js`, `loopy.css`, `sw.js` or a page's `Content-Security-Policy` line.
 - Fix: `python3 plugins/loopy/scripts/resolve_built.py` (the after_merge hook runs it), then resolve the rest by hand.
 
+## Chess puzzles check fails
+- Looks like: `tools/chess/build.mjs --check` says puzzles "no longer play through" or files are "out of date".
+- Fix: out of date: run `node tools/chess/build.mjs`, then `python3 tools/build.py`, and commit. A puzzle that no longer plays: the move rules between `// ENGINE START` and `// ENGINE END` in `brain/chess-puzzles/index.html` changed; fix them. New puzzles: `tools/chess/pick.mjs` on a computer that reaches lichess.org (see its top comment).
+
 ## Play test: question came back too soon
 - Looks like: `play.mjs` says a key repeats within 10.
 - Cause: the game makes questions without `Loopy.fresh`, or its key is not unique per question.
