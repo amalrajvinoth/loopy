@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'sha256-sGMuJ3Lmztwksb02B49f1CfVj2yB3q4cpssz802YgZ0='; style-src 'self' 'sha256-iKqZfY0yOsyVHa/qlTmRsjSUAon+EdDi9RLwucVWFNA=' 'sha256-Fp4YfWV7tQih99F8FWRs2yg4IMU5c8ChLlYRZC4o4uc='; img-src 'self' data:; font-src 'self'; connect-src 'self' https://loopy-sync.loopy-1e2.workers.dev; worker-src 'self'; object-src 'none'; base-uri 'none'; form-action 'none'; manifest-src 'self'; upgrade-insecure-requests">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'sha256-sGMuJ3Lmztwksb02B49f1CfVj2yB3q4cpssz802YgZ0='; style-src 'self' 'sha256-iKqZfY0yOsyVHa/qlTmRsjSUAon+EdDi9RLwucVWFNA=' 'sha256-TaPU8uqHgAUNXu6iT1U1e8VCNJHjrXDnMi9HAvUo3cw='; img-src 'self' data:; font-src 'self'; connect-src 'self' https://loopy-sync.loopy-1e2.workers.dev; worker-src 'self'; object-src 'none'; base-uri 'none'; form-action 'none'; manifest-src 'self'; upgrade-insecure-requests">
 <meta name="referrer" content="strict-origin-when-cross-origin">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <style>:root{color-scheme:light;padding-top:var(--safe-top);padding-bottom:var(--safe-bottom)}body{margin:0}[hidden]{display:none!important}</style>
@@ -51,7 +51,8 @@ button:focus-visible { outline: 3px solid var(--mark); outline-offset: 3px; }
 .play { display: flex; flex-direction: column; gap: var(--play-gap); -webkit-user-select: none; user-select: none; }
 .problem-card {
   background: var(--card); border: 1px solid var(--line); border-radius: 24px; display: flex; flex-direction: column; align-items: center;
-  gap: 8px; padding: var(--card-pad) var(--card-pad) calc(var(--card-pad) - 2px);
+  gap: var(--card-gap); padding: var(--card-pad) var(--card-pad) calc(var(--card-pad) - 2px);
+  --card-gap: 8px; --rim-w: 3px; /* the gap between the card's parts; the rim is the 1px border and the 2px right or wrong ring */
 }
 .problem-card.good { border-color: var(--good); box-shadow: 0 0 0 2px var(--good) inset; }
 .problem-card.bad { border-color: var(--bad); box-shadow: 0 0 0 2px var(--bad) inset; }
@@ -155,10 +156,10 @@ body .loopy-hint, body .loopy-hint.up { animation: none; }
   /* What room the board leaves goes half above the task and half between the task and the board: the
      first-time hint sits there, its arrow on the board, instead of covering Clue and Skip. The negative
      margins take back the card's gap. */
-  .problem-card::before { content: ""; order: -2; flex: 1 1 0; margin-bottom: -8px; }
-  .problem-card::after { content: ""; order: -1; flex: 1 1 0; margin-top: -8px; }
-  /* The board as big as the card allows: it reaches out over the card's own padding to its edge. */
-  .boardbox { flex: 0 1 auto; aspect-ratio: 1; width: calc(100% + 2 * var(--card-pad) - 6px); margin-inline: calc(3px - var(--card-pad)); }
+  .problem-card::before { content: ""; order: -2; flex: 1 1 0; margin-bottom: calc(-1 * var(--card-gap)); }
+  .problem-card::after { content: ""; order: -1; flex: 1 1 0; margin-top: calc(-1 * var(--card-gap)); }
+  /* The board as big as the card allows: it reaches out over the card's own padding to just inside its rim. */
+  .boardbox { flex: 0 1 auto; aspect-ratio: 1; width: calc(100% + 2 * (var(--card-pad) - var(--rim-w))); margin-inline: calc(var(--rim-w) - var(--card-pad)); }
   .problem-card.text .boardbox { flex: 0 0 auto; }
   /* The task is read first, so it sits above the board; the answer shows under it. */
   .topic, .question { order: -1; }
@@ -171,12 +172,13 @@ body .loopy-hint, body .loopy-hint.up { animation: none; }
   /* The board as tall as the screen allows: from under the top bar to the bottom. The title, score and
      Settings sit over the side column beside it, so they take no height from the board. */
   .wrap { flex: 1 1 auto; min-height: 0; width: 100%; display: grid; grid-template-columns: minmax(0, auto) minmax(0, 1fr);
-    grid-template-rows: auto auto auto minmax(0, 1fr); column-gap: var(--play-gap); row-gap: 0; }
+    grid-template-rows: auto auto auto minmax(0, 1fr); column-gap: var(--play-gap); row-gap: 0;
+    --bar-h: 48px; /* the top bar's height: the loopy back link is its tallest part */ }
   .game-bar { grid-column: 1 / -1; grid-row: 1; margin-bottom: var(--row-gap); }
   .top { grid-column: 2; grid-row: 2; margin-bottom: var(--row-gap); }
   .settings-panel { grid-column: 2; grid-row: 3; margin-bottom: var(--row-gap); }
   /* Settings open: the page may scroll, so the board keeps the screen's height (less the top bar) by itself. */
-  body:has(#settings-panel:not([hidden])) .boardbox { height: calc(100dvh - var(--safe-top) - var(--safe-bottom) - var(--page-pad-top) - var(--page-pad-bottom) - 60px); align-self: start; }
+  body:has(#settings-panel:not([hidden])) .boardbox { height: calc(100dvh - var(--safe-top) - var(--safe-bottom) - var(--page-pad-top) - var(--page-pad-bottom) - var(--bar-h) - var(--row-gap)); align-self: start; }
   .play, .problem-card { display: contents; }
   .boardbox { grid-column: 1; grid-row: 2 / -1; height: 100%; aspect-ratio: 1; width: auto; }
   /* The words move into the side column here (see placeWords), above the answers and buttons. */
