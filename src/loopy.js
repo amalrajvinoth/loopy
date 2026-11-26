@@ -2054,6 +2054,7 @@ Loopy.nextButton = function (btn, answered) {
     clearTimeout(fadeTimer);
     if (target) target.style.marginTop = "";
     window.removeEventListener("resize", place);
+    window.dispatchEvent(new Event("loopy-fit"));
   }
   // Where the bubble may sit. Each spot is tried in turn and the first one that lies over no words and no
   // button wins, so the bubble never hides an answer, a key or a letter a child needs to see:
@@ -2179,6 +2180,7 @@ Loopy.nextButton = function (btn, answered) {
     bubble.setAttribute("aria-hidden", "true"); // the game's own prompt says the same for screen readers
     words = Loopy.t(pick[1]);
     document.body.appendChild(bubble);
+    window.dispatchEvent(new Event("loopy-fit"));
     place();
     // The card can still settle after the first placement (fonts, pictures that size to the room), so look again.
     setTimeout(place, 400);
@@ -2225,12 +2227,41 @@ Loopy.nextButton = function (btn, answered) {
       el.style.setProperty("--rgap", /px/.test(cs.rowGap) ? cs.rowGap : "0px");
     }
   }
-  function soon() { if (!queued) { queued = true; requestAnimationFrame(count); } }
+  // On a tablet the card fills the question side (issue #370) and its content grows to fill it: the biggest
+  // --card-zoom step (0.7 to 2.6) at which nothing overflows. After an answer the step only goes down.
+  var STEPS = [], tablet = matchMedia("(min-width: 600px) and (min-height: 600px)");
+  for (var z = 7; z < 27; z++) STEPS.push(z / 10);
+  function fits(card) {
+    // A child that scrolls inside itself (the explanation line) is squeezed, not cut: it must not scroll.
+    for (var c = card.firstElementChild; c; c = c.nextElementSibling) {
+      if (c.scrollHeight > c.clientHeight + 1 && /auto|scroll/.test(getComputedStyle(c).overflowY)) return false;
+    }
+    return card.scrollHeight <= card.clientHeight + 1 && card.scrollWidth <= card.clientWidth + 1;
+  }
+  function grow() {
+    var card = play.querySelector(":scope > .problem-card"), st = card && card.style, lo = 0, hi = STEPS.length - 1;
+    if (!card) return;
+    // The first-time hint needs a free band in the card (the bubble sits inside its bottom edge).
+    st.setProperty("--hint-room", document.querySelector(".loopy-hint") ? "56px" : "0px");
+    if (!tablet.matches || document.querySelector("#settings-panel:not([hidden])")) return st.removeProperty("--card-zoom");
+    if ((card.classList.contains("good") || card.classList.contains("bad")) && card.zoomAt != null) hi = Math.min(hi, card.zoomAt);
+    while (lo < hi) {
+      var mid = (lo + hi + 1) >> 1;
+      st.setProperty("--card-zoom", STEPS[mid]);
+      if (fits(card)) lo = mid; else hi = mid - 1;
+    }
+    st.setProperty("--card-zoom", STEPS[card.zoomAt = lo]);
+  }
+  function soon() { if (!queued) { queued = true; requestAnimationFrame(function () { count(); grow(); }); } }
   // loopy.js loads in the head, before the page's markup.
   function start() {
     play = document.querySelector(".play.fit");
     if (!play) return;
-    count();
+    count(); grow();
+    if (document.fonts) document.fonts.addEventListener("loadingdone", soon);
+    window.addEventListener("loopy-fit", soon);
+    var panel = document.getElementById("settings-panel");
+    if (panel) new MutationObserver(soon).observe(panel, { attributes: true, attributeFilter: ["hidden"] });
     window.addEventListener("resize", soon);
     new MutationObserver(soon).observe(play, { childList: true, subtree: true, attributes: true, attributeFilter: ["class", "hidden"] });
   }
