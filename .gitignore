@@ -27,3 +27,6 @@ tools/lint/node_modules/
 sync/node_modules/
 # The Chess Puzzles picker downloads the Lichess puzzle list here (see tools/chess/pick.mjs).
 tools/chess/download/
+# Merge and patch leftovers never belong in the repo.
+*.orig
+*.rej

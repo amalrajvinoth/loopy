@@ -161,6 +161,13 @@ STORE_CALL = re.compile(r"\bstore\.(?:get|set|remove)\(\s*[\"'`]([^\"'`$]+)")
 KEY_NAME = re.compile(r"\bKEY\s*=\s*[\"']([^\"']+)[\"']")
 LOOPY_KEY = re.compile(r"[\"'](loopy\.[a-zA-Z][\w.]*)[\"']")
 NOT_KEY = (".js", ".css", ".html", ".svg", ".png", ".woff2")
+# The only direct `localStorage` use a page may have: reading a device-wide key by name (the home page's
+# first-visit check), and counting or walking the keys. Everything else (a write, a delete, a child's key,
+# a key held in a variable) must go through `Loopy.store`.
+DEVICE_READ = re.compile(
+    r"""localStorage\s*\.\s*getItem\(\s*(["'])(?!loopy\.kid\.)[^"'\\]*\1\s*\)"""
+    r"|localStorage\s*\.\s*key\("
+    r"|localStorage\s*\.\s*length\b(?!\s*=(?!=))")
 
 
 def saved_keys(files):
@@ -198,8 +205,9 @@ def check_storage(base, now, before):
         add("must", "src/loopy.js", f"`{name}` was taken out of OLD, so devices that still have old `{name}` keys "
             "lose them on their first visit")
     for path, text in now.items():
-        if not path.startswith("src/loopy") and "localStorage" in text:
-            add("must", path, "uses `localStorage` directly; use `Loopy.store` so each child keeps their own data")
+        # Only a read of a device-wide key by name is allowed (DEVICE_READ); anything else goes through `Loopy.store`.
+        if not path.startswith("src/loopy") and "localStorage" in DEVICE_READ.sub("", text):
+            add("must", path, "uses `localStorage` beyond reading a device-wide key by name; use `Loopy.store` so each child keeps their own data")
         was = before.get(path, "")
         for name, pattern, why, where in [
             ("removes saved data", r"\.removeItem\(|localStorage\.clear\(|\.deleteDatabase\(",
@@ -442,6 +450,9 @@ def main():
     check_size(base)
     if base:
         check_docs(base)
+    tracked = subprocess.run(["git", "ls-files", "*.orig", "*.rej"], cwd=ROOT, capture_output=True, text=True).stdout.split()
+    for path in tracked:
+        add("must", path, "is a merge or patch leftover; delete it (it is also ignored in .gitignore now)")
 
     home = (ROOT / "index.html").read_text(encoding="utf-8")
     readme = (ROOT / "README.md").read_text(encoding="utf-8")
