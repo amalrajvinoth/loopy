@@ -347,8 +347,8 @@ for (const game of GAMES) {
       const qs = keys.filter(k => k !== "\x00");
       rows.push(`| ${game} | ${run.age} | ${run.lang} | ${qs.length} | ${new Set(qs).size} | ${rightCount} | ${bad.length ? "repeats" : "pass"} |`);
     } catch (e) {
-      // The first line says what timed out; the call log's own lines say on what, and what was in the way.
-      const log = e.message.split("\n").filter(l => /locator|intercepts|not stable|not visible|not enabled/.test(l)).slice(-3).map(l => l.trim());
+      // The first line says what timed out; the last lines of the call log say on what, and what was in the way.
+      const log = e.message.split("\n").slice(1).map(l => l.trim()).filter(Boolean).slice(-8);
       fail(`could not play: ${[e.message.split("\n")[0], ...log].join(" / ")}`);
       rows.push(`| ${game} | ${run.age} | ${run.lang} | - | - | - | error |`);
     }
