@@ -78,7 +78,9 @@ for (const s of SCREENS) {
   for (const game of GAMES) {
     await page.goto(BASE + game, { waitUntil: "load" });
     await page.evaluate(() => document.fonts.ready.then(() => new Promise(f => requestAnimationFrame(() => requestAnimationFrame(f)))));
-    await page.waitForTimeout(500); // the first-time hint looks for its spot again after 400ms
+    // The first-time hint looks for its spot again after 400ms and 1200ms (on a tablet the card grows its content
+    // first, issue #370), so the test reads where it ends up.
+    await page.waitForTimeout(1300);
     const found = await page.evaluate((bar) => {
       const out = [], limit = innerHeight - bar + 0.5;
       const se = document.scrollingElement;
