@@ -349,7 +349,28 @@ for (const game of GAMES) {
     } catch (e) {
       // The first line says what timed out; the last lines of the call log say on what, and what was in the way.
       const log = e.message.split("\n").slice(1).map(l => l.trim()).filter(Boolean).slice(-8);
-      fail(`could not play: ${[e.message.split("\n")[0], ...log].join(" / ")}`);
+      // A tap that waited for "visible, enabled and stable" and never got it: say which of the three failed, by
+      // reading the element the way Playwright does (checkVisibility, its style, its box over ten frames). A frame
+      // that does not come within 200ms is counted as missed: without frames the steadiness check cannot finish.
+      // The read gets 5 seconds, so a page that hangs still gets its failure reported.
+      const sel = /waiting for locator\('(.+?)'\)/.exec(e.message);
+      let why = "";
+      if (p && sel && /stable/.test(e.message)) why = await Promise.race([
+        new Promise(f => setTimeout(() => f("no read: the page did not answer in 5s"), 5000)),
+        p.evaluate(async (s) => {
+          const el = document.querySelector(s); if (!el) return "gone now";
+          const boxes = []; let missed = 0;
+          for (let i = 0; i < 10; i++) {
+            const r = el.getBoundingClientRect(); boxes.push(`${r.x},${r.y},${r.width},${r.height}`);
+            if (!await Promise.race([new Promise(f => requestAnimationFrame(() => f(true))), new Promise(f => setTimeout(() => f(false), 200))])) missed++;
+          }
+          const st = getComputedStyle(el);
+          return `checkVisibility ${el.checkVisibility ? el.checkVisibility() : "n/a"}, visibility ${st.visibility}, disabled ${el.disabled}, ` +
+            `aria-disabled ${el.closest("[aria-disabled]")?.getAttribute("aria-disabled") || "none"}, inert ${!!el.closest("[inert]")}, ` +
+            `frames missed ${missed} of 10, boxes ${[...new Set(boxes)].join(" | ")}, fonts ${document.fonts.status}, bar ${document.querySelector(".game-bar")?.className}`;
+        }, sel[1]).catch(x => `no read: ${x.message.split("\n")[0]}`),
+      ]);
+      fail(`could not play: ${[e.message.split("\n")[0], ...log, why].filter(Boolean).join(" / ")}`);
       rows.push(`| ${game} | ${run.age} | ${run.lang} | - | - | - | error |`);
     }
     if (p) await p.context().close();
