@@ -92,12 +92,17 @@ async function open(game, { age, lang }, fail) {
   p.on("pageerror", e => fail(`script error: ${e.message}`));
   p.on("console", m => { if (m.type() === "error") fail(`console error: ${m.text()}`); });
   p.on("request", r => { if (!r.url().startsWith(ORIGIN) && !/^(data|blob):/.test(r.url())) fail(`loads from another website: ${r.url()}`); });
-  // (Leaving the page cancels what is still loading; that is not a failure.)
-  p.on("requestfailed", r => { if (r.failure().errorText !== "net::ERR_ABORTED") fail(`could not load ${r.url()}`); });
+  // (Leaving the page cancels what is still loading; that is not a failure. Chromium names it net::ERR_ABORTED;
+  // WebKit gives it other words, so a request cut by the test's own reload is let go too: a new age can start
+  // fetching a level's file, as Chess Puzzles does with puzzles-6.js at age 16, just as the page reloads.)
+  let leaving = false;
+  p.on("requestfailed", r => { if (!leaving && r.failure().errorText !== "net::ERR_ABORTED") fail(`could not load ${r.url()} (${r.failure().errorText})`); });
   await p.goto(BASE + game);
   // Set the age the way a parent does, then start again so the first question is at that age too.
   await p.evaluate(a => Loopy.setAge(a), age);
+  leaving = true;
   await p.reload();
+  leaving = false;
   await p.waitForFunction(() => window.__questions.length > 0);
   return p;
 }
