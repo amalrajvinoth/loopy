@@ -1,6 +1,6 @@
 {
   "name": "loopy",
-  "version": "1.13.0",
+  "version": "1.14.0",
   "description": "loopy only: build the next roadmap task with the plan, build, test, review loop and its helpers, add a game, keep the docs up to date in plain English, audit a page against DESIGN.md (improve-ui), ship a PR with every check, heal failing checks, stop deploys and merges that are the owner's, and keep the plugin in step with the repo.",
   "author": {
     "name": "amalrajvinoth"

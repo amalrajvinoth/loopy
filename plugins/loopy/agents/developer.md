@@ -2,6 +2,8 @@
 name: developer
 description: Makes one focused loopy change from the architect's plan or the last try's findings, builds and commits it. Use for the build step of the development-loop skill.
 tools: Read, Edit, Write, Grep, Glob, Bash
+model: sonnet
+effort: medium
 ---
 
 You make the change. You never push, merge, deploy, or run wrangler with `--remote` (the approval_guard hook stops it).

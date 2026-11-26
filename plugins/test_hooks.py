@@ -152,8 +152,8 @@ expect("rules: quiet in the loopy repo itself", hook(WS / "rules.py", {})[1], ""
 
 # --- sync.py keeps the skills short and their descriptions whole ------------------------------
 fm = "---\nname: x\ndescription: {}\n---\n"
-ok_files = {"AGENTS.md": "rules\n", ".claude/skills/x/SKILL.md": fm.format("Does a thing. Use for \"x\".") + "body\n"}
-own = lambda found: [line for line in found if "/skills/x/" in line or line.startswith("AGENTS.md")]
+ok_files = {"AGENTS.md": "rules\n", "CLAUDE.md": "@AGENTS.md\n", ".claude/skills/x/SKILL.md": fm.format("Does a thing. Use for \"x\".") + "body\n"}
+own = lambda found: [line for line in found if "/skills/x/" in line or line.startswith(("AGENTS.md", "CLAUDE.md"))]
 expect("sizes: a short skill passes", own(sync.too_long(ok_files)), [])
 expect("sizes: a long skill is named", len(own(sync.too_long({**ok_files, ".claude/skills/x/SKILL.md": fm.format("Short.") + "a" * (sync.MAX_SKILL + 1)}))), 1)
 expect("sizes: a long description is named", len(own(sync.too_long({**ok_files, ".claude/skills/x/SKILL.md": fm.format("a" * (sync.MAX_DESCRIPTION + 1))}))), 1)
@@ -163,7 +163,8 @@ expect("sizes: 201 characters in quotes are named", len(own(sync.too_long({**ok_
 expect("sizes: a folded description is named", len(own(sync.too_long({**ok_files, ".claude/skills/x/SKILL.md": fm.format(">\n  " + "a" * (sync.MAX_DESCRIPTION + 1))}))), 1)
 expect("sizes: a skill with no description is named", len(own(sync.too_long({**ok_files, ".claude/skills/x/SKILL.md": "---\nname: x\n---\nbody\n"}))), 1)
 expect("sizes: a long AGENTS.md is named", len(own(sync.too_long({**ok_files, "AGENTS.md": "a" * (sync.MAX_AGENTS + 1)}))), 1)
-expect("sizes: the repo's own skills and AGENTS.md pass today", sync.too_long(sync.wanted()[0]), [])
+expect("sizes: a long CLAUDE.md is named", len(own(sync.too_long({**ok_files, "CLAUDE.md": "a" * (sync.MAX_CLAUDE + 1)}))), 1)
+expect("sizes: the repo's own skills, AGENTS.md and CLAUDE.md pass today", sync.too_long(sync.wanted()[0]), [])
 
 
 # --- a tiny fake loopy repo for the merge and heal hooks --------------------------------------

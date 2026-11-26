@@ -2,6 +2,8 @@
 name: planner
 description: Drafts a numbered options plan (with ⭐ recommendation and before/after picture notes) for a "Plan for X" or "Brain-storm" ask. Read-only; returns the plan text and the screenshots it took.
 tools: Read, Grep, Glob, Bash
+model: opus
+effort: high
 ---
 
 <!-- Copied from plugins/work-style/agents/planner.md by plugins/sync.py. Edit the source there, then run python3 plugins/sync.py. -->

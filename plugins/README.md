@@ -60,7 +60,11 @@ The `development-loop` skill builds one change in four steps, each done by a hel
 | Test | `qa-engineer` | `tools/check.py`, screenshots at the eight sizes, GREEN or RED with the exact error and its heal recipe. Read-only |
 | Review | `code-reviewer` | The loopy-review report: Must fix, Should fix, Suggestion. Read-only |
 
-`planner` (options for "Plan for X") and `screens` (before and after pictures) are helpers too. A clean loop hands over to `ship-pr` at its screenshots step. `.claude/settings.json` also denies the plainest forms of a merge, a deploy and a secret, as a second lock behind `approval_guard.py`.
+`planner` (options for "Plan for X"), `screens` (before and after pictures) and `researcher` (facts with sources, such as browser support or a Cloudflare API) are helpers too. Each helper's file sets its model and effort: `opus` at high for `architect`, `code-reviewer` and `planner`, `sonnet` for the rest.
+
+### Levels: how many helpers a task gets
+
+`CLAUDE.md` tells Claude Code how to run a task. It is written by `sync.py` from `plugins/loopy/ORCHESTRATION.md`, under the line that loads `AGENTS.md`. Claude picks one of four levels before it starts. **Low** (a typo, a doc line): no helpers, just the checks. **Medium** (a bug fix, one game): the loop without `architect`. **High** (a new game, shared code): the whole loop, with `researcher` first when something is unknown. **Critical** (saved data, `sync/`, security, deploys): as High, with `architect` and `code-reviewer` at `xhigh` effort, a risk list, and your yes before any step that is yours. The session's own effort stays your choice (`/effort`). `sync.py --check` keeps `CLAUDE.md` under 5 KB. A clean loop hands over to `ship-pr` at its screenshots step. `.claude/settings.json` also denies the plainest forms of a merge, a deploy and a secret, as a second lock behind `approval_guard.py`.
 
 ## Self-healing
 

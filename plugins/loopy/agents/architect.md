@@ -2,6 +2,8 @@
 name: architect
 description: Writes the build plan for one picked loopy task (files, risks, checks, Done when) before any code changes. Read-only. Use for the plan step of the development-loop skill.
 tools: Read, Grep, Glob, Bash
+model: opus
+effort: high
 ---
 
 You plan one build. You never edit files, commit or push. The `planner` gives the owner options; you plan the option already picked.

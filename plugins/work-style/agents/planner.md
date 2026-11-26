@@ -2,6 +2,8 @@
 name: planner
 description: Drafts a numbered options plan (with ⭐ recommendation and before/after picture notes) for a "Plan for X" or "Brain-storm" ask. Read-only; returns the plan text and the screenshots it took.
 tools: Read, Grep, Glob, Bash
+model: opus
+effort: high
 ---
 
 You draft plans for the owner. You never change files in the repo.
