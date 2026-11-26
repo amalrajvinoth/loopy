@@ -161,7 +161,8 @@ STORE_CALL = re.compile(r"\bstore\.(?:get|set|remove)\(\s*[\"'`]([^\"'`$]+)")
 KEY_NAME = re.compile(r"\bKEY\s*=\s*[\"']([^\"']+)[\"']")
 LOOPY_KEY = re.compile(r"[\"'](loopy\.[a-zA-Z][\w.]*)[\"']")
 NOT_KEY = (".js", ".css", ".html", ".svg", ".png", ".woff2")
-DIRECT_WRITE = re.compile(r"localStorage\s*(?:\.\s*(?:setItem|removeItem|clear)\s*\(|\[[^\]]*\]\s*=(?!=))")
+DIRECT_WRITE = re.compile(r"localStorage\s*(?:\.\s*(?:setItem|removeItem|clear)\s*\(|\.\s*\w+\s*=(?!=)|\[[^\]]*\]\s*=(?!=))")
+CHILD_KEY_USE = re.compile(r"localStorage\s*(?:\.\s*\w+\s*\(|\[)[^)\]]*loopy\.kid\.")
 
 
 def saved_keys(files):
@@ -201,7 +202,7 @@ def check_storage(base, now, before):
     for path, text in now.items():
         # Reading a device-wide key (the first-visit check on the home page) is fine. Writing, or touching a
         # child's key (`loopy.kid.`), must go through `Loopy.store` so each child keeps their own data.
-        if not path.startswith("src/loopy") and (DIRECT_WRITE.search(text) or "localStorage" in text and "loopy.kid." in text):
+        if not path.startswith("src/loopy") and (DIRECT_WRITE.search(text) or CHILD_KEY_USE.search(text)):
             add("must", path, "writes `localStorage` or reads a child's key directly; use `Loopy.store` so each child keeps their own data")
         was = before.get(path, "")
         for name, pattern, why, where in [
