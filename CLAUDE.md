@@ -20,7 +20,7 @@ Pick the lowest level that fits; when torn between two, take the higher. Risk se
 | High | A new game, a shared change in `src/`, several pages, a new check | `architect` | The whole `development-loop`; `researcher` or `Explore` first when something is unknown | Its test and review, `--webkit` when the layout changed |
 | Critical | Saved data, `sync/` and the live tables, the service worker cache, security, secrets, anything that deploys or deletes | `architect` with a risk list | As High, with `effort: "xhigh"` for `architect` and `code-reviewer` | As High, and the owner's yes before each step in "What stays with the owner" (`development-loop`) |
 
-A Low or Medium task that turns out bigger moves up a level; say so in the report.
+A Low or Medium task that turns out bigger moves up a level; say so in the report. If the Agent tool has no `effort` field (an older Claude Code), a Critical task runs its helpers at the effort in their files and the report says so.
 
 ## 2. Helpers
 
