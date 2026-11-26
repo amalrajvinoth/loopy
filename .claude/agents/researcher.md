@@ -1,6 +1,6 @@
 ---
 name: researcher
-description: Finds the facts a loopy task depends on, such as browser support for a CSS or JavaScript feature, a library or a Cloudflare API, Read-only. Use before the plan when something is unknown.
+description: Finds the facts a loopy task depends on, such as browser support for a CSS or JavaScript feature, a library or a Cloudflare API. Read-only. Use before the plan when something is unknown.
 tools: Read, Grep, Glob, WebSearch, WebFetch
 model: sonnet
 effort: medium
