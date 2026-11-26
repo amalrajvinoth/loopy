@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'sha256-DsFyy6KmUUJioyLUa8Yte26/xbada+IFkvQguBVi5cc='; style-src 'self' 'sha256-iKqZfY0yOsyVHa/qlTmRsjSUAon+EdDi9RLwucVWFNA=' 'sha256-LxBqi/eylUzaCDuZIJkUZtdUXTbSWr6KCF8sQzqLcK0=' 'sha256-RT1053JU5UiKvjrCUFx1rlhdFLMmgtuFJ9T8jnMeawQ=' 'sha256-hN/7tJBT1KuaBR0z2WwbO/g5jHsY6zCxuiNQjWLo4r0='; img-src 'self' data:; font-src 'self'; connect-src 'self' https://loopy-sync.loopy-1e2.workers.dev; worker-src 'self'; object-src 'none'; base-uri 'none'; form-action 'none'; manifest-src 'self'; upgrade-insecure-requests">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'sha256-DsFyy6KmUUJioyLUa8Yte26/xbada+IFkvQguBVi5cc='; style-src 'self' 'sha256-iKqZfY0yOsyVHa/qlTmRsjSUAon+EdDi9RLwucVWFNA=' 'sha256-LxBqi/eylUzaCDuZIJkUZtdUXTbSWr6KCF8sQzqLcK0=' 'sha256-RT1053JU5UiKvjrCUFx1rlhdFLMmgtuFJ9T8jnMeawQ=' 'sha256-eYAHp0cjupW8ixlzPwcjYkFMzXT8hBZWUYUVAxLh5eY='; img-src 'self' data:; font-src 'self'; connect-src 'self' https://loopy-sync.loopy-1e2.workers.dev; worker-src 'self'; object-src 'none'; base-uri 'none'; form-action 'none'; manifest-src 'self'; upgrade-insecure-requests">
 <meta name="referrer" content="strict-origin-when-cross-origin">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <style>:root{color-scheme:light;padding-top:var(--safe-top);padding-bottom:var(--safe-bottom)}body{margin:0}[hidden]{display:none!important}</style>
@@ -206,6 +206,11 @@ body { min-height: 100vh; min-height: 100dvh; padding-block: var(--page-pad-top)
   body:not(:has(#settings-panel:not([hidden]))) .play.fit > .problem-card:has(.shop[hidden]) { max-height: 350px; }
   /* Yes and No take the same room as the number pad, so the card keeps its size from one question of a problem to the next. */
   body:not(:has(#settings-panel:not([hidden]))) .play.fit > .yn { flex: 0 0 auto; min-height: calc(4 * var(--key-h) + 24px); }
+}
+/* A tablet fills the question side (loopy.css): the card has no height cap. */
+@media (min-width: 600px) and (min-height: 600px) and (orientation: portrait) {
+  body:not(:has(#settings-panel:not([hidden]))) .play.fit > .problem-card, body:not(:has(#settings-panel:not([hidden]))) .play.fit > .problem-card:has(.shop[hidden]) { max-height: none; }
+  body:not(:has(#settings-panel:not([hidden]))) .play.fit > .yn { min-height: 0; }
 }
 @media (orientation: landscape) and (min-width: 640px) and (max-height: 500px) {
   body:not(:has(#settings-panel:not([hidden]))) .play.fit > .problem-card { container-type: size; height: 100%; }

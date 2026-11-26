@@ -8,6 +8,10 @@ loopy bekommt immer wieder neue Spiele. Das ist zuletzt dazugekommen!
 
 Die großen Änderungen, die neuesten zuerst. Kleine Korrekturen stehen nicht dabei. Die [ganze Liste steht auf GitHub](https://github.com/amalrajvinoth/loopy/blob/main/RELEASES.md) (auf Englisch).
 
+## 26. November 2026
+
+- **Größere Fragekarten auf dem Tablet.** Die Fragekarte füllt jetzt die ganze Fragenseite, und die Frage, das Bild und die Wörter wachsen mit. Vorher war die Karte nur so groß wie die Frage und ließ eine große Lücke. Auf Handys bleibt alles wie es war.
+
 ## 25. November 2026
 
 - **Ein neues Spiel: Schachrätsel.** Es steht in einem neuen Teil der Startseite, **Denkspiele**. Schach auf einem Holzbrett: Tippe oder zieh eine Figur, um sie zu bewegen. Sechs Stufen, in der Reihenfolge einer Schachschule: wie jede Figur zieht, Schachmatt, Figuren gewinnen, Verteidigen, Opfer, dann Eröffnung und Benehmen am Brett. Die Rätsel sind echte, leichte zuerst. Ein Tipp lässt die richtige Figur wackeln, und nach einem falschen Zug zeigt ein grüner Pfeil den richtigen. [So wird gespielt](/loopy/guide/de/games/brain/chess-puzzles/).
