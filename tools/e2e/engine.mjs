@@ -54,3 +54,22 @@ export async function launch() {
   for (const t of tries) { try { return await playwright.chromium.launch(t); } catch (e) { /* try the next one */ } }
   throw new Error("No Chrome or Chromium found. Set CHROME=/path/to/chrome.");
 }
+
+/**
+ * The pages a test covers this run. PAGES comes from tools/ci_changes.py: unset or "all" keeps the test's whole
+ * list; a JSON list of site paths such as ["math/plus-minus/"] keeps only those, so a change to one game tests that
+ * game. Nothing left means nothing to test: the test says so and passes, before it starts a browser.
+ */
+export function picked(list) {
+  const want = process.env.PAGES;
+  if (!want || want === "all") return list;
+  let keep;
+  try { keep = JSON.parse(want); } catch { keep = null; }
+  if (!Array.isArray(keep)) throw new Error(`PAGES must be "all" or a JSON list of pages such as ["math/plus-minus/"], not ${want}`);
+  const out = list.filter(p => keep.includes(p));
+  if (!out.length) {
+    console.log(`No page to test here: PAGES (${want}) names none of this test's pages.`);
+    process.exit(0);
+  }
+  return out;
+}

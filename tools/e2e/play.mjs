@@ -22,7 +22,7 @@ import { fileURLToPath } from "node:url";
 const HERE = path.dirname(fileURLToPath(import.meta.url));
 const ROOT = path.resolve(HERE, "../..");
 const require = createRequire(path.join(process.env.A11Y_DEPS || path.join(ROOT, "tools/a11y"), "package.json"));
-import { launch, ENGINE, body } from "./engine.mjs";
+import { launch, ENGINE, body, picked } from "./engine.mjs";
 
 const ROUNDS = 30, WINDOW = 10;
 const RUNS = [{ age: 5, lang: "en" }, { age: 8, lang: "de" }, { age: 16, lang: "en" }];
@@ -38,6 +38,8 @@ for (const subject of fs.readdirSync(ROOT).sort()) {
   }
 }
 
+// PAGES (from tools/ci_changes.py) keeps only the games a change touches.
+GAMES.splice(0, GAMES.length, ...picked(GAMES));
 // SHARD=1/2 checks only the first half of the games (every other one), SHARD=2/2 the rest. CI runs both at once.
 const [SHARD, SHARDS] = (process.env.SHARD || "1/1").split("/").map(Number);
 if (!(SHARDS >= 1 && SHARD >= 1 && SHARD <= SHARDS)) throw new Error(`SHARD must look like 1/2, not ${process.env.SHARD}`);

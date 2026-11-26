@@ -17,6 +17,8 @@ If it cannot find Chrome, point it there: `CHROME=/path/to/chrome node tools/a11
 
 `SHARD=1/2` checks every other page, starting with the first, and `SHARD=2/2` the rest. CI runs both halves at once to save time. Without `SHARD` it checks every page.
 
+`PAGES='["math/plus-minus/"]'` checks only the pages listed. On a pull request CI sets it from `tools/ci_changes.py`, so a change to one game checks that game only; a change to a shared file checks every page.
+
 The two packages are only for this check. No page loads them, and `node_modules` is not committed.
 
 ## What it checks

@@ -78,9 +78,9 @@ One per failure. Add new ones at the end (the heal skill step 3). Keep each to f
 
 ## All checks fails, or a long check did not run
 - Looks like: CI "All checks" lists a job as failure or cancelled; or a page change passed without the accessibility, play or guide jobs running.
-- How CI runs them: the accessibility check and the play test run in two halves at once (`SHARD=1/2`, `SHARD=2/2`), each in Chromium and in WebKit. On a pull request they and the guide job are skipped when `tools/ci_changes.py` says no file they read changed (docs, `.claude/`, `plugins/`). A new file type or folder the pages read must not match its DOCS list.
-- Cause: a job above it failed (fix that job), a newer push stopped this run (cancelled: look at the newer run), or `tools/ci_changes.py` treats a file the pages read as docs.
-- Fix: open the failed job named in the list. For a wrong skip, narrow the DOCS or GUIDE pattern in `tools/ci_changes.py` and test it with `python3 tools/ci_changes.py origin/main HEAD`. (20 Oct 2026)
+- How CI runs them: on a pull request `tools/ci_changes.py` picks the tests and the pages. A change to one game runs the browser tests on that game (and on pages that load its files) only, through `PAGES`. A shared file (`src/`, `loopy.js`, `loopy.css`, fonts, `checks.yml`, the test browsers, a file it does not know) runs every test on every page, in two halves at once (`SHARD=1/2`, `SHARD=2/2`), each in Chromium and in WebKit. Docs, `.claude/` and `plugins/` run none.
+- Cause: a job above it failed (fix that job), a newer push stopped this run (cancelled: look at the newer run), or `tools/ci_changes.py` treats a file the pages read as docs, or it missed a page that loads a file from another folder.
+- Fix: open the failed job named in the list. For a wrong skip, fix the RULES or DOCS pattern in `tools/ci_changes.py`, add the case to `tools/ci_changes_test.py`, and test it with `python3 tools/ci_changes.py origin/main HEAD`. (20 Oct 2026, pages 26 Nov 2026)
 
 ## Levels test fails
 - Looks like: `node tools/e2e/levels.mjs` fails, or CI "Levels follow the child: up by itself when ready, kept over the birthday".

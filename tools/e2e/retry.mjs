@@ -19,7 +19,7 @@ import { fileURLToPath } from "node:url";
 const HERE = path.dirname(fileURLToPath(import.meta.url));
 const ROOT = path.resolve(HERE, "../..");
 const require = createRequire(path.join(process.env.A11Y_DEPS || path.join(ROOT, "tools/a11y"), "package.json"));
-import { launch, ENGINE, body } from "./engine.mjs";
+import { launch, ENGINE, body, picked } from "./engine.mjs";
 
 const GAMES = [], ONLY = process.env.GAME || "";
 for (const subject of fs.readdirSync(ROOT).sort()) {
@@ -31,6 +31,9 @@ for (const subject of fs.readdirSync(ROOT).sort()) {
     if (`${subject}/${game}/`.includes(ONLY) && fs.existsSync(file) && !/http-equiv="refresh"|location\.replace/.test(fs.readFileSync(file, "utf8"))) GAMES.push(`${subject}/${game}/`);
   }
 }
+
+// PAGES (from tools/ci_changes.py) keeps only the games a change touches.
+GAMES.splice(0, GAMES.length, ...picked(GAMES));
 
 const TYPES = { ".html": "text/html", ".js": "text/javascript", ".css": "text/css", ".svg": "image/svg+xml", ".png": "image/png",
   ".woff2": "font/woff2", ".webmanifest": "application/manifest+json", ".json": "application/json", ".txt": "text/plain" };

@@ -12,7 +12,9 @@
 This is the list the ship-pr and loopy-review skills, AGENTS.md and the README point at, so it is written
 once. The GitHub check (.github/workflows/checks.yml) runs the same commands; plugins/loopy/scripts/drift.py
 fails when a check is added there and not here. Which browser tests a change needs comes from
-tools/ci_changes.py, the same answer CI uses. One difference: CI runs every lint whatever changed; here a
+tools/ci_changes.py, the same answer CI uses, and so do the pages they test: a change to one game tests that
+game (PAGES), a change to a shared file tests every page. --all tests every page; a check named by hand tests
+every page unless the shell sets PAGES. One difference: CI runs every lint whatever changed; here a
 lint (types, styles, scripts, workflows, links) runs when a file it reads changed. --all runs them all.
 
 tools/review.py also exits 1 for a `must` that was already on main. That is reported as "already on main"
@@ -29,7 +31,7 @@ would leave checks out.
 Lighthouse runs in CI only (job "Lighthouse budgets"); the heal recipe "Lighthouse budgets are red" says
 how to run it by hand.
 """
-import os, pathlib, re, shutil, subprocess, sys, tempfile, time
+import json, os, pathlib, re, shutil, subprocess, sys, tempfile, time
 
 ROOT = pathlib.Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT / "tools"))
@@ -105,6 +107,10 @@ CHECKS = [
     ("chess", "node tools/chess/build.mjs --check", "every chess puzzle plays through with the game's own rules, and its files are current",
      paths(r"^(brain/chess-puzzles/ | tools/chess/)"), [],
      "A puzzle that no longer plays means the rules in the page changed: fix the rules, never drop the check.", "Chess puzzles check fails"),
+    ("ci-changes", f"{PY} tools/ci_changes_test.py", "CI picks the right browser tests and pages for a change",
+     paths(r"^(tools/ci_changes(_test)?\.py | tools/e2e/.* | tools/a11y/check\.mjs | \.github/workflows/checks\.yml)$"), [],
+     "A wrong pick skips a test a change needs. Fix the rule in tools/ci_changes.py, never the test.",
+     "All checks fails, or a long check did not run"),
     ("a11y", "node tools/a11y/check.mjs", "every page works with a keyboard and a screen reader", SITE, BROWSER,
      "Fix the page. Never turn an axe rule off.", "Play test or accessibility check cannot start"),
     ("play", "node tools/e2e/play.mjs", "every game plays: no errors, stars add up, no repeated question (GAME=<id> for one game)", SITE, BROWSER,
@@ -187,14 +193,25 @@ def musts_on_base(base):
             subprocess.run(["git", "worktree", "remove", "--force", str(there)], cwd=ROOT, capture_output=True)
 
 
-def wanted(check, changed, site, guide):
-    """Does this change need the check, and the reason in words."""
-    when = check[3]
+# The browser tests that test only the pages a change touches, and the key of tools/ci_changes.py that says which.
+SCOPED = {"a11y": "a11y", "play": "play", "pictures": "pictures", "retry": "retry", "a11y-webkit": "a11y", "play-webkit": "play"}
+
+
+def wanted(check, changed, ci):
+    """Does this change need the check, and the reason in words. ci: the plan from tools/ci_changes.py."""
+    when, name = check[3], check[0]
     if when == ALWAYS:
         return True, "always"
+    if when == SITE and name in SCOPED:
+        scope = ci[SCOPED[name]]
+        if scope == "none":
+            return False, "no page it tests, and no file it reads, changed"
+        return True, "a shared file or the test changed: every page" if scope == "all" else "the pages this change touches: " + ", ".join(p or "home" for p in json.loads(scope))
     if when == SITE:
-        return site, "a file a page loads changed" if site else "no file a page loads changed"
+        run = name in json.loads(ci["extras"])
+        return run, "a page it opens or a file it reads changed" if run else "no page it opens, and no file it reads, changed"
     if when == GUIDE_JOB:
+        guide = ci["guide"]
         return guide, "the guide, or a file added or removed" if guide else "the guide did not change"
     if when == ASKED:
         return False, "only with --webkit or by name"
@@ -238,32 +255,38 @@ def main(argv):
         print(f"Cannot compare with {base}, so there is no telling which checks this change needs.\n   {str(err).splitlines()[0]}\n"
               "Get the branch first (git fetch origin main), or name another one with --base REF.")
         return 2
-    site, guide = ci_changes.needs(changed)
+    ci = ci_changes.plan(changed)
 
     plan = []
     for check in CHECKS:
         name = check[0]
-        run, why = wanted(check, changed, site, guide)
+        run, why = wanted(check, changed, ci)
+        env = dict(ENV.get(name, {}))
         if names:
             run, why = name in names, "named"
         elif "--all" in flags and check[3] != ASKED:
             run, why = True, "--all"
+        if name in SCOPED and not names:
+            # --all tests every page, whatever PAGES the shell has; otherwise the pages this change touches.
+            # A check named by hand keeps the shell's PAGES, so PAGES='["math/make-10/"]' check.py play still works.
+            if "--all" in flags or ci[SCOPED[name]] != "none":
+                env["PAGES"] = "all" if "--all" in flags else ci[SCOPED[name]]
         if "--webkit" in flags and check[3] == ASKED and not names:
-            run, why = True, "--webkit"
+            run, why = (ci[SCOPED[name]] != "none" or "--all" in flags), "--webkit"
         if "--fast" in flags and name in SLOW and not names:
             run, why = False, "a browser test or the guide build, left out by --fast"
-        plan.append((check, run, why))
+        plan.append((check, run, why, env))
 
     if "--list" in flags:
-        print(f"{len(changed)} changed file(s) against {base}. site={site} guide={guide}\n")
-        for (name, cmd, what, *_), run, why in plan:
-            env = "".join(f"{k}={v} " for k, v in ENV.get(name, {}).items())
+        print(f"{len(changed)} changed file(s) against {base}. site={ci['site']} guide={ci['guide']}\n")
+        for (name, cmd, what, *_), run, why, env in plan:
+            env = "".join(f"{k}={v!r} " if k == "PAGES" else f"{k}={v} " for k, v in env.items())
             print(f"{'run ' if run else 'skip'}  {name:12} {what}\n      {env}{cmd.replace(PY, 'python3')}   ({why})")
         print("\nCI only: Lighthouse budgets on the pages the change touches.")
         return 0
 
     failed, absent, passed, already = [], [], [], []
-    for (name, cmd, what, _when, needs, hint, recipe), run, _why in plan:
+    for (name, cmd, what, _when, needs, hint, recipe), run, _why, env in plan:
         if not run:
             continue
         how, broke = missing(needs, install=True)
@@ -280,7 +303,7 @@ def main(argv):
             print(f"-  {name}: not run here. Get it with: {how}", flush=True)
             continue
         began = time.time()
-        p = subprocess.run(cmd, shell=True, cwd=ROOT, capture_output=True, text=True, env={**os.environ, **ENV.get(name, {})})
+        p = subprocess.run(cmd, shell=True, cwd=ROOT, capture_output=True, text=True, env={**os.environ, **env})
         took = f"{time.time() - began:.0f}s"
         if p.returncode == 0:
             passed.append(name)
