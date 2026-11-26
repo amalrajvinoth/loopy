@@ -22,7 +22,7 @@ import { fileURLToPath } from "node:url";
 const HERE = path.dirname(fileURLToPath(import.meta.url));
 const ROOT = path.resolve(HERE, "../..");
 const require = createRequire(path.join(process.env.A11Y_DEPS || path.join(ROOT, "tools/a11y"), "package.json"));
-import { launch, ENGINE, body, picked } from "./engine.mjs";
+import { launch, warmUp, ENGINE, body, picked } from "./engine.mjs";
 
 const ROUNDS = 30, WINDOW = 10;
 const RUNS = [{ age: 5, lang: "en" }, { age: 8, lang: "de" }, { age: 16, lang: "en" }];
@@ -62,6 +62,8 @@ await new Promise(r => server.listen(0, "127.0.0.1", r));
 const ORIGIN = `http://127.0.0.1:${server.address().port}`, BASE = ORIGIN + "/loopy/";
 
 const browser = await launch();
+// The first page of a fresh browser is slow once (see warmUp); the chess board is the page that showed it.
+await warmUp(browser, BASE + "brain/chess-puzzles/");
 
 const problems = [];
 const rows = [];
