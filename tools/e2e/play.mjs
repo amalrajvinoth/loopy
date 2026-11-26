@@ -349,7 +349,19 @@ for (const game of GAMES) {
     } catch (e) {
       // The first line says what timed out; the last lines of the call log say on what, and what was in the way.
       const log = e.message.split("\n").slice(1).map(l => l.trim()).filter(Boolean).slice(-8);
-      fail(`could not play: ${[e.message.split("\n")[0], ...log].join(" / ")}`);
+      // A tap that waited for "visible, enabled and stable" and never got it: say which of the three failed, by
+      // reading the element the way Playwright does (checkVisibility, its style, its box over ten frames).
+      const sel = /waiting for locator\('(.+?)'\)/.exec(e.message);
+      let why = "";
+      if (p && sel && /stable/.test(e.message)) why = await p.evaluate(async (s) => {
+        const el = document.querySelector(s); if (!el) return "gone now";
+        const boxes = [];
+        for (let i = 0; i < 10; i++) { const r = el.getBoundingClientRect(); boxes.push(`${r.x.toFixed(1)},${r.y.toFixed(1)},${r.width.toFixed(1)}`); await new Promise(f => requestAnimationFrame(f)); }
+        const st = getComputedStyle(el);
+        return `checkVisibility ${el.checkVisibility ? el.checkVisibility() : "n/a"}, visibility ${st.visibility}, disabled ${el.disabled}, ` +
+          `aria-disabled ${el.closest("[aria-disabled]")?.getAttribute("aria-disabled") || "none"}, inert ${!!el.closest("[inert]")}, boxes ${[...new Set(boxes)].join(" | ")}, fonts ${document.fonts.status}, bar ${document.querySelector(".game-bar")?.className}`;
+      }, sel[1].replace(/\\"/g, '"')).catch(x => `no read: ${x.message.split("\n")[0]}`);
+      fail(`could not play: ${[e.message.split("\n")[0], ...log, why].filter(Boolean).join(" / ")}`);
       rows.push(`| ${game} | ${run.age} | ${run.lang} | - | - | - | error |`);
     }
     if (p) await p.context().close();
