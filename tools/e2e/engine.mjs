@@ -73,3 +73,19 @@ export function picked(list) {
   }
   return out;
 }
+
+/**
+ * Open one page and let it paint before the tests start, and say how long that took. A fresh runner's first page
+ * pays once for the browser's start: in WebKit the font caches are built while the first emoji and chess pieces are
+ * drawn, and the page then draws no frames for seconds. Without this, the first tap of the first game waited for
+ * that (Chess Puzzles at age 5, the first game in part 1). Every tap after it still has the usual 5 seconds.
+ */
+export async function warmUp(browser, url) {
+  const t0 = performance.now(), ctx = await browser.newContext();
+  try {
+    const p = await ctx.newPage();
+    await p.goto(url, { timeout: 60000 });
+    await p.evaluate(() => document.fonts.ready.then(() => new Promise(f => requestAnimationFrame(() => requestAnimationFrame(f)))));
+  } finally { await ctx.close(); }
+  console.error(`warm-up (${ENGINE}): ${((performance.now() - t0) / 1000).toFixed(1)}s`);
+}
