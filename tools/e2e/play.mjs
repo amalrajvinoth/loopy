@@ -91,18 +91,26 @@ async function open(game, { age, lang }, fail) {
   const p = await ctx.newPage();
   p.on("pageerror", e => fail(`script error: ${e.message}`));
   p.on("console", m => { if (m.type() === "error") fail(`console error: ${m.text()}`); });
-  p.on("request", r => { if (!r.url().startsWith(ORIGIN) && !/^(data|blob):/.test(r.url())) fail(`loads from another website: ${r.url()}`); });
+  const loading = new Set(), cut = new Set();
+  p.on("request", r => {
+    // A new page in the tab: what the old page was still loading gets cut, and only that is let go below.
+    if (r.isNavigationRequest() && r.frame() === p.mainFrame()) for (const old of loading) cut.add(old);
+    loading.add(r);
+    if (!r.url().startsWith(ORIGIN) && !/^(data|blob):/.test(r.url())) fail(`loads from another website: ${r.url()}`);
+  });
   // (Leaving the page cancels what is still loading; that is not a failure. Chromium names it net::ERR_ABORTED;
-  // WebKit gives it other words, so a request cut by the test's own reload is let go too: a new age can start
-  // fetching a level's file, as Chess Puzzles does with puzzles-6.js at age 16, just as the page reloads.)
-  let leaving = false;
-  p.on("requestfailed", r => { if (!leaving && r.failure().errorText !== "net::ERR_ABORTED") fail(`could not load ${r.url()} (${r.failure().errorText})`); });
+  // WebKit gives it other words, so a request still loading when the page is left is let go too: a new age can
+  // start fetching a level's file, as Chess Puzzles does with puzzles-6.js at age 16, just as the page reloads.
+  // A request the new page starts still fails the test.)
+  p.on("requestfinished", r => loading.delete(r));
+  p.on("requestfailed", r => {
+    loading.delete(r);
+    if (!cut.has(r) && r.failure().errorText !== "net::ERR_ABORTED") fail(`could not load ${r.url()} (${r.failure().errorText})`);
+  });
   await p.goto(BASE + game);
   // Set the age the way a parent does, then start again so the first question is at that age too.
   await p.evaluate(a => Loopy.setAge(a), age);
-  leaving = true;
   await p.reload();
-  leaving = false;
   await p.waitForFunction(() => window.__questions.length > 0);
   return p;
 }
