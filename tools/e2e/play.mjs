@@ -135,6 +135,7 @@ async function chess(p) {
     const c = document.querySelector("[data-chess]"); return c.dataset.chess !== "on" || c.dataset.wait !== "on";
   }, null, { timeout: 5000 });
   await ready();
+  await p.evaluate(() => { window.__cpBefore = Loopy.rewards.last(); });
   for (const u of (await p.locator(on).first().getAttribute("data-a")).split(",")) {
     if (!await p.locator(on).count()) break;
     await p.click(`#board [data-sq="${u.slice(0, 2)}"]`);
@@ -142,6 +143,8 @@ async function chess(p) {
     if (u[4]) await p.click(`[data-promo="${u[4]}"]`);
     await ready();
   }
+  // The puzzle's own moves must count as right (a level-up may already show the next card, so ask loopy).
+  if (!await p.evaluate(() => { const l = Loopy.rewards.last(); return !!l && l !== window.__cpBefore && l.ok; })) throw new Error("chess: the puzzle's own moves were not marked right");
 }
 
 // Answer the question on screen: the right answer when the page marks it, otherwise the first one.

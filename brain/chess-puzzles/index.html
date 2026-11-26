@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'sha256-xxjpbBvY5ivceeg9bcysPVmSJhY2ZS65b/kFfpIFCNg='; style-src 'self' 'sha256-iKqZfY0yOsyVHa/qlTmRsjSUAon+EdDi9RLwucVWFNA=' 'sha256-I5FcwtcOCb0JXTPL1HgT74ATYARlWxJeP13c7ndJ3p4='; img-src 'self' data:; font-src 'self'; connect-src 'self' https://loopy-sync.loopy-1e2.workers.dev; worker-src 'self'; object-src 'none'; base-uri 'none'; form-action 'none'; manifest-src 'self'; upgrade-insecure-requests">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'sha256-sGMuJ3Lmztwksb02B49f1CfVj2yB3q4cpssz802YgZ0='; style-src 'self' 'sha256-iKqZfY0yOsyVHa/qlTmRsjSUAon+EdDi9RLwucVWFNA=' 'sha256-Fp4YfWV7tQih99F8FWRs2yg4IMU5c8ChLlYRZC4o4uc='; img-src 'self' data:; font-src 'self'; connect-src 'self' https://loopy-sync.loopy-1e2.workers.dev; worker-src 'self'; object-src 'none'; base-uri 'none'; form-action 'none'; manifest-src 'self'; upgrade-insecure-requests">
 <meta name="referrer" content="strict-origin-when-cross-origin">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <style>:root{color-scheme:light;padding-top:var(--safe-top);padding-bottom:var(--safe-bottom)}body{margin:0}[hidden]{display:none!important}</style>
@@ -77,7 +77,7 @@ button:focus-visible { outline: 3px solid var(--mark); outline-offset: 3px; }
      wrong and rewards in loopy, so the last move, the picked piece and a king in check are never those. */
   --sel: color-mix(in srgb, var(--accent) 55%, transparent); --last: color-mix(in srgb, var(--accent) 42%, transparent);
   --check: color-mix(in srgb, var(--accent) 90%, transparent); --check-2: color-mix(in srgb, var(--accent) 40%, transparent); --hl-good: rgb(47 158 68 / 0.55); --hl-bad: rgb(217 72 15 / 0.6);
-  --w-edge: #3a2414; --b-edge: #0b0604; --arrow: #2f9e44; --arrow-bad: #d9480f;
+  --w-edge: #3a2414; --b-edge: #efdcb8; --arrow: #2f9e44; --arrow-bad: #d9480f;
   --grain: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='600' height='600'%3E%3Cfilter id='f'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.003 .06' numOctaves='3' seed='3'/%3E%3CfeComponentTransfer%3E%3CfeFuncA type='table' tableValues='0 .22 0 .22 0 .22 0 .22 0'/%3E%3C/feComponentTransfer%3E%3CfeColorMatrix values='0 0 0 0 .28 0 0 0 0 .16 0 0 0 0 .07 0 0 0 1 0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23f)'/%3E%3C/svg%3E");
   --grain-2: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='600' height='600'%3E%3Cfilter id='f'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.05 .004' numOctaves='3' seed='11'/%3E%3CfeComponentTransfer%3E%3CfeFuncA type='table' tableValues='0 .45 0 .45 0 .45 0 .45 0'/%3E%3C/feComponentTransfer%3E%3CfeColorMatrix values='0 0 0 0 .2 0 0 0 0 .1 0 0 0 0 .04 0 0 0 1 0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23f)'/%3E%3C/svg%3E");
   position: relative; width: min(100cqw, 100cqh); aspect-ratio: 1; padding: 5.2%; border-radius: clamp(10px, 3.4cqmin, 20px);
@@ -90,6 +90,9 @@ button:focus-visible { outline: 3px solid var(--mark); outline-offset: 3px; }
   box-shadow: 0 0 0 2px rgb(0 0 0 / 0.35), inset 0 0 12px rgb(0 0 0 / 0.18); touch-action: none;
 }
 .rank { display: contents; }
+/* The first-time hint stands still here: the board leaves it only a tight band, and a bobbing bubble is
+   measured at a different height each time loopy.js looks again, so it would jump between spots. */
+body .loopy-hint, body .loopy-hint.up { animation: none; }
 .sq { position: relative; border: 0; padding: 0; margin: 0; background: transparent; display: grid; place-items: center; cursor: pointer; -webkit-tap-highlight-color: transparent; min-width: 0; min-height: 0; }
 .sq.d { background: var(--grain-2) 0 0 / 800% 800%, linear-gradient(135deg, var(--walnut), var(--walnut-2)); }
 .sq.last { box-shadow: inset 0 0 0 999px var(--last); }
@@ -105,7 +108,9 @@ button:focus-visible { outline: 3px solid var(--mark); outline-offset: 3px; }
 .sq:focus-visible { outline: 3px solid var(--mark); outline-offset: -3px; z-index: 2; }
 .pc { width: 88%; height: 88%; pointer-events: none; filter: drop-shadow(0 2px 1.5px rgb(0 0 0 / 0.45)); }
 .pc .w { fill: url(#lw); stroke: var(--w-edge); stroke-width: 26; }
-.pc .b { fill: url(#lb); stroke: var(--b-edge); stroke-width: 20; }
+/* Ebony pieces get a thin boxwood-coloured rim and a soft light glow, so they stand out on walnut too. */
+.pc .b { fill: url(#lb); stroke: var(--b-edge); stroke-width: 36; paint-order: stroke; }
+.pc:has(.b) { --glow: rgb(255 238 205 / 0.6); filter: drop-shadow(0 0 1.5px var(--glow)) drop-shadow(0 2px 1.5px rgb(0 0 0 / 0.4)); }
 .star { font-size: clamp(1rem, 7cqmin, 2.6rem); line-height: 1; pointer-events: none; filter: drop-shadow(0 1px 1px rgb(0 0 0 / 0.4)); }
 .drag { position: fixed; z-index: 30; pointer-events: none; transform: translate(-50%, -60%) scale(1.15); }
 .coords { position: absolute; inset: 0; pointer-events: none; font-size: clamp(8px, 2.6cqmin, 14px); font-weight: 700; color: var(--edge); opacity: 0.85; }
@@ -147,11 +152,13 @@ button:focus-visible { outline: 3px solid var(--mark); outline-offset: 3px; }
   .wrap { flex: 1 1 auto; min-height: 0; width: 100%; }
   .play { flex: 1 1 auto; min-height: 0; }
   .problem-card { flex: 1 1 auto; min-height: 0; justify-content: center; overflow: hidden; }
-  /* Spare room goes two parts above the words, one part under them: the first-time hint gets a band of its
-     own over the topic, instead of covering Clue and Skip. The negative margins take back the card's gap. */
-  .problem-card::before { content: ""; order: -2; flex: 2 1 0; margin-bottom: -8px; }
-  .problem-card::after { content: ""; order: 1; flex: 1 1 0; margin-top: -8px; }
-  .boardbox { flex: 0 1 auto; aspect-ratio: 1; }
+  /* What room the board leaves goes half above the task and half between the task and the board: the
+     first-time hint sits there, its arrow on the board, instead of covering Clue and Skip. The negative
+     margins take back the card's gap. */
+  .problem-card::before { content: ""; order: -2; flex: 1 1 0; margin-bottom: -8px; }
+  .problem-card::after { content: ""; order: -1; flex: 1 1 0; margin-top: -8px; }
+  /* The board as big as the card allows: it reaches out over the card's own padding to its edge. */
+  .boardbox { flex: 0 1 auto; aspect-ratio: 1; width: calc(100% + 2 * var(--card-pad) - 6px); margin-inline: calc(3px - var(--card-pad)); }
   .problem-card.text .boardbox { flex: 0 0 auto; }
   /* The task is read first, so it sits above the board; the answer shows under it. */
   .topic, .question { order: -1; }
@@ -161,12 +168,19 @@ button:focus-visible { outline: 3px solid var(--mark); outline-offset: 3px; }
 @media (orientation: landscape) and (min-width: 640px) {
   body { height: calc(100dvh - var(--safe-top) - var(--safe-bottom)); min-height: 0; display: flex; flex-direction: column; overflow: hidden; }
   body:has(#settings-panel:not([hidden])) { height: auto; overflow: visible; }
-  .wrap { flex: 1 1 auto; min-height: 0; width: 100%; }
-  .play { flex: 1 1 auto; min-height: 0; display: grid; grid-template-columns: minmax(0, auto) minmax(0, 1fr); grid-template-rows: minmax(0, 1fr); column-gap: var(--play-gap); }
-  .problem-card { display: contents; }
-  .boardbox { grid-column: 1; grid-row: 1; height: 100%; aspect-ratio: 1; width: auto; }
+  /* The board as tall as the screen allows: from under the top bar to the bottom. The title, score and
+     Settings sit over the side column beside it, so they take no height from the board. */
+  .wrap { flex: 1 1 auto; min-height: 0; width: 100%; display: grid; grid-template-columns: minmax(0, auto) minmax(0, 1fr);
+    grid-template-rows: auto auto auto minmax(0, 1fr); column-gap: var(--play-gap); row-gap: 0; }
+  .game-bar { grid-column: 1 / -1; grid-row: 1; margin-bottom: var(--row-gap); }
+  .top { grid-column: 2; grid-row: 2; margin-bottom: var(--row-gap); }
+  .settings-panel { grid-column: 2; grid-row: 3; margin-bottom: var(--row-gap); }
+  /* Settings open: the page may scroll, so the board keeps the screen's height (less the top bar) by itself. */
+  body:has(#settings-panel:not([hidden])) .boardbox { height: calc(100dvh - var(--safe-top) - var(--safe-bottom) - var(--page-pad-top) - var(--page-pad-bottom) - 60px); align-self: start; }
+  .play, .problem-card { display: contents; }
+  .boardbox { grid-column: 1; grid-row: 2 / -1; height: 100%; aspect-ratio: 1; width: auto; }
   /* The words move into the side column here (see placeWords), above the answers and buttons. */
-  .side { grid-column: 2; grid-row: 1; min-height: 0; }
+  .side { grid-column: 2; grid-row: 4; min-height: 0; }
   .side .card-words { flex: 0 1 auto; margin-block: auto; min-height: 0; overflow-y: auto; display: flex; flex-direction: column; justify-content: center; gap: 8px; align-items: flex-start; }
   .card-words .question, .card-words .intro, .card-words .feedback { text-align: left; }
   .side .choices, .side .row2 { flex: 0 0 auto; }
@@ -700,15 +714,20 @@ const CHESS = (function () {
   function newRound() {
     const lv = level;
     if (got[lv]) return roundNow();
+    // The card on screen belongs to the old level: it takes no answer while the new level loads.
+    answered = true; busy = true;
     if (asked[lv]) return;
     asked[lv] = true;
-    const s = document.createElement("script"), done = () => { got[lv] = true; if (lv === level) roundNow(); };
+    const s = document.createElement("script");
     s.src = "puzzles-" + (lv + 1) + ".js";
-    s.addEventListener("load", done); s.addEventListener("error", done);
+    s.addEventListener("load", () => { got[lv] = true; if (lv === level) roundNow(); });
+    // Offline and not saved yet: a round from the first level now, and the next round asks again.
+    s.addEventListener("error", () => { asked[lv] = false; s.remove(); if (lv === level) roundNow(); });
     document.head.appendChild(s);
   }
   function roundNow() {
     current = Loopy.retry.fresh(GAME, recent, makeAny, rebuild, 12);
+    current.lv = level; // an answer counts for the level its card came from
     const r = ++round;
     answered = false; sel = -1; targets = []; lastMove = null; clues = 0; step = 0; busy = false;
     arrowsEl.textContent = ""; promoEl.hidden = true; card.className = "problem-card" + (current.text ? " text" : "");
@@ -790,11 +809,12 @@ const CHESS = (function () {
   }
   function askPromo(moves) {
     promoEl.textContent = ""; promoEl.hidden = false; busy = true;
+    const task = qEl.textContent;
     qEl.textContent = t("cpPromo");
     "qrbn".split("").forEach((q) => {
       const b = el("button"); b.type = "button"; b.dataset.promo = q; b.setAttribute("aria-label", t("pn-" + q));
       b.appendChild(pieceSvg(pos.w ? q.toUpperCase() : q));
-      b.addEventListener("click", () => { promoEl.hidden = true; busy = false; judge(moves.find((m) => m.p === q)); });
+      b.addEventListener("click", () => { promoEl.hidden = true; busy = false; qEl.textContent = task; judge(moves.find((m) => m.p === q)); });
       promoEl.appendChild(b);
     });
   }
@@ -832,7 +852,7 @@ const CHESS = (function () {
       if (now !== round) return;
       const r = C.find(pos, current.sol[step + 1]);
       if (!r) return finish(true, before, want, u);
-      pos = C.play(pos, r); lastMove = r; step += 2; busy = false; card.dataset.wait = "off"; clues = 0;
+      pos = C.play(pos, r); lastMove = r; step += 2; busy = false; card.dataset.wait = "off"; clues = 0; clueBtn.disabled = false;
       drawBoard(); slide(r.f, r.t);
     }, 550);
   }
@@ -848,7 +868,7 @@ const CHESS = (function () {
   function finish(ok, before, want, got) {
     answered = true; busy = false; tried++;
     if (ok) { right++; streak++; } else streak = 0;
-    const kind = "cp-" + KINDS[level];
+    const kind = "cp-" + KINDS[current.lv];
     const q = current.kind === "choice" && current.text ? current.task.slice(0, 40) : t("cpPuzzle", { t: t("t_" + current.topic), n: (current.i || 0) + 1 });
     const a = current.kind === "choice" ? want : before ? said(before, want) : want;
     if (ok) Loopy.rewards.correct(GAME, streak, kind);
@@ -921,18 +941,15 @@ const CHESS = (function () {
     boardEl.querySelectorAll(".sq").forEach((x) => { x.tabIndex = -1; });
     const to = sqEl(focusSq); to.tabIndex = 0; to.focus();
   });
-  // Next from the keyboard: focus goes to the board's square in the Tab order, so the child can play on
-  // (loopy.js does this for answer buttons, and still does on a card question).
-  nextBtn.addEventListener("keydown", (e) => {
-    if (e.key !== "Enter" && e.key !== " ") return;
-    setTimeout(() => {
+  nextBtn.addEventListener("click", (e) => {
+    if (!answered) { streak = 0; render(); }
+    newRound();
+    // Next from the keyboard (a click with no pointer): focus goes to the board's square in the Tab order,
+    // so the child can play on. loopy.js does this for answer buttons, and still does on a card question.
+    if (e.detail === 0) setTimeout(() => {
       const a = document.activeElement, sq = boardEl.querySelector('[tabindex="0"]');
       if ((a === document.body || a === nextBtn) && sq && sq.getClientRects().length) sq.focus({ preventScroll: true });
     }, 0);
-  });
-  nextBtn.addEventListener("click", () => {
-    if (!answered) { streak = 0; render(); }
-    newRound();
   });
   levelBtns.forEach((b) => b.addEventListener("click", () => { level = +b.dataset.level; topicPick = "all"; turn = 0; save(); recent = []; newRound(); }));
   window.addEventListener("loopy:age", (e) => { age = e.detail; recent = []; turn = 0; loadForAge(); newRound(); });
