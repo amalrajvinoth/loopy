@@ -1,8 +1,10 @@
 # Safety checks on every change. They must pass before a pull request is merged.
 #
-# The fast checks run on every change. The long browser tests and the guide check run only when
-# a pull request changes files they read (tools/ci_changes.py says which). Pushes to main run
-# everything. "All checks" at the end always reports, so it is the one check to mark as required.
+# The fast checks run on every change. On a pull request the long browser tests run only on the pages
+# the change touches, and only the tests that read the changed files: a change to one game tests that
+# game, a change to a shared file (src/, loopy.js, fonts ...) tests every page. tools/ci_changes.py
+# says which. Pushes to main run everything. "All checks" at the end always reports, so it is the one
+# check to mark as required.
 name: Checks
 
 on:
@@ -24,8 +26,14 @@ concurrency:
 jobs:
   changes:
     runs-on: ubuntu-latest
+    # a11y, play, retry, pictures: "all", "none" or a JSON list of pages. extras: the other browser tests to run.
     outputs:
-      site: ${{ steps.which.outputs.site }}
+      a11y: ${{ steps.which.outputs.a11y }}
+      play: ${{ steps.which.outputs.play }}
+      retry: ${{ steps.which.outputs.retry }}
+      pictures: ${{ steps.which.outputs.pictures }}
+      extras: ${{ steps.which.outputs.extras }}
+      lighthouse: ${{ steps.which.outputs.lighthouse }}
       guide: ${{ steps.which.outputs.guide }}
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
@@ -33,13 +41,13 @@ jobs:
           persist-credentials: false
           # A pull request is checked out as a merge commit: its first parent is the base branch.
           fetch-depth: 2
-      - name: Which long checks this change needs
+      - name: Which long checks this change needs, and on which pages
         id: which
         run: |
           if [ "${{ github.event_name }}" = pull_request ]; then
             python3 tools/ci_changes.py HEAD^1 HEAD >> "$GITHUB_OUTPUT"
           else
-            printf 'site=true\nguide=true\n' >> "$GITHUB_OUTPUT"
+            python3 tools/ci_changes.py --all >> "$GITHUB_OUTPUT"
           fi
           cat "$GITHUB_OUTPUT"
 
@@ -59,6 +67,8 @@ jobs:
         run: node sync/test.mjs
       - name: The Family sync usage report prints counts only (tools/sync-usage.mjs)
         run: node tools/sync-usage.test.mjs
+      - name: CI picks the right browser tests and pages for a change (tools/ci_changes.py)
+        run: python3 tools/ci_changes_test.py
       - name: Every chess puzzle plays through with the game's own rules (tools/chess/build.mjs)
         run: node tools/chess/build.mjs --check
       - name: Install the minifier and the type checker (exact versions from the lock file)
@@ -113,15 +123,16 @@ jobs:
           python3 tools/review.py --budget --base "$([ "$BASE" = main ] && echo origin/main || echo "$BASE")"
 
   # The browser tests run twice: in Chromium and in WebKit, the engine behind Safari on iPhone and iPad.
+  # Every page is split in two parts that run at once; a few pages run as one part.
   accessibility:
-    name: accessibility (part ${{ matrix.part }} of 2, ${{ matrix.engine }})
+    name: accessibility (part ${{ matrix.part }} of ${{ needs.changes.outputs.a11y == 'all' && 2 || 1 }}, ${{ matrix.engine }})
     needs: changes
-    if: needs.changes.outputs.site == 'true'
+    if: needs.changes.outputs.a11y != 'none'
     runs-on: ubuntu-latest
     strategy:
       fail-fast: false
       matrix:
-        part: [1, 2]
+        part: ${{ fromJSON(needs.changes.outputs.a11y == 'all' && '[1, 2]' || '[1]') }}
         engine: [chromium, webkit]
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
@@ -139,18 +150,19 @@ jobs:
         run: node tools/a11y/check.mjs
         env:
           A11Y_DEPS: ${{ runner.temp }}/a11y
-          SHARD: ${{ matrix.part }}/2
+          SHARD: ${{ matrix.part }}/${{ needs.changes.outputs.a11y == 'all' && 2 || 1 }}
           ENGINE: ${{ matrix.engine }}
+          PAGES: ${{ needs.changes.outputs.a11y }}
 
   play:
-    name: play test (part ${{ matrix.part }} of 2, ${{ matrix.engine }})
+    name: play test (part ${{ matrix.part }} of ${{ needs.changes.outputs.play == 'all' && 2 || 1 }}, ${{ matrix.engine }})
     needs: changes
-    if: needs.changes.outputs.site == 'true'
+    if: needs.changes.outputs.play != 'none'
     runs-on: ubuntu-latest
     strategy:
       fail-fast: false
       matrix:
-        part: [1, 2]
+        part: ${{ fromJSON(needs.changes.outputs.play == 'all' && '[1, 2]' || '[1]') }}
         engine: [chromium, webkit]
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
@@ -168,13 +180,15 @@ jobs:
         run: node tools/e2e/play.mjs
         env:
           A11Y_DEPS: ${{ runner.temp }}/a11y
-          SHARD: ${{ matrix.part }}/2
+          SHARD: ${{ matrix.part }}/${{ needs.changes.outputs.play == 'all' && 2 || 1 }}
           ENGINE: ${{ matrix.engine }}
+          PAGES: ${{ needs.changes.outputs.play }}
 
+  # Try again on the games the change touches, then the other browser tests whose pages or files it touches.
   retry:
     name: Try again test
     needs: changes
-    if: needs.changes.outputs.site == 'true'
+    if: needs.changes.outputs.retry != 'none' || needs.changes.outputs.extras != '[]'
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
@@ -186,36 +200,43 @@ jobs:
           cp tools/a11y/package.json tools/a11y/package-lock.json "$RUNNER_TEMP/a11y/"
           npm ci --prefix "$RUNNER_TEMP/a11y" --ignore-scripts --no-audit --no-fund
       - name: A mistake comes back in every game until it is fixed
+        if: needs.changes.outputs.retry != 'none'
         run: node tools/e2e/retry.mjs
         env:
           A11Y_DEPS: ${{ runner.temp }}/a11y
+          PAGES: ${{ needs.changes.outputs.retry }}
       - name: After an update, phones save the new pages, never an old one
+        if: contains(fromJSON(needs.changes.outputs.extras), 'offline')
         run: node tools/e2e/offline.mjs
         env:
           A11Y_DEPS: ${{ runner.temp }}/a11y
       - name: Family sync keeps two devices in step, and sends nothing when it is off
+        if: contains(fromJSON(needs.changes.outputs.extras), 'sync')
         run: node tools/e2e/sync.mjs
         env:
           A11Y_DEPS: ${{ runner.temp }}/a11y
       - name: "Levels follow the child: up by itself when ready, kept over the birthday"
+        if: contains(fromJSON(needs.changes.outputs.extras), 'levels')
         run: node tools/e2e/levels.mjs
         env:
           A11Y_DEPS: ${{ runner.temp }}/a11y
       - name: "Switching the child mid-game: each child keeps their own stars, log and last game"
+        if: contains(fromJSON(needs.changes.outputs.extras), 'switch')
         run: node tools/e2e/switch.mjs
         env:
           A11Y_DEPS: ${{ runner.temp }}/a11y
       - name: "The first visit: the welcome sheet once, the family code row until a code is set"
+        if: contains(fromJSON(needs.changes.outputs.extras), 'hello')
         run: node tools/e2e/hello.mjs
         env:
           A11Y_DEPS: ${{ runner.temp }}/a11y
 
-  # The home page and six games must still look the same: pictures at four sizes, English and German, compared
+  # The home page and six games must still look the same (those of them the change touches): pictures at four sizes, English and German, compared
   # with tools/e2e/pictures/. Playwright's own pinned Chromium, so the runner's Chrome updates cannot move a pixel.
   pictures:
     name: picture test
     needs: changes
-    if: needs.changes.outputs.site == 'true'
+    if: needs.changes.outputs.pictures != 'none'
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
@@ -233,6 +254,7 @@ jobs:
         env:
           A11Y_DEPS: ${{ runner.temp }}/a11y
           ENGINE: pinned
+          PAGES: ${{ needs.changes.outputs.pictures }}
       - name: Keep the new pictures and the diffs (only when a picture changed)
         if: failure()
         uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
@@ -246,7 +268,7 @@ jobs:
   lighthouse:
     name: Lighthouse budgets
     needs: changes
-    if: needs.changes.outputs.site == 'true'
+    if: needs.changes.outputs.lighthouse == 'true'
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1

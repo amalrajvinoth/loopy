@@ -1,12 +1,13 @@
 {
   "ci_steps": [
     "checks.yml: Checks",
-    "checks.yml: Which long checks this change needs",
+    "checks.yml: Which long checks this change needs, and on which pages",
     "checks.yml: Every page's security policy matches its code",
     "checks.yml: Nothing is loaded from other websites",
     "checks.yml: Every game has a page in the guide, in English and German",
     "checks.yml: The Family sync server answers right (sync/, with a stand-in database)",
     "checks.yml: The Family sync usage report prints counts only (tools/sync-usage.mjs)",
+    "checks.yml: CI picks the right browser tests and pages for a change (tools/ci_changes.py)",
     "checks.yml: Every chess puzzle plays through with the game's own rules (tools/chess/build.mjs)",
     "checks.yml: Install the minifier and the type checker (exact versions from the lock file)",
     "checks.yml: loopy.js and loopy.css match their sources in src/",
@@ -20,11 +21,11 @@
     "checks.yml: Every link inside the repo points at a file that exists (lychee, offline)",
     "checks.yml: The Claude Code plugins match the repo",
     "checks.yml: Every page stays in its size budget (100 KB sent; loopy.js and loopy.css grow by at most 2 KB)",
-    "checks.yml: accessibility (part ${{ matrix.part }} of 2, ${{ matrix.engine }})",
+    "checks.yml: accessibility (part ${{ matrix.part }} of ${{ needs.changes.outputs.a11y == 'all' && 2 || 1 }}, ${{ matrix.engine }})",
     "checks.yml: Install the checker (exact versions from the lock file, no browser download)",
     "checks.yml: Install WebKit, the engine behind Safari (only for the WebKit run)",
     "checks.yml: Every page works with a keyboard and a screen reader",
-    "checks.yml: play test (part ${{ matrix.part }} of 2, ${{ matrix.engine }})",
+    "checks.yml: play test (part ${{ matrix.part }} of ${{ needs.changes.outputs.play == 'all' && 2 || 1 }}, ${{ matrix.engine }})",
     "checks.yml: Install the checker (exact versions from the lock file, no browser download)",
     "checks.yml: Install WebKit, the engine behind Safari (only for the WebKit run)",
     "checks.yml: Every game plays, and no question comes back too soon",
@@ -102,6 +103,7 @@
     "tools/chess/cards.mjs",
     "tools/chess/pick.mjs",
     "tools/ci_changes.py",
+    "tools/ci_changes_test.py",
     "tools/csp.py",
     "tools/e2e/engine.mjs",
     "tools/e2e/hello.mjs",
@@ -157,5 +159,5 @@
     "844 × 390"
   ],
   "games_lists": 1,
-  "learned_at": "d5c9eac"
+  "learned_at": "d093761"
 }

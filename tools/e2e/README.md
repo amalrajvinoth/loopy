@@ -39,6 +39,8 @@ It checks:
 
 `SHARD=1/2` plays every other game, starting with the first, and `SHARD=2/2` the rest. CI runs both halves at once to save time.
 
+`PAGES='["math/plus-minus/"]'` plays only the games listed. On a pull request CI sets it from `tools/ci_changes.py`: a change to one game plays that game only, and a change to a shared file (`src/`, `loopy.js`, `loopy.css`, fonts) plays every game. The Try again test and the picture test read `PAGES` the same way.
+
 ## How games avoid repeats
 
 Each game gets its next question from `Loopy.fresh(recent, make)` in `src/loopy.js`. It skips the questions in the game's `recent` list. When there are too few questions to skip them all, the oldest ones may come back first. It also puts the question's key on `<body data-q="…">`, which is how this test sees each question, even the same one twice.

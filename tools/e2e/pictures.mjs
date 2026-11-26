@@ -22,7 +22,7 @@ import fs from "node:fs";
 import path from "node:path";
 import { createRequire } from "node:module";
 import { fileURLToPath } from "node:url";
-import { launch, ENGINE, body } from "./engine.mjs";
+import { launch, ENGINE, body, picked } from "./engine.mjs";
 
 const HERE = path.dirname(fileURLToPath(import.meta.url));
 const ROOT = path.resolve(HERE, "../..");
@@ -48,7 +48,8 @@ const LANGS = ["en", "de"];
 // picture fails past this share of changed pixels. Anti-aliasing never reaches it; a moved button does.
 const THRESHOLD = 0.15, MAX_SHARE = 0.003;
 
-const pages = process.env.PAGE ? [process.env.PAGE.replace(/^\/+/, "").replace(/index\.html$/, "")] : PAGES;
+// PAGE=<path> takes one page; PAGES (from tools/ci_changes.py) keeps only the pages a change touches.
+const pages = process.env.PAGE ? [process.env.PAGE.replace(/^\/+/, "").replace(/index\.html$/, "")] : picked(PAGES);
 
 const TYPES = { ".html": "text/html", ".js": "text/javascript", ".css": "text/css", ".svg": "image/svg+xml", ".png": "image/png",
   ".woff2": "font/woff2", ".webmanifest": "application/manifest+json", ".json": "application/json" };

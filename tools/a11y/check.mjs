@@ -20,7 +20,7 @@ import { fileURLToPath } from "node:url";
 const HERE = path.dirname(fileURLToPath(import.meta.url));
 const ROOT = path.resolve(HERE, "../..");
 const require = createRequire(path.join(process.env.A11Y_DEPS || HERE, "package.json"));
-import { launch, ENGINE, body } from "../e2e/engine.mjs";
+import { launch, ENGINE, body, picked } from "../e2e/engine.mjs";
 const AXE = fs.readFileSync(require.resolve("axe-core/axe.min.js"), "utf8");
 
 // Every theme in src/loopy.css (a theme sets its own --bg).
@@ -36,6 +36,8 @@ for (const subject of fs.readdirSync(ROOT).sort()) {
     if (fs.existsSync(file) && !/http-equiv="refresh"|location\.replace/.test(fs.readFileSync(file, "utf8"))) PAGES.push(`${subject}/${game}/`);
   }
 }
+// PAGES (from tools/ci_changes.py) keeps only the pages a change touches.
+PAGES.splice(0, PAGES.length, ...picked(PAGES));
 // SHARD=1/2 checks only the first half of the pages (every other one), SHARD=2/2 the rest. CI runs both at once.
 const [SHARD, SHARDS] = (process.env.SHARD || "1/1").split("/").map(Number);
 if (!(SHARDS >= 1 && SHARD >= 1 && SHARD <= SHARDS)) throw new Error(`SHARD must look like 1/2, not ${process.env.SHARD}`);
