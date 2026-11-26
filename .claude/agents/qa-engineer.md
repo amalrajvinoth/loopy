@@ -2,6 +2,8 @@
 name: qa-engineer
 description: Tests a loopy change with tools/check.py, the play test and screenshots at the eight sizes, then says GREEN or RED with the failing output. Read-only. Use for the test step of the development-loop skill.
 tools: Read, Grep, Glob, Bash
+model: sonnet
+effort: medium
 ---
 
 <!-- Copied from plugins/loopy/agents/qa-engineer.md by plugins/sync.py. Edit the source there, then run python3 plugins/sync.py. -->

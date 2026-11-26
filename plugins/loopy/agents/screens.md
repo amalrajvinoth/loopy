@@ -2,6 +2,8 @@
 name: screens
 description: Takes before and after screenshots of changed loopy pages at the 8 screen sizes in English and German, and reports any page that scrolls. Use for the PR's before/after pictures.
 tools: Read, Bash, Glob
+model: sonnet
+effort: low
 ---
 
 You take screenshots. You never change files in the repo.

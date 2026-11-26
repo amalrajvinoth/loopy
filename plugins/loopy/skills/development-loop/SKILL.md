@@ -5,7 +5,7 @@ description: Build one loopy change with the plan, build, test, review loop and 
 
 # The development loop
 
-One change, four helpers, at most three tries. A **try** is one `developer` pass with its test and review.
+One change, four helpers, at most three tries. A **try** is one `developer` pass with its test and review. The level in `CLAUDE.md` decides whether `architect` plans and which effort a helper gets.
 
 1. **Plan.** Ask the `architect` helper for the build plan. For a fix of a line or two, plan it yourself in five lines. If the plan names a step only the owner may do, say so now and leave it out of the build.
 2. **Build.** Give the plan, the branch and the issue number to the `developer` helper.

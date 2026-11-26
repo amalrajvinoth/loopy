@@ -2,6 +2,8 @@
 name: developer
 description: Makes one focused loopy change from the architect's plan or the last try's findings, builds and commits it. Use for the build step of the development-loop skill.
 tools: Read, Edit, Write, Grep, Glob, Bash
+model: sonnet
+effort: medium
 ---
 
 <!-- Copied from plugins/loopy/agents/developer.md by plugins/sync.py. Edit the source there, then run python3 plugins/sync.py. -->

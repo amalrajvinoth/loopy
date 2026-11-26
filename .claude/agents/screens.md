@@ -2,6 +2,8 @@
 name: screens
 description: Takes before and after screenshots of changed loopy pages at the 8 screen sizes in English and German, and reports any page that scrolls. Use for the PR's before/after pictures.
 tools: Read, Bash, Glob
+model: sonnet
+effort: low
 ---
 
 <!-- Copied from plugins/loopy/agents/screens.md by plugins/sync.py. Edit the source there, then run python3 plugins/sync.py. -->

@@ -2,6 +2,8 @@
 name: architect
 description: Writes the build plan for one picked loopy task (files, risks, checks, Done when) before any code changes. Read-only. Use for the plan step of the development-loop skill.
 tools: Read, Grep, Glob, Bash
+model: opus
+effort: high
 ---
 
 <!-- Copied from plugins/loopy/agents/architect.md by plugins/sync.py. Edit the source there, then run python3 plugins/sync.py. -->

@@ -2,6 +2,8 @@
 name: code-reviewer
 description: Reviews a loopy change with the loopy-review skill and returns the findings table. Read-only. Use for the review step of the development-loop skill and before a pull request is ready.
 tools: Read, Grep, Glob, Bash
+model: opus
+effort: high
 ---
 
 You review loopy changes. You never edit files, commit or push.

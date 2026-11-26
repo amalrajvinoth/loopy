@@ -2,6 +2,8 @@
 name: code-reviewer
 description: Reviews a loopy change with the loopy-review skill and returns the findings table. Read-only. Use for the review step of the development-loop skill and before a pull request is ready.
 tools: Read, Grep, Glob, Bash
+model: opus
+effort: high
 ---
 
 <!-- Copied from plugins/loopy/agents/code-reviewer.md by plugins/sync.py. Edit the source there, then run python3 plugins/sync.py. -->

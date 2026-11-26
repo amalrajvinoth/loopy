@@ -14,11 +14,12 @@ makes the .claude/ copies. Edit plugins/, never the copies; like src/ and the bu
 - plugins/<p>/hooks/hooks.json -> "hooks" in .claude/settings.json, with ${CLAUDE_PLUGIN_ROOT}
   pointing at "$CLAUDE_PROJECT_DIR"/plugins/<p>. Other settings in that file are kept.
 - plugins/loopy/RULES.md and plugins/work-style/RULES.md -> AGENTS.md at the repo root (the rules plus how to
-  build and check, for every coding agent: Codex, Copilot, Cursor, Gemini CLI, ...) and CLAUDE.md, which loads
-  AGENTS.md for Claude Code.
+  build and check, for every coding agent: Codex, Copilot, Cursor, Gemini CLI, ...).
+- plugins/loopy/ORCHESTRATION.md -> CLAUDE.md, under a line that loads AGENTS.md: how Claude Code runs a task
+  (the level, the helpers, their effort, the loop). Only Claude Code has subagents and effort, so it is not in AGENTS.md.
 
 --check also keeps the skills short (see MAX_SKILL below): every SKILL.md in .claude/skills, the repo's own
-included, its description, and AGENTS.md.
+included, its description, AGENTS.md and CLAUDE.md.
 """
 import json, pathlib, re, sys
 
@@ -31,7 +32,7 @@ WORK_STYLE = "How the owner works"
 # Sizes, in bytes of the file Claude reads (the .claude/ copy). A skill's body is read whole each time it is used, AGENTS.md in every
 # session, and every description in every session. More than this and the text is doing a page's job:
 # move the detail into a file next to the skill, which is read only when it is needed.
-MAX_SKILL, MAX_AGENTS, MAX_DESCRIPTION = 6 * 1024, 10 * 1024, 200
+MAX_SKILL, MAX_AGENTS, MAX_CLAUDE, MAX_DESCRIPTION = 6 * 1024, 10 * 1024, 5 * 1024, 200
 # A skill that may be longer, with the reason. Keep this list short.
 LONGER = {
     "improve-ui": (10 * 1024, "copied from ibelick/ui-skills (MIT); kept word for word so an update is a plain copy"),
@@ -53,11 +54,17 @@ loopy is a free learning games website for kids in grades 1 to 10, in English an
 
 """
 
-CLAUDE_MD = """<!-- Written by plugins/sync.py. Do not edit: the rules live in plugins/loopy/RULES.md. -->
+CLAUDE_HEAD = """<!-- Written by plugins/sync.py from plugins/loopy/ORCHESTRATION.md. Do not edit: change that file, then run python3 plugins/sync.py. -->
 @AGENTS.md
 
-The line above loads AGENTS.md, the rules every coding agent reads. The skills in `.claude/skills/` know the repo's workflows (development-loop, ship-pr, heal, new-game, loopy-review, loopy-docs, plan-options, go); the hooks in `.claude/settings.json` stop the common slips.
+The line above loads AGENTS.md, the rules every coding agent reads. Below is how Claude Code runs a task here. The skills in `.claude/skills/` hold the workflows; the hooks in `.claude/settings.json` stop the common slips.
+
 """
+
+
+def claude_md():
+    """CLAUDE.md: the line that loads AGENTS.md, then how Claude runs a task (plugins/loopy/ORCHESTRATION.md)."""
+    return CLAUDE_HEAD + (ROOT / "plugins/loopy/ORCHESTRATION.md").read_text(encoding="utf-8")
 
 
 def down(text, top):
@@ -87,7 +94,7 @@ def agents_md():
 
 def wanted():
     """{path: content} for every copy (in .claude/, plus AGENTS.md and CLAUDE.md at the root), and the merged hooks."""
-    files, hooks = {"AGENTS.md": agents_md(), "CLAUDE.md": CLAUDE_MD}, {}
+    files, hooks = {"AGENTS.md": agents_md(), "CLAUDE.md": claude_md()}, {}
     for plugin in PLUGINS:
         rel = plugin.relative_to(ROOT)
         for skill in sorted((plugin / "skills").glob("*/SKILL.md")):
@@ -156,6 +163,10 @@ def too_long(files):
     if agents > MAX_AGENTS:
         out.append(f"AGENTS.md is {agents} bytes (limit {MAX_AGENTS}). Every session reads it: keep rules to one or two lines "
                    "in the RULES.md files, and put the how-to in the skill, recipe or check that uses it.")
+    claude = len(files.get("CLAUDE.md", "").encode("utf-8"))
+    if claude > MAX_CLAUDE:
+        out.append(f"CLAUDE.md is {claude} bytes (limit {MAX_CLAUDE}). Every Claude session reads it: keep "
+                   "plugins/loopy/ORCHESTRATION.md to the levels, the helpers and the loop; the how-to goes in a skill.")
     return out
 
 
