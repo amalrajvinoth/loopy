@@ -61,11 +61,11 @@ Family sync carries the same things as a [stars code](/loopy/guide/stars/move-st
 ## When it syncs
 
 - **The home page** gets new stars from the other devices each time it opens. If something new came, it loads once more to show it.
-- **A game** sends its new stars soon after you play, and when you leave the game.
+- **A game** sends its new stars soon after you play, and when you leave the game. If another device saved first, the game reads the family's stars as it is left, adds them, and sends everything together. The game loads once more when you come back to it.
 - **A device left open** catches up by itself. After 5 minutes with no tap, it gets the new stars and loads the page once more. A game then shows a new question, and the level and stars stay. While nobody touches it, it checks again every 15 minutes, for up to an hour.
-- **Sync now** in ⚙ Settings does it right away. Under it, "Last sync at" shows the time this device last synced.
+- **Sync now** in ⚙ Settings does it right away. On the home page, new stars from the family's other devices load the page once more, even with Settings open. Under the button, "Last sync at" shows the time this device last synced.
 
-It never loads the page while a child is tapping, while a box or Settings is open, or while loopy is in the background. The games never wait for the internet. Stars are saved on the device first, as always. Without internet, Settings says "Waiting for the internet", and loopy syncs when it is back.
+On its own, it never loads the page while a child is tapping, while a box or Settings is open, or while loopy is in the background. Only a tap on **Sync now** does that. The games never wait for the internet. Stars are saved on the device first, as always. Without internet, Settings says "Waiting for the internet", and loopy syncs when it is back.
 
 ## Is it safe?
 

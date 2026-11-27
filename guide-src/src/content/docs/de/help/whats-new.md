@@ -11,6 +11,7 @@ Die großen Änderungen, die neuesten zuerst. Kleine Korrekturen stehen nicht da
 ## 27. November 2026
 
 - **Nichts mehr unter der Leiste des Tablets.** Ist loopy auf dem Home-Bildschirm eines Android-Tablets, liegt die unterste Reihe Knöpfe nicht mehr unter der Leiste des Tablets (Zurück, Start und Apps). Bei Schachrätsel bleibt das Brett auch groß, wenn der erste Tipp erscheint.
+- **Jetzt abgleichen zeigt die neuen Sterne der Familie.** Ein Spiel, dem ein anderes Gerät mit dem Speichern zuvorkam, liest sie beim Verlassen und fügt sie hinzu.
 - **Links, die loopy auf Deutsch oder Englisch öffnen.** Häng `#lang=de` oder `#lang=en` an den loopy-Link, dann öffnet sich loopy in dieser Sprache und merkt sie sich.
 
 ## 26. November 2026

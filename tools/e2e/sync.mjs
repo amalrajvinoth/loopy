@@ -324,6 +324,29 @@ await J.page.goto(BASE);
 await J.page.waitForTimeout(600);
 check("Once a code is set, the row is gone", await rowOf(J.page).isHidden(), "");
 
+// 9. Sync now with Settings open: the family's new stars show on the page at once. Settings being open
+// keeps the idle check from reloading, so Sync now has to do it, or the button seems to do nothing.
+const chip = p => p.evaluate(() => (document.getElementById("star-chip") || {}).textContent || "");
+await J.page.goto(BASE);
+await until(async () => await stars(J.page) === 4 && !!(await chip(J.page)));
+const chipWas = await chip(J.page);
+skew += 11000;
+await R.page.goto(BASE + "math/plus-minus/");
+await until(() => R.page.evaluate(() => !!(window.Loopy && Loopy.sync)));
+const rowBefore = [...env.DB.rows.values()][0].e;
+await earn(R.page, 3);
+await R.page.evaluate(() => {
+  Object.defineProperty(document, "visibilityState", { value: "hidden", configurable: true });
+  document.dispatchEvent(new Event("visibilitychange"));
+});
+// J saved after R read the copy, so R's save is turned away (412): leaving the game reads, merges and sends.
+check("R sends 3 more stars even though J saved first", await until(() => [...env.DB.rows.values()][0].e !== rowBefore), "");
+skew += 11000;
+await openSettings(J.page);
+await J.page.locator(".set-sync").getByRole("button", { name: "Sync now" }).click();
+check("Sync now with Settings open brings the family's new stars", await until(async () => await stars(J.page) === 7), String(await stars(J.page).catch(() => "?")));
+check("and the page shows them", await until(async () => /\b7\b/.test(await chip(J.page)) && await J.page.locator("#star-chip").isVisible()), chipWas + " -> " + await chip(J.page).catch(() => "?"));
+
 const others = [...A.seen.other, ...B.seen.other, ...R.seen.other, ...J.seen.other];
 check("Nothing goes anywhere but the site and the sync server", others.length === 0, others.slice(0, 3).join(" "));
 await A.ctx.close();
