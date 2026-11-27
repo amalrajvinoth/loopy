@@ -10,6 +10,7 @@ The big changes, newest first. Small fixes are not listed. See [the full list on
 
 ## 27 November 2026
 
+- **Nothing hidden under a tablet's bar.** With loopy added to the home screen of an Android tablet, the bottom row of buttons no longer sits under the tablet's own bar (back, home and apps). In Chess Puzzles the board also keeps its full size when the first tip shows.
 - **Sync now shows the family's new stars.** A game that another device's save got ahead of reads and adds them as it is left.
 - **Links that open loopy in English or German.** Add `#lang=en` or `#lang=de` to the loopy link and it opens in that language and keeps it.
 

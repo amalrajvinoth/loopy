@@ -4,6 +4,7 @@ The big changes, newest first. Small fixes are not listed.
 
 | Date | What's new | Where | PR |
 | --- | --- | --- | --- |
+| 2026-11-27 | loopy added to the home screen of an Android tablet no longer hides the bottom row of buttons under the tablet's own bar (back, home and apps). Before, Chess Puzzles lost its Clue and Skip buttons there. In Chess Puzzles the board also keeps its full size when the first-time tip shows. | Every game, in the home screen app on a tablet | [#367](https://github.com/amalrajvinoth/loopy/pull/367) |
 | 2026-11-27 | Sync now shows the family's new stars. A game that another device's save got ahead of reads and adds them as it is left. | [Home](https://amalrajvinoth.github.io/loopy/) ⚙ Settings, Family sync | [#374](https://github.com/amalrajvinoth/loopy/pull/374) |
 | 2026-11-27 | Links that open loopy in English or German. Add `#lang=en` or `#lang=de` to the loopy link and it opens in that language and keeps it. | [English](https://amalrajvinoth.github.io/loopy/#lang=en), [German](https://amalrajvinoth.github.io/loopy/#lang=de) | [#373](https://github.com/amalrajvinoth/loopy/pull/373) |
 | 2026-11-26 | On a tablet, the question card now fills the whole question side, and the question, picture and words grow to fill it. Before, the card was only as big as its question and left a big empty gap. Phones stay as they were. | Every game with a question card, on a tablet | [#371](https://github.com/amalrajvinoth/loopy/pull/371) |
