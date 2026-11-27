@@ -4,6 +4,7 @@ The big changes, newest first. Small fixes are not listed.
 
 | Date | What's new | Where | PR |
 | --- | --- | --- | --- |
+| 2026-11-27 | Links that open loopy in English or German. Add `#lang=en` or `#lang=de` to the loopy link and it opens in that language and keeps it. The WhatsApp invite now carries one link for each language. | [English](https://amalrajvinoth.github.io/loopy/#lang=en), [German](https://amalrajvinoth.github.io/loopy/#lang=de) | PR |
 | 2026-11-26 | On a tablet, the question card now fills the whole question side, and the question, picture and words grow to fill it. Before, the card was only as big as its question and left a big empty gap. Phones stay as they were. | Every game with a question card, on a tablet | [#371](https://github.com/amalrajvinoth/loopy/pull/371) |
 | 2026-11-26 | A new game, **Chess Puzzles**, in a new **Brain games** part of the home page. Children solve real chess puzzles on a wooden board, from how each piece moves up to checkmates and sacrifices, and can print a worksheet with nine boards. | [Chess Puzzles](https://amalrajvinoth.github.io/loopy/brain/chess-puzzles/) | [#356](https://github.com/amalrajvinoth/loopy/pull/356) |
 | 2026-11-24 | Pick how the game buttons look. A new **Game tiles** row in the home page Settings offers five looks: Chunky (as before), Sticker, Soft, List and Icons. Each child keeps their own choice, and it travels in the stars code. | [Home](https://amalrajvinoth.github.io/loopy/) ⚙ Settings | [#351](https://github.com/amalrajvinoth/loopy/pull/351) |

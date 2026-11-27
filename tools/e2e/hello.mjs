@@ -11,6 +11,8 @@
 //   3. A browser that already has stars never gets the sheet: nothing is reset. A page opened with a
 //      #family= link gets neither the sheet nor the row.
 //   4. A German browser with no saved language starts loopy in German; a saved English choice wins.
+//   5. A link with #lang=de (or #lang=en), as in the WhatsApp invite, opens in that language, keeps it, takes the
+//      hint off the address, works on the other pages too and still gives a new visitor the welcome sheet.
 import http from "node:http";
 import fs from "node:fs";
 import path from "node:path";
@@ -136,6 +138,23 @@ await D.page.evaluate(() => localStorage.setItem("loopy.lang", "en"));
 await D.page.goto(BASE);
 check(await D.page.evaluate(() => document.documentElement.lang) === "en", "a saved choice wins over the browser language");
 await D.ctx.close();
+
+// 5. A link that names the language.
+console.log("5. Language link");
+const E = await fresh({ locale: "en-US" });
+await E.page.goto(BASE + "#lang=de");
+await sheet(E.page).waitFor({ state: "visible" });
+check(await E.page.evaluate(() => document.documentElement.lang) === "de", "#lang=de opens loopy in German");
+check(await sheet(E.page).locator("h2").innerText() === "Hallo! Wer spielt?", "a new visitor still gets the welcome sheet, in German");
+check(await E.page.evaluate(() => localStorage.getItem("loopy.lang")) === "de", "the language is kept");
+check(await E.page.evaluate(() => location.hash) === "", "the hint comes off the address");
+await E.page.goto(BASE + "help/");
+check(await E.page.evaluate(() => document.documentElement.lang) === "de", "the Help page opens in German too");
+await E.page.goto(BASE + "#lang=en");
+check(await E.page.evaluate(() => document.documentElement.lang) === "en", "#lang=en switches back to English");
+await E.page.goto(BASE + "#lang=fr");
+check(await E.page.evaluate(() => document.documentElement.lang) === "en", "an unknown language changes nothing");
+await E.ctx.close();
 
 await browser.close();
 server.close();

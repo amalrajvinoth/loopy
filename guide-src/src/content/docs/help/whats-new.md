@@ -8,6 +8,10 @@ loopy keeps getting new games. Here is what came lately!
 
 The big changes, newest first. Small fixes are not listed. See [the full list on GitHub](https://github.com/amalrajvinoth/loopy/blob/main/RELEASES.md).
 
+## 27 November 2026
+
+- **Links that open loopy in English or German.** Add `#lang=en` or `#lang=de` to the loopy link and it opens in that language and keeps it. The WhatsApp invite now has one link for each language.
+
 ## 26 November 2026
 
 - **Bigger question cards on a tablet.** The question card now fills the whole question side, and the question, picture and words grow to fill it. Before, the card was only as big as its question and left a big empty gap. Phones stay as they were.

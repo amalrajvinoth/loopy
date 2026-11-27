@@ -8,6 +8,10 @@ loopy bekommt immer wieder neue Spiele. Das ist zuletzt dazugekommen!
 
 Die großen Änderungen, die neuesten zuerst. Kleine Korrekturen stehen nicht dabei. Die [ganze Liste steht auf GitHub](https://github.com/amalrajvinoth/loopy/blob/main/RELEASES.md) (auf Englisch).
 
+## 27. November 2026
+
+- **Links, die loopy auf Deutsch oder Englisch öffnen.** Häng `#lang=de` oder `#lang=en` an den loopy-Link, dann öffnet sich loopy in dieser Sprache und merkt sie sich. Die WhatsApp-Einladung hat jetzt für jede Sprache einen Link.
+
 ## 26. November 2026
 
 - **Größere Fragekarten auf dem Tablet.** Die Fragekarte füllt jetzt die ganze Fragenseite, und die Frage, das Bild und die Wörter wachsen mit. Vorher war die Karte nur so groß wie die Frage und ließ eine große Lücke. Auf Handys bleibt alles wie es war.
