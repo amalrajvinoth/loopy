@@ -20,7 +20,11 @@ document.documentElement.classList.add("loopy-building");
   // A link with #lang=de or #lang=en (the invite text has one for each) opens in that language and keeps it,
   // like a tap on the language pill. The hint comes off the address.
   var named = /^#lang=(en|de)$/.exec(location.hash);
-  if (named) try { localStorage.setItem(KEY, lang = named[1]); history.replaceState(null, "", location.pathname + location.search); } catch (e) { lang = named[1]; }
+  if (named) {
+    lang = named[1];
+    try { localStorage.setItem(KEY, lang); } catch (e) {}
+    try { history.replaceState(null, "", location.pathname + location.search); } catch (e) {}
+  }
   document.documentElement.lang = lang;
   var dict = { en: {}, de: {} };
 

@@ -10,7 +10,7 @@ Die großen Änderungen, die neuesten zuerst. Kleine Korrekturen stehen nicht da
 
 ## 27. November 2026
 
-- **Links, die loopy auf Deutsch oder Englisch öffnen.** Häng `#lang=de` oder `#lang=en` an den loopy-Link, dann öffnet sich loopy in dieser Sprache und merkt sie sich. Die WhatsApp-Einladung hat jetzt für jede Sprache einen Link.
+- **Links, die loopy auf Deutsch oder Englisch öffnen.** Häng `#lang=de` oder `#lang=en` an den loopy-Link, dann öffnet sich loopy in dieser Sprache und merkt sie sich.
 
 ## 26. November 2026
 

@@ -10,7 +10,7 @@ The big changes, newest first. Small fixes are not listed. See [the full list on
 
 ## 27 November 2026
 
-- **Links that open loopy in English or German.** Add `#lang=en` or `#lang=de` to the loopy link and it opens in that language and keeps it. The WhatsApp invite now has one link for each language.
+- **Links that open loopy in English or German.** Add `#lang=en` or `#lang=de` to the loopy link and it opens in that language and keeps it.
 
 ## 26 November 2026
 
