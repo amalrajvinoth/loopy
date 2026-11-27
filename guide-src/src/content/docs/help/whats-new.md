@@ -10,6 +10,7 @@ The big changes, newest first. Small fixes are not listed. See [the full list on
 
 ## 27 November 2026
 
+- **Sync now shows the family's new stars.** A game that another device's save got ahead of reads and adds them as it is left.
 - **Links that open loopy in English or German.** Add `#lang=en` or `#lang=de` to the loopy link and it opens in that language and keeps it.
 
 ## 26 November 2026

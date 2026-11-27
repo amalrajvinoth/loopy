@@ -61,11 +61,11 @@ Der Familien-Sync trägt dasselbe wie ein [Sterne-Code](/loopy/guide/de/stars/mo
 ## Wann abgeglichen wird
 
 - **Die Startseite** holt bei jedem Öffnen neue Sterne von den anderen Geräten. Kam etwas Neues, lädt sie einmal neu, um es zu zeigen.
-- **Ein Spiel** schickt seine neuen Sterne kurz nach dem Spielen und wenn du das Spiel verlässt.
+- **Ein Spiel** schickt seine neuen Sterne kurz nach dem Spielen und wenn du das Spiel verlässt. Hat ein anderes Gerät vorher gespeichert, liest das Spiel beim Verlassen die Sterne der Familie, fügt sie hinzu und schickt alles zusammen. Wenn du zum Spiel zurückkommst, lädt es einmal neu.
 - **Ein Gerät, das offen liegt,** holt von selbst auf. Nach 5 Minuten ohne Tippen holt es die neuen Sterne und lädt die Seite einmal neu. Ein Spiel zeigt dann eine neue Aufgabe, Stufe und Sterne bleiben. Solange niemand es berührt, prüft es alle 15 Minuten noch einmal, höchstens eine Stunde lang.
-- **Jetzt abgleichen** in ⚙ Einstellungen macht es sofort. Darunter zeigt "Zuletzt abgeglichen um", wann dieses Gerät zuletzt abgeglichen hat.
+- **Jetzt abgleichen** in ⚙ Einstellungen macht es sofort. Auf der Startseite laden neue Sterne von den anderen Geräten der Familie die Seite einmal neu, auch bei geöffneten Einstellungen. Unter dem Knopf zeigt "Zuletzt abgeglichen um", wann dieses Gerät zuletzt abgeglichen hat.
 
-Es lädt die Seite nie neu, während ein Kind tippt, während ein Feld oder die Einstellungen offen sind oder während loopy im Hintergrund ist. Die Spiele warten nie auf das Internet. Die Sterne werden wie immer zuerst auf dem Gerät gespeichert. Ohne Internet steht in den Einstellungen "Wartet auf Internet", und loopy gleicht ab, sobald es wieder da ist.
+Von selbst lädt es die Seite nie neu, während ein Kind tippt, während ein Feld oder die Einstellungen offen sind oder während loopy im Hintergrund ist. Nur ein Tipp auf **Jetzt abgleichen** tut das. Die Spiele warten nie auf das Internet. Die Sterne werden wie immer zuerst auf dem Gerät gespeichert. Ohne Internet steht in den Einstellungen "Wartet auf Internet", und loopy gleicht ab, sobald es wieder da ist.
 
 ## Ist das sicher?
 
