@@ -172,18 +172,24 @@
   // A page that is being left saves what it has. If another device saved first (412), the copy is read and
   // merged now and the merge saved, so new stars are not stuck on this device until its next home visit. The
   // page in memory is then older than what is stored, so it reloads when it is shown again (stale).
-  var stale = false;
+  var stale = false, owed = false;   // owed: a read brought stars but the page could not reload yet
   function leave() {
     return round(false).then(function (r) {
       if (!r.refused || !st) return;
-      return round(true).then(function (r2) { if (r2.changed) stale = true; });
+      return round(true).then(function (r2) { if (r2.changed) { stale = true; refresh(); } });
     });
+  }
+  // The page in memory is older than what is stored: reload it once it is shown and nothing is open.
+  function refresh() {
+    if (!stale || document.visibilityState === "hidden" || busyHere()) return false;
+    stale = false;
+    location.reload();
+    return true;
   }
   document.addEventListener("visibilitychange", function () {
     if (!st) return;
     if (document.visibilityState === "hidden") { clearTimeout(idleTimer); if (dirty || st.x) { clearTimeout(timer); leave(); } }
-    else if (stale && !busyHere()) { stale = false; location.reload(); }
-    else { touch(); if (Loopy.syncPage === "home" && Date.now() - pulled > 60000) home(); }
+    else if (!refresh()) { touch(); if (Loopy.syncPage === "home" && Date.now() - pulled > 60000) home(); }
   });
 
   // A box (a dialog) or Settings is open: someone is using the page, so it must not reload.
@@ -196,7 +202,9 @@
     return round(true).then(function (r) {
       var again = false;
       try { again = Date.now() - Number(sessionStorage.getItem("loopy.syncReload") || 0) < 30000; } catch (e) {}
-      if (r.changed && (asked || (!busyHere() && !again))) {
+      if (r.changed) owed = true;
+      if (owed && (asked || (!busyHere() && !again))) {
+        owed = false;
         try { sessionStorage.setItem("loopy.syncReload", String(Date.now())); } catch (e) {}
         location.reload();
       }
