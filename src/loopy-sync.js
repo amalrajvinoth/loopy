@@ -6,7 +6,8 @@
 // read it. The family code never leaves the device: the server only gets an id and a write key made from it.
 // Home page: read the copy when it changed, add it here (the stars code merge: it only adds, never takes
 // away), and save the result back. Every page: save after something changed (20 seconds after a change,
-// at most every 2 minutes), and when the page is left. New stars from another device show on the
+// at most every 2 minutes), and when the page is left (if another device saved first, the copy is read and merged
+// then, and the page reloads when it is shown again). New stars from another device show on the
 // home page, which reloads once. A page nobody has touched for 5 minutes (no tap, click or key) also reads
 // the copy, and again every 15 minutes up to an hour; it reloads once if something new came, so a tablet
 // left open catches up. Never while loopy is hidden, and never while a box or Settings is open.
@@ -97,7 +98,7 @@
   // A promise of { changed: true } when the copy brought something new to this device.
   function round(pull) {
     if (busy) return busy;
-    var s = st, changed = false;
+    var s = st, changed = false, refused = false;
     if (!s || ending) return Promise.resolve({});
     say("busy");
     busy = (pull ? get(s).then(function (r) {
@@ -124,7 +125,7 @@
             if (r.n === 200) { s.e = r.j.e; s.h = h; s.x = 0; pushed = Date.now(); return; }
             s.x = 1;
             if (r.n === 429) { later(); return; }
-            if (r.n === 412 && !pull) return;          // someone saved first: the home page will merge it
+            if (r.n === 412 && !pull) { refused = true; return; }   // someone saved first: a read and merge comes first (see leave)
             if (r.n === 412) { s.e = r.j.e || ""; throw new Error("again"); }
             if (r.n === 0) throw new Error("offline");
             if (r.n === 403) throw new Error("gone");
@@ -135,7 +136,7 @@
       s.t = Date.now();
       if (st === s) write();
       say("idle");
-      return { changed: changed };
+      return { changed: changed, refused: refused };
     }, function (err) {
       if (st === s) write();
       var why = err && err.message;
@@ -168,9 +169,20 @@
     var soon = Loopy.keep.soon;
     Loopy.keep.soon = function () { var r = soon.apply(this, arguments); changedHere(); return r; };
   }
+  // A page that is being left saves what it has. If another device saved first (412), the copy is read and
+  // merged now and the merge saved, so new stars are not stuck on this device until its next home visit. The
+  // page in memory is then older than what is stored, so it reloads when it is shown again (stale).
+  var stale = false;
+  function leave() {
+    return round(false).then(function (r) {
+      if (!r.refused || !st) return;
+      return round(true).then(function (r2) { if (r2.changed) stale = true; });
+    });
+  }
   document.addEventListener("visibilitychange", function () {
     if (!st) return;
-    if (document.visibilityState === "hidden") { clearTimeout(idleTimer); if (dirty || st.x) { clearTimeout(timer); round(false); } }
+    if (document.visibilityState === "hidden") { clearTimeout(idleTimer); if (dirty || st.x) { clearTimeout(timer); leave(); } }
+    else if (stale && !busyHere()) { stale = false; location.reload(); }
     else { touch(); if (Loopy.syncPage === "home" && Date.now() - pulled > 60000) home(); }
   });
 
@@ -178,12 +190,13 @@
   function busyHere() {
     return !!document.querySelector("dialog[open]") || (document.getElementById("settings-panel") || {}).hidden === false;
   }
-  // Read the copy; a change from another device reloads the page once, unless a box is open.
-  function home() {
+  // Read the copy; a change from another device reloads the page once, unless a box is open. asked: a grown-up
+  // tapped Sync now, so the page reloads even with Settings open (it is the answer they asked for).
+  function home(asked) {
     return round(true).then(function (r) {
       var again = false;
       try { again = Date.now() - Number(sessionStorage.getItem("loopy.syncReload") || 0) < 30000; } catch (e) {}
-      if (r.changed && !busyHere() && !again) {
+      if (r.changed && (asked || (!busyHere() && !again))) {
         try { sessionStorage.setItem("loopy.syncReload", String(Date.now())); } catch (e) {}
         location.reload();
       }
@@ -647,7 +660,7 @@
       return ending;
     },
     // Sync now (the home page's "Sync now"): a promise of { changed }.
-    now: function () { return Loopy.syncPage === "home" ? home() : round(true); },
+    now: function () { return Loopy.syncPage === "home" ? home(true) : round(true); },
     // Fills the Family sync part of ⚙ Settings on the home page (box: an empty element).
     settings: settings,
     // The small family code part for the welcome sheet and the row under My stars (see above).

@@ -10,6 +10,7 @@ Die großen Änderungen, die neuesten zuerst. Kleine Korrekturen stehen nicht da
 
 ## 27. November 2026
 
+- **Jetzt abgleichen zeigt die neuen Sterne der Familie.** Vorher nahm das Antippen bei geöffneten Einstellungen die neuen Sterne zwar auf, aber die Seite zeigte noch die alte Zahl. Jetzt lädt die Seite einmal neu und zeigt sie. Ein Spiel, das abgewiesen wurde, weil ein anderes Gerät zuerst gespeichert hatte, liest die Sterne der Familie jetzt beim Verlassen und fügt sie hinzu. Seine Sterne warten so nicht mehr auf den nächsten Besuch der Startseite.
 - **Links, die loopy auf Deutsch oder Englisch öffnen.** Häng `#lang=de` oder `#lang=en` an den loopy-Link, dann öffnet sich loopy in dieser Sprache und merkt sie sich.
 
 ## 26. November 2026
