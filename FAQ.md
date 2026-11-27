@@ -32,7 +32,7 @@ Yes. A new device starts with one child and shows no names. To add a child, open
 
 ## How do I change the language?
 
-Tap EN for English or DE for German. You find it on the home page and in each game's Settings. Loopy remembers your choice. Before you pick, a German phone or browser starts Loopy in German. In German the sums use the signs German schools use: 3 · 4 for times and 12 : 3 for share.
+Tap EN for English or DE for German. You find it on the home page and in each game's Settings. Loopy remembers your choice. A link can pick the language too: `https://amalrajvinoth.github.io/loopy/#lang=en` opens English and `#lang=de` opens German, and loopy keeps it. Handy when you send loopy to a friend. Before you pick, a German phone or browser starts Loopy in German. In German the sums use the signs German schools use: 3 · 4 for times and 12 : 3 for share.
 
 ## What are the badges for?
 
