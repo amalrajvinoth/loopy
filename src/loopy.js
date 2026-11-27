@@ -17,6 +17,14 @@ document.documentElement.classList.add("loopy-building");
     if (LANGS.indexOf(saved) !== -1) lang = saved;
     else if (saved === null && /^de(-|$)/i.test(navigator.language || "")) lang = "de";
   } catch (e) {}
+  // A link with #lang=de or #lang=en (the invite text has one for each) opens in that language and keeps it,
+  // like a tap on the language pill. The hint comes off the address.
+  var named = /^#lang=(en|de)$/.exec(location.hash);
+  if (named) {
+    lang = named[1];
+    try { localStorage.setItem(KEY, lang); } catch (e) {}
+    try { history.replaceState(null, "", location.pathname + location.search); } catch (e) {}
+  }
   document.documentElement.lang = lang;
   var dict = { en: {}, de: {} };
 
