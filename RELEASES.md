@@ -2,7 +2,7 @@
 
 The big changes, newest first. Small fixes are not listed.
 
-| Date | What's new | Where | PR |
+| Date | What's new | Where | [#373](https://github.com/amalrajvinoth/loopy/pull/373) |
 | --- | --- | --- | --- |
 | 2026-11-27 | Links that open loopy in English or German. Add `#lang=en` or `#lang=de` to the loopy link and it opens in that language and keeps it. The WhatsApp invite now carries one link for each language. | [English](https://amalrajvinoth.github.io/loopy/#lang=en), [German](https://amalrajvinoth.github.io/loopy/#lang=de) | PR |
 | 2026-11-26 | On a tablet, the question card now fills the whole question side, and the question, picture and words grow to fill it. Before, the card was only as big as its question and left a big empty gap. Phones stay as they were. | Every game with a question card, on a tablet | [#371](https://github.com/amalrajvinoth/loopy/pull/371) |
