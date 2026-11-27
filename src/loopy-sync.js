@@ -176,12 +176,13 @@
   function leave() {
     return round(false).then(function (r) {
       if (!r.refused || !st) return;
-      return round(true).then(function (r2) { if (r2.changed) { stale = true; refresh(); } });
+      return round(true).then(function (r2) { if (r2.changed) { stale = true; refresh(true); } });
     });
   }
-  // The page in memory is older than what is stored: reload it once it is shown and nothing is open.
-  function refresh() {
-    if (!stale || document.visibilityState === "hidden" || busyHere()) return false;
+  // The page in memory is older than what is stored: reload it once it is shown and nothing is open. quiet: a
+  // merge that ended while the page is shown again, so not while a child is tapping (the 5 minute check does it then).
+  function refresh(quiet) {
+    if (!stale || document.visibilityState === "hidden" || busyHere() || (quiet && Date.now() - touched < 10000)) return false;
     stale = false;
     location.reload();
     return true;
@@ -217,6 +218,7 @@
   function idle() {
     idleTimer = null;
     if (!st || document.visibilityState === "hidden") return;
+    if (refresh()) return;
     if (busyHere()) round(false); else home();
     var away = Date.now() - touched;
     if (away + AGAIN <= IDLE_MAX) idleTimer = setTimeout(idle, AGAIN);
