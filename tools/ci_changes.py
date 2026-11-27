@@ -11,7 +11,7 @@ The plan:
     a11y, play, retry, pictures   "all" (every page), "none" (skip the job), or a JSON list of the pages to test,
                                   such as ["math/plus-minus/"]. The tests read it from PAGES.
     extras                        a JSON list of the other browser tests in the Try again job to run:
-                                  offline, sync, levels, switch, hello.
+                                  offline, sync, levels, switch, hello, taskbar.
     lighthouse                    true or false (which pages: --pages).
     site                          true when any browser test runs.
     guide                         the guide build and check. Needed when the guide, the tools it uses or a workflow
@@ -33,7 +33,7 @@ import json, pathlib, posixpath, re, subprocess, sys
 ROOT = pathlib.Path(__file__).resolve().parents[1]
 ALL = "all"
 JOBS = ("a11y", "play", "retry", "pictures")
-EXTRAS = ("offline", "sync", "levels", "switch", "hello")
+EXTRAS = ("offline", "sync", "levels", "switch", "hello", "taskbar")
 
 # Files no page, test or guide build reads.
 DOCS = re.compile(r"""^(
@@ -58,7 +58,7 @@ RULES = [
     # A test, or the pictures the picture test compares with: that test on every page it covers.
     (re.compile(r"^tools/e2e/pictures(/.*|\.mjs)$"), {"pictures": ALL}),
     (re.compile(r"^tools/e2e/(play|retry)\.mjs$"), lambda m: {m.group(1): ALL}),
-    (re.compile(r"^tools/e2e/(offline|sync|levels|switch|hello)\.mjs$"), lambda m: {m.group(1): True}),
+    (re.compile(r"^tools/e2e/(offline|sync|levels|switch|hello|taskbar)\.mjs$"), lambda m: {m.group(1): True}),
     (re.compile(r"^tools/a11y/check\.mjs$"), {"a11y": ALL}),
     (re.compile(r"^tools/lighthouse/"), {"lighthouse": True}),
     # Run by the fast job only, or on the owner's Mac: lints, the build and policy scripts (a change in what they
@@ -123,6 +123,7 @@ def test_pages(root=ROOT):
         text = f.read_text(encoding="utf-8") if f.is_file() else ""
         named = {m for m in re.findall(r"""["'`]((?:[a-z]+/[a-z0-9-]+/)|help/|privacy/|progress/)["'`]""", text)}
         out[name] = [""] + sorted(p for p in named if p in pages)   # every one of them starts on the home page
+    out["taskbar"] = games   # opens every game (not the home page), so a change to any game runs it
     return out
 
 

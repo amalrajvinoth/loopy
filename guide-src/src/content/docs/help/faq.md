@@ -46,7 +46,7 @@ Yes. In ⚙ Settings on the home page, under **Stay in touch**, type your email,
 
 ## Can I use loopy like an app, and offline?
 
-Yes. Open ⚙ Settings on the home page and tap **Add loopy to the home screen**. After one visit with internet, loopy also works offline. See [Add to the home screen](/loopy/guide/setup/home-screen/) and [Offline](/loopy/guide/setup/offline/).
+Yes. Open ⚙ Settings on the home page and tap **Add loopy to the home screen**. After one visit with internet, loopy also works offline. loopy leaves room at the bottom for the device's own bar. So the last row of buttons is never hidden. See [Add to the home screen](/loopy/guide/setup/home-screen/) and [Offline](/loopy/guide/setup/offline/).
 
 ## Can loopy read the questions out loud?
 

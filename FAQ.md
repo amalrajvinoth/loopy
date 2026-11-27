@@ -66,7 +66,7 @@ Yes. On the home page, open ⚙ Settings, open **For grown-ups** and find **Stay
 
 Yes. On the home page, open ⚙ **Settings**, open **For grown-ups** and tap **Add loopy to the home screen** (on a computer: **Install loopy on this computer**). Where the browser has its own install box (Chrome, Edge, Samsung Internet), it opens. Otherwise loopy shows the steps for your device: iPhone, iPad, Android, a Mac with Safari, or a computer. It then opens full screen.
 
-On an iPhone, iPad or Mac, the loopy on the home screen keeps its own stars, apart from Safari. The steps box shows your stars code: copy it, open the new loopy, and load it under **My stars → Move my stars to another device**. Firefox on a computer cannot add sites as apps, so there loopy suggests a bookmark. After one visit with internet, it also works offline, on a plane or in the car. When you are online, it gets the newest version by itself.
+On an iPhone, iPad or Mac, the loopy on the home screen keeps its own stars, apart from Safari. The steps box shows your stars code: copy it, open the new loopy, and load it under **My stars → Move my stars to another device**. Firefox on a computer cannot add sites as apps, so there loopy suggests a bookmark. After one visit with internet, it also works offline, on a plane or in the car. When you are online, it gets the newest version by itself. loopy leaves room at the bottom for the device's own bar. So the last row of buttons is never hidden.
 
 ## Can Loopy read the questions out loud?
 

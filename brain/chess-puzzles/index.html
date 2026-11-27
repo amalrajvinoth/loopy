@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'sha256-sGMuJ3Lmztwksb02B49f1CfVj2yB3q4cpssz802YgZ0='; style-src 'self' 'sha256-iKqZfY0yOsyVHa/qlTmRsjSUAon+EdDi9RLwucVWFNA=' 'sha256-TaPU8uqHgAUNXu6iT1U1e8VCNJHjrXDnMi9HAvUo3cw='; img-src 'self' data:; font-src 'self'; connect-src 'self' https://loopy-sync.loopy-1e2.workers.dev; worker-src 'self'; object-src 'none'; base-uri 'none'; form-action 'none'; manifest-src 'self'; upgrade-insecure-requests">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'sha256-aIBVJzefGI1A2ndhj7dqk9K54lg4/z7ETTcZyZrSSlk='; style-src 'self' 'sha256-iKqZfY0yOsyVHa/qlTmRsjSUAon+EdDi9RLwucVWFNA=' 'sha256-PvZuSvwCpD5kzbyL+n/1XtV3Id9Gd2+kf5N5QY0yG/M='; img-src 'self' data:; font-src 'self'; connect-src 'self' https://loopy-sync.loopy-1e2.workers.dev; worker-src 'self'; object-src 'none'; base-uri 'none'; form-action 'none'; manifest-src 'self'; upgrade-insecure-requests">
 <meta name="referrer" content="strict-origin-when-cross-origin">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <style>:root{color-scheme:light;padding-top:var(--safe-top);padding-bottom:var(--safe-bottom)}body{margin:0}[hidden]{display:none!important}</style>
@@ -158,6 +158,12 @@ body .loopy-hint, body .loopy-hint.up { animation: none; }
      margins take back the card's gap. */
   .problem-card::before { content: ""; order: -2; flex: 1 1 0; margin-bottom: calc(-1 * var(--card-gap)); }
   .problem-card::after { content: ""; order: -1; flex: 1 1 0; margin-top: calc(-1 * var(--card-gap)); }
+  /* When that band is too thin for the hint (a tablet's home screen app, over its taskbar), the task's words get
+     smaller and all the room goes under them, so the board keeps its size and the hint never lands on Clue and Skip.
+     Only for the first puzzle. --hint-room is the bubble's height and arrow. */
+  .problem-card.hint-room::before { flex: 0 0 0; }
+  .problem-card.hint-room::after { min-height: var(--hint-room); }
+  .problem-card.hint-room .question { font-size: max(1rem, calc(var(--q-font) * 0.7)); }
   /* The board as big as the card allows: it reaches out over the card's own padding to just inside its rim. */
   .boardbox { flex: 0 1 auto; aspect-ratio: 1; width: calc(100% + 2 * (var(--card-pad) - var(--rim-w))); margin-inline: calc(var(--rim-w) - var(--card-pad)); }
   .problem-card.text .boardbox { flex: 0 0 auto; }
@@ -509,6 +515,21 @@ const CHESS = (function () {
   const card = $("card"), boardEl = $("board"), coordsEl = $("coords"), arrowsEl = $("arrows"), topicEl = $("topic"), picEl = $("pic");
   const qEl = $("question"), introEl = $("intro"), promoEl = $("promo"), feedbackEl = $("feedback"), choicesEl = $("choices");
   const clueBtn = $("clue"), nextBtn = $("next");
+  // The first-time hint goes between the task and the board. If it found no room there and fell under the board
+  // (onto Clue and Skip), the board makes room for this puzzle and loopy places the hint again.
+  // The room stays until the next puzzle, so the board never moves under a child's first tap. loopy places the
+  // hint again later (a turn of the screen), so each move of the hint is looked at too.
+  const hintMoved = new MutationObserver(() => roomForHint());
+  const roomForHint = () => {
+    const hint = document.querySelector("body > .loopy-hint"), box = document.querySelector(".boardbox");
+    if (hint && !hint.dataset.watched) { hint.dataset.watched = "1"; hintMoved.observe(hint, { attributes: true, attributeFilter: ["style"] }); }
+    if (!hint || !box || card.classList.contains("hint-room") || wide.matches) return;
+    if (hint.getBoundingClientRect().top < box.getBoundingClientRect().top) return;
+    card.style.setProperty("--hint-room", hint.offsetHeight + 24 + "px");
+    card.classList.add("hint-room");
+    dispatchEvent(new Event("resize"));
+  };
+  new MutationObserver(roomForHint).observe(document.body, { childList: true });
   const levelBtns = [...document.querySelectorAll("#level-seg button")], topicSeg = $("topic-seg");
   const randInt = (n) => Math.floor(Math.random() * n), pick = (a) => a[randInt(a.length)];
   const store = {
