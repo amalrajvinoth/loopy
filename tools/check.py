@@ -129,6 +129,8 @@ CHECKS = [
     ("hello", "node tools/e2e/hello.mjs", "the first visit: the welcome sheet once, the family code row until a code is set",
      SITE, BROWSER,
      "A test that starts with an empty browser must set loopy.hello.", "First visit test fails"),
+    ("taskbar", "node tools/e2e/taskbar.mjs", "every game as a home screen app: nothing under a phone's or tablet's bottom bar",
+     SITE, BROWSER, "Read var(--safe-bottom) from src/loopy.css, never raw env().", "Taskbar test fails"),
     ("offline", "node tools/e2e/offline.mjs", "after an update the offline copy saves the new pages, never an old one",
      SITE, BROWSER, "See the recipe.", "Offline copy keeps an old page"),
     ("sync", "node tools/e2e/sync.mjs", "Family sync keeps two devices in step and sends nothing when off",
@@ -143,7 +145,7 @@ CHECKS = [
      "Look for layout that leans on dvh, :has(), dialogs, speech or audio.", "A browser test is red in WebKit only"),
 ]
 ENV = {"pictures": {"ENGINE": "pinned"}, "a11y-webkit": {"ENGINE": "webkit"}, "play-webkit": {"ENGINE": "webkit"}}
-SLOW = {"a11y", "play", "pictures", "retry", "levels", "switch", "hello", "offline", "sync", "guide", "a11y-webkit", "play-webkit"}
+SLOW = {"a11y", "play", "pictures", "retry", "levels", "switch", "hello", "taskbar", "offline", "sync", "guide", "a11y-webkit", "play-webkit"}
 
 
 # A browser test says this when its browser is not on the machine; the line after "Run:" installs it.

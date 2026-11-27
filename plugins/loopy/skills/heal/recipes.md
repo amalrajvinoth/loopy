@@ -102,6 +102,11 @@ One per failure. Add new ones at the end (the heal skill step 3). Keep each to f
 - Cause: a change to `src/loopy-hello.js` (the sheet's steps, `dialog.hello`, `#family-row`), the home page's `hello()` hook (it waits for `Loopy.keep.done` and the `loopy:kept` event, and reads `CAME_BY_LINK` before the hash is taken off), `Loopy.kids.edit`, `Loopy.setAge`, the language rule in `src/loopy.js` (German from `navigator.language` only when nothing is saved), or a test that now starts with an empty browser and meets the sheet (set `loopy.hello` to `{"w":1}` in its init script, as `sync.mjs` does).
 - Fix: run the test; fix what it names, then `python3 tools/build.py`, `node tools/e2e/hello.mjs` and `node tools/e2e/sync.mjs` (its last part uses the row). (19 Nov 2026)
 
+## Taskbar test fails
+- Looks like: `node tools/e2e/taskbar.mjs` fails, or CI "Home screen app: nothing under the phone's or tablet's bar at the bottom". It names the game, the size and what ends under the bar.
+- Cause: a page pads or sizes itself by raw `env(safe-area-inset-bottom)` or a fixed number instead of `var(--safe-bottom)`; a part sits outside the page's one-screen height; or the home screen app rule in `src/loopy.css` changed (the test stops and asks for its new text in `APP_RULE`).
+- Fix: read `var(--safe-top)` / `var(--safe-bottom)` in the page (html padding, `body { height: calc(100dvh - ...) }`); never lower the floor or the bar heights in the test. Then `python3 tools/build.py` and `GAME=<id> node tools/e2e/taskbar.mjs`. (26 Nov 2026, issue #366)
+
 ## Live site check fails after a deploy
 - Looks like: CI "Pages" run, job "Live site check": "the live site still serves an older version, or a page does not answer".
 - Cause: Pages took longer than ten minutes (rare), the deploy job failed before it, or the guide folder is missing from the site.
